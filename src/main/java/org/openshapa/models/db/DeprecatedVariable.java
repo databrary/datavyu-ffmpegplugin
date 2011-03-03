@@ -21,7 +21,7 @@ import org.openshapa.models.db.legacy.TimeStamp;
 /**
  * Wrapper/adapter for deprecated data columns.
  */
-public final class DeprecatedVariable
+@Deprecated public final class DeprecatedVariable
 implements Variable, ExternalDataColumnListener, ExternalCascadeListener, ExternalDataCellListener {
 
     /** The legacy database we can fetch data from. */
@@ -132,7 +132,7 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
         }
     }
 
-
+    @Override
     public List<Cell> getCellsTemporally() {
         List<Cell> result = new ArrayList<Cell>();
 

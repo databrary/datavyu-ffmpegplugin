@@ -56,6 +56,7 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
     /**
      * Recalculate positions of all the cells in the spreadsheet.
      */
+    @Override
     public final void relayoutCells() {
 
         try {
@@ -141,8 +142,9 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
      * @throws SystemErrorException if a problem occurs.
      */
     private void layoutColumnCells(final SpreadsheetColumn col,
-        final long minOnset, final double pixPerTick)
-        throws SystemErrorException {
+                                   final long minOnset,
+                                   final double pixPerTick)
+    throws SystemErrorException {
 
         Long vPos = Long.valueOf(0);
         Long vHeight = Long.valueOf(0);

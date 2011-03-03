@@ -171,18 +171,16 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * Creates new form SpreadsheetCell.
      *
-     * @param cellDB
-     *            Database the cell is in
-     * @param cell
-     *            Cell to display
-     * @param listener
-     *            The spreadsheet cell selection listener to notify of changes
-     *            to cell selection.
-     * @throws SystemErrorException
-     *             if trouble with db calls
+     * @param cellDB Database the cell is in
+     * @param cell Cell to display
+     * @param listener The spreadsheet cell selection listener to notify of
+     * changes to cell selection.
+     * @throws SystemErrorException If trouble with db calls
      */
-    public SpreadsheetCell(final Database cellDB, final Cell cell,
-        final CellSelectionListener listener) throws SystemErrorException {
+    public SpreadsheetCell(final Database cellDB,
+                           final Cell cell,
+                           final CellSelectionListener listener)
+   throws SystemErrorException {
         db = cellDB;
         cellID = cell.getID();
         setName(this.getClass().getSimpleName());
@@ -192,9 +190,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
-        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-            .getCell(
-                cellID);
+        DataCell dc = (DataCell) db.getCell(cellID);
 
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
@@ -324,9 +320,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * @throws SystemErrorException
      */
     public long getOnsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-            .getCell(
-                cellID);
+        DataCell dc = (DataCell) db.getCell(cellID);
 
         return dc.getOnset().getTime();
     }
@@ -338,9 +332,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * @throws SystemErrorException
      */
     public long getOffsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-            .getCell(
-                cellID);
+        DataCell dc = (DataCell) db.getCell(cellID);
 
         return dc.getOffset().getTime();
     }
@@ -349,9 +341,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public long getOrdinal() throws SystemErrorException {
-        DataCell dc = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-            .getCell(
-                cellID);
+        DataCell dc = (DataCell) db.getCell(cellID);
 
         return dc.getOrd();
     }
@@ -880,15 +870,6 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     @Override public void paint(final Graphics g) {
         // BugzID:474 - Set the size at paint time - somewhere else may have
         // altered the font.
-        /*
-         * Graphics2D g2 = (Graphics2D) g;
-         * g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-         * RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-         * g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-         * RenderingHints.VALUE_RENDER_QUALITY);
-         *
-         */
-
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         super.paint(g);
     }

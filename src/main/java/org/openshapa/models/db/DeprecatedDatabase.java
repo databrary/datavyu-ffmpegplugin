@@ -57,6 +57,17 @@ import org.openshapa.util.Constants;
         legacyDB = newDB;
     }
 
+    @Deprecated public DeprecatedVariable getByLegacyID(final long colID) {
+        try {
+            return new DeprecatedVariable(getDatabase().getDataColumn(colID));
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to get variable", e);
+        }
+
+        // Failed - returned null.
+        return null;
+    }
+
     @Override public String getName() {
         return legacyDB.getName();
     }

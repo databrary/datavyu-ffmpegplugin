@@ -64,6 +64,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
+import org.openshapa.models.db.Variable;
 
 
 /**
@@ -226,19 +227,8 @@ public final class SpreadsheetPanel extends JPanel
      * Populate from the database.
      */
     private void buildColumns() {
-
-        try {
-            Vector<Long> dbColIds = getLegacyDatabase().getColOrderVector();
-
-            for (int i = 0; i < dbColIds.size(); i++) {
-
-                if (!getLegacyDatabase().getColumn(dbColIds.elementAt(i))
-                        .getHidden()) {
-                    addColumn(getDatastore(), dbColIds.elementAt(i));
-                }
-            }
-        } catch (SystemErrorException e) {
-            logger.error("Failed to populate Spreadsheet.", e);
+        for(Variable v : getDatastore().getAllVariables()) {
+            addColumn(getDatastore(), v);
         }
     }
 
@@ -246,15 +236,15 @@ public final class SpreadsheetPanel extends JPanel
      * Add a column panel to the scroll panel.
      *
      * @param db database.
-     * @param colID ID of the column to add.
+     * @param var The variable that this column represents.
      */
-    private void addColumn(final Datastore db, final long colID) {
+    private void addColumn(final Datastore db, final Variable var) {
 
         // Remove previous instance of newVar from the header.
         headerView.remove(newVar);
 
         // Create the spreadsheet column and register it.
-        SpreadsheetColumn col = new SpreadsheetColumn(db, colID, this, this);
+        SpreadsheetColumn col = new SpreadsheetColumn(db, var, this, this);
         col.registerListeners();
 
 
@@ -407,10 +397,12 @@ public final class SpreadsheetPanel extends JPanel
      * @param oldCov The column order vector prior to the insertion.
      * @param newCov The column order vector after to the insertion.
      */
-    public void colInsertion(final Database db, final long colID,
-        final Vector<Long> oldCov, final Vector<Long> newCov) {
+    public void colInsertion(final Database db,
+                             final long colID,
+                             final Vector<Long> oldCov,
+                             final Vector<Long> newCov) {
         deselectAll();
-        addColumn(datastore, colID);
+        addColumn(datastore, ((DeprecatedDatabase) datastore).getByLegacyID(colID));
     }
 
     /**
