@@ -35,7 +35,9 @@ import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 
@@ -64,6 +66,9 @@ public final class ColumnDataPanel extends JPanel
     /** Collection of the SpreadsheetCells held in by this data panel. */
     private List<SpreadsheetCell> cells;
 
+    /** The mapping between the database and the spreadsheet cells. */
+    private Map<Long, Long> viewMap;
+
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(ColumnDataPanel.class);
 
@@ -85,6 +90,7 @@ public final class ColumnDataPanel extends JPanel
         // Store member variables.
         columnWidth = width;
         cells = new ArrayList<SpreadsheetCell>();
+        viewMap = new HashMap();
         cellSelectionL = cellSelL;
         model = variable;
 
@@ -140,10 +146,8 @@ public final class ColumnDataPanel extends JPanel
      *            Spreadsheet listener to notify about cell selection changes.
      */
     private void buildDataPanelCells(final DataColumn dbColumn,
-        final CellSelectionListener cellSelL) {
-
+                                     final CellSelectionListener cellSelL) {
         try {
-
             // traverse and build the cells
             for (int j = 1; j <= dbColumn.getNumCells(); j++) {
                 DataCell dc = (DataCell) dbColumn.getDB().getCell(
@@ -159,6 +163,9 @@ public final class ColumnDataPanel extends JPanel
 
                 // and add it to our reference list
                 cells.add(sc);
+
+                // Add the ID's to the mapping.
+                viewMap.put(dc.getID(), (long) (cells.size() - 1));
             }
 
             this.add(newCellButton);
@@ -183,6 +190,7 @@ public final class ColumnDataPanel extends JPanel
             }
 
             cells.clear();
+            viewMap.clear();
         } catch (SystemErrorException se) {
             LOGGER.error("Unable to delete all cells", se);
         }
@@ -195,16 +203,11 @@ public final class ColumnDataPanel extends JPanel
      *            ID of cell to find and delete.
      */
     public void deleteCellByID(final long cellID) {
-
-        for (SpreadsheetCell cell : cells) {
-
-            if (cell.getCellID() == cellID) {
-                cells.remove(cell);
-                this.remove(cell);
-
-                break;
-            }
-        }
+        Long cellIndex = viewMap.get(cellID);
+        SpreadsheetCell cell = cells.get(cellIndex.intValue());
+        this.remove(cell);
+        cells.remove(cell);
+        viewMap.remove(cellID);
     }
 
     /**
@@ -238,6 +241,7 @@ public final class ColumnDataPanel extends JPanel
                 cells.add(nCell);
                 this.add(nCell);
             }
+            viewMap.put(cellID, (long) (cells.size() - 1));
 
             nCell.requestFocus();
         } catch (SystemErrorException e) {
@@ -314,6 +318,13 @@ public final class ColumnDataPanel extends JPanel
         Dimension size = super.getPreferredSize();
 
         return new Dimension(columnWidth, size.height);
+    }
+
+    /**
+     * @return The SpreadsheetCells in this column temporally.
+     */
+    public List<SpreadsheetCell> getCellsTemporally() {
+        return null;
     }
 
     /**
