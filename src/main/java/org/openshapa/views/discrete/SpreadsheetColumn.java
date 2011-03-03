@@ -463,6 +463,13 @@ public final class SpreadsheetColumn extends JLabel
     }
 
     /**
+     * @return The Spreadsheet cells in this column temporally.
+     */
+    public List<SpreadsheetCell> getCellsTemporally() {
+        return datapanel.getCellsTemporally();
+    }
+
+    /**
      * Request focus for this column. It will request focus for the first
      * SpreadsheetCell in the column if one exists. If no cells exist it
      * will request focus for the datapanel of the column.

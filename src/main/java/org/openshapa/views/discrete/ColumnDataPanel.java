@@ -38,6 +38,8 @@ import com.usermetrix.jclient.UserMetrix;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 
@@ -324,7 +326,15 @@ public final class ColumnDataPanel extends JPanel
      * @return The SpreadsheetCells in this column temporally.
      */
     public List<SpreadsheetCell> getCellsTemporally() {
-        return null;
+        ArrayList<SpreadsheetCell> result = new ArrayList<SpreadsheetCell>();
+
+        for (Cell c : model.getCellsTemporally()) {
+            DeprecatedCell dc = (DeprecatedCell) c;
+            long l = viewMap.get(dc.getLegacyCell().getID());
+            result.add(cells.get((int) l));
+        }
+
+        return result;
     }
 
     /**

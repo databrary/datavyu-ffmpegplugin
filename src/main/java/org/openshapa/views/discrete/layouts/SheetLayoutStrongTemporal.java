@@ -85,7 +85,7 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
     private void CalculateMaxMins(final SpreadsheetColumn col,
         final long[] minmax) throws SystemErrorException {
 
-        for (SpreadsheetCell cell : col.getCells()) {
+        for (SpreadsheetCell cell : col.getCellsTemporally()) {
 
             if (minmax[0] > cell.getOnsetTicks()) {
                 minmax[0] = cell.getOnsetTicks();
@@ -155,7 +155,7 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
         int prevvHeight = 0;
 
         // layout the cells.
-        for (SpreadsheetCell cell : col.getCells()) {
+        for (SpreadsheetCell cell : col.getCellsTemporally()) {
             vPos = Math.round((cell.getOnsetTicks() - minOnset) * pixPerTick);
             vHeight =
                 Math.round((cell.getOffsetTicks() - minOnset) * pixPerTick)
