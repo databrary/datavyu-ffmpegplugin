@@ -123,12 +123,11 @@ public final class SpreadsheetColumn extends JLabel
             setMinimumSize(this.getHeaderSize());
             setPreferredSize(this.getHeaderSize());
             setMaximumSize(this.getHeaderSize());
-            this.addMouseListener(this);
-            this.addMouseMotionListener(this);
-            this.setText(dbColumn.getName() + "  (" + dbColumn.getItsMveType()
-                + ")");
+            addMouseListener(this);
+            addMouseMotionListener(this);
+            setText(var.getName() + "  (" + dbColumn.getItsMveType() + ")");
 
-            datapanel = new ColumnDataPanel(width, dbColumn, cellSelL);
+            datapanel = new ColumnDataPanel(width, var, cellSelL);
 
         } catch (SystemErrorException e) {
             logger.error("Problem retrieving DataColumn", e);

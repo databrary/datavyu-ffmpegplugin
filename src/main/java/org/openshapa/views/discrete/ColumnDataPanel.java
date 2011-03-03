@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -37,6 +36,8 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
+import org.openshapa.models.db.DeprecatedVariable;
+import org.openshapa.models.db.Variable;
 
 
 /**
@@ -54,6 +55,10 @@ public final class ColumnDataPanel extends JPanel
     /** Layout type for Ordinal and Weak Temporal Ordering. */
     private LayoutManager boxLayout;
 
+    /** The model that this variable represents. */
+    private Variable model;
+
+    /** The cell selection listener used for cells in this column. */
     private CellSelectionListener cellSelectionL;
 
     /** Collection of the SpreadsheetCells held in by this data panel. */
@@ -68,21 +73,20 @@ public final class ColumnDataPanel extends JPanel
     /**
      * Creates a new ColumnDataPanel.
      *
-     * @param width
-     *            The width of the new column data panel in pixels.
-     * @param model
-     *            The Data Column that this panel represents.
-     * @param cellSelL
-     *            Spreadsheet cell selection listener.
+     * @param width The width of the new column data panel in pixels.
+     * @param variable The Data Column that this panel represents.
+     * @param cellSelL Spreadsheet cell selection listener.
      */
-    public ColumnDataPanel(final int width, final DataColumn model,
-        final CellSelectionListener cellSelL) {
+    public ColumnDataPanel(final int width,
+                           final Variable variable,
+                           final CellSelectionListener cellSelL) {
         super();
 
         // Store member variables.
         columnWidth = width;
         cells = new ArrayList<SpreadsheetCell>();
         cellSelectionL = cellSelL;
+        model = variable;
 
         // Create visual container for spreadsheet cells.
         Dimension d = new Dimension(0, Constants.BOTTOM_MARGIN);
@@ -93,12 +97,18 @@ public final class ColumnDataPanel extends JPanel
                 new Color(175, 175, 175)));
         this.add(bottomStrut, -1);
 
-        newCellButton = new SpreadsheetEmptyCell(model);
+
+
+        newCellButton = new SpreadsheetEmptyCell(getLegacyVariable());
         newCellButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
         this.add(newCellButton, -1);
 
         // Populate the data column with spreadsheet cells.
-        buildDataPanelCells(model, cellSelL);
+        buildDataPanelCells(getLegacyVariable(), cellSelL);
+    }
+
+    @Deprecated DataColumn getLegacyVariable() {
+        return ((DeprecatedVariable) model).getLegacyVariable();
     }
 
     /**
