@@ -9,7 +9,6 @@ import java.awt.event.KeyEvent;
 
 import java.io.File;
 
-import java.nio.charset.Charset;
 
 import java.util.EventObject;
 import java.util.Stack;
@@ -24,7 +23,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.eclipse.swt.custom.VerifyKeyListener;
 
 import org.jdesktop.application.Application;
 import org.jdesktop.application.LocalStorage;
@@ -42,7 +40,6 @@ import org.openshapa.plugins.PluginManager;
 
 import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
-import org.openshapa.util.WindowsFileAssociations;
 import org.openshapa.util.WindowsKeyChar;
 
 import org.openshapa.views.AboutV;
@@ -51,7 +48,6 @@ import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.UserMetrixV;
 import org.openshapa.views.VariableListV;
 
-import ca.beq.util.win32.registry.Win32Exception;
 
 import ch.randelshofer.quaqua.QuaquaManager;
 
@@ -199,9 +195,6 @@ public final class OpenSHAPA extends SingleFrameApplication
 
             // Code table used by Windows is different.
             case WINDOWS: {
-
-                // System.out.println((int) evt.getKeyChar());
-
                 switch (WindowsKeyChar.remap(evt.getKeyChar())) {
 
                 case '+':

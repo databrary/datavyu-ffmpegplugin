@@ -55,7 +55,7 @@ public final class ProjectController {
     private Project project;
 
     /** The current database we are working on. */
-    private DeprecatedDatabase db = new DeprecatedDatabase();
+    private Datastore db = new DeprecatedDatabase();
 
     /** The id of the last datacell that was created. */
     private long lastCreatedCellID;
@@ -143,7 +143,16 @@ public final class ProjectController {
      * database.
      */
     @Deprecated public DeprecatedDatabase getLegacyDB() {
-        return db;
+        return (DeprecatedDatabase) db;
+    }
+
+    /**
+     * Sets the datastore to use with this project. This is used when loading a
+     * database from file.
+     * @param newDS
+     */
+    public void setDatastore(final Datastore newDS) {
+        db = newDS;
     }
 
     /**
@@ -157,7 +166,7 @@ public final class ProjectController {
      * @param newDB The new MacshapaDatabase to use.
      */
     @Deprecated public void setDatabase(final MacshapaDatabase newDB) {
-        db.setDatabase(newDB);
+        getLegacyDB().setDatabase(newDB);
     }
 
     /**
@@ -215,7 +224,7 @@ public final class ProjectController {
      */
     public boolean isChanged() {
 
-        MacshapaDatabase legacyDB = db.getDatabase();
+        MacshapaDatabase legacyDB = getLegacyDB().getDatabase();
 
         if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
             return (changed || ((legacyDB != null) && legacyDB.isChanged()));

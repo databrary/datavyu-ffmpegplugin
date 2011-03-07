@@ -4,24 +4,19 @@ import com.usermetrix.jclient.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 
 import java.util.Vector;
 
-//import org.openshapa.models.db.MacshapaODBReader;
-
-import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
 
 import java.io.FileInputStream;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
 
-import org.openshapa.models.db.legacy.Cell;
 import org.openshapa.models.db.legacy.Column;
 import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.models.db.legacy.DataColumn;
@@ -33,7 +28,6 @@ import org.openshapa.models.db.legacy.FormalArgument;
 import org.openshapa.models.db.legacy.IntDataValue;
 import org.openshapa.models.db.legacy.IntFormalArg;
 import org.openshapa.models.db.legacy.LogicErrorException;
-import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.models.db.legacy.Matrix;
 import org.openshapa.models.db.legacy.MatrixVocabElement;
 import org.openshapa.models.db.legacy.NominalDataValue;
@@ -47,7 +41,6 @@ import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.models.db.legacy.TextStringDataValue;
 import org.openshapa.models.db.legacy.TimeStamp;
 import org.openshapa.models.db.legacy.VocabElement;
-import org.openshapa.models.db.legacy.MatrixVocabElement.MatrixType;
 
 
 /**
@@ -74,8 +67,8 @@ public final class OpenDatabaseFileC {
      *
      * @return populated MacshapaDatabase on success, null otherwise.
      */
-    public MacshapaDatabase open(final File sourceFile) {
-        MacshapaDatabase db;
+    public Datastore open(final File sourceFile) {
+        Datastore db;
         String inputFile = sourceFile.toString().toLowerCase();
 
         // If the file ends with CSV - treat it as a comma seperated file.
@@ -94,12 +87,11 @@ public final class OpenDatabaseFileC {
      * This method treats a file as a MacSHAPA database file and attempts to
      * populate the database with data.
      *
-     * @param sFile
-     *            The source file to use when populating the database.
+     * @param sFile The source file to use when populating the database.
      *
-     * @return popluated database on success, null otherwise.
+     * @return populated database on success, null otherwise.
      */
-    public MacshapaDatabase openAsMacSHAPADB(final File sFile) {
+    public Datastore openAsMacSHAPADB(final File sFile) {
 
         // Currently no implementation of opening older MacSHAPA database.
         // ... One day.
@@ -109,47 +101,20 @@ public final class OpenDatabaseFileC {
     }
 
     /**
-     * Remove data column from a MacSHAPA database.
-     * @param model MacSHAPA database
-     * @param dc DataColumn
-     * @return MacSHAPA database with dc removed
-     * @throws SystemErrorException see
-     */
-    private MacshapaDatabase removeDataColumn(final MacshapaDatabase model,
-        DataColumn dc) throws SystemErrorException {
-
-        while (dc.getNumCells() > 0) {
-            Cell c = model.getCell(dc.getID(), 1);
-
-            // Check if the cell we are deleting is the last created
-            // cell... Default this back to 0.
-            model.removeCell(c.getID());
-            dc = model.getDataColumn(dc.getID());
-        }
-
-        // Check if the column we are deleting was the last created
-        // column... Default this back to 0 if it is.
-        model.removeColumn(dc.getID());
-
-        return model;
-    }
-
-    /**
      * This method parses a CSV file and populates the database (and
      * spreadsheet) with data.
      *
-     * @param sFile
-     *            The source file to use when populating the database.
+     * @param sFile The source file to use when populating the database.
      *
-     * @return populated database on sucess, null otherwise.
+     * @return populated database on success, null otherwise.
      */
-    public MacshapaDatabase openAsCSV(final File sFile) {
+    public Datastore openAsCSV(final File sFile) {
 
         try {
             logger.usage("open csv database from file");
 
             FileInputStream fis = new FileInputStream(sFile);
-            MacshapaDatabase result = openAsCSV(fis);
+            Datastore result = openAsCSV(fis);
             fis.close();
 
             return result;
@@ -171,13 +136,12 @@ public final class OpenDatabaseFileC {
      *
      * @return populated database on sucess, null otherwise.
      */
-    public MacshapaDatabase openAsCSV(final InputStream inStream) {
+    public Datastore openAsCSV(final InputStream inStream) {
 
         try {
             logger.usage("open csv database from stream");
 
-            MacshapaDatabase db = new MacshapaDatabase(
-                    Constants.TICKS_PER_SECOND);
+            DeprecatedDatabase db = new DeprecatedDatabase();
             InputStreamReader isr = new InputStreamReader(inStream);
             BufferedReader csvFile = new BufferedReader(isr);
 
@@ -189,27 +153,27 @@ public final class OpenDatabaseFileC {
             if ("#4".equalsIgnoreCase(line)) {
 
                 //Version 4 includes a comment for columns.
-                line = parseDefinitions(csvFile, db);
+                line = parseDefinitions(csvFile, db.getDatabase());
 
                 while (line != null) {
-                    line = parseVariable(csvFile, line, db, "#4");
+                    line = parseVariable(csvFile, line, db.getDatabase(), "#4");
                 }
             } else if ("#3".equalsIgnoreCase(line)) {
 
                 //Version 3 includes column visible status after the column type
                 // Parse predicate definitions first.
-                line = parseDefinitions(csvFile, db);
+                line = parseDefinitions(csvFile, db.getDatabase());
 
                 while (line != null) {
-                    line = parseVariable(csvFile, line, db, "#3");
+                    line = parseVariable(csvFile, line, db.getDatabase(), "#3");
                 }
             } else if ("#2".equalsIgnoreCase(line)) {
 
                 // Parse predicate definitions first.
-                line = parseDefinitions(csvFile, db);
+                line = parseDefinitions(csvFile, db.getDatabase());
 
                 while (line != null) {
-                    line = parseVariable(csvFile, line, db);
+                    line = parseVariable(csvFile, line, db.getDatabase());
                 }
 
             } else {
@@ -217,7 +181,7 @@ public final class OpenDatabaseFileC {
                 // Use the original schema to load the file - just variables,
                 // and no escape characters.
                 while (line != null) {
-                    line = parseVariable(csvFile, line, db);
+                    line = parseVariable(csvFile, line, db.getDatabase());
                 }
             }
 

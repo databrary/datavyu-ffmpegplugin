@@ -7,6 +7,7 @@ import java.io.File;
 
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.openshapa.models.db.Datastore;
 
 import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.models.project.Project;
@@ -19,7 +20,7 @@ import org.openshapa.models.project.ViewerSetting;
 public final class OpenC {
 
     /** A reference to the database that this controller opened. */
-    private MacshapaDatabase database = null;
+    private Datastore database = null;
 
     /** A reference to the projec that this controller opened. */
     private Project project = null;
@@ -132,10 +133,10 @@ public final class OpenC {
     }
 
     /**
-     * @return The instance of the macshapa database that was opened by this
-     * controller, returns null if no database opened.
+     * @return The instance of the datastore that was opened by this controller,
+     * returns null if no database opened.
      */
-    public MacshapaDatabase getDatabase() {
+    public Datastore getDatastore() {
         return database;
     }
 

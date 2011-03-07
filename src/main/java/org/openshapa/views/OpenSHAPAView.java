@@ -591,7 +591,7 @@ public final class OpenSHAPAView extends FrameView
 
         ProjectController projController = OpenSHAPA.getProjectController();
 
-        projController.setDatabase(openC.getDatabase());
+        projController.setDatastore(openC.getDatastore());
         projController.setProjectDirectory(databaseFile.getParent());
         projController.setDatabaseFileName(databaseFile.getName());
     }
@@ -600,9 +600,9 @@ public final class OpenSHAPAView extends FrameView
         OpenC openC = new OpenC();
         openC.openProject(projectFile);
 
-        if ((openC.getProject() != null) && (openC.getDatabase() != null)) {
+        if ((openC.getProject() != null) && (openC.getDatastore() != null)) {
             OpenSHAPA.newProjectController(openC.getProject());
-            OpenSHAPA.getProjectController().setDatabase(openC.getDatabase());
+            OpenSHAPA.getProjectController().setDatastore(openC.getDatastore());
             OpenSHAPA.getProjectController().setProjectDirectory(
                 projectFile.getParent());
             OpenSHAPA.getProjectController().loadProject();
