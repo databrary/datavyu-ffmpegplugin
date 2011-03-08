@@ -27,6 +27,9 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
     /** The legacy database we can fetch data from. */
     private Database legacyDB;
 
+    /** The legacy datacolumn that this variable wraps. */
+    private DataColumn legacyColumn;
+
     /** The legacy id of the column we are fetching data from. */
     private long legacyColumnId;
 
@@ -51,6 +54,7 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
         colChanges = new VariableChanges();
         temporalMap = HashMultimap.create();
         temporalIndex = asSortedList(temporalMap.keySet());
+        legacyColumn = newVariable;
         this.setLegacyVariable(newVariable);
     }
 
@@ -61,12 +65,7 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
      * the db.legacy package.
      */
     @Deprecated public DataColumn getLegacyVariable() {
-        try {
-            return legacyDB.getDataColumn(legacyColumnId);
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get legacy variable", e);
-            return null;
-        }
+        return legacyColumn;
     }
 
     private static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
@@ -80,14 +79,15 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
      *
      * @param newColumn The legacy variable that this variable will represent.
      */
-    private void setLegacyVariable(DataColumn newColumn) {
+    @Deprecated public void setLegacyVariable(DataColumn newColumn) {
         try {
-            if (legacyDB != null) {
+            if (legacyDB != null && legacyColumnId != 0) {
                 legacyDB.deregisterDataColumnListener(legacyColumnId, this);
                 legacyDB.deregisterCascadeListener(this);
             }
 
             legacyDB = newColumn.getDB();
+            legacyColumn = newColumn;
             legacyColumnId = newColumn.getID();
 
             legacyDB.registerDataColumnListener(legacyColumnId, this);
@@ -153,11 +153,9 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
         }
     }
 
-    @Override
-    public void addCell(Cell newCell) {
+    @Override public void addCell(Cell newCell) {
         // TODO.
     }
-
 
     // --- Interface: ExternalCascadeListener.
     @Override public void beginCascade(final Database db) {

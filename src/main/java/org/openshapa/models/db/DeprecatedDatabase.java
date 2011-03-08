@@ -72,6 +72,17 @@ import org.openshapa.util.Constants;
         return legacyDB.getName();
     }
 
+    @Override public void addVariable(final Variable var) {
+        DeprecatedVariable legacyVar = (DeprecatedVariable) var;
+
+        try {
+            long colId = legacyDB.addColumn(legacyVar.getLegacyVariable());
+            legacyVar.setLegacyVariable(legacyDB.getDataColumn(colId));
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to add variable", e);
+        }
+    }
+
     @Override public List<Variable> getAllVariables() {
         List<Variable> result = new ArrayList<Variable>();
 

@@ -16,6 +16,7 @@ import com.usermetrix.jclient.UserMetrix;
 import java.io.FileInputStream;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
+import org.openshapa.models.db.DeprecatedVariable;
 
 import org.openshapa.models.db.legacy.Column;
 import org.openshapa.models.db.legacy.DataCell;
@@ -28,6 +29,7 @@ import org.openshapa.models.db.legacy.FormalArgument;
 import org.openshapa.models.db.legacy.IntDataValue;
 import org.openshapa.models.db.legacy.IntFormalArg;
 import org.openshapa.models.db.legacy.LogicErrorException;
+import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.models.db.legacy.Matrix;
 import org.openshapa.models.db.legacy.MatrixVocabElement;
 import org.openshapa.models.db.legacy.NominalDataValue;
@@ -51,7 +53,7 @@ public final class OpenDatabaseFileC {
     /** The index of the ONSET timestamp in the CSV line. */
     private static final int DATA_ONSET = 0;
 
-    /** The index of the OFFSET timestampe in the CSV line. */
+    /** The index of the OFFSET timestamp in the CSV line. */
     private static final int DATA_OFFSET = 1;
 
     /** The start of the data arguments. */
@@ -156,7 +158,7 @@ public final class OpenDatabaseFileC {
                 line = parseDefinitions(csvFile, db.getDatabase());
 
                 while (line != null) {
-                    line = parseVariable(csvFile, line, db.getDatabase(), "#4");
+                    line = parseVariable(csvFile, line, db, "#4");
                 }
             } else if ("#3".equalsIgnoreCase(line)) {
 
@@ -165,7 +167,7 @@ public final class OpenDatabaseFileC {
                 line = parseDefinitions(csvFile, db.getDatabase());
 
                 while (line != null) {
-                    line = parseVariable(csvFile, line, db.getDatabase(), "#3");
+                    line = parseVariable(csvFile, line, db, "#3");
                 }
             } else if ("#2".equalsIgnoreCase(line)) {
 
@@ -173,7 +175,7 @@ public final class OpenDatabaseFileC {
                 line = parseDefinitions(csvFile, db.getDatabase());
 
                 while (line != null) {
-                    line = parseVariable(csvFile, line, db.getDatabase());
+                    line = parseVariable(csvFile, line, db);
                 }
 
             } else {
@@ -181,7 +183,7 @@ public final class OpenDatabaseFileC {
                 // Use the original schema to load the file - just variables,
                 // and no escape characters.
                 while (line != null) {
-                    line = parseVariable(csvFile, line, db.getDatabase());
+                    line = parseVariable(csvFile, line, db);
                 }
             }
 
@@ -485,24 +487,22 @@ public final class OpenDatabaseFileC {
      * Method to invoke when we encounter a block of text in the CSV file that
      * is the contents of a variable.
      *
-     * @param csvFile
-     *            The csvFile we are currently parsing.
-     * @param dc
-     *            The datacolumn that we will be adding cells too.
-     * @param The
-     *            populator to use when converting the contents of the cell into
-     *            a datavalue that can be inserted into the spreadsheet.
+     * @param csvFile The csvFile we are currently parsing.
+     * @param dc The datacolumn that we will be adding cells too.
+     * @param The populator to use when converting the contents of the cell into
+     * a datavalue that can be inserted into the spreadsheet.
+     *
      * @return The next line in the file that is not part of the block of text
-     *         in the CSV file.
-     * @throws IOException
-     *             If unable to read the file correctly.
-     * @throws SystemErrorException
-     *             If unable to update the database with the datavalues we are
-     *             creating from the populator.
+     * in the CSV file.
+     *
+     * @throws IOException If unable to read the file correctly.
+     * @throws SystemErrorException If unable to update the database with the
+     * datavalues we are creating from the populator.
      */
     private String parseEntries(final BufferedReader csvFile,
-        final DataColumn dc, final EntryPopulator populator) throws IOException,
-        SystemErrorException {
+                                final DataColumn dc,
+                                final EntryPopulator populator)
+    throws IOException, SystemErrorException {
 
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
@@ -637,53 +637,47 @@ public final class OpenDatabaseFileC {
     /**
      * Method to invoke when we encounter a block of text that is a variable.
      *
-     * @param csvFile
-     *            The CSV file we are currently reading.
-     * @param line
-     *            The line of the CSV file we are currently reading.
-     * @param db
-     *            The database we are populating with data from the CSV file.
+     * @param csvFile The CSV file we are currently reading.
+     * @param line The line of the CSV file we are currently reading.
+     * @param db The data store we are populating with data from the CSV file.
+     *
      * @return The next String that is not part of the currently variable that
-     *         we are parsing.
-     * @throws IOException
-     *             When we are unable to read from the csvFile.
-     * @throws SystemErrorException
-     *             When we are unable to populate the variable with information
-     *             from the CSV file.
-     * @throws LogicErrorException
-     *             When we are unable to create a new variable from the CSV file
-     *             (i.e the variable already exists in the database).
+     * we are parsing.
+     *
+     * @throws IOException When we are unable to read from the csvFile.
+     * @throws SystemErrorException When we are unable to populate the variable
+     * with information from the CSV file.
+     * @throws LogicErrorException When we are unable to create a new variable
+     * from the CSV file (i.e the variable already exists in the database).
      */
     private String parseVariable(final BufferedReader csvFile,
-        final String line, final Database db) throws IOException,
-        SystemErrorException, LogicErrorException {
+                                 final String line,
+                                 final Datastore db)
+    throws IOException, SystemErrorException, LogicErrorException {
         return parseVariable(csvFile, line, db, "#2");
-
     }
 
     /**
      * Method to invoke when we encounter a block of text that is a variable.
      *
-     * @param csvFile
-     *            The CSV file we are currently reading.
-     * @param line
-     *            The line of the CSV file we are currently reading.
-     * @param db
-     *            The database we are populating with data from the CSV file.
+     * @param csvFile The CSV file we are currently reading.
+     * @param line The line of the CSV file we are currently reading.
+     * @param db The data store we are populating with data from the CSV file.
+     *
      * @return The next String that is not part of the currently variable that
-     *         we are parsing.
-     * @throws IOException
-     *             When we are unable to read from the csvFile.
-     * @throws SystemErrorException
-     *             When we are unable to populate the variable with information
-     *             from the CSV file.
-     * @throws LogicErrorException
-     *             When we are unable to create a new variable from the CSV file
-     *             (i.e the variable already exists in the database).
+     * we are parsing.
+     *
+     * @throws IOException When we are unable to read from the csvFile.
+     * @throws SystemErrorException When we are unable to populate the variable
+     * with information from the CSV file.
+     * @throws LogicErrorException When we are unable to create a new variable
+     * from the CSV file (i.e the variable already exists in the database).
      */
     private String parseVariable(final BufferedReader csvFile,
-        final String line, final Database db, final String version)
-        throws IOException, SystemErrorException, LogicErrorException {
+                                 final String line,
+                                 final Datastore db,
+                                 final String version)
+    throws IOException, SystemErrorException, LogicErrorException {
 
         // Determine the variable name and type.
         String[] tokens = line.split("\\(");
@@ -721,33 +715,41 @@ public final class OpenDatabaseFileC {
         }
 
         // Create variable to put cells within.
-        Column.isValidColumnName(db, varName);
+        MacshapaDatabase legacyDb = ((DeprecatedDatabase) db).getDatabase();
+        Column.isValidColumnName(legacyDb, varName);
 
-        DataColumn dc = new DataColumn(db, varName, getVarType(varType));
+        DataColumn dc = new DataColumn(legacyDb, varName, getVarType(varType));
         dc.setHidden(!varVisible);
         dc.setComment(varComment);
-
-        long colId = db.addColumn(dc);
-        dc = db.getDataColumn(colId);
+        DeprecatedVariable newVar = new DeprecatedVariable(dc);
+        db.addVariable(newVar);
 
         // Read text variable.
         if (getVarType(varType) == MatrixVocabElement.MatrixType.TEXT) {
-            return parseEntries(csvFile, dc, new PopulateText(dc.getDB()));
+            return parseEntries(csvFile,
+                                newVar.getLegacyVariable(),
+                                new PopulateText(legacyDb));
 
         } else if (getVarType(varType)
                 == MatrixVocabElement.MatrixType.NOMINAL) {
 
             // Read nominal variable.
-            return parseEntries(csvFile, dc, new PopulateNominal(dc.getDB()));
+            return parseEntries(csvFile,
+                                newVar.getLegacyVariable(),
+                                new PopulateNominal(legacyDb));
 
         } else if (getVarType(varType)
                 == MatrixVocabElement.MatrixType.INTEGER) {
 
             // Read integer variable.
-            return parseEntries(csvFile, dc, new PopulateInteger(dc.getDB()));
+            return parseEntries(csvFile,
+                                newVar.getLegacyVariable(),
+                                new PopulateInteger(legacyDb));
 
         } else if (getVarType(varType) == MatrixVocabElement.MatrixType.FLOAT) {
-            return parseEntries(csvFile, dc, new PopulateFloat(dc.getDB()));
+            return parseEntries(csvFile,
+                                newVar.getLegacyVariable(),
+                                new PopulateFloat(legacyDb));
 
         } else if (getVarType(varType)
                 == MatrixVocabElement.MatrixType.MATRIX) {
@@ -757,24 +759,24 @@ public final class OpenDatabaseFileC {
 
             // Get the vocab element for the matrix and clean it up to be
             // populated with arguments from the CSV file.
-            MatrixVocabElement mve = db.getMatrixVE(varName);
+            MatrixVocabElement mve = legacyDb.getMatrixVE(varName);
             mve.deleteFormalArg(0);
 
             // For each of the formal arguments in the file - parse it and
             // create a formal argument in the matrix vocab element.
             for (String arg : vocabString[1].split(",")) {
-                mve.appendFormalArg(parseFormalArgument(arg, db));
+                mve.appendFormalArg(parseFormalArgument(arg, legacyDb));
             }
 
-            db.replaceMatrixVE(mve);
-            mve = db.getMatrixVE(varName);
+            legacyDb.replaceMatrixVE(mve);
+            mve = legacyDb.getMatrixVE(varName);
 
-            return parseMatrixVariable(csvFile, dc, mve);
+            return parseMatrixVariable(csvFile, newVar.getLegacyVariable(), mve);
 
             // Read predicate variable.
         } else if (getVarType(varType)
                 == MatrixVocabElement.MatrixType.PREDICATE) {
-            return parsePredicateVariable(csvFile, dc);
+            return parsePredicateVariable(csvFile, newVar.getLegacyVariable());
         }
 
         throw new IllegalStateException("Unknown variable type.");

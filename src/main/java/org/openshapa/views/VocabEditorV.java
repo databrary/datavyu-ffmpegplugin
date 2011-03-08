@@ -497,15 +497,12 @@ ExternalVocabListListener{
                         // If the new vocab element is a matrix vocab element,
                         // we actually need to create a column.
                         if (ve.getClass() == MatrixVocabElement.class) {
-                            Column.isValidColumnName(OpenSHAPA
-                                    .getProjectController().getLegacyDB().getDatabase(), ve
-                                    .getName());
-                            DataColumn dc =
-                                    new DataColumn(
-                                            db,
-                                            ve.getName(),
-                                            MatrixVocabElement.MatrixType.MATRIX);
-                            
+                            Column.isValidColumnName(OpenSHAPA.getProjectController().getLegacyDB().getDatabase(),
+                                                     ve.getName());
+                            DataColumn dc = new DataColumn(db,
+                                                           ve.getName(),
+                                                           MatrixVocabElement.MatrixType.MATRIX);
+
                             long colID = db.addColumn(dc);
                             dc = db.getDataColumn(colID);
                             long mveID = dc.getItsMveID();
