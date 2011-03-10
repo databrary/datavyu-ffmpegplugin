@@ -2,6 +2,7 @@ package org.openshapa.views.discrete.layouts;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.Rectangle;
 import java.util.List;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
@@ -36,13 +37,19 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
      * Recalculate positions of all the cells in the spreadsheet.
      */
     @Override public final void relayoutCells() {
+        System.err.println("weak ordering");
+
         for (SpreadsheetColumn col : getColumns()) {
             int currentHeight = 0;
 
             for (SpreadsheetCell cell : col.getCellsTemporally()) {
-                cell.setBounds(0, currentHeight, cell.getWidth(), cell.getHeight());
-                currentHeight += cell.getHeight();
+                Rectangle rect = cell.getBounds();
+                rect.y += 100;
+                cell.setOnsetvGap(1);
+                cell.setBounds(rect);
             }
+
+            col.setBottomBound(5000);
         }
     }
 }

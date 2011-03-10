@@ -22,6 +22,9 @@ import org.openshapa.util.Constants;
     /** The legacy database that this datastore represents. */
     private MacshapaDatabase legacyDB;
 
+    /** The list of variables stored in this database. */
+    private List<Variable> variables;
+
     /**
      * Default constructor.
      */
@@ -30,6 +33,7 @@ import org.openshapa.util.Constants;
             legacyDB = new MacshapaDatabase(Constants.TICKS_PER_SECOND);
             // BugzID:449 - Set default database name.
             legacyDB.setName("Database1");
+            variables = new ArrayList<Variable>();
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to create new database", e);
         }
@@ -78,22 +82,13 @@ import org.openshapa.util.Constants;
         try {
             long colId = legacyDB.addColumn(legacyVar.getLegacyVariable());
             legacyVar.setLegacyVariable(legacyDB.getDataColumn(colId));
+            variables.add(var);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to add variable", e);
         }
     }
 
     @Override public List<Variable> getAllVariables() {
-        List<Variable> result = new ArrayList<Variable>();
-
-        try {
-            for (Long colId : getDatabase().getColOrderVector()) {
-                result.add(new DeprecatedVariable(getDatabase().getDataColumn(colId)));
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get all variables.", e);
-        }
-
-        return result;
+        return variables;
     }
 }

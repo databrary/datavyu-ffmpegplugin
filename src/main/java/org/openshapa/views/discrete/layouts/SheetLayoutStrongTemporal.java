@@ -164,7 +164,6 @@ public class SheetLayoutStrongTemporal extends SheetLayout {
             intvHeight = vHeight.intValue();
 
             if (prevCell != null) {
-
                 if (intvPos < (prevvPos + prevvHeight)) {
 
                     // we have overlap - modify size and border

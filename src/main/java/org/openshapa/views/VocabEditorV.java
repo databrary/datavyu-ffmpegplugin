@@ -44,6 +44,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.util.Stack;
 import javax.swing.JOptionPane;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
+import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.util.VEList;
 import org.openshapa.views.discrete.datavalues.vocabelements.VENameEditor;
 
@@ -54,7 +57,7 @@ public final class VocabEditorV extends OpenSHAPADialog implements
 ExternalVocabListListener{
 
     /** The database that this vocab editor is manipulating. */
-    private Database db;
+    private Datastore db;
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(VocabEditorV.class);
     /** The currently selected vocab element. */
@@ -87,7 +90,7 @@ ExternalVocabListListener{
         logger.usage("vocEd - show");
 
 
-        db = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
+        db = OpenSHAPA.getProjectController().getDB();
         initComponents();
         componentListnersInit();
         setName(this.getClass().getSimpleName());
@@ -159,7 +162,7 @@ ExternalVocabListListener{
         verticalFrame.setLayout(new BoxLayout(verticalFrame, BoxLayout.Y_AXIS));
 
         try {
-            Vector<MatrixVocabElement> matVEs = db.getMatrixVEs();
+            Vector<MatrixVocabElement> matVEs = getLegacyDB().getMatrixVEs();
             for (int i = matVEs.size() - 1; i >= 0; i--) {
                 MatrixVocabElement mve = matVEs.elementAt(i);
                 VocabElementV matrixV = new VocabElementV(mve, this);
@@ -167,7 +170,7 @@ ExternalVocabListListener{
                 veViews.add(matrixV);
             }
 
-            Vector<PredicateVocabElement> predVEs = db.getPredVEs();
+            Vector<PredicateVocabElement> predVEs = getLegacyDB().getPredVEs();
             for (int i = predVEs.size() - 1; i >= 0; i--) {
                 PredicateVocabElement pve = predVEs.elementAt(i);
                 VocabElementV predicateV = new VocabElementV(pve, this);
@@ -192,6 +195,10 @@ ExternalVocabListListener{
         revertButton.setVisible(false);
     }
 
+    @Deprecated public Database getLegacyDB() {
+        return ((DeprecatedDatabase) db).getDatabase();
+    }
+
     /**
      * The action to invoke when the user clicks on the add predicate button.
      */
@@ -200,7 +207,8 @@ ExternalVocabListListener{
         try {
             logger.usage("vocEd - add predicate");
             PredicateVocabElement pve =
-                    new PredicateVocabElement(db, "predicate" + getPredNameNum());
+                    new PredicateVocabElement(getLegacyDB(),
+                                              "predicate" + getPredNameNum());
             addVocabElement(pve);
 
         } catch (SystemErrorException e) {
@@ -217,7 +225,8 @@ ExternalVocabListListener{
         try {
             logger.usage("vocEd - add matrix");
             MatrixVocabElement mve =
-                    new MatrixVocabElement(db, "matrix" + getMatNameNum());
+                    new MatrixVocabElement(getLegacyDB(),
+                                           "matrix" + getMatNameNum());
             mve.setType(MatrixType.MATRIX);
             addVocabElement(mve);
         } catch (SystemErrorException e) {
@@ -245,7 +254,7 @@ ExternalVocabListListener{
         // The database dictates that vocab elements must have a single argument
         // add a default to get started.
         saveState();
-        ve.appendFormalArg(new NominalFormalArg(db, "<arg0>"));
+        ve.appendFormalArg(new NominalFormalArg(getLegacyDB(), "<arg0>"));
 
         VocabElementV vev = new VocabElementV(ve, this);
         vev.setHasChanged(true);
@@ -349,13 +358,13 @@ ExternalVocabListListener{
             FormalArgument fa;
 
             if (type.equals("Text")) {
-                fa = new QuoteStringFormalArg(db, newArgName);
+                fa = new QuoteStringFormalArg(getLegacyDB(), newArgName);
             } else if (type.equals("Nominal")) {
-                fa = new NominalFormalArg(db, newArgName);
+                fa = new NominalFormalArg(getLegacyDB(), newArgName);
             } else if (type.equals("Integer")) {
-                fa = new IntFormalArg(db, newArgName);
+                fa = new IntFormalArg(getLegacyDB(), newArgName);
             } else {
-                fa = new FloatFormalArg(db, newArgName);
+                fa = new FloatFormalArg(getLegacyDB(), newArgName);
             }
 
             ve.appendFormalArg(fa);
@@ -440,7 +449,7 @@ ExternalVocabListListener{
                     // changes in the view.
                     VocabElement ve = view.getModel();
                     if (ve.getID() != DBIndex.INVALID_ID) {
-                        view.setModel(db.getVocabElement(ve.getID()));
+                        view.setModel(getLegacyDB().getVocabElement(ve.getID()));
 
                         // If the change is a new vocab element - mark the view
                         // for
@@ -490,8 +499,8 @@ ExternalVocabListListener{
                         errors = 2;
                     }else
                     if (ve.getID() == DBIndex.INVALID_ID) {
-                        if ((db.colNameInUse(ve.getName()) || (db
-                                .predNameInUse(ve.getName())))) {
+                        if ((getLegacyDB().colNameInUse(ve.getName()) ||
+                            (getLegacyDB().predNameInUse(ve.getName())))) {
                             errors = 1;
                         }else                      
                         // If the new vocab element is a matrix vocab element,
@@ -499,14 +508,16 @@ ExternalVocabListListener{
                         if (ve.getClass() == MatrixVocabElement.class) {
                             Column.isValidColumnName(OpenSHAPA.getProjectController().getLegacyDB().getDatabase(),
                                                      ve.getName());
-                            DataColumn dc = new DataColumn(db,
+                            DataColumn dc = new DataColumn(getLegacyDB(),
                                                            ve.getName(),
                                                            MatrixVocabElement.MatrixType.MATRIX);
+                            DeprecatedVariable newVar = new DeprecatedVariable(dc);
+                            db.addVariable(newVar);
 
-                            long colID = db.addColumn(dc);
-                            dc = db.getDataColumn(colID);
-                            long mveID = dc.getItsMveID();
-                            MatrixVocabElement mve = db.getMatrixVE(mveID);
+                            //long colID = db.addColumn(dc);
+                            //dc = db.getDataColumn(colID);
+                            long mveID = newVar.getLegacyVariable().getItsMveID();
+                            MatrixVocabElement mve = getLegacyDB().getMatrixVE(mveID);
                             // Delete default formal argument.
                             mve.deleteFormalArg(0);
 
@@ -516,21 +527,21 @@ ExternalVocabListListener{
                                 mve.appendFormalArg(ve.getFormalArgCopy(i));
                             }
                             mve.setVarLen(ve.getVarLen());
-                            db.replaceVocabElement(mve);
-                            mve = db.getMatrixVE(mve.getID());
+                            getLegacyDB().replaceVocabElement(mve);
+                            mve = getLegacyDB().getMatrixVE(mve.getID());
                             vev.setModel(mve);
                             vev.setHasChanged(false);
                             // Otherwise just a predicate - add the new vocab
                             // element to the database.
                         } else {
-                            long id = db.addVocabElement(ve);
-                            vev.setModel(db.getVocabElement(id));
+                            long id = getLegacyDB().addVocabElement(ve);
+                            vev.setModel(getLegacyDB().getVocabElement(id));
                             vev.setHasChanged(false);
                         }
 
                     } else {
-                        db.replaceVocabElement(ve);
-                        ve = db.getVocabElement(ve.getID());
+                        getLegacyDB().replaceVocabElement(ve);
+                        ve = getLegacyDB().getVocabElement(ve.getID());
                         vev.setModel(ve);
                         vev.setHasChanged(false);
                     }
@@ -553,7 +564,7 @@ ExternalVocabListListener{
         for(int i = veViews.size()-1; i>= 0; i--){
             VocabElementV vev = veViews.get(i);
             if(vev.isDeletable()){
-                db.removeVocabElement(vev.getModel().getID());
+                getLegacyDB().removeVocabElement(vev.getModel().getID());
             }
         }
         }catch(Exception e){
@@ -1030,15 +1041,15 @@ ExternalVocabListListener{
 
             try {
                 if (evt.getItem().equals("Untyped")) {
-                    newArg = new UnTypedFormalArg(db, oldArg.getFargName());
+                    newArg = new UnTypedFormalArg(getLegacyDB(), oldArg.getFargName());
                 } else if (evt.getItem().equals("Text")) {
-                    newArg = new QuoteStringFormalArg(db, oldArg.getFargName());
+                    newArg = new QuoteStringFormalArg(getLegacyDB(), oldArg.getFargName());
                 } else if (evt.getItem().equals("Nominal")) {
-                    newArg = new NominalFormalArg(db, oldArg.getFargName());
+                    newArg = new NominalFormalArg(getLegacyDB(), oldArg.getFargName());
                 } else if (evt.getItem().equals("Integer")) {
-                    newArg = new IntFormalArg(db, oldArg.getFargName());
+                    newArg = new IntFormalArg(getLegacyDB(), oldArg.getFargName());
                 } else {
-                    newArg = new FloatFormalArg(db, oldArg.getFargName());
+                    newArg = new FloatFormalArg(getLegacyDB(), oldArg.getFargName());
                 }
 
                 if (oldArg.getFargType().equals(newArg.getFargType())) {

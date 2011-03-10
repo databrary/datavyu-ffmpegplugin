@@ -27,7 +27,7 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
     /** The legacy database we can fetch data from. */
     private Database legacyDB;
 
-    /** The legacy datacolumn that this variable wraps. */
+    /** The legacy data column that this variable wraps. */
     private DataColumn legacyColumn;
 
     /** The legacy id of the column we are fetching data from. */
@@ -65,6 +65,14 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
      * the db.legacy package.
      */
     @Deprecated public DataColumn getLegacyVariable() {
+        try {
+            if (legacyColumnId != 0) {
+                return legacyDB.getDataColumn(legacyColumnId);
+            }
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to get legacy variable", e);
+        }
+
         return legacyColumn;
     }
 
@@ -86,8 +94,8 @@ implements Variable, ExternalDataColumnListener, ExternalCascadeListener, Extern
                 legacyDB.deregisterCascadeListener(this);
             }
 
-            legacyDB = newColumn.getDB();
             legacyColumn = newColumn;
+            legacyDB = newColumn.getDB();
             legacyColumnId = newColumn.getID();
 
             legacyDB.registerDataColumnListener(legacyColumnId, this);
