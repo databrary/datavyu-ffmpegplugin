@@ -4,7 +4,6 @@ import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.legacy.Column;
 import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.Database;
 import org.openshapa.models.db.legacy.LogicErrorException;
 import org.openshapa.models.db.legacy.MatrixVocabElement;
 import org.openshapa.models.db.legacy.NominalFormalArg;
@@ -14,6 +13,10 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 import com.usermetrix.jclient.UserMetrix;
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
+import org.openshapa.models.db.DeprecatedVariable;
+import org.openshapa.models.db.legacy.Database;
 
 /**
  * The dialog for users to add new variables to the spreadsheet.
@@ -21,7 +24,7 @@ import javax.swing.LayoutStyle;
 public final class NewVariableV extends OpenSHAPADialog {
 
     /** The database to add the new variable to. */
-    private Database model;
+    private Datastore model;
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(NewVariableV.class);
 
@@ -39,7 +42,7 @@ public final class NewVariableV extends OpenSHAPADialog {
         initComponents();
         setName(this.getClass().getSimpleName());
 
-        model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
+        model = OpenSHAPA.getProjectController().getDB();
 
         // init button group
         buttonGroup1.add(textTypeButton);
@@ -314,6 +317,10 @@ public final class NewVariableV extends OpenSHAPADialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    @Deprecated private Database getLegacyDB() {
+        return ((DeprecatedDatabase) model).getDatabase();
+    }
+
     /**
      * The action to invoke when the user selects the ok button.
      * 
@@ -323,26 +330,25 @@ public final class NewVariableV extends OpenSHAPADialog {
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
         try {
             logger.usage("newVar - create column:" + getVariableType());
-            Column.isValidColumnName(OpenSHAPA.getProjectController().getLegacyDB().getDatabase(),
-                    getVariableName());
-            DataColumn dc =
-                    new DataColumn(model, getVariableName(), getVariableType());
-            long id = model.addColumn(dc);
-            dc = model.getDataColumn(id);
+            Column.isValidColumnName(getLegacyDB(), getVariableName());
+            DataColumn dc = new DataColumn(getLegacyDB(),
+                                           getVariableName(),
+                                           getVariableType());
+            DeprecatedVariable var = new DeprecatedVariable(dc);
+            model.addVariable(var);
 
             // If the column is a matrix - default to a single nominal variable
             // rather than untyped.
             if (matrixTypeButton.isSelected()) {
-                MatrixVocabElement mve = model.getMatrixVE(dc.getItsMveID());
+                MatrixVocabElement mve = getLegacyDB().getMatrixVE(var.getLegacyVariable().getItsMveID());
                 mve.deleteFormalArg(0);
-                mve.appendFormalArg(new NominalFormalArg(model, "<arg0>"));
-                model.replaceMatrixVE(mve);
+                mve.appendFormalArg(new NominalFormalArg(getLegacyDB(), "<arg0>"));
+                getLegacyDB().replaceMatrixVE(mve);
             }
 
             // Display any changes.
-            SpreadsheetPanel view =
-                    (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
-                            .getComponent();
+            SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
+                                    .getMainView().getComponent();
             view.relayoutCells();
 
             dispose();
