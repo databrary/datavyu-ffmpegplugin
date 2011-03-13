@@ -28,7 +28,6 @@ import org.openshapa.models.db.legacy.Database;
 import org.openshapa.models.db.legacy.SystemErrorException;
 
 
-import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.LayoutManager2;
@@ -39,6 +38,7 @@ import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
+import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.layouts.SheetLayoutOrdinal;
 
 
@@ -67,6 +67,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(ColumnDataPanel.class);
 
+    /** The size of the margin to use down the sides of the columns. */
+    private static final int MARGIN_SIZE = 1;
+
     /** button for creating a new empty cell. */
     private SpreadsheetEmptyCell newCellButton;
 
@@ -89,12 +92,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         cellSelectionL = cellSelL;
         model = variable;
 
-        layoutMngr = new SheetLayoutOrdinal();
+        layoutMngr = new SheetLayoutOrdinal(Constants.BORDER_SIZE);
         setLayout(layoutMngr);
-        setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(175, 175, 175)));
+        setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, new Color(175, 175, 175)));
 
         newCellButton = new SpreadsheetEmptyCell(getLegacyVariable());
-        newCellButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
         this.add(newCellButton);
 
         // Populate the data column with spreadsheet cells.

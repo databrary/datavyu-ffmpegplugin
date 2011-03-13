@@ -17,6 +17,9 @@ public class SheetLayoutOrdinal implements LayoutManager2 {
     // The list of all the other contents of this column.
     List<Component> layoutContents;
 
+    // The of the right hand margin.
+    int marginSize;
+
     // The new cell button to include at the bottom of the column.
     SpreadsheetEmptyCell newCellButton;
 
@@ -24,8 +27,9 @@ public class SheetLayoutOrdinal implements LayoutManager2 {
      * SheetLayoutOrdinal constructor.
      * @param cols Reference to the SpreadsheetColumns in the spreadsheet.
      */
-    public SheetLayoutOrdinal(/*final List<SpreadsheetColumn> cols*/) {
+    public SheetLayoutOrdinal(final int margin) {
         layoutContents = new ArrayList<Component>();
+        marginSize = margin;
     }
 
     @Override
@@ -87,11 +91,10 @@ public class SheetLayoutOrdinal implements LayoutManager2 {
     @Override
     public void layoutContainer(Container parent) {
         int currentHeight = 0;
-        System.err.println("Width: " + parent.getWidth());
 
         for (Component c : layoutContents) {
             Dimension d = c.getPreferredSize();
-            c.setBounds(0, currentHeight, parent.getWidth() - 1, (int) d.getHeight());
+            c.setBounds(0, currentHeight, parent.getWidth() - marginSize, (int) d.getHeight());
             currentHeight += d.getHeight();
         }
 

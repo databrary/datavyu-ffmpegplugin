@@ -59,6 +59,9 @@ public final class Constants {
     /** The format to use when outputing floating point values to a string. */
     public static final String FLOAT_FORMAT = "0.000000";
 
+    /** The margin size to use down the sides of the columns. */
+    public static final int BORDER_SIZE = 1;
+
     /**
      * Hidden Constructor - you can't create this - just a holder for global
      * constant values.
