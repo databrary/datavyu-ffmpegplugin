@@ -86,12 +86,10 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /** Border to use for normal cell. No extra information to show. */
     private static final Border NORMAL_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0,
-                    new Color(175, 175, 175)),
+                new MatteBorder(0, 0, 1, 0, new Color(175, 175, 175)),
                 new MatteBorder(0, 0, 3, 0,
                     Configuration.getInstance().getSSBackgroundColour())),
-            new MatteBorder(
-                3, 3, 0, 3,
+            new MatteBorder(3, 3, 0, 3,
                 Configuration.getInstance().getSSBackgroundColour()));
 
     /** Border to use if cell overlaps with another. */

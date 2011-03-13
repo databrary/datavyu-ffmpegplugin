@@ -72,8 +72,11 @@ import org.openshapa.models.db.Variable;
  * OpenSHAPA database as a spreadsheet.
  */
 public final class SpreadsheetPanel extends JPanel
-    implements ExternalColumnListListener, ComponentListener,
-        CellSelectionListener, ColumnSelectionListener, KeyEventDispatcher {
+implements ExternalColumnListListener,
+           ComponentListener,
+           CellSelectionListener,
+           ColumnSelectionListener,
+           KeyEventDispatcher {
 
     /** Default height for the viewport if no cells yet. */
     private static final int DEFAULT_HEIGHT = 50;

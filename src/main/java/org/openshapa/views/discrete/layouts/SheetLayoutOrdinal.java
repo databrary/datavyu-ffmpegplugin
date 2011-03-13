@@ -87,16 +87,20 @@ public class SheetLayoutOrdinal implements LayoutManager2 {
     @Override
     public void layoutContainer(Container parent) {
         int currentHeight = 0;
+        System.err.println("Width: " + parent.getWidth());
 
         for (Component c : layoutContents) {
             Dimension d = c.getPreferredSize();
-            c.setBounds(0, currentHeight, (int) d.getWidth(), (int) d.getHeight());
+            c.setBounds(0, currentHeight, parent.getWidth() - 1, (int) d.getHeight());
             currentHeight += d.getHeight();
         }
 
         // Put the new cell button at the end of the column.
         Dimension d = newCellButton.getPreferredSize();
-        this.newCellButton.setBounds(0, currentHeight, (int) d.getWidth(), (int) d.getHeight());
+        this.newCellButton.setBounds(0, currentHeight, parent.getWidth(), (int) d.getHeight());
+
+        currentHeight += (int) d.getHeight();
+        parent.setBounds(parent.getX(), parent.getY(), parent.getWidth(), currentHeight);
     }
 
     @Override

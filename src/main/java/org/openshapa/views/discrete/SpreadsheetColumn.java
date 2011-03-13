@@ -231,27 +231,18 @@ public final class SpreadsheetColumn extends JLabel
         width = colWidth;
 
         Dimension dim = getHeaderSize();
-        this.setPreferredSize(dim);
-        this.setMaximumSize(dim);
-
-        Dimension dim2 = getHeaderSize();
-        dim2.height = Integer.MAX_VALUE;
+        setPreferredSize(dim);
+        setMaximumSize(dim);
+        revalidate();
 
         datapanel.setWidth(width);
-
-        for (SpreadsheetCell cell : getCells()) {
-            cell.setWidth(width);
-        }
-
-        this.revalidate();
         datapanel.revalidate();
-        // Whereever we resize we will need to spreadsheetPanel.relayoutCells();
     }
 
     /**
      * @return Column Width in pixels.
      */
-    public int getWidth() {
+    @Override public int getWidth() {
         return width;
     }
 

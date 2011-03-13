@@ -138,8 +138,6 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
             for (int j = 1; j <= dbColumn.getNumCells(); j++) {
                 DataCell dc = (DataCell) dbColumn.getDB().getCell(dbColumn.getID(), j);
                 SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc, cellSelL);
-
-                //sc.setAlignmentX(Component.RIGHT_ALIGNMENT);
                 dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
 
                 // add cell to the JPanel
@@ -244,7 +242,6 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      */
     public void setWidth(final int width) {
         columnWidth = width;
-        newCellButton.setWidth(width);
     }
 
     /**
@@ -300,11 +297,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      * @return The selected spreadsheet cells in this column.
      */
     public AbstractList<SpreadsheetCell> getSelectedCells() {
-        AbstractList<SpreadsheetCell> selectedCells =
-            new ArrayList<SpreadsheetCell>();
+        AbstractList<SpreadsheetCell> selectedCells = new ArrayList<SpreadsheetCell>();
 
         for (SpreadsheetCell c : selectedCells) {
-
             if (c.isSelected()) {
                 selectedCells.add(c);
             }
