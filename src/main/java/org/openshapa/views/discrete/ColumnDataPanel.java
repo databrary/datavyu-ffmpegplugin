@@ -200,8 +200,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      * @param cellSelL SpreadsheetCellSelectionListener to notify of changes in
      * selection.
      */
-    public void insertCellByID(final Database db, final long cellID,
-        final CellSelectionListener cellSelL) {
+    public void insertCellByID(final Database db,
+                               final long cellID,
+                               final CellSelectionListener cellSelL) {
 
         try {
             DataCell dc = (DataCell) db.getCell(cellID);

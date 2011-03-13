@@ -78,9 +78,6 @@ implements ExternalColumnListListener,
            ColumnSelectionListener,
            KeyEventDispatcher {
 
-    /** Default height for the viewport if no cells yet. */
-    private static final int DEFAULT_HEIGHT = 50;
-
     /** To use when navigating left. */
     static final int LEFT_DIR = -1;
 
@@ -108,14 +105,8 @@ implements ExternalColumnListListener,
     /** Reference to the scrollPane. */
     private JScrollPane scrollPane;
 
-    /** Strut used to expand the viewport to fill the scrollpane. */
-    private Filler viewportStrut;
-
     /** New variable button to be added to the column header panel. */
     private JButton newVar = new JButton();
-
-    /** Filler column for the new variable button. */
-    private Filler newVarFillerCol;
 
     /** The currently highlighted cell. */
     private SpreadsheetCell highlightedCell;
@@ -151,13 +142,8 @@ implements ExternalColumnListListener,
         scrollPane.setViewportView(mainView);
         scrollPane.setColumnHeaderView(headerView);
 
-        // setup strut for the mainView - used when scrollPane is resized
-        Dimension d = new Dimension(0, DEFAULT_HEIGHT);
-        viewportStrut = new Filler(d, d, d);
-        mainView.add(viewportStrut);
-
         // set strut for headerView - necessary while there are no col headers
-        d = new Dimension(0, SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+        Dimension d = new Dimension(0, SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
 
         Filler headerStrut = new Filler(d, d, d);
         headerView.add(headerStrut);
@@ -171,25 +157,19 @@ implements ExternalColumnListListener,
         scrollPane.addComponentListener(this);
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
-            .getResourceMap(SpreadsheetPanel.class);
+                                      .getResourceMap(SpreadsheetPanel.class);
 
         // Set up the add new variable button
-        newVar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1,
-                Color.black));
+        newVar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
         newVar.setName("newVarPlusButton");
         newVar.setToolTipText(rMap.getString("add.tooltip"));
 
         ActionMap aMap = Application.getInstance(OpenSHAPA.class).getContext()
-            .getActionMap(SpreadsheetPanel.class, this);
+                                    .getActionMap(SpreadsheetPanel.class, this);
         newVar.setAction(aMap.get("openNewVarMenu"));
         newVar.setText(" + ");
-        newVar.setSize(newVar.getWidth(),
-            SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+        newVar.setSize(SpreadsheetColumn.DEFAULT_COLUMN_WIDTH, SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
-
-        newVarFillerCol = new Filler(newVar.getMinimumSize(),
-                newVar.getPreferredSize(), newVar.getMaximumSize());
-        mainView.add(newVarFillerCol);
 
         // set the database and layout the columns
         setDatabase(db);
@@ -238,7 +218,6 @@ implements ExternalColumnListListener,
      * @param var The variable that this column represents.
      */
     private void addColumn(final Datastore db, final Variable var) {
-
         // Remove previous instance of newVar from the header.
         headerView.remove(newVar);
 
@@ -246,12 +225,8 @@ implements ExternalColumnListListener,
         SpreadsheetColumn col = new SpreadsheetColumn(db, var, this, this);
         col.registerListeners();
 
-
-        mainView.remove(newVarFillerCol);
-
         // add the datapanel to the scrollpane viewport
         mainView.add(col.getDataPanel());
-        mainView.add(newVarFillerCol);
 
         // add the headerpanel to the scrollpane headerviewport
         headerView.add(col);

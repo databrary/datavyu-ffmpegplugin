@@ -55,7 +55,7 @@ public final class SpreadsheetColumn extends JLabel
         MouseListener, MouseMotionListener {
 
     /** Default column width. */
-    private static final int DEFAULT_COLUMN_WIDTH = 230;
+    public static final int DEFAULT_COLUMN_WIDTH = 230;
 
     /** Default column height. */
     public static final int DEFAULT_HEADER_HEIGHT = 16;
