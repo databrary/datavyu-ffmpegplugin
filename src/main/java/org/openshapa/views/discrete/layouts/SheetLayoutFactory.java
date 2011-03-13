@@ -1,5 +1,6 @@
 package org.openshapa.views.discrete.layouts;
 
+import java.awt.LayoutManager2;
 import java.util.List;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
@@ -33,16 +34,15 @@ public final class SheetLayoutFactory {
      * @param cols SpreadsheetColumns to lay out.
      * @return SheetLayout to use.
      */
-    public static SheetLayout getLayout(final SheetLayoutType type,
-                                        final List<SpreadsheetColumn> cols) {
-
+    public static LayoutManager2 getLayout(final SheetLayoutType type,
+                                           final List<SpreadsheetColumn> cols) {
         switch (type) {
             case Ordinal:
-                return new SheetLayoutOrdinal(cols);
+                return new SheetLayoutOrdinal(/*cols*/);
             case WeakTemporal:
-                return new SheetLayoutWeakTemporal(cols);
+                return new SheetLayoutWeakTemporal(/*cols*/);
             case StrongTemporal:
-                return new SheetLayoutStrongTemporal(cols);
+                return new SheetLayoutStrongTemporal(/*cols*/);
             default:
                 throw new IllegalArgumentException("Unknown layout - " + type);
         }

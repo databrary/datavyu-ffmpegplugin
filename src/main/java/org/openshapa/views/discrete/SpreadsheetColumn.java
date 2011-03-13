@@ -10,6 +10,7 @@ import java.awt.HeadlessException;
 import java.util.logging.Level;
 
 import java.awt.Dimension;
+import java.awt.LayoutManager2;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -43,7 +44,6 @@ import org.openshapa.models.db.legacy.ExternalDataColumnListener;
 import org.openshapa.models.db.legacy.LogicErrorException;
 import org.openshapa.models.db.legacy.SystemErrorException;
 
-import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 
 /**
@@ -156,7 +156,6 @@ public final class SpreadsheetColumn extends JLabel
      * this class of events.
      */
     public void registerListeners() {
-
         try {
             getLegacyDatabase().registerDataColumnListener(getLegacyVariableID(), this);
             getLegacyDatabase().registerCascadeListener(this);
@@ -171,7 +170,6 @@ public final class SpreadsheetColumn extends JLabel
      * notiying it of events.
      */
     public void deregisterListeners() {
-
         try {
             getLegacyDatabase().deregisterDataColumnListener(getLegacyVariableID(), this);
             getLegacyDatabase().deregisterCascadeListener(this);
@@ -186,7 +184,6 @@ public final class SpreadsheetColumn extends JLabel
      * @throws HeadlessException
      */
     public void showChangeVarNameDialog() throws HeadlessException {
-
         //Edit variable name on double click
         String newName = "";
 
@@ -284,7 +281,6 @@ public final class SpreadsheetColumn extends JLabel
      * @param isSelected Selected state.
      */
     public void setSelected(final boolean isSelected) {
-
         try {
             logger.usage("select column");
 
@@ -435,11 +431,13 @@ public final class SpreadsheetColumn extends JLabel
     }
 
     /**
-     * resetLayout changes the layout manager depending on the SheetLayoutType.
-     * @param type SheetLayoutType
+     * setLayout Changes the layout manager used with this spreadsheet column.
+     *
+     * @param manager The new layout manager to use with this column.
      */
-    public void resetLayoutManager(final SheetLayoutType type) {
-        datapanel.resetLayoutManager(type);
+    @Deprecated
+    public void setLayoutManager(final LayoutManager2 manager) {
+        datapanel.setLayoutManager(manager);
     }
 
     /**
@@ -475,7 +473,6 @@ public final class SpreadsheetColumn extends JLabel
      * will request focus for the datapanel of the column.
      */
     public void requestFocus() {
-
         if (datapanel.getCells().size() > 0) {
             datapanel.getCells().get(0).requestFocusInWindow();
         } else {
@@ -523,7 +520,6 @@ public final class SpreadsheetColumn extends JLabel
      * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(final MouseEvent me) {
-
         if (me.getClickCount() == 2) {
             showChangeVarNameDialog();
         } else {
@@ -550,7 +546,6 @@ public final class SpreadsheetColumn extends JLabel
     * @return header name of col
     */
     public String getColumnName() {
-
         try {
             return getLegacyDatabase().getDataColumn(getLegacyVariableID()).getName();
         } catch (SystemErrorException ex) {
@@ -564,7 +559,7 @@ public final class SpreadsheetColumn extends JLabel
     public void setColumnName(final String newName) throws LogicErrorException,
         SystemErrorException {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
-            .getResourceMap(Column.class);
+                                      .getResourceMap(Column.class);
 
         try {
             DataColumn dc = getLegacyDatabase().getDataColumn(getLegacyVariableID());
@@ -591,7 +586,6 @@ public final class SpreadsheetColumn extends JLabel
      * @param me The mouse event that triggered this action
      */
     public void mouseDragged(final MouseEvent me) {
-
         // BugzID:660 - Implements columns dragging.
         if (draggable) {
             int newWidth = me.getX();

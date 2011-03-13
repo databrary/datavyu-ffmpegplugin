@@ -180,7 +180,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     public SpreadsheetCell(final Database cellDB,
                            final Cell cell,
                            final CellSelectionListener listener)
-   throws SystemErrorException {
+    throws SystemErrorException {
         db = cellDB;
         cellID = cell.getID();
         setName(this.getClass().getSimpleName());
@@ -306,8 +306,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * Set the ordinal value.
      *
-     * @param ord
-     *            The new ordinal value to use with this cell.
+     * @param ord The new ordinal value to use with this cell.
      */
     private void setOrdinal(final Integer ordInt) {
         ord.setText(ordInt.toString());
@@ -350,8 +349,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * Allow a layout to set a preferred y location for the cell. Set to 0 if
      * layout wants default behaviour. (e.g. Ordinal layout)
      *
-     * @param y
-     *            Preferred Y location for the visible portion of the cell.
+     * @param y Preferred Y location for the visible portion of the cell.
      */
     public final void setLayoutPreferredY(final int y) {
         layoutPreferredY = y;
@@ -361,20 +359,17 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * Allow a layout to set a preferred y location for the cell.
      *
-     * @param y
-     *            Preferred Y location for the visible portion of the cell.
-     * @param prev
-     *            SpreadsheetCell previous to this cell.
+     * @param y Preferred Y location for the visible portion of the cell.
+     * @param prev SpreadsheetCell previous to this cell.
      */
     public final void setLayoutPreferredY(final int y,
-        final SpreadsheetCell prev) {
+                                          final SpreadsheetCell prev) {
         layoutPreferredY = y;
-
         int strutHeight = y;
 
         if (prev != null) {
             strutHeight -= (prev.getLayoutPreferredY()
-                    + prev.getLayoutPreferredHeight());
+                           + prev.getLayoutPreferredHeight());
         }
 
         setOnsetvGap(strutHeight);
@@ -382,7 +377,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /**
      * @return The active layouts preferred Y location for the visible portion
-     *         of this cell.
+     * of this cell.
      */
     public final int getLayoutPreferredY() {
         return layoutPreferredY;
@@ -390,7 +385,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /**
      * @return The active layouts preferred height for the visible portion of
-     *         this cell.
+     * this cell.
      */
     public final int getLayoutPreferredHeight() {
         return layoutPreferredHeight;
@@ -405,7 +400,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /**
      * @return the calculated preferred height for the SpreadsheetCell not
-     *         including the strut component.
+     * including the strut component.
      */
     public final int getPreferredHeight() {
         Dimension mysize = super.getPreferredSize();
@@ -457,8 +452,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * Set the width of the SpreadsheetCell.
      *
-     * @param width
-     *            New width of the SpreadsheetCell.
+     * @param width New width of the SpreadsheetCell.
      */
     public void setWidth(final int width) {
         Dimension d = new Dimension(width, 0);
@@ -468,9 +462,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * Mark the cell as selected in the database.
      *
-     * @param sel
-     *            The selection state to use when marking the cell. True if the
-     *            cell is selected, false otherwise.
+     * @param sel The selection state to use when marking the cell. True if the
+     * cell is selected, false otherwise.
      */
     public void selectCellInDB(final boolean sel) {
 
@@ -511,9 +504,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * Set this cell as highlighted, a highlighted cell has a difference
      * appearance to unselected (or fill selected) cell.
      *
-     * @param isHighlighted
-     *            The highlighted state of the cell, true when the cell is
-     *            highlighted false otherwise.
+     * @param isHighlighted The highlighted state of the cell, true when the
+     * cell is highlighted false otherwise.
      */
     public void setHighlighted(final boolean sel) {
         highlighted = sel;
@@ -560,9 +552,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * Set this cell as selected, a selected cell has a different appearance to
      * an unselcted one (typically colour).
      *
-     * @param sel
-     *            The selection state of the cell, when true the cell is
-     *            selected false otherwise.
+     * @param sel  The selection state of the cell, when true the cell is
+     * selected false otherwise.
      */
     public void setSelected(final boolean sel) {
         selected = sel;
@@ -648,8 +639,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * The action to invoke when the mouse enters this component.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
     public void mouseEntered(final MouseEvent me) {
     }
@@ -657,8 +647,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * The action to invoke when the mouse exits this component.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
     public void mouseExited(final MouseEvent me) {
     }
@@ -666,8 +655,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * The action to invoke when a mouse button is pressed.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
     public void mousePressed(final MouseEvent me) {
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -719,8 +707,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * The action to invoke when a mouse button is released.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
     public void mouseReleased(final MouseEvent me) {
     }
@@ -728,8 +715,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * The action to invoke when a mouse button is clicked.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
     public void mouseClicked(final MouseEvent me) {
     }
@@ -737,8 +723,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * The action to invoke when the focus is gained on this component.
      *
-     * @param e
-     *            The focus event that triggered this action.
+     * @param e The focus event that triggered this action.
      */
     public void focusGained(final FocusEvent e) {
 
@@ -752,8 +737,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * The action to invoke when the focus is lost from this component.
      *
-     * @param e
-     *            The focus event that triggered this action.
+     * @param e The focus event that triggered this action.
      */
     public void focusLost(final FocusEvent e) {
 
@@ -763,7 +747,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /**
      * @return True if this matrix view is the current focus owner, false
-     *         otherwise.
+     * otherwise.
      */
     @Override public boolean isFocusOwner() {
         return (onset.isFocusOwner() || offset.isFocusOwner()
@@ -779,7 +763,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
 
     /**
      * @return True if onset been processed and the layout position calculated.
-     *         False otherwise.
+     * False otherwise.
      */
     public boolean isOnsetProcessed() {
         return onsetProcessed;
@@ -788,9 +772,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * Set if onset has been processed. Used in the temporal layout algorithm.
      *
-     * @param onsetProcessed
-     *            True to mark that the onset has been processed. False
-     *            otherwise.
+     * @param onsetProcessed True to mark that the onset has been processed.
+     * False otherwise.
      */
     public void setOnsetProcessed(final boolean onsetProcessed) {
         this.onsetProcessed = onsetProcessed;
@@ -804,8 +787,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * Set the vertical location for the SpreadsheetCell. Sets the
      * onsetProcessed flag also. Used in the temporal layout algorithm.
      *
-     * @param vPos
-     *            The vertical location in pixels for this cell.
+     * @param vPos The vertical location in pixels for this cell.
      */
     public void setOnsetvGap(final int vGap) {
         setStrutHeight(vGap);
@@ -831,9 +813,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * Set the border of the cell.
      *
-     * @param overlap
-     *            true if the cell overlaps with the following cell, false
-     *            otherwise.
+     * @param overlap true if the cell overlaps with the following cell, false
+     * otherwise.
      */
     public void setOverlapBorder(final boolean overlap) {
         cellOverlap = overlap;

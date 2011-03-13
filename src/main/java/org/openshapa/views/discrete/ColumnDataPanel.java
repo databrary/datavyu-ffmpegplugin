@@ -7,18 +7,15 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.LayoutManager;
 import java.awt.event.KeyEvent;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.Box.Filler;
 import javax.swing.text.BadLocationException;
 
 
@@ -30,11 +27,11 @@ import org.openshapa.models.db.legacy.DataColumn;
 import org.openshapa.models.db.legacy.Database;
 import org.openshapa.models.db.legacy.SystemErrorException;
 
-import org.openshapa.util.Constants;
 
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.LayoutManager2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,22 +39,18 @@ import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
+import org.openshapa.views.discrete.layouts.SheetLayoutOrdinal;
 
 
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
  */
-public final class ColumnDataPanel extends JPanel
-    implements KeyEventDispatcher {
-
+public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher {
     /** Width of the column. */
     private int columnWidth;
 
-    /** Provides a strut to leave a gap at the bottom of the panel. */
-    private Component bottomStrut;
-
-    /** Layout type for Ordinal and Weak Temporal Ordering. */
-    private LayoutManager boxLayout;
+    /** Layout type for this column. */
+    private LayoutManager2 layoutMngr;
 
     /** The model that this variable represents. */
     private Variable model;
@@ -96,20 +89,13 @@ public final class ColumnDataPanel extends JPanel
         cellSelectionL = cellSelL;
         model = variable;
 
-        // Create visual container for spreadsheet cells.
-        Dimension d = new Dimension(0, Constants.BOTTOM_MARGIN);
-        bottomStrut = new Filler(d, d, d);
-        boxLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
-        setLayout(boxLayout);
-        setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1,
-                new Color(175, 175, 175)));
-        this.add(bottomStrut, -1);
-
-
+        layoutMngr = new SheetLayoutOrdinal();
+        setLayout(layoutMngr);
+        setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(175, 175, 175)));
 
         newCellButton = new SpreadsheetEmptyCell(getLegacyVariable());
         newCellButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        this.add(newCellButton, -1);
+        this.add(newCellButton);
 
         // Populate the data column with spreadsheet cells.
         buildDataPanelCells(getLegacyVariable(), cellSelL);
@@ -124,8 +110,7 @@ public final class ColumnDataPanel extends JPanel
      * this class of events.
      */
     public void registerListeners() {
-        KeyboardFocusManager m = KeyboardFocusManager
-            .getCurrentKeyboardFocusManager();
+        KeyboardFocusManager m = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         m.addKeyEventDispatcher(this);
     }
 
@@ -134,8 +119,7 @@ public final class ColumnDataPanel extends JPanel
      * notiying it of events.
      */
     public void deregisterListeners() {
-        KeyboardFocusManager m = KeyboardFocusManager
-            .getCurrentKeyboardFocusManager();
+        KeyboardFocusManager m = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         m.removeKeyEventDispatcher(this);
     }
 
@@ -152,12 +136,10 @@ public final class ColumnDataPanel extends JPanel
         try {
             // traverse and build the cells
             for (int j = 1; j <= dbColumn.getNumCells(); j++) {
-                DataCell dc = (DataCell) dbColumn.getDB().getCell(
-                        dbColumn.getID(), j);
+                DataCell dc = (DataCell) dbColumn.getDB().getCell(dbColumn.getID(), j);
+                SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc, cellSelL);
 
-                SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc,
-                        cellSelL);
-                sc.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                //sc.setAlignmentX(Component.RIGHT_ALIGNMENT);
                 dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
 
                 // add cell to the JPanel
@@ -180,14 +162,11 @@ public final class ColumnDataPanel extends JPanel
      * Clears the cells stored in the column data panel.
      */
     public void clear() {
-
         try {
-
             for (SpreadsheetCell cell : cells) {
-
                 // Need to deregister data cell listener here.
                 OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-                    .deregisterDataCellListener(cell.getCellID(), cell);
+                         .deregisterDataCellListener(cell.getCellID(), cell);
                 this.remove(cell);
             }
 
@@ -215,14 +194,11 @@ public final class ColumnDataPanel extends JPanel
     /**
      * Insert a new SpreadsheetCell given the cells ID.
      *
-     * @param db
-     *            The database holding the cell that is being inserted into this
-     *            column data panel.
-     * @param cellID
-     *            ID of cell to create and insert.
-     * @param cellSelL
-     *            SpreadsheetCellSelectionListener to notify of changes in
-     *            selection.
+     * @param db The database holding the cell that is being inserted into this
+     * column data panel.
+     * @param cellID ID of cell to create and insert.
+     * @param cellSelL SpreadsheetCellSelectionListener to notify of changes in
+     * selection.
      */
     public void insertCellByID(final Database db, final long cellID,
         final CellSelectionListener cellSelL) {
@@ -252,34 +228,12 @@ public final class ColumnDataPanel extends JPanel
     }
 
     /**
-     * resetLayout changes the layout manager depending on the SheetLayoutType.
+     * setLayout changes the layout manager for this columnDataPanel.
      *
-     * @param type
-     *            SheetLayoutType
+     * @param manager New layout manager.
      */
-    public void resetLayoutManager(final SheetLayoutType type) {
-
-        if (type != SheetLayoutType.StrongTemporal) {
-            setLayout(boxLayout);
-            setPreferredSize(null);
-        } else {
-            setLayout(null);
-        }
-    }
-
-    /**
-     * Adds the specified component to this container at the given position.
-     * Overridden to keep bottomStrut and addNewCellButton as the last
-     * components in the column.
-     *
-     * @param comp
-     *            Component to add.
-     * @return Component added.
-     */
-    @Override public Component add(final Component comp) {
-        super.add(comp, getComponentCount() - 2);
-
-        return comp;
+    public void setLayoutManager(final LayoutManager2 manager) {
+       layoutMngr = manager;
     }
 
     /**
@@ -308,7 +262,7 @@ public final class ColumnDataPanel extends JPanel
      * @return the minimum size of the data column.
      */
     @Override public Dimension getMinimumSize() {
-        return new Dimension(columnWidth, 0);
+        return new Dimension(columnWidth, (int) layoutMngr.preferredLayoutSize(this).getHeight());
     }
 
     /**
@@ -317,9 +271,7 @@ public final class ColumnDataPanel extends JPanel
      * @return the preferred size of the data column.
      */
     @Override public Dimension getPreferredSize() {
-        Dimension size = super.getPreferredSize();
-
-        return new Dimension(columnWidth, size.height);
+        return new Dimension(columnWidth, (int) layoutMngr.preferredLayoutSize(this).getHeight());
     }
 
     /**
@@ -364,10 +316,10 @@ public final class ColumnDataPanel extends JPanel
     /**
      * Dispatches the key event to the desired components.
      *
-     * @param e
-     *            The key event to dispatch.
+     * @param e The key event to dispatch.
+     *
      * @return true if the event has been consumed by this dispatch, false
-     *         otherwise
+     * otherwise
      */
     public boolean dispatchKeyEvent(final KeyEvent e) {
 

@@ -100,7 +100,7 @@ public final class SpreadsheetPanel extends JPanel
     private Logger logger = UserMetrix.getLogger(SpreadsheetPanel.class);
 
     /** Reference to the spreadsheet layout handler. */
-    private SheetLayout sheetLayout;
+    //private SheetLayout sheetLayout;
 
     /** Reference to the scrollPane. */
     private JScrollPane scrollPane;
@@ -138,8 +138,7 @@ public final class SpreadsheetPanel extends JPanel
 
         headerView = new JPanel();
         headerView.setLayout(new BoxLayout(headerView, BoxLayout.X_AXIS));
-        headerView.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0,
-                Color.BLACK));
+        headerView.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
         headerView.setName("headerView");
 
         columns = new Vector<SpreadsheetColumn>();
@@ -162,10 +161,8 @@ public final class SpreadsheetPanel extends JPanel
 
         // Set a border for the top right corner
         JPanel rightCorner = new JPanel();
-        rightCorner.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0,
-                Color.BLACK));
-        scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER,
-            rightCorner);
+        rightCorner.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, Color.BLACK));
+        scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, rightCorner);
 
         // add a listener for window resize events
         scrollPane.addComponentListener(this);
@@ -194,7 +191,6 @@ public final class SpreadsheetPanel extends JPanel
         // set the database and layout the columns
         setDatabase(db);
         buildColumns();
-        setLayoutType(SheetLayoutType.Ordinal);
 
         // Enable drag and drop support.
         setDropTarget(new DropTarget(this, new SSDropTarget()));
@@ -423,8 +419,8 @@ public final class SpreadsheetPanel extends JPanel
     /**
      * Relayout the SpreadsheetCells in the spreadsheet.
      */
+    @Deprecated
     public void relayoutCells() {
-        sheetLayout.relayoutCells();
         validate();
     }
 
@@ -641,7 +637,7 @@ public final class SpreadsheetPanel extends JPanel
      * @param type SheetLayoutType to set.
      */
     public void setLayoutType(final SheetLayoutType type) {
-        sheetLayout = SheetLayoutFactory.getLayout(type, columns);
+        //sheetLayout = SheetLayoutFactory.getLayout(type, columns);
         relayoutCells();
     }
 
@@ -650,15 +646,21 @@ public final class SpreadsheetPanel extends JPanel
      *
      * @param e Component event.
      */
+    @Override
     public void componentResized(final ComponentEvent e) {
 
         // resize the strut height to at least the size of the viewport.
+        /*
         Dimension d = new Dimension(0,
                 scrollPane.getViewportBorderBounds().height);
         viewportStrut.changeShape(d, d, d);
+        //viewportStrut.change
+
+        //System.err.println("component resized:" + d.height);
 
         // force a validate of the contents.
         revalidate();
+         */
     }
 
     /**

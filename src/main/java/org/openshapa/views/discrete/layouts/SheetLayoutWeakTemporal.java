@@ -1,55 +1,110 @@
 package org.openshapa.views.discrete.layouts;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
-import java.awt.Rectangle;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.LayoutManager2;
+import java.util.ArrayList;
 import java.util.List;
-import org.openshapa.views.discrete.SpreadsheetCell;
 
-import org.openshapa.views.discrete.SpreadsheetColumn;
-import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+import org.openshapa.views.discrete.SpreadsheetEmptyCell;
 
 /**
  * SheetLayoutWeakTemporal - mimics the weak temporal ordering style from
  * original MacSHAPA.
  */
-public class SheetLayoutWeakTemporal extends SheetLayout {
+public class SheetLayoutWeakTemporal  implements LayoutManager2 {
+    List<Component> layoutContents;
 
-    /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SheetLayoutWeakTemporal.class);
-
-    /** Gap in pixels between non-adjacent cells on spreadsheet. */
-    private static final int GAP = 3;
+    SpreadsheetEmptyCell newCellButton;
 
     /**
-     * SheetLayoutWeakTemporal constructor.
+     * SheetLayoutOrdinal constructor.
      * @param cols Reference to the SpreadsheetColumns in the spreadsheet.
      */
-    public SheetLayoutWeakTemporal(final List<SpreadsheetColumn> cols) {
-        setColumns(cols);
+    public SheetLayoutWeakTemporal(/*final List<SpreadsheetColumn> cols*/) {
+        layoutContents = new ArrayList<Component>();
+    }
 
-        for (SpreadsheetColumn col : cols) {
-            col.resetLayoutManager(SheetLayoutType.WeakTemporal);
+    @Override
+    public Dimension minimumLayoutSize(Container parent) {
+        return preferredLayoutSize(parent);
+    }
+
+    @Override
+    public Dimension maximumLayoutSize(Container parent) {
+        return preferredLayoutSize(parent);
+    }
+
+    @Override
+    public Dimension preferredLayoutSize(Container parent) {
+        Dimension result = new Dimension(0, 0);
+        for (Component c : layoutContents) {
+            int width = Math.max(c.getWidth(), (int) result.getWidth());
+            int height = ((int) result.getHeight()) + c.getHeight();
+
+            result.setSize(width, height);
+        }
+
+        int width = Math.max(this.newCellButton.getWidth(), (int) result.getWidth());
+        int height = ((int) result.getHeight()) + this.newCellButton.getHeight();
+        result.setSize(width, height);
+
+        return result;
+    }
+
+    @Override
+    public void removeLayoutComponent(Component comp) {
+        layoutContents.remove(comp);
+    }
+
+    public void setEmptyCell(final SpreadsheetEmptyCell seCell) {
+        this.newCellButton = seCell;
+    }
+
+    @Override
+    public void addLayoutComponent(String name, Component comp) {
+        if (comp instanceof SpreadsheetEmptyCell) {
+            this.newCellButton = (SpreadsheetEmptyCell) comp;
+        } else {
+            layoutContents.add(comp);
         }
     }
 
-    /**
-     * Recalculate positions of all the cells in the spreadsheet.
-     */
-    @Override public final void relayoutCells() {
-        System.err.println("weak ordering");
+    @Override
+    public void addLayoutComponent(Component comp, Object constraints) {
+        this.addLayoutComponent("", comp);
+    }
 
-        for (SpreadsheetColumn col : getColumns()) {
-            int currentHeight = 0;
+    @Override
+    public void invalidateLayout(Container target) {
+        // Nothing to invalidate.
+    }
 
-            for (SpreadsheetCell cell : col.getCellsTemporally()) {
-                Rectangle rect = cell.getBounds();
-                rect.y += 100;
-                cell.setOnsetvGap(1);
-                cell.setBounds(rect);
-            }
+    @Override
+    public void layoutContainer(Container parent) {
+        int currentHeight = 0;
 
-            col.setBottomBound(5000);
+        for (Component c : layoutContents) {
+            Dimension d = c.getPreferredSize();
+            c.setBounds(0, currentHeight, (int) d.getWidth(), (int) d.getHeight());
+            currentHeight += d.getHeight();
         }
+
+        // Put the new cell button at the end of the column.
+        Dimension d = newCellButton.getPreferredSize();
+        this.newCellButton.setBounds(0, currentHeight, (int) d.getWidth(), (int) d.getHeight());
+    }
+
+    @Override
+    public float getLayoutAlignmentX(Container target) {
+        // Always align along the X-axis with respect to the origin.
+        return 0.0f;
+    }
+
+    @Override
+    public float getLayoutAlignmentY(Container target) {
+        // Always align along the Y-axis with respect to the origin.
+        return 0.0f;
     }
 }
