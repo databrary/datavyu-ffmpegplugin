@@ -578,6 +578,9 @@ public final class OpenSHAPAView extends FrameView
 
         // Update the list of recently opened files.
         RecentFiles.rememberProject(jd.getSelectedFile());
+
+        // Default is to highlight cells when created - clear selection on load.
+        panel.clearCellSelection();
     }
 
     private void openDatabase(final File databaseFile) {
