@@ -34,6 +34,7 @@ import java.awt.LayoutManager2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.Box.Filler;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
@@ -66,9 +67,6 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(ColumnDataPanel.class);
-
-    /** The size of the margin to use down the sides of the columns. */
-    private static final int MARGIN_SIZE = 1;
 
     /** button for creating a new empty cell. */
     private SpreadsheetEmptyCell newCellButton;

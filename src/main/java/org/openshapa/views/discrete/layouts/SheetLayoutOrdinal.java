@@ -55,8 +55,9 @@ public class SheetLayoutOrdinal implements LayoutManager2 {
         int width = Math.max(this.newCellButton.getWidth(), (int) result.getWidth());
         int height = ((int) result.getHeight()) + this.newCellButton.getHeight();
         height += Constants.BOTTOM_MARGIN;
-        result.setSize(width, height);
+        int containerHeight = parent.getParent().getParent().getHeight();
         
+        result.setSize(width, Math.max(height, containerHeight));
 
         return result;
     }

@@ -57,14 +57,13 @@ import org.openshapa.models.db.legacy.SystemErrorException;
 
 import org.openshapa.util.ArrayDirection;
 
-import org.openshapa.views.discrete.layouts.SheetLayout;
-import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Variable;
+import org.openshapa.util.Constants;
 
 
 /**
@@ -160,7 +159,7 @@ implements ExternalColumnListListener,
                                       .getResourceMap(SpreadsheetPanel.class);
 
         // Set up the add new variable button
-        newVar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
+        newVar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, Color.black));
         newVar.setName("newVarPlusButton");
         newVar.setToolTipText(rMap.getString("add.tooltip"));
 
@@ -356,8 +355,10 @@ implements ExternalColumnListListener,
      * @param oldCov The column order vector prior to the deletion.
      * @param newCov The column order vector after to the deletion.
      */
-    public void colDeletion(final Database db, final long colID,
-        final Vector<Long> oldCov, final Vector<Long> newCov) {
+    public void colDeletion(final Database db,
+                            final long colID,
+                            final Vector<Long> oldCov,
+                            final Vector<Long> newCov) {
         deselectAll();
         removeColumn(colID);
         relayoutCells();

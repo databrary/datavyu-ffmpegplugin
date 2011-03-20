@@ -43,16 +43,17 @@ import org.openshapa.models.db.legacy.ExternalCascadeListener;
 import org.openshapa.models.db.legacy.ExternalDataColumnListener;
 import org.openshapa.models.db.legacy.LogicErrorException;
 import org.openshapa.models.db.legacy.SystemErrorException;
-
-
+import org.openshapa.util.Constants;
 
 /**
  * This class maintains the visual representation of the column in the
  * Spreadsheet window.
  */
 public final class SpreadsheetColumn extends JLabel
-    implements ExternalDataColumnListener, ExternalCascadeListener,
-        MouseListener, MouseMotionListener {
+implements ExternalDataColumnListener,
+           ExternalCascadeListener,
+           MouseListener,
+           MouseMotionListener {
 
     /** Default column width. */
     public static final int DEFAULT_COLUMN_WIDTH = 230;
@@ -118,7 +119,7 @@ public final class SpreadsheetColumn extends JLabel
 
             setOpaque(true);
             setHorizontalAlignment(JLabel.CENTER);
-            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.black));
+            setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, Color.black));
             backColor = getBackground();
             setMinimumSize(this.getHeaderSize());
             setPreferredSize(this.getHeaderSize());
@@ -363,8 +364,9 @@ public final class SpreadsheetColumn extends JLabel
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being deleted.
      */
-    public void DColCellDeletion(final Database db, final long colID,
-        final long cellID) {
+    public void DColCellDeletion(final Database db,
+                                 final long colID,
+                                 final long cellID) {
         colChanges.cellDeleted.add(cellID);
     }
 
@@ -375,8 +377,9 @@ public final class SpreadsheetColumn extends JLabel
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being inserted.
      */
-    public void DColCellInsertion(final Database db, final long colID,
-        final long cellID) {
+    public void DColCellInsertion(final Database db,
+                                  final long colID,
+                                  final long cellID) {
         colChanges.cellInserted.add(cellID);
     }
 
@@ -401,14 +404,23 @@ public final class SpreadsheetColumn extends JLabel
      * @param oldSelected Old Selected value.
      * @param newSelected New Selected value.
      */
-    public void DColConfigChanged(final Database db, final long colID,
-        final boolean nameChanged, final String oldName, final String newName,
-        final boolean hiddenChanged, final boolean oldHidden,
-        final boolean newHidden, final boolean readOnlyChanged,
-        final boolean oldReadOnly, final boolean newReadOnly,
-        final boolean varLenChanged, final boolean oldVarLen,
-        final boolean newVarLen, final boolean selectedChanged,
-        final boolean oldSelected, final boolean newSelected) {
+    public void DColConfigChanged(final Database db,
+                                  final long colID,
+                                  final boolean nameChanged,
+                                  final String oldName,
+                                  final String newName,
+                                  final boolean hiddenChanged,
+                                  final boolean oldHidden,
+                                  final boolean newHidden,
+                                  final boolean readOnlyChanged,
+                                  final boolean oldReadOnly,
+                                  final boolean newReadOnly,
+                                  final boolean varLenChanged,
+                                  final boolean oldVarLen,
+                                  final boolean newVarLen,
+                                  final boolean selectedChanged,
+                                  final boolean oldSelected,
+                                  final boolean newSelected) {
         colChanges.nameChanged = nameChanged;
     }
 
