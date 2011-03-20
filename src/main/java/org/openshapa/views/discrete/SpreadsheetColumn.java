@@ -10,7 +10,6 @@ import java.awt.HeadlessException;
 import java.util.logging.Level;
 
 import java.awt.Dimension;
-import java.awt.LayoutManager2;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -44,6 +43,7 @@ import org.openshapa.models.db.legacy.ExternalDataColumnListener;
 import org.openshapa.models.db.legacy.LogicErrorException;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.util.Constants;
+import org.openshapa.views.discrete.layouts.SheetLayout;
 
 /**
  * This class maintains the visual representation of the column in the
@@ -438,8 +438,7 @@ implements ExternalDataColumnListener,
      *
      * @param manager The new layout manager to use with this column.
      */
-    @Deprecated
-    public void setLayoutManager(final LayoutManager2 manager) {
+    public void setLayoutManager(final SheetLayout manager) {
         datapanel.setLayoutManager(manager);
     }
 

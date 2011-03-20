@@ -35,15 +35,15 @@ public final class SheetLayoutFactory {
      * @param cols SpreadsheetColumns to lay out.
      * @return SheetLayout to use.
      */
-    public static LayoutManager2 getLayout(final SheetLayoutType type,
-                                           final List<SpreadsheetColumn> cols) {
+    public static SheetLayout createLayout(final SheetLayoutType type) {
         switch (type) {
             case Ordinal:
                 return new SheetLayoutOrdinal(Constants.BORDER_SIZE);
             case WeakTemporal:
-                return new SheetLayoutWeakTemporal(/*cols*/);
+                return new SheetLayoutWeakTemporal(Constants.BORDER_SIZE);
             case StrongTemporal:
-                return new SheetLayoutStrongTemporal(/*cols*/);
+                // Using the same layout for now.
+                return new SheetLayoutWeakTemporal(Constants.BORDER_SIZE);
             default:
                 throw new IllegalArgumentException("Unknown layout - " + type);
         }

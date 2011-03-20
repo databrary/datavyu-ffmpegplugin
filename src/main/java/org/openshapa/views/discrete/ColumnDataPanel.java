@@ -34,12 +34,12 @@ import java.awt.LayoutManager2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.Box.Filler;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 import org.openshapa.util.Constants;
+import org.openshapa.views.discrete.layouts.SheetLayout;
 import org.openshapa.views.discrete.layouts.SheetLayoutOrdinal;
 
 
@@ -231,8 +231,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      *
      * @param manager New layout manager.
      */
-    public void setLayoutManager(final LayoutManager2 manager) {
+    public void setLayoutManager(final SheetLayout manager) {
        layoutMngr = manager;
+       this.setLayout(layoutMngr);
     }
 
     /**
@@ -270,6 +271,10 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      */
     @Override public Dimension getPreferredSize() {
         return new Dimension(columnWidth, (int) layoutMngr.preferredLayoutSize(this).getHeight());
+    }
+
+    public SpreadsheetEmptyCell getNewCellButton() {
+        return this.newCellButton;
     }
 
     /**

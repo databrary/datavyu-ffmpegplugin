@@ -44,7 +44,6 @@ import org.openshapa.controllers.NewVariableC;
 import org.openshapa.controllers.OpenC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
-import org.openshapa.controllers.SetSheetLayoutC;
 import org.openshapa.controllers.VocabEditorC;
 import org.openshapa.controllers.layout.AutoWindowTiler;
 import org.openshapa.controllers.project.ProjectController;
@@ -816,7 +815,7 @@ public final class OpenSHAPAView extends FrameView
             type = SheetLayoutType.StrongTemporal;
         }
 
-        new SetSheetLayoutC(type);
+        panel.setLayoutType(type);
     }
 
     /**

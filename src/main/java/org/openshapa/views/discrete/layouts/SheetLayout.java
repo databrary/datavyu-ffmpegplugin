@@ -1,14 +1,15 @@
 package org.openshapa.views.discrete.layouts;
 
+import java.awt.LayoutManager2;
 import java.util.List;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 /**
  * SheetLayout - abstract class for spreadsheet layouts.
  */
-public abstract class SheetLayout {
+public abstract class SheetLayout implements LayoutManager2 {
 
-    /** Vector of the Spreadsheetcolumns in the spreadsheet. */
+    /** The Spreadsheetcolumns in the spreadsheet. */
     private List<SpreadsheetColumn> columns;
 
     /**
@@ -17,11 +18,6 @@ public abstract class SheetLayout {
     protected SheetLayout() {
         columns = null;
     }
-
-    /**
-     * Recalculate positions of all the cells in the spreadsheet.
-     */
-    public abstract void relayoutCells();
 
     /**
      * Setup a reference to the SpreadsheetColumns in the spreadsheet.

@@ -60,10 +60,12 @@ import org.openshapa.util.ArrayDirection;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.LayoutManager2;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Variable;
 import org.openshapa.util.Constants;
+import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
 
 
 /**
@@ -400,7 +402,12 @@ implements ExternalColumnListListener,
      */
     @Deprecated
     public void relayoutCells() {
-        validate();
+        this.revalidate();
+        this.repaint();
+        for (SpreadsheetColumn col : columns) {
+            col.getDataPanel().revalidate();
+            col.getDataPanel().repaint();
+        }
     }
 
     /**
@@ -616,7 +623,11 @@ implements ExternalColumnListListener,
      * @param type SheetLayoutType to set.
      */
     public void setLayoutType(final SheetLayoutType type) {
-        //sheetLayout = SheetLayoutFactory.getLayout(type, columns);
+        // Inject the layout manager into the columns
+        for (SpreadsheetColumn col : columns) {
+            col.setLayoutManager(SheetLayoutFactory.createLayout(type));
+        }
+
         relayoutCells();
     }
 
