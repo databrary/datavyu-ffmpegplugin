@@ -696,8 +696,13 @@ public final class OpenSHAPAView extends FrameView
         panel.addFileDropEventListener(this);
         setComponent(panel);
         getComponent().revalidate();
+        getComponent().repaint();
         getComponent().resetKeyboardActions();
         getComponent().requestFocus();
+
+        // The default is to create cells that are highlighted - ensure that
+        // they are deselected.
+        panel.clearCellSelection();
     }
 
     /**
