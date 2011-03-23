@@ -76,6 +76,14 @@ import org.openshapa.util.Constants;
         return legacyDB.getName();
     }
 
+    @Override public void setName(final String datastoreName) {
+        try {
+            legacyDB.setName(datastoreName);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to set datastore name", e);
+        }
+    }
+
     @Override public void addVariable(final Variable var) {
         DeprecatedVariable legacyVar = (DeprecatedVariable) var;
 

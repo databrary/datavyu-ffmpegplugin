@@ -1,9 +1,6 @@
 package org.openshapa.views.discrete.layouts;
 
-import java.awt.LayoutManager2;
-import java.util.List;
 import org.openshapa.util.Constants;
-import org.openshapa.views.discrete.SpreadsheetColumn;
 
 /**
  * Factory for SheetLayouts.

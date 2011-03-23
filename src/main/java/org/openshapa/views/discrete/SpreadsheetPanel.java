@@ -60,7 +60,7 @@ import org.openshapa.util.ArrayDirection;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.LayoutManager2;
+import java.util.ArrayList;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Variable;
@@ -136,7 +136,7 @@ implements ExternalColumnListListener,
         headerView.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
         headerView.setName("headerView");
 
-        columns = new Vector<SpreadsheetColumn>();
+        columns = new ArrayList<SpreadsheetColumn>();
 
         scrollPane = new JScrollPane();
         this.add(scrollPane, BorderLayout.CENTER);
@@ -357,6 +357,7 @@ implements ExternalColumnListListener,
      * @param oldCov The column order vector prior to the deletion.
      * @param newCov The column order vector after to the deletion.
      */
+    @Override
     public void colDeletion(final Database db,
                             final long colID,
                             final Vector<Long> oldCov,
@@ -374,6 +375,7 @@ implements ExternalColumnListListener,
      * @param oldCov The column order vector prior to the insertion.
      * @param newCov The column order vector after to the insertion.
      */
+    @Override
     public void colInsertion(final Database db,
                              final long colID,
                              final Vector<Long> oldCov,
@@ -390,6 +392,7 @@ implements ExternalColumnListListener,
      * @param oldCov The column order vector prior to the insertion.
      * @param newCov The column order vector after to the insertion.
      */
+    @Override
     public void colOrderVectorEdited(final Database db,
         final Vector<Long> oldCov, final Vector<Long> newCov) {
 
@@ -418,6 +421,7 @@ implements ExternalColumnListListener,
      * @return true if the event has been consumed by this dispatch, false
      * otherwise
      */
+    @Override
     public boolean dispatchKeyEvent(final KeyEvent e) {
 
         // Quick filter - if we aren't dealing with a key press and left or
@@ -658,6 +662,7 @@ implements ExternalColumnListListener,
      *
      * @param e Component event.
      */
+    @Override
     public void componentHidden(final ComponentEvent e) {
     }
 
@@ -666,6 +671,7 @@ implements ExternalColumnListListener,
      *
      * @param e Component event.
      */
+    @Override
     public void componentMoved(final ComponentEvent e) {
     }
 
@@ -674,6 +680,7 @@ implements ExternalColumnListListener,
      *
      * @param e Component event.
      */
+    @Override
     public void componentShown(final ComponentEvent e) {
     }
 
@@ -829,6 +836,7 @@ implements ExternalColumnListListener,
      *
      * @param cell The cell to use as the end point for the selection.
      */
+    @Override
     public void addCellToContinousSelection(final SpreadsheetCell cell) {
 
         try {
@@ -893,6 +901,7 @@ implements ExternalColumnListListener,
      *
      * @param cell The cell to add to the selection.
      */
+    @Override
     public void addCellToSelection(final SpreadsheetCell cell) {
         clearColumnSelection();
 
@@ -911,6 +920,7 @@ implements ExternalColumnListListener,
      *
      * @param cell The cell to highlight.
      */
+    @Override
     public void setHighlightedCell(final SpreadsheetCell cell) {
 
         if (highlightedCell != null) {
@@ -927,6 +937,7 @@ implements ExternalColumnListListener,
     /**
      * Clears the current cell selection.
      */
+    @Override
     public void clearCellSelection() {
         highlightedCell = null;
         lastSelectedCell = null;
@@ -945,6 +956,7 @@ implements ExternalColumnListListener,
      *
      * @param column The column to add to the current selection.
      */
+    @Override
     public void addColumnToSelection(final SpreadsheetColumn column) {
         clearCellSelection();
         column.requestFocus();
@@ -953,6 +965,7 @@ implements ExternalColumnListListener,
     /**
      * Clears the current column selection.
      */
+    @Override
     public void clearColumnSelection() {
 
         for (SpreadsheetColumn col : getColumns()) {
@@ -1038,6 +1051,7 @@ implements ExternalColumnListListener,
          *
          *@param dtde The event to handle.
          */
+        @Override
         public void drop(final DropTargetDropEvent dtde) {
             Transferable tr = dtde.getTransferable();
             DataFlavor[] flavors = tr.getTransferDataFlavors();

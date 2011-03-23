@@ -26,6 +26,7 @@ public class SpreadsheetView extends JPanel implements Scrollable {
      * @return the preferredSize of a <code>JViewport</code> whose view
      *    is this <code>SpreadsheetView</code>
      */
+    @Override
     public final Dimension getPreferredScrollableViewportSize() {
         return getPreferredSize();
     }
@@ -33,6 +34,7 @@ public class SpreadsheetView extends JPanel implements Scrollable {
     /**
      * @return False - the spreadsheet can scroll left to right if needed.
      */
+    @Override
     public final boolean getScrollableTracksViewportWidth() {
         return false;
     }
@@ -40,6 +42,7 @@ public class SpreadsheetView extends JPanel implements Scrollable {
     /**
      * @return False - the spreadsheet can scroll up and down if needed.
      */
+    @Override
     public final boolean getScrollableTracksViewportHeight() {
         return false;
     }
@@ -54,6 +57,7 @@ public class SpreadsheetView extends JPanel implements Scrollable {
      * @return The "unit" increment for scrolling in the specified direction.
      *         This value should always be positive.
      */
+    @Override
     public final int getScrollableUnitIncrement(final Rectangle visibleRect,
                                                 final int orientation,
                                                 final int direction) {
@@ -93,6 +97,7 @@ public class SpreadsheetView extends JPanel implements Scrollable {
      * @return The "block" increment for scrolling in the specified direction.
      *         This value should always be positive.
      */
+    @Override
     public final int getScrollableBlockIncrement(final Rectangle visibleRect,
                                                  final int orientation,
                                                  final int direction) {

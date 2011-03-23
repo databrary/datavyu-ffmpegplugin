@@ -10,10 +10,8 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 
 import org.openshapa.models.db.legacy.LogicErrorException;
-import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.models.db.legacy.SystemErrorException;
 
-import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
 
@@ -21,6 +19,8 @@ import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
 
 import org.openshapa.controllers.NewProjectC;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
 
 
 /**
@@ -222,13 +222,11 @@ public final class NewProjectV extends OpenSHAPADialog {
             // new spreadsheet.
             s.clearSpreadsheet();
 
-            MacshapaDatabase database = new MacshapaDatabase(
-                    Constants.TICKS_PER_SECOND);
-            database.setName(getProjectName());
-            database.setDescription(getProjectDescription());
+            Datastore ds = new DeprecatedDatabase();
+            ds.setName(getProjectName());
 
             OpenSHAPA.getProjectController().createNewProject(getProjectName());
-            OpenSHAPA.getProjectController().setDatabase(database);
+            OpenSHAPA.getProjectController().setDatastore(ds);
 
             s.showSpreadsheet();
 

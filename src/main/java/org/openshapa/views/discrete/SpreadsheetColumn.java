@@ -15,9 +15,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.List;
 
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -314,6 +314,7 @@ implements ExternalDataColumnListener,
      * Called at the beginning of a cascade of changes through the database.
      * @param db The database.
      */
+    @Override
     public void beginCascade(final Database db) {
         colChanges.reset();
     }
@@ -322,6 +323,7 @@ implements ExternalDataColumnListener,
      * Called at the end of a cascade of changes through the database.
      * @param db The database.
      */
+    @Override
     public void endCascade(final Database db) {
 
         if (colChanges.colDeleted) {
@@ -364,6 +366,7 @@ implements ExternalDataColumnListener,
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being deleted.
      */
+    @Override
     public void DColCellDeletion(final Database db,
                                  final long colID,
                                  final long cellID) {
@@ -377,6 +380,7 @@ implements ExternalDataColumnListener,
      * @param colID The ID assigned to the DataColumn.
      * @param cellID ID of the DataCell that is being inserted.
      */
+    @Override
     public void DColCellInsertion(final Database db,
                                   final long colID,
                                   final long cellID) {
@@ -404,6 +408,7 @@ implements ExternalDataColumnListener,
      * @param oldSelected Old Selected value.
      * @param newSelected New Selected value.
      */
+    @Override
     public void DColConfigChanged(final Database db,
                                   final long colID,
                                   final boolean nameChanged,
@@ -429,6 +434,7 @@ implements ExternalDataColumnListener,
      * @param db The database.
      * @param colID The ID assigned to the DataColumn.
      */
+    @Override
     public void DColDeleted(final Database db, final long colID) {
         colChanges.colDeleted = true;
     }
@@ -474,6 +480,7 @@ implements ExternalDataColumnListener,
      * SpreadsheetCell in the column if one exists. If no cells exist it
      * will request focus for the datapanel of the column.
      */
+    @Override
     public void requestFocus() {
         if (datapanel.getCells().size() > 0) {
             datapanel.getCells().get(0).requestFocusInWindow();
@@ -487,6 +494,7 @@ implements ExternalDataColumnListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mouseEntered(final MouseEvent me) {
         setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
     }
@@ -496,6 +504,7 @@ implements ExternalDataColumnListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mouseExited(final MouseEvent me) {
         setCursor(Cursor.getDefaultCursor());
     }
@@ -505,6 +514,7 @@ implements ExternalDataColumnListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mousePressed(final MouseEvent me) {
     }
 
@@ -513,6 +523,7 @@ implements ExternalDataColumnListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mouseReleased(final MouseEvent me) {
     }
 
@@ -521,6 +532,7 @@ implements ExternalDataColumnListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mouseClicked(final MouseEvent me) {
         if (me.getClickCount() == 2) {
             showChangeVarNameDialog();
@@ -587,6 +599,7 @@ implements ExternalDataColumnListener,
      *
      * @param me The mouse event that triggered this action
      */
+    @Override
     public void mouseDragged(final MouseEvent me) {
         // BugzID:660 - Implements columns dragging.
         if (draggable) {
@@ -623,6 +636,7 @@ implements ExternalDataColumnListener,
      *
      * @param me The mouse event that triggered this action
      */
+    @Override
     public void mouseMoved(final MouseEvent me) {
         final int xCoord = me.getX();
         final int componentWidth = this.getSize().width;
@@ -657,10 +671,10 @@ implements ExternalDataColumnListener,
         private boolean nameChanged;
 
         /** List of cell IDs of newly inserted cells. */
-        private Vector<Long> cellInserted;
+        private List<Long> cellInserted;
 
         /** List of cell IDs of deleted cells. */
-        private Vector<Long> cellDeleted;
+        private List<Long> cellDeleted;
 
         /** colDeleted. */
         private boolean colDeleted;
@@ -669,8 +683,8 @@ implements ExternalDataColumnListener,
          * ColumnChanges constructor.
          */
         private ColumnChanges() {
-            cellInserted = new Vector<Long>();
-            cellDeleted = new Vector<Long>();
+            cellInserted = new ArrayList<Long>();
+            cellDeleted = new ArrayList<Long>();
             reset();
         }
 
