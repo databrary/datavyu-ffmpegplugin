@@ -18,16 +18,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
-
 import org.openshapa.OpenSHAPA;
-
 
 import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.models.db.legacy.DataColumn;
 import org.openshapa.models.db.legacy.Database;
 import org.openshapa.models.db.legacy.SystemErrorException;
-
-
 
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.LayoutManager2;
@@ -41,7 +37,6 @@ import org.openshapa.models.db.Variable;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.layouts.SheetLayout;
 import org.openshapa.views.discrete.layouts.SheetLayoutOrdinal;
-
 
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
@@ -63,7 +58,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     private List<SpreadsheetCell> cells;
 
     /** The mapping between the database and the spreadsheet cells. */
-    private Map<Long, Long> viewMap;
+    private Map<Long, SpreadsheetCell> viewMap;
 
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(ColumnDataPanel.class);
@@ -147,7 +142,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 cells.add(sc);
 
                 // Add the ID's to the mapping.
-                viewMap.put(dc.getID(), (long) (cells.size() - 1));
+                viewMap.put(dc.getID(), sc);
             }
 
             this.add(newCellButton);
@@ -182,8 +177,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      *            ID of cell to find and delete.
      */
     public void deleteCellByID(final long cellID) {
-        Long cellIndex = viewMap.get(cellID);
-        SpreadsheetCell cell = cells.get(cellIndex.intValue());
+        SpreadsheetCell cell = viewMap.get(cellID);
         this.remove(cell);
         cells.remove(cell);
         viewMap.remove(cellID);
@@ -218,7 +212,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 cells.add(nCell);
                 this.add(nCell);
             }
-            viewMap.put(cellID, (long) (cells.size() - 1));
+            viewMap.put(cellID, nCell);
 
             nCell.requestFocus();
         } catch (SystemErrorException e) {
@@ -285,8 +279,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
         for (Cell c : model.getCellsTemporally()) {
             DeprecatedCell dc = (DeprecatedCell) c;
-            long l = viewMap.get(dc.getLegacyCell().getID());
-            result.add(cells.get((int) l));
+            result.add(viewMap.get(dc.getLegacyCell().getID()));
         }
 
         return result;
@@ -322,6 +315,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      * @return true if the event has been consumed by this dispatch, false
      * otherwise
      */
+    @Override
     public boolean dispatchKeyEvent(final KeyEvent e) {
 
         // Quick filter - if we aren't dealing with a key press or up and down

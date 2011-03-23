@@ -140,6 +140,7 @@ implements ExternalColumnListListener,
 
         scrollPane = new JScrollPane();
         this.add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane);
         scrollPane.setViewportView(mainView);
         scrollPane.setColumnHeaderView(headerView);
 
@@ -153,9 +154,6 @@ implements ExternalColumnListListener,
         JPanel rightCorner = new JPanel();
         rightCorner.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, Color.BLACK));
         scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, rightCorner);
-
-        // add a listener for window resize events
-        scrollPane.addComponentListener(this);
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
                                       .getResourceMap(SpreadsheetPanel.class);
@@ -188,8 +186,10 @@ implements ExternalColumnListListener,
      * this class of events.
      */
     public void registerListeners() {
-        KeyboardFocusManager m = KeyboardFocusManager
-            .getCurrentKeyboardFocusManager();
+        // add a listener for window resize events
+        scrollPane.addComponentListener(this);
+
+        KeyboardFocusManager m = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         m.addKeyEventDispatcher(this);
     }
 
@@ -198,8 +198,10 @@ implements ExternalColumnListListener,
      * notiying it of events.
      */
     public void deregisterListeners() {
-        KeyboardFocusManager m = KeyboardFocusManager
-            .getCurrentKeyboardFocusManager();
+        // remove a listener for window resize events.
+        scrollPane.removeComponentListener(this);
+
+        KeyboardFocusManager m = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         m.removeKeyEventDispatcher(this);
     }
 

@@ -17,12 +17,15 @@ import org.openshapa.models.db.legacy.Matrix;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.models.db.legacy.TimeStamp;
 
-
 /**
  * Wrapper/adapter for deprecated data columns.
  */
-@Deprecated public final class DeprecatedVariable
-implements Variable, ExternalDataColumnListener, ExternalCascadeListener, ExternalDataCellListener {
+@Deprecated
+public final class DeprecatedVariable
+implements Variable,
+           ExternalDataColumnListener,
+           ExternalCascadeListener,
+           ExternalDataCellListener {
 
     /** The legacy database we can fetch data from. */
     private Database legacyDB;
