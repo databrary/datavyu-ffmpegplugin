@@ -44,10 +44,8 @@ public final class NewProjectV extends OpenSHAPADialog {
     /**
      * Creates new form NewDatabaseView.
      *
-     * @param parent
-     *            The parent of this JDialog.
-     * @param modal
-     *            Is this dialog modal or not?
+     * @param parent The parent of this JDialog.
+     * @param modal Is this dialog modal or not?
      */
     public NewProjectV(final Frame parent, final boolean modal) {
         super(parent, modal);
@@ -178,8 +176,7 @@ public final class NewProjectV extends OpenSHAPADialog {
     /**
      * The action to invoke when a user clicks on the CANCEL button.
      *
-     * @param evt
-     *            The event that triggered this action
+     * @param evt The event that triggered this action
      */
     private void cancelButtonActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_cancelButtonActionPerformed
@@ -197,8 +194,7 @@ public final class NewProjectV extends OpenSHAPADialog {
     /**
      * The action to invoke when a user clicks on the OK button.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_okButtonActionPerformed
 

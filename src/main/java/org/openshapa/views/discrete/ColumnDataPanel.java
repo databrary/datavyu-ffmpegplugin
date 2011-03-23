@@ -121,10 +121,8 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /**
      * Build the SpreadsheetCells and add to the DataPanel.
      *
-     * @param dbColumn
-     *            DataColumn to display.
-     * @param cellSelL
-     *            Spreadsheet listener to notify about cell selection changes.
+     * @param dbColumn DataColumn to display.
+     * @param cellSelL Spreadsheet listener to notify about cell selection changes.
      */
     private void buildDataPanelCells(final DataColumn dbColumn,
                                      final CellSelectionListener cellSelL) {

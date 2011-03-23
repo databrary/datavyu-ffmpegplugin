@@ -48,8 +48,8 @@ import com.usermetrix.jclient.UserMetrix;
 /**
  * Visual representation of a spreadsheet cell.
  */
-public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
-    MouseListener, FocusListener {
+public class SpreadsheetCell extends JPanel
+implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /** Width of spacer between onset and offset timestamps. */
     private static final int TIME_SPACER = 5;
@@ -414,7 +414,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @return the maximum size of the cell.
      */
-    @Override public final Dimension getMaximumSize() {
+    @Override
+    public final Dimension getMaximumSize() {
         Dimension mysize = super.getPreferredSize();
 
         if ((mysize != null)
@@ -433,7 +434,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @return the preferred size of the cell.
      */
-    @Override public final Dimension getPreferredSize() {
+    @Override
+    public final Dimension getPreferredSize() {
         return getMaximumSize();
     }
 
@@ -443,7 +445,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @return the minimum size of the cell.
      */
-    @Override public final Dimension getMinimumSize() {
+    @Override
+    public final Dimension getMinimumSize() {
         return getMaximumSize();
     }
 
@@ -592,16 +595,28 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * Called if the DataCell of interest is changed. see
      * ExternalDataCellListener.
      */
-    public void DCellChanged(final Database db, final long colID,
-        final long cellID, final boolean ordChanged, final int oldOrd,
-        final int newOrd, final boolean onsetChanged,
-        final TimeStamp oldOnset, final TimeStamp newOnset,
-        final boolean offsetChanged, final TimeStamp oldOffset,
-        final TimeStamp newOffset, final boolean valChanged,
-        final Matrix oldVal, final Matrix newVal,
-        final boolean selectedChanged, final boolean oldSelected,
-        final boolean newSelected, final boolean commentChanged,
-        final String oldComment, final String newComment) {
+    @Override
+    public void DCellChanged(final Database db,
+                             final long colID,
+                             final long cellID,
+                             final boolean ordChanged,
+                             final int oldOrd,
+                             final int newOrd,
+                             final boolean onsetChanged,
+                             final TimeStamp oldOnset,
+                             final TimeStamp newOnset,
+                             final boolean offsetChanged,
+                             final TimeStamp oldOffset,
+                             final TimeStamp newOffset,
+                             final boolean valChanged,
+                             final Matrix oldVal,
+                             final Matrix newVal,
+                             final boolean selectedChanged,
+                             final boolean oldSelected,
+                             final boolean newSelected,
+                             final boolean commentChanged,
+                             final String oldComment,
+                             final String newComment) {
 
         if (ordChanged) {
             setOrdinal(newOrd);
@@ -639,6 +654,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mouseEntered(final MouseEvent me) {
     }
 
@@ -647,6 +663,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mouseExited(final MouseEvent me) {
     }
 
@@ -655,6 +672,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mousePressed(final MouseEvent me) {
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
         boolean groupSel = (me.getModifiers() & keyMask) != 0;
@@ -707,6 +725,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mouseReleased(final MouseEvent me) {
     }
 
@@ -715,6 +734,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @param me The mouse event that triggered this action.
      */
+    @Override
     public void mouseClicked(final MouseEvent me) {
     }
 
@@ -723,6 +743,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @param e The focus event that triggered this action.
      */
+    @Override
     public void focusGained(final FocusEvent e) {
 
         if (highlighted
@@ -737,6 +758,7 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      *
      * @param e The focus event that triggered this action.
      */
+    @Override
     public void focusLost(final FocusEvent e) {
 
         // BugzID: 718 - Make sure content is deselected.
@@ -747,7 +769,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
      * @return True if this matrix view is the current focus owner, false
      * otherwise.
      */
-    @Override public boolean isFocusOwner() {
+    @Override
+    public boolean isFocusOwner() {
         return (onset.isFocusOwner() || offset.isFocusOwner()
                 || dataPanel.isFocusOwner());
     }
@@ -755,7 +778,8 @@ public class SpreadsheetCell extends JPanel implements ExternalDataCellListener,
     /**
      * Request to focus this cell.
      */
-    @Override public void requestFocus() {
+    @Override
+    public void requestFocus() {
         dataPanel.requestFocus();
     }
 
