@@ -244,6 +244,7 @@ implements ExternalColumnListListener,
         // Add the new column to the adjacent list of all the existing columns.
         for (SpreadsheetColumn c : columns) {
             c.addAdjacentColumn(col);
+            col.addAdjacentColumn(c);
         }
 
         // and add it to our maintained ref collection
@@ -290,6 +291,7 @@ implements ExternalColumnListListener,
             for (SpreadsheetColumn col : columns) {
                 col.removeAdjacentColumn(colToRemove);
             }
+            colToRemove.clearAdjacentColumns();
         }
     }
 

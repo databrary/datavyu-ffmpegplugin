@@ -50,7 +50,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
        
         int width = Math.max(panel.getNewCellButton().getWidth(), (int) result.getWidth());
         int height = ((int) result.getHeight()) + panel.getNewCellButton().getHeight();
-        height += Constants.BOTTOM_MARGIN;
         int containerHeight = parent.getParent().getParent().getHeight();
         result.setSize(width, Math.max(height, containerHeight));
 
@@ -94,9 +93,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // Put the new cell button at the end of the column.
         Dimension d = panel.getNewCellButton().getPreferredSize();
         panel.getNewCellButton().setBounds(0, currentHeight, parent.getWidth(), (int) d.getHeight());
-
         currentHeight += (int) d.getHeight();
-        parent.setBounds(parent.getX(), parent.getY(), parent.getWidth(), currentHeight);
+
+        padColumn(parent, panel, currentHeight);
     }
 
     @Override

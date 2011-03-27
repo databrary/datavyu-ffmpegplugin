@@ -42,21 +42,16 @@ public class SheetLayoutOrdinal extends SheetLayout {
         // This layout can only be applied to Column Data Panels.
         ColumnDataPanel panel = (ColumnDataPanel) parent;
 
-        int ord = 1;
-        for (SpreadsheetCell c : panel.getCells()) {
+        for (Component c : panel.getCells()) {
             int width = Math.max(c.getWidth(), (int) result.getWidth());
             int height = ((int) result.getHeight()) + c.getHeight();
-            c.setOrdinal(ord);
-            ord++;
 
             result.setSize(width, height);
         }
 
         int width = Math.max(panel.getNewCellButton().getWidth(), (int) result.getWidth());
         int height = ((int) result.getHeight()) + panel.getNewCellButton().getHeight();
-        height += Constants.BOTTOM_MARGIN;
-        int containerHeight = parent.getParent().getParent().getHeight();
-        
+        int containerHeight = parent.getParent().getParent().getHeight();   
         result.setSize(width, Math.max(height, containerHeight));
 
         return result;
@@ -64,9 +59,6 @@ public class SheetLayoutOrdinal extends SheetLayout {
 
     @Override
     public void removeLayoutComponent(Component comp) {
-    }
-
-    public void setEmptyCell(final SpreadsheetEmptyCell seCell) {
     }
 
     @Override
@@ -89,9 +81,12 @@ public class SheetLayoutOrdinal extends SheetLayout {
         // This layout can only be applied to Column Data Panels.
         ColumnDataPanel panel = (ColumnDataPanel) parent;
 
-        for (Component c : panel.getCells()) {
+        int ord = 1;
+        for (SpreadsheetCell c : panel.getCells()) {
             Dimension d = c.getPreferredSize();
             c.setBounds(0, currentHeight, parent.getWidth() - marginSize, (int) d.getHeight());
+            c.setOrdinal(ord);
+            ord++;
             currentHeight += d.getHeight();
         }
 
@@ -100,26 +95,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
         panel.getNewCellButton().setBounds(0, currentHeight, parent.getWidth(), (int) d.getHeight());       
         currentHeight += (int) d.getHeight();
 
-        // Find max height of adjacent columns.
-        int adjacentHeight = 0;
-        for (SpreadsheetColumn col : panel.getAdjacentColumns()) {
-            adjacentHeight = Math.max(col.getDataPanel().getPreferredSize().height, adjacentHeight);
-        }
-
-        // Find max column height.
-        int columnHeight = currentHeight + Constants.BOTTOM_MARGIN;
-        int maxColumnHeight = Math.max(adjacentHeight, columnHeight);
-        int containerHeight = parent.getParent().getParent().getHeight();
-
-        if (containerHeight > maxColumnHeight) {
-            panel.getPadding().setBounds(0, currentHeight, parent.getWidth(), (containerHeight - columnHeight));
-            currentHeight += (containerHeight - columnHeight);
-        } else {
-            panel.getPadding().setBounds(0, currentHeight, parent.getWidth(), (maxColumnHeight - columnHeight));
-            currentHeight += (maxColumnHeight - columnHeight);
-        }
-
-        parent.setBounds(parent.getX(), parent.getY(), parent.getWidth(), currentHeight);
+        padColumn(parent, panel, currentHeight);
     }
 
     @Override
