@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.ColumnDataPanel;
+import org.openshapa.views.discrete.SpreadsheetCell;
 
 
 /**
@@ -81,9 +82,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // This layout can only be applied to Column Data Panels.
         ColumnDataPanel panel = (ColumnDataPanel) parent;
 
-        for (Component c : panel.getCellsTemporally()) {
+        int ord = 1;
+        for (SpreadsheetCell c : panel.getCellsTemporally()) {
             Dimension d = c.getPreferredSize();
             c.setBounds(0, currentHeight, parent.getWidth() - marginSize, (int) d.getHeight());
+            c.setOrdinal(ord);
+            ord++;
             currentHeight += d.getHeight();
         }
 

@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.ColumnDataPanel;
+import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetEmptyCell;
 
 /**
@@ -40,9 +41,12 @@ public class SheetLayoutOrdinal extends SheetLayout {
         // This layout can only be applied to Column Data Panels.
         ColumnDataPanel panel = (ColumnDataPanel) parent;
 
-        for (Component c : panel.getCells()) {
+        int ord = 1;
+        for (SpreadsheetCell c : panel.getCells()) {
             int width = Math.max(c.getWidth(), (int) result.getWidth());
             int height = ((int) result.getHeight()) + c.getHeight();
+            c.setOrdinal(ord);
+            ord++;
 
             result.setSize(width, height);
         }

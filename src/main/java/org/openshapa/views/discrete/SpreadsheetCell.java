@@ -215,8 +215,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         ord.addMouseListener(this);
         ord.setFocusable(true);
 
-        setOrdinal(dc.getOrd());
-
         onset = new TimeStampTextField(dc, TimeStampSource.Onset);
         onset.setFont(Configuration.getInstance().getSSLabelFont());
         onset.setForeground(Configuration.getInstance().getSSTimestampColour());
@@ -306,7 +304,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      *
      * @param ord The new ordinal value to use with this cell.
      */
-    private void setOrdinal(final Integer ordInt) {
+    public void setOrdinal(final Integer ordInt) {
         ord.setText(ordInt.toString());
     }
 
@@ -617,10 +615,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
                              final boolean commentChanged,
                              final String oldComment,
                              final String newComment) {
-
-        if (ordChanged) {
-            setOrdinal(newOrd);
-        }
 
         if (onsetChanged) {
             onset.setValue();

@@ -115,6 +115,9 @@ implements ExternalColumnListListener,
     /** Last selected cell - used as an end point for continous selections. */
     private SpreadsheetCell lastSelectedCell;
 
+    /** The layout that is currently being used. */
+    private SheetLayoutType currentLayoutType;
+
     /** List containing listeners interested in file drop events. */
     private final transient List<FileDropEventListener> fileDropListeners;
 
@@ -135,6 +138,9 @@ implements ExternalColumnListListener,
         headerView.setLayout(new BoxLayout(headerView, BoxLayout.X_AXIS));
         headerView.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
         headerView.setName("headerView");
+
+        // Default layout is ordinal.
+        currentLayoutType = SheetLayoutType.Ordinal;
 
         columns = new ArrayList<SpreadsheetColumn>();
 
@@ -608,11 +614,8 @@ implements ExternalColumnListListener,
      * @param cellID The id of the cell to mark as highlighted.
      */
     public void highlightCell(final long cellID) {
-
         for (SpreadsheetColumn col : getColumns()) {
-
             for (SpreadsheetCell cell : col.getCells()) {
-
                 if (cell.getCellID() == cellID) {
                     cell.setHighlighted(true);
                     setHighlightedCell(cell);
@@ -629,6 +632,8 @@ implements ExternalColumnListListener,
      * @param type SheetLayoutType to set.
      */
     public void setLayoutType(final SheetLayoutType type) {
+        this.currentLayoutType = type;
+
         // Inject the layout manager into the columns
         for (SpreadsheetColumn col : columns) {
             col.setLayoutManager(SheetLayoutFactory.createLayout(type));
@@ -834,7 +839,24 @@ implements ExternalColumnListListener,
     }
 
     /**
-     * Adds a series of cells as a continous selection.
+     * Returns the cells of the supplied column as ordered by the current
+     * layout.
+     *
+     * @param col The column to fetch the cells from.
+     *
+     * @return The cells in ordinal order if SheetLayoutType is Ordinal,
+     * otherwise the cells will be in temporal order.
+     */
+    public List<SpreadsheetCell> getOrderedCells(SpreadsheetColumn col) {
+        if (this.currentLayoutType == SheetLayoutType.Ordinal) {
+            return col.getCells();
+        } else {
+            return col.getCellsTemporally();
+        }
+    }
+
+    /**
+     * Adds a series of cells as a continuous selection.
      *
      * @param cell The cell to use as the end point for the selection.
      */
@@ -842,7 +864,6 @@ implements ExternalColumnListListener,
     public void addCellToContinousSelection(final SpreadsheetCell cell) {
 
         try {
-
             if (lastSelectedCell != null) {
                 DataCell c1 = (DataCell) getLegacyDatabase()
                                          .getCell(lastSelectedCell.getCellID());
@@ -867,14 +888,13 @@ implements ExternalColumnListListener,
                             // Perform continous selection.
                             boolean addToSelection = false;
 
-                            for (SpreadsheetCell c : col.getCells()) {
+                            for (SpreadsheetCell c : getOrderedCells(col)) {
 
                                 if (!addToSelection) {
                                     c.setSelected(false);
                                 }
 
-                                if (c.equals(cell)
-                                        || c.equals(lastSelectedCell)) {
+                                if (c.equals(cell) || c.equals(lastSelectedCell)) {
                                     addToSelection = !addToSelection;
 
                                     // We always include start and end cells.
@@ -945,7 +965,6 @@ implements ExternalColumnListListener,
         lastSelectedCell = null;
 
         for (SpreadsheetColumn col : getColumns()) {
-
             for (SpreadsheetCell cell : col.getCells()) {
                 cell.setSelected(false);
                 cell.setHighlighted(false);
@@ -969,7 +988,6 @@ implements ExternalColumnListListener,
      */
     @Override
     public void clearColumnSelection() {
-
         for (SpreadsheetColumn col : getColumns()) {
             col.setSelected(false);
         }
