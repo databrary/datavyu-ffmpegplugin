@@ -100,9 +100,6 @@ implements ExternalColumnListListener,
     /** The logger for this class. */
     private Logger logger = UserMetrix.getLogger(SpreadsheetPanel.class);
 
-    /** Reference to the spreadsheet layout handler. */
-    //private SheetLayout sheetLayout;
-
     /** Reference to the scrollPane. */
     private JScrollPane scrollPane;
 
@@ -173,7 +170,8 @@ implements ExternalColumnListListener,
                                     .getActionMap(SpreadsheetPanel.class, this);
         newVar.setAction(aMap.get("openNewVarMenu"));
         newVar.setText(" + ");
-        newVar.setSize(SpreadsheetColumn.DEFAULT_COLUMN_WIDTH, SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+        newVar.setSize(SpreadsheetColumn.DEFAULT_COLUMN_WIDTH,
+                       SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
 
         // set the database and layout the columns
@@ -243,6 +241,11 @@ implements ExternalColumnListListener,
         // add the new variable '+' button to the header.
         headerView.add(newVar);
 
+        // Add the new column to the adjacent list of all the existing columns.
+        for (SpreadsheetColumn c : columns) {
+            c.addAdjacentColumn(col);
+        }
+
         // and add it to our maintained ref collection
         columns.add(col);
     }
@@ -255,6 +258,7 @@ implements ExternalColumnListListener,
         for (SpreadsheetColumn col : columns) {
             col.deregisterListeners();
             col.clear();
+            col.clearAdjacentColumns();
 
             mainView.remove(col.getDataPanel());
             headerView.remove(col);
@@ -269,16 +273,22 @@ implements ExternalColumnListListener,
      * @param colID ID of column to remove
      */
     private void removeColumn(final long colID) {
-
+        SpreadsheetColumn colToRemove = null;
         for (SpreadsheetColumn col : columns) {
-
             if (col.getColID() == colID) {
+                colToRemove = col;
                 col.deregisterListeners();
                 mainView.remove(col.getDataPanel());
                 headerView.remove(col);
                 columns.remove(col);
 
                 break;
+            }
+        }
+
+        if (colToRemove != null) {
+            for (SpreadsheetColumn col : columns) {
+                col.removeAdjacentColumn(colToRemove);
             }
         }
     }
@@ -402,7 +412,8 @@ implements ExternalColumnListListener,
      */
     @Override
     public void colOrderVectorEdited(final Database db,
-        final Vector<Long> oldCov, final Vector<Long> newCov) {
+                                     final Vector<Long> oldCov,
+                                     final Vector<Long> newCov) {
 
         // do nothing for now
         return;

@@ -30,6 +30,7 @@ import java.awt.LayoutManager2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.openshapa.Configuration;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
@@ -57,6 +58,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /** Collection of the SpreadsheetCells held in by this data panel. */
     private List<SpreadsheetCell> cells;
 
+    /** Adjacent columns held in the spreadsheet. */
+    private List<SpreadsheetColumn> adjacentColumns;
+
     /** The mapping between the database and the spreadsheet cells. */
     private Map<Long, SpreadsheetCell> viewMap;
 
@@ -65,6 +69,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     /** button for creating a new empty cell. */
     private SpreadsheetEmptyCell newCellButton;
+
+    /** Padding for the bottom of the column. */
+    private JPanel padding;
 
     /**
      * Creates a new ColumnDataPanel.
@@ -81,6 +88,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         // Store member variables.
         columnWidth = width;
         cells = new ArrayList<SpreadsheetCell>();
+        adjacentColumns = new ArrayList<SpreadsheetColumn>();
         viewMap = new HashMap();
         cellSelectionL = cellSelL;
         model = variable;
@@ -92,8 +100,29 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         newCellButton = new SpreadsheetEmptyCell(getLegacyVariable());
         this.add(newCellButton);
 
+        padding = new JPanel();
+        padding.setBackground(new Color(237, 237, 237));
+        padding.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, new Color(175, 175, 175)));
+        this.add(padding);
+
         // Populate the data column with spreadsheet cells.
         buildDataPanelCells(getLegacyVariable(), cellSelL);
+    }
+
+    public void addAdjacentColumn(final SpreadsheetColumn col) {
+        adjacentColumns.add(col);
+    }
+
+    public List<SpreadsheetColumn> getAdjacentColumns() {
+        return adjacentColumns;
+    }
+
+    public void clearAdjacentColumns() {
+        adjacentColumns.clear();
+    }
+
+    public void removeAdjacentColumn(final SpreadsheetColumn col) {
+        adjacentColumns.remove(col);
     }
 
     @Deprecated DataColumn getLegacyVariable() {
@@ -267,6 +296,10 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     public SpreadsheetEmptyCell getNewCellButton() {
         return this.newCellButton;
+    }
+
+    public JPanel getPadding() {
+        return this.padding;
     }
 
     /**

@@ -137,6 +137,18 @@ implements ExternalDataColumnListener,
         colChanges = new ColumnChanges();
     }
 
+    public void addAdjacentColumn(SpreadsheetColumn col) {
+        datapanel.addAdjacentColumn(col);
+    }
+
+    public void removeAdjacentColumn(SpreadsheetColumn col) {
+        datapanel.removeAdjacentColumn(col);
+    }
+
+    public void clearAdjacentColumns() {
+        datapanel.clearAdjacentColumns();
+    }
+
     public Variable getModel() {
         return variable;
     }

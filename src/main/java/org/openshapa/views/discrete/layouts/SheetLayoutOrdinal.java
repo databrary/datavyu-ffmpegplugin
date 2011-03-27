@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.ColumnDataPanel;
 import org.openshapa.views.discrete.SpreadsheetCell;
+import org.openshapa.views.discrete.SpreadsheetColumn;
 import org.openshapa.views.discrete.SpreadsheetEmptyCell;
 
 /**
@@ -14,7 +15,7 @@ import org.openshapa.views.discrete.SpreadsheetEmptyCell;
  */
 public class SheetLayoutOrdinal extends SheetLayout {
     // The of the right hand margin.
-    int marginSize;
+    private int marginSize;
 
     /**
      * SheetLayoutOrdinal constructor.
@@ -96,9 +97,28 @@ public class SheetLayoutOrdinal extends SheetLayout {
 
         // Put the new cell button at the end of the column.
         Dimension d = panel.getNewCellButton().getPreferredSize();
-        panel.getNewCellButton().setBounds(0, currentHeight, parent.getWidth(), (int) d.getHeight());
-
+        panel.getNewCellButton().setBounds(0, currentHeight, parent.getWidth(), (int) d.getHeight());       
         currentHeight += (int) d.getHeight();
+
+        // Find max height of adjacent columns.
+        int adjacentHeight = 0;
+        for (SpreadsheetColumn col : panel.getAdjacentColumns()) {
+            adjacentHeight = Math.max(col.getDataPanel().getPreferredSize().height, adjacentHeight);
+        }
+
+        // Find max column height.
+        int columnHeight = currentHeight + Constants.BOTTOM_MARGIN;
+        int maxColumnHeight = Math.max(adjacentHeight, columnHeight);
+        int containerHeight = parent.getParent().getParent().getHeight();
+
+        if (containerHeight > maxColumnHeight) {
+            panel.getPadding().setBounds(0, currentHeight, parent.getWidth(), (containerHeight - columnHeight));
+            currentHeight += (containerHeight - columnHeight);
+        } else {
+            panel.getPadding().setBounds(0, currentHeight, parent.getWidth(), (maxColumnHeight - columnHeight));
+            currentHeight += (maxColumnHeight - columnHeight);
+        }
+
         parent.setBounds(parent.getX(), parent.getY(), parent.getWidth(), currentHeight);
     }
 
