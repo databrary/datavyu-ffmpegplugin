@@ -86,16 +86,13 @@ public final class CreateNewCellC {
      * supplied cells. If no column is adjacent in the specified direction, no
      * cell will be created.
      *
-     * @param sourceCells
-     *            The list of source cells that we wish to create cells adjacent
-     *            too.
-     * @param direction
-     *            The direction in which we wish to create adjacent cells.
+     * @param sourceCells The list of source cells that we wish to create cells
+     * adjacent too.
+     * @param direction The direction in which we wish to create adjacent cells.
      */
     public CreateNewCellC(final Vector<DataCell> sourceCells,
-        final ArrayDirection direction) {
-        view = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
-            .getComponent();
+                          final ArrayDirection direction) {
+        view = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView().getComponent();
         model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
 
         long cellID = 0;
@@ -127,7 +124,7 @@ public final class CreateNewCellC {
                             cell.setOffset(sourceCell.getOffset());
                             cellID = model.appendCell(cell);
                             OpenSHAPA.getProjectController()
-                                .setLastCreatedCellId(cellID);
+                                     .setLastCreatedCellId(cellID);
                         }
 
                         break;
