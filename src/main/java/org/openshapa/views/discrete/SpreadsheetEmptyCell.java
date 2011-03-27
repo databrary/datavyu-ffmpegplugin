@@ -46,7 +46,7 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
     private static final Logger LOGGER = UserMetrix.getLogger(SpreadsheetEmptyCell.class);
 
     /** Border to use for normal cell. No extra information to show. */
-    private static final Border NORMAL_BORDER = new MatteBorder(0, 0, 1, 1, new Color(175, 175, 175));
+    private static final Border NORMAL_BORDER = new MatteBorder(0, 0, 1, 1, Configuration.BORDER_COLOUR);
 
     /** The panel that displays the cell. */
     private JPanel cellPanel;

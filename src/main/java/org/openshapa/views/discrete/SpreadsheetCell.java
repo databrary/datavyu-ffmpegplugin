@@ -56,27 +56,22 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /** Border to use when a cell is highlighted. */
     private static final Border HIGHLIGHT_BORDER = new CompoundBorder(
-            new MatteBorder(0, 0, 1, 0, new Color(175, 175, 175)),
-            new MatteBorder(3, 3, 3, 3,
-                Configuration.getInstance().getSSSelectedColour()));
+            new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
+            new MatteBorder(3, 3, 3, 3, Configuration.getInstance().getSSSelectedColour()));
 
     /** Border to use when a cell is highlighted and overlapping cell. */
     private static final Border HIGHLIGHT_OVERLAP_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0,
-                    new Color(175, 175, 175)),
-                new MatteBorder(0, 0, 3, 0,
-                    Configuration.getInstance().getSSOverlapColour())),
+                new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
+                new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSOverlapColour())),
             new MatteBorder(3,
                 3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
 
     /** Border to use when a cell is selected. */
     private static final Border FILL_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0,
-                    new Color(175, 175, 175)),
-                new MatteBorder(0, 0, 3, 0,
-                    Configuration.getInstance().getSSSelectedColour())),
+                new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
+                new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSSelectedColour())),
             new MatteBorder(3,
                 3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
 
@@ -86,25 +81,21 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /** Border to use for normal cell. No extra information to show. */
     private static final Border NORMAL_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0, new Color(175, 175, 175)),
-                new MatteBorder(0, 0, 3, 0,
-                    Configuration.getInstance().getSSBackgroundColour())),
+                new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
+                new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSBackgroundColour())),
             new MatteBorder(3, 3, 0, 3,
                 Configuration.getInstance().getSSBackgroundColour()));
 
     /** Border to use if cell overlaps with another. */
     public static final Border OVERLAP_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0,
-                    new Color(175, 175, 175)),
-                new MatteBorder(0, 0, 3, 0,
-                    Configuration.getInstance().getSSOverlapColour())),
+                new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
+                new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSOverlapColour())),
             new MatteBorder(3,
                 3, 0, 3, Configuration.getInstance().getSSBackgroundColour()));
 
     /** Border to use for normal cell if there is no strut (abuts prev cell). */
-    public static final Border STRUT_BORDER = BorderFactory.createMatteBorder(0,
-            0, 1, 0, new Color(175, 175, 175));
+    public static final Border STRUT_BORDER = BorderFactory.createMatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR);
 
     /** The panel that displays the cell. */
     private JPanel cellPanel;

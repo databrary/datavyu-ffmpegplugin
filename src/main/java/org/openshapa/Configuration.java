@@ -38,6 +38,9 @@ public final class Configuration {
     /** The default label font size to be used by OpenSHAPA labels. */
     private static final float LABEL_FONT_SIZE = 12;
 
+    /** The colour to use for the border. */
+    public static final Color BORDER_COLOUR = new Color(175, 175, 175);
+
     /** The default spreadsheet background colour. */
     private static final Color DEFAULT_BACKGROUND = new Color(249, 249, 249);
 

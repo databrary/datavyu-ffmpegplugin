@@ -3,7 +3,6 @@ package org.openshapa.views.discrete.layouts;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.ColumnDataPanel;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
