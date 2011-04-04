@@ -182,8 +182,7 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
         Dimension mysize = super.getPreferredSize();
 
         if ((mysize != null) && (mysize.height < (layoutPreferredHeight + strut.getHeight()))) {
-            mysize = new Dimension(mysize.width,
-                                   (layoutPreferredHeight + strut.getHeight()));
+            mysize = new Dimension(mysize.width, (layoutPreferredHeight + strut.getHeight()));
         }
 
         return mysize;

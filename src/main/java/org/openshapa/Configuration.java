@@ -60,20 +60,16 @@ public final class Configuration {
     private static final Color DEFAULT_OVERLAP = Color.RED;
 
     /** Fill colour of a carriage in the unselected/normal state. */
-    private static final Color DEFAULT_NORMAL_CARRIAGE_COLOR = new Color(169,
-            218, 248);
+    private static final Color DEFAULT_NORMAL_CARRIAGE_COLOR = new Color(169, 218, 248);
 
     /** Outline colour of a carriage in the unselected/normal state. */
-    private static final Color DEFAULT_NORMAL_OUTLINE_COLOR = new Color(129,
-            167, 188);
+    private static final Color DEFAULT_NORMAL_OUTLINE_COLOR = new Color(129, 167, 188);
 
     /** Fill colour of a carriage in the selected state. */
-    private static final Color DEFAULT_SELECTED_CARRIAGE_COLOR = new Color(138,
-            223, 162);
+    private static final Color DEFAULT_SELECTED_CARRIAGE_COLOR = new Color(138, 223, 162);
 
     /** Outline colour of a carriage in the selected state. */
-    private static final Color DEFAULT_SELECTED_OUTLINE_COLOR = new Color(105,
-            186, 128);
+    private static final Color DEFAULT_SELECTED_OUTLINE_COLOR = new Color(105, 186, 128);
 
     /** The configuration properties. */
     private ConfigProperties properties;

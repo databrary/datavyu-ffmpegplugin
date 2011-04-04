@@ -2,6 +2,8 @@ package org.openshapa.views.discrete;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
@@ -15,8 +17,25 @@ public class SpreadsheetView extends JPanel implements Scrollable {
     /** Maximum unit scroll amount. */
     private static final int MAX_UNIT_INCREMENT = 50;
 
+    private List<SpreadsheetColumn> columns;
+
     /** Creates new form SpreadsheetView. */
     public SpreadsheetView() {
+        columns = new ArrayList<SpreadsheetColumn>();
+    }
+
+    public void addColumn(final SpreadsheetColumn newColumn) {
+        columns.add(newColumn);
+        this.add(newColumn.getDataPanel());
+    }
+
+    public void removeColumn(final SpreadsheetColumn delColumn) {
+        this.remove(delColumn.getDataPanel());
+        columns.remove(delColumn);
+    }
+
+    public List<SpreadsheetColumn> getColumns() {
+        return columns;
     }
 
     /**

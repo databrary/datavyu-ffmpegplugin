@@ -26,18 +26,15 @@ import org.openshapa.models.db.legacy.Database;
 import org.openshapa.models.db.legacy.SystemErrorException;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.LayoutManager2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.openshapa.Configuration;
+import javax.swing.BoxLayout;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 import org.openshapa.util.Constants;
-import org.openshapa.views.discrete.layouts.SheetLayout;
-import org.openshapa.views.discrete.layouts.SheetLayoutOrdinal;
 
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
@@ -45,9 +42,6 @@ import org.openshapa.views.discrete.layouts.SheetLayoutOrdinal;
 public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher {
     /** Width of the column. */
     private int columnWidth;
-
-    /** Layout type for this column. */
-    private LayoutManager2 layoutMngr;
 
     /** The model that this variable represents. */
     private Variable model;
@@ -57,9 +51,6 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     /** Collection of the SpreadsheetCells held in by this data panel. */
     private List<SpreadsheetCell> cells;
-
-    /** Adjacent columns held in the spreadsheet. */
-    private List<SpreadsheetColumn> adjacentColumns;
 
     /** The mapping between the database and the spreadsheet cells. */
     private Map<Long, SpreadsheetCell> viewMap;
@@ -88,13 +79,12 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         // Store member variables.
         columnWidth = width;
         cells = new ArrayList<SpreadsheetCell>();
-        adjacentColumns = new ArrayList<SpreadsheetColumn>();
         viewMap = new HashMap();
         cellSelectionL = cellSelL;
         model = variable;
 
-        layoutMngr = new SheetLayoutOrdinal(Constants.BORDER_SIZE);
-        setLayout(layoutMngr);
+        setLayout(null);
+        //setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, new Color(175, 175, 175)));
 
         newCellButton = new SpreadsheetEmptyCell(getLegacyVariable());
@@ -107,22 +97,6 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
         // Populate the data column with spreadsheet cells.
         buildDataPanelCells(getLegacyVariable(), cellSelL);
-    }
-
-    public void addAdjacentColumn(final SpreadsheetColumn col) {
-        adjacentColumns.add(col);
-    }
-
-    public List<SpreadsheetColumn> getAdjacentColumns() {
-        return adjacentColumns;
-    }
-
-    public void clearAdjacentColumns() {
-        adjacentColumns.clear();
-    }
-
-    public void removeAdjacentColumn(final SpreadsheetColumn col) {
-        adjacentColumns.remove(col);
     }
 
     @Deprecated DataColumn getLegacyVariable() {
@@ -157,9 +131,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                                      final CellSelectionListener cellSelL) {
         try {
             // traverse and build the cells
+            int currentHeight = 0;
             for (int j = 1; j <= dbColumn.getNumCells(); j++) {
                 DataCell dc = (DataCell) dbColumn.getDB().getCell(dbColumn.getID(), j);
                 SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc, cellSelL);
+                sc.setBounds(0, currentHeight, columnWidth, sc.getHeight());
                 dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
 
                 // add cell to the JPanel
@@ -170,9 +146,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
                 // Add the ID's to the mapping.
                 viewMap.put(dc.getID(), sc);
+                currentHeight += sc.getHeight();
             }
 
             this.add(newCellButton);
+            this.setSize(columnWidth, currentHeight);
         } catch (SystemErrorException e) {
             LOGGER.error("Failed to populate Spreadsheet.", e);
         }
@@ -248,16 +226,6 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     }
 
     /**
-     * setLayout changes the layout manager for this columnDataPanel.
-     *
-     * @param manager New layout manager.
-     */
-    public void setLayoutManager(final SheetLayout manager) {
-       layoutMngr = manager;
-       this.setLayout(layoutMngr);
-    }
-
-    /**
      * Set the width of the SpreadsheetCell.
      *
      * @param width
@@ -282,7 +250,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      * @return the minimum size of the data column.
      */
     @Override public Dimension getMinimumSize() {
-        return new Dimension(columnWidth, (int) layoutMngr.preferredLayoutSize(this).getHeight());
+        return new Dimension(columnWidth, super.getMinimumSize().height);
     }
 
     /**
@@ -291,7 +259,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      * @return the preferred size of the data column.
      */
     @Override public Dimension getPreferredSize() {
-        return new Dimension(columnWidth, (int) layoutMngr.preferredLayoutSize(this).getHeight());
+        return new Dimension(columnWidth, super.getPreferredSize().height);
     }
 
     public SpreadsheetEmptyCell getNewCellButton() {

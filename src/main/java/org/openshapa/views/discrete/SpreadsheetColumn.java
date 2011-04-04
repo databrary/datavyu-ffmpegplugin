@@ -20,7 +20,6 @@ import java.util.List;
 
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -43,7 +42,6 @@ import org.openshapa.models.db.legacy.ExternalDataColumnListener;
 import org.openshapa.models.db.legacy.LogicErrorException;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.util.Constants;
-import org.openshapa.views.discrete.layouts.SheetLayout;
 
 /**
  * This class maintains the visual representation of the column in the
@@ -135,18 +133,6 @@ implements ExternalDataColumnListener,
         }
 
         colChanges = new ColumnChanges();
-    }
-
-    public void addAdjacentColumn(SpreadsheetColumn col) {
-        datapanel.addAdjacentColumn(col);
-    }
-
-    public void removeAdjacentColumn(SpreadsheetColumn col) {
-        datapanel.removeAdjacentColumn(col);
-    }
-
-    public void clearAdjacentColumns() {
-        datapanel.clearAdjacentColumns();
     }
 
     public Variable getModel() {
@@ -269,7 +255,7 @@ implements ExternalDataColumnListener,
     /**
      * @return The datapanel.
      */
-    public JComponent getDataPanel() {
+    public ColumnDataPanel getDataPanel() {
         return datapanel;
     }
 
@@ -449,15 +435,6 @@ implements ExternalDataColumnListener,
     @Override
     public void DColDeleted(final Database db, final long colID) {
         colChanges.colDeleted = true;
-    }
-
-    /**
-     * setLayout Changes the layout manager used with this spreadsheet column.
-     *
-     * @param manager The new layout manager to use with this column.
-     */
-    public void setLayoutManager(final SheetLayout manager) {
-        datapanel.setLayoutManager(manager);
     }
 
     /**

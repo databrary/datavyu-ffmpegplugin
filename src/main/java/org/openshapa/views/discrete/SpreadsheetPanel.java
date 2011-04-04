@@ -60,7 +60,9 @@ import org.openshapa.util.ArrayDirection;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.Container;
 import java.util.ArrayList;
+import javax.swing.ScrollPaneLayout;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Variable;
@@ -136,16 +138,15 @@ implements ExternalColumnListListener,
         headerView.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Color.BLACK));
         headerView.setName("headerView");
 
-        // Default layout is ordinal.
-        currentLayoutType = SheetLayoutType.Ordinal;
-
         columns = new ArrayList<SpreadsheetColumn>();
-
         scrollPane = new JScrollPane();
         this.add(scrollPane, BorderLayout.CENTER);
         add(scrollPane);
         scrollPane.setViewportView(mainView);
         scrollPane.setColumnHeaderView(headerView);
+
+        // Default layout is ordinal.
+        setLayoutType(SheetLayoutType.Ordinal);
 
         // set strut for headerView - necessary while there are no col headers
         Dimension d = new Dimension(0, SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
@@ -233,19 +234,13 @@ implements ExternalColumnListListener,
         col.registerListeners();
 
         // add the datapanel to the scrollpane viewport
-        mainView.add(col.getDataPanel());
+        mainView.addColumn(col);
 
         // add the headerpanel to the scrollpane headerviewport
         headerView.add(col);
 
         // add the new variable '+' button to the header.
         headerView.add(newVar);
-
-        // Add the new column to the adjacent list of all the existing columns.
-        for (SpreadsheetColumn c : columns) {
-            c.addAdjacentColumn(col);
-            col.addAdjacentColumn(c);
-        }
 
         // and add it to our maintained ref collection
         columns.add(col);
@@ -259,9 +254,8 @@ implements ExternalColumnListListener,
         for (SpreadsheetColumn col : columns) {
             col.deregisterListeners();
             col.clear();
-            col.clearAdjacentColumns();
 
-            mainView.remove(col.getDataPanel());
+            mainView.removeColumn(col);
             headerView.remove(col);
         }
 
@@ -279,19 +273,13 @@ implements ExternalColumnListListener,
             if (col.getColID() == colID) {
                 colToRemove = col;
                 col.deregisterListeners();
-                mainView.remove(col.getDataPanel());
+                
+                mainView.removeColumn(col);
                 headerView.remove(col);
                 columns.remove(col);
 
                 break;
             }
-        }
-
-        if (colToRemove != null) {
-            for (SpreadsheetColumn col : columns) {
-                col.removeAdjacentColumn(colToRemove);
-            }
-            colToRemove.clearAdjacentColumns();
         }
     }
 
@@ -646,11 +634,7 @@ implements ExternalColumnListListener,
      */
     public void setLayoutType(final SheetLayoutType type) {
         this.currentLayoutType = type;
-
-        // Inject the layout manager into the columns
-        for (SpreadsheetColumn col : columns) {
-            col.setLayoutManager(SheetLayoutFactory.createLayout(type));
-        }
+        this.scrollPane.setLayout(SheetLayoutFactory.createLayout(type));
 
         relayoutCells();
     }

@@ -2,7 +2,6 @@ package org.openshapa.views.discrete;
 
 import com.usermetrix.jclient.Logger;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -127,26 +126,14 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /** Highlighted state of cell. */
     private boolean highlighted = false;
 
+    /** Temporal ordering state: Pixel to duration ratio. */
+    private double temporalRatio;
+
     /** Component that sets the width of the cell. */
     private Filler stretcher;
 
     /** strut creates the gap between this cell and the previous cell. */
     private Filler strut;
-
-    /**
-     * The Y location of the visible portion of the cell requested by the active
-     * SheetLayout.
-     */
-    private int layoutPreferredY;
-
-    /**
-     * The height of the visible portion of the cell requested by the active
-     * SheetLayout.
-     */
-    private int layoutPreferredHeight;
-
-    /** Onset has been processed and layout position calculated. */
-    private boolean onsetProcessed = false;
 
     /** Does this cell overlap another? */
     private boolean cellOverlap = false;
@@ -155,7 +142,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     private CellSelectionListener cellSelL;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SpreadsheetCell.class);
+    private Logger LOGGER = UserMetrix.getLogger(SpreadsheetCell.class);
 
     /**
      * Creates new form SpreadsheetCell.
@@ -175,7 +162,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         setName(this.getClass().getSimpleName());
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
-            .getResourceMap(SpreadsheetCell.class);
+                                      .getResourceMap(SpreadsheetCell.class);
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
@@ -189,8 +176,9 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         cellPanel = new JPanel();
         cellPanel.addMouseListener(this);
-        strut = new Filler(new Dimension(0, 0), new Dimension(0, 0),
-                new Dimension(Short.MAX_VALUE, 0));
+        strut = new Filler(new Dimension(0, 0),
+                           new Dimension(0, 0),
+                           new Dimension(Short.MAX_VALUE, 0));
 
         setLayout(new BorderLayout());
         this.add(strut, BorderLayout.NORTH);
@@ -216,8 +204,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         offset = new TimeStampTextField(dc, TimeStampSource.Offset);
         offset.setFont(Configuration.getInstance().getSSLabelFont());
-        offset.setForeground(Configuration.getInstance()
-            .getSSTimestampColour());
+        offset.setForeground(Configuration.getInstance().getSSTimestampColour());
         offset.setToolTipText(rMap.getString("offset.tooltip"));
         offset.addFocusListener(this);
         offset.addMouseListener(this);
@@ -225,8 +212,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         dataPanel = new MatrixRootView(dc, null);
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
-        dataPanel.setForeground(Configuration.getInstance()
-            .getSSForegroundColour());
+        dataPanel.setForeground(Configuration.getInstance().getSSForegroundColour());
 
         dataPanel.setMatrix(dc.getVal());
         dataPanel.setOpaque(false);
@@ -235,11 +221,10 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         dataPanel.setName("cellValue");
 
         // Set the appearance of the spreadsheet cell.
-        cellPanel.setBackground(Configuration.getInstance()
-            .getSSBackgroundColour());
+        cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
         // Cell is highlighted by default.
         cellPanel.setBorder(HIGHLIGHT_BORDER);
-        this.highlighted = true;
+        highlighted = true;
         cellPanel.setLayout(new BorderLayout());
 
         // Set the apperance of the top panel and add child elements (ord, onset
@@ -269,6 +254,20 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         Dimension d = new Dimension(229, 0);
         stretcher = new Filler(d, d, d);
         cellPanel.add(stretcher, BorderLayout.SOUTH);
+
+        updateTemporalRatio();
+    }
+
+    public boolean isPointEvent() {
+        return (temporalRatio <= 0.0);
+    }
+
+    public double getTemporalRatio() {
+        return this.temporalRatio;
+    }
+
+    private void updateTemporalRatio() {
+        temporalRatio = (getOffsetTicks() - getOnsetTicks()) / this.getPreferredSize().getHeight();
     }
 
     /**
@@ -307,10 +306,15 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @return Onset time as a long.
      * @throws SystemErrorException
      */
-    public long getOnsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) db.getCell(cellID);
+    public long getOnsetTicks() {
+        try {
+            DataCell dc = (DataCell) db.getCell(cellID);
+            return dc.getOnset().getTime();
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to get onset ticks", e);
+        }
 
-        return dc.getOnset().getTime();
+        return 0;
     }
 
     /**
@@ -319,10 +323,15 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @return Offset ticks as a long.
      * @throws SystemErrorException
      */
-    public long getOffsetTicks() throws SystemErrorException {
-        DataCell dc = (DataCell) db.getCell(cellID);
+    public long getOffsetTicks() {
+        try {
+            DataCell dc = (DataCell) db.getCell(cellID);
+            return dc.getOffset().getTime();
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to get offset ticks", e);
+        }
 
-        return dc.getOffset().getTime();
+        return 0;
     }
 
     /**
@@ -332,113 +341,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         DataCell dc = (DataCell) db.getCell(cellID);
 
         return dc.getOrd();
-    }
-
-    /**
-     * Allow a layout to set a preferred y location for the cell. Set to 0 if
-     * layout wants default behaviour. (e.g. Ordinal layout)
-     *
-     * @param y Preferred Y location for the visible portion of the cell.
-     */
-    public final void setLayoutPreferredY(final int y) {
-        layoutPreferredY = y;
-        setOnsetvGap(0);
-    }
-
-    /**
-     * Allow a layout to set a preferred y location for the cell.
-     *
-     * @param y Preferred Y location for the visible portion of the cell.
-     * @param prev SpreadsheetCell previous to this cell.
-     */
-    public final void setLayoutPreferredY(final int y,
-                                          final SpreadsheetCell prev) {
-        layoutPreferredY = y;
-        int strutHeight = y;
-
-        if (prev != null) {
-            strutHeight -= (prev.getLayoutPreferredY()
-                           + prev.getLayoutPreferredHeight());
-        }
-
-        setOnsetvGap(strutHeight);
-    }
-
-    /**
-     * @return The active layouts preferred Y location for the visible portion
-     * of this cell.
-     */
-    public final int getLayoutPreferredY() {
-        return layoutPreferredY;
-    }
-
-    /**
-     * @return The active layouts preferred height for the visible portion of
-     * this cell.
-     */
-    public final int getLayoutPreferredHeight() {
-        return layoutPreferredHeight;
-    }
-
-    /**
-     * Set a preferred height for the visible portion of the cell.
-     */
-    public final void setLayoutPreferredHeight(final int height) {
-        layoutPreferredHeight = height;
-    }
-
-    /**
-     * @return the calculated preferred height for the SpreadsheetCell not
-     * including the strut component.
-     */
-    public final int getPreferredHeight() {
-        Dimension mysize = super.getPreferredSize();
-        int myheight = mysize.height;
-        myheight -= strut.getHeight();
-
-        return myheight;
-    }
-
-    /**
-     * Override Maximum size to return the preferred size or the active layouts
-     * preferred height, whichever is greater.
-     *
-     * @return the maximum size of the cell.
-     */
-    @Override
-    public final Dimension getMaximumSize() {
-        Dimension mysize = super.getPreferredSize();
-
-        if ((mysize != null)
-                && (mysize.height
-                    < (layoutPreferredHeight + strut.getHeight()))) {
-            mysize = new Dimension(mysize.width,
-                    (layoutPreferredHeight + strut.getHeight()));
-        }
-
-        return mysize;
-    }
-
-    /**
-     * Override Preferred size to return the maximum size (which takes into
-     * account the super.preferred size. See getMaximumSize.
-     *
-     * @return the preferred size of the cell.
-     */
-    @Override
-    public final Dimension getPreferredSize() {
-        return getMaximumSize();
-    }
-
-    /**
-     * Override Minimum size to return the maximum size (which takes into
-     * account the super.preferred size. See getMaximumSize.
-     *
-     * @return the minimum size of the cell.
-     */
-    @Override
-    public final Dimension getMinimumSize() {
-        return getMaximumSize();
     }
 
     /**
@@ -478,17 +380,13 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
                 // method names don't reflect usage - we didn't really create
                 // this cell just now.
-                OpenSHAPA.getProjectController().setLastCreatedColId(
-                    cell.getItsColID());
-                OpenSHAPA.getProjectController().setLastSelectedCellId(
-                    cell.getID());
-                OpenSHAPA.getDataController().setFindTime(
-                    dcell.getOnset().getTime());
-                OpenSHAPA.getDataController().setFindOffsetField(
-                    dcell.getOffset().getTime());
+                OpenSHAPA.getProjectController().setLastCreatedColId(cell.getItsColID());
+                OpenSHAPA.getProjectController().setLastSelectedCellId(cell.getID());
+                OpenSHAPA.getDataController().setFindTime(dcell.getOnset().getTime());
+                OpenSHAPA.getDataController().setFindOffsetField(dcell.getOffset().getTime());
             }
         } catch (SystemErrorException e) {
-            logger.error("Failed selected cell in SpreadsheetCell.", e);
+            LOGGER.error("Failed selected cell in SpreadsheetCell.", e);
         }
     }
 
@@ -560,8 +458,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
                 cellPanel.setBorder(FILL_BORDER);
             }
 
-            cellPanel.setBackground(Configuration.getInstance()
-                .getSSSelectedColour());
+            cellPanel.setBackground(Configuration.getInstance().getSSSelectedColour());
         } else {
 
             if (cellOverlap) {
@@ -570,8 +467,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
                 cellPanel.setBorder(NORMAL_BORDER);
             }
 
-            cellPanel.setBackground(Configuration.getInstance()
-                .getSSBackgroundColour());
+            cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
         }
     }
 
@@ -617,6 +513,10 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
             offset.setValue();
         }
 
+        if (onsetChanged || offsetChanged) {
+            updateTemporalRatio();
+        }
+
         if (valChanged) {
             dataPanel.setMatrix(newVal);
         }
@@ -631,6 +531,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /**
      * Called if the DataCell of interest is deleted.
      */
+    @Override
     public void DCellDeleted(final Database db, final long colID,
         final long cellID) {
         // TODO - Figure out how to work with cells that are deleted.
@@ -667,7 +568,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         Class source = me.getSource().getClass();
         boolean isEditorSrc = (source.equals(TimeStampTextField.class)
-                || (source.equals(MatrixRootView.class)));
+                               || (source.equals(MatrixRootView.class)));
 
         // User has clicked in magic spot, without modifier. Clear
         // currently selected cells and select this cell.
@@ -733,9 +634,8 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     @Override
     public void focusGained(final FocusEvent e) {
 
-        if (highlighted
-                && (cellPanel.getBorder().equals(NORMAL_BORDER)
-                    || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
+        if (highlighted && (cellPanel.getBorder().equals(NORMAL_BORDER)
+                            || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
             selectCellInDB(true);
         }
     }
@@ -758,8 +658,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      */
     @Override
     public boolean isFocusOwner() {
-        return (onset.isFocusOwner() || offset.isFocusOwner()
-                || dataPanel.isFocusOwner());
+        return (onset.isFocusOwner() || offset.isFocusOwner() || dataPanel.isFocusOwner());
     }
 
     /**
@@ -768,55 +667,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     @Override
     public void requestFocus() {
         dataPanel.requestFocus();
-    }
-
-    /**
-     * @return True if onset been processed and the layout position calculated.
-     * False otherwise.
-     */
-    public boolean isOnsetProcessed() {
-        return onsetProcessed;
-    }
-
-    /**
-     * Set if onset has been processed. Used in the temporal layout algorithm.
-     *
-     * @param onsetProcessed True to mark that the onset has been processed.
-     * False otherwise.
-     */
-    public void setOnsetProcessed(final boolean onsetProcessed) {
-        this.onsetProcessed = onsetProcessed;
-
-        if (!onsetProcessed) {
-            setStrutHeight(0);
-        }
-    }
-
-    /**
-     * Set the vertical location for the SpreadsheetCell. Sets the
-     * onsetProcessed flag also. Used in the temporal layout algorithm.
-     *
-     * @param vPos The vertical location in pixels for this cell.
-     */
-    public void setOnsetvGap(final int vGap) {
-        setStrutHeight(vGap);
-        setOnsetProcessed(true);
-    }
-
-    /**
-     * Set the strut height for the SpreadsheetCell.
-     */
-    private void setStrutHeight(final int height) {
-
-        if (height == 0) {
-            strut.setBorder(null);
-        } else {
-            strut.setBorder(STRUT_BORDER);
-        }
-
-        strut.changeShape(new Dimension(0, height), new Dimension(0, height),
-            new Dimension(Short.MAX_VALUE, height));
-        validate();
     }
 
     /**

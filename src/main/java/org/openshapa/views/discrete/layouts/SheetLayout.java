@@ -1,15 +1,15 @@
 package org.openshapa.views.discrete.layouts;
 
 import java.awt.Component;
-import java.awt.LayoutManager2;
 import java.util.List;
+import javax.swing.ScrollPaneLayout;
 import org.openshapa.views.discrete.ColumnDataPanel;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 /**
  * SheetLayout - abstract class for spreadsheet layouts.
  */
-public abstract class SheetLayout implements LayoutManager2 {
+public abstract class SheetLayout extends ScrollPaneLayout {
 
     /** The Spreadsheetcolumns in the spreadsheet. */
     private List<SpreadsheetColumn> columns;
@@ -35,14 +35,16 @@ public abstract class SheetLayout implements LayoutManager2 {
         return columns;
     }
 
-    protected void padColumn(Component panelParent, ColumnDataPanel panel, int currentHeight) {
+    protected void padColumn(Component panelParent, ColumnDataPanel panel, int currentHeight, double ratio) {
         int finalHeight = currentHeight;
 
         // Find max height of adjacent columns.
         int adjacentHeight = 0;
+        /*
         for (SpreadsheetColumn col : panel.getAdjacentColumns()) {
-            adjacentHeight = Math.max(col.getDataPanel().getPreferredSize().height, adjacentHeight);
-        }
+            int adjacentSize = (int) (col.getDataPanel().getPreferredSize().height / ratio);
+            adjacentHeight = Math.max(adjacentSize, adjacentHeight);
+        }*/
 
         // Find max column height.
         int columnHeight = currentHeight;
