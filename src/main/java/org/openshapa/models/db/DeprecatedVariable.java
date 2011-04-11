@@ -7,6 +7,7 @@ import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.omg.CORBA.SystemException;
 import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.models.db.legacy.DataColumn;
 import org.openshapa.models.db.legacy.Database;
@@ -141,6 +142,28 @@ implements Variable,
             LOGGER.error("Unable to get cells.", e);
             return new ArrayList<Cell>();
         }
+    }
+
+    @Override
+    public Cell getCellTemporally(final int index) {
+        try {
+            int i = 0;
+            for (Long key : temporalIndex) {
+                for (Long cellID : temporalMap.get(key)) {
+                    if (i == index) {
+                        org.openshapa.models.db.legacy.Cell cell = legacyDB.getCell(cellID);
+                        if (cell instanceof DataCell) {
+                            return new DeprecatedCell((DataCell) cell);
+                        }
+                    }
+                    i++;
+                }
+            }
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to get cell temporally", e);
+        }
+
+        return null;
     }
 
     @Override

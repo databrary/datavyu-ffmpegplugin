@@ -127,7 +127,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     private boolean highlighted = false;
 
     /** Temporal ordering state: Pixel to duration ratio. */
-    private double temporalRatio;
+    //private double temporalRatio;
 
     /** Component that sets the width of the cell. */
     private Filler stretcher;
@@ -254,10 +254,60 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         Dimension d = new Dimension(229, 0);
         stretcher = new Filler(d, d, d);
         cellPanel.add(stretcher, BorderLayout.SOUTH);
-
-        updateTemporalRatio();
     }
 
+    /** Onset has been processed and layout position calculated. */
+    private boolean onsetProcessed = false;
+
+    /**
+     * @return True if onset been processed and the layout position calculated.
+     * false otherwise.
+     */
+    public boolean isOnsetProcessed() {
+        return onsetProcessed;
+    }
+
+    /**
+     * Set if onset has been processed. Used in the temporal layout algorithm.
+     *
+     * @param onsetProcessed true to mark that the onset has been processed.
+     * False otherwise.
+     */
+    public void setOnsetProcessed(final boolean isOnsetProcessed) {
+        onsetProcessed = isOnsetProcessed;
+    }
+
+    boolean isLaid = false;
+
+    public void setLaid(final boolean newStatus) {
+        isLaid = newStatus;
+    }
+
+    public boolean isLaid() {
+        return isLaid;
+    }
+
+    public int getTemporalTop(final double ratio) {
+        return (int) (getOnsetTicks() * ratio);
+    }
+
+    public int getTemporalBottom(final double ratio) {
+        return (int) (getOffsetTicks() * ratio);
+    }
+
+    public int getTemporalSize(final double ratio) {
+        return Math.max((int) ((getOffsetTicks() - getOnsetTicks()) * ratio), 0);
+    }
+
+    public int getTemporalPadding(final double ratio) {
+        return Math.max((getPreferredSize().height - getTemporalSize(ratio)), 0);
+    }
+
+    public boolean isTemporalPadCell(final double ratio) {
+        return (getPreferredSize().height < getTemporalSize(ratio));
+    }
+
+    /*
     public boolean isPointEvent() {
         return (temporalRatio <= 0.0);
     }
@@ -268,7 +318,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     private void updateTemporalRatio() {
         temporalRatio = (getOffsetTicks() - getOnsetTicks()) / this.getPreferredSize().getHeight();
-    }
+    }*/
 
     /**
      * @return CellID of the SpreadsheetCell.
@@ -511,10 +561,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         if (offsetChanged) {
             offset.setValue();
-        }
-
-        if (onsetChanged || offsetChanged) {
-            updateTemporalRatio();
         }
 
         if (valChanged) {

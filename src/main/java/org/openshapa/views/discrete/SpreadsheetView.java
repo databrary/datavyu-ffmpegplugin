@@ -17,6 +17,7 @@ public class SpreadsheetView extends JPanel implements Scrollable {
     /** Maximum unit scroll amount. */
     private static final int MAX_UNIT_INCREMENT = 50;
 
+    /** The columns held in this SpreadsheetView. */
     private List<SpreadsheetColumn> columns;
 
     /** Creates new form SpreadsheetView. */
@@ -24,16 +25,29 @@ public class SpreadsheetView extends JPanel implements Scrollable {
         columns = new ArrayList<SpreadsheetColumn>();
     }
 
+    /**
+     * Adds a column to this spreadsheet view.
+     *
+     * @param newColumn The new column to add this spreadsheet view.
+     */
     public void addColumn(final SpreadsheetColumn newColumn) {
         columns.add(newColumn);
         this.add(newColumn.getDataPanel());
     }
 
+    /**
+     * Removes a column from this spreadsheet view.
+     *
+     * @param delColumn The column to remove from this spreadsheet view.
+     */
     public void removeColumn(final SpreadsheetColumn delColumn) {
         this.remove(delColumn.getDataPanel());
         columns.remove(delColumn);
     }
 
+    /**
+     * @return All the columns held in this spreadsheet view.
+     */
     public List<SpreadsheetColumn> getColumns() {
         return columns;
     }

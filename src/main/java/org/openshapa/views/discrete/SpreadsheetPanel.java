@@ -60,9 +60,7 @@ import org.openshapa.util.ArrayDirection;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Container;
 import java.util.ArrayList;
-import javax.swing.ScrollPaneLayout;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Variable;

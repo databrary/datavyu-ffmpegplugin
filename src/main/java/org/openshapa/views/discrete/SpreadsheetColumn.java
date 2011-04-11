@@ -95,6 +95,19 @@ implements ExternalDataColumnListener,
     /** column selection listener to notify of column selection changes. */
     private ColumnSelectionListener columnSelList;
 
+
+    /** Layout state: The ordinal we are working on for this column. */
+    private int workingOrd = 0;
+
+    /** Layout state: The height of the column data area in pixels. */
+    private int dataHeight = 0;
+
+    /** Layout state: The padding to apply to the onset of the current working cell. */
+    private int onsetPadding = 0;
+
+    /** Layout state: The padding to apply to the offset of the current working cell. */
+    private int offsetPadding = 0;
+
     /**
      * Creates new SpreadsheetColumn.
      *
@@ -133,6 +146,79 @@ implements ExternalDataColumnListener,
         }
 
         colChanges = new ColumnChanges();
+    }
+
+    /**
+     * @param padding The working onset padding to use for cells in this column.
+     */
+    public void setWorkingOnsetPadding(final int padding) {
+        onsetPadding = padding;
+    }
+
+    /**
+     * @param padding The working offset padding to use for cells in this column.
+     */
+    public void setWorkingOffsetPadding(final int padding) {
+        offsetPadding = padding;
+    }
+
+    /**
+     * @return The onset padding to use for the next cell you are laying in this
+     * column
+     */
+    public int getWorkingOnsetPadding() {
+        return onsetPadding;
+    }
+
+    /**
+     * @return The offset padding to use for the next cell you are laying in
+     * this column.
+     */
+    public int getWorkingOffsetPadding() {
+        return offsetPadding;
+    }
+
+    /**
+     * @return The height in pixels of the cells that have been laid in this
+     * column
+     */
+    public int getWorkingHeight() {
+        return dataHeight;
+    }
+
+    /**
+     * @param newHeight The height in pixels of the cells that have been laid
+     * in this column.
+     */
+    public void setWorkingHeight(final int newHeight) {
+        dataHeight = newHeight;
+    }
+
+    /**
+     * @return The ordinal of the current cell that is being laid in this
+     * column.
+     */
+    public int getWorkingOrd() {
+        return workingOrd;
+    }
+
+    /**
+     * @param newOrd Set the ordinal value of the current cell that we are about
+     * to lay.
+     */
+    public void setWorkingOrd(final int newOrd) {
+        workingOrd = newOrd;
+    }
+
+    /**
+     * @return The next cell that needs to be laid in the column.
+     */
+    public SpreadsheetCell getWorkingTemporalCell() {
+        if (workingOrd < datapanel.getNumCells()) {
+            return datapanel.getCellTemporally(workingOrd);
+        }
+
+        return null;
     }
 
     public Variable getModel() {
@@ -455,6 +541,10 @@ implements ExternalDataColumnListener,
      */
     public List<SpreadsheetCell> getCells() {
         return datapanel.getCells();
+    }
+
+    public SpreadsheetCell getCellTemporally(final int index) {
+        return datapanel.getCellTemporally(index);
     }
 
     /**

@@ -29,7 +29,6 @@ import com.usermetrix.jclient.UserMetrix;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.BoxLayout;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
@@ -42,6 +41,9 @@ import org.openshapa.util.Constants;
 public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher {
     /** Width of the column. */
     private int columnWidth;
+
+    /** Height of the column. */
+    private int columnHeight;
 
     /** The model that this variable represents. */
     private Variable model;
@@ -78,6 +80,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
         // Store member variables.
         columnWidth = width;
+        columnHeight = 0;
         cells = new ArrayList<SpreadsheetCell>();
         viewMap = new HashMap();
         cellSelectionL = cellSelL;
@@ -131,11 +134,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                                      final CellSelectionListener cellSelL) {
         try {
             // traverse and build the cells
-            int currentHeight = 0;
             for (int j = 1; j <= dbColumn.getNumCells(); j++) {
                 DataCell dc = (DataCell) dbColumn.getDB().getCell(dbColumn.getID(), j);
                 SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc, cellSelL);
-                sc.setBounds(0, currentHeight, columnWidth, sc.getHeight());
                 dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
 
                 // add cell to the JPanel
@@ -146,11 +147,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
                 // Add the ID's to the mapping.
                 viewMap.put(dc.getID(), sc);
-                currentHeight += sc.getHeight();
+                columnHeight += sc.getHeight();
             }
 
             this.add(newCellButton);
-            this.setSize(columnWidth, currentHeight);
+            this.setSize(columnWidth, columnHeight);
         } catch (SystemErrorException e) {
             LOGGER.error("Failed to populate Spreadsheet.", e);
         }
@@ -228,29 +229,14 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /**
      * Set the width of the SpreadsheetCell.
      *
-     * @param width
-     *            New width of the SpreadsheetCell.
+     * @param width New width of the SpreadsheetCell.
      */
     public void setWidth(final int width) {
         columnWidth = width;
     }
 
-    /**
-     * Override Maximum size to fix the width.
-     *
-     * @return the maximum size of the data column.
-     */
-    @Override public Dimension getMaximumSize() {
-        return new Dimension(columnWidth, Short.MAX_VALUE);
-    }
-
-    /**
-     * Override Minimum size to fix the width.
-     *
-     * @return the minimum size of the data column.
-     */
-    @Override public Dimension getMinimumSize() {
-        return new Dimension(columnWidth, super.getMinimumSize().height);
+    public void setHeight(final int height) {
+        columnHeight = height;
     }
 
     /**
@@ -259,7 +245,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      * @return the preferred size of the data column.
      */
     @Override public Dimension getPreferredSize() {
-        return new Dimension(columnWidth, super.getPreferredSize().height);
+        return new Dimension(columnWidth, columnHeight);
     }
 
     public SpreadsheetEmptyCell getNewCellButton() {
@@ -268,6 +254,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     public JPanel getPadding() {
         return this.padding;
+    }
+
+    public SpreadsheetCell getCellTemporally(final int index) {
+        DeprecatedCell dc = (DeprecatedCell) model.getCellTemporally(index);
+        return viewMap.get(dc.getLegacyCell().getID());
     }
 
     /**
@@ -282,6 +273,13 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         }
 
         return result;
+    }
+
+    /**
+     * @return The number of cells stored in this column.
+     */
+    public int getNumCells() {
+        return cells.size();
     }
 
     /**
