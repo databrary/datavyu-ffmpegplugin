@@ -140,6 +140,8 @@ implements ExternalDataColumnListener,
             setText(var.getName() + "  (" + dbColumn.getItsMveType() + ")");
 
             datapanel = new ColumnDataPanel(width, var, cellSelL);
+            this.setVisible(!dbColumn.getHidden());
+            datapanel.setVisible(!dbColumn.getHidden());
 
         } catch (SystemErrorException e) {
             logger.error("Problem retrieving DataColumn", e);
@@ -511,6 +513,8 @@ implements ExternalDataColumnListener,
                                   final boolean oldSelected,
                                   final boolean newSelected) {
         colChanges.nameChanged = nameChanged;
+        setVisible(!newHidden);
+        this.datapanel.setVisible(!newHidden);
     }
 
     /**
@@ -649,11 +653,8 @@ implements ExternalDataColumnListener,
         return null;
     }
 
-    public void setColumnName(final String newName) throws LogicErrorException,
-        SystemErrorException {
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
-                                      .getResourceMap(Column.class);
-
+    public void setColumnName(final String newName)
+    throws LogicErrorException, SystemErrorException {
         try {
             DataColumn dc = getLegacyDatabase().getDataColumn(getLegacyVariableID());
 

@@ -13,9 +13,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.Vector;
-import java.util.logging.Level;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -89,7 +86,7 @@ public final class OpenSHAPAView extends FrameView
     public static final int ZOOM_MIN_SIZE = 8;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(OpenSHAPAView.class);
+    private Logger LOGGER = UserMetrix.getLogger(OpenSHAPAView.class);
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
@@ -486,7 +483,7 @@ public final class OpenSHAPAView extends FrameView
         } catch (LogicErrorException e) {
             OpenSHAPA.getApplication().showWarningDialog(e);
         } catch (SystemErrorException e) {
-            logger.error("Unable to save.", e);
+            LOGGER.error("Unable to save.", e);
         }
     }
 
@@ -618,6 +615,7 @@ public final class OpenSHAPAView extends FrameView
      * @param evt
      *            The event to handle.
      */
+    @Override
     public void filesDropped(final FileDropEvent evt) {
 
         if (!OpenSHAPA.getApplication().safeQuit()) {
@@ -714,7 +712,7 @@ public final class OpenSHAPAView extends FrameView
             RunScriptC scriptC = new RunScriptC();
             scriptC.execute();
         } catch (IOException e) {
-            logger.error("Unable run script", e);
+            LOGGER.error("Unable run script", e);
         }
     }
 
@@ -729,35 +727,50 @@ public final class OpenSHAPAView extends FrameView
      * Action for hiding columns.
      */
     @Action public void hideColumn() {
-        Vector<DataColumn> cols = panel.getSelectedCols();
-        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB()
-            .getDatabase();
+        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
+        LOGGER.usage("Hidding columns");
 
-        for (DataColumn col : cols) {
+        for (DataColumn col : panel.getSelectedCols()) {
             try {
                 col.setHidden(true);
                 col.setSelected(false);
                 msdb.replaceColumn(col);
             } catch (SystemErrorException ex) {
-                java.util.logging.Logger.getLogger(OpenSHAPAView.class
-                    .getName()).log(Level.SEVERE, null, ex);
+                LOGGER.error("Unable to hide column", ex);
             }
         }
 
-        OpenSHAPA.getView().showSpreadsheet();
+        getComponent().revalidate();
+    }
+
+    /**
+     * Action for showing all columns.
+     */
+    @Action public void showAllColumns() {
+        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
+        LOGGER.usage("Showing all columns");
+
+        try {
+            for (DataColumn col : msdb.getDataColumns()) {
+                if (col.getHidden() == true) {
+                    col.setHidden(false);
+                    msdb.replaceColumn(col);
+                }
+            }
+        } catch (SystemErrorException ex) {
+            LOGGER.error("Unable to show all columns", ex);
+        }
+
+        getComponent().revalidate();
     }
 
     /**
      * Action for changing variable name.
      */
     @Action public void changeColumnName() {
-        Vector<DataColumn> cols = panel.getSelectedCols();
-        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB()
-            .getDatabase();
-
         // Only one column should be selected, but just in case, we'll only
         // change the first column
-        DataColumn col = cols.firstElement();
+        DataColumn col = panel.getSelectedCols().firstElement();
 
         for (SpreadsheetColumn sCol : panel.getColumns()) {
 
@@ -767,38 +780,6 @@ public final class OpenSHAPAView extends FrameView
                 break;
             }
         }
-    }
-
-    /**
-     * Action for showing all columns.
-     */
-    @Action public void showAllColumns() {
-        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB()
-            .getDatabase();
-        Vector<DataColumn> cols = null;
-
-        try {
-            cols = msdb.getDataColumns();
-        } catch (SystemErrorException ex) {
-            java.util.logging.Logger.getLogger(OpenSHAPAView.class.getName())
-                .log(Level.SEVERE, null, ex);
-        }
-
-        for (DataColumn col : cols) {
-
-            try {
-
-                if (col.getHidden() == true) {
-                    col.setHidden(false);
-                    msdb.replaceColumn(col);
-                }
-            } catch (SystemErrorException ex) {
-                java.util.logging.Logger.getLogger(OpenSHAPAView.class
-                    .getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        OpenSHAPA.getView().showSpreadsheet();
     }
 
     /**
@@ -1616,7 +1597,7 @@ public final class OpenSHAPAView extends FrameView
             RunScriptC scriptC = new RunScriptC(evt.getActionCommand());
             scriptC.execute();
         } catch (IOException e) {
-            logger.error("Unable to run recent script", e);
+            LOGGER.error("Unable to run recent script", e);
         }
     }
 

@@ -18,6 +18,28 @@ public class SheetLayoutOrdinal extends SheetLayout {
     private int marginSize;
 
     /**
+     * Helper class for tracking what we are ordering.
+     */
+    public class ColInfo {
+        // The ID of the column we are ordering.
+        public int colID;
+
+        // The height of the column in pixels.
+        public int colHeight;
+
+        /**
+         * Constructor.
+         *
+         * @param columnID The ID of the column we are ordering.
+         * @param columnHeight The height of the column in pixels
+         */
+        public ColInfo(final int columnID, final int columnHeight) {
+            colID = columnID;
+            colHeight = columnHeight;
+        }
+    }
+
+    /**
      * SheetLayoutOrdinal constructor.
      * @param cols Reference to the SpreadsheetColumns in the spreadsheet.
      */
@@ -34,7 +56,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
 
-        List<Integer> columnHeight = new ArrayList<Integer>();
+        List<ColInfo> columnHeight = new ArrayList<ColInfo>();
 
         // This layout must be applied to a Spreadsheet panel.
         JScrollPane pane = (JScrollPane) parent;
@@ -42,37 +64,44 @@ public class SheetLayoutOrdinal extends SheetLayout {
                                                          .getView();
 
         int maxHeight = 0;
+        int colID = 0;
         for (SpreadsheetColumn col : mainView.getColumns()) {
-            int ord = 1;
-            int currentHeight = 0;
-            for (SpreadsheetCell cell : col.getCells()) {
-                Dimension d = cell.getPreferredSize();
-                cell.setBounds(0,
-                               currentHeight,
-                               (col.getWidth() - marginSize),
-                               (int) d.getHeight());
-                cell.setOrdinal(ord);
-                cell.repaint();
-                ord++;
-                currentHeight += d.getHeight();
+
+            // Only layout 'visible' columns.
+            if (col.isVisible()) {
+                int ord = 1;
+                int currentHeight = 0;
+                for (SpreadsheetCell cell : col.getCells()) {
+                    Dimension d = cell.getPreferredSize();
+                    cell.setBounds(0,
+                                   currentHeight,
+                                   (col.getWidth() - marginSize),
+                                   (int) d.getHeight());
+                    cell.setOrdinal(ord);
+                    cell.repaint();
+                    ord++;
+                    currentHeight += d.getHeight();
+                }
+
+                // Put the new cell button at the end of the column.
+                Dimension d = col.getDataPanel().getNewCellButton().getPreferredSize();
+                col.getDataPanel().getNewCellButton().setBounds(0,
+                                                                currentHeight,
+                                                                parent.getWidth(),
+                                                                (int) d.getHeight());
+                currentHeight += (int) d.getHeight();
+                columnHeight.add(new ColInfo(colID, currentHeight));
+                maxHeight = Math.max(maxHeight, currentHeight);
             }
 
-            // Put the new cell button at the end of the column.
-            Dimension d = col.getDataPanel().getNewCellButton().getPreferredSize();
-            col.getDataPanel().getNewCellButton().setBounds(0,
-                                                            currentHeight,
-                                                            parent.getWidth(),
-                                                            (int) d.getHeight());
-            currentHeight += (int) d.getHeight();
-            columnHeight.add(currentHeight);
-            maxHeight = Math.max(maxHeight, currentHeight);
+            colID++;
         }
 
         // Pad the columns out at the bottom.
         maxHeight = Math.max(maxHeight, parent.getHeight());
         for (int i = 0; i < columnHeight.size(); i++) {
-            SpreadsheetColumn col = mainView.getColumns().get(i);
-            Integer colHeight = columnHeight.get(i);
+            SpreadsheetColumn col = mainView.getColumns().get(columnHeight.get(i).colID);
+            Integer colHeight = columnHeight.get(i).colHeight;
 
             col.getDataPanel().setHeight(maxHeight);
             col.getDataPanel().getPadding().setBounds(0,

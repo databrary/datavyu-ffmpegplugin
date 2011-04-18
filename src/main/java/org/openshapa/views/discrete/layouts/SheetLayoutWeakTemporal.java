@@ -66,28 +66,32 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         long ratioTicks = 0;
         int totalCells = 0;
         for (SpreadsheetColumn c : mainView.getColumns()) {
-            // Initalise the working data for the columns.
-            c.setWorkingHeight(0);
-            c.setWorkingOrd(0);
-            c.setWorkingOnsetPadding(0);
-            c.setWorkingOffsetPadding(0);
 
-            // Determine the total height in pixels of the cells in this column.
-            List<SpreadsheetCell> colCells = c.getCellsTemporally();
-            int colHeight = 0;
-            for (SpreadsheetCell cell : colCells) {
-                colHeight += cell.getPreferredSize().height;
+            // Only layout visible columns
+            if (c.isVisible()) {
+                // Initalise the working data for the columns.
+                c.setWorkingHeight(0);
+                c.setWorkingOrd(0);
+                c.setWorkingOnsetPadding(0);
+                c.setWorkingOffsetPadding(0);
+
+                // Determine the total height in pixels of the cells in this column.
+                List<SpreadsheetCell> colCells = c.getCellsTemporally();
+                int colHeight = 0;
+                for (SpreadsheetCell cell : colCells) {
+                    colHeight += cell.getPreferredSize().height;
+                }
+
+                // Determine the maximum column height in pixels.
+                ratioHeight = Math.max(ratioHeight, colHeight);
+
+                // Determine the temporal length of the column in ticks.
+                if (colCells.size() > 0) {
+                    ratioTicks = Math.max(ratioTicks,
+                                          colCells.get((colCells.size() - 1)).getOffsetTicks());
+                }
+                totalCells = totalCells + colCells.size();
             }
-
-            // Determine the maximum column height in pixels.
-            ratioHeight = Math.max(ratioHeight, colHeight);
-
-            // Determine the temporal length of the column in ticks.
-            if (colCells.size() > 0) {
-                ratioTicks = Math.max(ratioTicks,
-                                      colCells.get((colCells.size() - 1)).getOffsetTicks());
-            }
-            totalCells = totalCells + colCells.size();
         }
         // Determine the ratio / scale to use with temporal ordering - we pick
         // The maximum height in pixels and the maximum length in ticks.
@@ -106,15 +110,18 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             int numMaxOffsetCells = 0;
 
             for (SpreadsheetColumn col : mainView.getColumns()) {
-                SpreadsheetCell cell = col.getWorkingTemporalCell();
-                if (cell != null) {
-                    rowCells.add(new RowInfo(cell, col));
+                // Only layout visible columns.
+                if (col.isVisible()) {
+                    SpreadsheetCell cell = col.getWorkingTemporalCell();
+                    if (cell != null) {
+                        rowCells.add(new RowInfo(cell, col));
 
-                    if (cell.getOffsetTicks() > maxOffset) {
-                        numMaxOffsetCells = 1;
-                        maxOffset = cell.getOffsetTicks();
-                    } else if (cell.getOffsetTicks() == maxOffset) {
-                        numMaxOffsetCells++;
+                        if (cell.getOffsetTicks() > maxOffset) {
+                            numMaxOffsetCells = 1;
+                            maxOffset = cell.getOffsetTicks();
+                        } else if (cell.getOffsetTicks() == maxOffset) {
+                            numMaxOffsetCells++;
+                        }
                     }
                 }
             }

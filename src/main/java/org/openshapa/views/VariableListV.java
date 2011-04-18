@@ -326,7 +326,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                 }
             }
 
-            OpenSHAPA.getView().showSpreadsheet();
+            OpenSHAPA.getView().getComponent().revalidate();
         }
     }
 
