@@ -20,18 +20,22 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     // The total number of
     int laidCells;
 
-    // The total number of cells we need to lay.
-    //int totalCells;
-
+    // The maximum height of the layout in pixels.
     int maxHeight;
 
+    /**
+     * Information on each element in the row we are currently processing.
+     */ 
     private class RowInfo {
         public RowInfo(SpreadsheetCell nCell, SpreadsheetColumn nCol) {
             cell = nCell;
             col = nCol;
         }
 
+        // The cell that this row information is about.
         public SpreadsheetCell cell;
+        
+        // The column that the above cell belongs too.
         public SpreadsheetColumn col;
     }
 
@@ -54,11 +58,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
                                                          .getView();
 
-        // TEST CODE
-        //int rowLock = 300;
-        //int rowsCompleted = 0;
-        // END TEST CODE.
-
         laidCells = 0;
         maxHeight = parent.getHeight();
 
@@ -78,10 +77,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             int colHeight = 0;
             for (SpreadsheetCell cell : colCells) {
                 colHeight += cell.getPreferredSize().height;
-
-                // TEST CODE.
-                cell.setBounds(0, 0, 0, 0);
-                // END TEST CODE.
             }
 
             // Determine the maximum column height in pixels.
@@ -100,9 +95,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         if (ratioTicks > 0) {
             ratio = ratioHeight / (float) ratioTicks;
         }
-
-        System.err.println("Ratio: " + ratioTicks + " / " + ratioHeight + " = " + ratio);
-        System.err.println("Cells to lay: " + totalCells);
 
         int pad = 0;
 
@@ -128,15 +120,15 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             }
             rowCells = sortRow(rowCells);
 
-            //System.err.println("\n");
-            //System.err.println("**** Laying row[" + rowsCompleted + "]");
-
             for (int i = 0; i < rowCells.size(); i++) {
                 RowInfo ri = rowCells.get(i);
 
                 int t = ri.cell.getTemporalTop(ratio) + ri.col.getWorkingOnsetPadding();
                 int b = ri.cell.getTemporalBottom(ratio) + ri.col.getWorkingOffsetPadding();
                 int ts = Math.max(b - t, 0);
+                
+                // Detect overlapping cells that we must lay at the same time.
+                // Must complete.
 
                 // The size of the cell must be at least the preffered size in height.
                 pad = Math.max(pad, (ri.cell.getPreferredSize().height - ts));
@@ -145,8 +137,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     ri.col.setWorkingOffsetPadding(ri.col.getWorkingOffsetPadding() + pad);
                     b += pad;
                 }
-
-                //System.err.println("C: [" + t + ", " + b + ", " + ts + ", " + pad + "," + ri.cell.getPreferredSize().height + "]: " + ri.cell.getDataView().getText());
 
                 // Position the cell in the column.
                 ri.cell.setBounds(0, t, (ri.col.getWidth() - marginSize), (b - t));
@@ -176,8 +166,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                    
 
                 } else if ((totalCells - laidCells) == numMaxOffsetCells) {
-                    //System.err.println("Finished laying: " + numMaxOffsetCells);
-
                     // Push the final padding backwards.
                     for (int j = (i - 1); j >= 0; j--) {
                         RowInfo nri = rowCells.get(j);
@@ -189,8 +177,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                             b = nri.cell.getTemporalBottom(ratio) + nri.col.getWorkingOffsetPadding();
                             nri.cell.setBounds(0, t, (ri.col.getWidth() - marginSize), (b - t));
                             nri.col.setWorkingHeight(b);
-
-                            //System.err.println("Pushing pad back: [" + j + ", " + i + "]: " + t + ", " + b);
                         }                        
                     }
 
@@ -200,14 +186,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     laidCells++;
                 }
             }
-
-            // TODO: REMOVE - THIS IS TEST CODE ************
-            /*
-            rowsCompleted++;
-            if (rowsCompleted >= rowLock) {
-                break;
-            }*/
-            // TODO: END TEST CODE *************************
         }
 
         // Pad the columns so that they are all the same length.
