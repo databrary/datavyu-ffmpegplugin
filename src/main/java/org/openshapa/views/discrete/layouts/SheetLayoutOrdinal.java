@@ -20,7 +20,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
     /**
      * Helper class for tracking what we are ordering.
      */
-    public class ColInfo {
+    private class ColInfo {
         // The ID of the column we are ordering.
         public int colID;
 
@@ -71,7 +71,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
             if (col.isVisible()) {
                 int ord = 1;
                 int currentHeight = 0;
-                for (SpreadsheetCell cell : col.getCells()) {
+                for (SpreadsheetCell cell : col.getCellsTemporally()) {
                     Dimension d = cell.getPreferredSize();
                     cell.setBounds(0,
                                    currentHeight,

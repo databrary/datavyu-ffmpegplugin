@@ -1,13 +1,12 @@
 package org.openshapa.models.db;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.omg.CORBA.SystemException;
 import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.models.db.legacy.DataColumn;
 import org.openshapa.models.db.legacy.Database;
@@ -37,6 +36,12 @@ implements Variable,
     /** The legacy id of the column we are fetching data from. */
     private long legacyColumnId;
 
+    /** The cells that are currently selected in this column. */
+    private List<Long> selectedCells;
+
+    /** Is the column currently selected? */
+    private boolean isSelected;
+
     /** Records changes to column during a cascade. */
     private VariableChanges colChanges;
 
@@ -56,7 +61,8 @@ implements Variable,
      */
     public DeprecatedVariable(DataColumn newVariable) {
         colChanges = new VariableChanges();
-        temporalMap = HashMultimap.create();
+        selectedCells = new ArrayList<Long>();
+        temporalMap = ArrayListMultimap.create();
         temporalIndex = asSortedList(temporalMap.keySet());
         legacyColumn = newVariable;
         this.setLegacyVariable(newVariable);
@@ -187,7 +193,19 @@ implements Variable,
         }
     }
 
-    @Override public void addCell(Cell newCell) {
+    @Override
+    public void setSelected(final boolean selected) {
+        isSelected = selected;
+        legacyColumn.setSelected(selected);
+    }
+
+    @Override
+    public boolean isSelected() {
+        return isSelected || !selectedCells.isEmpty();
+    }
+
+    @Override
+    public void addCell(Cell newCell) {
         // TODO.
     }
 
@@ -259,6 +277,7 @@ implements Variable,
                                             final boolean selectedChanged,
                                             final boolean oldSelected,
                                             final boolean newSelected) {
+        isSelected = newSelected;
     }
 
     @Override public void DColDeleted(final Database db,
@@ -292,6 +311,14 @@ implements Variable,
             temporalMap.remove(oldOnset.getTime(), cellID);
             temporalMap.put(newOnset.getTime(), cellID);
             temporalIndex = asSortedList(temporalMap.keySet());
+        }
+
+        if (selectedChanged && newSelected && selectedCells.indexOf(cellID) == -1) {
+            selectedCells.add(cellID);
+        }
+
+        if (selectedChanged && !newSelected && selectedCells.indexOf(cellID) != -1) {
+            selectedCells.remove(cellID);
         }
     }
 

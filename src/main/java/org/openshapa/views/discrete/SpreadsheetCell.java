@@ -299,27 +299,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         return Math.max((int) ((getOffsetTicks() - getOnsetTicks()) * ratio), 0);
     }
 
-    public int getTemporalPadding(final double ratio) {
-        return Math.max((getPreferredSize().height - getTemporalSize(ratio)), 0);
-    }
-
-    public boolean isTemporalPadCell(final double ratio) {
-        return (getPreferredSize().height < getTemporalSize(ratio));
-    }
-
-    /*
-    public boolean isPointEvent() {
-        return (temporalRatio <= 0.0);
-    }
-
-    public double getTemporalRatio() {
-        return this.temporalRatio;
-    }
-
-    private void updateTemporalRatio() {
-        temporalRatio = (getOffsetTicks() - getOnsetTicks()) / this.getPreferredSize().getHeight();
-    }*/
-
     /**
      * @return CellID of the SpreadsheetCell.
      */

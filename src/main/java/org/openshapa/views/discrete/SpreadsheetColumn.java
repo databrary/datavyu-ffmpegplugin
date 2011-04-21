@@ -356,6 +356,7 @@ implements ExternalDataColumnListener,
 
     /**
      * Set the selected state for the DataColumn this displays.
+     *
      * @param isSelected Selected state.
      */
     public void setSelected(final boolean isSelected) {
@@ -693,19 +694,18 @@ implements ExternalDataColumnListener,
         if (moveable) {
             setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 
-            final int columnWidth = this.getSize().width;
+            final int columnWidth = this.getWidth();
 
             if (me.getX() > columnWidth) {
-                int positions = Math.round((me.getX() * 1F)
-                        / (columnWidth * 1F));
-                SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
-                    .getApplication().getMainView().getComponent();
+                int positions = Math.round((me.getX() * 1F) / (columnWidth * 1F));
+
+                SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView().getComponent();
                 sp.moveColumnRight(this.getColID(), positions);
+
             } else if (me.getX() < 0) {
-                int positions = Math.round((me.getX() * -1F)
-                        / (columnWidth * 1F));
-                SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA
-                    .getApplication().getMainView().getComponent();
+                int positions = Math.round((me.getX() * -1F) / (columnWidth * 1F));
+                SpreadsheetPanel sp = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView().getComponent();
+
                 sp.moveColumnLeft(this.getColID(), positions);
             }
         }

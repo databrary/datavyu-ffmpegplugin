@@ -90,7 +90,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         //setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, new Color(175, 175, 175)));
 
-        newCellButton = new SpreadsheetEmptyCell(getLegacyVariable());
+        newCellButton = new SpreadsheetEmptyCell(variable);
         this.add(newCellButton);
 
         padding = new JPanel();

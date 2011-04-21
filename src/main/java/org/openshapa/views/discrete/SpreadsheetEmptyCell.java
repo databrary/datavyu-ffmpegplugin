@@ -28,8 +28,9 @@ import java.awt.Color;
 
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
+import org.openshapa.controllers.CreateNewCellC;
 
-import org.openshapa.models.db.legacy.DataColumn;
+import org.openshapa.models.db.Variable;
 
 
 /**
@@ -72,8 +73,8 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
     /** strut creates the gap between this cell and the previous cell. */
     private Filler strut;
 
-    /** Parent ID for data column. */
-    private DataColumn parent;
+    /** Variable model for what we are adding cells too. */
+    private Variable model;
 
     /**
      * The height of the visible portion of the cell requested by the active
@@ -84,7 +85,7 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
     /**
      * Creates new Empty SpreadsheetCell stub.
      */
-    public SpreadsheetEmptyCell(final DataColumn newCol) {
+    public SpreadsheetEmptyCell(final Variable newCol) {
         setName(this.getClass().getSimpleName());
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
@@ -165,7 +166,7 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
         stretcher = new Filler(d, d, d);
         cellPanel.add(stretcher, BorderLayout.SOUTH);
 
-        parent = newCol;
+        model = newCol;
     }
 
     private static Color addAlpha(final Color col, final int alpha) {
@@ -263,9 +264,8 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
      */
     @Override public void mouseClicked(final MouseEvent me) {
         LOGGER.usage("Pressed empty cell");
-        OpenSHAPA.getView().getSpreadsheetPanel().deselectAll();
-        OpenSHAPA.getProjectController().setLastCreatedColId(parent.getID());
-        OpenSHAPA.getDataController().pressCreateNewCellSettingOffset();
+        CreateNewCellC controller = new CreateNewCellC();
+        controller.createDefaultCell(model);
     }
 
     /**

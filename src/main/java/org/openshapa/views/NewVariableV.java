@@ -8,7 +8,6 @@ import org.openshapa.models.db.legacy.LogicErrorException;
 import org.openshapa.models.db.legacy.MatrixVocabElement;
 import org.openshapa.models.db.legacy.NominalFormalArg;
 import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
 import javax.swing.GroupLayout;
@@ -25,8 +24,9 @@ public final class NewVariableV extends OpenSHAPADialog {
 
     /** The database to add the new variable to. */
     private Datastore model;
+
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(NewVariableV.class);
+    private static final Logger LOGGER = UserMetrix.getLogger(NewVariableV.class);
 
     /**
      * Constructor, creates a new form to create a new variable.
@@ -38,7 +38,7 @@ public final class NewVariableV extends OpenSHAPADialog {
      */
     public NewVariableV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
-        logger.usage("newVar - show");
+        LOGGER.usage("newVar - show");
         initComponents();
         setName(this.getClass().getSimpleName());
 
@@ -329,12 +329,13 @@ public final class NewVariableV extends OpenSHAPADialog {
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
         try {
-            logger.usage("newVar - create column:" + getVariableType());
+            LOGGER.usage("newVar - create column:" + getVariableType());
             Column.isValidColumnName(getLegacyDB(), getVariableName());
             DataColumn dc = new DataColumn(getLegacyDB(),
                                            getVariableName(),
                                            getVariableType());
             DeprecatedVariable var = new DeprecatedVariable(dc);
+            var.setSelected(true);
             model.addVariable(var);
 
             // If the column is a matrix - default to a single nominal variable
@@ -347,26 +348,23 @@ public final class NewVariableV extends OpenSHAPADialog {
             }
 
             // Display any changes.
-            SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
-                                    .getMainView().getComponent();
-            view.relayoutCells();
+            OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
 
             dispose();
             finalize();
 
-            // Whoops, user has done something strange - show warning dialog.
+        // Whoops, user has done something strange - show warning dialog.
         } catch (LogicErrorException fe) {
             OpenSHAPA.getApplication().showWarningDialog(fe);
 
-            // Whoops, programmer has done something strange - show error
-            // message.
+        // Whoops, programmer has done something strange - show error message.
         } catch (SystemErrorException e) {
-            logger.error("Unable to add variable to database", e);
+            LOGGER.error("Unable to add variable to database", e);
             OpenSHAPA.getApplication().showErrorDialog();
 
-            // Whoops, unable to destroy dialog correctly.
+        // Whoops, unable to destroy dialog correctly.
         } catch (Throwable e) {
-            logger.error("Unable to release window NewVariableV.", e);
+            LOGGER.error("Unable to release window NewVariableV.", e);
         }
     }// GEN-LAST:event_okButtonActionPerformed
 
@@ -376,15 +374,14 @@ public final class NewVariableV extends OpenSHAPADialog {
      * @param evt
      *            The event that triggered this action.
      */
-    private void cancelButtonActionPerformed(
-            final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cancelButtonActionPerformed
+    private void cancelButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cancelButtonActionPerformed
         try {
             dispose();
             finalize();
 
             // Whoops, unable to destroy dialog correctly.
         } catch (Throwable e) {
-            logger.error("Unable to release window NewVariableV.", e);
+            LOGGER.error("Unable to release window NewVariableV.", e);
         }
     }// GEN-LAST:event_cancelButtonActionPerformed
 

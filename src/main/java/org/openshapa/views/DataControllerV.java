@@ -2192,7 +2192,8 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     @Action public void createNewCellAction() {
         logger.usage("New cell");
-        new CreateNewCellC();
+        CreateNewCellC controller = new CreateNewCellC();
+        controller.createDefaultCell();
     }
 
     /**

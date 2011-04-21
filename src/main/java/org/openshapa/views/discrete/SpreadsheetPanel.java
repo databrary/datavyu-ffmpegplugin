@@ -15,8 +15,6 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
@@ -61,6 +59,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Variable;
@@ -74,7 +73,6 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
  */
 public final class SpreadsheetPanel extends JPanel
 implements ExternalColumnListListener,
-           ComponentListener,
            CellSelectionListener,
            ColumnSelectionListener,
            KeyEventDispatcher {
@@ -98,7 +96,7 @@ implements ExternalColumnListListener,
     private List<SpreadsheetColumn> columns;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SpreadsheetPanel.class);
+    private static final Logger LOGGER = UserMetrix.getLogger(SpreadsheetPanel.class);
 
     /** Reference to the scrollPane. */
     private JScrollPane scrollPane;
@@ -189,9 +187,6 @@ implements ExternalColumnListListener,
      * this class of events.
      */
     public void registerListeners() {
-        // add a listener for window resize events
-        scrollPane.addComponentListener(this);
-
         KeyboardFocusManager m = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         m.addKeyEventDispatcher(this);
     }
@@ -201,9 +196,6 @@ implements ExternalColumnListListener,
      * notiying it of events.
      */
     public void deregisterListeners() {
-        // remove a listener for window resize events.
-        scrollPane.removeComponentListener(this);
-
         KeyboardFocusManager m = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         m.removeKeyEventDispatcher(this);
     }
@@ -248,7 +240,6 @@ implements ExternalColumnListListener,
      * Remove all the columns from the spreadsheet panel.
      */
     @Override public void removeAll() {
-
         for (SpreadsheetColumn col : columns) {
             col.deregisterListeners();
             col.clear();
@@ -266,10 +257,8 @@ implements ExternalColumnListListener,
      * @param colID ID of column to remove
      */
     private void removeColumn(final long colID) {
-        SpreadsheetColumn colToRemove = null;
         for (SpreadsheetColumn col : columns) {
             if (col.getColID() == colID) {
-                colToRemove = col;
                 col.deregisterListeners();
                 
                 mainView.removeColumn(col);
@@ -323,7 +312,7 @@ implements ExternalColumnListListener,
                 DeprecatedDatabase dd = (DeprecatedDatabase) db;
                 dd.getDatabase().deregisterColumnListListener(this);
             } catch (SystemErrorException e) {
-                logger.error("deregisterColumnListListener failed", e);
+                LOGGER.error("deregisterColumnListListener failed", e);
             }
         }
 
@@ -335,7 +324,7 @@ implements ExternalColumnListListener,
             DeprecatedDatabase dd = (DeprecatedDatabase) db;
             dd.getDatabase().registerColumnListListener(this);
         } catch (SystemErrorException e) {
-            logger.error("registerColumnListListener failed", e);
+            LOGGER.error("registerColumnListListener failed", e);
         }
 
         // setName to remember screen locations
@@ -370,7 +359,7 @@ implements ExternalColumnListListener,
                             final Vector<Long> newCov) {
         deselectAll();
         removeColumn(colID);
-        relayoutCells();
+        revalidate();
     }
 
     /**
@@ -405,19 +394,6 @@ implements ExternalColumnListListener,
 
         // do nothing for now
         return;
-    }
-
-    /**
-     * Relayout the SpreadsheetCells in the spreadsheet.
-     */
-    @Deprecated
-    public void relayoutCells() {
-        this.revalidate();
-        this.repaint();
-        for (SpreadsheetColumn col : columns) {
-            col.getDataPanel().revalidate();
-            col.getDataPanel().repaint();
-        }
     }
 
     /**
@@ -525,7 +501,7 @@ implements ExternalColumnListListener,
                 }
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to set new cell stop time.", e);
+            LOGGER.error("Unable to set new cell stop time.", e);
         }
 
         return selcols;
@@ -571,7 +547,7 @@ implements ExternalColumnListListener,
                 }
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to find columns to left of selection", e);
+            LOGGER.error("Unable to find columns to left of selection", e);
         }
 
         return result;
@@ -601,7 +577,7 @@ implements ExternalColumnListListener,
                 }
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to set new cell stop time.", e);
+            LOGGER.error("Unable to set new cell stop time.", e);
         }
 
         return selcells;
@@ -634,56 +610,7 @@ implements ExternalColumnListListener,
         this.currentLayoutType = type;
         this.scrollPane.setLayout(SheetLayoutFactory.createLayout(type));
 
-        relayoutCells();
-    }
-
-    /**
-     * Invoked when the component's size changes.
-     *
-     * @param e Component event.
-     */
-    @Override
-    public void componentResized(final ComponentEvent e) {
-
-        // resize the strut height to at least the size of the viewport.
-        /*
-        Dimension d = new Dimension(0,
-                scrollPane.getViewportBorderBounds().height);
-        viewportStrut.changeShape(d, d, d);
-        //viewportStrut.change
-
-        //System.err.println("component resized:" + d.height);
-
-        // force a validate of the contents.
         revalidate();
-         */
-    }
-
-    /**
-     * Invoked when the component has been made invisible.
-     *
-     * @param e Component event.
-     */
-    @Override
-    public void componentHidden(final ComponentEvent e) {
-    }
-
-    /**
-     * Invoked when the component's position changes.
-     *
-     * @param e Component event.
-     */
-    @Override
-    public void componentMoved(final ComponentEvent e) {
-    }
-
-    /**
-     * Invoked when the component has been made visible.
-     *
-     * @param e Component event.
-     */
-    @Override
-    public void componentShown(final ComponentEvent e) {
     }
 
     /**
@@ -701,13 +628,12 @@ implements ExternalColumnListListener,
      * column.
      */
     public void moveColumnLeft(final long colID, final int positions) {
-        logger.usage("move column left");
-
-        int columnIndex = -1;
+        LOGGER.usage("move column left");
+        System.err.println("Moving left");
 
         // What index does the given column sit at
+        int columnIndex = -1;
         for (int i = 0; i < columns.size(); i++) {
-
             if (columns.get(i).getColID() == colID) {
                 columnIndex = i;
             }
@@ -721,9 +647,6 @@ implements ExternalColumnListListener,
             }
 
             shuffleColumn(columnIndex, newIndex);
-            relayoutCells();
-            invalidate();
-            this.repaint();
         }
     }
 
@@ -734,11 +657,11 @@ implements ExternalColumnListListener,
      * column.
      */
     public void moveColumnRight(final long colID, final int positions) {
-        logger.usage("move column right");
-
-        int columnIndex = -1;
+        LOGGER.usage("move column right");
+        System.err.println("Moving right");
 
         // What index does the column sit at
+        int columnIndex = -1;
         for (int i = 0; i < columns.size(); i++) {
 
             if (columns.get(i).getColID() == colID) {
@@ -751,9 +674,6 @@ implements ExternalColumnListListener,
 
             if (newIndex < columns.size()) {
                 shuffleColumn(columnIndex, newIndex);
-                relayoutCells();
-                invalidate();
-                this.repaint();
             }
         }
     }
@@ -765,6 +685,7 @@ implements ExternalColumnListListener,
      * @param destination index of the destination column
      */
     private void shuffleColumn(final int source, final int destination) {
+        System.err.println("S=" + source + " d=" + destination);
 
         if ((source >= columns.size()) || (destination >= columns.size())) {
             return;
@@ -775,7 +696,6 @@ implements ExternalColumnListListener,
         }
 
         try {
-
             // Write the new column order back to the database.
             Vector<Long> orderVec = getLegacyDatabase().getColOrderVector();
 
@@ -785,7 +705,7 @@ implements ExternalColumnListListener,
 
             getLegacyDatabase().setColOrderVector(orderVec);
         } catch (SystemErrorException se) {
-            logger.error("Unable to shuffle column order", se);
+            LOGGER.error("Unable to shuffle column order", se);
         }
 
         // Reorder the columns vector
@@ -794,43 +714,29 @@ implements ExternalColumnListListener,
         columns.add(destination, sourceColumn);
 
         // Reorder the header components
-        Vector<Component> newHeaders = new Vector<Component>();
-        Component[] headers = headerView.getComponents();
+        List<Component> newHeaders = new ArrayList<Component>(Arrays.asList(headerView.getComponents()));
+        Component sourceHeaderComponent = newHeaders.get(source);
+        newHeaders.remove(source);
+        newHeaders.add(destination, sourceHeaderComponent);
 
-        for (int i = 0; i < headers.length; i++) {
-            newHeaders.add(headers[i]);
-        }
-
-        Component sourceHeaderComponent = newHeaders.elementAt(source + 1);
-        newHeaders.removeElementAt(source + 1);
-        newHeaders.insertElementAt(sourceHeaderComponent, destination + 1);
+        headerView.removeAll();
+        for (Component header : newHeaders) {
+            headerView.add(header);
+        }        
 
         // Reorder the data components
-        Vector<Component> newData = new Vector<Component>();
-        Component[] data = mainView.getComponents();
+        List<Component> newData = new ArrayList<Component>(Arrays.asList(mainView.getComponents()));
+        Component sourceDataComponent = newData.get(source);
+        newData.remove(source);
+        newData.add(destination, sourceDataComponent);
 
-        for (int i = 0; i < data.length; i++) {
-            newData.add(data[i]);
-        }
-
-        Component sourceDataComponent = newData.elementAt(source + 1);
-        newData.removeElementAt(source + 1);
-        newData.insertElementAt(sourceDataComponent, destination + 1);
-
-        // Reset the containers
-        headerView.removeAll();
         mainView.removeAll();
-
-        // Re-insert components into the containers
-        for (int i = 0; i < headers.length; i++) {
-
-            if (i < data.length) {
-                headerView.add(newHeaders.elementAt(i));
-                mainView.add(newData.elementAt(i));
-            } else {
-                headerView.add(newHeaders.elementAt(i));
-            }
+        for (Component data : newData) {
+            mainView.add(data);
         }
+
+        System.err.println("Successful shuffle");
+        revalidate();
     }
 
     /**
@@ -909,7 +815,7 @@ implements ExternalColumnListListener,
                 lastSelectedCell = cell;
             }
         } catch (SystemErrorException se) {
-            logger.error("Unable to continous select cells", se);
+            LOGGER.error("Unable to continous select cells", se);
         }
     }
 
