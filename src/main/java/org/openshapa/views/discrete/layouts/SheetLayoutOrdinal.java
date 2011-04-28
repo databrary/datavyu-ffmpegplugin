@@ -64,6 +64,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
                                                          .getView();
 
         int maxHeight = 0;
+        int selectedHeight = -1;
         int colID = 0;
         for (SpreadsheetColumn col : mainView.getColumns()) {
 
@@ -71,8 +72,14 @@ public class SheetLayoutOrdinal extends SheetLayout {
             if (col.isVisible()) {
                 int ord = 1;
                 int currentHeight = 0;
+                SpreadsheetCell prevCell = null;
+
                 for (SpreadsheetCell cell : col.getCellsTemporally()) {
                     Dimension d = cell.getPreferredSize();
+                    if (cell.isSelected() && currentHeight != cell.getBounds().y) {
+                        selectedHeight = currentHeight;
+                    }
+
                     cell.setBounds(0,
                                    currentHeight,
                                    (col.getWidth() - marginSize),
@@ -81,6 +88,17 @@ public class SheetLayoutOrdinal extends SheetLayout {
                     cell.repaint();
                     ord++;
                     currentHeight += d.getHeight();
+
+                    // Determine if this cell overlaps with the previous cell.
+                    if (prevCell != null) {
+                        if (prevCell.getOffsetTicks() > cell.getOnsetTicks()) {
+                            prevCell.setOverlapBorder(true);
+                        } else {
+                            prevCell.setOverlapBorder(false);
+                        }
+                    }
+
+                    prevCell = cell;
                 }
 
                 // Put the new cell button at the end of the column.
@@ -108,6 +126,23 @@ public class SheetLayoutOrdinal extends SheetLayout {
                                                       colHeight,
                                                       col.getWidth(),
                                                       (maxHeight - colHeight));
+        }
+
+        if (selectedHeight != -1) {
+            // Determine the cell position relative to the entire column.
+            double cellPos = 0;
+            if (maxHeight > 0) {
+                cellPos = (selectedHeight / (double) maxHeight);
+            }
+
+            // Determine the new scroll position to ensure the focused cell is highlighted.
+            int newPos = (int) (cellPos * (pane.getVerticalScrollBar().getMaximum() - pane.getVerticalScrollBar().getVisibleAmount()));
+            // Make sure the position is within a valid bound.
+            newPos = Math.max(0, newPos);
+            newPos = Math.min(newPos, pane.getVerticalScrollBar().getMaximum());
+
+            // Set the new position of the scroll window.
+            pane.getVerticalScrollBar().setValue(newPos);
         }
     }
 }

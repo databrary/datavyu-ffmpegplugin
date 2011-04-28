@@ -357,8 +357,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     /**
      * focusSet is the signal that this editor has become "current".
      * 
-     * @param fe
-     *            Focus Event
+     * @param fe Focus Event
      */
     @Override
     public void focusGained(final FocusEvent fe) {
@@ -367,8 +366,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     /**
      * Action to take by this editor when a key is released.
      * 
-     * @param e
-     *            KeyEvent
+     * @param e KeyEvent
      */
     @Override
     public void keyReleased(final KeyEvent e) {

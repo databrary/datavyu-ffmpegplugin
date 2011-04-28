@@ -625,7 +625,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
             // User has clicked somewhere in the cell without modifier. This
             // cell needs to be highlighted.
         } else {
-
             // BugzID:320 - Deselect cells before selected cell contents.
             cellSelL.clearCellSelection();
             setHighlighted(true);
