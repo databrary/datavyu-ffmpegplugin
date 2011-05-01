@@ -126,9 +126,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /** Highlighted state of cell. */
     private boolean highlighted = false;
 
-    /** Temporal ordering state: Pixel to duration ratio. */
-    //private double temporalRatio;
-
     /** Component that sets the width of the cell. */
     private Filler stretcher;
 
@@ -427,6 +424,11 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * cell is highlighted false otherwise.
      */
     public void setHighlighted(final boolean sel) {
+        // If selection state is unchanged - exit, we aren't changing anything
+        if (highlighted == sel) {
+            return;
+        }
+
         highlighted = sel;
         selectCellInDB(highlighted);
 
@@ -439,6 +441,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
                 cellPanel.setBorder(HIGHLIGHT_BORDER);
             }
         } else {
+            dataPanel.select(0, 0);
 
             if (cellOverlap) {
                 cellPanel.setBorder(OVERLAP_BORDER);
@@ -475,6 +478,11 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * selected false otherwise.
      */
     public void setSelected(final boolean sel) {
+        // If selection state is not changing - don't bother doing anything.
+        if (selected == sel) {
+            return;
+        }
+
         selected = sel;
         selectCellInDB(selected);
 
@@ -489,6 +497,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
             cellPanel.setBackground(Configuration.getInstance().getSSSelectedColour());
         } else {
+            dataPanel.select(0, 0);
 
             if (cellOverlap) {
                 cellPanel.setBorder(OVERLAP_BORDER);
@@ -625,10 +634,13 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
             // User has clicked somewhere in the cell without modifier. This
             // cell needs to be highlighted.
         } else {
-            // BugzID:320 - Deselect cells before selected cell contents.
-            cellSelL.clearCellSelection();
-            setHighlighted(true);
-            cellSelL.setHighlightedCell(this);
+            // Only change selection if not selected.
+            if (!isHighlighted()) {
+                // BugzID:320 - Deselect cells before selected cell contents.
+                cellSelL.clearCellSelection();
+                setHighlighted(true);
+                cellSelL.setHighlightedCell(this);
+            }
         }
     }
 
@@ -671,9 +683,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      */
     @Override
     public void focusLost(final FocusEvent e) {
-
-        // BugzID: 718 - Make sure content is deselected.
-        dataPanel.select(0, 0);
     }
 
     /**

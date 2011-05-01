@@ -19,8 +19,8 @@ import com.usermetrix.jclient.UserMetrix;
 /**
  * JTextArea view of the Matrix (database cell) data.
  */
-public final class TimeStampTextField extends JTextField implements
-        FocusListener, KeyListener {
+public final class TimeStampTextField extends JTextField
+implements FocusListener, KeyListener {
 
     /** The parent cell for this JPanel. */
     private long parentCell = -1;
@@ -34,10 +34,8 @@ public final class TimeStampTextField extends JTextField implements
     /**
      * Creates a new instance of MatrixV.
      *
-     * @param cell
-     *            The parent datacell for this spreadsheet cell.
-     * @param tsType
-     *            Which TimeStamp of the cell to display. represent.
+     * @param cell The parent datacell for this spreadsheet cell.
+     * @param tsType Which TimeStamp of the cell to display. represent.
      */
     public TimeStampTextField(final DataCell cell, final TimeStampSource tsType) {
         super();
@@ -75,9 +73,9 @@ public final class TimeStampTextField extends JTextField implements
     /**
      * The action to invoke if the focus is gained by this MatrixRootView.
      * 
-     * @param fe
-     *            The Focus Event that triggered this action.
+     * @param fe The Focus Event that triggered this action.
      */
+    @Override
     public void focusGained(final FocusEvent fe) {
         try {
             // We need to remember which cell should be duplicated if the user
@@ -104,9 +102,9 @@ public final class TimeStampTextField extends JTextField implements
     /**
      * The action to invoke if the focus is lost.
      * 
-     * @param fe
-     *            The FocusEvent that triggered this action.
+     * @param fe The FocusEvent that triggered this action.
      */
+    @Override
     public void focusLost(final FocusEvent fe) {
         myEditor.focusLost(fe);
     }
@@ -116,8 +114,7 @@ public final class TimeStampTextField extends JTextField implements
      * through to all listeners, and then if they are not consumed pass it onto
      * the parent of this component.
      * 
-     * @param ke
-     *            They keyboard event that was dispatched to this component.
+     * @param ke They keyboard event that was dispatched to this component.
      */
     @Override
     public void processKeyEvent(final KeyEvent ke) {
@@ -133,9 +130,9 @@ public final class TimeStampTextField extends JTextField implements
     /**
      * The action to invoke when a key is released.
      * 
-     * @param e
-     *            The KeyEvent that triggered this action.
+     * @param e The KeyEvent that triggered this action.
      */
+    @Override
     public void keyReleased(final KeyEvent e) {
         resetEditorText();
         myEditor.keyReleased(e);
@@ -144,9 +141,9 @@ public final class TimeStampTextField extends JTextField implements
     /**
      * The action to invoke when a key is typed.
      * 
-     * @param e
-     *            The KeyEvent that triggered this action.
+     * @param e The KeyEvent that triggered this action.
      */
+    @Override
     public void keyTyped(final KeyEvent e) {
         myEditor.keyTyped(e);
     }
@@ -154,9 +151,9 @@ public final class TimeStampTextField extends JTextField implements
     /**
      * The action to invoke when a key is pressed.
      * 
-     * @param e
-     *            The KeyEvent that triggered this action.
+     * @param e The KeyEvent that triggered this action.
      */
+    @Override
     public void keyPressed(final KeyEvent e) {
         switch (e.getKeyCode()) {
 
@@ -225,5 +222,4 @@ public final class TimeStampTextField extends JTextField implements
         Dimension mysize = super.getPreferredSize();
         return new Dimension(mysize.width, mysize.height);
     }
-
 }

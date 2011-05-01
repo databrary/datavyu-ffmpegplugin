@@ -56,12 +56,12 @@ public class SheetLayoutOrdinal extends SheetLayout {
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
 
-        List<ColInfo> columnHeight = new ArrayList<ColInfo>();
-
         // This layout must be applied to a Spreadsheet panel.
         JScrollPane pane = (JScrollPane) parent;
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
                                                          .getView();
+
+        List<ColInfo> columnHeight = new ArrayList<ColInfo>();
 
         int maxHeight = 0;
         int selectedHeight = -1;

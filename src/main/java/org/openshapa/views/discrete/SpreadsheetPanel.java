@@ -735,7 +735,6 @@ implements ExternalColumnListListener,
             mainView.add(data);
         }
 
-        System.err.println("Successful shuffle");
         revalidate();
     }
 
@@ -845,7 +844,6 @@ implements ExternalColumnListListener,
      */
     @Override
     public void setHighlightedCell(final SpreadsheetCell cell) {
-
         if (highlightedCell != null) {
             highlightedCell.setSelected(false);
             highlightedCell.setHighlighted(false);

@@ -194,9 +194,9 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     /**
      * The action to invoke if the focus is gained by this MatrixRootView.
      * 
-     * @param fe
-     *            The Focus Event that triggered this action.
+     * @param fe The Focus Event that triggered this action.
      */
+    @Override
     public void focusGained(final FocusEvent fe) {
         try {
             // We need to remember which cell should be duplicated if the user
@@ -220,9 +220,9 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     /**
      * The action to invoke if the focus is lost.
      * 
-     * @param fe
-     *            The FocusEvent that triggered this action.
+     * @param fe The FocusEvent that triggered this action.
      */
+    @Override
     public void focusLost(final FocusEvent fe) {
         // do nothing
     }

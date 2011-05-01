@@ -52,15 +52,13 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     /**
      * Constructor.
      * 
-     * @param ta
-     *            The parent JTextComponent the editor is in.
-     * @param cell
-     *            The parent data cell this editor resides within.
-     * @param sourceType
-     *            What timestamp are we displaying.
+     * @param ta The parent JTextComponent the editor is in.
+     * @param cell The parent data cell this editor resides within.
+     * @param sourceType What timestamp are we displaying.
      */
     public TimeStampDataValueEditor(final JTextComponent ta,
-            final DataCell cell, final TimeStampSource sourceType) {
+                                    final DataCell cell,
+                                    final TimeStampSource sourceType) {
         super(ta);
         setEditable(true);
         parentCell = cell.getID();
@@ -136,8 +134,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     /**
      * Action to take by this editor when a key is pressed.
      * 
-     * @param e
-     *            The KeyEvent that triggered this action.
+     * @param e The KeyEvent that triggered this action.
      */
     @Override
     public void keyPressed(final KeyEvent e) {
@@ -279,44 +276,12 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     /**
      * The action to invoke when a key is typed.
      * 
-     * @param e
-     *            The KeyEvent that triggered this action.
+     * @param e The KeyEvent that triggered this action.
      */
     @Override
     public void keyTyped(final KeyEvent e) {
         try {
             TimeStampDataValue tdv = (TimeStampDataValue) getModel();
-
-            // // The backspace key removes digits from behind the caret.
-            // if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-            // && e.getKeyChar() == '\u0008') {
-            //
-            // // Can't delete empty time stamp data value.
-            // if (!tdv.isEmpty()) {
-            // this.removeBehindCaret();
-            // tdv.setItsValue(new TimeStamp(getText()));
-            // e.consume();
-            // }
-            //
-            // // The delete key removes digits ahead of the caret.
-            // } else if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-            // && e.getKeyChar() == '\u007F') {
-            //
-            // // Can't delete empty time stamp data value.
-            // if (!tdv.isEmpty()) {
-            // int caret = getSelectionEnd();
-            // this.removeAheadOfCaret();
-            // setCaretPosition(caret);
-            //
-            // if (caret < getText().length()
-            // && this.isPreserved(getText().charAt(caret))) {
-            // setCaretPosition(getCaretPosition() + 1);
-            // }
-            //
-            // this.setCaretPosition(this.getCaretPosition() + 1);
-            // tdv.setItsValue(new TimeStamp(getText()));
-            // e.consume();
-            // }
 
             // Key stoke is number - insert stroke at current caret position
             // but only if their is room in the editor for the new digit.
