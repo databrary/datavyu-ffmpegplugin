@@ -61,15 +61,22 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         laidCells = 0;
         maxHeight = parent.getHeight();
 
-        // Find the largest column size in pixels and temporal length in ticks:
-        long ratioHeight = 0;
-        long ratioTicks = 0;
-        int totalCells = 0;
+
+
+        // Determine the ratio/scale to use with temporal ordering, we pick the
+        // the largest column size in pixels and temporal length in ticks to
+        // use as an aggressive ratio/scale to fit as many cells on the screen
+        // as possible.
+        long ratioHeight = 0;   // The height required to fit all the visible cells on the spreadsheet without any spacing.
+        long ratioTicks = 0;    // The maximum offset used in the entire visible spreadsheet.
+        int totalCells = 0;     // The total number of visible cells we are laying out on the spreadsheet.
+        double ratio = 1.0;     // The ratio / scale that we are using to position the cells temporally.
+
         for (SpreadsheetColumn c : mainView.getColumns()) {
 
-            // Only layout visible columns
+            // We only work with visible columns.
             if (c.isVisible()) {
-                // Initalise the working data for the columns.
+                // Take this opportunity to initalise the working data we need for each of the columns.
                 c.setWorkingHeight(0);
                 c.setWorkingOrd(0);
                 c.setWorkingOnsetPadding(0);
@@ -93,24 +100,33 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 totalCells = totalCells + colCells.size();
             }
         }
-        // Determine the ratio / scale to use with temporal ordering - we pick
-        // The maximum height in pixels and the maximum length in ticks.
-        double ratio = 1.0;
+        // Determine the final temporal ratio/scale we are going to use for the spreadsheet.
         if (ratioTicks > 0) {
             ratio = ratioHeight / (float) ratioTicks;
         }
 
-        int pad = 0;
 
-        // Position the cells temporally.
+
+        // Untill we have laid all the cells, we position each of them
+        // temporarily. We do this row by row with the cells sorted temporarily,
+        // untill we have no cells left to lay.
+        int pad = 0;    // The cumulative padding we need to apply to cell positioning - this is the total
+                        // amount of extra vertical space we have had to pad out, to make entire cells visible.
+
         while (laidCells < totalCells) {
             List<RowInfo> rowCells = new ArrayList<RowInfo>(mainView.getColumns().size());
 
-            long maxOffset = 0L;
-            int numMaxOffsetCells = 0;
+
+
+            // Determine the maximum offset in this row of cells, and the number
+            // of cells that have that maximum offset.
+            //
+            // We build the row of cells we are working with at the same time.
+            long maxOffset = 0L;        // The maximum offset (in ticks) for this row.
+            int numMaxOffsetCells = 0;  // The number of cells that match the above maximum offset for this.
 
             for (SpreadsheetColumn col : mainView.getColumns()) {
-                // Only layout visible columns.
+                // We only work with visible columns.
                 if (col.isVisible()) {
                     SpreadsheetCell cell = col.getWorkingTemporalCell();
                     if (cell != null) {
@@ -125,20 +141,28 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     }
                 }
             }
+            // We work with the row is sorted by onset and offset.
             rowCells = sortRow(rowCells);
 
+
+
+            // For each cell in the row, we are working our way from the cells
+            // with the lowest onset and offset positioning as we go. Adding to
+            // the culmative padding when we are unable to fit the cell using
+            // the current temporal ratio / scale.
             for (int i = 0; i < rowCells.size(); i++) {
                 RowInfo ri = rowCells.get(i);
 
                 int t = ri.cell.getTemporalTop(ratio) + ri.col.getWorkingOnsetPadding();
                 int b = ri.cell.getTemporalBottom(ratio) + ri.col.getWorkingOffsetPadding();
                 int ts = Math.max(b - t, 0);
-                
-                // Detect overlapping cells that we must lay at the same time.
-                // Must complete.
 
                 // The size of the cell must be at least the preffered size in height.
                 pad = Math.max(pad, (ri.cell.getPreferredSize().height - ts));
+
+                // Detect overlapping cells that we must lay at the same time.
+                // TODO!
+                List<SpreadsheetCell> overlapping = ri.col.getOverlappingCells();
 
                 if (ri.cell.getPreferredSize().height > ts) {
                     ri.col.setWorkingOffsetPadding(ri.col.getWorkingOffsetPadding() + pad);
@@ -149,6 +173,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 ri.cell.setBounds(0, t, (ri.col.getWidth() - marginSize), (b - t));
                 ri.col.setWorkingHeight(b);
 
+                // Cell is not last cell in column.
                 if (ri.cell.getOffsetTicks() < maxOffset) {
                     ri.col.setWorkingOnsetPadding(ri.col.getWorkingOffsetPadding());
 
@@ -163,17 +188,18 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     if (j < rowCells.size()) {
                         RowInfo nri = rowCells.get(j);
 
-                        //System.err.println("Passing pad on:" + pad);
                         if (nri.cell.getOnsetTicks() > ri.cell.getOnsetTicks()) {
                             nri.col.setWorkingOnsetPadding(nri.col.getWorkingOffsetPadding() + pad);
                         }
 
                         nri.col.setWorkingOffsetPadding(nri.col.getWorkingOffsetPadding() + pad);
                     }
-                   
 
+                // Last cells in column.
                 } else if ((totalCells - laidCells) == numMaxOffsetCells) {
-                    // Push the final padding backwards.
+
+                    // Push the final padding backwards into cells that we have
+                    // already positioned.
                     for (int j = (i - 1); j >= 0; j--) {
                         RowInfo nri = rowCells.get(j);
 
@@ -191,6 +217,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     // exist with the maximum offset.
                     numMaxOffsetCells--;
                     laidCells++;
+
+                // Error: We haven't positioned this cell at all!
+                } else {
+                    //laidCells++;
+                    System.err.println("Unpositioned cell");
                 }
             }
         }
@@ -199,6 +230,15 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         padColumns(mainView, parent);
     }
 
+    /**
+     * Performs a bubble sort of a row of cells by onset and offset. The collection
+     * of cells will be ordered by onset, if the onsets match, they will then be
+     * ordered by offset.
+     *
+     * @param row The row of cells to be ordered by onset and offset.
+     *
+     * @return A row of cells ordered by onset and offset.
+     */
     private List<RowInfo> sortRow(List<RowInfo> row) {
         boolean sorted;
         do {

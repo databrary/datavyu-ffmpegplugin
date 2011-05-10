@@ -223,6 +223,19 @@ implements ExternalDataColumnListener,
         return null;
     }
 
+    public List<SpreadsheetCell> getOverlappingCells() {
+        ArrayList<SpreadsheetCell> workingList = new ArrayList<SpreadsheetCell>();
+        int currentOrd = workingOrd + 1;
+        SpreadsheetCell currentCell = datapanel.getCellTemporally(workingOrd);
+
+        while (currentOrd < datapanel.getNumCells() && currentCell.getOffsetTicks() > datapanel.getCellTemporally(currentOrd).getOnsetTicks()) {
+            workingList.add(datapanel.getCellTemporally(currentOrd));
+            currentOrd++;
+        }
+
+        return workingList;
+    }
+
     public Variable getModel() {
         return variable;
     }
