@@ -109,10 +109,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             ratio = ratioHeight / (float) ratioTicks;
         }
 
-// TODO: DEBUGGING REMOVE
-        int maxLock = 5;
-        int lock = 0;
-
 
         // Untill we have laid all the cells, we position each of them
         // temporarily. We do this row by row with the cells sorted temporarily,
@@ -120,9 +116,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         int pad = 0;    // The cumulative padding we need to apply to cell positioning - this is the total
                         // amount of extra vertical space we have had to pad out, to make entire cells visible.
 
-        while (laidCells < totalCells && lock < maxLock) {
+        while (laidCells < totalCells) {
             List<RowInfo> rowCells = new ArrayList<RowInfo>(mainView.getColumns().size());
-
 
 
             // Determine the maximum offset in this row of cells, and the number
@@ -174,8 +169,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
 // TODO: DEBUGGING REMOMVE
 //                System.err.println("rowCell: [" + i + ", " + ri.overlappingCells.size() + "]");
-//                System.err.println("offset: [" + ri.cell.getOffsetTicks() + ", " + maxOffset + ", " + numMaxOffsetCells +"]");
-//                System.err.println("row: [" + laidCells + ", " + totalCells + "] - " + ri.cell);
+                System.err.println("offset: [" + ri.cell.getOffsetTicks() + ", " + maxOffset + ", " + numMaxOffsetCells +"]");
 
                 if (ri.cell.getPreferredSize().height > ts) {
                     ri.col.setWorkingOffsetPadding(ri.col.getWorkingOffsetPadding() + pad);
@@ -190,16 +184,19 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 if (ri.cell.getOffsetTicks() < maxOffset) {
                     ri.col.setWorkingOnsetPadding(ri.col.getWorkingOffsetPadding());
 
+                    System.err.println("laying: [" + laidCells + ", " + totalCells + "] - " + ri.cell.getDataView().getText());
                     // We have finished laying this cell.
                     ri.col.setWorkingOrd(ri.col.getWorkingOrd() + 1);
                     maxHeight = Math.max(b, maxHeight);
                     ri.cell.setOrdinal(ri.col.getWorkingOrd());
                     laidCells++;
-
+                    
                     // Lay overlapping cells.
+                    for (SpreadsheetCell overlappingCell : ri.overlappingCells) {
 // TODO: Position the overlapping cells at the same time.
-// TODO: DEBUGGING REMOVE.
-                    System.err.println("Lapping: " + ri.overlappingCells.size());
+                        System.err.println("Olaying: [" + laidCells + ", " + totalCells + "] - " + overlappingCell.getDataView().getText());
+                        laidCells++;
+                    }                   
 
                     // Pass the padding onto the next cell in the row.
                     int j = i + 1;
@@ -212,7 +209,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
                         nri.col.setWorkingOffsetPadding(nri.col.getWorkingOffsetPadding() + pad);
                     }
-                    System.err.println("Laid cell");
 
                 // Last cells in column.
                 } else if ((totalCells - laidCells) == numMaxOffsetCells) {
@@ -229,28 +225,23 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                             b = nri.cell.getTemporalBottom(ratio) + nri.col.getWorkingOffsetPadding();
                             nri.cell.setBounds(0, t, (ri.col.getWidth() - marginSize), (b - t));
                             nri.col.setWorkingHeight(b);
+                            System.err.println("Flaying: [" + laidCells + ", " + totalCells + "] - " + nri.cell.getDataView().getText());
+                            
+                            for (SpreadsheetCell overlappingCell : nri.overlappingCells) {
+                                System.err.println("OFlaying: [" + laidCells + ", " + totalCells + "] - " + overlappingCell.getDataView().getText());
+                                numMaxOffsetCells--;
+                                laidCells++;
+                            }
                         }                        
-                    }
+                    }                    
 
-// TODO: Position the overlapping cells at the same time.
-// TODO: DEBUGGING REMOVE.
-                    System.err.println("Lapping: " + ri.overlappingCells.size());
 
                     // Eventually we will be left with only the cells that
                     // exist with the maximum offset.
                     numMaxOffsetCells--;
                     laidCells++;
-                    System.err.println("finishing cell");
-
-// TODO: DEBUGGING REMOVE.
-                } else {
-                    //laidCells++;
-                    System.err.println("Unpositioned cell");
                 }
             }
-
-// TODO: DEBUGGING REMOVE.
-            lock++;
         }
 
         // Pad the columns so that they are all the same length.
