@@ -230,6 +230,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     // Lay overlapping cells.
                     for (SpreadsheetCell overlappingCell : ri.overlappingCells) {
 // TODO: Position the overlapping cells at the same time.
+                        t = ri.col.getWorkingHeight();
+                        b = overlappingCell.getPreferredSize().height;
+                        overlappingCell.setBounds(0, t, (ri.col.getWidth() - marginSize), b);
+                        ri.col.setWorkingHeight(t + b);
+
 //                        System.err.println("Olaying: [" + laidCells + ", " + totalCells + "] - " + overlappingCell.getDataView().getText());
                         laidCells++;
                     }                   
@@ -265,7 +270,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
                     rollPaddingBack(i, ri, rowCells);
 
-
 //                    System.err.println("Rlaying: [" + laidCells + ", " + totalCells + "] - " + ri.cell.getDataView().getText());
 
                     // Eventually we will be left with only the cells that
@@ -300,11 +304,16 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 int b = nri.cell.getTemporalBottom(ratio) + nri.col.getWorkingOffsetPadding();
                 nri.cell.setBounds(0, t, (ri.col.getWidth() - marginSize), (b - t));
                 nri.col.setWorkingHeight(b);
-//                System.err.println("Flaying: [" + laidCells + "] - " + nri.cell.getDataView().getText());
+//                System.err.println("Flaying: [" + t + "," + (b - t) + "] - " + nri.cell.getDataView().getText());
 
                 for (SpreadsheetCell overlappingCell : nri.overlappingCells) {
 // TODO: Deal with overlapping cells at the same time.
-//                    System.err.println("OFlaying: [" + laidCells + "] - " + overlappingCell.getDataView().getText());
+                    t = nri.col.getWorkingHeight();
+                    b = overlappingCell.getPreferredSize().height;
+                    overlappingCell.setBounds(0, t, (ri.col.getWidth() - marginSize), b);
+                    nri.col.setWorkingHeight(t + b);
+
+//                    System.err.println("OFlaying: [" + t + "," + b + "] - " + overlappingCell.getDataView().getText());
                     numMaxOffsetCells--;
                     laidCells++;
                 }
