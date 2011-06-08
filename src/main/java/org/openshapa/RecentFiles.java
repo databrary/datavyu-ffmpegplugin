@@ -41,7 +41,7 @@ public enum RecentFiles {
     private static final String fileName = "recent_files.yml";
 
     /** Class logger. */
-    private Logger logger = UserMetrix.getLogger(RecentFiles.class);
+    private static Logger LOGGER = UserMetrix.getLogger(RecentFiles.class);
 
     /** List of recently opened projects. */
     private List<File> projects;
@@ -128,7 +128,7 @@ public enum RecentFiles {
             fw = new FileWriter(historyFile);
             yaml.dump(historyMap, fw);
         } catch (IOException e) {
-            logger.error("Couldn't save history", e);
+            LOGGER.error("Couldn't save history", e);
         } finally {
             IOUtils.closeQuietly(fw);
         }

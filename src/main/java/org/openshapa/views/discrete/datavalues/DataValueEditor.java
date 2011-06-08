@@ -55,7 +55,7 @@ public abstract class DataValueEditor extends EditorComponent {
     private String textOnFocus;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(DataValueEditor.class);
+    private static Logger LOGGER = UserMetrix.getLogger(DataValueEditor.class);
 
     /**
      * Constructor.
@@ -137,7 +137,7 @@ public abstract class DataValueEditor extends EditorComponent {
             }
 
         } catch (SystemErrorException ex) {
-            logger.error("Unable to create DataValueEditor: ", ex);
+            LOGGER.error("Unable to create DataValueEditor: ", ex);
         }
 
         updateStrings();
@@ -164,7 +164,7 @@ public abstract class DataValueEditor extends EditorComponent {
                 model = p.getArgCopy(pIndex);
             }
         } catch (SystemErrorException ex) {
-            logger.error("Unable to create DataValue View: ", ex);
+            LOGGER.error("Unable to create DataValue View: ", ex);
         }
 
         updateStrings();
@@ -207,7 +207,7 @@ public abstract class DataValueEditor extends EditorComponent {
                 t = fa.toString();
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to get NULL arg", e);
+            LOGGER.error("Unable to get NULL arg", e);
         }
         return t;
     }
@@ -395,7 +395,7 @@ public abstract class DataValueEditor extends EditorComponent {
             c.setVal(parentMatrix);
             c.getDB().replaceCell(c);
         } catch (SystemErrorException ex) {
-            logger.error("Unable to update Database: ", ex);
+            LOGGER.error("Unable to update Database: ", ex);
         }
     }
 
@@ -462,7 +462,7 @@ public abstract class DataValueEditor extends EditorComponent {
         switch (model.getItsFargType()) {
             case COL_PREDICATE:
                 // This should never execute
-                logger.error("Predicate name went through DataValueEditor!");
+                LOGGER.error("Predicate name went through DataValueEditor!");
                 break;
             case FLOAT:
                 FloatDataValue fdv = (FloatDataValue) model;
@@ -493,13 +493,13 @@ public abstract class DataValueEditor extends EditorComponent {
                         ndv.setItsValue(getText());
                     }
                 } catch (SystemErrorException sysErr) {
-                    logger.error("Couldn't set nominal value", sysErr);
+                    LOGGER.error("Couldn't set nominal value", sysErr);
                     return;
                 }
                 break;
             case PREDICATE:
                 // This should never execute
-                logger.error("Predicate field went through DataValueEditor!");
+                LOGGER.error("Predicate field went through DataValueEditor!");
                 break;
             case QUOTE_STRING:
                 QuoteStringDataValue qsdv = (QuoteStringDataValue) model;
@@ -510,7 +510,7 @@ public abstract class DataValueEditor extends EditorComponent {
                         qsdv.setItsValue(getText());
                     }
                 } catch (SystemErrorException sysErr) {
-                    logger.error("Couldn't set quote string value", sysErr);
+                    LOGGER.error("Couldn't set quote string value", sysErr);
                     return;
                 }
                 break;
@@ -523,25 +523,25 @@ public abstract class DataValueEditor extends EditorComponent {
                         tsdv.setItsValue(getText());
                     }
                 } catch (SystemErrorException sysErr) {
-                    logger.error("Couldn't set text string value", sysErr);
+                    LOGGER.error("Couldn't set text string value", sysErr);
                     return;
                 }
                 break;
             case TIME_STAMP:
                 // This should never execute
-                logger.error("Timestamp field went through DataValueEditor!");
+                LOGGER.error("Timestamp field went through DataValueEditor!");
                 break;
             case UNDEFINED:
                 // This should never execute
-                logger.error("Undefined DataValue!");
+                LOGGER.error("Undefined DataValue!");
                 break;
             case UNTYPED:
                 // This should never execute
-                logger.error("Untyped DataValue!");
+                LOGGER.error("Untyped DataValue!");
                 break;
             default:
                 // This should never execute
-                logger.error("Untyped DataValue!");
+                LOGGER.error("Untyped DataValue!");
         }
         updateDatabase();
     }

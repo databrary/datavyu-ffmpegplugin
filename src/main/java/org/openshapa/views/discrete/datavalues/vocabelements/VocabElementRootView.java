@@ -27,7 +27,7 @@ public final class VocabElementRootView extends JTextArea  {
     private EditorTracker edTracker;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(VocabElementRootView.class);
+    private static Logger LOGGER = UserMetrix.getLogger(VocabElementRootView.class);
 
     /** Border to set the text area more aligned to the icons. */
     private static Border GAP_BORDER =
@@ -79,7 +79,7 @@ public final class VocabElementRootView extends JTextArea  {
                                    buildVocabElement(this, ve, pv));
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to set/reset VocabE for VERootView.", e);
+            LOGGER.error("Unable to set/reset VocabE for VERootView.", e);
         }
 
         rebuildText();

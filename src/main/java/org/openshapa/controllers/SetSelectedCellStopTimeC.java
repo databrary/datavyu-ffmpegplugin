@@ -16,7 +16,7 @@ import com.usermetrix.jclient.UserMetrix;
  */
 public class SetSelectedCellStopTimeC {
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SetSelectedCellStopTimeC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(SetSelectedCellStopTimeC.class);
 
     /**
      * Sets all selected cells to have the specified stop time / offset.
@@ -27,7 +27,7 @@ public class SetSelectedCellStopTimeC {
      */
     public SetSelectedCellStopTimeC(final long milliseconds) {
 
-        logger.usage("set selected cell offset");
+        LOGGER.event("set selected cell offset");
 
         // Get the view for this controller (the main spreadsheet panel.
         SpreadsheetPanel view =
@@ -41,7 +41,7 @@ public class SetSelectedCellStopTimeC {
                 OpenSHAPA.getProjectController().getLegacyDB().getDatabase().replaceCell(c);
             }
         } catch (SystemErrorException se) {
-            logger.error("Unable to set selected cell onset", se);
+            LOGGER.error("Unable to set selected cell onset", se);
         }
     }
 }

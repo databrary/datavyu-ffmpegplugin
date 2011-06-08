@@ -18,7 +18,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class DeleteColumnC {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(DeleteColumnC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(DeleteColumnC.class);
 
     /**
      * Constructor.
@@ -27,7 +27,7 @@ public final class DeleteColumnC {
      *            The columns to remove from the database/spreadsheet.
      */
     public DeleteColumnC(final Vector<DataColumn> colsToDelete) {
-        logger.usage("delete columns");
+        LOGGER.event("delete columns");
 
         // The spreadsheet is the view for this controller.
         SpreadsheetPanel view =
@@ -63,7 +63,7 @@ public final class DeleteColumnC {
                 view.repaint();
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to delete columns.", e);
+            LOGGER.error("Unable to delete columns.", e);
         }
     }
 }

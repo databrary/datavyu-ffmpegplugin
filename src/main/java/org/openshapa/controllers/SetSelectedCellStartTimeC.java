@@ -17,7 +17,7 @@ import com.usermetrix.jclient.UserMetrix;
 public class SetSelectedCellStartTimeC {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SetSelectedCellStartTimeC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(SetSelectedCellStartTimeC.class);
 
     /**
      * Sets all selected cells to have the specified start time / onset.
@@ -28,7 +28,7 @@ public class SetSelectedCellStartTimeC {
      */
     public SetSelectedCellStartTimeC(final long milliseconds) {
 
-        logger.usage("set selected cell onset");
+        LOGGER.event("set selected cell onset");
 
         // Get the view for this controller (the main spreadsheet panel.
         SpreadsheetPanel view =
@@ -42,7 +42,7 @@ public class SetSelectedCellStartTimeC {
                 OpenSHAPA.getProjectController().getLegacyDB().getDatabase().replaceCell(c);
             }
         } catch (SystemErrorException se) {
-            logger.error("Unable to set selected cell onset", se);
+            LOGGER.error("Unable to set selected cell onset", se);
         }
     }
 }

@@ -38,7 +38,7 @@ import org.openshapa.util.StringUtils;
 public final class SaveDatabaseFileC {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SaveDatabaseFileC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(SaveDatabaseFileC.class);
 
     /**
      * Saves the database to the specified destination, if the file ends with
@@ -83,7 +83,7 @@ public final class SaveDatabaseFileC {
         final MacshapaDatabase db) throws LogicErrorException {
 
         try {
-            logger.usage("save database as ODB");
+            LOGGER.event("save database as ODB");
 
             PrintStream outStream = new PrintStream(outFile);
             db.toMODBFile(outStream, "\r");
@@ -100,7 +100,7 @@ public final class SaveDatabaseFileC {
             throw new LogicErrorException(rMap.getString("UnableToSave.message",
                     outFile), e);
         } catch (SystemErrorException e) {
-            logger.error("Can't write macshapa db file '" + outFile + "'", e);
+            LOGGER.error("Can't write macshapa db file '" + outFile + "'", e);
         }
     }
 
@@ -145,7 +145,7 @@ public final class SaveDatabaseFileC {
         final MacshapaDatabase db) throws LogicErrorException {
 
         try {
-            logger.usage("save database as CSV to stream");
+            LOGGER.event("save database as CSV to stream");
 
             // Dump out an identifier for the version of file.
             PrintStream ps = new PrintStream(outStream);
@@ -243,7 +243,7 @@ public final class SaveDatabaseFileC {
                 }
             }
         } catch (SystemErrorException se) {
-            logger.error("Unable to save database as CSV file", se);
+            LOGGER.error("Unable to save database as CSV file", se);
         }
     }
 }

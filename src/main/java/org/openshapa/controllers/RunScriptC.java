@@ -50,7 +50,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     private JTextArea console = null;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(RunScriptC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(RunScriptC.class);
 
     /** output stream for messages coming from the scripting engine. */
     private PipedInputStream consoleOutputStream;
@@ -106,7 +106,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     }
 
     @Override protected Object doInBackground() {
-        logger.usage("run script");
+        LOGGER.event("run script");
 
         ReaderThread t = new ReaderThread();
         t.start();
@@ -143,9 +143,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             consoleWriter.println("*************************");
             consoleWriter.flush();
 
-            logger.error("Unable to execute script: ", e);
+            LOGGER.error("Unable to execute script: ", e);
         } catch (FileNotFoundException e) {
-            logger.error("Unable to execute script: ", e);
+            LOGGER.error("Unable to execute script: ", e);
         }
 
         running = false;
@@ -203,7 +203,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     Thread.yield();
                 }
             } catch (IOException e) {
-                logger.error("Unable to run console thread.", e);
+                LOGGER.error("Unable to run console thread.", e);
             }
         }
     }

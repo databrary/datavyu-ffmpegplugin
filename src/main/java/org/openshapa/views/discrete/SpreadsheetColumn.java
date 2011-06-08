@@ -69,7 +69,7 @@ implements ExternalDataColumnListener,
     private ColumnDataPanel datapanel;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SpreadsheetColumn.class);
+    private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetColumn.class);
 
     /** Records changes to column during a cascade. */
     private ColumnChanges colChanges;
@@ -144,7 +144,7 @@ implements ExternalDataColumnListener,
             datapanel.setVisible(!dbColumn.getHidden());
 
         } catch (SystemErrorException e) {
-            logger.error("Problem retrieving DataColumn", e);
+            LOGGER.error("Problem retrieving DataColumn", e);
         }
 
         colChanges = new ColumnChanges();
@@ -261,7 +261,7 @@ implements ExternalDataColumnListener,
             getLegacyDatabase().registerCascadeListener(this);
             datapanel.registerListeners();
         } catch (SystemErrorException e) {
-            logger.error("Unable to register listeners for the column.", e);
+            LOGGER.error("Unable to register listeners for the column.", e);
         }
     }
 
@@ -275,7 +275,7 @@ implements ExternalDataColumnListener,
             getLegacyDatabase().deregisterCascadeListener(this);
             datapanel.deregisterListeners();
         } catch (SystemErrorException e) {
-            logger.error("Unable to register listeners for the column.", e);
+            LOGGER.error("Unable to register listeners for the column.", e);
         }
     }
 
@@ -327,7 +327,7 @@ implements ExternalDataColumnListener,
      * @param colWidth Column width to set in pixels.
      */
     public void setWidth(final int colWidth) {
-        logger.usage("set column width");
+        LOGGER.event("set column width");
         width = colWidth;
 
         Dimension dim = getHeaderSize();
@@ -374,7 +374,7 @@ implements ExternalDataColumnListener,
      */
     public void setSelected(final boolean isSelected) {
         try {
-            logger.usage("select column");
+            LOGGER.event("select column");
 
             DataColumn dc = getLegacyDatabase().getDataColumn(getLegacyVariableID());
             this.selected = isSelected;
@@ -383,7 +383,7 @@ implements ExternalDataColumnListener,
             getLegacyDatabase().replaceColumn(dc);
 
         } catch (SystemErrorException e) {
-            logger.error("Failed setting column select state.", e);
+            LOGGER.error("Failed setting column select state.", e);
         }
 
         if (selected) {
@@ -404,7 +404,7 @@ implements ExternalDataColumnListener,
         try {
             dc = getLegacyDatabase().getDataColumn(getLegacyVariableID());
         } catch (SystemErrorException e) {
-            logger.error("Unable to get selected columns", e);
+            LOGGER.error("Unable to get selected columns", e);
         }
 
         return dc.getSelected();
@@ -453,7 +453,7 @@ implements ExternalDataColumnListener,
                 this.setText(dbColumn.getName() + "  ("
                     + dbColumn.getItsMveType() + ")");
             } catch (SystemErrorException e) {
-                logger.error("Problem getting data column", e);
+                LOGGER.error("Problem getting data column", e);
             }
         }
 

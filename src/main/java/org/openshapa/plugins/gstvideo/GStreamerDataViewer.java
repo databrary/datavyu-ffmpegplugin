@@ -115,7 +115,7 @@ public class GStreamerDataViewer implements DataViewer {
     private boolean isVisible = true;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(GStreamerDataViewer.class);
+    private static Logger LOGGER = UserMetrix.getLogger(GStreamerDataViewer.class);
 
     /** The list of listeners interested in changes made to the project. */
     private final List<ViewerStateListener> viewerListeners =
@@ -635,7 +635,7 @@ public class GStreamerDataViewer implements DataViewer {
             }
 
         } catch (IOException e) {
-            logger.error("Error loading settings", e);
+            LOGGER.error("Error loading settings", e);
         }
     }
 
@@ -651,7 +651,7 @@ public class GStreamerDataViewer implements DataViewer {
         try {
             settings.store(os, null);
         } catch (IOException e) {
-            logger.error("Error saving settings", e);
+            LOGGER.error("Error saving settings", e);
         }
     }
 

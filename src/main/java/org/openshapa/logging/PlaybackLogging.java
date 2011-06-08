@@ -16,75 +16,75 @@ public class PlaybackLogging implements PlaybackListener {
             PlaybackLogging.class);
 
     public void addDataEvent(final PlaybackEvent evt) {
-        logger.usage("Add data");
+        logger.event("Add data");
     }
 
     public void findEvent(final PlaybackEvent evt) {
-        logger.usage("Find");
+        logger.event("Find");
     }
 
     public void forwardEvent(final PlaybackEvent evt) {
-        logger.usage("Fast forward");
+        logger.event("Fast forward");
     }
 
     public void goBackEvent(final PlaybackEvent evt) {
-        logger.usage("Go back");
+        logger.event("Go back");
     }
 
     public void jogBackEvent(final PlaybackEvent evt) {
-        logger.usage("Jog back");
+        logger.event("Jog back");
     }
 
     public void jogForwardEvent(final PlaybackEvent evt) {
-        logger.usage("Jog forward");
+        logger.event("Jog forward");
     }
 
     public void newCellEvent(final PlaybackEvent evt) {
-        logger.usage("New cell");
+        logger.event("New cell");
     }
 
     public void newCellSetOnsetEvent(final PlaybackEvent evt) {
-        logger.usage("New cell set onset");
+        logger.event("New cell set onset");
     }
 
     public void pauseEvent(final PlaybackEvent evt) {
-        logger.usage("Pause");
+        logger.event("Pause");
     }
 
     public void playEvent(final PlaybackEvent evt) {
-        logger.usage("Play");
+        logger.event("Play");
     }
 
     public void rewindEvent(final PlaybackEvent evt) {
-        logger.usage("Rewind");
+        logger.event("Rewind");
     }
 
     public void setCellOffsetEvent(final PlaybackEvent evt) {
-        logger.usage("Set cell offset");
+        logger.event("Set cell offset");
     }
 
     public void setCellOnsetEvent(final PlaybackEvent evt) {
-        logger.usage("Set cell onset");
+        logger.event("Set cell onset");
     }
 
     public void setNewCellOffsetEvent(final PlaybackEvent evt) {
-        logger.usage("Set new cell offset");
+        logger.event("Set new cell offset");
     }
 
     public void showTracksEvent(final PlaybackEvent evt) {
-        logger.usage("Show tracks");
+        logger.event("Show tracks");
     }
 
     public void shuttleBackEvent(final PlaybackEvent evt) {
-        logger.usage("Shuttle back");
+        logger.event("Shuttle back");
     }
 
     public void shuttleForwardEvent(final PlaybackEvent evt) {
-        logger.usage("Shuttle forward");
+        logger.event("Shuttle forward");
     }
 
     public void stopEvent(final PlaybackEvent evt) {
-        logger.usage("Stop event");
+        logger.event("Stop event");
     }
 
 }

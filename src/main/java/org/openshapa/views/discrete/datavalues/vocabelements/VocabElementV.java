@@ -74,7 +74,7 @@ public class VocabElementV extends JPanel {
                 BorderFactory.createEmptyBorder(3, 0, 3, 0));
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(VocabElementV.class);
+    private static Logger LOGGER = UserMetrix.getLogger(VocabElementV.class);
 
     /** the light blue colour used for backgrounds */
     private static Color lightBlue = new Color(224,248,255,255);

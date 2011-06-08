@@ -24,7 +24,7 @@ public final class TextStringDataValueEditor extends DataValueEditor {
     private static final String RESERVED_CHARS = "\u001B\t";
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(TextStringDataValueEditor.class);
+    private static Logger LOGGER = UserMetrix.getLogger(TextStringDataValueEditor.class);
 
     /**
      * Constructor.
@@ -102,7 +102,7 @@ public final class TextStringDataValueEditor extends DataValueEditor {
                 }
                 updateDatabase();
             } catch (SystemErrorException se) {
-                logger.error("Unable to edit text string", se);
+                LOGGER.error("Unable to edit text string", se);
             }
 
         // All other key strokes are consumed.

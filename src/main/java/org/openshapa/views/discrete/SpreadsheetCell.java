@@ -139,7 +139,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     private CellSelectionListener cellSelL;
 
     /** The logger for this class. */
-    private Logger LOGGER = UserMetrix.getLogger(SpreadsheetCell.class);
+    private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetCell.class);
 
     /**
      * Creates new form SpreadsheetCell.

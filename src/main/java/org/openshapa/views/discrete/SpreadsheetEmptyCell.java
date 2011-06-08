@@ -263,7 +263,7 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
      *            The mouse event that triggered this action.
      */
     @Override public void mouseClicked(final MouseEvent me) {
-        LOGGER.usage("Pressed empty cell");
+        LOGGER.event("Pressed empty cell");
         CreateNewCellC controller = new CreateNewCellC();
         controller.createDefaultCell(model);
     }

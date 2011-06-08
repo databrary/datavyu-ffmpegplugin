@@ -59,7 +59,7 @@ ExternalVocabListListener{
     /** The database that this vocab editor is manipulating. */
     private Datastore db;
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(VocabEditorV.class);
+    private static Logger LOGGER = UserMetrix.getLogger(VocabEditorV.class);
     /** The currently selected vocab element. */
     private VocabElementV selectedVocabElement;
     /** The currently selected formal argument. */
@@ -87,7 +87,7 @@ ExternalVocabListListener{
     public VocabEditorV(final Frame parent, final boolean modal) {
         super(parent, modal);
 
-        logger.usage("vocEd - show");
+        LOGGER.event("vocEd - show");
 
 
         db = OpenSHAPA.getProjectController().getDB();
@@ -178,7 +178,7 @@ ExternalVocabListListener{
                 veViews.add(predicateV);
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to populate current vocab list", e);
+            LOGGER.error("Unable to populate current vocab list", e);
         }
 
         // Add a pad cell to fill out the bottom of the vertical frame.
@@ -205,14 +205,14 @@ ExternalVocabListListener{
     @Action
     public void addPredicate() {
         try {
-            logger.usage("vocEd - add predicate");
+            LOGGER.event("vocEd - add predicate");
             PredicateVocabElement pve =
                     new PredicateVocabElement(getLegacyDB(),
                                               "predicate" + getPredNameNum());
             addVocabElement(pve);
 
         } catch (SystemErrorException e) {
-            logger.error("Unable to create predicate vocab element", e);
+            LOGGER.error("Unable to create predicate vocab element", e);
         }
         updateDialogState();
     }
@@ -223,14 +223,14 @@ ExternalVocabListListener{
     @Action
     public void addMatrix() {
         try {
-            logger.usage("vocEd - add matrix");
+            LOGGER.event("vocEd - add matrix");
             MatrixVocabElement mve =
                     new MatrixVocabElement(getLegacyDB(),
                                            "matrix" + getMatNameNum());
             mve.setType(MatrixType.MATRIX);
             addVocabElement(mve);
         } catch (SystemErrorException e) {
-            logger.error("Unable to create matrix vocab element", e);
+            LOGGER.error("Unable to create matrix vocab element", e);
         }
         updateDialogState();
     }
@@ -301,7 +301,7 @@ ExternalVocabListListener{
     public void moveArgumentLeft() {
         try {
             saveState();
-            logger.error("vocEd - move argument left");
+            LOGGER.error("vocEd - move argument left");
             VocabElement ve = selectedVocabElement.getModel();
             ve.deleteFormalArg(selectedArgumentI);
             ve.insertFormalArg(selectedArgument.getModel(),
@@ -315,7 +315,7 @@ ExternalVocabListListener{
 
             updateDialogState();
         } catch (SystemErrorException e) {
-            logger.error("Unable to move formal argument left", e);
+            LOGGER.error("Unable to move formal argument left", e);
         }
     }
 
@@ -326,7 +326,7 @@ ExternalVocabListListener{
     public void moveArgumentRight() {
         try {
             saveState();
-            logger.error("vocEd - move argument right");
+            LOGGER.error("vocEd - move argument right");
             VocabElement ve = selectedVocabElement.getModel();
             ve.deleteFormalArg(selectedArgumentI);
             ve.insertFormalArg(selectedArgument.getModel(),
@@ -340,7 +340,7 @@ ExternalVocabListListener{
 
             updateDialogState();
         } catch (SystemErrorException e) {
-            logger.error("Unable to move formal argument right", e);
+            LOGGER.error("Unable to move formal argument right", e);
         }
     }
 
@@ -353,7 +353,7 @@ ExternalVocabListListener{
             saveState();
             VocabElement ve = selectedVocabElement.getModel();
             String type = (String) argTypeComboBox.getSelectedItem();
-            logger.usage("vocEd - add argument:" + type);
+            LOGGER.event("vocEd - add argument:" + type);
             String newArgName = "<arg" + ve.getNumFormalArgs() + ">";
             FormalArgument fa;
 
@@ -378,7 +378,7 @@ ExternalVocabListListener{
             updateDialogState();
             
         } catch (SystemErrorException e) {
-            logger.error("Unable to create formal argument.", e);
+            LOGGER.error("Unable to create formal argument.", e);
         }
     }
 
@@ -387,7 +387,7 @@ ExternalVocabListListener{
      */
     @Action
     public void setVaryingArgs() {
-        logger.usage("vocEd - toggle vary args");
+        LOGGER.event("vocEd - toggle vary args");
         if (selectedVocabElement != null) {
             try {
                 selectedVocabElement.getModel().setVarLen(
@@ -396,7 +396,7 @@ ExternalVocabListListener{
                 selectedVocabElement.setHasChanged(true);
                 selectedVocabElement.rebuildContents();  
             } catch (SystemErrorException e) {
-                logger.error("Unable to set varying arguments.", e);
+                LOGGER.error("Unable to set varying arguments.", e);
             }
         }
     }
@@ -409,24 +409,24 @@ ExternalVocabListListener{
         // User has vocab element selected - delete it from the editor.
         saveState();
         if (selectedVocabElement != null && selectedArgument == null) {
-                logger.usage("vocEd - delete element");
+                LOGGER.event("vocEd - delete element");
                 selectedVocabElement.setDeleted(true);
                 try{
                     selectedVocabElement.getDataView().getEditors().get(0).selectAll();
                 }catch(Exception e){
-                    logger.error("veViews is empty.", e);
+                    LOGGER.error("veViews is empty.", e);
                 }
                 verticalFrame.revalidate();                
                 // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
-            logger.usage("vocEd - delete argument");
+            LOGGER.event("vocEd - delete argument");
             VocabElement ve = selectedVocabElement.getModel();
             try {
                 ve.deleteFormalArg(selectedArgumentI);
                 selectedVocabElement.setHasChanged(true);
                 selectedVocabElement.rebuildContents();
             } catch (SystemErrorException e) {
-                logger.error("Unable to selected argument", e);
+                LOGGER.error("Unable to selected argument", e);
             }
         }
 
@@ -439,7 +439,7 @@ ExternalVocabListListener{
     @Action
     public void revertChanges() {
         try {
-            logger.usage("vocEd - revert");
+            LOGGER.event("vocEd - revert");
 
             ArrayList<VocabElementV> toDelete = new ArrayList<VocabElementV>();
 
@@ -474,7 +474,7 @@ ExternalVocabListListener{
                 veViews.remove(view);
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to revert changes in vocab editor.", e);
+            LOGGER.error("Unable to revert changes in vocab editor.", e);
         }
 
         updateDialogState();
@@ -485,7 +485,7 @@ ExternalVocabListListener{
      */
     @Action
     public int applyChanges() {
-        logger.usage("vocEd - apply");
+        LOGGER.event("vocEd - apply");
         int errors = 0;
         try {
 
@@ -556,7 +556,7 @@ ExternalVocabListListener{
                     .showSpreadsheet();
 
         } catch (SystemErrorException e) {
-            logger.error("Unable to apply vocab changes", e);
+            LOGGER.error("Unable to apply vocab changes", e);
         } catch (LogicErrorException le) {
             OpenSHAPA.getApplication().showWarningDialog(le);
         }
@@ -568,7 +568,7 @@ ExternalVocabListListener{
             }
         }
         }catch(Exception e){
-            logger.error("Unable to delete ve");
+            LOGGER.error("Unable to delete ve");
         }
         if(errors!=0){
             switch(errors){
@@ -589,13 +589,13 @@ ExternalVocabListListener{
      */
     @Action
     public void ok() {
-        logger.usage("vocEd - ok");
+        LOGGER.event("vocEd - ok");
         if(applyChanges()==0){
             try {
                 disposeAll();
                 finalize();
             } catch (Throwable e) {
-                logger.error("Unable to destroy vocab editor view.", e);
+                LOGGER.error("Unable to destroy vocab editor view.", e);
             }
         }
     }
@@ -605,13 +605,13 @@ ExternalVocabListListener{
      */
     @Action
     public void closeWindow() {
-        logger.usage("vocEd - close");
+        LOGGER.event("vocEd - close");
         try {
             disposeAll();
             finalize();
 
         } catch (Throwable e) {
-            logger.error("Unable to destroy vocab editor view.", e);
+            LOGGER.error("Unable to destroy vocab editor view.", e);
         }
     }
 
@@ -730,7 +730,7 @@ ExternalVocabListListener{
                     moveArgRightButton.setEnabled(false);
                 }
             } catch (SystemErrorException e) {
-                logger.error("Unable to get num of formal args", e);
+                LOGGER.error("Unable to get num of formal args", e);
             }
         } else {
             moveArgLeftButton.setEnabled(false);
@@ -1074,7 +1074,7 @@ ExternalVocabListListener{
                 updateDialogState();
 
             } catch (SystemErrorException se) {
-                logger.error("Unable to alter selected argument.", se);
+                LOGGER.error("Unable to alter selected argument.", se);
             }
         }
     }// GEN-LAST:event_argTypeComboBoxItemStateChanged
@@ -1305,7 +1305,7 @@ ExternalVocabListListener{
                 }
             }
         }catch(Exception e){
-            logger.error("could not delete VE from DB" +e);
+            LOGGER.error("could not delete VE from DB" +e);
         }
     }
 
@@ -1330,7 +1330,7 @@ ExternalVocabListListener{
             }
         }
         }catch(Exception e){
-            logger.error("problem replacing vocab element"+e);
+            LOGGER.error("problem replacing vocab element"+e);
         }
     }
 
@@ -1369,7 +1369,7 @@ ExternalVocabListListener{
                 }
             }
         } catch (SystemErrorException ex) {
-                logger.error("could not add vocab element"+ex);
+                LOGGER.error("could not add vocab element"+ex);
         }
     }
 

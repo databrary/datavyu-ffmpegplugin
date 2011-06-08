@@ -24,7 +24,7 @@ public final class SetNewCellStopTimeC {
      */
     public SetNewCellStopTimeC(final long milliseconds) {
         try {
-            logger.usage("set new cell offset");
+            LOGGER.event("set new cell offset");
             Database model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
 
             DataCell cell =
@@ -34,10 +34,10 @@ public final class SetNewCellStopTimeC {
                     milliseconds));
             model.replaceCell(cell);
         } catch (SystemErrorException e) {
-            logger.error("Unable to set new cell stop time.", e);
+            LOGGER.error("Unable to set new cell stop time.", e);
         }
     }
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SetNewCellStopTimeC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(SetNewCellStopTimeC.class);
 }

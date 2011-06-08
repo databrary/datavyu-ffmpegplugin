@@ -20,7 +20,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class OpenProjectFileC {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(OpenProjectFileC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(OpenProjectFileC.class);
 
     /**
      * Opens and loads a project file from disk.
@@ -37,13 +37,13 @@ public final class OpenProjectFileC {
 
             // Make sure the de-serialised object is a project file
             if (!(o instanceof Project)) {
-                logger.error("Not an OpenSHAPA project file");
+                LOGGER.error("Not an OpenSHAPA project file");
                 return null;
             }
 
             return (Project) o;
         } catch (FileNotFoundException ex) {
-            logger.error("Cannot open project file: "
+            LOGGER.error("Cannot open project file: "
                     + inFile.getAbsolutePath(), ex);
             return null;
         }
@@ -63,7 +63,7 @@ public final class OpenProjectFileC {
 
         // Make sure the de-serialised object is a project file
         if (!(o instanceof Project)) {
-            logger.error("Not an OpenSHAPA project file");
+            LOGGER.error("Not an OpenSHAPA project file");
             return null;
         }
 

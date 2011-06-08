@@ -29,7 +29,7 @@ implements FocusListener, KeyListener {
     private TimeStampDataValueEditor myEditor;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(TimeStampTextField.class);
+    private static Logger LOGGER = UserMetrix.getLogger(TimeStampTextField.class);
 
     /**
      * Creates a new instance of MatrixV.
@@ -95,7 +95,7 @@ implements FocusListener, KeyListener {
 
             myEditor.focusGained(fe);
         } catch (SystemErrorException se) {
-            logger.error("Unable to gain focus", se);
+            LOGGER.error("Unable to gain focus", se);
         }
     }
 

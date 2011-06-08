@@ -173,7 +173,7 @@ public final class PlaybackController implements PlaybackListener,
     // [static]
     //
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(PlaybackController.class);
+    private static Logger LOGGER = UserMetrix.getLogger(PlaybackController.class);
 
     // -------------------------------------------------------------------------
     //
@@ -859,7 +859,7 @@ public final class PlaybackController implements PlaybackListener,
                 return;
             }
         } catch (Exception e) {
-            logger.error("Unable to Sync viewers", e);
+            LOGGER.error("Unable to Sync viewers", e);
         }
     }
 
@@ -1075,9 +1075,9 @@ public final class PlaybackController implements PlaybackListener,
                         }
                     }).get();
         } catch (InterruptedException e) {
-            logger.error("Executor thread interrupted", e);
+            LOGGER.error("Executor thread interrupted", e);
         } catch (ExecutionException e) {
-            logger.error("Failed to retrieve result", e);
+            LOGGER.error("Failed to retrieve result", e);
         }
 
         return viewers;
@@ -1492,9 +1492,9 @@ public final class PlaybackController implements PlaybackListener,
                         }
                     }).get();
         } catch (InterruptedException e) {
-            logger.error("Executor thread interrupted", e);
+            LOGGER.error("Executor thread interrupted", e);
         } catch (ExecutionException e) {
-            logger.error("Failed to retrieve result", e);
+            LOGGER.error("Failed to retrieve result", e);
         }
 
         return clock.getTime();

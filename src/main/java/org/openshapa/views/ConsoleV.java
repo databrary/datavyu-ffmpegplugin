@@ -16,7 +16,7 @@ import javax.swing.LayoutStyle;
 public final class ConsoleV extends OpenSHAPADialog {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(VariableListV.class);
+    private static Logger LOGGER = UserMetrix.getLogger(ConsoleV.class);
 
     /** The instance of the console. */
     private static ConsoleV instance;
@@ -124,7 +124,7 @@ public final class ConsoleV extends OpenSHAPADialog {
 
         // Whoops, unable to destroy dialog correctly.
         } catch (Throwable e) {
-            logger.error("Unable to release window NewVariableV.", e);
+            LOGGER.error("Unable to release window NewVariableV.", e);
         }
 }//GEN-LAST:event_closeButtonActionPerformed
 

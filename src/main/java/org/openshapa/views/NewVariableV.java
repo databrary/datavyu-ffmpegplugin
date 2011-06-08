@@ -38,7 +38,7 @@ public final class NewVariableV extends OpenSHAPADialog {
      */
     public NewVariableV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
-        LOGGER.usage("newVar - show");
+        LOGGER.event("newVar - show");
         initComponents();
         setName(this.getClass().getSimpleName());
 
@@ -329,7 +329,7 @@ public final class NewVariableV extends OpenSHAPADialog {
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
         try {
-            LOGGER.usage("newVar - create column:" + getVariableType());
+            LOGGER.event("newVar - create column:" + getVariableType());
             Column.isValidColumnName(getLegacyDB(), getVariableName());
             DataColumn dc = new DataColumn(getLegacyDB(),
                                            getVariableName(),

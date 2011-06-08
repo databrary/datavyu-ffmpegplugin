@@ -29,7 +29,7 @@ import org.openshapa.models.db.DeprecatedDatabase;
 public final class NewProjectV extends OpenSHAPADialog {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(NewProjectV.class);
+    private static Logger LOGGER = UserMetrix.getLogger(NewProjectV.class);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
@@ -49,7 +49,7 @@ public final class NewProjectV extends OpenSHAPADialog {
      */
     public NewProjectV(final Frame parent, final boolean modal) {
         super(parent, modal);
-        logger.usage("newProj - show");
+        LOGGER.event("newProj - show");
         initComponents();
 
         // Need to set a unique name so that we save and restore session data
@@ -187,7 +187,7 @@ public final class NewProjectV extends OpenSHAPADialog {
 
             // Whoops, unable to destroy dialog correctly.
         } catch (Throwable e) {
-            logger.error("Unable to release window NewProjectV.", e);
+            LOGGER.error("Unable to release window NewProjectV.", e);
         }
     } // GEN-LAST:event_cancelButtonActionPerformed
 
@@ -202,7 +202,7 @@ public final class NewProjectV extends OpenSHAPADialog {
             .getResourceMap(NewProjectV.class);
 
         try {
-            logger.usage("create new project");
+            LOGGER.event("create new project");
 
             OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
                 .getMainView();
@@ -233,12 +233,12 @@ public final class NewProjectV extends OpenSHAPADialog {
             dispose();
             finalize();
         } catch (SystemErrorException ex) {
-            logger.error("Unable to create new database", ex);
+            LOGGER.error("Unable to create new database", ex);
         } catch (LogicErrorException ex) {
             OpenSHAPA.getApplication().showWarningDialog(ex);
             new NewProjectC();
         } catch (Throwable ex) {
-            logger.error("Unable to clean up the new project view.");
+            LOGGER.error("Unable to clean up the new project view.");
         }
 
         OpenSHAPA.getApplication().resetApp();

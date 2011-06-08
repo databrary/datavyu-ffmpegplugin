@@ -33,7 +33,7 @@ public final class VariableListV extends OpenSHAPADialog
 implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnListListener, TableModelListener {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(VariableListV.class);
+    private static Logger LOGGER = UserMetrix.getLogger(VariableListV.class);
 
     /** Records changes to column during a cascade. */
     private ColumnChanges colChanges;
@@ -90,7 +90,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
                 }
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to list variables.", e);
+            LOGGER.error("Unable to list variables.", e);
         }
     }
 
@@ -189,7 +189,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
         try {
             database.registerCascadeListener(this);
         } catch (SystemErrorException e) {
-            logger.error("Unable to register listeners for the variable list.", e);
+            LOGGER.error("Unable to register listeners for the variable list.", e);
         }
     }
 
@@ -201,7 +201,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
         try {
             database.deregisterCascadeListener(this);
         } catch (SystemErrorException e) {
-            logger.error("Unable to deregister listeners for the variable list.", e);
+            LOGGER.error("Unable to deregister listeners for the variable list.", e);
         }
     }
 
@@ -213,7 +213,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
         try {
             database.registerDataColumnListener(dbColID, this);
         } catch (SystemErrorException e) {
-            logger.error("Unable to deregister listeners for the variable list.", e);
+            LOGGER.error("Unable to deregister listeners for the variable list.", e);
         }
     }
     
@@ -226,7 +226,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
             database.deregisterDataColumnListener(dbColID, this);
             database.deregisterCascadeListener(this);
         } catch (SystemErrorException e) {
-            logger.error("Unable to deregister listeners for the variable list.", e);
+            LOGGER.error("Unable to deregister listeners for the variable list.", e);
         }
     }
   
@@ -447,7 +447,7 @@ implements ExternalDataColumnListener, ExternalCascadeListener, ExternalColumnLi
             //you'll need to specify where to put the new row
             insertRow(dbColumn, rMap);
         } catch (SystemErrorException e) {
-            logger.error("Unable to insert column into variable list", e);
+            LOGGER.error("Unable to insert column into variable list", e);
         }
     }
 

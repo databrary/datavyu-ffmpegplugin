@@ -25,7 +25,7 @@ public final class OpenC {
     private Project project = null;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(OpenC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(OpenC.class);
 
     /**
      * Opens a file as a OpenSHAPA database.
@@ -55,12 +55,12 @@ public final class OpenC {
 
         // If project is archive - open it as such.
         if (projectFile.getName().endsWith(".opf")) {
-            logger.usage("open project archive");
+            LOGGER.event("open project archive");
             openProjectArchive(projectFile);
 
             // Otherwise project is uncompressed.
         } else {
-            logger.usage("open legacy shapa");
+            LOGGER.event("open legacy shapa");
 
             OpenProjectFileC opc = new OpenProjectFileC();
             project = opc.open(projectFile);
@@ -118,7 +118,7 @@ public final class OpenC {
 
             zf.close();
         } catch (Exception e) {
-            logger.error("Unable to open project archive", e);
+            LOGGER.error("Unable to open project archive", e);
         }
     }
 

@@ -14,7 +14,7 @@ public class BackgroundPanel extends JPanel {
     Image image;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(BackgroundPanel.class);
+    private static Logger LOGGER = UserMetrix.getLogger(BackgroundPanel.class);
 
     public BackgroundPanel(String resource) {
         try {
@@ -22,7 +22,7 @@ public class BackgroundPanel extends JPanel {
             this.image = ImageIO.read(typeIconURL);
             this.setSize(this.image.getWidth(null), this.image.getHeight(null));
         } catch (IOException e) {
-            logger.error("Unable to load resource", e);
+            LOGGER.error("Unable to load resource", e);
         }
     }
 

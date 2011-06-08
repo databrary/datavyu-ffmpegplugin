@@ -60,7 +60,7 @@ public final class OpenDatabaseFileC {
     private static final int DATA_INDEX = 2;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(OpenDatabaseFileC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(OpenDatabaseFileC.class);
 
     /**
      * Opens a database.
@@ -113,7 +113,7 @@ public final class OpenDatabaseFileC {
     public Datastore openAsCSV(final File sFile) {
 
         try {
-            logger.usage("open csv database from file");
+            LOGGER.event("open csv database from file");
 
             FileInputStream fis = new FileInputStream(sFile);
             Datastore result = openAsCSV(fis);
@@ -121,7 +121,7 @@ public final class OpenDatabaseFileC {
 
             return result;
         } catch (Exception fe) {
-            logger.error("Unable to open as CSV", fe);
+            LOGGER.error("Unable to open as CSV", fe);
         }
 
         // Error encountered - return null.
@@ -141,7 +141,7 @@ public final class OpenDatabaseFileC {
     public Datastore openAsCSV(final InputStream inStream) {
 
         try {
-            logger.usage("open csv database from stream");
+            LOGGER.event("open csv database from stream");
 
             DeprecatedDatabase db = new DeprecatedDatabase();
             InputStreamReader isr = new InputStreamReader(inStream);
@@ -192,11 +192,11 @@ public final class OpenDatabaseFileC {
 
             return db;
         } catch (IOException e) {
-            logger.error("Unable to read line from CSV file", e);
+            LOGGER.error("Unable to read line from CSV file", e);
         } catch (SystemErrorException e) {
-            logger.error("Unable to populate databse from CSV file", e);
+            LOGGER.error("Unable to populate databse from CSV file", e);
         } catch (LogicErrorException e) {
-            logger.error("Corrupted CSV file", e);
+            LOGGER.error("Corrupted CSV file", e);
         }
 
         // Error encountered - return null.

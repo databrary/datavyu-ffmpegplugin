@@ -49,7 +49,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     private Media visualMedia;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(getClass());
+    private static Logger LOGGER = UserMetrix.getLogger(QTDataViewer.class);
 
     public QTDataViewer(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
@@ -61,7 +61,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
             // Initalise QTJava.
             QTSession.open();
         } catch (Throwable e) {
-            logger.error("Unable to create " + this.getClass().getName(), e);
+            LOGGER.error("Unable to create " + this.getClass().getName(), e);
         }
     }
 
@@ -74,7 +74,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         try {
             movie.setVolume(volume);
         } catch (StdQTException ex) {
-            logger.error("Unable to set volume", ex);
+            LOGGER.error("Unable to set volume", ex);
         }
     }
 
@@ -90,7 +90,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                     * (long) movie.getDuration() / movie.getTimeScale();
             }
         } catch (StdQTException ex) {
-            logger.error("Unable to determine QT movie duration", ex);
+            LOGGER.error("Unable to determine QT movie duration", ex);
         }
 
         return -1;
@@ -117,7 +117,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
             // is displayable/visible
             add(QTFactory.makeQTComponent(movie).asComponent());
         } catch (QTException e) {
-            logger.error("Unable to setVideoFile", e);
+            LOGGER.error("Unable to setVideoFile", e);
         }
     }
 
@@ -128,7 +128,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 	            return new Dimension(vtDim.getWidth(), vtDim.getHeight());
         	}
         } catch (QTException e) {
-            logger.error("Unable to getQTNativeVideoSize", e);
+            LOGGER.error("Unable to getQTNativeVideoSize", e);
         }
 
         return new Dimension(1, 1);
@@ -151,7 +151,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 	            }
         	}
         } catch (QTException e) {
-            logger.error("Unable to calculate FPS", e);
+            LOGGER.error("Unable to calculate FPS", e);
         }
 
         return fps;
@@ -190,7 +190,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                     minFrameLength = candidateFrameLen;
                 }
             } catch (QTException e) {
-                logger.error("Error getting time", e);
+                LOGGER.error("Error getting time", e);
             }
         }
 
@@ -209,7 +209,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                 movie.setRate(getPlaybackSpeed());
             }
         } catch (QTException e) {
-            logger.error("Unable to play", e);
+            LOGGER.error("Unable to play", e);
         }
     }
 
@@ -225,7 +225,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                 movie.stop();
             }
         } catch (QTException e) {
-            logger.error("Unable to stop", e);
+            LOGGER.error("Unable to stop", e);
         }
     }
 
@@ -242,7 +242,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                 movie.setTime(time);
             }
         } catch (QTException e) {
-            logger.error("Unable to find", e);
+            LOGGER.error("Unable to find", e);
         }
     }
 
@@ -254,7 +254,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         try {
             return movie.getTime();
         } catch (QTException e) {
-            logger.error("Unable to get time", e);
+            LOGGER.error("Unable to get time", e);
         }
 
         return 0;

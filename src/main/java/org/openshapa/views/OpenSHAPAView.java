@@ -86,7 +86,7 @@ public final class OpenSHAPAView extends FrameView
     public static final int ZOOM_MIN_SIZE = 8;
 
     /** The logger for this class. */
-    private Logger LOGGER = UserMetrix.getLogger(OpenSHAPAView.class);
+    private static Logger LOGGER = UserMetrix.getLogger(OpenSHAPAView.class);
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
@@ -728,7 +728,7 @@ public final class OpenSHAPAView extends FrameView
      */
     @Action public void hideColumn() {
         MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
-        LOGGER.usage("Hidding columns");
+        LOGGER.event("Hidding columns");
 
         for (DataColumn col : panel.getSelectedCols()) {
             try {
@@ -748,7 +748,7 @@ public final class OpenSHAPAView extends FrameView
      */
     @Action public void showAllColumns() {
         MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
-        LOGGER.usage("Showing all columns");
+        LOGGER.event("Showing all columns");
 
         try {
             for (DataColumn col : msdb.getDataColumns()) {

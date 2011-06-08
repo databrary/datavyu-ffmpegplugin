@@ -30,7 +30,7 @@ import org.openshapa.RecentFiles;
 public final class SaveC {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SaveC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(SaveC.class);
 
     /**
      * Saves only a database to disk.
@@ -55,7 +55,7 @@ public final class SaveC {
      */
     public void saveDatabase(final File databaseFile,
         final MacshapaDatabase database) throws LogicErrorException {
-        logger.usage("saving database");
+        LOGGER.event("saving database");
 
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
         saveDBC.saveDatabase(databaseFile, database);
@@ -76,7 +76,7 @@ public final class SaveC {
         final MacshapaDatabase database) throws LogicErrorException {
 
         try {
-            logger.usage("save project");
+            LOGGER.event("save project");
 
             FileOutputStream fos = new FileOutputStream(projectFile);
             ZipOutputStream zos = new ZipOutputStream(fos);

@@ -75,7 +75,7 @@ public final class Configuration {
     private ConfigProperties properties;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(Configuration.class);
+    private static Logger LOGGER = UserMetrix.getLogger(Configuration.class);
 
     /** Default font type. */
     private Font newFont = null;
@@ -94,7 +94,7 @@ public final class Configuration {
 
             // Oh-noes, can't load configuration file from disk.
         } catch (IOException e) {
-            logger.error("Unable to load configuration file from dis", e);
+            LOGGER.error("Unable to load configuration file from dis", e);
         }
 
         // Set custom font
@@ -442,7 +442,7 @@ public final class Configuration {
 
             // Oh-noes, can't save configuration file to disk.
         } catch (IOException e) {
-            logger.error("Unable to save configuration to disk", e);
+            LOGGER.error("Unable to save configuration to disk", e);
         }
     }
 

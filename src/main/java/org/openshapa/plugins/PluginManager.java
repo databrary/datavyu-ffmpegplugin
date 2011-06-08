@@ -61,7 +61,7 @@ public final class PluginManager {
     private static final PluginManager INSTANCE = new PluginManager();
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(PluginManager.class);
+    private static Logger LOGGER = UserMetrix.getLogger(PluginManager.class);
 
     /** Set of plugins. */
     private Set<Plugin> plugins;
@@ -257,11 +257,11 @@ public final class PluginManager {
 
             // Whoops, something went bad. Chuck a spaz.
         } catch (ClassNotFoundException e) {
-            logger.error("Unable to build Plugin", e);
+            LOGGER.error("Unable to build Plugin", e);
         } catch (IOException ie) {
-            logger.error("Unable to load jar file", ie);
+            LOGGER.error("Unable to load jar file", ie);
         } catch (URISyntaxException se) {
-            logger.error("Unable to build path to jar file", se);
+            LOGGER.error("Unable to build path to jar file", se);
         }
     }
 
@@ -284,7 +284,7 @@ public final class PluginManager {
             method.setAccessible(true);
             method.invoke(sysLoader, new Object[] { f.toURL() });
         } catch (Throwable t) {
-            logger.error("Unable to inject class into class path.", t);
+            LOGGER.error("Unable to inject class into class path.", t);
         }
     }
 
@@ -357,16 +357,16 @@ public final class PluginManager {
                     	System.err.println(msg);
                         e.printStackTrace();
                         
-                        logger.error(msg, e);
+                        LOGGER.error(msg, e);
                     }
                 }
             }
         } catch (ClassNotFoundException e) {
-            logger.error("Unable to find plugin.", e);
+            LOGGER.error("Unable to find plugin.", e);
         } catch (ClassFormatError e) {
-            logger.error("Plugin with bad class format.", e);
+            LOGGER.error("Plugin with bad class format.", e);
         } catch (Throwable e) {
-            logger.error("Unable to instantiate plugin", e);
+            LOGGER.error("Unable to instantiate plugin", e);
         }
     }
 

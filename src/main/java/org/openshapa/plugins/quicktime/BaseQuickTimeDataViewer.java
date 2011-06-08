@@ -52,7 +52,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
     implements DataViewer {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(getClass());
+    private static Logger LOGGER = UserMetrix.getLogger(BaseQuickTimeDataViewer.class);
 
     /** Rate for playback. */
     private float playRate;
@@ -520,7 +520,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
 
 
         } catch (IOException e) {
-            logger.error("Error loading settings", e);
+            LOGGER.error("Error loading settings", e);
         }
     }
 
@@ -534,7 +534,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         try {
             settings.store(os, null);
         } catch (IOException e) {
-            logger.error("Error saving settings", e);
+            LOGGER.error("Error saving settings", e);
         }
     }
 

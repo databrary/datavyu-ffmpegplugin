@@ -203,7 +203,7 @@ public final class DataControllerV extends OpenSHAPADialog
     // [static]
     //
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(DataControllerV.class);
+    private static Logger LOGGER = UserMetrix.getLogger(DataControllerV.class);
 
     /** Determines whether or not Shift is being held. */
     private boolean shiftMask = false;
@@ -406,7 +406,7 @@ public final class DataControllerV extends OpenSHAPADialog
                     mixerController.getTracksEditorController()
                         .getViewerStateListener(dataViewer.getIdentifier()));
             } catch (Throwable t) {
-                logger.error(t);
+                LOGGER.error(t);
                 JOptionPane.showMessageDialog(null,
                     "Could not open data source: " + t.getMessage());
             }
@@ -562,7 +562,7 @@ public final class DataControllerV extends OpenSHAPADialog
                 return;
             }
         } catch (Exception e) {
-            logger.error("Unable to Sync viewers", e);
+            LOGGER.error("Unable to Sync viewers", e);
         }
     }
 
@@ -1359,7 +1359,7 @@ public final class DataControllerV extends OpenSHAPADialog
      */
     private void openVideoButtonActionPerformed(
         final java.awt.event.ActionEvent evt) {
-        logger.usage("Add data");
+        LOGGER.event("Add data");
 
         PluginChooser chooser = null;
 
@@ -1413,12 +1413,12 @@ public final class DataControllerV extends OpenSHAPADialog
                 DataControllerV.class);
 
         if (tracksPanelEnabled) {
-            logger.usage("Show tracks");
+            LOGGER.event("Show tracks");
 
             // Panel is being displayed, hide it
             button.setIcon(resourceMap.getIcon("showTracksButton.show.icon"));
         } else {
-            logger.usage("Hide tracks");
+            LOGGER.event("Hide tracks");
 
             // Panel is hidden, show it
             button.setIcon(resourceMap.getIcon("showTracksButton.hide.icon"));
@@ -1541,7 +1541,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks the set cell onset button.
      */
     @Action public void setCellOnsetAction() {
-        logger.usage("Set cell onset");
+        LOGGER.event("Set cell onset");
         new SetSelectedCellStartTimeC(getCurrentTime());
         setFindTime(getCurrentTime());
     }
@@ -1550,7 +1550,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the set cell offest button.
      */
     @Action public void setCellOffsetAction() {
-        logger.usage("Set cell offset");
+        LOGGER.event("Set cell offset");
         new SetSelectedCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }
@@ -1797,7 +1797,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the play button.
      */
     @Action public void playAction() {
-        logger.usage("Play");
+        LOGGER.event("Play");
 
         // BugzID:464 - When stopped at the end of the region of interest.
         // pressing play jumps the stream back to the start of the video before
@@ -1814,7 +1814,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the fast forward button.
      */
     @Action public void forwardAction() {
-        logger.usage("Fast forward");
+        LOGGER.event("Fast forward");
         playAt(FFORWARD_RATE);
     }
 
@@ -1822,7 +1822,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the rewind button.
      */
     @Action public void rewindAction() {
-        logger.usage("Rewind");
+        LOGGER.event("Rewind");
         playAt(REWIND_RATE);
     }
 
@@ -1830,7 +1830,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the pause button.
      */
     @Action public void pauseAction() {
-        logger.usage("Pause");
+        LOGGER.event("Pause");
 
         // Resume from pause at playback rate prior to pause.
         if (clock.isStopped()) {
@@ -1850,7 +1850,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the stop button.
      */
     @Action public void stopAction() {
-        logger.usage("Stop event");
+        LOGGER.event("Stop event");
         clock.stop();
         clock.setRate(0);
         playbackModel.setShuttleRate(0);
@@ -1864,7 +1864,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * @todo proper behaviour for reversing shuttle direction?
      */
     @Action public void shuttleForwardAction() {
-        logger.usage("Shuttle forward");
+        LOGGER.event("Shuttle forward");
 
         if ((clock.getTime() <= 0)
                 && ((playbackModel.getShuttleRate() != 0)
@@ -1893,7 +1893,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the shuttle back button.
      */
     @Action public void shuttleBackAction() {
-        logger.usage("Shuttle back");
+        LOGGER.event("Shuttle back");
 
         if ((clock.getTime() <= 0)
                 && ((playbackModel.getShuttleRate() != 0)
@@ -1966,7 +1966,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the find button.
      */
     @Action public void findAction() {
-        logger.usage("Find");
+        LOGGER.event("Find");
 
         if (shiftMask) {
             findOffsetAction();
@@ -1975,7 +1975,7 @@ public final class DataControllerV extends OpenSHAPADialog
             try {
                 jumpTo(CLOCK_FORMAT.parse(findTextField.getText()).getTime());
             } catch (ParseException e) {
-                logger.error("unable to find within video", e);
+                LOGGER.error("unable to find within video", e);
             }
         }
     }
@@ -1988,7 +1988,7 @@ public final class DataControllerV extends OpenSHAPADialog
         try {
             jumpTo(CLOCK_FORMAT.parse(findOffsetField.getText()).getTime());
         } catch (ParseException e) {
-            logger.error("unable to find within video", e);
+            LOGGER.error("unable to find within video", e);
         }
     }
 
@@ -2016,7 +2016,7 @@ public final class DataControllerV extends OpenSHAPADialog
             mixerController.getMixerModel().getNeedleModel().setCurrentTime(
                 newWindowPlayStart);
         } catch (ParseException e) {
-            logger.error("Unable to set playback region of interest", e);
+            LOGGER.error("Unable to set playback region of interest", e);
         }
     }
 
@@ -2026,7 +2026,7 @@ public final class DataControllerV extends OpenSHAPADialog
     @Action public void goBackAction() {
 
         try {
-            logger.usage("Go back");
+            LOGGER.event("Go back");
 
             long j = -CLOCK_FORMAT.parse(goBackTextField.getText()).getTime();
             jump(j);
@@ -2035,7 +2035,7 @@ public final class DataControllerV extends OpenSHAPADialog
             playAt(PLAY_RATE);
 
         } catch (ParseException e) {
-            logger.error("unable to find within video", e);
+            LOGGER.error("unable to find within video", e);
         }
     }
 
@@ -2043,7 +2043,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the jog backwards button.
      */
     @Action public void jogBackAction() {
-        logger.usage("Jog back");
+        LOGGER.event("Jog back");
 
         int mul = 1;
 
@@ -2073,7 +2073,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the jog forwards button.
      */
     @Action public void jogForwardAction() {
-        logger.usage("Jog forward");
+        LOGGER.event("Jog forward");
 
         int mul = 1;
 
@@ -2191,7 +2191,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the create new cell button.
      */
     @Action public void createNewCellAction() {
-        logger.usage("New cell");
+        LOGGER.event("New cell");
         CreateNewCellC controller = new CreateNewCellC();
         controller.createDefaultCell();
     }
@@ -2200,7 +2200,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the new cell button.
      */
     @Action public void createNewCellAndSetOnsetAction() {
-        logger.usage("New cell set onset");
+        LOGGER.event("New cell set onset");
         new CreateNewCellC(getCurrentTime());
     }
 
@@ -2208,7 +2208,7 @@ public final class DataControllerV extends OpenSHAPADialog
      * Action to invoke when the user clicks on the new cell offset button.
      */
     @Action public void pointCellAction() {
-        logger.usage("Set new cell offset");
+        LOGGER.event("Set new cell offset");
         new CreateNewCellC(getCurrentTime());
         new SetNewCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());

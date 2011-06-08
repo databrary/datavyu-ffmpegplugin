@@ -577,7 +577,7 @@
                 <preCp>openshapa-lib-0.0.60.jar</preCp>
                 <preCp>openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</preCp>
                 <preCp>snakeyaml-1.7.jar</preCp>
-                <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
+                <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
                 <preCp>miglayout-3.7.3.1-swing.jar</preCp>
                 <preCp>commons-io-2.0.jar</preCp>
                 <preCp>fest-reflect-1.2.jar</preCp>
@@ -682,7 +682,7 @@
     <dependency>
         <groupId>com.usermetrix</groupId>
         <artifactId>UserMetrix-jclient</artifactId>
-        <version>0.0.5</version>
+        <version>0.0.6</version>
     </dependency>
 
     <dependency>

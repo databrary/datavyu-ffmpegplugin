@@ -24,7 +24,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class TimeStampDataValueEditor extends EditorComponent {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(TimeStampDataValueEditor.class);
+    private static Logger LOGGER = UserMetrix.getLogger(TimeStampDataValueEditor.class);
 
     /** The TimeStampDataValue that this view represents. **/
     private TimeStampDataValue model;
@@ -100,7 +100,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
 
             setText(getModel().toString());
         } catch (SystemErrorException e) {
-            logger.error("Unable to resetValue.", e);
+            LOGGER.error("Unable to resetValue.", e);
         }
     }
 
@@ -127,7 +127,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             }
             c.getDB().replaceCell(c);
         } catch (SystemErrorException se) {
-            logger.error("Unable to update Database: ", se);
+            LOGGER.error("Unable to update Database: ", se);
         }
     }
 
@@ -315,7 +315,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             // Push the value back into the database.
             updateDatabase();
         } catch (SystemErrorException se) {
-            logger.error("Unable to update TimeStampDataValue", se);
+            LOGGER.error("Unable to update TimeStampDataValue", se);
         }
     }
 

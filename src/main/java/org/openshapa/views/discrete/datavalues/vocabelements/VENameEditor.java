@@ -23,7 +23,7 @@ public final class VENameEditor extends EditorComponent {
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(VENameEditor.class);
+    private static Logger LOGGER = UserMetrix.getLogger(VENameEditor.class);
 
     /** The parent editor window that this argument belongs too. */
     private VocabElementV parentView;
@@ -78,7 +78,7 @@ public final class VENameEditor extends EditorComponent {
                 parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
-                logger.error("Unable to set new predicate name", se);
+                LOGGER.error("Unable to set new predicate name", se);
             }
         }
 
@@ -112,7 +112,7 @@ public final class VENameEditor extends EditorComponent {
                     parentView.setHasChanged(true);
                     parentView.getParentDialog().updateDialogState();
                 } catch (SystemErrorException se) {
-                    logger.error("Unable to backspace from predicate name", se);
+                    LOGGER.error("Unable to backspace from predicate name", se);
                 }
                 e.consume();
                 break;
@@ -127,7 +127,7 @@ public final class VENameEditor extends EditorComponent {
                     parentView.setHasChanged(true);
                     parentView.getParentDialog().updateDialogState();
                 } catch (SystemErrorException se) {
-                    logger.error("Unable to delete from predicate name", se);
+                    LOGGER.error("Unable to delete from predicate name", se);
                 }
                 e.consume();
                 break;

@@ -18,7 +18,7 @@ import com.usermetrix.jclient.UserMetrix;
 public final class SaveProjectFileC {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(SaveProjectFileC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(SaveProjectFileC.class);
 
     /**
      * Serialize the OpenSHAPA project to a stream. The caller is responsible
@@ -28,7 +28,7 @@ public final class SaveProjectFileC {
      * @param project The project you wish to serialize.
      */
     public void save(final OutputStream outStream, final Project project) {
-        logger.usage("save to stream");
+        LOGGER.event("save to stream");
         Dumper dumper = new Dumper(new OpenSHAPAProjectRepresenter(),
                 new DumperOptions());
         Yaml yaml = new Yaml(dumper);
@@ -36,7 +36,7 @@ public final class SaveProjectFileC {
         try {
             outStream.write(yaml.dump(project).getBytes());
         } catch (IOException ex) {
-            logger.error("Unable to save project file", ex);
+            LOGGER.error("Unable to save project file", ex);
         }
     }
 

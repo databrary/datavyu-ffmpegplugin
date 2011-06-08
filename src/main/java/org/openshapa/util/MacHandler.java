@@ -28,7 +28,7 @@ import com.usermetrix.jclient.UserMetrix;
 public class MacHandler {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(MacHandler.class);
+    private static Logger LOGGER = UserMetrix.getLogger(MacHandler.class);
 
     /**
      * Default constructor.
@@ -48,15 +48,15 @@ public class MacHandler {
             Method m = appc.getMethod("addApplicationListener", applc);
             m.invoke(app, listener);
         } catch (ClassNotFoundException e) {
-            logger.error("Unable to find apple classes", e);
+            LOGGER.error("Unable to find apple classes", e);
         } catch (InstantiationException e) {
-            logger.error("Unable to instantiate apple application", e);
+            LOGGER.error("Unable to instantiate apple application", e);
         } catch (IllegalAccessException e) {
-            logger.error("Unable to access application excapeion", e);
+            LOGGER.error("Unable to access application excapeion", e);
         } catch (NoSuchMethodException e) {
-            logger.error("Unable to access method in application", e);
+            LOGGER.error("Unable to access method in application", e);
         } catch (InvocationTargetException e) {
-            logger.error("Unable to invocate target", e);
+            LOGGER.error("Unable to invocate target", e);
         }
     }
 
@@ -121,13 +121,13 @@ public class MacHandler {
                     setHandled.invoke(args[0], true);
                 }
             } catch (NoSuchMethodException e) {
-                logger.error("Unable to access method in application", e);
+                LOGGER.error("Unable to access method in application", e);
             } catch (IllegalAccessException e) {
-                logger.error("Unable to access application excapeion", e);
+                LOGGER.error("Unable to access application excapeion", e);
             } catch (InvocationTargetException e) {
-                logger.error("Unable to invocate target", e);
+                LOGGER.error("Unable to invocate target", e);
             } catch (ClassNotFoundException e) {
-                logger.error("Unable to find apple classes", e);
+                LOGGER.error("Unable to find apple classes", e);
             }
 
             return null;

@@ -26,7 +26,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n\"\u001B";
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(NominalDataValueEditor.class);
+    private static Logger LOGGER = UserMetrix.getLogger(NominalDataValueEditor.class);
 
     /**
      * Constructor.
@@ -78,7 +78,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
                 this.setText(ndv.getItsValue());
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to determine if nominal is valid", e);
+            LOGGER.error("Unable to determine if nominal is valid", e);
         }
 
         super.focusLost(fe);
@@ -132,7 +132,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
                 updateDatabase();
             }
         } catch (SystemErrorException se) {
-            logger.error("Unable to edit text string", se);
+            LOGGER.error("Unable to edit text string", se);
         }
     }
 

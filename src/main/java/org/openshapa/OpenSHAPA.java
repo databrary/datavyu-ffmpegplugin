@@ -133,7 +133,7 @@ public final class OpenSHAPA extends SingleFrameApplication
     private JRubyScriptEngineManager m;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(OpenSHAPA.class);
+    private static Logger LOGGER = UserMetrix.getLogger(OpenSHAPA.class);
 
     /** The view to use when listing all variables in the database. */
     private VariableListV listVarView;
@@ -527,7 +527,7 @@ public final class OpenSHAPA extends SingleFrameApplication
             projectController.getLegacyDB().getDatabase()
                 .registerColumnListListener(listVarView);
         } catch (SystemErrorException e) {
-            logger.error("Unable register column list listener: ", e);
+            LOGGER.error("Unable register column list listener: ", e);
         }
 
         OpenSHAPA.getApplication().show(listVarView);
@@ -710,7 +710,7 @@ public final class OpenSHAPA extends SingleFrameApplication
             rMap.getString("Application.version") + ":"
             + rMap.getString("Application.build"));
         UserMetrix.initalise(config);
-        logger = UserMetrix.getLogger(OpenSHAPA.class);
+        LOGGER = UserMetrix.getLogger(OpenSHAPA.class);
 
         // If the user hasn't specified, we don't send error logs.
         if (Configuration.getInstance().getCanSendLogs() == null) {
@@ -757,7 +757,7 @@ public final class OpenSHAPA extends SingleFrameApplication
         // Now that openshapa is up - we may need to ask the user if can send
         // gather logs.
         if (Configuration.getInstance().getCanSendLogs() == null) {
-            logger.usage("show usermetrix dialog");
+            LOGGER.event("show usermetrix dialog");
             show(new UserMetrixV(VIEW.getFrame(), true));
         }
 

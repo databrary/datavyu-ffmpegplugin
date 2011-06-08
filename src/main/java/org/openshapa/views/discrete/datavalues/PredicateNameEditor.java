@@ -36,7 +36,7 @@ public final class PredicateNameEditor extends DataValueEditor {
     static final String PREDNAME_RESERVED_CHARS = ")(<>|,;\t\n";
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(PredicateNameEditor.class);
+    private static Logger LOGGER = UserMetrix.getLogger(PredicateNameEditor.class);
 
     /**
      * Constructor.
@@ -79,7 +79,7 @@ public final class PredicateNameEditor extends DataValueEditor {
             }
             resetText(newText);
         } catch (SystemErrorException e) {
-            logger.error("Problem getting predicate.", e);
+            LOGGER.error("Problem getting predicate.", e);
         }
     }
 
@@ -169,7 +169,7 @@ public final class PredicateNameEditor extends DataValueEditor {
             }
 
         } catch (SystemErrorException se) {
-            logger.error("Unable to search vocab.", se);
+            LOGGER.error("Unable to search vocab.", se);
         }
     }
 
@@ -199,7 +199,7 @@ public final class PredicateNameEditor extends DataValueEditor {
             updateDatabase();
 
         } catch (SystemErrorException e) {
-            logger.error("Unable to edit value", e);
+            LOGGER.error("Unable to edit value", e);
         }
     }
 }

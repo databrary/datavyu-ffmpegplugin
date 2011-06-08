@@ -35,7 +35,7 @@ import org.openshapa.models.db.legacy.MacshapaDatabase;
 public final class CreateNewCellC {
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(CreateNewCellC.class);
+    private static Logger LOGGER = UserMetrix.getLogger(CreateNewCellC.class);
 
     /** The view (the spreadsheet) for this controller. */
     private SpreadsheetPanel view;
@@ -87,7 +87,7 @@ public final class CreateNewCellC {
         long cellID = 0;
 
         try {
-            logger.usage("create cell in selected column");
+            LOGGER.event("create cell in selected column");
             List<Cell> cells = v.getCellsTemporally();
 
             long newOnset = 0;
@@ -110,7 +110,7 @@ public final class CreateNewCellC {
 
             OpenSHAPA.getProjectController().setLastCreatedColId(asLegacy(v).getID());
         } catch (SystemErrorException se) {
-            logger.error("Unable to create new default cell", se);
+            LOGGER.error("Unable to create new default cell", se);
         }
 
         return cellID;
@@ -159,7 +159,7 @@ public final class CreateNewCellC {
         long cellID = 0;
 
         try {
-            logger.usage("create adjacent cells:" + direction);
+            LOGGER.event("create adjacent cells:" + direction);
 
             // Get the column that is the parent of the source cell.
             for (DataCell sourceCell : sourceCells) {
@@ -190,7 +190,7 @@ public final class CreateNewCellC {
             }
 
         } catch (SystemErrorException se) {
-            logger.error("Unable to create cell in adjacent column", se);
+            LOGGER.error("Unable to create cell in adjacent column", se);
             OpenSHAPA.getApplication().showErrorDialog();
         }
 
@@ -250,7 +250,7 @@ public final class CreateNewCellC {
             // Create the new cell.
             createNewCell(milliseconds);
         } catch (SystemErrorException se) {
-            logger.error("Unable to set offset of previous cell", se);
+            LOGGER.error("Unable to set offset of previous cell", se);
             OpenSHAPA.getApplication().showErrorDialog();
         }
     }
@@ -305,7 +305,7 @@ public final class CreateNewCellC {
 
         // check for Situation 1: one or more selected columns
         for (DataColumn col : view.getSelectedCols()) {
-            logger.usage("create cell in selected column");
+            LOGGER.event("create cell in selected column");
 
             MatrixVocabElement mve = modelAsLegacyDB().getMatrixVE(col.getItsMveID());
             DataCell cell = new DataCell(col.getDB(), col.getID(), mve.getID());
@@ -334,7 +334,7 @@ public final class CreateNewCellC {
             Iterator<DataCell> itCells = view.getSelectedCells().iterator();
 
             while (itCells.hasNext()) {
-                logger.usage("create cell below selected cell");
+                LOGGER.event("create cell below selected cell");
 
                 // reget the selected cell from the database using its id
                 // in case a previous insert has changed its ordinal.
@@ -370,7 +370,7 @@ public final class CreateNewCellC {
             // else check for Situation 3: User is or was editing an
             // existing cell and has requested a new cell
             if (OpenSHAPA.getProjectController().getLastSelectedCellId() != 0) {
-                logger.usage("create cell while editing existing cell");
+                LOGGER.event("create cell while editing existing cell");
 
                 DataCell dc = (DataCell) modelAsLegacyDB().getCell(OpenSHAPA.getProjectController().getLastSelectedCellId());
                 DataCell cell = new DataCell(modelAsLegacyDB(), dc.getItsColID(), dc.getItsMveID());
@@ -385,7 +385,7 @@ public final class CreateNewCellC {
         }
 
         if (!newcelladded) {
-            logger.usage("create cell in same location as last created cell");
+            LOGGER.event("create cell in same location as last created cell");
             // else go with Situation 4: Video controller requested
             // - create in the same column as the last created cell or
             // the last focused cell.

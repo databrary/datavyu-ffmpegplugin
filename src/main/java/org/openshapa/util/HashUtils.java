@@ -17,7 +17,7 @@ import com.usermetrix.jclient.Logger;
 public final class HashUtils {
 
     /** The logger for this class. */
-    private static Logger logger = UserMetrix.getLogger(HashUtils.class);
+    private static Logger LOGGER = UserMetrix.getLogger(HashUtils.class);
 
     /**
      * Generates a hash code for the supplied object.
@@ -55,7 +55,7 @@ public final class HashUtils {
         if (!file.exists())
             return null;
 
-        logger.usage("Compute MD5 digest for file " + file.getName());
+        LOGGER.event("Compute MD5 digest for file " + file.getName());
         String md5 = null;
         byte[] buffer = new byte[8192];
         MessageDigest md = null;
@@ -71,11 +71,11 @@ public final class HashUtils {
             md5 = convertToHex(md.digest());
 
         } catch (NoSuchAlgorithmException nsae) {
-            logger.error("Unable to instantiate MD5 algorithm for file " + file.getName(), nsae);
+            LOGGER.error("Unable to instantiate MD5 algorithm for file " + file.getName(), nsae);
         } catch (FileNotFoundException fnfe) {
-            logger.error("Unable to find file " + file.getName(), fnfe);
+            LOGGER.error("Unable to find file " + file.getName(), fnfe);
         } catch (IOException ioe) {
-            logger.error("Unable to compute MD5 digest for file " + file.getName(), ioe);
+            LOGGER.error("Unable to compute MD5 digest for file " + file.getName(), ioe);
         } finally {
             try {
                 if (dis != null)
@@ -83,7 +83,7 @@ public final class HashUtils {
                 if (fis != null)
                     fis.close();
             } catch (IOException ioe) {
-                logger.error("Unable to close InputStream. Exception in finally clause.", ioe);
+                LOGGER.error("Unable to close InputStream. Exception in finally clause.", ioe);
             }
         }
 

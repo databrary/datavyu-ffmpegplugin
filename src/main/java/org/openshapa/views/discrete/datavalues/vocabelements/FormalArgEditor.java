@@ -30,7 +30,7 @@ public final class FormalArgEditor extends EditorComponent {
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(FormalArgEditor.class);
+    private static Logger LOGGER = UserMetrix.getLogger(FormalArgEditor.class);
 
     /** The parent editor window that this argument belongs too. */
     private VocabElementV parentView;
@@ -70,7 +70,7 @@ public final class FormalArgEditor extends EditorComponent {
             }
             setText(fargName);
         } catch (SystemErrorException se) {
-            logger.error("Unable to resetValue", se);
+            LOGGER.error("Unable to resetValue", se);
         }
     }
 
@@ -122,7 +122,7 @@ public final class FormalArgEditor extends EditorComponent {
                 parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
-                logger.error("Unable to set new predicate name", se);
+                LOGGER.error("Unable to set new predicate name", se);
             }
         }
 
@@ -154,7 +154,7 @@ public final class FormalArgEditor extends EditorComponent {
                 parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
-                logger.error("Unable to backspace from predicate name", se);
+                LOGGER.error("Unable to backspace from predicate name", se);
             }
                 e.consume();
                 break;
@@ -166,7 +166,7 @@ public final class FormalArgEditor extends EditorComponent {
                 parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
             } catch (SystemErrorException se) {
-                logger.error("Unable to delete from predicate name", se);
+                LOGGER.error("Unable to delete from predicate name", se);
             }
                 e.consume();
                 break;

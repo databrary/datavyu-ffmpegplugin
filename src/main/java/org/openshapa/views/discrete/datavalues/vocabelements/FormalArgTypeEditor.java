@@ -24,7 +24,7 @@ public final class FormalArgTypeEditor extends EditorComponent {
     private int argIndex;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(FormalArgTypeEditor.class);
+    private static Logger LOGGER = UserMetrix.getLogger(FormalArgTypeEditor.class);
 
     public FormalArgTypeEditor(final JTextComponent ta,
                                final VocabElement ve,
@@ -44,7 +44,7 @@ public final class FormalArgTypeEditor extends EditorComponent {
             FArgType ft = model.getFargType();
             fargType = ft.toString().substring(0, 1);
         } catch (SystemErrorException e) {
-            logger.error("Unable to reset value", e);
+            LOGGER.error("Unable to reset value", e);
         }
         setText(fargType);
     }

@@ -44,7 +44,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     private int numPredArgs;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(MatrixRootView.class);
+    private static Logger LOGGER = UserMetrix.getLogger(MatrixRootView.class);
 
     /**
      * Creates a new instance of MatrixV.
@@ -137,7 +137,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
                 }
             }
         } catch (SystemErrorException e) {
-            logger.error("Unable to set/reset Matrix for MatrixRootView.", e);
+            LOGGER.error("Unable to set/reset Matrix for MatrixRootView.", e);
         }
 
         rebuildText();
@@ -213,7 +213,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
                         parentCell);
             }
         } catch (SystemErrorException se) {
-            logger.error("Unable to gain focus", se);
+            LOGGER.error("Unable to gain focus", se);
         }
     }
 

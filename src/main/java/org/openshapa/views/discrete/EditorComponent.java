@@ -47,7 +47,7 @@ public abstract class EditorComponent implements ClipboardOwner {
     private char replaceChar;
 
     /** The logger for this class. */
-    private Logger logger = UserMetrix.getLogger(EditorComponent.class);
+    private static Logger LOGGER = UserMetrix.getLogger(EditorComponent.class);
 
     /**
      * Action to invoke when a key is pressed.
@@ -380,7 +380,7 @@ public abstract class EditorComponent implements ClipboardOwner {
             }
 
         } catch (Exception ex) {
-            logger.error("Unable to get clipboard contents", ex);
+            LOGGER.error("Unable to get clipboard contents", ex);
         }
     }
 
