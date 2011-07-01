@@ -2055,15 +2055,15 @@ public final class DataControllerV extends OpenSHAPADialog
             mul = CTRLSHIFTJOG;
         }
 
-        long stepSize = ((-ONE_SECOND) / (long) playbackModel.getCurrentFPS());
-        long nextTime = (long) (mul * stepSize);
+        double stepSize = ((-ONE_SECOND) / (double) playbackModel.getCurrentFPS());
+        double nextTime = (double) (mul * stepSize);
 
         /* BugzID:1544 - Preserve precision - force jog to frame markers. */
         nextTime = nextTime - (clock.getTime() % stepSize);
 
         /* BugzID:1361 - Disallow jog to skip past the region boundaries. */
         if ((clock.getTime() + nextTime) > playbackModel.getWindowPlayStart()) {
-            jump(nextTime);
+            jump((long) nextTime);
         } else {
             jumpTo(playbackModel.getWindowPlayStart());
         }
@@ -2085,11 +2085,11 @@ public final class DataControllerV extends OpenSHAPADialog
             mul = CTRLSHIFTJOG;
         }
 
-        long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
-        long nextTime = (long) (mul * stepSize);
+        double stepSize = (ONE_SECOND / (double) playbackModel.getCurrentFPS());
+        double nextTime = (double) (mul * stepSize);
 
         /* BugzID:1544 - Preserve precision - force jog to frame markers. */
-        long mod = (clock.getTime() % stepSize);
+        double mod = (clock.getTime() % stepSize);
 
         if (mod != 0) {
             nextTime = nextTime + stepSize - mod;
@@ -2097,7 +2097,7 @@ public final class DataControllerV extends OpenSHAPADialog
 
         /* BugzID:1361 - Disallow jog to skip past the region boundaries. */
         if ((clock.getTime() + nextTime) < playbackModel.getWindowPlayEnd()) {
-            jump(nextTime);
+            jump((long) nextTime);
         } else {
             jumpTo(playbackModel.getWindowPlayEnd());
         }
