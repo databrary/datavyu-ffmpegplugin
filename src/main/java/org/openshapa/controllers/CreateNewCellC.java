@@ -21,12 +21,14 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
+import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 import org.openshapa.models.db.legacy.MacshapaDatabase;
+import org.openshapa.undoableedits.AddCellEdit;
 
 
 /**
@@ -83,11 +85,16 @@ public final class CreateNewCellC {
      *
      * @return The ID of the cell that was inserted.
      */
-    private long createCell(final Variable v) {
+    public long createCell(final Variable v) {
         long cellID = 0;
-
+        
         try {
             LOGGER.event("create cell in selected column");
+            
+            
+
+            
+            // perform the operation
             List<Cell> cells = v.getCellsTemporally();
 
             long newOnset = 0;
@@ -109,6 +116,10 @@ public final class CreateNewCellC {
             }
 
             OpenSHAPA.getProjectController().setLastCreatedColId(asLegacy(v).getID());
+            
+     
+
+            
         } catch (SystemErrorException se) {
             LOGGER.error("Unable to create new default cell", se);
         }
@@ -121,10 +132,19 @@ public final class CreateNewCellC {
      *
      * @param v The variable we are adding a cell to the end of.
      */
-    public void createDefaultCell(final Variable v) {
+    public void createDefaultCell(final Variable v) {       
         long cellID = createCell(v);
+        
         view.deselectAll();
         view.highlightCell(cellID);
+        // record the effect
+        UndoableEdit edit = new AddCellEdit(v.getName());            
+//        UndoableEdit edit = new AddCellEdit1(v, cellID);            
+        // Display any changes.
+        OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
+        // notify the listeners
+        OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+    
     }
 
     /**
@@ -134,12 +154,20 @@ public final class CreateNewCellC {
         long cellID = 0;
         for (Variable v : model.getAllVariables()) {
             if (v.isSelected()) {
-                cellID = createCell(v);
+                cellID = createCell(v); 
+                // record the effect
+                UndoableEdit edit = new AddCellEdit(v.getName());            
+//                UndoableEdit edit = new AddCellEdit1(v, cellID);            
+                // Display any changes.
+                OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
+                // notify the listeners
+                OpenSHAPA.getView().getUndoSupport().postEdit(edit); 
             }
         }
 
         view.deselectAll();
         view.highlightCell(cellID);
+
     }
 
     /**
@@ -182,6 +210,22 @@ public final class CreateNewCellC {
                             cell.setOffset(sourceCell.getOffset());
                             cellID = modelAsLegacyDB().appendCell(cell);
                             OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
+                            
+                            // record the effect
+                            String columnCellName;
+                            columnCellName = ((MacshapaDatabase)cell.getDB()).getDataColumn(cell.getItsColID()).getName();
+                            for (Variable v : model.getAllVariables()) {
+                                String variableName = v.getName();
+                                if (variableName.equals(columnCellName)) {
+                                    // Add the undoable action
+                                    UndoableEdit edit = new AddCellEdit(v.getName());            
+//                                   UndoableEdit edit = new AddCellEdit1(v, cellID);
+                                   // notify the listeners
+                                   OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+                                   break;
+                                }
+                            }    
+                            /////
                         }
 
                         break;

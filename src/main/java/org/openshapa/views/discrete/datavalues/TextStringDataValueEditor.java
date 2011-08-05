@@ -2,6 +2,7 @@ package org.openshapa.views.discrete.datavalues;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 
@@ -110,6 +111,7 @@ public final class TextStringDataValueEditor extends DataValueEditor {
             e.consume();
         }        
     }
+
 
     /**
      * @param aChar Character to test

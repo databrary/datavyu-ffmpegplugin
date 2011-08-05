@@ -746,4 +746,25 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         super.paint(g);
     }
+    
+    public void selectOnset() {
+        onset.selectAll();
+        offset.select(0,0);
+        dataPanel.select(0,0);
+        onset.requestFocusInWindow();
+    }
+    
+    public void selectOffset() {
+        offset.selectAll();
+        onset.select(0,0);
+        dataPanel.select(0,0);
+        offset.requestFocusInWindow();
+    }
+    
+    public void selectVal() {
+        dataPanel.selectAll();
+        onset.select(0,0);
+        offset.select(0,0);
+        dataPanel.requestFocusInWindow();
+    }
 }

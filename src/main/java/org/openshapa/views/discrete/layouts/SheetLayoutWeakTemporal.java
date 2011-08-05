@@ -279,8 +279,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     /**
      * Performs a bubble sort of a row of cells by onset and offset. The collection
      * of cells will be ordered by onset, if the onsets match, they will then be
-     * ordered by offset, with cells having the greatest offset coming before cells
-     * with the lowest offset.
+     * ordered by offset.
      *
      * @param row The row of cells to be ordered by onset and offset.
      *
@@ -299,7 +298,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     sorted = false;
                     row.set(i, b);
                     row.set(i + 1, a);
-                } else if ((a.cell.getOnsetTicks() == b.cell.getOnsetTicks()) && (b.cell.getOffsetTicks() > a.cell.getOffsetTicks())) {
+                } else if ((a.cell.getOnsetTicks() == b.cell.getOnsetTicks()) && (a.cell.getOffsetTicks() > b.cell.getOffsetTicks())) {
                     sorted = false;
                     row.set(i, b);
                     row.set(i + 1, a);

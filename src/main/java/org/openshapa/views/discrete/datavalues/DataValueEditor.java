@@ -4,6 +4,7 @@ import com.usermetrix.jclient.Logger;
 import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.logging.Level;
 
 import javax.swing.text.JTextComponent;
 
@@ -11,6 +12,7 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.EditorComponent;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.undo.UndoableEdit;
 
 import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.models.db.legacy.DataValue;
@@ -26,6 +28,7 @@ import org.openshapa.models.db.legacy.PredicateVocabElement;
 import org.openshapa.models.db.legacy.QuoteStringDataValue;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.models.db.legacy.TextStringDataValue;
+import org.openshapa.undoableedits.ChangeValCellEdit;
 
 /**
  * DataValueEditor - abstract class extending EditorComponent. Adds
@@ -56,7 +59,12 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(DataValueEditor.class);
-
+    
+    /** the previous version of the Cell. */
+    private DataCell cb = null;       
+    private DataCell ca_old = null;       
+    private DataCell cb_old = null;       
+     
     /**
      * Constructor.
      * 
@@ -220,6 +228,7 @@ public abstract class DataValueEditor extends EditorComponent {
      */
     @Override
     public void focusGained(final FocusEvent fe) {        
+        cb = null;
         textOnFocus = getText();
     }
 
@@ -233,6 +242,30 @@ public abstract class DataValueEditor extends EditorComponent {
         super.focusLost(fe);
         if (!getText().equals(textOnFocus)) {
             updateDatabase();
+            if (cb != null) {
+                try {
+                    DataCell c = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
+                    // record the effect
+                    if (!(cb.getVal().toString().equals(c.getVal().toString()))) {
+                       if (((ca_old == null)&&(cb_old == null)) ||
+                           (
+                            (ca_old != null)&&(cb_old != null) && 
+                            (!ca_old.getVal().toString().equals(c.getVal().toString())) &&
+                            (!cb_old.getVal().toString().equals(cb.getVal().toString())) 
+                           )     
+                          ) {    
+                                UndoableEdit edit = new ChangeValCellEdit(cb);                        
+                                // notify the listeners
+                                OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+                                ca_old = new DataCell(c);
+                                cb_old = new DataCell(cb);
+                       }         
+                     }            
+            
+                } catch (SystemErrorException e) {
+                    LOGGER.error("Unable to create DataCell", e);
+                }          
+            }            
         }
     }
 
@@ -382,6 +415,10 @@ public abstract class DataValueEditor extends EditorComponent {
                     (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
                             .getCell(parentCell);
 
+            if (cb == null) {
+                cb = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
+            }
+            
             // Update the OpenSHAPA database with the latest values.
             if (parentMatrix != null && parentPredicate == null) {
                 parentMatrix.replaceArg(mIndex, model);
@@ -394,6 +431,7 @@ public abstract class DataValueEditor extends EditorComponent {
             }
             c.setVal(parentMatrix);
             c.getDB().replaceCell(c);
+            
         } catch (SystemErrorException ex) {
             LOGGER.error("Unable to update Database: ", ex);
         }

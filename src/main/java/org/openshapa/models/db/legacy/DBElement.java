@@ -85,6 +85,34 @@ public abstract class DBElement implements Cloneable {
          this.id = dbe.id;
          this.lastModUID = dbe.lastModUID;
      }
+     
+     /**
+      * Copy constructor.
+      *
+      * @param dbe The DBElement To copy.
+      * @param clearID don't copy the ID.
+      *
+      * @throws SystemErrorException If the DBElement or dbe database is null,
+      * or if the lastModUID of the dbe is invalid.
+      *
+      * @date 2011/07/13
+      */
+     public DBElement(final DBElement dbe, final boolean clearID) throws SystemErrorException {
+         super();
+
+         if (dbe == null || dbe.db == null ||
+             !( dbe.db.isValidUID(dbe.lastModUID))) {
+             final String mName = "DBElement::DBElement(dbe): ";
+             throw new SystemErrorException(mName + "Bad dbe param");
+         }
+         
+         this.db = dbe.db;
+         if (!clearID) {
+             this.id = dbe.id;
+         }
+         this.lastModUID = dbe.lastModUID;
+     }     
+     
 
     /**
      * Subclasses should override this method, which constructs a string

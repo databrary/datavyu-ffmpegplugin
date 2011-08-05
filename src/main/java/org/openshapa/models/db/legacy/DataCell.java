@@ -7,6 +7,8 @@
 
 package org.openshapa.models.db.legacy;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
 
@@ -644,8 +646,7 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
         return;
 
     } /* PredDataValue::setVal() */
-
-
+    
     /*************************************************************************/
     /***************************** Overrides: ********************************/
     /*************************************************************************/
@@ -3295,5 +3296,62 @@ public class DataCell extends Cell // implements DatabaseChangeListener, DataVal
 
         return clone;
     }
-
+    
+    // Method to get Transfer Object for DataCell data
+    public DataCellTO getDataCellData() {
+      return new DataCellTO(this);
+    }
+    
+  // method to set DataCell values with a Transfer Object
+  public void setDataCellData(DataCellTO updatedDataCell) {
+        try {
+            this.setOnset(updatedDataCell.onset);
+            this.setOffset(updatedDataCell.offset);
+            int numArgs = val.getNumArgs();
+            for (int i=0; i< numArgs; i++) {                        
+                DataValue dv = val.getArgCopy(i);
+                if ( dv instanceof TimeStampDataValue ) {
+                    ((TimeStampDataValue)dv).setItsValue((TimeStamp)updatedDataCell.argList.get(i));    
+                }
+                else if ( dv instanceof NominalDataValue ) {
+                    ((NominalDataValue)dv).setItsValue((String)updatedDataCell.argList.get(i));    
+                }
+                else if ( dv instanceof TextStringDataValue ) {
+                    String value = (String)updatedDataCell.argList.get(i);
+                    ((TextStringDataValue)dv).setItsValue(value);
+                    if (value == null) {
+                        ((TextStringDataValue)dv).clearValue();    
+                    }
+                }
+                else if ( dv instanceof PredDataValue ) {
+                    ((PredDataValue)dv).setItsValue((Predicate)updatedDataCell.argList.get(i));    
+                }
+                else if ( dv instanceof QueryVarDataValue ) {
+                    ((QueryVarDataValue)dv).setItsValue((String)updatedDataCell.argList.get(i));       
+                }
+                else if ( dv instanceof ColPredDataValue ) { 
+                    ((ColPredDataValue)dv).setItsValue((ColPred)updatedDataCell.argList.get(i));        
+                }
+                else if ( dv instanceof QuoteStringDataValue ) {
+                    ((QuoteStringDataValue)dv).setItsValue((String)updatedDataCell.argList.get(i));      
+                }
+                else if ( dv instanceof FloatDataValue ) {
+                    ((FloatDataValue)dv).setItsValue(((Double)updatedDataCell.argList.get(i)).doubleValue());        
+                }
+                else if ( dv instanceof IntDataValue ) {
+                    ((IntDataValue)dv).setItsValue(((Long)updatedDataCell.argList.get(i)).longValue());       
+                }
+                else if ( dv instanceof UndefinedDataValue ) {
+                    ((UndefinedDataValue)dv).setItsValue((String)updatedDataCell.argList.get(i));       
+                }
+                val.replaceArg(i, dv);
+            }           
+        } catch (SystemErrorException e) {
+            Logger.getLogger(DataCell.class.getName()).log(Level.SEVERE, null, e);
+        }
+    
+  }
+  
+  
+  
 } // End of DataCell class definition

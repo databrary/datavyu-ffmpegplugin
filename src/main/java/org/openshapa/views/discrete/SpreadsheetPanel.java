@@ -715,9 +715,13 @@ implements ExternalColumnListListener,
 
         // Reorder the header components
         List<Component> newHeaders = new ArrayList<Component>(Arrays.asList(headerView.getComponents()));
-        Component sourceHeaderComponent = newHeaders.get(source);
-        newHeaders.remove(source);
-        newHeaders.add(destination, sourceHeaderComponent);
+        
+        Component sourceHeaderComponent = newHeaders.get(source+1);
+//      Component sourceHeaderComponent = newHeaders.get(source);        
+        newHeaders.remove(source+1);
+//      newHeaders.remove(source);
+        newHeaders.add(destination+1, sourceHeaderComponent);
+//      newHeaders.add(destination, sourceHeaderComponent);
 
         headerView.removeAll();
         for (Component header : newHeaders) {
@@ -738,6 +742,68 @@ implements ExternalColumnListListener,
         revalidate();
     }
 
+    
+    public void reorderColumns(Vector<Long> newOrderVec) {
+        
+        try {
+            getLegacyDatabase().setColOrderVector(newOrderVec);
+        } catch (SystemErrorException se) {
+            LOGGER.error("Unable to shuffle column order", se);
+        }
+
+        // Reorder the columns vector
+        int i, j;
+        List<SpreadsheetColumn> columns = new ArrayList<SpreadsheetColumn>();
+        SpreadsheetColumn sourceColumn = null;
+        // Reorder the header components
+        List<Component> currentHeaders = new ArrayList<Component>(Arrays.asList(headerView.getComponents()));
+        List<Component> newHeaders = new ArrayList<Component>();
+        // Reorder the data components
+        List<Component> currentData = new ArrayList<Component>(Arrays.asList(mainView.getComponents()));
+        List<Component> newData = new ArrayList<Component>();
+        
+        newHeaders.add(currentHeaders.get(0));
+        for (i =0; i< newOrderVec.size(); i++) {
+          for (j = 0 ; j < this.columns.size(); j++) {
+            sourceColumn = this.columns.get(j);
+            if (sourceColumn.getColID() == newOrderVec.get(i)) {
+                columns.add(sourceColumn);
+                newHeaders.add(currentHeaders.get(j+1));
+                newData.add(currentData.get(j));
+                break;
+            }
+          }            
+        }
+        this.columns = columns;
+        newHeaders.add(currentHeaders.get(currentHeaders.size()-1));
+        headerView.removeAll();
+        for (Component header : newHeaders) {
+            headerView.add(header);
+        }        
+
+        // Reorder the data components
+        /*
+        List<Component> currentData = new ArrayList<Component>(Arrays.asList(mainView.getComponents()));
+        List<Component> newData = new ArrayList<Component>();
+        for (i = 0; i < newOrderVec.size(); i++) {                   
+            for (j = 0 ; j < columns.size(); j++) {
+                sourceColumn = columns.get(j);
+                if (sourceColumn.getColID() == newOrderVec.get(i)) {
+                    newData.add(currentData.get(j));
+                    break;
+                }            
+            } 
+        }  
+        */
+        
+        mainView.removeAll();
+        for (Component data : newData) {
+            mainView.add(data);
+        }
+        revalidate();
+    }
+    
+    
     /**
      * Returns the cells of the supplied column as ordered by the current
      * layout.

@@ -22,6 +22,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.undo.UndoableEdit;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -41,6 +42,7 @@ import org.openshapa.models.db.legacy.ExternalCascadeListener;
 import org.openshapa.models.db.legacy.ExternalDataColumnListener;
 import org.openshapa.models.db.legacy.LogicErrorException;
 import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.undoableedits.ChangeNameVariableEdit;
 import org.openshapa.util.Constants;
 
 /**
@@ -674,8 +676,18 @@ implements ExternalDataColumnListener,
 
             if ((!dc.getName().equals(newName)
                         && (DataColumn.isValidColumnName(getLegacyDatabase(), newName)))) {
+                // record the effect
+                UndoableEdit edit = new ChangeNameVariableEdit(dc.getName(), newName);  
+
+                // perform the action
                 dc.setName(newName);
                 getLegacyDatabase().replaceColumn(dc);
+
+                // Display any changes.
+                OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
+                // notify the listeners
+                OpenSHAPA.getView().getUndoSupport().postEdit(edit);                
+                
             }
         } catch (LogicErrorException fe) {
             OpenSHAPA.getApplication().showWarningDialog(fe);

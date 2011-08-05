@@ -17,6 +17,9 @@ import org.openshapa.models.db.legacy.TimeStampDataValue;
 import org.openshapa.views.discrete.EditorComponent;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.undo.UndoableEdit;
+import org.openshapa.undoableedits.ChangeOffsetCellEdit;
+import org.openshapa.undoableedits.ChangeOnsetCellEdit;
 
 /**
  * This class is the character editor of a TimeStampDataValues.
@@ -35,6 +38,9 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     /** The source of the TimeStampDataValue being edited. */
     private TimeStampSource dataSourceType;
 
+    /** the previous version of the Cell. */
+    private DataCell cb = null;
+    
     /**
      *
      */
@@ -113,11 +119,17 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             DataCell c =
                     (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
                             .getCell(parentCell);
-
+            
+            if (cb == null) {
+                cb = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
+            }
+            
             TimeStampDataValue tsdv = (TimeStampDataValue) getModel();
+ 
             switch (dataSourceType) {
             case Onset:
                 c.setOnset(tsdv.getItsValue());
+                
                 break;
             case Offset:
                 c.setOffset(tsdv.getItsValue());
@@ -125,7 +137,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             default:
                 break;
             }
-            c.getDB().replaceCell(c);
+            c.getDB().replaceCell(c);          
         } catch (SystemErrorException se) {
             LOGGER.error("Unable to update Database: ", se);
         }
@@ -319,6 +331,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
         }
     }
 
+ 
     /**
      * focusSet is the signal that this editor has become "current".
      * 
@@ -326,7 +339,34 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      */
     @Override
     public void focusGained(final FocusEvent fe) {
+        cb = null;
     }
+    
+    @Override
+    public void focusLost(FocusEvent fe) {
+        super.focusLost(fe);
+        if (cb != null) {
+            try {
+                DataCell c = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
+                // record the effect
+                if (cb.getOnset().getTime()  != c.getOnset().getTime()) {
+                   UndoableEdit edit = new ChangeOnsetCellEdit(cb);                        
+                   
+                   // notify the listeners
+                   OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+                } else if (cb.getOffset().getTime() != c.getOffset().getTime())   {
+                   UndoableEdit edit = new ChangeOffsetCellEdit(cb);                       
+                   // notify the listeners
+                   OpenSHAPA.getView().getUndoSupport().postEdit(edit);                    
+                }        
+            
+            } catch (SystemErrorException e) {
+                LOGGER.error("Unable to create DataCell", e);
+            }          
+        }
+    }
+
+
 
     /**
      * Action to take by this editor when a key is released.

@@ -12,10 +12,16 @@ import org.openshapa.models.db.legacy.SystemErrorException;
 import com.usermetrix.jclient.UserMetrix;
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.legacy.Database;
+import org.openshapa.undoableedits.AddVariableEdit;
+
 
 /**
  * The dialog for users to add new variables to the spreadsheet.
@@ -333,9 +339,11 @@ public final class NewVariableV extends OpenSHAPADialog {
             Column.isValidColumnName(getLegacyDB(), getVariableName());
             DataColumn dc = new DataColumn(getLegacyDB(),
                                            getVariableName(),
-                                           getVariableType());
+                                           getVariableType());        
             DeprecatedVariable var = new DeprecatedVariable(dc);
-            var.setSelected(true);
+            var.setSelected(true);            
+
+            // perform the operation           
             model.addVariable(var);
 
             // If the column is a matrix - default to a single nominal variable
@@ -346,13 +354,19 @@ public final class NewVariableV extends OpenSHAPADialog {
                 mve.appendFormalArg(new NominalFormalArg(getLegacyDB(), "<arg0>"));
                 getLegacyDB().replaceMatrixVE(mve);
             }
-
+                        
+            // record the effect
+            UndoableEdit edit = new AddVariableEdit(getVariableName(), getVariableType(), matrixTypeButton.isSelected());                       
+             
             // Display any changes.
             OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
 
             dispose();
             finalize();
-
+            
+            // notify the listeners
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+                    
         // Whoops, user has done something strange - show warning dialog.
         } catch (LogicErrorException fe) {
             OpenSHAPA.getApplication().showWarningDialog(fe);

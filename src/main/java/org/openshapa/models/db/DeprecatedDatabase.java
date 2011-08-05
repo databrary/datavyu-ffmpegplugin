@@ -25,6 +25,10 @@ import org.openshapa.util.Constants;
     /** The list of variables stored in this database. */
     private List<Variable> variables;
 
+    public void setVariables(List<Variable> variables) {
+        this.variables = variables;
+    }
+
     /**
      * Default constructor.
      */
@@ -45,7 +49,8 @@ import org.openshapa.util.Constants;
      * @deprecated Should use methods defined in datastore interface rather than
      * the db.legacy package.
      */
-    @Deprecated public MacshapaDatabase getDatabase() {
+    @Deprecated
+ public MacshapaDatabase getDatabase() {
         return legacyDB;
     }
 
@@ -57,11 +62,13 @@ import org.openshapa.util.Constants;
      * @deprecated Should use methods defined in datastore interface rather than
      * the db.legacy package.
      */
-    @Deprecated public void setDatabase(MacshapaDatabase newDB) {
+    @Deprecated
+ public void setDatabase(MacshapaDatabase newDB) {
         legacyDB = newDB;
     }
 
-    @Deprecated public DeprecatedVariable getByLegacyID(final long colID) {
+    @Deprecated
+ public DeprecatedVariable getByLegacyID(final long colID) {
         try {
             return new DeprecatedVariable(getDatabase().getDataColumn(colID));
         } catch (SystemErrorException e) {
@@ -95,8 +102,33 @@ import org.openshapa.util.Constants;
             LOGGER.error("Unable to add variable", e);
         }
     }
+    
+    public void addVariable(final Variable var, final int index) {
+        DeprecatedVariable legacyVar = (DeprecatedVariable) var;
 
+        try {
+            long colId = legacyDB.addColumn(legacyVar.getLegacyVariable());
+            legacyVar.setLegacyVariable(legacyDB.getDataColumn(colId));
+            variables. add(index, var);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to add variable", e);
+        }
+    }
+
+    public void removeVariable(final Variable var) {
+        variables.remove(var);
+    }   
+    
     @Override public List<Variable> getAllVariables() {
         return variables;
+    }
+
+    public void removeVariable(long colID) {
+        for (Variable v : variables) {
+            if (((DeprecatedVariable)v).getLegacyColumn().getID() == colID) {
+                removeVariable(v);
+                return;
+            }
+        }
     }
 }

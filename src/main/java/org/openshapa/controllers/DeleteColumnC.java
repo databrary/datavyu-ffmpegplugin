@@ -11,6 +11,8 @@ import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
 
 /**
  * Controller for deleting cells from the database.
@@ -34,7 +36,8 @@ public final class DeleteColumnC {
                 (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
                         .getComponent();
         MacshapaDatabase model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
-
+        Datastore datastore =  OpenSHAPA.getProjectController().getDB();
+        
         try {
             // Deselect everything.
             view.deselectAll();
@@ -58,7 +61,11 @@ public final class DeleteColumnC {
                 if (dc.getID() == OpenSHAPA.getProjectController().getLastCreatedColId()) {
                     OpenSHAPA.getProjectController().setLastCreatedColId(0);
                 }
+                
                 model.removeColumn(dc.getID());
+                
+                ((DeprecatedDatabase)datastore).removeVariable(dc.getID());
+                
                 view.revalidate();
                 view.repaint();
             }

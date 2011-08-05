@@ -122,6 +122,20 @@ public abstract class DataValue extends DBElement
         this.empty = dv.empty;
     } /* DataValue::DataValue() */
 
+    public DataValue(DataValue dv, boolean clearID)
+        throws SystemErrorException
+    {
+        super(dv, clearID);
+
+        this.itsFargID = dv.itsFargID;
+        this.itsFargType = dv.itsFargType;
+        this.subRange = dv.subRange;
+        this.itsCellID = dv.itsCellID;
+        this.itsPredID = dv.itsPredID;
+        this.empty = dv.empty;
+    } /* DataValue::DataValue() */    
+    
+    
     /**
      * @return true if the current DataValue empty, false otherwise.
      */
@@ -1006,5 +1020,6 @@ public abstract class DataValue extends DBElement
             && (itsFargType == null ? dv.itsFargType == null
                                     : itsFargType.equals(dv.itsFargType));
     }
+    
 
 } //End of DataValue class definition

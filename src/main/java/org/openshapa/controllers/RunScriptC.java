@@ -89,6 +89,10 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         scriptFile = new File(file);
         init();
     }
+    
+    public String getScriptFilePath() {
+        return this.scriptFile.getAbsolutePath();
+    }
 
     /**
      * Initalises the controller for running scripts.
@@ -121,7 +125,6 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             // Place reference to various OpenSHAPA functionality.
             rubyEngine.put("db",
                 OpenSHAPA.getProjectController().getLegacyDB().getDatabase());
-            rubyEngine.put("ds", OpenSHAPA.getProjectController().getDB());
             rubyEngine.put("pj", OpenSHAPA.getProjectController().getProject());
             rubyEngine.put("mixer",
                 OpenSHAPA.getDataController().getMixerController());

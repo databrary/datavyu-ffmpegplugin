@@ -55,7 +55,7 @@ public final class HashUtils {
         if (!file.exists())
             return null;
 
-        LOGGER.event("Compute MD5 digest for file");
+        LOGGER.event("Compute MD5 digest for file " + file.getName());
         String md5 = null;
         byte[] buffer = new byte[8192];
         MessageDigest md = null;
@@ -63,6 +63,7 @@ public final class HashUtils {
         DigestInputStream dis = null;
 
         try {
+
             md = MessageDigest.getInstance("MD5");
             fis = new FileInputStream(file);
             dis = new DigestInputStream(fis, md);
@@ -70,11 +71,11 @@ public final class HashUtils {
             md5 = convertToHex(md.digest());
 
         } catch (NoSuchAlgorithmException nsae) {
-            LOGGER.error("Unable to instantiate MD5 algorithm for file", nsae);
+            LOGGER.error("Unable to instantiate MD5 algorithm for file " + file.getName(), nsae);
         } catch (FileNotFoundException fnfe) {
-            LOGGER.error("Unable to find file", fnfe);
+            LOGGER.error("Unable to find file " + file.getName(), fnfe);
         } catch (IOException ioe) {
-            LOGGER.error("Unable to compute MD5 digest for file", ioe);
+            LOGGER.error("Unable to compute MD5 digest for file " + file.getName(), ioe);
         } finally {
             try {
                 if (dis != null)

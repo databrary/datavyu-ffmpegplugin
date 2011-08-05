@@ -1,0 +1,96 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.openshapa.undoableedits;
+
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
+import java.util.Vector;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import org.openshapa.models.db.legacy.Column;
+import org.openshapa.models.db.legacy.DataCell;
+import org.openshapa.models.db.legacy.SystemErrorException;
+import org.openshapa.views.discrete.SpreadsheetCell;
+
+/**
+ *
+ * @author harold
+ */
+abstract class ChangeCellEdit extends SpreadsheetEdit {
+    /** The logger for this class. */
+    private static final Logger LOGGER = UserMetrix.getLogger(ChangeCellEdit.class);
+    /** Column's index */
+    protected int colIndex = -1;       
+    /** Number of this cell in its host column. This number should be 1 + the
+     *  index of the cell in the column's vector of cells. It is set to -1
+     *  initially as it is an invalid value. */
+    protected int ord = -1;
+    /////
+    
+    protected String columnName;
+    protected long rowIndex;
+    
+    public ChangeCellEdit(DataCell c) {
+        super();
+        try {
+           Column col = c.getDB().getColumn(c.getItsColID());
+           columnName = col.getName();
+           rowIndex = col.getNumCells() - c.getOrd() + 1;           
+           long colID = c.getItsColID();
+           Vector<Long> orderVector = c.getDB().getColOrderVector();
+           for (int i = 0; i < orderVector.size(); i++) {
+               if (orderVector.get(i).longValue() == colID) {
+                  this.colIndex = i;
+                  break;
+               }
+           }
+           this.ord = c.getOrd();                    
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to get DataCell", e);
+        } 
+    }
+
+    @Override
+    public String getPresentationName() {
+        return "Change ";
+    }
+
+    @Override
+    public void redo() throws CannotRedoException {
+        super.redo();
+        updateCell();
+    }
+
+    @Override
+    public void undo() throws CannotUndoException {
+        super.undo();
+        updateCell();
+    }
+   
+    protected void updateCell() {
+        try {
+            long colID = db.getDataColumn(this.db.getColOrderVector().get(this.colIndex)).getID();
+            // get a copy of the current cell
+            DataCell cell = (DataCell) db.getCell(colID, ord);
+            updateCell(cell);           
+            updateSpreadsheetCell(cell);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to update Cell", e);
+        }        
+    }
+    
+    abstract protected void updateCell(DataCell cell); 
+    
+    protected void updateSpreadsheetCell(DataCell cell) {
+        unselectAll();
+        SpreadsheetCell sCell = getSpreadsheetCell(cell);
+        sCell.setHighlighted(true);
+        sCell.requestFocusInWindow();
+        selectField(sCell);    
+    }
+    
+    abstract protected void selectField(SpreadsheetCell sCell); 
+     
+}

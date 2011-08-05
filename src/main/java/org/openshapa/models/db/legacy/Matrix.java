@@ -182,7 +182,8 @@ public class Matrix implements Cloneable {
             this.copyArgList(argList);
         }
     } /* Matrix::Matrix(db, mveID, argList) */
-
+    
+  
     public Matrix(Matrix m)
         throws SystemErrorException
     {
@@ -209,7 +210,7 @@ public class Matrix implements Cloneable {
         }
 
     } /* Matrix::Matrix(m) */
-
+             
     protected Matrix(Matrix m,
                      boolean blindCopy)
         throws SystemErrorException
@@ -1152,13 +1153,13 @@ public class Matrix implements Cloneable {
             // is the actual argument -- must be careful not to modify it
             // in any way.
             dv = srcArgList.get(i);
-
+            
             if ( dv == null )
             {
                 throw new SystemErrorException(mName + "no " + i +
                         "th source argument?!?!");
             }
-
+            
             /* Instances of UndefinedDataValue can now be assigned to formal
              * arguments of all types.  As the checks are the same in all
              * cases, handle all UndefinedDataValue data values here.

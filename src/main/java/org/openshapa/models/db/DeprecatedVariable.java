@@ -36,6 +36,10 @@ implements Variable,
     /** The legacy id of the column we are fetching data from. */
     private long legacyColumnId;
 
+    public DataColumn getLegacyColumn() {
+        return legacyColumn;
+    }
+
     /** The cells that are currently selected in this column. */
     private List<Long> selectedCells;
 

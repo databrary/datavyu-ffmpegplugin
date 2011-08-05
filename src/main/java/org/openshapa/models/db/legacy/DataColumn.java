@@ -6,6 +6,8 @@
  */
 package org.openshapa.models.db.legacy;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openshapa.util.Constants;
 import org.openshapa.util.HashUtils;
 import java.util.HashSet;
@@ -281,7 +283,6 @@ public class DataColumn extends Column
         this.varLen = mve.getVarLen();
 
     } /* DataColumn::DataColumn(db, name, hidden, readOnly, mveID, comment) */
-
 
     public DataColumn(DataColumn dc)
             throws SystemErrorException {
@@ -2690,6 +2691,24 @@ public class DataColumn extends Column
         varLen = varyingArgs;
     }
 
+    
+    // Method to get Transfer Object for DataColumn data
+    public DataColumnTO getDataColumnData() {
+      return new DataColumnTO(this);
+    }    
+    
+  // method to set DataCell values with a Transfer Object
+  public void setDataColumnData(DataColumnTO updatedDataColumn) throws SystemErrorException {
+        this.setName(updatedDataColumn.name);
+        this.setItsMveType(updatedDataColumn.itsMveType);
+        for (int i=0; i < updatedDataColumn.dataCellsTO.size(); i++) {                        
+            DataCellTO cellTO = updatedDataColumn.dataCellsTO.get(i);
+            DataCell cell = this.itsCells.get(i);
+            cell.setDataCellData(cellTO);
+        }
+    
+  }
+    
     /*************************************************************************/
     /************************ Class Methods: *********************************/
     /*************************************************************************/
