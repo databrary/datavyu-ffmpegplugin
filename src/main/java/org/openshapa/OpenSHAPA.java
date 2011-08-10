@@ -792,6 +792,7 @@ public final class OpenSHAPA extends SingleFrameApplication
                     screenSize.getHeight() - dataController.getHeight()), 0);
         dataController.setLocation(x, y);
         show(dataController);
+        VIEW.checkForAutosavedFile();
     }
 
     @Override protected void ready() {

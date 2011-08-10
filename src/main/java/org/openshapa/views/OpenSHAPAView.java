@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -66,12 +67,14 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
+import org.openshapa.controllers.AutosaveC;
 import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.undoableedits.RemoveCellEdit;
 import org.openshapa.undoableedits.RemoveVariableEdit;
@@ -280,9 +283,48 @@ public final class OpenSHAPAView extends FrameView
         undoSupport.addUndoableEditListener(new UndoAdapter());
         refreshUndoRedo();
         //////        
-
+    }
+    
+    
+    public void checkForAutosavedFile() {
+        // Check for autosaved file (crash condition)
+        try {
+            File tempfile = File.createTempFile("test","");
+            String path = FilenameUtils.getFullPath(tempfile.getPath());
+            tempfile.delete();
+            File folder = new File(path);
+            File[] listOfFiles = folder.listFiles();
+            for (File f : listOfFiles) {
+                if ((f.isFile()) &&
+                     (
+                      (FilenameUtils.wildcardMatchOnSystem(f.getName(), "~*.opf")) ||
+                      (FilenameUtils.wildcardMatchOnSystem(f.getName(), "~*.csv"))
+                     )
+                   ) { // the last time openshapa crashed
+                    
+                   // Show the Dialog
+                   if (JOptionPane.showConfirmDialog(null, 
+                           "Openshapa has detected an unsaved file. Would you like recover this file ?", 
+                           "OpenShapa",
+                           JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        openRecoveredFile(f);
+                        this.saveAs();
+                   } 
+                   // delete the recovered file
+                   f.delete();
+                }
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(OpenSHAPAView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        // initialize autosave feature
+        AutosaveC.setInterval(1); // five minutes        
     }
 
+    
+    
     /**
      * Update the title of the application.
      */
@@ -620,6 +662,39 @@ public final class OpenSHAPAView extends FrameView
         panel.clearCellSelection();
     }
 
+    /**
+     * Method for opening a recovered file from disk.
+     *
+     * @param f
+     *            The file to open.
+     */
+    public void openRecoveredFile(final File f) {
+        //OpenSHAPA.getApplication().resetApp();
+
+        // Clear the current spreadsheet before loading the new content - we
+        // need to clean up resources.
+        clearSpreadsheet();
+        String filename = FilenameUtils.getBaseName(f.getAbsolutePath()); 
+        String ext = FilenameUtils.getExtension(f.getAbsolutePath());
+        //ext = ext.substring(10);
+        //f.renameTo(new File(filename + "." + ext));
+        // Opening a project or project archive file
+        if (ext.equalsIgnoreCase("opf")) {
+            openProject(f);
+            // Opening a database file
+        } else {
+            openDatabase(f);
+        }
+
+        // Display any changes to the database.
+        showSpreadsheet();
+
+        // Default is to highlight cells when created - clear selection on load.
+        panel.clearCellSelection();
+    }    
+    
+    
+    
     private void openDatabase(final File databaseFile) {
 
         // Set the database to the freshly loaded database.

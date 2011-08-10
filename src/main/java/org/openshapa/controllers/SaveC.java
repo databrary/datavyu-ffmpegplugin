@@ -55,13 +55,29 @@ public final class SaveC {
      */
     public void saveDatabase(final File databaseFile,
         final MacshapaDatabase database) throws LogicErrorException {
+            saveDatabase(databaseFile, database, true);
+    }
+
+    /**
+     * Saves only a database to disk.
+     *
+     * @param databaseFile The location to save the database too.
+     * @param database The database to save to disk.
+     * @param remember Add this project to the rememberProject list.
+     * @throws LogicErrorException If unable to save the database.
+     */
+    public void saveDatabase(final File databaseFile,
+        final MacshapaDatabase database, boolean remember) throws LogicErrorException {
         LOGGER.event("saving database");
 
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
         saveDBC.saveDatabase(databaseFile, database);
-        RecentFiles.rememberProject(databaseFile);
+        if (remember) {
+            RecentFiles.rememberProject(databaseFile);
+        }    
     }
-
+    
+    
     /**
      * Saves an entire project, including database to disk.
      *
@@ -74,6 +90,22 @@ public final class SaveC {
      */
     public void saveProject(final File projectFile, final Project project,
         final MacshapaDatabase database) throws LogicErrorException {
+        saveProject(projectFile, project, database, true);
+    }
+
+    /**
+     * Saves an entire project, including database to disk.
+     *
+     * @param projectFile The destination to save the project too.
+     * @param project The project to save to disk.
+     * @param database The database to save to disk.
+     * @param remember Add this project to the rememberProject list.
+     * 
+     * @throws LogicErrorException If unable to save the entire project to
+     * disk.
+     */
+    public void saveProject(final File projectFile, final Project project,
+        final MacshapaDatabase database, boolean remember) throws LogicErrorException {
 
         try {
             LOGGER.event("save project");
@@ -104,7 +136,10 @@ public final class SaveC {
             fos.flush();
             fos.close();
 
-            RecentFiles.rememberProject(projectFile);
+            if (remember) {
+                RecentFiles.rememberProject(projectFile);
+            }
+            
         } catch (FileNotFoundException e) {
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                 .getContext().getResourceMap(OpenSHAPA.class);
@@ -117,4 +152,5 @@ public final class SaveC {
                     projectFile), e);
         }
     }
+    
 }

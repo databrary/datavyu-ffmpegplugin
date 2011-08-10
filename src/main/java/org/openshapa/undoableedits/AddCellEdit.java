@@ -4,7 +4,7 @@
  */
 package org.openshapa.undoableedits;
 
-import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.Logger;//
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
 import java.util.logging.Level;

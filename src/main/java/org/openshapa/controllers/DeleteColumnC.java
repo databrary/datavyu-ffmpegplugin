@@ -1,6 +1,7 @@
 package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 import java.util.Vector;
 
 import org.openshapa.OpenSHAPA;
@@ -10,7 +11,7 @@ import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
-import com.usermetrix.jclient.UserMetrix;
+
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 
