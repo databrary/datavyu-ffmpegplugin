@@ -372,6 +372,8 @@ public final class OpenSHAPAView extends FrameView
 
         if (OpenSHAPA.getApplication().safeQuit()) {
             new NewProjectC();
+            // Reset the undo manager
+            resetUndoManager();
         }
     }
 
@@ -709,6 +711,10 @@ public final class OpenSHAPAView extends FrameView
         projController.setDatastore(openC.getDatastore());
         projController.setProjectDirectory(databaseFile.getParent());
         projController.setDatabaseFileName(databaseFile.getName());
+        
+        // Reset the undo manager
+        resetUndoManager();
+        
     }
 
     private void openProject(final File projectFile) {
@@ -721,6 +727,9 @@ public final class OpenSHAPAView extends FrameView
             OpenSHAPA.getProjectController().setProjectDirectory(
                 projectFile.getParent());
             OpenSHAPA.getProjectController().loadProject();
+            
+            // Reset the undo manager
+            resetUndoManager();            
         }
     }
 
@@ -961,6 +970,13 @@ public final class OpenSHAPAView extends FrameView
          spreadsheetUndoManager.redo();
          refreshUndoRedo();
     }  
+    
+    
+    private void resetUndoManager() {
+        spreadsheetUndoManager.discardAllEdits();
+        refreshUndoRedo();
+    } 
+    
     
     /**
      * This method is called from within the constructor to initialize the form.
