@@ -121,6 +121,7 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     @Override 
     public void redo() throws CannotUndoException {        
         super.redo();
+        vars = new ArrayList<Variable>(model.getAllVariables());
         Vector<DataColumn> colsToDelete = new Vector<DataColumn>();
         for (DataColumnTO colTO : colsTO) {
             try {
