@@ -18,6 +18,7 @@ import org.openshapa.views.discrete.EditorComponent;
 
 import com.usermetrix.jclient.UserMetrix;
 import javax.swing.undo.UndoableEdit;
+import org.openshapa.undoableedits.ChangeCellEdit.Granularity;
 import org.openshapa.undoableedits.ChangeOffsetCellEdit;
 import org.openshapa.undoableedits.ChangeOnsetCellEdit;
 
@@ -124,20 +125,28 @@ public final class TimeStampDataValueEditor extends EditorComponent {
                 cb = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
             }
             
+            
             TimeStampDataValue tsdv = (TimeStampDataValue) getModel();
- 
+            UndoableEdit edit = null;
             switch (dataSourceType) {
             case Onset:
-                c.setOnset(tsdv.getItsValue());
-                
+                // record the effect
+                edit = new ChangeOnsetCellEdit(c, Granularity.FINEGRAINED);                
+                // perform the action
+                c.setOnset(tsdv.getItsValue());             
                 break;
             case Offset:
+                // record the effect
+                edit = new ChangeOffsetCellEdit(c, Granularity.FINEGRAINED);                
+                // perform the action                
                 c.setOffset(tsdv.getItsValue());
                 break;
             default:
                 break;
             }
-            c.getDB().replaceCell(c);          
+            c.getDB().replaceCell(c);
+            // notify the listeners
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
         } catch (SystemErrorException se) {
             LOGGER.error("Unable to update Database: ", se);
         }

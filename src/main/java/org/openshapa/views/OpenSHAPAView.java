@@ -79,6 +79,7 @@ import org.openshapa.models.db.legacy.DataCell;
 import org.openshapa.undoableedits.RemoveCellEdit;
 import org.openshapa.undoableedits.RemoveVariableEdit;
 import org.openshapa.undoableedits.RunScriptEdit;
+import org.openshapa.undoableedits.SpreadsheetUndoManager;
 
 
 /**
@@ -278,7 +279,7 @@ public final class OpenSHAPAView extends FrameView
         setComponent(panel);
 
         // initialize the undo/redo system
-        spreadsheetUndoManager = new UndoManager();
+        spreadsheetUndoManager = new SpreadsheetUndoManager();
         undoSupport = new UndoableEditSupport();
         undoSupport.addUndoableEditListener(new UndoAdapter());
         refreshUndoRedo();

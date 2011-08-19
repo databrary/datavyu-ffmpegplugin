@@ -22,9 +22,8 @@ public class ChangeOnsetCellEdit extends ChangeCellEdit {
     /** onset of cell */
     private TimeStamp onset = null;
   
-    public ChangeOnsetCellEdit(DataCell c) {
-        super(c);
-
+    public ChangeOnsetCellEdit(DataCell c, Granularity granularity) {
+        super(c, granularity);
         try {
             this.onset = c.getOnset();
         } catch (SystemErrorException e) {
@@ -34,9 +33,13 @@ public class ChangeOnsetCellEdit extends ChangeCellEdit {
         }
     }
 
+    public ChangeOnsetCellEdit(DataCell c) {
+        this(c, Granularity.COARSEGRAINED);
+    }
+    
     @Override
     public String getPresentationName() {
-        return super.getPresentationName() + "Onset Cell (" + columnName + "," + rowIndex + ")";
+        return super.getPresentationName() + "Onset Cell (" + columnName + "," + rowIndex + ") to " + onset.toHMSFString();
     }
    
     @Override
@@ -55,5 +58,18 @@ public class ChangeOnsetCellEdit extends ChangeCellEdit {
     protected void selectField(SpreadsheetCell sCell) {
         sCell.selectOnset();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        ChangeOnsetCellEdit t = (ChangeOnsetCellEdit) obj;       
+        return this.onset.equals(((ChangeOnsetCellEdit)t).onset);
+    }   
     
 }

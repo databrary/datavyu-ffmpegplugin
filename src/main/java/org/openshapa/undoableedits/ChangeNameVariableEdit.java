@@ -39,10 +39,10 @@ public class ChangeNameVariableEdit extends SpreadsheetEdit {
         String msg = "";
 
         if (canUndo()) {
-            msg = "Change Variable Name \"" + newVarName +  "\"" + " => " 
+            msg = "Change Variable Name from \"" + newVarName +  "\"" + " to " 
                                   + "\"" + oldVarName +  "\"";
         } else {
-            msg = "Change Variable Name \"" + oldVarName +  "\"" + " => " 
+            msg = "Change Variable Name from \"" + oldVarName +  "\"" + " to " 
                                   + "\"" + newVarName +  "\"";            
         }
         return msg;

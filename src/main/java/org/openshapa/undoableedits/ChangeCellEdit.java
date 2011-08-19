@@ -18,7 +18,7 @@ import org.openshapa.views.discrete.SpreadsheetCell;
  *
  * @author harold
  */
-abstract class ChangeCellEdit extends SpreadsheetEdit {
+abstract public class ChangeCellEdit extends SpreadsheetEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(ChangeCellEdit.class);
     /** Column's index */
@@ -32,8 +32,20 @@ abstract class ChangeCellEdit extends SpreadsheetEdit {
     protected String columnName;
     protected long rowIndex;
     
-    public ChangeCellEdit(DataCell c) {
+    protected Granularity granularity;
+
+    public Granularity getGranularity() {
+        return granularity;
+    }
+    
+    public enum Granularity {
+        FINEGRAINED,
+        COARSEGRAINED
+    }    
+    
+    public ChangeCellEdit(DataCell c, Granularity granularity) {
         super();
+        this.granularity = granularity;
         try {
            Column col = c.getDB().getColumn(c.getItsColID());
            columnName = col.getName();
@@ -51,10 +63,14 @@ abstract class ChangeCellEdit extends SpreadsheetEdit {
             LOGGER.error("Unable to get DataCell", e);
         } 
     }
+    
+    public ChangeCellEdit(DataCell c) {
+        this(c, Granularity.COARSEGRAINED);
+    }
 
     @Override
     public String getPresentationName() {
-        return "Change ";
+        return "Change " /* + this.granularity */ + " ";
     }
 
     @Override
@@ -75,7 +91,9 @@ abstract class ChangeCellEdit extends SpreadsheetEdit {
             // get a copy of the current cell
             DataCell cell = (DataCell) db.getCell(colID, ord);
             updateCell(cell);           
-            updateSpreadsheetCell(cell);
+            if (this.granularity == Granularity.COARSEGRAINED) {
+                updateSpreadsheetCell(cell);
+            }
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to update Cell", e);
         }        
@@ -91,6 +109,12 @@ abstract class ChangeCellEdit extends SpreadsheetEdit {
         selectField(sCell);    
     }
     
-    abstract protected void selectField(SpreadsheetCell sCell); 
+    abstract protected void selectField(SpreadsheetCell sCell);
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof ChangeCellEdit) && 
+               ((ChangeCellEdit)obj).granularity == this.granularity;
+    }
      
 }

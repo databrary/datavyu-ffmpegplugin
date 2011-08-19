@@ -22,8 +22,8 @@ public class ChangeOffsetCellEdit extends ChangeCellEdit {
     /** offset of cell */
     private TimeStamp offset = null;
   
-    public ChangeOffsetCellEdit(DataCell c) {
-        super(c);
+    public ChangeOffsetCellEdit(DataCell c, Granularity granularity) {
+        super(c, granularity);
         try {
             this.offset = c.getOffset();
         } catch (SystemErrorException e) {
@@ -33,9 +33,13 @@ public class ChangeOffsetCellEdit extends ChangeCellEdit {
         }
     }
 
+    public ChangeOffsetCellEdit(DataCell c) {
+        this(c,Granularity.COARSEGRAINED);
+    }
+    
     @Override
     public String getPresentationName() {
-        return super.getPresentationName() + "Offset Cell (" + columnName + "," + rowIndex + ")";
+        return super.getPresentationName() + "Offset Cell (" + columnName + "," + rowIndex + ") to " + offset.toHMSFString();
     }
     
     @Override
@@ -53,5 +57,18 @@ public class ChangeOffsetCellEdit extends ChangeCellEdit {
     @Override
     protected void selectField(SpreadsheetCell sCell) {
         sCell.selectOffset();
-    }    
+    } 
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        ChangeOffsetCellEdit t = (ChangeOffsetCellEdit) obj;       
+        return this.offset.equals(((ChangeOffsetCellEdit)t).offset);
+    }
 }

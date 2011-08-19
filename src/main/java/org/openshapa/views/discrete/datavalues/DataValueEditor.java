@@ -28,6 +28,7 @@ import org.openshapa.models.db.legacy.PredicateVocabElement;
 import org.openshapa.models.db.legacy.QuoteStringDataValue;
 import org.openshapa.models.db.legacy.SystemErrorException;
 import org.openshapa.models.db.legacy.TextStringDataValue;
+import org.openshapa.undoableedits.ChangeCellEdit.Granularity;
 import org.openshapa.undoableedits.ChangeValCellEdit;
 
 /**
@@ -241,7 +242,7 @@ public abstract class DataValueEditor extends EditorComponent {
     public void focusLost(final FocusEvent fe) {
         super.focusLost(fe);
         if (!getText().equals(textOnFocus)) {
-            updateDatabase();
+//            updateDatabase();
             if (cb != null) {
                 try {
                     DataCell c = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
@@ -429,8 +430,13 @@ public abstract class DataValueEditor extends EditorComponent {
                 parentPredicate.setItsValue(p);
                 parentMatrix.replaceArg(mIndex, parentPredicate);
             }
+            // Record the effect
+            UndoableEdit edit = new ChangeValCellEdit(c, Granularity.FINEGRAINED);                        
+            // perform the action            
             c.setVal(parentMatrix);
             c.getDB().replaceCell(c);
+            // notify the listeners
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);            
             
         } catch (SystemErrorException ex) {
             LOGGER.error("Unable to update Database: ", ex);

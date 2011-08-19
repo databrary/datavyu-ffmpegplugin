@@ -20,15 +20,18 @@ public class ChangeValCellEdit extends ChangeCellEdit {
     /** offset of cell */
     private DataCellTO dcTO= null;
   
-    public ChangeValCellEdit(DataCell c) {
-        super(c);
+    public ChangeValCellEdit(DataCell c, Granularity granularity) {
+        super(c, granularity);
         dcTO = c.getDataCellData();
-
     }
 
+    public ChangeValCellEdit(DataCell c) {
+        this(c, Granularity.COARSEGRAINED);
+    }
+    
     @Override
     public String getPresentationName() {
-        return super.getPresentationName() + "Val Cell (" + columnName + "," + rowIndex + ")";
+        return super.getPresentationName() + "Val Cell (" + columnName + "," + rowIndex + ") to " + dcTO.argListToString();
     }
    
     @Override
@@ -46,6 +49,19 @@ public class ChangeValCellEdit extends ChangeCellEdit {
     @Override
     protected void selectField(SpreadsheetCell sCell) {
         sCell.selectVal();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+        // Must be this class to be here
+        ChangeValCellEdit t = (ChangeValCellEdit) obj;       
+        return super.equals(obj) && this.dcTO.equals(((ChangeValCellEdit)t).dcTO);
     }
     
 }

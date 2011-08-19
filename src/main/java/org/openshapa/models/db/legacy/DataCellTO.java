@@ -67,7 +67,59 @@ public class DataCellTO implements java.io.Serializable {
             }                        
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to get DataCell.", e);
-        }       
+        }         
+    }
+    
+     /**
+     * Compares this DataCellTO against another object.
+     *
+     * @param obj The object to compare this against.
+     *
+     * @return true if the Object obj is logically equal.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if ((obj == null) || (obj.getClass() != this.getClass())) {
+            return false;
+        }
+
+        // Must be this class to be here
+        DataCellTO dcTO = (DataCellTO) obj;
+        return onset == dcTO.onset && offset == dcTO.offset && this.compareVal(dcTO);
+    }    
+    
+    public boolean compareVal(DataCellTO dcTO) {
+        boolean result = true;
+        int size = argList.size();
+        int sizeDcTO = dcTO.argList.size();
+        if (size != sizeDcTO) {
+            result = false;
+        } else {
+            for (int i =0; i < size; i++) {
+                Object o1 = this.argList.get(i);
+                Object o2 = dcTO.argList.get(i);
+                if (o1.equals(o2) == false) {
+                    result = false;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+    
+    public String argListToString() {
+        String str = "";
+        for (Object arg : argList) {
+            if (arg != null) {
+                str += arg.toString() + " ";
+            } else {
+                str += "<val>";
+            }
+        }
+        return str;
     }
     
 }

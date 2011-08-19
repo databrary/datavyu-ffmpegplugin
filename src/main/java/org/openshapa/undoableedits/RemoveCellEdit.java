@@ -47,7 +47,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
     @Override
     public String getPresentationName() {
         String msg;
-        if (cellPosV.size() > 1) {
+        if ((cellPosV != null) && (cellPosV.size() > 1)) {
             msg = "Delete " + cellPosV.size() + " Cells";
         }
         else { // one cell

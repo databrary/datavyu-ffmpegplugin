@@ -54,7 +54,7 @@ public class RunScriptEdit extends SpreadsheetEdit {
         return "Run Script \"" + fileName + "\"";
          * 
          */
-        return "the effect of running the script \"" + this.scriptPath + "\"";
+        return "Changes due to \"" + this.scriptPath + "\"";
     }
 
     @Override
