@@ -94,7 +94,7 @@
         <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.60/openshapa-lib-0.0.60.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-gstreamer-java/1.5-SNAPSHOT-a/openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.7/snakeyaml-1.7.jar</string>
-        <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.5/UserMetrix-jclient-0.0.5.jar</string>
+        <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.6/UserMetrix-jclient-0.0.6.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.3.1/miglayout-3.7.3.1-swing.jar</string>
         <string>$JAVAROOT/repo/commons-io/commons-io/2.0/commons-io-2.0.jar</string>
         <string>$JAVAROOT/repo/commons-lang/commons-lang/2.5/commons-lang-2.5.jar</string>
