@@ -576,9 +576,8 @@
                 <preCp>openhashtable-0.1.jar</preCp>
                 <preCp>openshapa-lib-0.0.60.jar</preCp>
                 <preCp>openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</preCp>
-                <preCp>asd-0.0.5.jar</preCp>
                 <preCp>snakeyaml-1.7.jar</preCp>
-                <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
+                <preCp>UserMetrix-jclient-0.0.5.jar</preCp>
                 <preCp>miglayout-3.7.3.1-swing.jar</preCp>
                 <preCp>commons-io-2.0.jar</preCp>
                 <preCp>fest-reflect-1.2.jar</preCp>
@@ -656,12 +655,6 @@
     </dependency>
 
     <dependency>
-      <groupId>au.com.nicta.echomod</groupId>
-      <artifactId>asd</artifactId>
-      <version>0.0.5</version>
-    </dependency>    
-
-    <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
       <version>1.7</version>
@@ -689,7 +682,7 @@
     <dependency>
         <groupId>com.usermetrix</groupId>
         <artifactId>UserMetrix-jclient</artifactId>
-        <version>0.0.6</version>
+        <version>0.0.5</version>
     </dependency>
 
     <dependency>
