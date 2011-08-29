@@ -53,15 +53,16 @@ public final class PluginManager {
         PLUGIN_CLASS = Plugin.class;
     }
 
-    //
-    // WARNING: instance must be last static !!!
-    //
-
-    /** The single instance of the PluginManager for OpenSHAPA. */
-    private static final PluginManager INSTANCE = new PluginManager();
-
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(PluginManager.class);
+
+    //
+    //
+    // !!! WARNING: instance must be last static - or OpenSHAPA will crash !!!
+    // 
+    //
+    /** The single instance of the PluginManager for OpenSHAPA. */
+    private static final PluginManager INSTANCE = new PluginManager();
 
     /** Set of plugins. */
     private Set<Plugin> plugins;
@@ -342,22 +343,10 @@ public final class PluginManager {
                     // BugzID:2110
                     pluginClassifiers.put(p.getClassifier(), p);
 
-                    try {
-                        final Class<? extends DataViewer> cdv =
-                            p.getViewerClass();
+                    final Class<? extends DataViewer> cdv = p.getViewerClass();
 
-                        if (cdv != null) {
-                            pluginLookup.put(cdv.getName(), p);
-                        }
-                    } catch (Throwable e) {
-                    	String msg = String.format(
-                    			"Unable to load plugin: %s", 
-                    			p.getClass().getName()
-                			);
-                    	System.err.println(msg);
-                        e.printStackTrace();
-                        
-                        LOGGER.error(msg, e);
+                    if (cdv != null) {
+                        pluginLookup.put(cdv.getName(), p);
                     }
                 }
             }
