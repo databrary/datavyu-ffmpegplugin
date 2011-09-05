@@ -1,6 +1,5 @@
 package org.openshapa.uitests;
 
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import static org.fest.reflect.core.Reflection.method;
@@ -26,14 +25,12 @@ import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.controllers.project.ProjectController;
 
-import org.openshapa.models.db.legacy.LogicErrorException;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.LogicErrorException;
+import database.SystemErrorException;
 import org.openshapa.models.project.Project;
 
 import org.openshapa.util.UIUtils;
 import org.openshapa.util.FileFilters.CSVFilter;
-import org.openshapa.util.FileFilters.MODBFilter;
-import org.openshapa.util.FileFilters.SHAPAFilter;
 import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.util.UIFileUtils;
 

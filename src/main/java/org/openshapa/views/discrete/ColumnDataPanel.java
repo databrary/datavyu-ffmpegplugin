@@ -20,10 +20,10 @@ import javax.swing.text.BadLocationException;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.Database;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataCell;
+import database.DataColumn;
+import database.Database;
+import database.SystemErrorException;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.util.HashMap;

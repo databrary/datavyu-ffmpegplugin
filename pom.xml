@@ -637,9 +637,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.openshapa</groupId>
-      <artifactId>openhashtable</artifactId>
-      <version>0.1</version>
+      <groupId>database</groupId>
+      <artifactId>database</artifactId>
+      <version>0.01</version>
     </dependency>
 
     <dependency>

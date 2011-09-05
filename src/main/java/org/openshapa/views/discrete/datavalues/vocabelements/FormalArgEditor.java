@@ -4,12 +4,11 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import java.util.logging.Level;
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.models.db.legacy.FormalArgument;
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.VocabElement;
+import database.FormalArgument;
+import database.SystemErrorException;
+import database.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**

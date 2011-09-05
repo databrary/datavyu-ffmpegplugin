@@ -4,8 +4,8 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
 import java.util.List;
-import org.openshapa.models.db.legacy.MacshapaDatabase;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.MacshapaDatabase;
+import database.SystemErrorException;
 import org.openshapa.util.Constants;
 
 /**

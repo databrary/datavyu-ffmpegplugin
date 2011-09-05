@@ -6,12 +6,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.Database;
-import org.openshapa.models.db.legacy.Matrix;
-import org.openshapa.models.db.legacy.NominalDataValue;
-import org.openshapa.models.db.legacy.PredDataValue;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataCell;
+import database.Database;
+import database.Matrix;
+import database.NominalDataValue;
+import database.PredDataValue;
+import database.SystemErrorException;
 
 /**
  * This class is the character editor of a NominalDataValue.

@@ -2,16 +2,13 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.logging.Level;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
 
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.VocabElement;
+import database.SystemErrorException;
+import database.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 

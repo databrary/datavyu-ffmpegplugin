@@ -6,16 +6,10 @@ package org.openshapa.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.util.Vector;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import org.openshapa.controllers.DeleteColumnC;
-import org.openshapa.models.db.DeprecatedDatabase;
-import org.openshapa.models.db.DeprecatedVariable;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.MatrixVocabElement;
-import org.openshapa.models.db.legacy.NominalFormalArg;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataColumn;
+import database.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 /**

@@ -7,17 +7,14 @@ package org.openshapa.undoableedits;
 import com.usermetrix.jclient.Logger;//
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
-import java.util.logging.Level;
-import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.Variable;
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataCell;
+import database.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 

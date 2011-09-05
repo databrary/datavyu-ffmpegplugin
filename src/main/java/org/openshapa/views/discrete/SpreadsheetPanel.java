@@ -47,11 +47,11 @@ import org.openshapa.controllers.NewVariableC;
 import org.openshapa.event.component.FileDropEvent;
 import org.openshapa.event.component.FileDropEventListener;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.Database;
-import org.openshapa.models.db.legacy.ExternalColumnListListener;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataCell;
+import database.DataColumn;
+import database.Database;
+import database.ExternalColumnListListener;
+import database.SystemErrorException;
 
 import org.openshapa.util.ArrayDirection;
 

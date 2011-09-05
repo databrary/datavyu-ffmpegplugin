@@ -24,8 +24,8 @@ import org.fest.swing.util.Platform;
 
 import org.openshapa.util.UIUtils;
 
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.TimeStamp;
+import database.SystemErrorException;
+import database.TimeStamp;
 
 import org.openshapa.util.UIImageUtils;
 

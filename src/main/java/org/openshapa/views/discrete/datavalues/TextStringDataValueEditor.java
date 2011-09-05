@@ -2,15 +2,14 @@ package org.openshapa.views.discrete.datavalues;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.Matrix;
-import org.openshapa.models.db.legacy.PredDataValue;
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.TextStringDataValue;
+import database.DataCell;
+import database.Matrix;
+import database.PredDataValue;
+import database.SystemErrorException;
+import database.TextStringDataValue;
 
 /**
  * This class is the character editor of a TextStringDataValue.

@@ -9,9 +9,9 @@ import com.usermetrix.jclient.UserMetrix;
 import java.util.Vector;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import org.openshapa.models.db.legacy.Column;
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.Column;
+import database.DataCell;
+import database.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 /**

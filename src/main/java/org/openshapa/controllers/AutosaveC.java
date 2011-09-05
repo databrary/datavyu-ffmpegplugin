@@ -15,7 +15,7 @@ import java.io.File;
 import org.apache.commons.io.FilenameUtils;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.project.ProjectController;
-import org.openshapa.models.db.legacy.LogicErrorException;
+import database.LogicErrorException;
 import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 

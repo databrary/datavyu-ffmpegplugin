@@ -35,13 +35,13 @@ import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 
-import org.openshapa.models.db.legacy.Column;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.Database;
-import org.openshapa.models.db.legacy.ExternalCascadeListener;
-import org.openshapa.models.db.legacy.ExternalDataColumnListener;
-import org.openshapa.models.db.legacy.LogicErrorException;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.Column;
+import database.DataColumn;
+import database.Database;
+import database.ExternalCascadeListener;
+import database.ExternalDataColumnListener;
+import database.LogicErrorException;
+import database.SystemErrorException;
 import org.openshapa.undoableedits.ChangeNameVariableEdit;
 import org.openshapa.util.Constants;
 

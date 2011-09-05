@@ -9,8 +9,8 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.models.db.legacy.LogicErrorException;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.LogicErrorException;
+import database.SystemErrorException;
 
 
 import com.usermetrix.jclient.UserMetrix;

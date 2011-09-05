@@ -6,10 +6,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.models.db.legacy.FormalArgument;
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.VocabElement;
-import org.openshapa.models.db.legacy.FormalArgument.FArgType;
+import database.FormalArgument;
+import database.SystemErrorException;
+import database.VocabElement;
+import database.FormalArgument.FArgType;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**

@@ -4,7 +4,6 @@ import com.usermetrix.jclient.Logger;
 import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.logging.Level;
 
 import javax.swing.text.JTextComponent;
 
@@ -14,20 +13,20 @@ import org.openshapa.views.discrete.EditorComponent;
 import com.usermetrix.jclient.UserMetrix;
 import javax.swing.undo.UndoableEdit;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.DataValue;
-import org.openshapa.models.db.legacy.FloatDataValue;
-import org.openshapa.models.db.legacy.FormalArgument;
-import org.openshapa.models.db.legacy.IntDataValue;
-import org.openshapa.models.db.legacy.Matrix;
-import org.openshapa.models.db.legacy.MatrixVocabElement;
-import org.openshapa.models.db.legacy.NominalDataValue;
-import org.openshapa.models.db.legacy.PredDataValue;
-import org.openshapa.models.db.legacy.Predicate;
-import org.openshapa.models.db.legacy.PredicateVocabElement;
-import org.openshapa.models.db.legacy.QuoteStringDataValue;
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.TextStringDataValue;
+import database.DataCell;
+import database.DataValue;
+import database.FloatDataValue;
+import database.FormalArgument;
+import database.IntDataValue;
+import database.Matrix;
+import database.MatrixVocabElement;
+import database.NominalDataValue;
+import database.PredDataValue;
+import database.Predicate;
+import database.PredicateVocabElement;
+import database.QuoteStringDataValue;
+import database.SystemErrorException;
+import database.TextStringDataValue;
 import org.openshapa.undoableedits.ChangeCellEdit.Granularity;
 import org.openshapa.undoableedits.ChangeValCellEdit;
 

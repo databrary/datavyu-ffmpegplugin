@@ -14,16 +14,16 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.FormalArgument;
-import org.openshapa.models.db.legacy.LogicErrorException;
-import org.openshapa.models.db.legacy.MacshapaDatabase;
-import org.openshapa.models.db.legacy.MatrixVocabElement;
-import org.openshapa.models.db.legacy.PredicateVocabElement;
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.FormalArgument.FArgType;
-import org.openshapa.models.db.legacy.MatrixVocabElement.MatrixType;
+import database.DataCell;
+import database.DataColumn;
+import database.FormalArgument;
+import database.LogicErrorException;
+import database.MacshapaDatabase;
+import database.MatrixVocabElement;
+import database.PredicateVocabElement;
+import database.SystemErrorException;
+import database.FormalArgument.FArgType;
+import database.MatrixVocabElement.MatrixType;
 
 import com.usermetrix.jclient.UserMetrix;
 

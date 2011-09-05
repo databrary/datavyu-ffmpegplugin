@@ -6,8 +6,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.VocabElement;
+import database.SystemErrorException;
+import database.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.util.SequentialNumberGenerator;
 

@@ -19,12 +19,12 @@ import org.openshapa.controllers.RunScriptC;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
-import org.openshapa.models.db.legacy.Cell;
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.DataCellTO;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.DataColumnTO;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.Cell;
+import database.DataCell;
+import database.DataCellTO;
+import database.DataColumn;
+import database.DataColumnTO;
+import database.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 

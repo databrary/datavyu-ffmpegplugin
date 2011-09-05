@@ -8,11 +8,12 @@ import java.util.Vector;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.MatrixVocabElement;
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.TimeStamp;
+import database.DataCell;
+import database.DataColumn;
+import database.MacshapaDatabase;
+import database.MatrixVocabElement;
+import database.SystemErrorException;
+import database.TimeStamp;
 
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.Constants;
@@ -27,7 +28,6 @@ import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
-import org.openshapa.models.db.legacy.MacshapaDatabase;
 import org.openshapa.undoableedits.AddCellEdit;
 
 

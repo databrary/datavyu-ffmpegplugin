@@ -16,14 +16,14 @@ import javax.swing.table.TableModel;
 import net.miginfocom.swing.MigLayout;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.Database;
-import org.openshapa.models.db.legacy.ExternalCascadeListener;
-import org.openshapa.models.db.legacy.ExternalColumnListListener;
-import org.openshapa.models.db.legacy.ExternalDataColumnListener;
-import org.openshapa.models.db.legacy.LogicErrorException;
-import org.openshapa.models.db.legacy.MacshapaDatabase;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataColumn;
+import database.Database;
+import database.ExternalCascadeListener;
+import database.ExternalColumnListListener;
+import database.ExternalDataColumnListener;
+import database.LogicErrorException;
+import database.MacshapaDatabase;
+import database.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 /**

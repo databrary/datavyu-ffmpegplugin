@@ -10,8 +10,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,9 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import org.openshapa.models.db.legacy.FormalArgument;
-import org.openshapa.models.db.legacy.MatrixVocabElement;
-import org.openshapa.models.db.legacy.VocabElement;
+import database.FormalArgument;
+import database.MatrixVocabElement;
+import database.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**

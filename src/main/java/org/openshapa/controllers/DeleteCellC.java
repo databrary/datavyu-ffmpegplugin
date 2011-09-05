@@ -4,9 +4,9 @@ import com.usermetrix.jclient.Logger;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.MacshapaDatabase;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataCell;
+import database.MacshapaDatabase;
+import database.SystemErrorException;
 
 import org.openshapa.views.discrete.SpreadsheetPanel;
 

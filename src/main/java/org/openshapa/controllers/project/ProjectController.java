@@ -40,7 +40,7 @@ import com.google.common.collect.Lists;
 
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
-import org.openshapa.models.db.legacy.MacshapaDatabase;
+import database.MacshapaDatabase;
 
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Plugin;

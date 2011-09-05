@@ -1,12 +1,12 @@
 package org.openshapa.models.db;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.Database;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataCell;
+import database.Database;
+import database.SystemErrorException;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.models.db.legacy.MatrixVocabElement;
+import database.MatrixVocabElement;
 
 
 /**

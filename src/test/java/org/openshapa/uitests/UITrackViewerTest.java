@@ -40,8 +40,8 @@ import org.openshapa.util.UIUtils;
 import org.openshapa.views.DataControllerV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.TimeStamp;
+import database.SystemErrorException;
+import database.TimeStamp;
 
 import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.util.UIImageUtils;

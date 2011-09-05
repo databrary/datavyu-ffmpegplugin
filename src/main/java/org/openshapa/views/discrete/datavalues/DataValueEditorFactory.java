@@ -4,18 +4,18 @@ import java.util.Vector;
 
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.DataValue;
-import org.openshapa.models.db.legacy.FloatDataValue;
-import org.openshapa.models.db.legacy.IntDataValue;
-import org.openshapa.models.db.legacy.Matrix;
-import org.openshapa.models.db.legacy.NominalDataValue;
-import org.openshapa.models.db.legacy.PredDataValue;
-import org.openshapa.models.db.legacy.Predicate;
-import org.openshapa.models.db.legacy.QuoteStringDataValue;
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.TextStringDataValue;
-import org.openshapa.models.db.legacy.UndefinedDataValue;
+import database.DataCell;
+import database.DataValue;
+import database.FloatDataValue;
+import database.IntDataValue;
+import database.Matrix;
+import database.NominalDataValue;
+import database.PredDataValue;
+import database.Predicate;
+import database.QuoteStringDataValue;
+import database.SystemErrorException;
+import database.TextStringDataValue;
+import database.UndefinedDataValue;
 
 import org.openshapa.views.discrete.EditorComponent;
 

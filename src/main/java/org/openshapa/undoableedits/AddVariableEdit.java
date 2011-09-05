@@ -12,10 +12,10 @@ import javax.swing.undo.CannotUndoException;
 import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.MatrixVocabElement;
-import org.openshapa.models.db.legacy.NominalFormalArg;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataColumn;
+import database.MatrixVocabElement;
+import database.NominalFormalArg;
+import database.SystemErrorException;
 
 /**
  *

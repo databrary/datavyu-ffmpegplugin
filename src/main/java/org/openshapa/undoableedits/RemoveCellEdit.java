@@ -11,14 +11,11 @@ import java.util.List;
 import java.util.Vector;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.controllers.DeleteCellC;
-import org.openshapa.models.db.DeprecatedDatabase;
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.DataCellTO;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.MatrixVocabElement;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.DataCell;
+import database.DataCellTO;
+import database.DataColumn;
+import database.SystemErrorException;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 

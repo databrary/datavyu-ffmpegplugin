@@ -6,9 +6,9 @@ package org.openshapa.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.TimeStamp;
+import database.DataCell;
+import database.SystemErrorException;
+import database.TimeStamp;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 /**

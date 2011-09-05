@@ -4,10 +4,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.IntDataValue;
-import org.openshapa.models.db.legacy.Matrix;
-import org.openshapa.models.db.legacy.PredDataValue;
+import database.DataCell;
+import database.IntDataValue;
+import database.Matrix;
+import database.PredDataValue;
 
 /**
  * This class is the character editor of a IntDataValue.

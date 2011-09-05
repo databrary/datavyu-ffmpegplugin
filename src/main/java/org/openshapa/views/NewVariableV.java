@@ -2,24 +2,21 @@ package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.legacy.Column;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.LogicErrorException;
-import org.openshapa.models.db.legacy.MatrixVocabElement;
-import org.openshapa.models.db.legacy.NominalFormalArg;
-import org.openshapa.models.db.legacy.SystemErrorException;
+import database.Column;
+import database.DataColumn;
+import database.LogicErrorException;
+import database.MatrixVocabElement;
+import database.NominalFormalArg;
+import database.SystemErrorException;
 
 import com.usermetrix.jclient.UserMetrix;
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
-import org.openshapa.models.db.legacy.Database;
+import database.Database;
 import org.openshapa.undoableedits.AddVariableEdit;
 
 

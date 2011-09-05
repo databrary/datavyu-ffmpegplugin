@@ -7,15 +7,15 @@ import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.openshapa.models.db.legacy.DataCell;
-import org.openshapa.models.db.legacy.DataColumn;
-import org.openshapa.models.db.legacy.Database;
-import org.openshapa.models.db.legacy.ExternalCascadeListener;
-import org.openshapa.models.db.legacy.ExternalDataCellListener;
-import org.openshapa.models.db.legacy.ExternalDataColumnListener;
-import org.openshapa.models.db.legacy.Matrix;
-import org.openshapa.models.db.legacy.SystemErrorException;
-import org.openshapa.models.db.legacy.TimeStamp;
+import database.DataCell;
+import database.DataColumn;
+import database.Database;
+import database.ExternalCascadeListener;
+import database.ExternalDataCellListener;
+import database.ExternalDataColumnListener;
+import database.Matrix;
+import database.SystemErrorException;
+import database.TimeStamp;
 
 /**
  * Wrapper/adapter for deprecated data columns.
@@ -139,7 +139,7 @@ implements Variable,
             if (variable != null) {
                 int numCells = variable.getNumCells();
                 for (int i = 1; i < numCells + 1; i++) {
-                    org.openshapa.models.db.legacy.Cell cell = legacyDB.getCell(variable.getID(), i);
+                    database.Cell cell = legacyDB.getCell(variable.getID(), i);
                     if (cell instanceof DataCell) {
                         result.add(new DeprecatedCell((DataCell) cell));
                     }
@@ -161,7 +161,7 @@ implements Variable,
             for (Long key : temporalIndex) {
                 for (Long cellID : temporalMap.get(key)) {
                     if (i == index) {
-                        org.openshapa.models.db.legacy.Cell cell = legacyDB.getCell(cellID);
+                        database.Cell cell = legacyDB.getCell(cellID);
                         if (cell instanceof DataCell) {
                             return new DeprecatedCell((DataCell) cell);
                         }
@@ -183,7 +183,7 @@ implements Variable,
         try {
             for (Long key : temporalIndex) {
                 for(Long cellID : temporalMap.get(key)) {
-                    org.openshapa.models.db.legacy.Cell cell = legacyDB.getCell(cellID);
+                    database.Cell cell = legacyDB.getCell(cellID);
                     if (cell instanceof DataCell) {
                         result.add(new DeprecatedCell((DataCell) cell));
                     }
@@ -222,7 +222,7 @@ implements Variable,
         try {
             for (Long cellID : colChanges.cellDeleted) {
                 // Remove the reference to the cell from the temporal index.
-                org.openshapa.models.db.legacy.Cell cell = legacyDB.getCell(cellID);
+                database.Cell cell = legacyDB.getCell(cellID);
                 if (cell instanceof DataCell) {
                     DataCell dataCell = (DataCell) cell;
                     temporalMap.remove(dataCell.getOnset().getTime(), cellID);
@@ -234,7 +234,7 @@ implements Variable,
 
             for (Long cellID : colChanges.cellInserted) {
                 // Push a reference to the new cell into the temporal index.
-                org.openshapa.models.db.legacy.Cell cell = legacyDB.getCell(cellID);
+                database.Cell cell = legacyDB.getCell(cellID);
                 if (cell instanceof DataCell) {
                     DataCell dataCell = (DataCell) cell;
                     temporalMap.put(dataCell.getOnset().getTime(), cellID);
