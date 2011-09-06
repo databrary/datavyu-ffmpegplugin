@@ -1,3 +1,17 @@
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.openshapa.views.continuous.quicktime;
 
 import com.usermetrix.jclient.Logger;
@@ -65,6 +79,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         }
     }
 
+    @Override
     protected void setQTVolume(final float volume) {
 
         if (movie == null) {
@@ -81,6 +96,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getDuration() {
 
         try {
@@ -96,6 +112,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         return -1;
     }
 
+    @Override
     protected void setQTDataFeed(final File videoFile) {
 
         try {
@@ -121,6 +138,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         }
     }
 
+    @Override
     protected Dimension getQTVideoSize() {
         try {
         	if (visualTrack != null) {
@@ -134,6 +152,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         return new Dimension(1, 1);
     }
 
+    @Override
     protected float getQTFPS() {
         float fps = 0;
 
@@ -200,6 +219,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void play() {
         super.play();
 
@@ -216,6 +236,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void stop() {
         super.stop();
 
@@ -232,6 +253,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void seekTo(final long position) {
 
         try {
@@ -249,6 +271,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getCurrentTime() {
 
         try {
@@ -260,9 +283,8 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         return 0;
     }
 
+    @Override
     protected void cleanUp() {
         //TODO
     }
-
-
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <NonVisualComponents>
@@ -37,7 +37,7 @@
               </Group>
               <EmptySpace pref="115" max="32767" attributes="0"/>
           </Group>
-          <Component id="jScrollPane1" alignment="0" pref="443" max="32767" attributes="0"/>
+          <Component id="jScrollPane1" alignment="0" pref="462" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
