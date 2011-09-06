@@ -82,12 +82,14 @@ public final class ProjectController {
      * Default constructor.
      */
     public ProjectController() {
+        ((DeprecatedDatabase) db).getDatabase().setTitleNotifier(OpenSHAPA.getApplication());
         project = new Project();
         changed = false;
         newProject = true;
     }
 
     public ProjectController(final Project project) {
+        ((DeprecatedDatabase) db).getDatabase().setTitleNotifier(OpenSHAPA.getApplication());
         this.project = project;
         changed = false;
         newProject = false;
@@ -153,20 +155,6 @@ public final class ProjectController {
      */
     public void setDatastore(final Datastore newDS) {
         db = newDS;
-    }
-
-    /**
-     * Sets the MacshapaDatabase to use with this project. This is used when
-     * loading a Database from file.
-     *
-     * ***
-     * setDB should be refactored to return a Datastore.
-     * ***
-     *
-     * @param newDB The new MacshapaDatabase to use.
-     */
-    @Deprecated public void setDatabase(final MacshapaDatabase newDB) {
-        getLegacyDB().setDatabase(newDB);
     }
 
     /**

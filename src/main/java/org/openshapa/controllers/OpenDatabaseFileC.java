@@ -43,6 +43,7 @@ import database.SystemErrorException;
 import database.TextStringDataValue;
 import database.TimeStamp;
 import database.VocabElement;
+import org.openshapa.OpenSHAPA;
 
 
 /**
@@ -144,6 +145,7 @@ public final class OpenDatabaseFileC {
             LOGGER.event("open csv database from stream");
 
             DeprecatedDatabase db = new DeprecatedDatabase();
+            ((DeprecatedDatabase) db).getDatabase().setTitleNotifier(OpenSHAPA.getApplication());
             InputStreamReader isr = new InputStreamReader(inStream);
             BufferedReader csvFile = new BufferedReader(isr);
 

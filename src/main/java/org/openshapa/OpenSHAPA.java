@@ -55,13 +55,14 @@ import com.sun.script.jruby.JRubyScriptEngineManager;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import database.TitleNotifier;
 
 
 /**
  * The main class of the application.
  */
 public final class OpenSHAPA extends SingleFrameApplication
-    implements KeyEventDispatcher {
+    implements KeyEventDispatcher, TitleNotifier {
 
     /** Load required native libraries (JNI). */
     static {
@@ -775,6 +776,7 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         // Allow changes to the database to propagate up and signify db modified
         canSetUnsaved = true;
+        projectController.getLegacyDB().getDatabase().canSetUnsaved(canSetUnsaved);
 
         addExitListener(new ExitListenerImpl());
 
@@ -825,6 +827,7 @@ public final class OpenSHAPA extends SingleFrameApplication
     /**
      * Asks the main frame to update its title.
      */
+    @Override
     public void updateTitle() {
         SwingUtilities.invokeLater(new Runnable() {
 

@@ -220,6 +220,7 @@ public final class NewProjectV extends OpenSHAPADialog {
 
             Datastore ds = new DeprecatedDatabase();
             ds.setName(getProjectName());
+            ((DeprecatedDatabase) ds).getDatabase().setTitleNotifier(OpenSHAPA.getApplication());
 
             OpenSHAPA.getProjectController().createNewProject(getProjectName());
             OpenSHAPA.getProjectController().setDatastore(ds);
