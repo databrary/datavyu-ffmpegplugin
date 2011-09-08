@@ -573,7 +573,6 @@
                 <preCp>jruby-engine-1.1.6.jar</preCp>
                 <preCp>jruby-complete-1.4.0.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
-                <preCp>openhashtable-0.1.jar</preCp>
                 <preCp>openshapa-lib-0.0.60.jar</preCp>
                 <preCp>openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</preCp>
                 <preCp>snakeyaml-1.7.jar</preCp>
@@ -634,12 +633,6 @@
       <groupId>org.swinglabs</groupId>
       <artifactId>swing-layout</artifactId>
       <version>1.0.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>database</groupId>
-      <artifactId>database</artifactId>
-      <version>0.01</version>
     </dependency>
 
     <dependency>
