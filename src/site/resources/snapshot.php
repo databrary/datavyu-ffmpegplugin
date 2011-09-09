@@ -151,6 +151,7 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 								<li><a href="http://www.openshapa.org/news">News</a></li>
 								<li class="current"><a href="http://www.openshapa.org/dev/snapshot.php">Development Snapshots</a></li>
                                                                 <li><a href="publications.html">Publications</a></li>
+                                                                <li><a href="workshop.html">Workshop 2011</a></li>
 								<li><a href="https://openshapa.org/fogbugz/default.php?W19" target="_blank">User Guide</a></li>
 								<li><a href="https://openshapa.org/fogbugz/default.php?W20" target="_blank">Contributer Guide</a></li>
 								<li><a href="https://openshapa.org/fogbugz/default.php?OpenSHAPA" target="_blank">Forum</a></li>
