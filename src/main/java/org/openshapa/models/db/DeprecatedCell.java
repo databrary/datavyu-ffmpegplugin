@@ -21,6 +21,7 @@ import database.SystemErrorException;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import database.MatrixVocabElement;
+import database.TimeStamp;
 
 
 /**
@@ -104,6 +105,36 @@ import database.MatrixVocabElement;
         return -1;
     }
 
+    @Override public void setOnset(final String newOnset) {
+        DataCell cell = getLegacyCell();
+
+        if (cell == null) {
+            return ;
+        }
+
+        try {
+            TimeStamp timeStamp = new TimeStamp(newOnset);
+            cell.setOnset(timeStamp);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to set onset", e);
+        }
+    }
+
+    @Override public void setOnset(final long newOnset) {
+        DataCell cell = getLegacyCell();
+
+        if (cell == null) {
+            return;
+        }
+
+        try {
+            TimeStamp timeStamp = new TimeStamp(1000, newOnset);
+            cell.setOnset(timeStamp);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to set onset", e);
+        }
+    }
+
     @Override public long getOffset() {
         DataCell cell = getLegacyCell();
 
@@ -118,6 +149,36 @@ import database.MatrixVocabElement;
         }
 
         return -1;
+    }
+    
+   @Override public void setOffset(final String newOffset) {
+        DataCell cell = getLegacyCell();
+
+        if (cell == null) {
+            return ;
+        }
+
+        try {
+            TimeStamp timeStamp = new TimeStamp(newOffset);
+            cell.setOffset(timeStamp);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to set onset", e);
+        }
+    }
+
+    @Override public void setOffset(final long newOffset) {
+        DataCell cell = getLegacyCell();
+
+        if (cell == null) {
+            return;
+        }
+
+        try {
+            TimeStamp timeStamp = new TimeStamp(1000, newOffset);
+            cell.setOffset(timeStamp);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to set onset", e);
+        }
     }
 
     /**
