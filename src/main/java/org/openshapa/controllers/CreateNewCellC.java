@@ -104,10 +104,7 @@ public final class CreateNewCellC {
         
         try {
             LOGGER.event("create cell in selected column");
-            
-            
 
-            
             // perform the operation
             List<Cell> cells = v.getCellsTemporally();
 
@@ -131,9 +128,6 @@ public final class CreateNewCellC {
 
             OpenSHAPA.getProjectController().setLastCreatedColId(asLegacy(v).getID());
             
-     
-
-            
         } catch (SystemErrorException se) {
             LOGGER.error("Unable to create new default cell", se);
         }
@@ -153,7 +147,7 @@ public final class CreateNewCellC {
         view.highlightCell(cellID);
         // record the effect
         UndoableEdit edit = new AddCellEdit(v.getName());            
-//        UndoableEdit edit = new AddCellEdit1(v, cellID);            
+
         // Display any changes.
         OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
         // notify the listeners
@@ -171,7 +165,7 @@ public final class CreateNewCellC {
                 cellID = createCell(v); 
                 // record the effect
                 UndoableEdit edit = new AddCellEdit(v.getName());            
-//                UndoableEdit edit = new AddCellEdit1(v, cellID);            
+
                 // Display any changes.
                 OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
                 // notify the listeners
@@ -233,13 +227,12 @@ public final class CreateNewCellC {
                                 if (variableName.equals(columnCellName)) {
                                     // Add the undoable action
                                     UndoableEdit edit = new AddCellEdit(v.getName());            
-//                                   UndoableEdit edit = new AddCellEdit1(v, cellID);
-                                   // notify the listeners
-                                   OpenSHAPA.getView().getUndoSupport().postEdit(edit);
-                                   break;
+
+                                    // notify the listeners
+                                    OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+                                    break;
                                 }
-                            }    
-                            /////
+                            }
                         }
 
                         break;
@@ -283,7 +276,8 @@ public final class CreateNewCellC {
                 // the same column as the newly created cell.
                 ArrayList<Long> matchingColumns = new ArrayList<Long>();
 
-                for (DataColumn col : view.getSelectedCols()) {
+                for (Variable var : model.getSelectedVariables()) {
+                    DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
                     matchingColumns.add(col.getID());
                 }
 
@@ -324,7 +318,7 @@ public final class CreateNewCellC {
      * append it to the database.
      */
     public void createNewCell(final long milliseconds)
-        throws SystemErrorException {
+    throws SystemErrorException {
 
         /*
          * Concept of operation: Creating a new cell.
@@ -362,8 +356,11 @@ public final class CreateNewCellC {
         boolean newcelladded = false;
 
         // check for Situation 1: one or more selected columns
-        for (DataColumn col : view.getSelectedCols()) {
+        model = OpenSHAPA.getProjectController().getDB();
+
+        for (Variable var : model.getSelectedVariables()) {
             LOGGER.event("create cell in selected column");
+            DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
 
             MatrixVocabElement mve = modelAsLegacyDB().getMatrixVE(col.getItsMveID());
             DataCell cell = new DataCell(col.getDB(), col.getID(), mve.getID());

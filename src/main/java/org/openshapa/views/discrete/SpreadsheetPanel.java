@@ -498,30 +498,6 @@ implements ExternalColumnListListener,
     }
 
     /**
-     * @return Vector of the selected columns.
-     */
-    public Vector<DataColumn> getSelectedCols() {
-        Vector<DataColumn> selcols = new Vector<DataColumn>();
-
-        try {
-            Vector<DataColumn> cols = getLegacyDatabase().getDataColumns();
-            int numCols = cols.size();
-
-            for (int i = 0; i < numCols; i++) {
-                DataColumn col = cols.elementAt(i);
-
-                if (col.getSelected()) {
-                    selcols.add(col);
-                }
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to set new cell stop time.", e);
-        }
-
-        return selcols;
-    }
-
-    /**
      * @param dir The direction in which to search for adjacent cells (left or
      * right).
      *

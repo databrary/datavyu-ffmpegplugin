@@ -80,6 +80,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.event.UndoableEditEvent;
@@ -88,6 +89,9 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 import org.openshapa.controllers.AutosaveC;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedVariable;
+import org.openshapa.models.db.Variable;
 import org.openshapa.undoableedits.RemoveCellEdit;
 import org.openshapa.undoableedits.RemoveVariableEdit;
 import org.openshapa.undoableedits.RunScriptEdit;
@@ -845,14 +849,12 @@ public final class OpenSHAPAView extends FrameView
      * Action for invoking a script.
      */
     @Action public void runScript() {
-
-        try {            
+        try {
             RunScriptC scriptC = new RunScriptC();
             // record the effect
             UndoableEdit edit = new RunScriptEdit(scriptC.getScriptFilePath());
             // notify the listeners
-            OpenSHAPA.getView().getUndoSupport().postEdit(edit);           
-            /////
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
             scriptC.execute();
         } catch (IOException e) {
             LOGGER.error("Unable run script", e);
@@ -863,27 +865,36 @@ public final class OpenSHAPAView extends FrameView
      * Action for removing columns from the database.
      */
     @Action public void deleteColumn() {
-        Vector<DataColumn> selcols = panel.getSelectedCols();
-        
+        Datastore ds = OpenSHAPA.getProjectController().getDB();
+        List<Variable> selectedVariables = ds.getSelectedVariables();
+
+        Vector<DataColumn> selCols = new Vector<DataColumn>();
+        for (Variable var : selectedVariables) {
+            DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
+            selCols.add(col);
+        }
+
         // record the effect
-        UndoableEdit edit = new RemoveVariableEdit(selcols);            
+        UndoableEdit edit = new RemoveVariableEdit(selCols);
 
         // perform the operation
-        new DeleteColumnC(selcols);
-        
+        new DeleteColumnC(selCols);
+
         // notify the listeners
-        OpenSHAPA.getView().getUndoSupport().postEdit(edit);        
+        OpenSHAPA.getView().getUndoSupport().postEdit(edit);
     }
 
     /**
      * Action for hiding columns.
      */
     @Action public void hideColumn() {
+        Datastore ds = OpenSHAPA.getProjectController().getDB();
         MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
         LOGGER.event("Hidding columns");
 
-        for (DataColumn col : panel.getSelectedCols()) {
+        for (Variable var : ds.getSelectedVariables()) {
             try {
+                DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
                 col.setHidden(true);
                 col.setSelected(false);
                 msdb.replaceColumn(col);
@@ -922,7 +933,8 @@ public final class OpenSHAPAView extends FrameView
     @Action public void changeColumnName() {
         // Only one column should be selected, but just in case, we'll only
         // change the first column
-        DataColumn col = panel.getSelectedCols().firstElement();
+        Variable var = OpenSHAPA.getProjectController().getDB().getSelectedVariables().get(0);
+        DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
 
         for (SpreadsheetColumn sCol : panel.getColumns()) {
 
@@ -1557,11 +1569,14 @@ public final class OpenSHAPAView extends FrameView
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
             .getResourceMap(OpenSHAPAView.class);
 
-        if (panel.getSelectedCols().size() == 0) {
+        List<Variable> selectedCols = OpenSHAPA.getProjectController().getDB()
+                                               .getSelectedVariables();
+
+        if (selectedCols.isEmpty()) {
             deleteColumnMenuItem.setEnabled(false);
             hideSelectedColumnsMenuItem.setEnabled(false);
             changeVarNameMenuItem.setEnabled(false);
-        } else if (panel.getSelectedCols().size() == 1) {
+        } else if (selectedCols.size() == 1) {
             deleteColumnMenuItem.setText(rMap.getString(
                     "deleteColumnMenuItemSingle.text"));
             deleteColumnMenuItem.setEnabled(true);

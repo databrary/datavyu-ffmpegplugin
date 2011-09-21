@@ -76,7 +76,7 @@ public class AddVariableEdit extends SpreadsheetEdit {
         super.undo();
         Vector<DataColumn> cols = new Vector<DataColumn>();
         DeprecatedVariable v = (DeprecatedVariable) getVariable(varName);
-        cols.add(v.getLegacyColumn());
+        cols.add(v.getLegacyVariable());
         new DeleteColumnC(cols);
         //((DeprecatedDatabase)model).removeVariable(v);
     }

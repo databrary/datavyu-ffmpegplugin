@@ -36,18 +36,15 @@ public class SetSelectedCellStartTimeC {
     /**
      * Sets all selected cells to have the specified start time / onset.
      * 
-     * @param milliseconds
-     *            The time in milliseconds to use for all selected cells onset /
-     *            start time.
+     * @param milliseconds The time in milliseconds to use for all selected
+     * cells onset / start time.
      */
     public SetSelectedCellStartTimeC(final long milliseconds) {
-
         LOGGER.event("set selected cell onset");
 
         // Get the view for this controller (the main spreadsheet panel.
-        SpreadsheetPanel view =
-                (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
-                        .getComponent();
+        SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
+                                .getMainView().getComponent();
 
         try {
             for (DataCell c : view.getSelectedCells()) {

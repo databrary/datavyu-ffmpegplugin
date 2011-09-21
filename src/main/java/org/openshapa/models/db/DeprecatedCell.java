@@ -181,6 +181,26 @@ import database.TimeStamp;
         }
     }
 
+    @Override public boolean isSelected() {
+        DataCell cell = getLegacyCell();
+
+        if (cell == null) {
+            return false;
+        }
+
+        return cell.getSelected();
+    }
+
+    @Override public void setSelected(final boolean selected) {
+        DataCell cell = getLegacyCell();
+
+        if (cell == null) {
+            return;
+        }
+
+        cell.setSelected(selected);
+    }
+
     /**
      * Retrieve the DataCell represented by this Cell.
      */

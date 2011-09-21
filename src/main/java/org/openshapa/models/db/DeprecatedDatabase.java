@@ -64,7 +64,7 @@ import org.openshapa.util.Constants;
      * the db.legacy package.
      */
     @Deprecated
- public MacshapaDatabase getDatabase() {
+    public MacshapaDatabase getDatabase() {
         return legacyDB;
     }
 
@@ -77,12 +77,12 @@ import org.openshapa.util.Constants;
      * the db.legacy package.
      */
     @Deprecated
- public void setDatabase(MacshapaDatabase newDB) {
+    public void setDatabase(MacshapaDatabase newDB) {
         legacyDB = newDB;
     }
 
     @Deprecated
- public DeprecatedVariable getByLegacyID(final long colID) {
+    public DeprecatedVariable getByLegacyID(final long colID) {
         try {
             return new DeprecatedVariable(getDatabase().getDataColumn(colID));
         } catch (SystemErrorException e) {
@@ -137,9 +137,21 @@ import org.openshapa.util.Constants;
         return variables;
     }
 
+    @Override public List<Variable> getSelectedVariables() {
+        List<Variable> result = new ArrayList<Variable>();
+
+        for (Variable var : variables) {
+            if (var.isSelected()) {
+                result.add(var);
+            }
+        }
+
+        return result;
+    }
+
     public void removeVariable(long colID) {
         for (Variable v : variables) {
-            if (((DeprecatedVariable)v).getLegacyColumn().getID() == colID) {
+            if (((DeprecatedVariable)v).getLegacyVariable().getID() == colID) {
                 removeVariable(v);
                 return;
             }
