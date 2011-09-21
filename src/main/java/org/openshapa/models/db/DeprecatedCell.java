@@ -29,8 +29,7 @@ import database.TimeStamp;
  */
 @Deprecated public final class DeprecatedCell implements Cell {
 
-    private static final Logger LOGGER = UserMetrix.getLogger(
-            DeprecatedCell.class);
+    private static final Logger LOGGER = UserMetrix.getLogger(DeprecatedCell.class);
 
     /** The legacy database we can fetch data from. */
     Database legacyDB;
@@ -115,6 +114,7 @@ import database.TimeStamp;
         try {
             TimeStamp timeStamp = new TimeStamp(newOnset);
             cell.setOnset(timeStamp);
+            legacyDB.replaceCell(cell);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set onset", e);
         }
@@ -130,6 +130,7 @@ import database.TimeStamp;
         try {
             TimeStamp timeStamp = new TimeStamp(1000, newOnset);
             cell.setOnset(timeStamp);
+            legacyDB.replaceCell(cell);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set onset", e);
         }
@@ -161,6 +162,7 @@ import database.TimeStamp;
         try {
             TimeStamp timeStamp = new TimeStamp(newOffset);
             cell.setOffset(timeStamp);
+            legacyDB.replaceCell(cell);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set onset", e);
         }
@@ -176,6 +178,7 @@ import database.TimeStamp;
         try {
             TimeStamp timeStamp = new TimeStamp(1000, newOffset);
             cell.setOffset(timeStamp);
+            legacyDB.replaceCell(cell);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set onset", e);
         }
@@ -199,6 +202,11 @@ import database.TimeStamp;
         }
 
         cell.setSelected(selected);
+        try {
+            legacyDB.replaceCell(cell);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to set selected cell", e);
+        }
     }
 
     /**

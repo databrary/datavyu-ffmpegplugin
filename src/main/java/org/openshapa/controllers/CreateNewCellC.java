@@ -39,6 +39,7 @@ import java.util.List;
 import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
@@ -187,7 +188,7 @@ public final class CreateNewCellC {
      * adjacent too.
      * @param direction The direction in which we wish to create adjacent cells.
      */
-    public CreateNewCellC(final Vector<DataCell> sourceCells,
+    public CreateNewCellC(final List<DataCell> sourceCells,
                           final ArrayDirection direction) {
         view = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView().getComponent();
         model = OpenSHAPA.getProjectController().getDB();
@@ -386,7 +387,13 @@ public final class CreateNewCellC {
         if (!newcelladded) {
 
             // else check for Situation 2: one or more selected cells
-            Iterator<DataCell> itCells = view.getSelectedCells().iterator();
+            List<Cell> cells = model.getSelectedCells();
+            List<DataCell> dataCells = new ArrayList<DataCell>();
+            for (Cell c : cells) {
+                dataCells.add(((DeprecatedCell) c).getLegacyCell());
+            }
+
+            Iterator<DataCell> itCells = dataCells.iterator();
 
             while (itCells.hasNext()) {
                 LOGGER.event("create cell below selected cell");

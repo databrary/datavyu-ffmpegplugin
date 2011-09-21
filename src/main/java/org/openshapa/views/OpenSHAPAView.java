@@ -80,8 +80,9 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import database.DataCell;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -89,7 +90,9 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 import org.openshapa.controllers.AutosaveC;
+import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 import org.openshapa.undoableedits.RemoveCellEdit;
@@ -944,10 +947,18 @@ public final class OpenSHAPAView extends FrameView
      * Action for removing cells from the database.
      */
     @Action public void deleteCells() {
-         // record the effect
-        UndoableEdit edit = new RemoveCellEdit(panel.getSelectedCells()); 
+        List<Cell> selectedCells = OpenSHAPA.getProjectController()
+                                            .getDB().getSelectedCells();
+        List<DataCell> selectedDataCells = new ArrayList();
+
+        for (Cell cell : selectedCells) {
+            selectedDataCells.add(((DeprecatedCell) cell).getLegacyCell());
+        }
+
+        // record the effect
+        UndoableEdit edit = new RemoveCellEdit(selectedDataCells);
         // perform the operation
-        new DeleteCellC(panel.getSelectedCells());         
+        new DeleteCellC(selectedDataCells);
         // notify the listeners
         OpenSHAPA.getView().getUndoSupport().postEdit(edit);
     }
@@ -1588,9 +1599,12 @@ public final class OpenSHAPAView extends FrameView
             changeVarNameMenuItem.setEnabled(false);
         }
 
-        if (panel.getSelectedCells().size() == 0) {
+        List<Cell> selectedCells = OpenSHAPA.getProjectController().getDB()
+                                            .getSelectedCells();
+
+        if (selectedCells.isEmpty()) {
             deleteCellMenuItem.setEnabled(false);
-        } else if (panel.getSelectedCells().size() == 1) {
+        } else if (selectedCells.size() == 1) {
             deleteCellMenuItem.setText(rMap.getString(
                     "deleteCellMenuItemSingle.text"));
             deleteCellMenuItem.setEnabled(true);
@@ -1650,7 +1664,15 @@ public final class OpenSHAPAView extends FrameView
     } // GEN-LAST:event_newCellLeftMenuItemActionPerformed
 
     public void newCellLeft() {
-        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.LEFT);
+        List<Cell> selectedCells = OpenSHAPA.getProjectController()
+                                            .getDB().getSelectedCells();
+        List<DataCell> selectedDataCells = new ArrayList();
+
+        for (Cell cell : selectedCells) {
+            selectedDataCells.add(((DeprecatedCell) cell).getLegacyCell());
+        }
+
+        new CreateNewCellC(selectedDataCells, ArrayDirection.LEFT);
     }
 
     /**
@@ -1666,7 +1688,15 @@ public final class OpenSHAPAView extends FrameView
     } // GEN-LAST:event_newCellRightMenuItemActionPerformed
 
     public void newCellRight() {
-        new CreateNewCellC(panel.getSelectedCells(), ArrayDirection.RIGHT);
+        List<Cell> selectedCells = OpenSHAPA.getProjectController()
+                                            .getDB().getSelectedCells();
+        List<DataCell> selectedDataCells = new ArrayList();
+
+        for (Cell cell : selectedCells) {
+            selectedDataCells.add(((DeprecatedCell) cell).getLegacyCell());
+        }
+
+        new CreateNewCellC(selectedDataCells, ArrayDirection.RIGHT);
     }
 
     /**

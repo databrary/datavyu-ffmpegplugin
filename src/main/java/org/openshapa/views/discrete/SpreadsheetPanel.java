@@ -62,7 +62,6 @@ import org.openshapa.event.component.FileDropEvent;
 import org.openshapa.event.component.FileDropEventListener;
 
 import database.DataCell;
-import database.DataColumn;
 import database.Database;
 import database.ExternalColumnListListener;
 import database.SystemErrorException;
@@ -74,7 +73,9 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Variable;
 import org.openshapa.util.Constants;
@@ -354,7 +355,8 @@ implements ExternalColumnListListener,
         return (datastore);
     }
 
-    @Deprecated public Database getLegacyDatabase() {
+    @Deprecated
+    public Database getLegacyDatabase() {
         return ((DeprecatedDatabase) datastore).getDatabase();
     }
 
@@ -511,12 +513,17 @@ implements ExternalColumnListListener,
         int result = 0;
 
         try {
-            Vector<DataCell> selectedCells = getSelectedCells();
+            List<Cell> selectedCells = datastore.getSelectedCells();
             Vector<Long> columnOrder = getLegacyDatabase().getColOrderVector();
 
             // For each of the selected cells search to see if we have a column
             // to the left.
-            for (DataCell cell : selectedCells) {
+            Vector<DataCell> selectedDataCells = new Vector<DataCell>();
+            for (Cell cell : selectedCells) {
+                selectedDataCells.add(((DeprecatedCell) cell).getLegacyCell());
+            }
+
+            for (DataCell cell : selectedDataCells) {
 
                 for (int i = 0; i < columnOrder.size(); i++) {
 
@@ -541,36 +548,6 @@ implements ExternalColumnListListener,
         }
 
         return result;
-    }
-
-    /**
-     * @return Vector of the selected columns.
-     */
-    public Vector<DataCell> getSelectedCells() {
-        Vector<DataCell> selcells = new Vector<DataCell>();
-
-        try {
-            Vector<DataColumn> cols = getLegacyDatabase().getDataColumns();
-            int numCols = cols.size();
-
-            for (int i = 0; i < numCols; i++) {
-                DataColumn col = cols.elementAt(i);
-                int numCells = col.getNumCells();
-
-                for (int j = 1; j <= numCells; j++) {
-                    DataCell dc = (DataCell) col.getDB().getCell(col.getID(),
-                            j);
-
-                    if (dc.getSelected()) {
-                        selcells.add(dc);
-                    }
-                }
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to set new cell stop time.", e);
-        }
-
-        return selcells;
     }
 
     /**

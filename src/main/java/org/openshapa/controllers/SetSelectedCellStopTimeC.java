@@ -20,9 +20,11 @@ import database.DataCell;
 import database.SystemErrorException;
 import database.TimeStamp;
 import org.openshapa.util.Constants;
-import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedCell;
 
 /**
  * Controller for setting all selected cells to have the specified stop time /
@@ -43,16 +45,15 @@ public class SetSelectedCellStopTimeC {
 
         LOGGER.event("set selected cell offset");
 
-        // Get the view for this controller (the main spreadsheet panel.
-        SpreadsheetPanel view =
-                (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
-                        .getComponent();
+        // Get the datastore that we are manipulating.
+        Datastore datastore = OpenSHAPA.getProjectController().getDB();
 
         try {
-            for (DataCell c : view.getSelectedCells()) {
-                c.setOffset(new TimeStamp(Constants.TICKS_PER_SECOND,
+            for (Cell c : datastore.getSelectedCells()) {
+                DataCell dc = ((DeprecatedCell) c).getLegacyCell();
+                dc.setOffset(new TimeStamp(Constants.TICKS_PER_SECOND,
                         milliseconds));
-                OpenSHAPA.getProjectController().getLegacyDB().getDatabase().replaceCell(c);
+                OpenSHAPA.getProjectController().getLegacyDB().getDatabase().replaceCell(dc);
             }
         } catch (SystemErrorException se) {
             LOGGER.error("Unable to set selected cell onset", se);

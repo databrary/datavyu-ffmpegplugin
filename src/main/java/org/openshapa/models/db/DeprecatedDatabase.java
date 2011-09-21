@@ -160,6 +160,20 @@ import org.openshapa.util.Constants;
         return result;
     }
 
+    @Override public List<Cell> getSelectedCells() {
+        List<Cell> result = new ArrayList<Cell>();
+
+        for (Variable var : variables) {
+            for (Cell cell : var.getCells()) {
+                if (cell.isSelected()) {
+                    result.add(cell);
+                }
+            }
+        }
+
+        return result;
+    }
+
     public void removeVariable(long colID) {
         for (Variable v : variables) {
             if (((DeprecatedVariable)v).getLegacyVariable().getID() == colID) {

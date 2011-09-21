@@ -39,7 +39,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
     private Vector<CellPos> cellPosV;
     private Vector<DataCellTO> cellTOV;
     
-    public RemoveCellEdit(Vector<DataCell> cells) {
+    public RemoveCellEdit(List<DataCell> cells) {
       super();
       cellPosV = new Vector<CellPos>();
       cellTOV = new Vector<DataCellTO>();
