@@ -44,15 +44,23 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     private Vector<DataColumnTO> colsTO; // DataColumn relevant values
     private Vector<Long> colOrderVec;    // Order Vector before deleting the variables
     private List<Variable> vars;         // Vars vector   
+    private List<Variable> varsTo;       // Variables to delete.
     private Vector<Integer> indexV;      // indexes of the columns to delete on the spreadsheet 
     
-    public RemoveVariableEdit(Vector<DataColumn> colsToDelete) { 
+    public RemoveVariableEdit(List<Variable> varsToDelete) {
         super();
         try {
+            varsTo = varsToDelete;
             colsTO = new Vector<DataColumnTO>();
             indexV = new Vector<Integer>(); 
             colOrderVec = db.getColOrderVector();            
             vars = new ArrayList<Variable>(model.getAllVariables());
+
+            Vector<DataColumn> colsToDelete = new Vector<DataColumn>();
+            for (Variable var : varsToDelete) {
+                colsToDelete.add(((DeprecatedVariable) var).getLegacyVariable());
+            }
+
             // Add the cells to each Column
             for (DataColumn col : colsToDelete) {
                 DataColumnTO colTO = new DataColumnTO(col);  
@@ -130,16 +138,8 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     @Override 
     public void redo() throws CannotUndoException {        
         super.redo();
-        vars = new ArrayList<Variable>(model.getAllVariables());
-        Vector<DataColumn> colsToDelete = new Vector<DataColumn>();
-        for (DataColumnTO colTO : colsTO) {
-            try {
-                colsToDelete.addElement(db.getDataColumn(colTO.name));
-            } catch (SystemErrorException e) {
-                LOGGER.error("Unable to redo.", e);
-            }
-        }
-        new DeleteColumnC(colsToDelete);
+
+        new DeleteColumnC(varsTo);
         unselectAll();
     }   
 }

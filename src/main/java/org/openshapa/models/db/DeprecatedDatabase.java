@@ -117,6 +117,17 @@ import org.openshapa.util.Constants;
         }
     }
     
+    @Override public Variable getVariable(String varName) {
+        for (Variable v : variables) {
+            String variableName = v.getName();
+            if (variableName.equals(varName)) {
+                return v;
+            }
+        }
+
+        return null;
+    }
+
     public void addVariable(final Variable var, final int index) {
         DeprecatedVariable legacyVar = (DeprecatedVariable) var;
 

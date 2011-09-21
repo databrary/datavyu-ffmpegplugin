@@ -868,17 +868,11 @@ public final class OpenSHAPAView extends FrameView
         Datastore ds = OpenSHAPA.getProjectController().getDB();
         List<Variable> selectedVariables = ds.getSelectedVariables();
 
-        Vector<DataColumn> selCols = new Vector<DataColumn>();
-        for (Variable var : selectedVariables) {
-            DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
-            selCols.add(col);
-        }
-
         // record the effect
-        UndoableEdit edit = new RemoveVariableEdit(selCols);
+        UndoableEdit edit = new RemoveVariableEdit(selectedVariables);
 
         // perform the operation
-        new DeleteColumnC(selCols);
+        new DeleteColumnC(selectedVariables);
 
         // notify the listeners
         OpenSHAPA.getView().getUndoSupport().postEdit(edit);

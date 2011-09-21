@@ -113,9 +113,8 @@ public class RunScriptEdit extends SpreadsheetEdit {
 
     private void setSpreadsheetState(Vector<DataColumnTO> colsTO) {
         try {           
-            Vector<DataColumn> colsToDelete;
-            colsToDelete = db.getDataColumns();  
-            new DeleteColumnC(colsToDelete);
+            new DeleteColumnC(model.getAllVariables());
+
             for (DataColumnTO colTO : colsTO) {    
                 DataColumn dc = new DataColumn(db, colTO.name, colTO.itsMveType);                             
                 DeprecatedVariable var = new DeprecatedVariable(dc); 

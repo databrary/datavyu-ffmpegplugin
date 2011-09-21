@@ -16,18 +16,20 @@ package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.util.Vector;
 
 import org.openshapa.OpenSHAPA;
 import database.Cell;
 import database.DataColumn;
 import database.MacshapaDatabase;
 import database.SystemErrorException;
+import java.util.List;
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
+import org.openshapa.models.db.DeprecatedVariable;
+import org.openshapa.models.db.Variable;
 
 /**
  * Controller for deleting cells from the database.
@@ -40,10 +42,9 @@ public final class DeleteColumnC {
     /**
      * Constructor.
      * 
-     * @param colsToDelete
-     *            The columns to remove from the database/spreadsheet.
+     * @param colsToDelete The columns to remove from the database/spreadsheet.
      */
-    public DeleteColumnC(final Vector<DataColumn> colsToDelete) {
+    public DeleteColumnC(final List<Variable> colsToDelete) {
         LOGGER.event("delete columns");
 
         // The spreadsheet is the view for this controller.
@@ -57,7 +58,8 @@ public final class DeleteColumnC {
             // Deselect everything.
             view.deselectAll();
 
-            for (DataColumn dc : colsToDelete) {
+            for (Variable var : colsToDelete) {
+                DataColumn dc = ((DeprecatedVariable) var).getLegacyVariable();
 
                 // All cells in the column removed - now delete the column.
                 // Must remove cells from the data column before removing it.

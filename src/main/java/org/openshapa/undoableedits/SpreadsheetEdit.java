@@ -23,7 +23,6 @@ import javax.swing.undo.CannotUndoException;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.project.ProjectController;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.Variable;
 import database.DataCell;
 import database.DataColumn;
 import database.Database;
@@ -65,21 +64,10 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
     public void undo() throws CannotUndoException {
         super.undo();
     }
-    
-    protected Variable getVariable(String varName) {
-        for (Variable v : model.getAllVariables()) {
-            String variableName = v.getName();
-            if (variableName.equals(varName)) {
-                return v;
-            }
-        } 
-        return null;
-    }    
  
     protected DataCell getDataCell(CellPos cellPos) {
         try {        
             DataColumn col = (DataColumn) db.getColumn(cellPos.varName);
-            int numCells = col.getNumCells();
             long ColID = col.getID();    
             DataCell cell = (DataCell)db.getCell(ColID, cellPos.ord);
             return cell;

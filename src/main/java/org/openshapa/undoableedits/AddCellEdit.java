@@ -51,7 +51,7 @@ public class AddCellEdit extends SpreadsheetEdit {
     public void redo() throws CannotRedoException {
         super.redo();
         CreateNewCellC newCellController = new CreateNewCellC();
-        Variable var = getVariable(varName);
+        Variable var = model.getVariable(varName);
         newCellController.createCell(var);
         unselectAll();
         if ((var.getCells() != null) && (var.getCells().size() > 0)) {
@@ -73,7 +73,7 @@ public class AddCellEdit extends SpreadsheetEdit {
     }    
     
     private long getLastCellID() {
-        Variable v = getVariable(varName);
+        Variable v = model.getVariable(varName);
         List<Cell> cells = v.getCells();
         int numCells = v.getCells().size();
         DeprecatedCell cell = (DeprecatedCell)cells.get(numCells - 1);

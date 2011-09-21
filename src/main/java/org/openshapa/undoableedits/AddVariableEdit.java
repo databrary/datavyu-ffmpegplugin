@@ -16,7 +16,6 @@ package org.openshapa.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.util.Vector;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import org.openshapa.controllers.DeleteColumnC;
@@ -25,6 +24,9 @@ import database.DataColumn;
 import database.MatrixVocabElement;
 import database.NominalFormalArg;
 import database.SystemErrorException;
+import java.util.ArrayList;
+import java.util.List;
+import org.openshapa.models.db.Variable;
 
 /**
  *
@@ -74,11 +76,10 @@ public class AddVariableEdit extends SpreadsheetEdit {
     @Override
     public void undo() throws CannotUndoException {
         super.undo();
-        Vector<DataColumn> cols = new Vector<DataColumn>();
-        DeprecatedVariable v = (DeprecatedVariable) getVariable(varName);
-        cols.add(v.getLegacyVariable());
+
+        List<Variable> cols = new ArrayList<Variable>();
+        cols.add(model.getVariable(varName));
         new DeleteColumnC(cols);
-        //((DeprecatedDatabase)model).removeVariable(v);
     }
     
 }
