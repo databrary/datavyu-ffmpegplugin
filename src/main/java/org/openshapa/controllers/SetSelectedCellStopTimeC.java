@@ -16,15 +16,10 @@ package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
-import database.DataCell;
-import database.SystemErrorException;
-import database.TimeStamp;
-import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedCell;
 
 /**
  * Controller for setting all selected cells to have the specified stop time /
