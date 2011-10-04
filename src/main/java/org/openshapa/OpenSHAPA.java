@@ -69,8 +69,7 @@ import com.sun.script.jruby.JRubyScriptEngineManager;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.TitleNotifier;
-
+import org.openshapa.models.db.TitleNotifier;
 
 /**
  * The main class of the application.

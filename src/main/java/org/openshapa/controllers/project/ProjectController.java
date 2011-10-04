@@ -96,14 +96,14 @@ public final class ProjectController {
      * Default constructor.
      */
     public ProjectController() {
-        ((DeprecatedDatabase) db).getDatabase().setTitleNotifier(OpenSHAPA.getApplication());
+        db.setTitleNotifier(OpenSHAPA.getApplication());
         project = new Project();
         changed = false;
         newProject = true;
     }
 
     public ProjectController(final Project project) {
-        ((DeprecatedDatabase) db).getDatabase().setTitleNotifier(OpenSHAPA.getApplication());
+        db.setTitleNotifier(OpenSHAPA.getApplication());
         this.project = project;
         changed = false;
         newProject = false;
@@ -225,7 +225,6 @@ public final class ProjectController {
      * @return the changed
      */
     public boolean isChanged() {
-
         MacshapaDatabase legacyDB = getLegacyDB().getDatabase();
 
         if (OpenSHAPA.getApplication().getCanSetUnsaved()) {

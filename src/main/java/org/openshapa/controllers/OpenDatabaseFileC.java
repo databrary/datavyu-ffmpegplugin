@@ -159,7 +159,7 @@ public final class OpenDatabaseFileC {
             LOGGER.event("open csv database from stream");
 
             DeprecatedDatabase db = new DeprecatedDatabase();
-            ((DeprecatedDatabase) db).getDatabase().setTitleNotifier(OpenSHAPA.getApplication());
+            db.setTitleNotifier(OpenSHAPA.getApplication());
             InputStreamReader isr = new InputStreamReader(inStream);
             BufferedReader csvFile = new BufferedReader(isr);
 

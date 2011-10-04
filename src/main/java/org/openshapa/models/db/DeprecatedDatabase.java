@@ -28,7 +28,7 @@ import org.openshapa.util.Constants;
  * @deprecated Should use the datastore interface instead. This is a temporary
  * class to allow us to incrementally migrate to the new API.
  */
-@Deprecated public class DeprecatedDatabase implements Datastore {
+@Deprecated public class DeprecatedDatabase implements Datastore, database.TitleNotifier {
 
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(DeprecatedDatabase.class);
@@ -38,6 +38,9 @@ import org.openshapa.util.Constants;
 
     /** The list of variables stored in this database. */
     private List<Variable> variables;
+    
+    /** notifier that needs to be informed when the title needs to be updated. */
+    private TitleNotifier titleNotifier;
 
     public void setVariables(List<Variable> variables) {
         this.variables = variables;
@@ -51,6 +54,7 @@ import org.openshapa.util.Constants;
             legacyDB = new MacshapaDatabase(Constants.TICKS_PER_SECOND);
             // BugzID:449 - Set default database name.
             legacyDB.setName("Database1");
+            legacyDB.setTitleNotifier(this);
             variables = new ArrayList<Variable>();
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to create new database", e);
@@ -79,6 +83,7 @@ import org.openshapa.util.Constants;
     @Deprecated
     public void setDatabase(MacshapaDatabase newDB) {
         legacyDB = newDB;
+        legacyDB.setTitleNotifier(this);
     }
 
     @Deprecated
@@ -103,6 +108,14 @@ import org.openshapa.util.Constants;
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set datastore name", e);
         }
+    }
+    
+    @Override public void updateTitle() {
+        titleNotifier.updateTitle();
+    }
+
+    @Override public void setTitleNotifier(final TitleNotifier newTitleNotifier) {
+        titleNotifier = newTitleNotifier;
     }
 
     @Override public void addVariable(final Variable var) {
