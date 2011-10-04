@@ -32,9 +32,8 @@ public final class SetNewCellStopTimeC {
     /**
      * Sets the stop time of the last cell that was created.
      * 
-     * @param milliseconds
-     *            The number of milliseconds since the origin of the spreadsheet
-     *            to set the stop time for.
+     * @param milliseconds The number of milliseconds since the origin of the
+     * spreadsheet to set the stop time for.
      */
     public SetNewCellStopTimeC(final long milliseconds) {
         try {

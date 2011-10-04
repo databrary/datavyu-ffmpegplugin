@@ -72,13 +72,13 @@ public final class ProjectController {
     private Datastore db = new DeprecatedDatabase();
 
     /** The id of the last datacell that was created. */
-    private long lastCreatedCellID;
+    @Deprecated private long lastCreatedCellID;
 
     /** The id of the last selected cell. */
-    private long lastSelectedCellID;
+    @Deprecated private long lastSelectedCellID;
 
     /** The id of the last datacell that was created. */
-    private long lastCreatedColID;
+    @Deprecated private long lastCreatedColID;
 
     /**
      * Controller state
@@ -174,7 +174,7 @@ public final class ProjectController {
     /**
      * @return The id of the last created cell.
      */
-    public long getLastCreatedCellId() {
+    @Deprecated public long getLastCreatedCellId() {
         return lastCreatedCellID;
     }
 
@@ -184,14 +184,14 @@ public final class ProjectController {
      * @param newId
      *            The Id of the newly created cell.
      */
-    public void setLastCreatedCellId(final long newId) {
+    @Deprecated public void setLastCreatedCellId(final long newId) {
         lastCreatedCellID = newId;
     }
 
     /**
      * @return The id of the last selected cell.
      */
-    public long getLastSelectedCellId() {
+    @Deprecated public long getLastSelectedCellId() {
         return lastSelectedCellID;
     }
 
@@ -200,14 +200,14 @@ public final class ProjectController {
      *
      * @param newId The id of the newly selected cell.
      */
-    public void setLastSelectedCellId(final long newId) {
+    @Deprecated public void setLastSelectedCellId(final long newId) {
         lastSelectedCellID = newId;
     }
 
     /**
      * @return The id of the last created column.
      */
-    public long getLastCreatedColId() {
+    @Deprecated public long getLastCreatedColId() {
         return lastCreatedColID;
     }
 
@@ -217,7 +217,7 @@ public final class ProjectController {
      * @param newId
      *            The Id of the newly created column.
      */
-    public void setLastCreatedColId(final long newId) {
+    @Deprecated public void setLastCreatedColId(final long newId) {
         lastCreatedColID = newId;
     }
 

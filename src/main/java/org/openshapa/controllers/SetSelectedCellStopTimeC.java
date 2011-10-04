@@ -31,32 +31,24 @@ import org.openshapa.models.db.DeprecatedCell;
  * offset.
  */
 public class SetSelectedCellStopTimeC {
+
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(SetSelectedCellStopTimeC.class);
 
     /**
      * Sets all selected cells to have the specified stop time / offset.
      * 
-     * @param milliseconds
-     *            The time in milliseconds to use for all selected cells offset
-     *            / stop time.
+     * @param milliseconds The time in milliseconds to use for all selected
+     * cells offset / stop time.
      */
     public SetSelectedCellStopTimeC(final long milliseconds) {
-
         LOGGER.event("set selected cell offset");
 
         // Get the datastore that we are manipulating.
         Datastore datastore = OpenSHAPA.getProjectController().getDB();
 
-        try {
-            for (Cell c : datastore.getSelectedCells()) {
-                DataCell dc = ((DeprecatedCell) c).getLegacyCell();
-                dc.setOffset(new TimeStamp(Constants.TICKS_PER_SECOND,
-                        milliseconds));
-                OpenSHAPA.getProjectController().getLegacyDB().getDatabase().replaceCell(dc);
-            }
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to set selected cell onset", se);
+        for (Cell c : datastore.getSelectedCells()) {
+            c.setOffset(milliseconds);
         }
     }
 }

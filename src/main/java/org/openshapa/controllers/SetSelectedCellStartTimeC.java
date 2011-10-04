@@ -16,15 +16,10 @@ package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
-import database.SystemErrorException;
-import database.TimeStamp;
-import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
-import database.DataCell;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedCell;
 
 /**
  * Controller for setting all selected cells to have the specified start time /
@@ -47,16 +42,8 @@ public class SetSelectedCellStartTimeC {
         // Get the datastore that we are manipulating.
         Datastore datastore = OpenSHAPA.getProjectController().getDB();
 
-        try {
-            for (Cell c : datastore.getSelectedCells()) {
-                DataCell dc = ((DeprecatedCell) c).getLegacyCell();
-
-                dc.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND,
-                                          milliseconds));
-                OpenSHAPA.getProjectController().getLegacyDB().getDatabase().replaceCell(dc);
-            }
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to set selected cell onset", se);
+        for (Cell c : datastore.getSelectedCells()) {
+            c.setOnset(milliseconds);
         }
     }
 }
