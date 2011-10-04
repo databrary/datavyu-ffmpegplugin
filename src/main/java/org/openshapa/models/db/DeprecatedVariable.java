@@ -210,12 +210,34 @@ implements Variable,
     @Override
     public void setSelected(final boolean selected) {
         isSelected = selected;
-        legacyColumn.setSelected(selected);
+
+        try {
+            legacyColumn.setSelected(selected);
+            legacyDB.replaceColumn(legacyColumn);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to select column", e);
+        }
     }
 
     @Override
     public boolean isSelected() {
         return isSelected || !selectedCells.isEmpty();
+    }
+
+    @Override
+    public void setHidden(final boolean hidden) {
+
+        try {
+            legacyColumn.setHidden(hidden);
+            legacyDB.replaceColumn(legacyColumn);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to hide column", e);
+        }
+    }
+
+    @Override
+    public boolean isHidden() {
+        return legacyColumn.getHidden();
     }
 
     @Override

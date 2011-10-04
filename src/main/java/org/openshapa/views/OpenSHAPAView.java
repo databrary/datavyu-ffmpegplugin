@@ -64,7 +64,6 @@ import org.openshapa.event.component.FileDropEvent;
 import org.openshapa.event.component.FileDropEventListener;
 
 import database.DataColumn;
-import database.LogicErrorException;
 import database.MacshapaDatabase;
 import database.SystemErrorException;
 
@@ -81,6 +80,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import database.DataCell;
+import database.LogicErrorException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -130,7 +130,6 @@ public final class OpenSHAPAView extends FrameView
      */
     UndoManager spreadsheetUndoManager; // history list
     UndoableEditSupport undoSupport; // event support
-    /////
     
     public UndoableEditSupport getUndoSupport() {
         return undoSupport;
@@ -885,19 +884,12 @@ public final class OpenSHAPAView extends FrameView
      * Action for hiding columns.
      */
     @Action public void hideColumn() {
-        Datastore ds = OpenSHAPA.getProjectController().getDB();
-        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
         LOGGER.event("Hidding columns");
+        Datastore ds = OpenSHAPA.getProjectController().getDB();
 
         for (Variable var : ds.getSelectedVariables()) {
-            try {
-                DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
-                col.setHidden(true);
-                col.setSelected(false);
-                msdb.replaceColumn(col);
-            } catch (SystemErrorException ex) {
-                LOGGER.error("Unable to hide column", ex);
-            }
+            var.setHidden(true);
+            var.setSelected(false);
         }
 
         getComponent().revalidate();
@@ -907,18 +899,13 @@ public final class OpenSHAPAView extends FrameView
      * Action for showing all columns.
      */
     @Action public void showAllColumns() {
-        MacshapaDatabase msdb = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
         LOGGER.event("Showing all columns");
+        Datastore ds = OpenSHAPA.getProjectController().getDB();
 
-        try {
-            for (DataColumn col : msdb.getDataColumns()) {
-                if (col.getHidden() == true) {
-                    col.setHidden(false);
-                    msdb.replaceColumn(col);
-                }
+        for (Variable var : ds.getAllVariables()) {
+            if (var.isHidden()) {
+                var.setHidden(false);
             }
-        } catch (SystemErrorException ex) {
-            LOGGER.error("Unable to show all columns", ex);
         }
 
         getComponent().revalidate();
