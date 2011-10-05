@@ -559,16 +559,22 @@ public final class OpenSHAPA extends SingleFrameApplication
     /**
      * Show a warning dialog to the user.
      *
-     * @param e
-     *            The LogicErrorException to present to the user.
+     * @param s The message to present to the user.
+     */
+    public void showWarningDialog(final String s) {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext().getResourceMap(OpenSHAPA.class);
+
+        JOptionPane.showMessageDialog(mainFrame, s, rMap.getString("WarningDialog.title"), JOptionPane.WARNING_MESSAGE);
+    }
+
+    /**
+     * Show a warning dialog to the user.
+     *
+     * @param e The LogicErrorException to present to the user.
      */
     public void showWarningDialog(final LogicErrorException e) {
-        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
-            .getResourceMap(OpenSHAPA.class);
-
-        JOptionPane.showMessageDialog(mainFrame, e.getMessage(),
-            rMap.getString("WarningDialog.title"), JOptionPane.WARNING_MESSAGE);
+        showWarningDialog(e.getMessage());
     }
 
     /**

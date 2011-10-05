@@ -23,9 +23,6 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 
-import database.LogicErrorException;
-import database.SystemErrorException;
-
 
 import com.usermetrix.jclient.UserMetrix;
 
@@ -192,17 +189,8 @@ public final class NewProjectV extends OpenSHAPADialog {
      *
      * @param evt The event that triggered this action
      */
-    private void cancelButtonActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_cancelButtonActionPerformed
-
-        try {
-            dispose();
-            finalize();
-
-            // Whoops, unable to destroy dialog correctly.
-        } catch (Throwable e) {
-            LOGGER.error("Unable to release window NewProjectV.", e);
-        }
+    private void cancelButtonActionPerformed(final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_cancelButtonActionPerformed
+        dispose();
     } // GEN-LAST:event_cancelButtonActionPerformed
 
     /**
@@ -211,23 +199,18 @@ public final class NewProjectV extends OpenSHAPADialog {
      * @param evt The event that triggered this action.
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_okButtonActionPerformed
+        LOGGER.event("create new project");
+        ResourceMap r = Application.getInstance(OpenSHAPA.class).getContext().getResourceMap(NewProjectV.class);
+        OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
 
-        ResourceMap r = Application.getInstance(OpenSHAPA.class).getContext()
-            .getResourceMap(NewProjectV.class);
+        // clear the contents of the existing spreadsheet.
+        OpenSHAPA.getProjectController().setLastCreatedCellId(0);
 
-        try {
-            LOGGER.event("create new project");
-
-            OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication()
-                .getMainView();
-
-            // clear the contents of the existing spreadsheet.
-            OpenSHAPA.getProjectController().setLastCreatedCellId(0);
-
-            if (!isValidProjectName(getProjectName())) {
-                throw new LogicErrorException(r.getString("Error.invalidName"));
-            }
-
+        if (!isValidProjectName(getProjectName())) {
+            OpenSHAPA.getApplication().showWarningDialog(r.getString("Error.invalidName"));
+            dispose();
+            new NewProjectC();
+        } else {
             // BugzID:2352 - Clean up spreadsheet resources before creating a
             // new spreadsheet.
             s.clearSpreadsheet();
@@ -246,14 +229,6 @@ public final class NewProjectV extends OpenSHAPADialog {
             OpenSHAPA.getApplication().updateTitle();
 
             dispose();
-            finalize();
-        } catch (SystemErrorException ex) {
-            LOGGER.error("Unable to create new database", ex);
-        } catch (LogicErrorException ex) {
-            OpenSHAPA.getApplication().showWarningDialog(ex);
-            new NewProjectC();
-        } catch (Throwable ex) {
-            LOGGER.error("Unable to clean up the new project view.");
         }
 
         OpenSHAPA.getApplication().resetApp();
@@ -263,7 +238,6 @@ public final class NewProjectV extends OpenSHAPADialog {
     } // GEN-LAST:event_okButtonActionPerformed
 
     private boolean isValidProjectName(final String name) {
-
         if (name == null) {
             return false;
         }
@@ -288,5 +262,4 @@ public final class NewProjectV extends OpenSHAPADialog {
     public String getProjectDescription() {
         return descriptionField.getText();
     }
-
 }
