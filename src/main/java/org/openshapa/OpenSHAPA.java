@@ -47,7 +47,6 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.openshapa.controllers.project.ProjectController;
 
 import database.LogicErrorException;
-import database.SystemErrorException;
 import org.openshapa.models.project.Project;
 
 import org.openshapa.plugins.PluginManager;
@@ -70,6 +69,7 @@ import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.TitleNotifier;
+import org.openshapa.models.db.UserWarningException;
 
 /**
  * The main class of the application.
@@ -534,15 +534,8 @@ public final class OpenSHAPA extends SingleFrameApplication
      */
     public void showVariableList() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
-        listVarView = new VariableListV(mainFrame, false,
-                projectController.getLegacyDB().getDatabase());
-
-        try {
-            projectController.getLegacyDB().getDatabase()
-                .registerColumnListListener(listVarView);
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable register column list listener: ", e);
-        }
+        listVarView = new VariableListV(mainFrame, false, projectController.getDB());
+        listVarView.registerListeners();
 
         OpenSHAPA.getApplication().show(listVarView);
     }
@@ -574,6 +567,15 @@ public final class OpenSHAPA extends SingleFrameApplication
      * @param e The LogicErrorException to present to the user.
      */
     public void showWarningDialog(final LogicErrorException e) {
+        showWarningDialog(e.getMessage());
+    }
+
+    /**
+     * Show a warning dialog to the user.
+     *
+     * @param e The UserWarningException to present to the user.
+     */
+    public void showWarningDialog(final UserWarningException e) {
         showWarningDialog(e.getMessage());
     }
 

@@ -27,6 +27,7 @@ import database.Database;
 import database.ExternalCascadeListener;
 import database.ExternalDataCellListener;
 import database.ExternalDataColumnListener;
+import database.LogicErrorException;
 import database.Matrix;
 import database.SystemErrorException;
 import database.TimeStamp;
@@ -131,13 +132,29 @@ implements Variable,
 
     @Override
     public String getName() {
-        DataColumn variable = getLegacyVariable();
+        legacyColumn = getLegacyVariable();
 
-        if (variable == null) {
+        if (legacyColumn == null) {
             return null;
         }
 
-        return variable.getName();
+        return legacyColumn.getName();
+    }
+
+    @Override
+    public void setName(final String newName) throws UserWarningException {
+        try {
+            if (DataColumn.isValidColumnName(legacyDB, newName)) {
+                legacyColumn = getLegacyVariable();
+                legacyColumn.setName(newName);
+                legacyDB.replaceColumn(legacyColumn);
+            }
+        } catch (LogicErrorException fe) {
+            LOGGER.error("Unable to set variable name: " + fe);
+            throw new UserWarningException(fe.getMessage());
+        } catch (SystemErrorException se) {
+            LOGGER.error("Unable to set variable name: " + se);
+        }
     }
 
     @Override
@@ -212,6 +229,7 @@ implements Variable,
         isSelected = selected;
 
         try {
+            legacyColumn = getLegacyVariable();
             legacyColumn.setSelected(selected);
             legacyDB.replaceColumn(legacyColumn);
         } catch (SystemErrorException e) {
@@ -228,6 +246,7 @@ implements Variable,
     public void setHidden(final boolean hidden) {
 
         try {
+            legacyColumn = getLegacyVariable();
             legacyColumn.setHidden(hidden);
             legacyDB.replaceColumn(legacyColumn);
         } catch (SystemErrorException e) {

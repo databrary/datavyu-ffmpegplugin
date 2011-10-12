@@ -14,11 +14,18 @@
  */
 package org.openshapa.models.db;
 
+import com.google.common.collect.HashBiMap;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import database.DataColumn;
+import database.ExternalCascadeListener;
+import database.ExternalColumnListListener;
+import database.ExternalDataColumnListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import database.MacshapaDatabase;
+import database.Database;
 import database.SystemErrorException;
 import org.openshapa.util.Constants;
 
@@ -28,7 +35,11 @@ import org.openshapa.util.Constants;
  * @deprecated Should use the datastore interface instead. This is a temporary
  * class to allow us to incrementally migrate to the new API.
  */
-@Deprecated public class DeprecatedDatabase implements Datastore, database.TitleNotifier {
+@Deprecated public class DeprecatedDatabase implements Datastore, 
+                                                       database.TitleNotifier,
+                                                       ExternalDataColumnListener,
+                                                       ExternalCascadeListener,
+                                                       ExternalColumnListListener {
 
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(DeprecatedDatabase.class);
@@ -39,8 +50,15 @@ import org.openshapa.util.Constants;
     /** The list of variables stored in this database. */
     private List<Variable> variables;
     
+    HashBiMap<Long, Variable> legacyToModelMap;
+
+    private List<DatastoreListener> listeners;
+
     /** notifier that needs to be informed when the title needs to be updated. */
     private TitleNotifier titleNotifier;
+
+    /** Records changes to column during a cascade. */
+    private ColumnChanges colChanges;
 
     public void setVariables(List<Variable> variables) {
         this.variables = variables;
@@ -51,10 +69,16 @@ import org.openshapa.util.Constants;
      */
     public DeprecatedDatabase() {
         try {
+            colChanges = new ColumnChanges();
+            listeners = new ArrayList<DatastoreListener>();
+            legacyToModelMap = HashBiMap.create();
             legacyDB = new MacshapaDatabase(Constants.TICKS_PER_SECOND);
             // BugzID:449 - Set default database name.
             legacyDB.setName("Database1");
             legacyDB.setTitleNotifier(this);
+            legacyDB.registerCascadeListener(this);
+            legacyDB.registerColumnListListener(this);
+
             variables = new ArrayList<Variable>();
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to create new database", e);
@@ -82,8 +106,28 @@ import org.openshapa.util.Constants;
      */
     @Deprecated
     public void setDatabase(MacshapaDatabase newDB) {
-        legacyDB = newDB;
-        legacyDB.setTitleNotifier(this);
+        try {
+            // Tidy up our listeners after ourselves so that we don't hold
+            // the database in memory.
+            if (legacyDB != null) {
+                legacyDB.deregisterCascadeListener(this);
+                legacyDB.deregisterColumnListListener(this);
+
+                for (DataColumn dc : legacyDB.getDataColumns()) {
+                    legacyDB.deregisterDataColumnListener(dc.getID(), this);
+                }
+            }
+
+            legacyDB = newDB;
+            legacyDB.setTitleNotifier(this);
+            legacyDB.registerCascadeListener(this);
+            legacyDB.registerColumnListListener(this);
+            for (DataColumn dc : legacyDB.getDataColumns()) {
+                legacyDB.registerDataColumnListener(dc.getID(), this);
+            }
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to set new database.", e);
+        }
     }
 
     @Deprecated
@@ -125,6 +169,13 @@ import org.openshapa.util.Constants;
             long colId = legacyDB.addColumn(legacyVar.getLegacyVariable());
             legacyVar.setLegacyVariable(legacyDB.getDataColumn(colId));
             variables.add(var);
+            legacyToModelMap.put(colId, var);
+
+            //notify listeners.
+            for (DatastoreListener listener : listeners) {
+                listener.variableAdded(var);
+            }
+
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to add variable", e);
         }
@@ -147,7 +198,8 @@ import org.openshapa.util.Constants;
         try {
             long colId = legacyDB.addColumn(legacyVar.getLegacyVariable());
             legacyVar.setLegacyVariable(legacyDB.getDataColumn(colId));
-            variables. add(index, var);
+            variables.add(index, var);
+            legacyToModelMap.put(colId, var);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to add variable", e);
         }
@@ -155,6 +207,7 @@ import org.openshapa.util.Constants;
 
     public void removeVariable(final Variable var) {
         variables.remove(var);
+        legacyToModelMap.inverse().remove(var);
     }   
     
     @Override public List<Variable> getAllVariables() {
@@ -193,6 +246,186 @@ import org.openshapa.util.Constants;
                 removeVariable(v);
                 return;
             }
+        }
+    }
+
+    @Override public void addListener(final DatastoreListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(final DatastoreListener listener) {
+        listeners.remove(listener);
+    }
+
+    @Override
+    public void colInsertion(final Database db,
+                             final long colID,
+                             final Vector<Long> old_cov,
+                             final Vector<Long> new_cov) {
+        colChanges.changes = true;
+
+        for (Variable var : variables) {
+            if (((DeprecatedVariable) var).getLegacyVariable().getID() == colID) {
+                for (DatastoreListener listener : listeners) {
+                    listener.variableAdded(var);
+                }
+
+            }
+        }
+
+        try {
+            legacyDB.registerDataColumnListener(colID, this);
+        } catch (SystemErrorException e) {
+            LOGGER.error("unable to register listener", e);
+        }
+    }
+
+    @Override
+    public void colDeletion(Database db,
+                            long colID,
+                            Vector<Long> old_cov,
+                            Vector<Long> new_cov) {
+        colChanges.changes = true;
+        for (Variable var : variables) {
+            if (((DeprecatedVariable) var).getLegacyVariable().getID() == colID) {
+                for (DatastoreListener listener : listeners) {
+                    listener.variableRemoved(var);
+                }
+            }
+        }
+
+        try {
+            legacyDB.deregisterDataColumnListener(colID, this);
+        } catch (SystemErrorException e) {
+            LOGGER.error("unable to degrester listener", e);
+        }
+    }
+
+    @Override
+    public void colOrderVectorEdited(Database db,
+                                     Vector<Long> old_cov,
+                                     Vector<Long> new_cov) {
+        colChanges.changes = true;
+
+        List<Variable> newVariables = new ArrayList<Variable>();
+        for (Long colID : new_cov) {
+            newVariables.add(legacyToModelMap.get(colID));
+        }
+        variables = newVariables;
+
+        for (DatastoreListener listener : listeners) {
+            listener.variableOrderChanged();
+        }
+    }
+
+    @Override
+    public void DColCellDeletion(Database db, long colID, long cellID) {
+        // Don't care yet
+    }
+
+    @Override
+    public void DColCellInsertion(Database db, long colID, long cellID) {
+        // Don't care yet
+    }
+
+    @Override
+    public void DColConfigChanged(Database db, long colID, boolean nameChanged,
+                                  String oldName, String newName, boolean hiddenChanged,
+                                  boolean oldHidden, boolean newHidden, boolean readOnlyChanged,
+                                  boolean oldReadOnly, boolean newReadOnly, boolean varLenChanged,
+                                  boolean oldVarLen, boolean newVarLen, boolean selectedChanged,
+                                  boolean oldSelected, boolean newSelected) {
+        if (nameChanged) {
+            colChanges.colsNameChanged.add(colID);
+            colChanges.changes = true;
+        }
+
+        if (hiddenChanged) {
+            colChanges.changes = true;
+            colChanges.colsHiddenChanged.add(colID);
+        }
+    }
+
+    @Override
+    public void DColDeleted(Database db, long colID) {
+    }
+
+    @Override
+    public void beginCascade(Database db) {
+        colChanges.reset();
+    }
+
+    @Override
+    public void endCascade(Database db) {
+
+        if (colChanges.colsHiddenChanged.size() > 0) {
+            for (Variable var : this.getAllVariables()) {
+                DeprecatedVariable dVar = (DeprecatedVariable) var;
+                if (colChanges.colsHiddenChanged.contains(dVar.getLegacyVariable().getID())) {
+
+                    for (DatastoreListener listener : listeners) {
+                        if (dVar.getLegacyVariable().getHidden()) {
+                            listener.variableHidden(var);
+                        } else {
+                            listener.variableVisible(var);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (colChanges.colsNameChanged.size() > 0) {
+            for (Variable var : this.getAllVariables()) {
+
+                DeprecatedVariable dVar = (DeprecatedVariable) var;
+                if (colChanges.colsNameChanged.contains(dVar.getLegacyVariable().getID())) {
+
+                    for (DatastoreListener listener : listeners) {
+                        listener.variableNameChange(var);
+                    }
+                }
+            }
+        }
+        colChanges.reset();
+    }
+
+    /**
+     * Private class for recording the changes reported by the listener
+     * callbacks on this column.
+     */
+    private final class ColumnChanges {
+        /** True if external changes have taken place. */
+        boolean changes;
+        /** Column name changed. */
+        private List<Long> colsNameChanged;
+        /** Column hidden changed. */
+        private List<Long> colsHiddenChanged;
+        /** List of cell IDs of newly inserted cells. */
+        private List<Long> colsInserted;
+        /** List of cell IDs of deleted cells. */
+        private List<Long> colsDeleted;
+
+        /**
+         * ColumnChanges constructor.
+         */
+        private ColumnChanges() {
+            colsHiddenChanged = new ArrayList<Long>();
+            colsNameChanged = new ArrayList<Long>();
+            colsInserted = new ArrayList<Long>();
+            colsDeleted = new ArrayList<Long>();
+            reset();
+        }
+
+        /**
+         * Reset the ColumnChanges flags and lists.
+         */
+        private void reset() {
+            changes = false;
+            colsHiddenChanged.clear();
+            colsNameChanged.clear();
+            colsInserted.clear();
+            colsDeleted.clear();
         }
     }
 }
