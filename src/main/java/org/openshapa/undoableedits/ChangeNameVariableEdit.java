@@ -18,8 +18,9 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import database.DataColumn;
-import database.SystemErrorException;
+import org.openshapa.OpenSHAPA;
+import org.openshapa.models.db.UserWarningException;
+import org.openshapa.models.db.Variable;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 /**
@@ -53,33 +54,34 @@ public class ChangeNameVariableEdit extends SpreadsheetEdit {
 
     @Override
     public void redo() throws CannotRedoException {
+        LOGGER.event("REDO VariableNameEdit");
         super.redo();
         try {
-            DataColumn dc = db.getDataColumn(oldVarName);
-            dc.setName(newVarName);
-            db.replaceColumn(dc);            
+            Variable var = model.getVariable(oldVarName);
+            var.setName(newVarName);
             unselectAll();
             selectVarName(newVarName);
-        } catch (SystemErrorException e) {
-             LOGGER.error("Unable to redo Change Variable Name.", e);
+        } catch (UserWarningException uwe) {
+            OpenSHAPA.getApplication().showWarningDialog(uwe);
+            throw new CannotRedoException();
         }
-
     }
 
     @Override
     public void undo() throws CannotUndoException {
+        LOGGER.event("UNDO VariableNameEdit");
         super.undo();
         try {
-            DataColumn dc = db.getDataColumn(newVarName);
-            dc.setName(oldVarName);
-            db.replaceColumn(dc);            
+            Variable var = model.getVariable(newVarName);
+            var.setName(oldVarName);
             unselectAll();
             selectVarName(oldVarName);
-        } catch (SystemErrorException e) {
-             LOGGER.error("Unable to undo Change Variable Name.", e);
+        } catch (UserWarningException uwe) {
+             OpenSHAPA.getApplication().showWarningDialog(uwe);
+             throw new CannotRedoException();
         }
     }
-    
+
     private void selectVarName(String varName) {
         SpreadsheetColumn sCol = this.getSpreadsheetColumn(varName);
         if (sCol != null) sCol.setSelected(true);
