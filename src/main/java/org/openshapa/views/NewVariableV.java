@@ -16,23 +16,13 @@ package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
-import database.Column;
-import database.DataColumn;
-import database.LogicErrorException;
-import database.MatrixVocabElement;
-import database.NominalFormalArg;
-import database.SystemErrorException;
 
 import com.usermetrix.jclient.UserMetrix;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle;
 import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedDatabase;
-import org.openshapa.models.db.DeprecatedVariable;
-import database.Database;
+import org.openshapa.models.db.UserWarningException;
+import org.openshapa.models.db.VariableType.VariableType;
 import org.openshapa.undoableedits.AddVariableEdit;
-
 
 /**
  * The dialog for users to add new variables to the spreadsheet.
@@ -47,11 +37,9 @@ public final class NewVariableV extends OpenSHAPADialog {
 
     /**
      * Constructor, creates a new form to create a new variable.
-     * 
-     * @param parent
-     *            The parent of this form.
-     * @param modal
-     *            Should the dialog be modal or not?
+     *
+     * @param parent The parent of this form.
+     * @param modal Should the dialog be modal or not?
      */
     public NewVariableV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
@@ -64,10 +52,7 @@ public final class NewVariableV extends OpenSHAPADialog {
         // init button group
         buttonGroup1.add(textTypeButton);
         buttonGroup1.add(nominalTypeButton);
-        buttonGroup1.add(predicateTypeButton);
         buttonGroup1.add(matrixTypeButton);
-        buttonGroup1.add(integerTypeButton);
-        buttonGroup1.add(floatTypeButton);
 
         getRootPane().setDefaultButton(okButton);
     }
@@ -79,7 +64,7 @@ public final class NewVariableV extends OpenSHAPADialog {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed"
-    // desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
@@ -89,17 +74,12 @@ public final class NewVariableV extends OpenSHAPADialog {
         jPanel1 = new javax.swing.JPanel();
         textTypeButton = new javax.swing.JRadioButton();
         nominalTypeButton = new javax.swing.JRadioButton();
-        predicateTypeButton = new javax.swing.JRadioButton();
         matrixTypeButton = new javax.swing.JRadioButton();
-        integerTypeButton = new javax.swing.JRadioButton();
-        floatTypeButton = new javax.swing.JRadioButton();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        java.util.ResourceBundle bundle =
-                java.util.ResourceBundle
-                        .getBundle("org/openshapa/views/resources/NewVariableV"); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/openshapa/views/resources/NewVariableV"); // NOI18N
         setTitle(bundle.getString("title.text")); // NOI18N
         setName("Form"); // NOI18N
         setResizable(false);
@@ -112,9 +92,7 @@ public final class NewVariableV extends OpenSHAPADialog {
 
         nameField.setName("nameField"); // NOI18N
 
-        jPanel1
-                .setBorder(javax.swing.BorderFactory
-                        .createTitledBorder("Type:"));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Type:"));
         jPanel1.setName("jPanel1"); // NOI18N
 
         textTypeButton.setSelected(true);
@@ -124,102 +102,38 @@ public final class NewVariableV extends OpenSHAPADialog {
         nominalTypeButton.setLabel(bundle.getString("nominalTypeButton.text")); // NOI18N
         nominalTypeButton.setName("nominalTypeButton"); // NOI18N
 
-        predicateTypeButton.setLabel(bundle
-                .getString("predicateTypeButton.text")); // NOI18N
-        predicateTypeButton.setName("predicateTypeButton"); // NOI18N
-
         matrixTypeButton.setLabel(bundle.getString("matrixTypeButton.text")); // NOI18N
         matrixTypeButton.setName("matrixTypeButton"); // NOI18N
 
-        integerTypeButton.setLabel(bundle.getString("integerTypeButton.text")); // NOI18N
-        integerTypeButton.setName("integerTypeButton"); // NOI18N
-
-        floatTypeButton.setLabel(bundle.getString("floatTypeButton.text")); // NOI18N
-        floatTypeButton.setName("floatTypeButton"); // NOI18N
-
-        GroupLayout jPanel1Layout =
-                new GroupLayout(jPanel1);
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout
-                .setHorizontalGroup(jPanel1Layout
-                        .createParallelGroup(
-                                GroupLayout.Alignment.LEADING)
-                        .addGroup(
-                                jPanel1Layout
-                                        .createSequentialGroup()
-                                        .addContainerGap()
-                                        .addGroup(
-                                                jPanel1Layout
-                                                        .createParallelGroup(
-                                                                GroupLayout.Alignment.LEADING)
-                                                        .addComponent(textTypeButton)
-                                                        .addComponent(nominalTypeButton))
-                                        .addGap(16, 16, 16)
-                                        .addGroup(
-                                                jPanel1Layout
-                                                        .createParallelGroup(
-                                                                GroupLayout.Alignment.LEADING)
-                                                        .addComponent(matrixTypeButton)
-                                                        .addComponent(predicateTypeButton))
-                                        .addPreferredGap(
-											    LayoutStyle.ComponentPlacement.RELATED,
-                                                GroupLayout.DEFAULT_SIZE,
-                                                Short.MAX_VALUE)
-                                        .addGroup(
-                                                jPanel1Layout
-                                                        .createParallelGroup(
-                                                                GroupLayout.Alignment.LEADING)
-                                                        .addComponent(integerTypeButton)
-                                                        .addComponent(floatTypeButton))
-                                        .addContainerGap()));
-        jPanel1Layout
-                .setVerticalGroup(jPanel1Layout
-                        .createParallelGroup(
-                                GroupLayout.Alignment.LEADING)
-                        .addGroup(
-                                jPanel1Layout
-                                        .createSequentialGroup()
-                                        .addGroup(
-                                                jPanel1Layout
-                                                        .createParallelGroup(
-                                                                GroupLayout.Alignment.LEADING)
-                                                        .addComponent(textTypeButton)
-                                                        .addGroup(
-                                                                jPanel1Layout
-                                                                        .createSequentialGroup()
-                                                                        .addGroup(
-                                                                                jPanel1Layout
-                                                                                        .createParallelGroup(
-                                                                                                GroupLayout.Alignment.BASELINE)
-                                                                                        .addComponent(
-                                                                                                integerTypeButton)
-                                                                                        .addComponent(
-                                                                                                predicateTypeButton))
-                                                                        .addPreferredGap(
-                                                                                LayoutStyle.ComponentPlacement.RELATED,
-                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                Short.MAX_VALUE)
-                                                                        .addGroup(
-                                                                                jPanel1Layout
-                                                                                        .createParallelGroup(
-                                                                                                GroupLayout.Alignment.BASELINE)
-                                                                                        .addComponent(
-                                                                                                floatTypeButton)
-                                                                                        .addComponent(
-                                                                                                matrixTypeButton)
-                                                                                        .addComponent(
-                                                                                                nominalTypeButton))))
-                                        .addContainerGap()));
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .add(39, 39, 39)
+                .add(textTypeButton)
+                .add(40, 40, 40)
+                .add(nominalTypeButton)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 39, Short.MAX_VALUE)
+                .add(matrixTypeButton)
+                .add(24, 24, 24))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(textTypeButton)
+                    .add(nominalTypeButton)
+                    .add(matrixTypeButton))
+                .addContainerGap(39, Short.MAX_VALUE))
+        );
 
-        org.jdesktop.application.ResourceMap resourceMap =
-                org.jdesktop.application.Application.getInstance(
-                        org.openshapa.OpenSHAPA.class).getContext()
-                        .getResourceMap(NewVariableV.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getResourceMap(NewVariableV.class);
         okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
         okButton.setName("okButton"); // NOI18N
         okButton.setPreferredSize(new java.awt.Dimension(65, 23));
         okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(final java.awt.event.ActionEvent evt) {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
             }
         });
@@ -227,187 +141,88 @@ public final class NewVariableV extends OpenSHAPADialog {
         cancelButton.setLabel(bundle.getString("cancelButton.text")); // NOI18N
         cancelButton.setName("cancelButton"); // NOI18N
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(final java.awt.event.ActionEvent evt) {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
             }
         });
 
-        GroupLayout layout =
-                new GroupLayout(getContentPane());
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout
-                .setHorizontalGroup(layout
-                        .createParallelGroup(
-                                GroupLayout.Alignment.LEADING)
-                        .addGroup(
-                                layout
-                                        .createSequentialGroup()
-                                        .addContainerGap(
-                                                GroupLayout.DEFAULT_SIZE,
-                                                Short.MAX_VALUE)
-                                        .addComponent(jLabel2)
-                                        .addPreferredGap(
-                                                LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(
-                                                layout
-                                                        .createParallelGroup(
-                                                                GroupLayout.Alignment.TRAILING,
-                                                                false)
-                                                        .addGroup(
-                                                                layout
-                                                                        .createSequentialGroup()
-                                                                        .addComponent(
-                                                                                okButton,
-                                                                                GroupLayout.PREFERRED_SIZE,
-                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                GroupLayout.PREFERRED_SIZE)
-                                                                        .addPreferredGap(
-                                                                                LayoutStyle.ComponentPlacement.RELATED)
-                                                                        .addComponent(
-                                                                                cancelButton))
-                                                        .addGroup(
-                                                                GroupLayout.Alignment.LEADING,
-                                                                layout
-                                                                        .createSequentialGroup()
-                                                                        .addComponent(
-                                                                                jLabel1)
-                                                                        .addPreferredGap(
-                                                                                LayoutStyle.ComponentPlacement.RELATED)
-                                                                        .addComponent(
-                                                                                nameField))
-                                                        .addComponent(
-																jPanel1,
-                                                                GroupLayout.Alignment.LEADING,
-                                                                GroupLayout.PREFERRED_SIZE,
-                                                                GroupLayout.DEFAULT_SIZE,
-                                                                GroupLayout.PREFERRED_SIZE))
-                                        .addContainerGap()));
-        layout
-                .setVerticalGroup(layout
-                        .createParallelGroup(
-                                GroupLayout.Alignment.LEADING)
-                        .addGroup(
-                                layout
-                                        .createSequentialGroup()
-                                        .addContainerGap()
-                                        .addGroup(
-                                                layout
-                                                        .createParallelGroup(
-                                                                GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jLabel2)
-                                                        .addGroup(
-                                                                layout
-                                                                        .createSequentialGroup()
-                                                                        .addGroup(
-                                                                                layout
-                                                                                        .createParallelGroup(
-                                                                                                GroupLayout.Alignment.BASELINE)
-                                                                                        .addComponent(
-                                                                                                nameField,
-                                                                                                GroupLayout.PREFERRED_SIZE,
-                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                GroupLayout.PREFERRED_SIZE)
-                                                                                        .addComponent(
-                                                                                                jLabel1))
-                                                                        .addPreferredGap(
-                                                                                LayoutStyle.ComponentPlacement.RELATED)
-                                                                        .addComponent(
-                                                                                jPanel1,
-                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                Short.MAX_VALUE)
-                                                                        .addPreferredGap(
-                                                                                LayoutStyle.ComponentPlacement.RELATED)
-                                                                        .addGroup(
-                                                                                layout
-                                                                                        .createParallelGroup(
-                                                                                                GroupLayout.Alignment.BASELINE)
-                                                                                        .addComponent(
-                                                                                                cancelButton)
-                                                                                        .addComponent(
-                                                                                                okButton,
-                                                                                                GroupLayout.PREFERRED_SIZE,
-                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                GroupLayout.PREFERRED_SIZE))))
-                                        .addContainerGap()));
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(jLabel2)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                    .add(layout.createSequentialGroup()
+                        .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(cancelButton))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                        .add(jLabel1)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(nameField))
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .addContainerGap()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jLabel2)
+                    .add(layout.createSequentialGroup()
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(jLabel1))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(cancelButton)
+                            .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap())
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    @Deprecated private Database getLegacyDB() {
-        return ((DeprecatedDatabase) model).getDatabase();
-    }
-
     /**
-     * The action to invoke when the user selects the ok button.
-     * 
-     * @param evt
-     *            The event that triggered this action.
+     * The action to invoke when the user selects the OK button.
+     *
+     * @param evt The event that triggered this action.
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
         try {
             LOGGER.event("newVar - create column:" + getVariableType());
-            Column.isValidColumnName(getLegacyDB(), getVariableName());
-            DataColumn dc = new DataColumn(getLegacyDB(),
-                                           getVariableName(),
-                                           getVariableType());        
-            DeprecatedVariable var = new DeprecatedVariable(dc);
-            var.setSelected(true);            
+            model.createVariable(getVariableName(), getVariableType());
 
-            // perform the operation           
-            model.addVariable(var);
-
-            // If the column is a matrix - default to a single nominal variable
-            // rather than untyped.
-            if (matrixTypeButton.isSelected()) {
-                MatrixVocabElement mve = getLegacyDB().getMatrixVE(var.getLegacyVariable().getItsMveID());
-                mve.deleteFormalArg(0);
-                mve.appendFormalArg(new NominalFormalArg(getLegacyDB(), "<arg0>"));
-                getLegacyDB().replaceMatrixVE(mve);
-            }
-                        
             // record the effect
-            UndoableEdit edit = new AddVariableEdit(getVariableName(), getVariableType(), matrixTypeButton.isSelected());                       
-             
+            UndoableEdit edit = new AddVariableEdit(getVariableName(), getVariableType());
+
             // Display any changes.
             OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
 
             dispose();
-            finalize();
-            
-            // notify the listeners
-            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
-                    
+
         // Whoops, user has done something strange - show warning dialog.
-        } catch (LogicErrorException fe) {
+        } catch (UserWarningException fe) {
             OpenSHAPA.getApplication().showWarningDialog(fe);
 
-        // Whoops, programmer has done something strange - show error message.
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to add variable to database", e);
-            OpenSHAPA.getApplication().showErrorDialog();
-
-        // Whoops, unable to destroy dialog correctly.
-        } catch (Throwable e) {
-            LOGGER.error("Unable to release window NewVariableV.", e);
         }
     }// GEN-LAST:event_okButtonActionPerformed
 
     /**
      * The action to invoke when the user selects the cancel button.
      * 
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void cancelButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cancelButtonActionPerformed
-        try {
-            dispose();
-            finalize();
+        LOGGER.event("newVar - cancel create.");
+        dispose();
 
-            // Whoops, unable to destroy dialog correctly.
-        } catch (Throwable e) {
-            LOGGER.error("Unable to release window NewVariableV.", e);
-        }
     }// GEN-LAST:event_cancelButtonActionPerformed
 
     /**
@@ -420,29 +235,19 @@ public final class NewVariableV extends OpenSHAPADialog {
     /**
      * @return The type of variable the user has selected to use.
      */
-    public MatrixVocabElement.MatrixType getVariableType() {
-        if (textTypeButton.isSelected()) {
-            return MatrixVocabElement.MatrixType.TEXT;
-        } else if (nominalTypeButton.isSelected()) {
-            return MatrixVocabElement.MatrixType.NOMINAL;
-        } else if (predicateTypeButton.isSelected()) {
-            return MatrixVocabElement.MatrixType.PREDICATE;
+    public VariableType.type getVariableType() {
+        if (nominalTypeButton.isSelected()) {
+            return VariableType.type.NOMINAL;
         } else if (matrixTypeButton.isSelected()) {
-            return MatrixVocabElement.MatrixType.MATRIX;
-        } else if (integerTypeButton.isSelected()) {
-            return MatrixVocabElement.MatrixType.INTEGER;
-        } else if (floatTypeButton.isSelected()) {
-            return MatrixVocabElement.MatrixType.FLOAT;
+            return VariableType.type.MATRIX;
         } else {
-            return MatrixVocabElement.MatrixType.UNDEFINED;
+            return VariableType.type.TEXT;
         }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JRadioButton floatTypeButton;
-    private javax.swing.JRadioButton integerTypeButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -450,7 +255,6 @@ public final class NewVariableV extends OpenSHAPADialog {
     private javax.swing.JTextField nameField;
     private javax.swing.JRadioButton nominalTypeButton;
     private javax.swing.JButton okButton;
-    private javax.swing.JRadioButton predicateTypeButton;
     private javax.swing.JRadioButton textTypeButton;
     // End of variables declaration//GEN-END:variables
 }

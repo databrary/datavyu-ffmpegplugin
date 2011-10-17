@@ -17,6 +17,7 @@ package org.openshapa.models.db;
 import com.google.common.collect.HashBiMap;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import database.Column;
 import database.DataColumn;
 import database.ExternalCascadeListener;
 import database.ExternalColumnListListener;
@@ -26,7 +27,13 @@ import java.util.List;
 import java.util.Vector;
 import database.MacshapaDatabase;
 import database.Database;
+import database.LogicErrorException;
+import database.MatrixVocabElement;
+import database.NominalFormalArg;
 import database.SystemErrorException;
+import org.openshapa.OpenSHAPA;
+import org.openshapa.models.db.VariableType.DeprecatedType;
+import org.openshapa.models.db.VariableType.VariableType;
 import org.openshapa.util.Constants;
 
 /**
@@ -187,6 +194,64 @@ import org.openshapa.util.Constants;
             if (variableName.equals(varName)) {
                 return v;
             }
+        }
+
+        return null;
+    }
+
+    @Override
+    public Variable createVariable(final String name, final VariableType.type type)
+    throws UserWarningException {
+
+        try {
+            MatrixVocabElement.MatrixType deprecatedType;
+
+            if (type.equals(VariableType.type.MATRIX)) {
+                deprecatedType = MatrixVocabElement.MatrixType.MATRIX;
+
+            } else if (type.equals(VariableType.type.NOMINAL)) {
+                deprecatedType = MatrixVocabElement.MatrixType.NOMINAL;
+
+            } else {
+                // Default to text.
+                deprecatedType = MatrixVocabElement.MatrixType.TEXT;
+            }
+
+            Column.isValidColumnName(legacyDB, name);
+            DataColumn dc = new DataColumn(legacyDB,
+                                           name,
+                                           deprecatedType);
+            // Return the freshly created variable.
+            DeprecatedVariable var = new DeprecatedVariable(dc);
+            var.setSelected(true);
+            addVariable(var);
+            dc = var.getLegacyVariable();
+
+            // If the column is a matrix - default to a single nominal variable
+            // rather than untyped.
+            if (type.equals(VariableType.type.MATRIX)) {
+                System.err.println("A");
+                MatrixVocabElement mve = legacyDB.getMatrixVE(dc.getItsMveID());
+                System.err.println("B");
+                mve.deleteFormalArg(0);
+                System.err.println("C");
+                mve.appendFormalArg(new NominalFormalArg(legacyDB, "<arg0>"));
+                System.err.println("D");
+                legacyDB.replaceMatrixVE(mve);
+                System.err.println("E");
+            }
+
+            return var;
+
+        // Whoops, user has done something strange - show warning dialog.
+        } catch (LogicErrorException fe) {
+            throw new UserWarningException(fe.getMessage());
+
+        // Whoops, programmer has done something strange - show error message.
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to add variable to database", e);
+            OpenSHAPA.getApplication().showErrorDialog();
+
         }
 
         return null;

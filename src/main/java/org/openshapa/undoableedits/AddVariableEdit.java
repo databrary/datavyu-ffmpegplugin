@@ -19,14 +19,11 @@ import com.usermetrix.jclient.UserMetrix;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import org.openshapa.controllers.DeleteColumnC;
-import org.openshapa.models.db.DeprecatedVariable;
-import database.DataColumn;
-import database.MatrixVocabElement;
-import database.NominalFormalArg;
-import database.SystemErrorException;
 import java.util.ArrayList;
 import java.util.List;
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
+import org.openshapa.models.db.VariableType.VariableType;
 
 /**
  *
@@ -35,14 +32,12 @@ public class AddVariableEdit extends SpreadsheetEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(AddVariableEdit.class);  
     private String varName;
-    private MatrixVocabElement.MatrixType varType;
-    private boolean matType;
+    private VariableType.type varType;
     
-    public AddVariableEdit(String variableName, MatrixVocabElement.MatrixType variableType, boolean matrixType) {
+    public AddVariableEdit(String variableName, VariableType.type variableType) {
         super();
         this.varName = variableName;
         this.varType = variableType;
-        this.matType = matrixType;
     }
 
     @Override
@@ -54,23 +49,12 @@ public class AddVariableEdit extends SpreadsheetEdit {
     public void redo() throws CannotRedoException {
         super.redo();
         try {
-            DataColumn dc = new DataColumn(db, varName, varType);        
-            DeprecatedVariable var = new DeprecatedVariable(dc);
-            model.addVariable(var);
-            // If the column is a matrix - default to a single nominal variable
-            // rather than untyped.
-            if (matType) {
-                MatrixVocabElement mve = db.getMatrixVE(var.getLegacyVariable().getItsMveID());
-                mve.deleteFormalArg(0);
-                mve.appendFormalArg(new NominalFormalArg(db, "<arg0>"));
-                db.replaceMatrixVE(mve);                
-            }         
             unselectAll();
-            var.setSelected(true);
-        } catch (SystemErrorException e) {
+            model.createVariable(varName, varType);
+
+        } catch (UserWarningException e) {
              LOGGER.error("Unable to redo New Variable.", e);
         }
-
     }
 
     @Override

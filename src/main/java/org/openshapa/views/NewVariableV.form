@@ -112,45 +112,26 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="textTypeButton" min="-2" max="-2" attributes="0"/>
-                      <Component id="nominalTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="matrixTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="predicateTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="integerTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="floatTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+                  <Component id="textTypeButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
+                  <Component id="nominalTypeButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="39" max="32767" attributes="0"/>
+                  <Component id="matrixTypeButton" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="textTypeButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="integerTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="predicateTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="32767" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="floatTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="matrixTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="nominalTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="textTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="nominalTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="matrixTypeButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace pref="39" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -173,36 +154,12 @@
             <Property name="name" type="java.lang.String" value="nominalTypeButton" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JRadioButton" name="predicateTypeButton">
-          <Properties>
-            <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="org/openshapa/views/resources/NewVariableV.properties" key="predicateTypeButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-            </Property>
-            <Property name="name" type="java.lang.String" value="predicateTypeButton" noResource="true"/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JRadioButton" name="matrixTypeButton">
           <Properties>
             <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="org/openshapa/views/resources/NewVariableV.properties" key="matrixTypeButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="name" type="java.lang.String" value="matrixTypeButton" noResource="true"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JRadioButton" name="integerTypeButton">
-          <Properties>
-            <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="org/openshapa/views/resources/NewVariableV.properties" key="integerTypeButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-            </Property>
-            <Property name="name" type="java.lang.String" value="integerTypeButton" noResource="true"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JRadioButton" name="floatTypeButton">
-          <Properties>
-            <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="org/openshapa/views/resources/NewVariableV.properties" key="floatTypeButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-            </Property>
-            <Property name="name" type="java.lang.String" value="floatTypeButton" noResource="true"/>
           </Properties>
         </Component>
       </SubComponents>
