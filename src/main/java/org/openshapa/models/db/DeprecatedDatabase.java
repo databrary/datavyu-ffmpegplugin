@@ -230,15 +230,10 @@ import org.openshapa.util.Constants;
             // If the column is a matrix - default to a single nominal variable
             // rather than untyped.
             if (type.equals(VariableType.type.MATRIX)) {
-                System.err.println("A");
                 MatrixVocabElement mve = legacyDB.getMatrixVE(dc.getItsMveID());
-                System.err.println("B");
                 mve.deleteFormalArg(0);
-                System.err.println("C");
                 mve.appendFormalArg(new NominalFormalArg(legacyDB, "<arg0>"));
-                System.err.println("D");
                 legacyDB.replaceMatrixVE(mve);
-                System.err.println("E");
             }
 
             return var;
