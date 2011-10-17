@@ -187,8 +187,9 @@ import org.openshapa.util.Constants;
             LOGGER.error("Unable to add variable", e);
         }
     }
-    
-    @Override public Variable getVariable(String varName) {
+
+    @Override
+    public Variable getVariable(String varName) {
         for (Variable v : variables) {
             String variableName = v.getName();
             if (variableName.equals(varName)) {

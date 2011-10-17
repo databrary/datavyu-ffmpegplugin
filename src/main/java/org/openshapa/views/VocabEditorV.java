@@ -765,7 +765,6 @@ ExternalVocabListListener{
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        addPredicateButton = new javax.swing.JButton();
         addMatrixButton = new javax.swing.JButton();
         moveArgLeftButton = new javax.swing.JButton();
         moveArgRightButton = new javax.swing.JButton();
@@ -798,16 +797,6 @@ ExternalVocabListListener{
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.openshapa.OpenSHAPA.class).getContext().getActionMap(VocabEditorV.class, this);
-        addPredicateButton.setAction(actionMap.get("addPredicate")); // NOI18N
-        addPredicateButton.setText(bundle.getString("addPredicateButton.text")); // NOI18N
-        addPredicateButton.setToolTipText(bundle.getString("addPredicateButton.tip")); // NOI18N
-        addPredicateButton.setName("addPredicateButton"); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-        getContentPane().add(addPredicateButton, gridBagConstraints);
-
         addMatrixButton.setAction(actionMap.get("addMatrix")); // NOI18N
         addMatrixButton.setText(bundle.getString("addMatrixButton.text")); // NOI18N
         addMatrixButton.setToolTipText(bundle.getString("addMatrixButton.tip")); // NOI18N
@@ -864,7 +853,7 @@ ExternalVocabListListener{
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         getContentPane().add(addArgButton, gridBagConstraints);
 
-        argTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Nominal", "Text", "Integer", "Float" }));
+        argTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Nominal" }));
         argTypeComboBox.setToolTipText(bundle.getString("argTypeComboBox.tip")); // NOI18N
         argTypeComboBox.setEnabled(false);
         argTypeComboBox.setName("argTypeComboBox"); // NOI18N
@@ -1096,7 +1085,6 @@ ExternalVocabListListener{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addArgButton;
     private javax.swing.JButton addMatrixButton;
-    private javax.swing.JButton addPredicateButton;
     private javax.swing.JButton applyButton;
     private javax.swing.JComboBox argTypeComboBox;
     private javax.swing.JButton closeButton;
@@ -1175,7 +1163,6 @@ ExternalVocabListListener{
         argTypeComboBox.addMouseListener(ma);
         currentVocabList.addMouseListener(ma);
         addMatrixButton.addMouseListener(ma);
-        addPredicateButton.addMouseListener(ma);
         deleteButton.addMouseListener(ma);
         okButton.addMouseListener(ma);
         closeButton.addMouseListener(ma);

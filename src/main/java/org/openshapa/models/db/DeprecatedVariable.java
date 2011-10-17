@@ -31,6 +31,7 @@ import database.LogicErrorException;
 import database.Matrix;
 import database.SystemErrorException;
 import database.TimeStamp;
+import org.openshapa.models.db.VariableType.VariableType;
 
 /**
  * Wrapper/adapter for deprecated data columns.
