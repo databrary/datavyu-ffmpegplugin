@@ -65,6 +65,7 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
             for (DataColumn col : colsToDelete) {
                 DataColumnTO colTO = new DataColumnTO(col);  
                 List<SpreadsheetColumn> columns = getSpreadsheet().getColumns();
+
                 // What index does the given column sit at
                 int columnIndex = -1;
                 for (int i = 0; i < columns.size(); i++) {

@@ -389,18 +389,9 @@ implements ExternalDataColumnListener,
      * @param isSelected Selected state.
      */
     public void setSelected(final boolean isSelected) {
-        try {
-            LOGGER.event("select column");
-
-            DataColumn dc = getLegacyDatabase().getDataColumn(getLegacyVariableID());
-            this.selected = isSelected;
-
-            dc.setSelected(isSelected);
-            getLegacyDatabase().replaceColumn(dc);
-
-        } catch (SystemErrorException e) {
-            LOGGER.error("Failed setting column select state.", e);
-        }
+        LOGGER.event("select column");
+        variable.setSelected(isSelected);
+        this.selected = isSelected;
 
         if (selected) {
             setBackground(Configuration.getInstance().getSSSelectedColour());
