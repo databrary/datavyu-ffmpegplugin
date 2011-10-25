@@ -68,7 +68,7 @@ import org.openshapa.views.discrete.datavalues.vocabelements.VENameEditor;
  * A view for editing the database vocab.
  */
 public final class VocabEditorV extends OpenSHAPADialog implements
-ExternalVocabListListener{
+ExternalVocabListListener {
 
     /** The database that this vocab editor is manipulating. */
     private Datastore db;

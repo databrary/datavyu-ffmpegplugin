@@ -32,7 +32,6 @@ import database.MatrixVocabElement;
 import database.NominalFormalArg;
 import database.SystemErrorException;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.VariableType.DeprecatedType;
 import org.openshapa.models.db.VariableType.VariableType;
 import org.openshapa.util.Constants;
 
@@ -266,11 +265,37 @@ import org.openshapa.util.Constants;
         }
     }
 
+    @Override
     public void removeVariable(final Variable var) {
-        variables.remove(var);
-        legacyToModelMap.inverse().remove(var);
-    }   
-    
+        try {
+            DataColumn dc = ((DeprecatedVariable) var).getLegacyVariable();
+
+            // All cells in the column removed - now delete the column.
+            // Must remove cells from the data column before removing it.
+            while (dc.getNumCells() > 0) {
+                database.Cell c = legacyDB.getCell(dc.getID(), 1);
+                // Check if the cell we are deleting is the last created
+                // cell... Default this back to 0.
+                if (c.getID() == OpenSHAPA.getProjectController().getLastCreatedCellId()) {
+                    OpenSHAPA.getProjectController().setLastCreatedCellId(0);
+                }
+                legacyDB.removeCell(c.getID());
+                dc = legacyDB.getDataColumn(dc.getID());
+            }
+            // Check if the column we are deleting was the last created
+            // column... Default this back to 0 if it is.
+            if (dc.getID() == OpenSHAPA.getProjectController().getLastCreatedColId()) {
+                OpenSHAPA.getProjectController().setLastCreatedColId(0);
+            }
+
+            legacyDB.removeColumn(dc.getID());
+            variables.remove(var);
+            legacyToModelMap.inverse().remove(var);
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to delete variable.", e);
+        }
+    }
+
     @Override public List<Variable> getAllVariables() {
         return variables;
     }
@@ -299,15 +324,6 @@ import org.openshapa.util.Constants;
         }
 
         return result;
-    }
-
-    public void removeVariable(long colID) {
-        for (Variable v : variables) {
-            if (((DeprecatedVariable)v).getLegacyVariable().getID() == colID) {
-                removeVariable(v);
-                return;
-            }
-        }
     }
 
     @Override public void addListener(final DatastoreListener listener) {

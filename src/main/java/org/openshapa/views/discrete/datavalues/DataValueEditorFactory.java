@@ -20,13 +20,8 @@ import javax.swing.text.JTextComponent;
 
 import database.DataCell;
 import database.DataValue;
-import database.FloatDataValue;
-import database.IntDataValue;
 import database.Matrix;
 import database.NominalDataValue;
-import database.PredDataValue;
-import database.Predicate;
-import database.QuoteStringDataValue;
 import database.SystemErrorException;
 import database.TextStringDataValue;
 import database.UndefinedDataValue;
@@ -59,7 +54,9 @@ public class DataValueEditorFactory {
      * the supplied matrix.
      */
     public static Vector<EditorComponent> buildMatrix(final JTextComponent ta,
-        final DataCell c, final Matrix m) throws SystemErrorException {
+                                                      final DataCell c,
+                                                      final Matrix m)
+    throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
 
@@ -97,9 +94,11 @@ public class DataValueEditorFactory {
      *
      * @return A vector of editor components to represent the matrix argument.
      */
-    public static Vector<EditorComponent> buildMatrixArg(
-        final JTextComponent ta, final DataCell c, final Matrix m, final int i)
-        throws SystemErrorException {
+    public static Vector<EditorComponent> buildMatrixArg(final JTextComponent ta,
+                                                         final DataCell c,
+                                                         final Matrix m,
+                                                         final int i)
+    throws SystemErrorException {
 
         Vector<EditorComponent> eds = new Vector<EditorComponent>();
 
@@ -127,7 +126,9 @@ public class DataValueEditorFactory {
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildTextString(final JTextComponent ta,
-        final DataCell c, final Matrix m, final int i) {
+                                                  final DataCell c,
+                                                  final Matrix m,
+                                                  final int i) {
         return new TextStringDataValueEditor(ta, c, m, i);
     }
 
@@ -142,7 +143,9 @@ public class DataValueEditorFactory {
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildNominal(final JTextComponent ta,
-        final DataCell c, final Matrix m, final int i) {
+                                               final DataCell c,
+                                               final Matrix m,
+                                               final int i) {
         return new NominalDataValueEditor(ta, c, m, i);
     }
 
@@ -157,61 +160,9 @@ public class DataValueEditorFactory {
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildUndefined(final JTextComponent ta,
-        final DataCell c, final Matrix m, final int i) {
+                                                 final DataCell c,
+                                                 final Matrix m,
+                                                 final int i) {
         return new UndefinedDataValueEditor(ta, c, m, i);
-    }
-
-    /**
-     * Creates a data value view from the specified data value in a predicate.
-     *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param p The predicate holding the datavalue this editor will represent.
-     * @param pi The index of the datavalue within the predicate.
-     * @param m The matrix holding the predicate.
-     * @param i The index of the predicate within the matrix.
-     *
-     * @return An editor component to represent the specified data value.
-     */
-    public static EditorComponent buildTextString(final JTextComponent ta,
-        final DataCell c, final PredDataValue p, final int pi, final Matrix m,
-        final int i) {
-        return new TextStringDataValueEditor(ta, c, p, pi, m, i);
-    }
-
-    /**
-     * Creates a data value view from the specified data value in a predicate.
-     *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param p The predicate holding the datavalue this editor will represent.
-     * @param pi The index of the datavalue within the predicate.
-     * @param m The matrix holding the predicate.
-     * @param i The index of the predicate within the matrix.
-     *
-     * @return An editor component to represent the specified data value.
-     */
-    public static EditorComponent buildNominal(final JTextComponent ta,
-        final DataCell c, final PredDataValue p, final int pi, final Matrix m,
-        final int i) {
-        return new NominalDataValueEditor(ta, c, p, pi, m, i);
-    }
-
-    /**
-     * Creates a data value view from the specified data value in a predicate.
-     *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param p The predicate holding the datavalue this editor will represent.
-     * @param pi The index of the datavalue within the predicate.
-     * @param m The matrix holding the predicate.
-     * @param i The index of the predicate within the matrix.
-     *
-     * @return An editor component to represent the specified data value.
-     */
-    public static EditorComponent buildUndefined(final JTextComponent ta,
-        final DataCell c, final PredDataValue p, final int pi, final Matrix m,
-        final int i) {
-        return new UndefinedDataValueEditor(ta, c, p, pi, m, i);
     }
 }
