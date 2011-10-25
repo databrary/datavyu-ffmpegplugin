@@ -75,6 +75,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DatastoreListener;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Variable;
@@ -87,7 +88,7 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
  * OpenSHAPA database as a spreadsheet.
  */
 public final class SpreadsheetPanel extends JPanel
-implements ExternalColumnListListener,
+implements DatastoreListener,
            CellSelectionListener,
            ColumnSelectionListener,
            KeyEventDispatcher {
@@ -269,13 +270,11 @@ implements ExternalColumnListListener,
     /**
      * Remove a column panel from the scroll panel viewport.
      *
-     * @param colID ID of column to remove
+     * @param var
      */
-    private void removeColumn(final long colID) {
+    private void removeColumn(final Variable var) {
         for (SpreadsheetColumn col : columns) {
-            if (col.getColID() == colID) {
-                col.deregisterListeners();
-                
+            if (col.getVariable().equals(var)) {
                 mainView.removeColumn(col);
                 headerView.remove(col);
                 columns.remove(col);
@@ -319,32 +318,17 @@ implements ExternalColumnListListener,
      * @param db Database to set
      */
     public void setDatabase(final Datastore db) {
-
-        // check if we need to deregister
+        // check if we need to deregister any existing listeners.
         if ((datastore != null) && (datastore != db)) {
-
-            try {
-                DeprecatedDatabase dd = (DeprecatedDatabase) db;
-                dd.getDatabase().deregisterColumnListListener(this);
-            } catch (SystemErrorException e) {
-                LOGGER.error("deregisterColumnListListener failed", e);
-            }
+            datastore.removeListener(this);
         }
 
         // set the database
         datastore = db;
-
-        // register as a columnListListener
-        try {
-            DeprecatedDatabase dd = (DeprecatedDatabase) db;
-            dd.getDatabase().registerColumnListListener(this);
-        } catch (SystemErrorException e) {
-            LOGGER.error("registerColumnListListener failed", e);
-        }
+        datastore.addListener(this);
 
         // setName to remember screen locations
         setName(this.getClass().getSimpleName() + db.getName());
-
         deselectAll();
     }
 
@@ -360,56 +344,37 @@ implements ExternalColumnListListener,
         return ((DeprecatedDatabase) datastore).getDatabase();
     }
 
-    /**
-     * Action to invoke when a column is removed from a database.
-     *
-     * @param db The database that the column has been removed from.
-     * @param colID The id of the freshly removed column.
-     * @param oldCov The column order vector prior to the deletion.
-     * @param newCov The column order vector after to the deletion.
-     */
     @Override
-    public void colDeletion(final Database db,
-                            final long colID,
-                            final Vector<Long> oldCov,
-                            final Vector<Long> newCov) {
+    public void variableAdded(final Variable newVariable) {
+        addColumn(datastore, newVariable);
+    }
+
+    @Override
+    public void variableRemoved(final Variable deletedVariable) {
         deselectAll();
-        removeColumn(colID);
+        removeColumn(deletedVariable);
         revalidate();
+
     }
 
-    /**
-     * Action to invoke when a column is added to a database.
-     *
-     * @param db The database that the column has been added to.
-     * @param colID The id of the newly added column.
-     * @param oldCov The column order vector prior to the insertion.
-     * @param newCov The column order vector after to the insertion.
-     */
     @Override
-    public void colInsertion(final Database db,
-                             final long colID,
-                             final Vector<Long> oldCov,
-                             final Vector<Long> newCov) {
-        deselectAll();
-        addColumn(datastore, ((DeprecatedDatabase) datastore).getByLegacyID(colID));
+    public void variableOrderChanged() {
+        // Do nothing.
     }
 
-    /**
-     * Action to invoke when the column order vector is edited (i.e, the order
-     * of the columns is changed without any insertions or deletions).
-     *
-     * @param db The database that the column has been added to.
-     * @param oldCov The column order vector prior to the insertion.
-     * @param newCov The column order vector after to the insertion.
-     */
     @Override
-    public void colOrderVectorEdited(final Database db,
-                                     final Vector<Long> oldCov,
-                                     final Vector<Long> newCov) {
+    public void variableHidden(final Variable hiddenVariable) {
+        // Do nothing.
+    }
 
-        // do nothing for now
-        return;
+    @Override
+    public void variableVisible(final Variable visibleVariable) {
+        // Do nothing.
+    }
+
+    @Override
+    public void variableNameChange(final Variable editedVariable) {
+        // Do nothing.
     }
 
     /**
@@ -683,12 +648,9 @@ implements ExternalColumnListListener,
         // Reorder the header components
         List<Component> newHeaders = new ArrayList<Component>(Arrays.asList(headerView.getComponents()));
         
-        Component sourceHeaderComponent = newHeaders.get(source+1);
-//      Component sourceHeaderComponent = newHeaders.get(source);        
-        newHeaders.remove(source+1);
-//      newHeaders.remove(source);
-        newHeaders.add(destination+1, sourceHeaderComponent);
-//      newHeaders.add(destination, sourceHeaderComponent);
+        Component sourceHeaderComponent = newHeaders.get(source + 1);
+        newHeaders.remove(source + 1);
+        newHeaders.add(destination + 1, sourceHeaderComponent);
 
         headerView.removeAll();
         for (Component header : newHeaders) {
@@ -747,21 +709,6 @@ implements ExternalColumnListListener,
         for (Component header : newHeaders) {
             headerView.add(header);
         }        
-
-        // Reorder the data components
-        /*
-        List<Component> currentData = new ArrayList<Component>(Arrays.asList(mainView.getComponents()));
-        List<Component> newData = new ArrayList<Component>();
-        for (i = 0; i < newOrderVec.size(); i++) {                   
-            for (j = 0 ; j < columns.size(); j++) {
-                sourceColumn = columns.get(j);
-                if (sourceColumn.getColID() == newOrderVec.get(i)) {
-                    newData.add(currentData.get(j));
-                    break;
-                }            
-            } 
-        }  
-        */
         
         mainView.removeAll();
         for (Component data : newData) {

@@ -376,6 +376,10 @@ implements ExternalDataColumnListener,
         return datapanel;
     }
 
+    public Variable getVariable() {
+        return variable;
+    }
+
     /**
      * @return The column ID of the datacolumn being displayed.
      */
@@ -406,15 +410,7 @@ implements ExternalDataColumnListener,
      * @return selection status.
      */
     public boolean isSelected() {
-        DataColumn dc = null;
-
-        try {
-            dc = getLegacyDatabase().getDataColumn(getLegacyVariableID());
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get selected columns", e);
-        }
-
-        return dc.getSelected();
+        return variable.isSelected();
     }
 
     /**
