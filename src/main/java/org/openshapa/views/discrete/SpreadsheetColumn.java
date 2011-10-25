@@ -141,27 +141,20 @@ implements ExternalDataColumnListener,
         this.cellSelList = cellSelL;
         this.columnSelList = colSelL;
 
-        try {
-            DataColumn dbColumn = getLegacyDatabase().getDataColumn(getLegacyVariableID());
+        setOpaque(true);
+        setHorizontalAlignment(JLabel.CENTER);
+        setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, Color.black));
+        backColor = getBackground();
+        setMinimumSize(this.getHeaderSize());
+        setPreferredSize(this.getHeaderSize());
+        setMaximumSize(this.getHeaderSize());
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        setText(var.getName() + "  (" + var.getVariableType() + ")");
 
-            setOpaque(true);
-            setHorizontalAlignment(JLabel.CENTER);
-            setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, Color.black));
-            backColor = getBackground();
-            setMinimumSize(this.getHeaderSize());
-            setPreferredSize(this.getHeaderSize());
-            setMaximumSize(this.getHeaderSize());
-            addMouseListener(this);
-            addMouseMotionListener(this);
-            setText(var.getName() + "  (" + dbColumn.getItsMveType() + ")");
-
-            datapanel = new ColumnDataPanel(width, var, cellSelL);
-            this.setVisible(!dbColumn.getHidden());
-            datapanel.setVisible(!dbColumn.getHidden());
-
-        } catch (SystemErrorException e) {
-            LOGGER.error("Problem retrieving DataColumn", e);
-        }
+        datapanel = new ColumnDataPanel(width, var, cellSelL);
+        this.setVisible(!var.isHidden());
+        datapanel.setVisible(!var.isHidden());
 
         colChanges = new ColumnChanges();
     }

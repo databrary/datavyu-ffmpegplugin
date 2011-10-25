@@ -70,17 +70,21 @@ implements Variable,
     /** The temporal index for this column. */
     List<Long> temporalIndex;
 
+    /** The type of variable. */
+    private VariableType.type varType;
+
     /**
      * Constructor.
      *
      * @param newVariable The legacy variable that this Variable represents.
      */
-    public DeprecatedVariable(DataColumn newVariable) {
+    public DeprecatedVariable(DataColumn newVariable, VariableType.type type) {
         colChanges = new VariableChanges();
         selectedCells = new ArrayList<Long>();
         temporalMap = ArrayListMultimap.create();
         temporalIndex = asSortedList(temporalMap.keySet());
         legacyColumn = newVariable;
+        varType = type;
         this.setLegacyVariable(newVariable);
     }
 
@@ -202,6 +206,11 @@ implements Variable,
         }
 
         return null;
+    }
+
+    @Override
+    public VariableType.type getVariableType() {
+        return varType;
     }
 
     @Override

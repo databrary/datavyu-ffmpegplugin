@@ -136,18 +136,6 @@ import org.openshapa.util.Constants;
         }
     }
 
-    @Deprecated
-    public DeprecatedVariable getByLegacyID(final long colID) {
-        try {
-            return new DeprecatedVariable(getDatabase().getDataColumn(colID));
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get variable", e);
-        }
-
-        // Failed - returned null.
-        return null;
-    }
-
     @Override public String getName() {
         return legacyDB.getName();
     }
@@ -222,7 +210,7 @@ import org.openshapa.util.Constants;
                                            name,
                                            deprecatedType);
             // Return the freshly created variable.
-            DeprecatedVariable var = new DeprecatedVariable(dc);
+            DeprecatedVariable var = new DeprecatedVariable(dc, type);
             var.setSelected(true);
             addVariable(var);
             dc = var.getLegacyVariable();

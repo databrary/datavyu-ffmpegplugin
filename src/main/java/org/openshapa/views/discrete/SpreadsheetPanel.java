@@ -63,7 +63,6 @@ import org.openshapa.event.component.FileDropEventListener;
 
 import database.DataCell;
 import database.Database;
-import database.ExternalColumnListListener;
 import database.SystemErrorException;
 
 import org.openshapa.util.ArrayDirection;
@@ -296,7 +295,6 @@ implements DatastoreListener,
      * Deselect all selected items in the Spreadsheet.
      */
     public void deselectAll() {
-
         for (SpreadsheetColumn col : columns) {
 
             if (col.isSelected()) {

@@ -58,6 +58,7 @@ import database.TextStringDataValue;
 import database.TimeStamp;
 import database.VocabElement;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.models.db.VariableType.VariableType;
 
 
 /**
@@ -734,10 +735,21 @@ public final class OpenDatabaseFileC {
         MacshapaDatabase legacyDb = ((DeprecatedDatabase) db).getDatabase();
         Column.isValidColumnName(legacyDb, varName);
 
-        DataColumn dc = new DataColumn(legacyDb, varName, getVarType(varType));
+        MatrixVocabElement.MatrixType legacyType = getVarType(varType);
+        DataColumn dc = new DataColumn(legacyDb, varName, legacyType);
         dc.setHidden(!varVisible);
         dc.setComment(varComment);
-        DeprecatedVariable newVar = new DeprecatedVariable(dc);
+
+        VariableType.type newType;
+        if (legacyType == MatrixVocabElement.MatrixType.MATRIX) {
+            newType = VariableType.type.MATRIX;
+        } else if (legacyType == MatrixVocabElement.MatrixType.NOMINAL) {
+            newType = VariableType.type.NOMINAL;
+        } else {
+            newType = VariableType.type.TEXT;
+        }
+
+        DeprecatedVariable newVar = new DeprecatedVariable(dc, newType);
         db.addVariable(newVar);
 
         // Read text variable.

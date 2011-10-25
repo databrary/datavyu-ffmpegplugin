@@ -30,7 +30,9 @@ import database.DataCell;
 import database.DataCellTO;
 import database.DataColumn;
 import database.DataColumnTO;
+import database.MatrixVocabElement;
 import database.SystemErrorException;
+import org.openshapa.models.db.VariableType.VariableType;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 
 
@@ -109,8 +111,17 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
         try {
             int j = 0;
             for (DataColumnTO colTO : colsTO) {    
-                DataColumn dc = new DataColumn(db, colTO.name, colTO.itsMveType);                             
-                DeprecatedVariable var = new DeprecatedVariable(dc); 
+                DataColumn dc = new DataColumn(db, colTO.name, colTO.itsMveType);
+                VariableType.type newType;
+                if (colTO.itsMveType == MatrixVocabElement.MatrixType.MATRIX) {
+                    newType = VariableType.type.MATRIX;
+                } else if (colTO.itsMveType == MatrixVocabElement.MatrixType.NOMINAL) {
+                    newType = VariableType.type.NOMINAL;
+                } else {
+                    newType = VariableType.type.TEXT;
+                }
+
+                DeprecatedVariable var = new DeprecatedVariable(dc, newType);
                 model.addVariable(var);
                 vars.set(indexV.get(j), var);
                 dc = db.getDataColumn(dc.getName()); 
