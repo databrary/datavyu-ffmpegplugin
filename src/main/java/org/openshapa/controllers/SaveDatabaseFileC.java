@@ -31,7 +31,6 @@ import org.openshapa.OpenSHAPA;
 import database.DataCell;
 import database.DataColumn;
 import database.FormalArgument;
-import database.LogicErrorException;
 import database.MacshapaDatabase;
 import database.MatrixVocabElement;
 import database.PredicateVocabElement;
@@ -43,6 +42,7 @@ import com.usermetrix.jclient.UserMetrix;
 
 import java.io.FileOutputStream;
 
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.util.StringUtils;
 
 
@@ -59,21 +59,19 @@ public final class SaveDatabaseFileC {
      * .csv, the database is saved in a CSV format, if the database ends with
      * .odb, the database is saved in a MacSHAPA format.
      *
-     * @param destinationFile
-     *      The destination to save the database too.
-     * @param db
-     *      The database to save to disk.
+     * @param destinationFile The destination to save the database too.
+     * @param db The database to save to disk.
      *
-     * @throws LogicErrorException If unable to save the database to the
+     * @throws UserWarningException If unable to save the database to the
      * desired location.
      */
     public void saveDatabase(final File destinationFile,
-        final MacshapaDatabase db) throws LogicErrorException {
+                             final MacshapaDatabase db)
+    throws UserWarningException {
 
         // We bypass any overwrite checks here.
         String outputFile = destinationFile.getName().toLowerCase();
-        String extension = outputFile.substring(outputFile.lastIndexOf('.'),
-                outputFile.length());
+        String extension = outputFile.substring(outputFile.lastIndexOf('.'), outputFile.length());
 
         if (extension.equals(".csv")) {
             saveAsCSV(destinationFile.toString(), db);
@@ -85,16 +83,14 @@ public final class SaveDatabaseFileC {
     /**
      * Saves the database to the specified destination in a MacSHAPA format.
      *
-     * @param outFile
-     *      The path of the file to use when writing to disk.
-     * @param db
-     *      The database to save as a MacSHAPA db format.
-     * @throws LogicErrorException
-     *      When unable to save the database as a macshapa database to
-     *      disk (usually because of permissions errors).
+     * @param outFile The path of the file to use when writing to disk.
+     * @param db The database to save as a MacSHAPA db format.
+     * @throws UserWarningException When unable to save the database as a
+     * macshapa database to disk (usually because of permissions errors).
      */
     public void saveAsMacSHAPADB(final String outFile,
-        final MacshapaDatabase db) throws LogicErrorException {
+                                 final MacshapaDatabase db)
+    throws UserWarningException {
 
         try {
             LOGGER.event("save database as ODB");
@@ -105,14 +101,14 @@ public final class SaveDatabaseFileC {
 
         } catch (FileNotFoundException e) {
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString("UnableToSave.message",
-                    outFile), e);
+                                           .getContext().getResourceMap(OpenSHAPA.class);
+            throw new UserWarningException(rMap.getString("UnableToSave.message", outFile), e);
+
         } catch (IOException e) {
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString("UnableToSave.message",
-                    outFile), e);
+                                          .getContext().getResourceMap(OpenSHAPA.class);
+            throw new UserWarningException(rMap.getString("UnableToSave.message", outFile), e);
+
         } catch (SystemErrorException e) {
             LOGGER.error("Can't write macshapa db file '" + outFile + "'", e);
         }
@@ -121,16 +117,13 @@ public final class SaveDatabaseFileC {
     /**
      * Saves the database to the specified destination in a CSV format.
      *
-     * @param outFile
-     *      The path of the file to use when writing to disk.
-     * @param db
-     *      The database to save as a CSV file.
-     * @throws LogicErrorException
-     *      When unable to save the database as a CSV to disk (usually
-     *      because of permissions errors).
+     * @param outFile The path of the file to use when writing to disk.
+     * @param db The database to save as a CSV file.
+     * @throws UserWarningException When unable to save the database as a CSV to
+     * disk (usually because of permissions errors).
      */
     public void saveAsCSV(final String outFile, final MacshapaDatabase db)
-        throws LogicErrorException {
+    throws UserWarningException {
 
         try {
             FileOutputStream fos = new FileOutputStream(outFile);
@@ -138,25 +131,22 @@ public final class SaveDatabaseFileC {
             fos.close();
         } catch (IOException ie) {
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString("UnableToSave.message",
-                    outFile), ie);
+                                           .getContext().getResourceMap(OpenSHAPA.class);
+            throw new UserWarningException(rMap.getString("UnableToSave.message", outFile), ie);
         }
     }
 
     /**
      * Serialize the database to the specified stream in a CSV format.
      *
-     * @param outStream
-     *      The stream to use when serializing.
-     * @param db
-     *      The database to save as a CSV file.
-     * @throws LogicErrorException
-     *      When unable to save the database as a CSV to disk (usually
-     *      because of permissions errors).
+     * @param outStream The stream to use when serializing.
+     * @param db The database to save as a CSV file.
+     * @throws UserWarningException When unable to save the database as a CSV to
+     * disk (usually because of permissions errors).
      */
     public void saveAsCSV(final OutputStream outStream,
-        final MacshapaDatabase db) throws LogicErrorException {
+                          final MacshapaDatabase db)
+    throws UserWarningException {
 
         try {
             LOGGER.event("save database as CSV to stream");

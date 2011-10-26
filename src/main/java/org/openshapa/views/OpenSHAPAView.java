@@ -64,7 +64,6 @@ import org.openshapa.event.component.FileDropEvent;
 import org.openshapa.event.component.FileDropEventListener;
 
 import database.DataColumn;
-import database.MacshapaDatabase;
 import database.SystemErrorException;
 
 import org.openshapa.util.ArrayDirection;
@@ -80,7 +79,6 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import database.DataCell;
-import database.LogicErrorException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -94,6 +92,7 @@ import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
 import org.openshapa.undoableedits.RemoveCellEdit;
 import org.openshapa.undoableedits.RemoveVariableEdit;
@@ -456,7 +455,7 @@ public final class OpenSHAPAView extends FrameView
                 }
             }
 
-        } catch (LogicErrorException e) {
+        } catch (UserWarningException e) {
             OpenSHAPA.getApplication().showWarningDialog(e);
         }
     }
@@ -584,7 +583,7 @@ public final class OpenSHAPAView extends FrameView
             projController.getLegacyDB().getDatabase().markAsUnchanged();
             updateTitle();
 
-        } catch (LogicErrorException e) {
+        } catch (UserWarningException e) {
             OpenSHAPA.getApplication().showWarningDialog(e);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to save.", e);

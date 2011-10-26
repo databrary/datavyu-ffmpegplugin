@@ -25,7 +25,7 @@ import java.io.File;
 import org.apache.commons.io.FilenameUtils;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.project.ProjectController;
-import database.LogicErrorException;
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.util.FileFilters.OPFFilter;
 import org.openshapa.util.FileFilters.SHAPAFilter;
 
@@ -99,12 +99,12 @@ public class AutosaveC implements ActionListener {
                         projController.getLegacyDB().getDatabase(), false);
                 }                        
             }
-        } catch (LogicErrorException lee) {
-                LOGGER.error("LogicErrorException: Unable to autosave.", lee);
+        } catch (UserWarningException lee) {
+            LOGGER.error("UserWarningException: Unable to autosave.", lee);
         } catch (IOException ioe) {
-                LOGGER.error("IOException: Unable to autosave.", ioe);
+            LOGGER.error("IOException: Unable to autosave.", ioe);
         } finally {
-                f.deleteOnExit();                                
+            f.deleteOnExit();
         }                            
     } 
 

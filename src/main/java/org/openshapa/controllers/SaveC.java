@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import database.LogicErrorException;
 import database.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.ViewerSetting;
@@ -36,6 +35,7 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 import org.openshapa.RecentFiles;
+import org.openshapa.models.db.UserWarningException;
 
 
 /**
@@ -52,10 +52,11 @@ public final class SaveC {
      * @param databaseFile The location to save the database too.
      * @param database The database to save to disk.
      *
-     * @throws LogicErrorException If unable to save the database.
+     * @throws UswerWarningException If unable to save the database.
      */
     public void saveDatabase(final String databaseFile,
-        final MacshapaDatabase database) throws LogicErrorException {
+                             final MacshapaDatabase database)
+    throws UserWarningException {
         this.saveDatabase(new File(databaseFile), database);
     }
 
@@ -65,10 +66,11 @@ public final class SaveC {
      * @param databaseFile The location to save the database too.
      * @param database The database to save to disk.
      *
-     * @throws LogicErrorException If unable to save the database.
+     * @throws UserWarningException If unable to save the database.
      */
     public void saveDatabase(final File databaseFile,
-        final MacshapaDatabase database) throws LogicErrorException {
+                             final MacshapaDatabase database)
+    throws UserWarningException {
             saveDatabase(databaseFile, database, true);
     }
 
@@ -78,10 +80,12 @@ public final class SaveC {
      * @param databaseFile The location to save the database too.
      * @param database The database to save to disk.
      * @param remember Add this project to the rememberProject list.
-     * @throws LogicErrorException If unable to save the database.
+     * @throws UserWarningException If unable to save the database.
      */
     public void saveDatabase(final File databaseFile,
-        final MacshapaDatabase database, boolean remember) throws LogicErrorException {
+                             final MacshapaDatabase database,
+                             boolean remember)
+    throws UserWarningException {
         LOGGER.event("saving database");
 
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
@@ -99,11 +103,13 @@ public final class SaveC {
      * @param project The project to save to disk.
      * @param database The database to save to disk.
      *
-     * @throws LogicErrorException If unable to save the entire project to
+     * @throws UserWarningException If unable to save the entire project to
      * disk.
      */
-    public void saveProject(final File projectFile, final Project project,
-        final MacshapaDatabase database) throws LogicErrorException {
+    public void saveProject(final File projectFile,
+                            final Project project,
+                            final MacshapaDatabase database)
+    throws UserWarningException {
         saveProject(projectFile, project, database, true);
     }
 
@@ -115,11 +121,13 @@ public final class SaveC {
      * @param database The database to save to disk.
      * @param remember Add this project to the rememberProject list.
      * 
-     * @throws LogicErrorException If unable to save the entire project to
+     * @throws UserWarningException If unable to save the entire project to
      * disk.
      */
-    public void saveProject(final File projectFile, final Project project,
-        final MacshapaDatabase database, boolean remember) throws LogicErrorException {
+    public void saveProject(final File projectFile,
+                            final Project project,
+                            final MacshapaDatabase database,
+                            boolean remember) throws UserWarningException {
 
         try {
             LOGGER.event("save project");
@@ -156,14 +164,12 @@ public final class SaveC {
             
         } catch (FileNotFoundException e) {
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString("UnableToSave.message",
-                    projectFile), e);
+                                          .getContext().getResourceMap(OpenSHAPA.class);
+            throw new UserWarningException(rMap.getString("UnableToSave.message", projectFile), e);
         } catch (IOException e) {
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                .getContext().getResourceMap(OpenSHAPA.class);
-            throw new LogicErrorException(rMap.getString("UnableToSave.message",
-                    projectFile), e);
+                                          .getContext().getResourceMap(OpenSHAPA.class);
+            throw new UserWarningException(rMap.getString("UnableToSave.message", projectFile), e);
         }
     }
     
