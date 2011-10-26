@@ -58,6 +58,7 @@ import org.openshapa.util.Constants;
     
     HashBiMap<Long, Variable> legacyToModelMap;
 
+    /** The list of listeners to be notified when this datastore changes. */
     private List<DatastoreListener> listeners;
 
     /** notifier that needs to be informed when the title needs to be updated. */

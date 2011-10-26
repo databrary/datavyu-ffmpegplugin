@@ -71,6 +71,9 @@ implements Variable,
     /** The temporal index for this column. */
     List<Long> temporalIndex;
 
+    /** The list of listeners to be notified when this variable changes. */
+    private List<VariableListener> listeners;
+
     /** The type of variable. */
     private VariableType.type varType;
 
@@ -86,6 +89,7 @@ implements Variable,
         temporalIndex = asSortedList(temporalMap.keySet());
         legacyColumn = newVariable;
         varType = type;
+        listeners = new ArrayList<VariableListener>();
         this.setLegacyVariable(newVariable);
     }
 
@@ -290,6 +294,16 @@ implements Variable,
         return result;
     }
 
+    @Override
+    public void addListener(final VariableListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(final VariableListener listener) {
+        listeners.remove(listener);
+    }
+
     // --- Interface: ExternalCascadeListener.
     @Override public void beginCascade(final Database db) {
         colChanges.reset();
@@ -358,6 +372,7 @@ implements Variable,
                                             final boolean selectedChanged,
                                             final boolean oldSelected,
                                             final boolean newSelected) {
+        colChanges.nameChanged = nameChanged;
         isSelected = newSelected;
     }
 
@@ -419,6 +434,8 @@ implements Variable,
         private List<Long> cellInserted;
         /** List of cell IDs of deleted cells. */
         private List<Long> cellDeleted;
+        /** Has the name changed? */
+        private boolean nameChanged;
 
         /**
          * ColumnChanges constructor.
@@ -435,6 +452,7 @@ implements Variable,
         private void reset() {
             cellInserted.clear();
             cellDeleted.clear();
+            nameChanged = false;
         }
     }
 }
