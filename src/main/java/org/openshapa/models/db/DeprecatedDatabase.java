@@ -147,6 +147,10 @@ import org.openshapa.util.Constants;
             LOGGER.error("Unable to set datastore name", e);
         }
     }
+
+    @Override public boolean isChanged() {
+        return legacyDB.isChanged();
+    }
     
     @Override public void updateTitle() {
         titleNotifier.updateTitle();

@@ -113,11 +113,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         this.add(padding);
 
         // Populate the data column with spreadsheet cells.
-        buildDataPanelCells(getLegacyVariable(), cellSelL);
-    }
-
-    @Deprecated DataColumn getLegacyVariable() {
-        return ((DeprecatedVariable) model).getLegacyVariable();
+        buildDataPanelCells(variable, cellSelL);
     }
 
     /**
@@ -141,17 +137,20 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /**
      * Build the SpreadsheetCells and add to the DataPanel.
      *
-     * @param dbColumn DataColumn to display.
-     * @param cellSelL Spreadsheet listener to notify about cell selection changes.
+     * @param variable The variable to display.
+     * @param cellSelL Spreadsheet listener to notify about cell selection
+     * changes.
      */
-    private void buildDataPanelCells(final DataColumn dbColumn,
+    private void buildDataPanelCells(final Variable variable,
                                      final CellSelectionListener cellSelL) {
         try {
             // traverse and build the cells
-            for (int j = 1; j <= dbColumn.getNumCells(); j++) {
-                DataCell dc = (DataCell) dbColumn.getDB().getCell(dbColumn.getID(), j);
-                SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dc, cellSelL);
-                dbColumn.getDB().registerDataCellListener(dc.getID(), sc);
+            for (Cell cell : variable.getCellsTemporally()) {
+                DataColumn dbColumn = ((DeprecatedVariable) variable).getLegacyVariable();
+                DataCell dCell = ((DeprecatedCell) cell).getLegacyCell();
+
+                SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dCell, cellSelL);
+                dbColumn.getDB().registerDataCellListener(dCell.getID(), sc);
 
                 // add cell to the JPanel
                 this.add(sc);
@@ -160,7 +159,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 cells.add(sc);
 
                 // Add the ID's to the mapping.
-                viewMap.put(dc.getID(), sc);
+                viewMap.put(dCell.getID(), sc);
                 columnHeight += sc.getHeight();
             }
 

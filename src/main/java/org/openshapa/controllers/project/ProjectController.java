@@ -54,7 +54,6 @@ import com.google.common.collect.Lists;
 
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
-import database.MacshapaDatabase;
 
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Plugin;
@@ -225,10 +224,8 @@ public final class ProjectController {
      * @return the changed
      */
     public boolean isChanged() {
-        MacshapaDatabase legacyDB = getLegacyDB().getDatabase();
-
         if (OpenSHAPA.getApplication().getCanSetUnsaved()) {
-            return (changed || ((legacyDB != null) && legacyDB.isChanged()));
+            return (changed || ((db != null) && db.isChanged()));
         } else {
             return false;
         }
