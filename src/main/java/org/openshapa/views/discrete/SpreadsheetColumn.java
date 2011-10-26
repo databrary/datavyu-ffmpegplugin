@@ -21,7 +21,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.HeadlessException;
 
-import java.util.logging.Level;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -39,8 +38,6 @@ import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
 
 import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
@@ -49,13 +46,12 @@ import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 
-import database.Column;
 import database.DataColumn;
 import database.Database;
 import database.ExternalCascadeListener;
 import database.ExternalDataColumnListener;
-import database.LogicErrorException;
 import database.SystemErrorException;
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.undoableedits.ChangeNameVariableEdit;
 import org.openshapa.util.Constants;
 
@@ -152,7 +148,7 @@ implements ExternalDataColumnListener,
         addMouseMotionListener(this);
         setText(var.getName() + "  (" + var.getVariableType() + ")");
 
-        datapanel = new ColumnDataPanel(width, var, cellSelL);
+        datapanel = new ColumnDataPanel(db, width, var, cellSelL);
         this.setVisible(!var.isHidden());
         datapanel.setVisible(!var.isHidden());
 
@@ -297,21 +293,18 @@ implements ExternalDataColumnListener,
         String newName = "";
 
         while (newName != null) {
-            newName = (String) JOptionPane.showInputDialog(null, null,
-                    "New variable name", JOptionPane.PLAIN_MESSAGE, null, null,
-                    getColumnName());
+            newName = (String) JOptionPane.showInputDialog(null, null, "New variable name",
+                                                           JOptionPane.PLAIN_MESSAGE, null, null, getColumnName());
 
             if (newName != null) {
-
                 try {
                     setColumnName(newName);
-
                     break;
-                } catch (LogicErrorException ex) {
-                    continue;
-                } catch (SystemErrorException ex) {
+
+                } catch (UserWarningException ex) {
                     continue;
                 }
+
             } else {
                 break;
             }
@@ -648,47 +641,22 @@ implements ExternalDataColumnListener,
     }
 
     /**
-    * Returns the header name of this SpreadsheetColumn.
-    * @param col SpreadsheetColumn
-    * @return header name of col
-    */
+     * @return The header name of this SpreadsheetColumn.
+     */
     public String getColumnName() {
-        try {
-            return getLegacyDatabase().getDataColumn(getLegacyVariableID()).getName();
-        } catch (SystemErrorException ex) {
-            java.util.logging.Logger.getLogger(SpreadsheetColumn.class
-                .getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return null;
+        return variable.getName();
     }
 
-    public void setColumnName(final String newName)
-    throws LogicErrorException, SystemErrorException {
+    public void setColumnName(final String newName) throws UserWarningException {
+
         try {
-            DataColumn dc = getLegacyDatabase().getDataColumn(getLegacyVariableID());
-
-            if ((!dc.getName().equals(newName)
-                        && (DataColumn.isValidColumnName(getLegacyDatabase(), newName)))) {
-                // record the effect
-                UndoableEdit edit = new ChangeNameVariableEdit(dc.getName(), newName);  
-
-                // perform the action
-                dc.setName(newName);
-                getLegacyDatabase().replaceColumn(dc);
-
-                // Display any changes.
-                OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
-                // notify the listeners
-                OpenSHAPA.getView().getUndoSupport().postEdit(edit);                
-                
-            }
-        } catch (LogicErrorException fe) {
-            OpenSHAPA.getApplication().showWarningDialog(fe);
-            throw new LogicErrorException(fe.getMessage(), fe);
-        } catch (SystemErrorException see) {
-            OpenSHAPA.getApplication().showErrorDialog();
-            throw new SystemErrorException(see.getMessage(), see);
+            variable.setName(newName);
+            UndoableEdit edit = new ChangeNameVariableEdit(variable.getName(), newName);
+            OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+        } catch (UserWarningException uwe) {
+            OpenSHAPA.getApplication().showWarningDialog(uwe);
+            throw new UserWarningException();
         }
 
         OpenSHAPA.getView().showSpreadsheet();

@@ -52,9 +52,11 @@ import org.openshapa.views.DataControllerV;
 
 import com.google.common.collect.Lists;
 
+import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 
+import org.openshapa.models.db.Variable;
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Plugin;
 
@@ -79,6 +81,15 @@ public final class ProjectController {
     /** The id of the last datacell that was created. */
     @Deprecated private long lastCreatedColID;
 
+    /** The last cell that was created. */
+    private Cell lastCreatedCell;
+
+    /** The last cell that was selected. */
+    private Cell lastSelectedCell;
+
+    /** The last variable that was created. */
+    private Variable lastCreatedVariable;
+
     /**
      * Controller state
      */
@@ -99,6 +110,9 @@ public final class ProjectController {
         project = new Project();
         changed = false;
         newProject = true;
+        lastCreatedCell = null;
+        lastSelectedCell = null;
+        lastCreatedVariable = null;
     }
 
     public ProjectController(final Project project) {
@@ -106,6 +120,9 @@ public final class ProjectController {
         this.project = project;
         changed = false;
         newProject = false;
+        lastCreatedCell = null;
+        lastSelectedCell = null;
+        lastCreatedVariable = null;
     }
 
     /**
@@ -168,6 +185,54 @@ public final class ProjectController {
      */
     public void setDatastore(final Datastore newDS) {
         db = newDS;
+    }
+
+    /**
+     * @return The last cell created for the datastore.
+     */
+    public Cell getLastCreatedCell() {
+        return lastCreatedCell;
+    }
+
+    /**
+     * Sets the last created cell to the specified parameter.
+     *
+     * @param newCell The newly created cell.
+     */
+    public void setLastCreatedCell(final Cell newCell) {
+        lastCreatedCell = newCell;
+    }
+
+    /**
+     * @return The last selected cell.
+     */
+    public Cell getLastSelectedCell() {
+        return lastSelectedCell;
+    }
+
+    /**
+     * Sets the last selected cell to the specified cell.
+     *
+     * @param newCell The newly selected cell.
+     */
+    public void setLastSelectedCell(final Cell newCell) {
+        lastSelectedCell = newCell;
+    }
+
+    /**
+     * @return The last variable created for the datastore.
+     */
+    public Variable getLastCreatedVariable() {
+        return lastCreatedVariable;
+    }
+
+    /**
+     * Sets the newly created variable to the specified parameter.
+     *
+     * @param newVariable The newly created variable.
+     */
+    public void setLastCreatedVariable(final Variable newVariable) {
+        lastCreatedVariable = newVariable;
     }
 
     /**

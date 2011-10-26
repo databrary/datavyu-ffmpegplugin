@@ -29,6 +29,7 @@ import database.ExternalDataCellListener;
 import database.ExternalDataColumnListener;
 import database.LogicErrorException;
 import database.Matrix;
+import database.MatrixVocabElement;
 import database.SystemErrorException;
 import database.TimeStamp;
 import org.openshapa.models.db.VariableType.VariableType;
@@ -270,8 +271,23 @@ implements Variable,
     }
 
     @Override
-    public void addCell(Cell newCell) {
-        // TODO.
+    public Cell createCell() {
+        Cell result = null;
+
+        try {
+            MatrixVocabElement mve = legacyDB.getMatrixVE(getLegacyVariable().getItsMveID());
+            DataCell newCell = new DataCell(getLegacyVariable().getDB(),
+                                            getLegacyVariable().getID(),
+                                            mve.getID());
+            long cellID = legacyDB.appendCell(newCell);
+            newCell = (DataCell) legacyDB.getCell(cellID);
+            result = new DeprecatedCell(newCell);
+
+        } catch (SystemErrorException e) {
+            LOGGER.error("Unable to create cell", e);
+        }
+
+        return result;
     }
 
     // --- Interface: ExternalCascadeListener.

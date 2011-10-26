@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
@@ -83,11 +84,13 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /**
      * Creates a new ColumnDataPanel.
      *
+     * @param db The datastore that this column data panel reflects.
      * @param width The width of the new column data panel in pixels.
      * @param variable The Data Column that this panel represents.
      * @param cellSelL Spreadsheet cell selection listener.
      */
-    public ColumnDataPanel(final int width,
+    public ColumnDataPanel(final Datastore db,
+                           final int width,
                            final Variable variable,
                            final CellSelectionListener cellSelL) {
         super();
@@ -113,7 +116,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         this.add(padding);
 
         // Populate the data column with spreadsheet cells.
-        buildDataPanelCells(variable, cellSelL);
+        buildDataPanelCells(db, variable, cellSelL);
     }
 
     /**
@@ -137,11 +140,13 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /**
      * Build the SpreadsheetCells and add to the DataPanel.
      *
+     * @param db The datastore holding cells that this column will represent.
      * @param variable The variable to display.
      * @param cellSelL Spreadsheet listener to notify about cell selection
      * changes.
      */
-    private void buildDataPanelCells(final Variable variable,
+    private void buildDataPanelCells(final Datastore db,
+                                     final Variable variable,
                                      final CellSelectionListener cellSelL) {
         try {
             // traverse and build the cells
@@ -149,7 +154,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 DataColumn dbColumn = ((DeprecatedVariable) variable).getLegacyVariable();
                 DataCell dCell = ((DeprecatedCell) cell).getLegacyCell();
 
-                SpreadsheetCell sc = new SpreadsheetCell(dbColumn.getDB(), dCell, cellSelL);
+                SpreadsheetCell sc = new SpreadsheetCell(db, cell, cellSelL);
                 dbColumn.getDB().registerDataCellListener(dCell.getID(), sc);
 
                 // add cell to the JPanel

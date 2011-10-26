@@ -42,7 +42,6 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 
-import database.Cell;
 import database.DataCell;
 import database.Database;
 import database.ExternalDataCellListener;
@@ -56,6 +55,10 @@ import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedCell;
+import org.openshapa.models.db.DeprecatedDatabase;
 
 
 /**
@@ -129,7 +132,9 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     private TimeStampTextField offset;
 
     /** The Database the cell belongs to. */
-    private Database db;
+    private Database legacyDB;
+
+    private Datastore db;
 
     /** The cellID for retrieving the cell from the database. */
     private long cellID;
@@ -155,6 +160,113 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetCell.class);
 
+    public SpreadsheetCell(final Datastore cellDB,
+                           final Cell cell,
+                           final CellSelectionListener listener) {
+
+        legacyDB = ((DeprecatedDatabase) cellDB).getDatabase();
+        cellID = ((DeprecatedCell) cell).getLegacyCell().getID();
+        setName(this.getClass().getSimpleName());
+
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+                                      .getResourceMap(SpreadsheetCell.class);
+
+        // Register this view with the database so that we can get updates when
+        // the cell within the database changes.
+        DataCell dc = ((DeprecatedCell) cell).getLegacyCell();
+
+        // Check the selected state of the datacell
+        // If it is already selected in the database, we need to inform
+        // the selector, but not trigger a selection change or deselect others.
+        selected = cell.isSelected();
+        cellSelL = listener;
+
+        cellPanel = new JPanel();
+        cellPanel.addMouseListener(this);
+        strut = new Filler(new Dimension(0, 0),
+                           new Dimension(0, 0),
+                           new Dimension(Short.MAX_VALUE, 0));
+
+        setLayout(new BorderLayout());
+        this.add(strut, BorderLayout.NORTH);
+        this.add(cellPanel, BorderLayout.CENTER);
+
+        // Build components used for the spreadsheet cell.
+        topPanel = new JPanel();
+        topPanel.addMouseListener(this);
+        ord = new JLabel();
+        ord.setFont(Configuration.getInstance().getSSLabelFont());
+        ord.setForeground(Configuration.getInstance().getSSOrdinalColour());
+        ord.setToolTipText(rMap.getString("ord.tooltip"));
+        ord.addMouseListener(this);
+        ord.setFocusable(true);
+
+        onset = new TimeStampTextField(dc, TimeStampSource.Onset);
+        onset.setFont(Configuration.getInstance().getSSLabelFont());
+        onset.setForeground(Configuration.getInstance().getSSTimestampColour());
+        onset.setToolTipText(rMap.getString("onset.tooltip"));
+        onset.addFocusListener(this);
+        onset.addMouseListener(this);
+        onset.setName("onsetTextField");
+
+        offset = new TimeStampTextField(dc, TimeStampSource.Offset);
+        offset.setFont(Configuration.getInstance().getSSLabelFont());
+        offset.setForeground(Configuration.getInstance().getSSTimestampColour());
+        offset.setToolTipText(rMap.getString("offset.tooltip"));
+        offset.addFocusListener(this);
+        offset.addMouseListener(this);
+        offset.setName("offsetTextField");
+
+        dataPanel = new MatrixRootView(dc, null);
+        dataPanel.setFont(Configuration.getInstance().getSSDataFont());
+        dataPanel.setForeground(Configuration.getInstance().getSSForegroundColour());
+
+        try {
+            dataPanel.setMatrix(dc.getVal());
+        } catch (SystemErrorException e) {
+            LOGGER.error("unable to set matrix", e);
+        }
+        dataPanel.setOpaque(false);
+        dataPanel.addFocusListener(this);
+        dataPanel.addMouseListener(this);
+        dataPanel.setName("cellValue");
+
+        // Set the appearance of the spreadsheet cell.
+        cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
+        // Cell is highlighted by default.
+        cellPanel.setBorder(HIGHLIGHT_BORDER);
+        highlighted = true;
+        cellPanel.setLayout(new BorderLayout());
+
+        // Set the apperance of the top panel and add child elements (ord, onset
+        // and offset).
+        topPanel.setOpaque(false);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+        cellPanel.add(topPanel, BorderLayout.NORTH);
+        topPanel.add(ord);
+
+        Component strut1 = Box.createHorizontalStrut(TIME_SPACER);
+        topPanel.add(strut1);
+
+        Component glue = Box.createGlue();
+        topPanel.add(glue);
+
+        topPanel.add(onset);
+
+        Component strut2 = Box.createHorizontalStrut(TIME_SPACER);
+        topPanel.add(strut2);
+        topPanel.add(offset);
+
+        // Set the apperance of the data panel - add elements for dis6playing
+        // the actual data of the panel.
+        cellPanel.add(dataPanel, BorderLayout.CENTER);
+
+        Dimension d = new Dimension(229, 0);
+        stretcher = new Filler(d, d, d);
+        cellPanel.add(stretcher, BorderLayout.SOUTH);
+    }
+
     /**
      * Creates new form SpreadsheetCell.
      *
@@ -164,11 +276,12 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * changes to cell selection.
      * @throws SystemErrorException If trouble with db calls
      */
+    @Deprecated
     public SpreadsheetCell(final Database cellDB,
-                           final Cell cell,
+                           final database.Cell cell,
                            final CellSelectionListener listener)
     throws SystemErrorException {
-        db = cellDB;
+        legacyDB = cellDB;
         cellID = cell.getID();
         setName(this.getClass().getSimpleName());
 
@@ -177,7 +290,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         // Register this view with the database so that we can get updates when
         // the cell within the database changes.
-        DataCell dc = (DataCell) db.getCell(cellID);
+        DataCell dc = (DataCell) legacyDB.getCell(cellID);
 
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
@@ -348,7 +461,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      */
     public long getOnsetTicks() {
         try {
-            DataCell dc = (DataCell) db.getCell(cellID);
+            DataCell dc = (DataCell) legacyDB.getCell(cellID);
             return dc.getOnset().getTime();
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to get onset ticks", e);
@@ -365,7 +478,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      */
     public long getOffsetTicks() {
         try {
-            DataCell dc = (DataCell) db.getCell(cellID);
+            DataCell dc = (DataCell) legacyDB.getCell(cellID);
             return dc.getOffset().getTime();
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to get offset ticks", e);
@@ -378,7 +491,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @return Return the Ordinal value of the datacell as an IntDataValue.
      */
     public long getOrdinal() throws SystemErrorException {
-        DataCell dc = (DataCell) db.getCell(cellID);
+        DataCell dc = (DataCell) legacyDB.getCell(cellID);
 
         return dc.getOrd();
     }
@@ -403,13 +516,13 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         // Set the selection within the database.
         try {
-            Cell cell = db.getCell(cellID);
+            database.Cell cell = legacyDB.getCell(cellID);
             DataCell dcell = null;
 
             if (cell instanceof DataCell) {
-                dcell = (DataCell) db.getCell(cell.getID());
+                dcell = (DataCell) legacyDB.getCell(cell.getID());
             } else {
-                dcell = (DataCell) db.getCell(((ReferenceCell) cell)
+                dcell = (DataCell) legacyDB.getCell(((ReferenceCell) cell)
                         .getTargetID());
             }
 
