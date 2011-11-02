@@ -18,6 +18,7 @@ import com.google.common.collect.HashBiMap;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import database.Column;
+import database.DataCell;
 import database.DataColumn;
 import database.ExternalCascadeListener;
 import database.ExternalColumnListListener;
@@ -301,6 +302,16 @@ import org.openshapa.util.Constants;
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to delete variable.", e);
         }
+    }
+
+    /**
+     * Removes a variable from the datastore.
+     *
+     * @param cell The cell to remove from the datastore.
+     */
+    @Override
+    public void removeCell(final Cell cell) {
+        getVariable(cell).removeCell(cell);
     }
 
     @Override public List<Variable> getAllVariables() {

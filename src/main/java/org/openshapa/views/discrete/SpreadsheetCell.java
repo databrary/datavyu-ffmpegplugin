@@ -470,14 +470,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @throws SystemErrorException
      */
     public long getOnsetTicks() {
-        try {
-            DataCell dc = (DataCell) legacyDB.getCell(cellID);
-            return dc.getOnset().getTime();
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get onset ticks", e);
-        }
-
-        return 0;
+        return model.getOnset();
     }
 
     /**
@@ -487,14 +480,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      * @throws SystemErrorException
      */
     public long getOffsetTicks() {
-        try {
-            DataCell dc = (DataCell) legacyDB.getCell(cellID);
-            return dc.getOffset().getTime();
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get offset ticks", e);
-        }
-
-        return 0;
+        return model.getOffset();
     }
 
     /**

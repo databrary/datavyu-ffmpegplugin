@@ -320,6 +320,21 @@ implements Variable,
     }
 
     @Override
+    public void removeCell(final Cell cell) {
+        try {
+            DataCell dc = ((DeprecatedCell) cell).getLegacyCell();
+            legacyDB.removeCell(dc.getID());
+
+            // notify listeners.
+            for (VariableListener listener : listeners) {
+                listener.cellRemoved(cell);
+            }
+        } catch (SystemErrorException se) {
+            LOGGER.error("Unable to delete cell", se);
+        }
+    }
+
+    @Override
     public void addListener(final VariableListener listener) {
         listeners.add(listener);
     }

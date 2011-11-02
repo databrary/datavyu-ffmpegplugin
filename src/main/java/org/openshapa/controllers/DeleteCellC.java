@@ -18,16 +18,12 @@ import com.usermetrix.jclient.Logger;
 
 import org.openshapa.OpenSHAPA;
 
-import database.DataCell;
-import database.MacshapaDatabase;
-import database.SystemErrorException;
 
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
 import org.openshapa.models.db.Cell;
-import org.openshapa.models.db.DeprecatedCell;
 
 /**
  * Controller for deleting cells from the database.
@@ -48,30 +44,23 @@ public final class DeleteCellC {
         // The spreadsheet is the view for this controller.
         SpreadsheetPanel view = (SpreadsheetPanel) OpenSHAPA.getApplication()
                                                    .getMainView().getComponent();
-        MacshapaDatabase model = OpenSHAPA.getProjectController()
-                                          .getLegacyDB().getDatabase();
         view.deselectAll();
 
-        try {
-            for (Cell c : cellsToDelete) {
+        for (Cell c : cellsToDelete) {
 
-                // Check if the cell we are deleting is the last created cell.
-                // Default this back to 0 if it is.
-                if (c.equals(OpenSHAPA.getProjectController().getLastCreatedCell())) {
-                    OpenSHAPA.getProjectController().setLastCreatedCell(null);
-                }
-
-                // Check if the cell we are deleting is the last selected cell.
-                // Default this back to 0 if it is.
-                if (c.equals(OpenSHAPA.getProjectController().getLastSelectedCell())) {
-                    OpenSHAPA.getProjectController().setLastSelectedCell(null);
-                }
-
-                DataCell dc = ((DeprecatedCell) c).getLegacyCell();
-                model.removeCell(dc.getID());
+            // Check if the cell we are deleting is the last created cell.
+            // Default this back to 0 if it is.
+            if (c.equals(OpenSHAPA.getProjectController().getLastCreatedCell())) {
+                OpenSHAPA.getProjectController().setLastCreatedCell(null);
             }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to delete cells", e);
+
+            // Check if the cell we are deleting is the last selected cell.
+            // Default this back to 0 if it is.
+            if (c.equals(OpenSHAPA.getProjectController().getLastSelectedCell())) {
+                OpenSHAPA.getProjectController().setLastSelectedCell(null);
+            }
+
+            OpenSHAPA.getProjectController().getDB().removeCell(c);
         }
     }
 }
