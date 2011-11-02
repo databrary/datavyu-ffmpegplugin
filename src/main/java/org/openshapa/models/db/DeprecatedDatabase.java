@@ -272,24 +272,27 @@ import org.openshapa.util.Constants;
     @Override
     public void removeVariable(final Variable var) {
         try {
-            DataColumn dc = ((DeprecatedVariable) var).getLegacyVariable();
+            // Check if a cell we are deleting is the last created cell...
+            // Default this back to null.
+            for (Cell c : var.getCells()) {
+                if (c.equals(OpenSHAPA.getProjectController().getLastCreatedCell())) {
+                    OpenSHAPA.getProjectController().setLastCreatedCell(null);
+                }
+            }
 
+            DataColumn dc = ((DeprecatedVariable) var).getLegacyVariable();
             // All cells in the column removed - now delete the column.
             // Must remove cells from the data column before removing it.
             while (dc.getNumCells() > 0) {
                 database.Cell c = legacyDB.getCell(dc.getID(), 1);
-                // Check if the cell we are deleting is the last created
-                // cell... Default this back to 0.
-                if (c.getID() == OpenSHAPA.getProjectController().getLastCreatedCellId()) {
-                    OpenSHAPA.getProjectController().setLastCreatedCell(null);
-                }
                 legacyDB.removeCell(c.getID());
                 dc = legacyDB.getDataColumn(dc.getID());
             }
+
             // Check if the column we are deleting was the last created
-            // column... Default this back to 0 if it is.
-            if (dc.getID() == OpenSHAPA.getProjectController().getLastCreatedColId()) {
-                OpenSHAPA.getProjectController().setLastCreatedColId(0);
+            // column... Default this back to null if it is.
+            if (var.equals(OpenSHAPA.getProjectController().getLastCreatedVariable())) {
+                OpenSHAPA.getProjectController().setLastCreatedVariable(null);
             }
 
             legacyDB.removeColumn(dc.getID());

@@ -21,11 +21,12 @@ import java.util.List;
 import java.util.Vector;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import org.openshapa.controllers.DeleteCellC;
 import database.DataCell;
 import database.DataCellTO;
 import database.DataColumn;
 import database.SystemErrorException;
+import java.util.ArrayList;
+import org.openshapa.models.db.Cell;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 
@@ -36,39 +37,41 @@ public class RemoveCellEdit extends SpreadsheetEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(RemoveCellEdit.class);
     
-    private Vector<CellPos> cellPosV;
-    private Vector<DataCellTO> cellTOV;
+    //private List<CellPos> cellPosV;
+    private List<DataCellTO> cellTOV;
     
-    public RemoveCellEdit(List<DataCell> cells) {
+    public RemoveCellEdit(List<Cell> cells) {
       super();
-      cellPosV = new Vector<CellPos>();
-      cellTOV = new Vector<DataCellTO>();
+      //cellPosV = new Vector<CellPos>();
+      cellTOV = new ArrayList<DataCellTO>();
+      /*
       for (DataCell cell : cells) {
-          cellPosV.add(getCellPos(cell)); 
           cellTOV.add(cell.getDataCellData());
-      }
+      }*/
 
     }
 
     @Override
     public String getPresentationName() {
-        String msg;
+        String msg = "nothing";
+        /*
         if ((cellPosV != null) && (cellPosV.size() > 1)) {
             msg = "Delete " + cellPosV.size() + " Cells";
         }
         else { // one cell
             msg = "Delete Cell (" + cellPosV.get(0).varName + "," + cellPosV.get(0).ord + ")";
-        }
+        }*/
         return msg;
     }
 
     @Override
     public void redo() throws CannotRedoException {
         super.redo();
+        /*
         List<DataCell> cellsToDelete = new Vector<DataCell>();
         for (CellPos cellPos : cellPosV) {
             cellsToDelete.add(getDataCell(cellPos));
-        }
+        }*/
         
         //
         // TODO.
@@ -78,6 +81,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
     @Override
     public void undo() throws CannotUndoException {  
         super.undo();
+        /*
         unselectAll();
         for (int i = 0; i < cellPosV.size(); i++) {
             try {
@@ -97,8 +101,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
             } catch (SystemErrorException e) {
                 LOGGER.error("Unable to undo Remove Cell.", e);
             }
-        }          
-
+        }*/          
     }
     
 }

@@ -72,9 +72,6 @@ public final class ProjectController {
     /** The current database we are working on. */
     private Datastore db = new DeprecatedDatabase();
 
-    /** The id of the last datacell that was created. */
-    @Deprecated private long lastCreatedCellID;
-
     /** The id of the last selected cell. */
     @Deprecated private long lastSelectedCellID;
 
@@ -236,43 +233,12 @@ public final class ProjectController {
     }
 
     /**
-     * @return The id of the last created cell.
-     */
-    @Deprecated public long getLastCreatedCellId() {
-        return lastCreatedCellID;
-    }
-
-    /**
-     * Sets the id of the last created cell to the specified parameter.
-     *
-     * @param newId
-     *            The Id of the newly created cell.
-     */
-    @Deprecated public void setLastCreatedCellId(final long newId) {
-        lastCreatedCellID = newId;
-    }
-
-    /**
-     * @return The id of the last selected cell.
-     */
-    @Deprecated public long getLastSelectedCellId() {
-        return lastSelectedCellID;
-    }
-
-    /**
      * Sets the id of the last selected cell to the specified parameter.
      *
      * @param newId The id of the newly selected cell.
      */
     @Deprecated public void setLastSelectedCellId(final long newId) {
         lastSelectedCellID = newId;
-    }
-
-    /**
-     * @return The id of the last created column.
-     */
-    @Deprecated public long getLastCreatedColId() {
-        return lastCreatedColID;
     }
 
     /**

@@ -937,11 +937,11 @@ public final class OpenSHAPAView extends FrameView
                                             .getDB().getSelectedCells();
 
         // record the effect
-        //UndoableEdit edit = new RemoveCellEdit(selectedCells);
+        UndoableEdit edit = new RemoveCellEdit(selectedCells);
         // perform the operation
         new DeleteCellC(selectedCells);
         // notify the listeners
-        //OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+        OpenSHAPA.getView().getUndoSupport().postEdit(edit);
     }
 
     /**

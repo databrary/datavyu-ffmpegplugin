@@ -63,7 +63,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
     @Override
     public void undo() throws CannotUndoException {
         super.undo();
-    }
+    }    
  
     protected DataCell getDataCell(CellPos cellPos) {
         try {        
@@ -76,20 +76,6 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
             return null;
         }
     } 
-    
-    protected CellPos getCellPos(DataCell cell) {
-        try {
-            long colID = cell.getItsColID();
-            DataColumn col = (DataColumn)db.getColumn(colID);
-            String varName = col.getName();
-            int ord = cell.getOrd(); 
-            CellPos cellPos = new CellPos(varName, ord);
-            return cellPos;
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to getCellPos", e);
-            return null;
-        }
-    }
     
     protected SpreadsheetCell getSpreadsheetCell(DataCell cell) {
         for (SpreadsheetColumn sCol : getSpreadsheet().getColumns()) {

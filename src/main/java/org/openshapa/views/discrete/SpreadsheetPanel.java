@@ -521,7 +521,7 @@ implements DatastoreListener,
     public void highlightCell(final Cell cell) {
         for (SpreadsheetColumn col : getColumns()) {
             for (SpreadsheetCell spreadsheetCell : col.getCells()) {
-                if (spreadsheetCell.getCell().equals(cell)) {
+                if (cell != null && spreadsheetCell.getCell().equals(cell)) {
                     spreadsheetCell.setHighlighted(true);
                     setHighlightedCell(spreadsheetCell);
 
