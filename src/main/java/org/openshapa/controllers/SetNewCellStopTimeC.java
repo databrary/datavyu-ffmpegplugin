@@ -16,18 +16,17 @@ package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
-import database.DataCell;
-import database.Database;
-import database.SystemErrorException;
-import database.TimeStamp;
-import org.openshapa.util.Constants;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.Cell;
 
 /**
  * Controller for setting the stop time (offset) of a new cell.
  */
 public final class SetNewCellStopTimeC {
+
+    /** The logger for this class. */
+    private static Logger LOGGER = UserMetrix.getLogger(SetNewCellStopTimeC.class);
 
     /**
      * Sets the stop time of the last cell that was created.
@@ -36,21 +35,9 @@ public final class SetNewCellStopTimeC {
      * spreadsheet to set the stop time for.
      */
     public SetNewCellStopTimeC(final long milliseconds) {
-        try {
-            LOGGER.event("set new cell offset");
-            Database model = OpenSHAPA.getProjectController().getLegacyDB().getDatabase();
+        LOGGER.event("set new cell offset");
 
-            DataCell cell =
-                    (DataCell) model.getCell(OpenSHAPA.getProjectController()
-                            .getLastCreatedCellId());
-            cell.setOffset(new TimeStamp(Constants.TICKS_PER_SECOND,
-                    milliseconds));
-            model.replaceCell(cell);
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to set new cell stop time.", e);
-        }
+        Cell dataCell = OpenSHAPA.getProjectController().getLastCreatedCell();
+        dataCell.setOffset(milliseconds);
     }
-
-    /** The logger for this class. */
-    private static Logger LOGGER = UserMetrix.getLogger(SetNewCellStopTimeC.class);
 }

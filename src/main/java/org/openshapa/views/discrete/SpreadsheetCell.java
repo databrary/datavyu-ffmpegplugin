@@ -136,6 +136,8 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     private Datastore db;
 
+    private Cell model;
+
     /** The cellID for retrieving the cell from the database. */
     private long cellID;
 
@@ -166,6 +168,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
         legacyDB = ((DeprecatedDatabase) cellDB).getDatabase();
         cellID = ((DeprecatedCell) cell).getLegacyCell().getID();
+        model = cell;
         setName(this.getClass().getSimpleName());
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
@@ -421,6 +424,13 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     public int getTemporalSize(final double ratio) {
         return Math.max((int) ((getOffsetTicks() - getOnsetTicks()) * ratio), 0);
+    }
+
+    /**
+     * @return The cell that this view element represents.
+     */
+    public Cell getCell() {
+        return model;
     }
 
     /**

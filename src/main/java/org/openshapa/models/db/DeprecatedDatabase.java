@@ -193,6 +193,17 @@ import org.openshapa.util.Constants;
     }
 
     @Override
+    public Variable getVariable(Cell cell) {
+        for (Variable v : variables) {
+            if (v.contains(cell)) {
+                return v;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public Variable createVariable(final String name, final VariableType.type type)
     throws UserWarningException {
 
@@ -270,7 +281,7 @@ import org.openshapa.util.Constants;
                 // Check if the cell we are deleting is the last created
                 // cell... Default this back to 0.
                 if (c.getID() == OpenSHAPA.getProjectController().getLastCreatedCellId()) {
-                    OpenSHAPA.getProjectController().setLastCreatedCellId(0);
+                    OpenSHAPA.getProjectController().setLastCreatedCell(null);
                 }
                 legacyDB.removeCell(c.getID());
                 dc = legacyDB.getDataColumn(dc.getID());

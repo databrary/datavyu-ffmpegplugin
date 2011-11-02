@@ -204,7 +204,7 @@ public final class NewProjectV extends OpenSHAPADialog {
         OpenSHAPAView s = (OpenSHAPAView) OpenSHAPA.getApplication().getMainView();
 
         // clear the contents of the existing spreadsheet.
-        OpenSHAPA.getProjectController().setLastCreatedCellId(0);
+        OpenSHAPA.getProjectController().setLastCreatedCell(null);
 
         if (!isValidProjectName(getProjectName())) {
             OpenSHAPA.getApplication().showWarningDialog(r.getString("Error.invalidName"));

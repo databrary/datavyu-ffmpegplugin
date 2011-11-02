@@ -69,7 +69,10 @@ public class RemoveCellEdit extends SpreadsheetEdit {
         for (CellPos cellPos : cellPosV) {
             cellsToDelete.add(getDataCell(cellPos));
         }
-        new DeleteCellC(cellsToDelete);
+        
+        //
+        // TODO.
+        //new DeleteCellC(cellsToDelete);
     }          
 
     @Override

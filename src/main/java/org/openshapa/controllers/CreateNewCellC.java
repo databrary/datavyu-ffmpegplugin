@@ -16,21 +16,11 @@ package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
 
 import org.openshapa.OpenSHAPA;
 
-import database.DataCell;
-import database.DataColumn;
-import database.MacshapaDatabase;
-import database.MatrixVocabElement;
-import database.SystemErrorException;
-import database.TimeStamp;
 
 import org.openshapa.util.ArrayDirection;
-import org.openshapa.util.Constants;
 
 import org.openshapa.views.discrete.SpreadsheetPanel;
 
@@ -39,9 +29,6 @@ import java.util.List;
 import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedCell;
-import org.openshapa.models.db.DeprecatedDatabase;
-import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 import org.openshapa.undoableedits.AddCellEdit;
 
@@ -70,70 +57,30 @@ public final class CreateNewCellC {
     }
 
     /**
-     * @return The legacy database that controller is interacting with.
-     *
-     * @deprecated Should use methods defined in datastore interface rather than
-     * the db.legacy package.
-     */
-    @Deprecated
-    private MacshapaDatabase modelAsLegacyDB() {
-        return ((DeprecatedDatabase) model).getDatabase();
-    }
-
-    /**
-     * @param newVariable The variable we want to fetch the legacy type for.
-     *
-     * @return A legacy variable/column for the supplied variable.
-     *
-     * @deprecated Should use method defined in the new Variable interface
-     * rather than the db.legacy package.
-     */
-    @Deprecated
-    private DataColumn asLegacy(Variable newVariable) {
-        return ((DeprecatedVariable) newVariable).getLegacyVariable();
-    }
-
-    /**
      * Inserts a cell into the end of the supplied variable.
      *
      * @param v The variable that we want to add a cell too.
      *
-     * @return The ID of the cell that was inserted.
+     * @return The cell that was just inserted.
      */
-    public long createCell(final Variable v) {
-        long cellID = 0;
-        
-        try {
-            LOGGER.event("create cell in selected column");
+    public Cell createCell(final Variable v) {
+        LOGGER.event("create cell in selected column");
 
-            // perform the operation
-            List<Cell> cells = v.getCellsTemporally();
+        // perform the operation
+        List<Cell> cells = v.getCellsTemporally();
 
-            long newOnset = 0;
-            if (!cells.isEmpty()) {
-                Cell lastCell = cells.get(cells.size() - 1);
-                newOnset = Math.max(lastCell.getOnset(), lastCell.getOffset());
-            }
-
-            MatrixVocabElement mve = modelAsLegacyDB().getMatrixVE(asLegacy(v).getItsMveID());
-            DataCell newCell = new DataCell(asLegacy(v).getDB(), asLegacy(v).getID(), mve.getID());
-            newCell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, newOnset));
-
-            if (newOnset > 0) {
-                cellID = modelAsLegacyDB().appendCell(newCell);
-                OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
-            } else {
-                cellID = modelAsLegacyDB().insertdCell(newCell, 1);
-                OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
-            }
-
-            OpenSHAPA.getProjectController().setLastCreatedColId(asLegacy(v).getID());
-            
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to create new default cell", se);
+        long newOnset = 0;
+        if (!cells.isEmpty()) {
+            Cell lastCell = cells.get(cells.size() - 1);
+            newOnset = Math.max(lastCell.getOnset(), lastCell.getOffset());
         }
 
-        return cellID;
+        Cell newCell = v.createCell();
+        newCell.setOnset(newOnset);
+        OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
+        OpenSHAPA.getProjectController().setLastCreatedVariable(v);
+
+        return newCell;
     }
 
     /**
@@ -142,10 +89,11 @@ public final class CreateNewCellC {
      * @param v The variable we are adding a cell to the end of.
      */
     public void createDefaultCell(final Variable v) {       
-        long cellID = createCell(v);
-        
+        Cell newCell = createCell(v);
+
         view.deselectAll();
-        view.highlightCell(cellID);
+        view.highlightCell(newCell);
+
         // record the effect
         UndoableEdit edit = new AddCellEdit(v.getName());            
 
@@ -160,23 +108,24 @@ public final class CreateNewCellC {
      * Create a default cell - at the end of the selected variables.
      */
     public void createDefaultCell() {
-        long cellID = 0;
+        Cell newCell = null;
         for (Variable v : model.getAllVariables()) {
             if (v.isSelected()) {
-                cellID = createCell(v); 
+                newCell = createCell(v);
                 // record the effect
                 UndoableEdit edit = new AddCellEdit(v.getName());            
 
                 // Display any changes.
                 OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
                 // notify the listeners
-                OpenSHAPA.getView().getUndoSupport().postEdit(edit); 
+                OpenSHAPA.getView().getUndoSupport().postEdit(edit);
             }
         }
 
-        view.deselectAll();
-        view.highlightCell(cellID);
-
+        if (newCell != null) {
+            view.deselectAll();
+            view.highlightCell(newCell);
+        }
     }
 
     /**
@@ -188,124 +137,87 @@ public final class CreateNewCellC {
      * adjacent too.
      * @param direction The direction in which we wish to create adjacent cells.
      */
-    public CreateNewCellC(final List<DataCell> sourceCells,
+    public CreateNewCellC(final List<Cell> sourceCells,
                           final ArrayDirection direction) {
         view = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView().getComponent();
         model = OpenSHAPA.getProjectController().getDB();
 
-        long cellID = 0;
+        Cell newCell = null;
 
-        try {
-            LOGGER.event("create adjacent cells:" + direction);
+        LOGGER.event("create adjacent cells:" + direction);
 
-            // Get the column that is the parent of the source cell.
-            for (DataCell sourceCell : sourceCells) {
-                long sourceColumn = sourceCell.getItsColID();
-                Vector<Long> columnOrder = modelAsLegacyDB().getColOrderVector();
+        // Get the column that is the parent of the source cell.
+        for (Cell sourceCell : sourceCells) {
 
-                for (int i = 0; i < columnOrder.size(); i++) {
+            Variable sourceColumn = model.getVariable(sourceCell);
+            //long sourceColumn = sourceCell.getItsColID();
+            //Vector<Long> columnOrder = modelAsLegacyDB().getColOrderVector();
 
-                    // Found the source column in the order column.
-                    if (columnOrder.get(i) == sourceColumn) {
-                        i = i + direction.getModifier();
+            for (int i = 0; i < model.getAllVariables().size(); i++) {
 
-                        // Only create the cell if a valid column exists.
-                        if ((i >= 0) && (i < columnOrder.size())) {
-                            DataColumn c = modelAsLegacyDB().getDataColumn(columnOrder.get(i));
-                            MatrixVocabElement mve = modelAsLegacyDB().getMatrixVE(c.getItsMveID());
-                            DataCell cell = new DataCell(c.getDB(), c.getID(), mve.getID());
+                // Found the source column in the order column.
+                if (model.getAllVariables().get(i).equals(sourceColumn)) {
+                    i = i + direction.getModifier();
 
-                            cell.setOnset(sourceCell.getOnset());
-                            cell.setOffset(sourceCell.getOffset());
-                            cellID = modelAsLegacyDB().appendCell(cell);
-                            OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
-                            
-                            // record the effect
-                            String columnCellName;
-                            columnCellName = ((MacshapaDatabase)cell.getDB()).getDataColumn(cell.getItsColID()).getName();
-                            for (Variable v : model.getAllVariables()) {
-                                String variableName = v.getName();
-                                if (variableName.equals(columnCellName)) {
-                                    // Add the undoable action
-                                    UndoableEdit edit = new AddCellEdit(v.getName());            
+                    // Only create the cell if a valid column exists.
+                    if ((i >= 0) && (i < model.getAllVariables().size())) {
+                        Variable var = model.getAllVariables().get(i);
+                        newCell = var.createCell();
+                        newCell.setOnset(sourceCell.getOnset());
+                        newCell.setOffset(sourceCell.getOffset());
+                        OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
 
-                                    // notify the listeners
-                                    OpenSHAPA.getView().getUndoSupport().postEdit(edit);
-                                    break;
-                                }
-                            }
-                        }
+                        // Add the undoable action
+                        UndoableEdit edit = new AddCellEdit(var.getName());
 
+                        // notify the listeners
+                        OpenSHAPA.getView().getUndoSupport().postEdit(edit);
                         break;
                     }
+
+                    break;
                 }
             }
-
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to create cell in adjacent column", se);
-            OpenSHAPA.getApplication().showErrorDialog();
         }
 
         view.deselectAll();
-        view.highlightCell(cellID);
+        view.highlightCell(newCell);
     }
 
     /**
      * Constructor - creates new controller.
      *
-     * @param milliseconds
-     *            The milliseconds to use for the onset for the new cell.
+     * @param milliseconds The milliseconds to use for the onset for the new cell.
      */
     public CreateNewCellC(final long milliseconds) {
-
         // The spreadsheet is the view for this controller.
-        view = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView()
-            .getComponent();
+        view = (SpreadsheetPanel) OpenSHAPA.getApplication().getMainView().getComponent();
         model = OpenSHAPA.getProjectController().getDB();
 
         // BugzID:758 - Before creating a new cell and setting onset. We need
         // the last created cell and need to set the previous cells offset...
         // But only if it is not 0.
-        try {
-            final long lastCreatedCellId = OpenSHAPA.getProjectController()
-                .getLastCreatedCellId();
+        Cell lastCreatedCell = OpenSHAPA.getProjectController().getLastCreatedCell();
 
-            if (lastCreatedCellId != 0) {
-                DataCell dc = (DataCell) modelAsLegacyDB().getCell(lastCreatedCellId);
-
-                // BugzID:1285 - Only update the last created cell if it is in
-                // the same column as the newly created cell.
-                ArrayList<Long> matchingColumns = new ArrayList<Long>();
-
-                for (Variable var : model.getSelectedVariables()) {
-                    DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
-                    matchingColumns.add(col.getID());
-                }
-
-                if (matchingColumns.isEmpty()) {
-                    matchingColumns.add(OpenSHAPA.getProjectController().getLastCreatedColId());
-                }
-
-                for (Long colID : matchingColumns) {
-
-                    if (colID == dc.getItsColID()) {
-                        TimeStamp ts = dc.getOffset();
-
-                        if (ts.getTime() == 0) {
-                            ts.setTime(Math.max(0, (milliseconds - 1)));
-                            dc.setOffset(ts);
-                            modelAsLegacyDB().replaceCell(dc);
-                        }
-                    }
+        if (lastCreatedCell != null) {
+            // BugzID:1285 - Only update the last created cell if it is in
+            // the same column as the newly created cell.
+            for (Variable var : model.getSelectedVariables()) {
+                if (var.contains(lastCreatedCell)) {
+                    lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
                 }
             }
 
-            // Create the new cell.
-            createNewCell(milliseconds);
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to set offset of previous cell", se);
-            OpenSHAPA.getApplication().showErrorDialog();
+            Variable lastCreated = OpenSHAPA.getProjectController().getLastCreatedVariable();
+            if (model.getSelectedVariables().isEmpty() && lastCreated != null) {
+                if (lastCreated.contains(lastCreatedCell)) {
+                    lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
+                }
+            }
         }
+
+        // Create the new cell.
+        createNewCell(milliseconds);
     }
 
     /**
@@ -314,12 +226,8 @@ public final class CreateNewCellC {
      *
      * @param milliseconds The number of milliseconds since the origin of the
      * spreadsheet to create a new cell from.
-     *
-     * @throws SystemErrorException If unable to create the desired new cell and
-     * append it to the database.
      */
-    public void createNewCell(final long milliseconds)
-    throws SystemErrorException {
+    public void createNewCell(final long milliseconds) {
 
         /*
          * Concept of operation: Creating a new cell.
@@ -352,8 +260,7 @@ public final class CreateNewCellC {
             onset = 0;
         }
 
-        long cellID = 0;
-
+        Cell newCell = null;
         boolean newcelladded = false;
 
         // check for Situation 1: one or more selected columns
@@ -361,22 +268,11 @@ public final class CreateNewCellC {
 
         for (Variable var : model.getSelectedVariables()) {
             LOGGER.event("create cell in selected column");
-            DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
+            newCell = var.createCell();
+            newCell.setOnset(onset);
+            OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
+            OpenSHAPA.getProjectController().setLastCreatedVariable(var);
 
-            MatrixVocabElement mve = modelAsLegacyDB().getMatrixVE(col.getItsMveID());
-            DataCell cell = new DataCell(col.getDB(), col.getID(), mve.getID());
-            cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
-
-            if (onset > 0) {
-                cellID = modelAsLegacyDB().appendCell(cell);
-                OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
-            } else {
-                cellID = modelAsLegacyDB().insertdCell(cell, 1);
-                OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
-
-            }
-
-            OpenSHAPA.getProjectController().setLastCreatedColId(col.getID());
             newcelladded = true;
 
             if (!multiadd) {
@@ -385,40 +281,19 @@ public final class CreateNewCellC {
         }
 
         if (!newcelladded) {
-
-            // else check for Situation 2: one or more selected cells
-            List<Cell> cells = model.getSelectedCells();
-            List<DataCell> dataCells = new ArrayList<DataCell>();
-            for (Cell c : cells) {
-                dataCells.add(((DeprecatedCell) c).getLegacyCell());
-            }
-
-            Iterator<DataCell> itCells = dataCells.iterator();
-
-            while (itCells.hasNext()) {
+            for (Cell cell : model.getSelectedCells()) {
                 LOGGER.event("create cell below selected cell");
 
                 // reget the selected cell from the database using its id
                 // in case a previous insert has changed its ordinal.
                 // recasting to DataCell without checking as the iterator
                 // only returns DataCells (no ref cells allowed so far)
-                DataCell dc = (DataCell) modelAsLegacyDB().getCell(itCells.next().getID());
-                DataCell cell = new DataCell(modelAsLegacyDB(), dc.getItsColID(),
-                        dc.getItsMveID());
+                Variable var = model.getVariable(cell);
+                newCell = var.createCell();
+                newCell.setOnset(onset);
+                OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
+                OpenSHAPA.getProjectController().setLastCreatedVariable(var);
 
-                if (multiadd) {
-
-                    // BugzID:1837 - We want a zero onset here.
-                    cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
-                    cellID = modelAsLegacyDB().insertdCell(cell, dc.getOrd() + 1);
-                    OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
-                } else {
-                    cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
-                    cellID = modelAsLegacyDB().appendCell(cell);
-                    OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
-                }
-
-                OpenSHAPA.getProjectController().setLastCreatedColId(cell.getItsColID());
                 newcelladded = true;
 
                 if (!multiadd) {
@@ -427,51 +302,42 @@ public final class CreateNewCellC {
             }
         }
 
+        // else check for Situation 3: User is or was editing an existing cell
+        // and has requested a new cell
         if (!newcelladded && multiadd) {
-
-            // else check for Situation 3: User is or was editing an
-            // existing cell and has requested a new cell
-            if (OpenSHAPA.getProjectController().getLastSelectedCellId() != 0) {
+            if (OpenSHAPA.getProjectController().getLastSelectedCell() != null) {
                 LOGGER.event("create cell while editing existing cell");
-
-                DataCell dc = (DataCell) modelAsLegacyDB().getCell(OpenSHAPA.getProjectController().getLastSelectedCellId());
-                DataCell cell = new DataCell(modelAsLegacyDB(), dc.getItsColID(), dc.getItsMveID());
-
-                // BugzID:1837 - We want a zero onset here.
-                cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
-                cellID = modelAsLegacyDB().insertdCell(cell, dc.getOrd() + 1);
-                OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
-                OpenSHAPA.getProjectController().setLastCreatedColId(cell.getItsColID());
-                newcelladded = true;
+                Variable var = model.getVariable(OpenSHAPA.getProjectController().getLastCreatedCell());
+                if (var != null) {
+                    newCell = var.createCell();
+                    newCell.setOnset(onset);
+                    OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
+                    OpenSHAPA.getProjectController().setLastCreatedVariable(var);
+                    newcelladded = true;
+                }
             }
         }
 
+        // else go with Situation 4: Video controller requested - create in the
+        // same column as the last created cell or the last focused cell.
         if (!newcelladded) {
             LOGGER.event("create cell in same location as last created cell");
-            // else go with Situation 4: Video controller requested
-            // - create in the same column as the last created cell or
-            // the last focused cell.
 
             // BugzID:779 - Check for presence of columns, else return
-            if (modelAsLegacyDB().getDataColumns().isEmpty()) {
+            if (model.getAllVariables().isEmpty()) {
                 return;
             }
 
-            if (OpenSHAPA.getProjectController().getLastCreatedColId() == 0) {
-                OpenSHAPA.getProjectController().setLastCreatedColId(modelAsLegacyDB().getDataColumns().get(0).getID());
+            if (OpenSHAPA.getProjectController().getLastCreatedVariable() == null) {
+                OpenSHAPA.getProjectController().setLastCreatedVariable(model.getAllVariables().get(0));
             }
 
-            // would throw by now if no columns exist
-            DataColumn col = modelAsLegacyDB().getDataColumn(OpenSHAPA.getProjectController().getLastCreatedColId());
-
-            DataCell cell = new DataCell(col.getDB(), col.getID(),
-                    col.getItsMveID());
-            cell.setOnset(new TimeStamp(Constants.TICKS_PER_SECOND, onset));
-            cellID = modelAsLegacyDB().appendCell(cell);
-            OpenSHAPA.getProjectController().setLastCreatedCellId(cellID);
+            newCell = OpenSHAPA.getProjectController().getLastCreatedVariable().createCell();
+            newCell.setOnset(onset);
+            OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
         }
 
         view.deselectAll();
-        view.highlightCell(cellID);
+        view.highlightCell(newCell);
     }
 }

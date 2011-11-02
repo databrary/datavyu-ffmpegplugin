@@ -935,18 +935,13 @@ public final class OpenSHAPAView extends FrameView
     @Action public void deleteCells() {
         List<Cell> selectedCells = OpenSHAPA.getProjectController()
                                             .getDB().getSelectedCells();
-        List<DataCell> selectedDataCells = new ArrayList();
-
-        for (Cell cell : selectedCells) {
-            selectedDataCells.add(((DeprecatedCell) cell).getLegacyCell());
-        }
 
         // record the effect
-        UndoableEdit edit = new RemoveCellEdit(selectedDataCells);
+        //UndoableEdit edit = new RemoveCellEdit(selectedCells);
         // perform the operation
-        new DeleteCellC(selectedDataCells);
+        new DeleteCellC(selectedCells);
         // notify the listeners
-        OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+        //OpenSHAPA.getView().getUndoSupport().postEdit(edit);
     }
 
     /**
@@ -1652,13 +1647,8 @@ public final class OpenSHAPAView extends FrameView
     public void newCellLeft() {
         List<Cell> selectedCells = OpenSHAPA.getProjectController()
                                             .getDB().getSelectedCells();
-        List<DataCell> selectedDataCells = new ArrayList();
 
-        for (Cell cell : selectedCells) {
-            selectedDataCells.add(((DeprecatedCell) cell).getLegacyCell());
-        }
-
-        new CreateNewCellC(selectedDataCells, ArrayDirection.LEFT);
+        new CreateNewCellC(selectedCells, ArrayDirection.LEFT);
     }
 
     /**
@@ -1676,13 +1666,8 @@ public final class OpenSHAPAView extends FrameView
     public void newCellRight() {
         List<Cell> selectedCells = OpenSHAPA.getProjectController()
                                             .getDB().getSelectedCells();
-        List<DataCell> selectedDataCells = new ArrayList();
 
-        for (Cell cell : selectedCells) {
-            selectedDataCells.add(((DeprecatedCell) cell).getLegacyCell());
-        }
-
-        new CreateNewCellC(selectedDataCells, ArrayDirection.RIGHT);
+        new CreateNewCellC(selectedCells, ArrayDirection.RIGHT);
     }
 
     /**

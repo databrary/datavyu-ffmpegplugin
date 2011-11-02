@@ -37,6 +37,9 @@ import database.TimeStamp;
     /** The legacy id of the cell we are fetching data from. */
     long legacyCellId;
 
+    /** Is the cell highlighted or not? */
+    boolean isHighlighted;
+
     /**
      * Construct a new Cell using the given reference DataCell.
      *
@@ -45,6 +48,7 @@ import database.TimeStamp;
      */
     public DeprecatedCell(final DataCell newCell) {
         setLegacyCell(newCell);
+        isHighlighted = false;
     }
 
 
@@ -207,6 +211,24 @@ import database.TimeStamp;
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set selected cell", e);
         }
+    }
+
+    /**
+     * @return True if the cell is highlighted, false otherwise.
+     */
+    @Override
+    public boolean isHighlighted() {
+        return isHighlighted;
+    }
+
+    /**
+     * Highlights the cell.
+     *
+     * @param higlighted True if this cell is highlighted, false otherwise.
+     */
+    @Override
+    public void setHighlighted(final boolean highlighted) {
+        isHighlighted = highlighted;
     }
 
     /**

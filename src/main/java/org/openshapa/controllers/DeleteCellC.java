@@ -26,6 +26,8 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.DeprecatedCell;
 
 /**
  * Controller for deleting cells from the database.
@@ -40,7 +42,7 @@ public final class DeleteCellC {
      *
      * @param cellsToDelete The cells to delete from the spreadsheet.
      */
-    public DeleteCellC(final List<DataCell> cellsToDelete) {
+    public DeleteCellC(final List<Cell> cellsToDelete) {
         LOGGER.event("delete cells");
 
         // The spreadsheet is the view for this controller.
@@ -51,23 +53,22 @@ public final class DeleteCellC {
         view.deselectAll();
 
         try {
-            for (DataCell c : cellsToDelete) {
+            for (Cell c : cellsToDelete) {
 
                 // Check if the cell we are deleting is the last created cell.
                 // Default this back to 0 if it is.
-                if (c.getID() == OpenSHAPA.getProjectController()
-                                          .getLastCreatedCellId()) {
-                    OpenSHAPA.getProjectController().setLastCreatedCellId(0);
+                if (c.equals(OpenSHAPA.getProjectController().getLastCreatedCell())) {
+                    OpenSHAPA.getProjectController().setLastCreatedCell(null);
                 }
 
                 // Check if the cell we are deleting is the last selected cell.
                 // Default this back to 0 if it is.
-                if (c.getID() == OpenSHAPA.getProjectController()
-                                          .getLastSelectedCellId()) {
-                    OpenSHAPA.getProjectController().setLastSelectedCellId(0);
+                if (c.equals(OpenSHAPA.getProjectController().getLastSelectedCell())) {
+                    OpenSHAPA.getProjectController().setLastSelectedCell(null);
                 }
 
-                model.removeCell(c.getID());
+                DataCell dc = ((DeprecatedCell) c).getLegacyCell();
+                model.removeCell(dc.getID());
             }
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to delete cells", e);

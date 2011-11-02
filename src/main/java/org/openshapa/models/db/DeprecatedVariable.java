@@ -15,6 +15,7 @@
 package org.openshapa.models.db;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Multimap;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
@@ -52,6 +53,11 @@ implements Variable,
 
     /** The legacy id of the column we are fetching data from. */
     private long legacyColumnId;
+
+    /** The list of variables stored in this database. */
+    private List<Cell> cells;
+
+    HashBiMap<Long, Cell> legacyToModelMap;
 
     /** The cells that are currently selected in this column. */
     private List<Long> selectedCells;
@@ -91,6 +97,9 @@ implements Variable,
         varType = type;
         listeners = new ArrayList<VariableListener>();
         this.setLegacyVariable(newVariable);
+
+        cells = new ArrayList<Cell>();
+        legacyToModelMap = HashBiMap.create();
     }
 
     /**
@@ -159,6 +168,11 @@ implements Variable,
                 legacyColumn.setName(newName);
                 legacyDB.replaceColumn(legacyColumn);
             }
+
+            //notify listeners.
+            for (VariableListener listener : listeners) {
+                listener.nameChanged(newName);
+            }
         } catch (LogicErrorException fe) {
             LOGGER.error("Unable to set variable name: " + fe);
             throw new UserWarningException(fe.getMessage());
@@ -211,6 +225,11 @@ implements Variable,
         }
 
         return null;
+    }
+
+    @Override
+    public boolean contains(final Cell c) {
+        return cells.contains(c);
     }
 
     @Override
@@ -286,7 +305,13 @@ implements Variable,
             long cellID = legacyDB.appendCell(newCell);
             newCell = (DataCell) legacyDB.getCell(cellID);
             result = new DeprecatedCell(newCell);
+            cells.add(result);
+            legacyToModelMap.put(cellID, result);
 
+            //notify listeners.
+            for (VariableListener listener : listeners) {
+                listener.cellInserted(result);
+            }
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to create cell", e);
         }

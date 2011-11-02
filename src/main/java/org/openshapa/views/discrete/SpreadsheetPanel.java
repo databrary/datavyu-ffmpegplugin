@@ -516,14 +516,14 @@ implements DatastoreListener,
     /**
      * Mark a cell as highlighted in the spreadsheet panel.
      *
-     * @param cellID The id of the cell to mark as highlighted.
+     * @param cell The cell to mark as highlighted.
      */
-    public void highlightCell(final long cellID) {
+    public void highlightCell(final Cell cell) {
         for (SpreadsheetColumn col : getColumns()) {
-            for (SpreadsheetCell cell : col.getCells()) {
-                if (cell.getCellID() == cellID) {
-                    cell.setHighlighted(true);
-                    setHighlightedCell(cell);
+            for (SpreadsheetCell spreadsheetCell : col.getCells()) {
+                if (spreadsheetCell.getCell().equals(cell)) {
+                    spreadsheetCell.setHighlighted(true);
+                    setHighlightedCell(spreadsheetCell);
 
                     return;
                 }
