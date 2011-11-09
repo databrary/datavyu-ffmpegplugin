@@ -88,7 +88,7 @@
         <!-- JNA 3.2.7 needs to be ahead of the other dependencies so that it is found first (instead of the older versions bundled elsewhere) -->
         <string>$JAVAROOT/repo/net/java/dev/jna/jna/3.2.7/jna-3.2.7.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
-        <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.4.0/jruby-complete-1.4.0.jar</string>
+        <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.6.5/jruby-complete-1.6.5.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
         <string>$JAVAROOT/repo/database/database/0.01/database-0.01.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.69/openshapa-lib-0.0.69.jar</string>
