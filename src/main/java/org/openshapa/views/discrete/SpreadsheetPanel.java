@@ -524,18 +524,18 @@ implements DatastoreListener,
 
     /**
      * Moves a given column to the left by a certain number of positions.
-     * @param colID the ID of the column to move
+     *
+     * @param var The variable for the column to move
      * @param positions the number of positions to the left to move the given
      * column.
      */
-    public void moveColumnLeft(final long colID, final int positions) {
+    public void moveColumnLeft(final Variable var, final int positions) {
         LOGGER.event("move column left");
-        System.err.println("Moving left");
 
         // What index does the given column sit at
         int columnIndex = -1;
         for (int i = 0; i < columns.size(); i++) {
-            if (columns.get(i).getColID() == colID) {
+            if (columns.get(i).getVariable().equals(var)) {
                 columnIndex = i;
             }
         }
@@ -553,19 +553,19 @@ implements DatastoreListener,
 
     /**
      * Moves a given column to the right by a certain number of positions.
-     * @param colID the ID of the column to move
+     * @param var The variable for the column to move
+     *
      * @param positions the number for positions to the right to move the given
      * column.
      */
-    public void moveColumnRight(final long colID, final int positions) {
+    public void moveColumnRight(final Variable var, final int positions) {
         LOGGER.event("move column right");
-        System.err.println("Moving right");
 
         // What index does the column sit at
         int columnIndex = -1;
         for (int i = 0; i < columns.size(); i++) {
 
-            if (columns.get(i).getColID() == colID) {
+            if (columns.get(i).getVariable().equals(var)) {
                 columnIndex = i;
             }
         }

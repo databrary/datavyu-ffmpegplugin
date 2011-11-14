@@ -51,6 +51,7 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     
     public RemoveVariableEdit(List<Variable> varsToDelete) {
         super();
+        /*
         try {
             varsTo = varsToDelete;
             colsTO = new Vector<DataColumnTO>();
@@ -91,6 +92,7 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
         } finally {
 
         }
+         */
     }
 
     @Override
@@ -108,6 +110,7 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     @Override
     public void undo() throws CannotRedoException {
         super.undo();
+        /*
         try {
             int j = 0;
             for (DataColumnTO colTO : colsTO) {    
@@ -145,6 +148,7 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
         } catch (SystemErrorException e) {
                 LOGGER.error("Unable to undo.", e);
         }
+         */
     }
 
     @Override 

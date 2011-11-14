@@ -249,6 +249,10 @@ implements Variable,
             legacyColumn = getLegacyVariable();
             legacyColumn.setHidden(hidden);
             legacyDB.replaceColumn(legacyColumn);
+
+            for (VariableListener listener : listeners) {
+                listener.visibilityChanged(hidden);
+            }
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to hide column", e);
         }

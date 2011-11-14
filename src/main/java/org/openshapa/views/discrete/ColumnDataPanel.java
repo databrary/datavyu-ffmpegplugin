@@ -197,51 +197,60 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /**
      * Find and delete SpreadsheetCell by its ID.
      *
-     * @param cellID
-     *            ID of cell to find and delete.
+     * @param cell The cell to find and delete from the column data panel.
      */
-    public void deleteCellByID(final long cellID) {
-        SpreadsheetCell cell = viewMap.get(cellID);
-        this.remove(cell);
-        cells.remove(cell);
-        viewMap.remove(cellID);
+    public void deleteCell(final Cell cell) {
+
+//        SpreadsheetCell cell = viewMap.get(cellID);
+//        this.remove(cell);
+//        cells.remove(cell);
+//        viewMap.remove(cellID);
     }
 
     /**
-     * Insert a new SpreadsheetCell given the cells ID.
+     * Insert a new SpreadsheetCell for a given cell.
      *
      * @param db The database holding the cell that is being inserted into this
      * column data panel.
-     * @param cellID ID of cell to create and insert.
+     * @param cell The cell to create and insert into this column data panel.
      * @param cellSelL SpreadsheetCellSelectionListener to notify of changes in
      * selection.
      */
-    public void insertCellByID(final Database db,
-                               final long cellID,
-                               final CellSelectionListener cellSelL) {
+    public void insertCell(final Datastore ds,
+                           final Cell cell,
+                           final CellSelectionListener cellSelL) {
 
-        try {
-            DataCell dc = (DataCell) db.getCell(cellID);
-            SpreadsheetCell nCell = new SpreadsheetCell(db, dc, cellSelL);
-            nCell.setWidth(this.getWidth());
-            db.registerDataCellListener(dc.getID(), nCell);
+        SpreadsheetCell nCell = new SpreadsheetCell(ds, cell, cellSelL);
+        nCell.setWidth(this.getWidth());
 
-            Long newOrd = new Long(dc.getOrd());
-            nCell.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        // TODO wire up cell listener.
 
-            if (cells.size() > newOrd.intValue()) {
-                cells.add(newOrd.intValue() - 1, nCell);
-                this.add(nCell, newOrd.intValue() - 1);
-            } else {
-                cells.add(nCell);
-                this.add(nCell);
-            }
-            viewMap.put(cellID, nCell);
+        nCell.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        this.add(nCell);
+        nCell.requestFocus();
 
-            nCell.requestFocus();
-        } catch (SystemErrorException e) {
-            LOGGER.error("Problem inserting a new SpreadsheetCell", e);
-        }
+//        try {
+//            DataCell dc = (DataCell) db.getCell(cellID);
+//            SpreadsheetCell nCell = new SpreadsheetCell(db, dc, cellSelL);
+//            nCell.setWidth(this.getWidth());
+//            db.registerDataCellListener(dc.getID(), nCell);
+//
+//            Long newOrd = new Long(dc.getOrd());
+//            nCell.setAlignmentX(Component.RIGHT_ALIGNMENT);
+//
+//            if (cells.size() > newOrd.intValue()) {
+//                cells.add(newOrd.intValue() - 1, nCell);
+//                this.add(nCell, newOrd.intValue() - 1);
+//            } else {
+//                cells.add(nCell);
+//                this.add(nCell);
+//            }
+//            viewMap.put(cellID, nCell);
+//
+//            nCell.requestFocus();
+//        } catch (SystemErrorException e) {
+//            LOGGER.error("Problem inserting a new SpreadsheetCell", e);
+//        }
     }
 
     /**
