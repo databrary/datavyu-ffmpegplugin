@@ -917,11 +917,9 @@ public final class OpenSHAPAView extends FrameView
         // Only one column should be selected, but just in case, we'll only
         // change the first column
         Variable var = OpenSHAPA.getProjectController().getDB().getSelectedVariables().get(0);
-        DataColumn col = ((DeprecatedVariable) var).getLegacyVariable();
 
         for (SpreadsheetColumn sCol : panel.getColumns()) {
-
-            if (sCol.getColID() == col.getID()) {
+            if (sCol.getVariable().equals(var)) {
                 sCol.showChangeVarNameDialog();
 
                 break;

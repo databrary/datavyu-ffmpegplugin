@@ -37,7 +37,6 @@ import java.io.IOException;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -61,9 +60,6 @@ import org.openshapa.controllers.NewVariableC;
 import org.openshapa.event.component.FileDropEvent;
 import org.openshapa.event.component.FileDropEventListener;
 
-import database.DataCell;
-import database.Database;
-import database.SystemErrorException;
 
 import org.openshapa.util.ArrayDirection;
 
@@ -75,8 +71,6 @@ import java.util.Arrays;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DatastoreListener;
-import org.openshapa.models.db.DeprecatedCell;
-import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Variable;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.layouts.SheetLayoutFactory;
@@ -337,11 +331,6 @@ implements DatastoreListener,
         return (datastore);
     }
 
-    @Deprecated
-    public Database getLegacyDatabase() {
-        return ((DeprecatedDatabase) datastore).getDatabase();
-    }
-
     @Override
     public void variableAdded(final Variable newVariable) {
         addColumn(datastore, newVariable);
@@ -475,39 +464,21 @@ implements DatastoreListener,
     public int getAdjacentSelectedCells(final ArrayDirection dir) {
         int result = 0;
 
-        try {
-            List<Cell> selectedCells = datastore.getSelectedCells();
-            Vector<Long> columnOrder = getLegacyDatabase().getColOrderVector();
+        for (Cell cell : datastore.getSelectedCells()) {
+            for (int i = 0; i < datastore.getAllVariables().size(); i++) {
+                if (datastore.getAllVariables().get(i).equals(datastore.getVariable(cell))) {
+                    // We have at least one column to the left of the cells.
+                    if (((i + dir.getModifier()) >= 0) && ((i + dir.getModifier())
+                                < datastore.getAllVariables().size())) {
+                        result++;
+                    }
 
-            // For each of the selected cells search to see if we have a column
-            // to the left.
-            Vector<DataCell> selectedDataCells = new Vector<DataCell>();
-            for (Cell cell : selectedCells) {
-                selectedDataCells.add(((DeprecatedCell) cell).getLegacyCell());
-            }
-
-            for (DataCell cell : selectedDataCells) {
-
-                for (int i = 0; i < columnOrder.size(); i++) {
-
-                    if (columnOrder.get(i) == cell.getItsColID()) {
-
-                        // We have at least one column to the left of the cells.
-                        if (((i + dir.getModifier()) >= 0)
-                                && ((i + dir.getModifier())
-                                    < columnOrder.size())) {
-                            result++;
-                        }
-
-                        // We have many columns to the left of the cells - end.
-                        if (result == 2) {
-                            return result;
-                        }
+                    // We have many columns to the left of the cells - end.
+                    if (result == 2) {
+                        return result;
                     }
                 }
             }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to find columns to left of selection", e);
         }
 
         return result;
@@ -615,8 +586,6 @@ implements DatastoreListener,
      * @param destination index of the destination column
      */
     private void shuffleColumn(final int source, final int destination) {
-        System.err.println("S=" + source + " d=" + destination);
-
         if ((source >= columns.size()) || (destination >= columns.size())) {
             return;
         }
@@ -625,18 +594,9 @@ implements DatastoreListener,
             return;
         }
 
-        try {
-            // Write the new column order back to the database.
-            Vector<Long> orderVec = getLegacyDatabase().getColOrderVector();
-
-            Long sourceColumn = orderVec.elementAt(source);
-            orderVec.removeElementAt(source);
-            orderVec.insertElementAt(sourceColumn, destination);
-
-            getLegacyDatabase().setColOrderVector(orderVec);
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to shuffle column order", se);
-        }
+        Variable sourceVar = datastore.getAllVariables().get(source);
+        datastore.getAllVariables().remove(source);
+        datastore.getAllVariables().add(destination, sourceVar);
 
         // Reorder the columns vector
         SpreadsheetColumn sourceColumn = columns.get(source);
@@ -669,52 +629,10 @@ implements DatastoreListener,
         revalidate();
     }
 
-    
-    public void reorderColumns(Vector<Long> newOrderVec) {
-        
-        try {
-            getLegacyDatabase().setColOrderVector(newOrderVec);
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to shuffle column order", se);
-        }
-
-        // Reorder the columns vector
-        int i, j;
-        List<SpreadsheetColumn> columns = new ArrayList<SpreadsheetColumn>();
-        SpreadsheetColumn sourceColumn = null;
-        // Reorder the header components
-        List<Component> currentHeaders = new ArrayList<Component>(Arrays.asList(headerView.getComponents()));
-        List<Component> newHeaders = new ArrayList<Component>();
-        // Reorder the data components
-        List<Component> currentData = new ArrayList<Component>(Arrays.asList(mainView.getComponents()));
-        List<Component> newData = new ArrayList<Component>();
-        
-        newHeaders.add(currentHeaders.get(0));
-        for (i =0; i< newOrderVec.size(); i++) {
-          for (j = 0 ; j < this.columns.size(); j++) {
-            sourceColumn = this.columns.get(j);
-            if (sourceColumn.getColID() == newOrderVec.get(i)) {
-                columns.add(sourceColumn);
-                newHeaders.add(currentHeaders.get(j+1));
-                newData.add(currentData.get(j));
-                break;
-            }
-          }            
-        }
-        this.columns = columns;
-        newHeaders.add(currentHeaders.get(currentHeaders.size()-1));
-        headerView.removeAll();
-        for (Component header : newHeaders) {
-            headerView.add(header);
-        }        
-        
-        mainView.removeAll();
-        for (Component data : newData) {
-            mainView.add(data);
-        }
-        revalidate();
+    @Deprecated
+    public void reorderColumns(List<Long> newOrderVec) {
+        // No longer supported.
     }
-    
     
     /**
      * Returns the cells of the supplied column as ordered by the current
@@ -740,59 +658,55 @@ implements DatastoreListener,
      */
     @Override
     public void addCellToContinousSelection(final SpreadsheetCell cell) {
+        if (lastSelectedCell != null) {
+            Cell c1 = lastSelectedCell.getCell();
+            Variable v1 = datastore.getVariable(c1);
 
-        try {
-            if (lastSelectedCell != null) {
-                DataCell c1 = (DataCell) getLegacyDatabase()
-                                         .getCell(lastSelectedCell.getCellID());
-                DataCell c2 = (DataCell) getLegacyDatabase()
-                                         .getCell(cell.getCellID());
+            Cell c2 = cell.getCell();
+            Variable v2 = datastore.getVariable(c2);
 
-                // We can only do continous selections in a single column at
-                // at the moment.
-                if (c1.getItsColID() == c2.getItsColID()) {
+            // We can only do continous selections in a single column at
+            // at the moment.
+            if (v1.equals(v2)) {
 
-                    // Deselect the highlighted cell.
-                    if (highlightedCell != null) {
-                        highlightedCell.setHighlighted(false);
-                        highlightedCell.setSelected(true);
-                        highlightedCell = null;
-                    }
+                // Deselect the highlighted cell.
+                if (highlightedCell != null) {
+                    highlightedCell.setHighlighted(false);
+                    highlightedCell.setSelected(true);
+                    highlightedCell = null;
+                }
 
-                    for (SpreadsheetColumn col : getColumns()) {
+                for (SpreadsheetColumn col : getColumns()) {
 
-                        if (c1.getItsColID() == col.getColID()) {
+                    if (v1.equals(col.getVariable())) {
 
-                            // Perform continous selection.
-                            boolean addToSelection = false;
+                        // Perform continous selection.
+                        boolean addToSelection = false;
 
-                            for (SpreadsheetCell c : getOrderedCells(col)) {
+                        for (SpreadsheetCell c : getOrderedCells(col)) {
 
-                                if (!addToSelection) {
-                                    c.setSelected(false);
-                                }
-
-                                if (c.equals(cell) || c.equals(lastSelectedCell)) {
-                                    addToSelection = !addToSelection;
-
-                                    // We always include start and end cells.
-                                    c.setSelected(true);
-                                }
-
-                                if (addToSelection) {
-                                    c.setSelected(true);
-                                }
+                            if (!addToSelection) {
+                                c.setSelected(false);
                             }
 
-                            break;
+                            if (c.equals(cell) || c.equals(lastSelectedCell)) {
+                                addToSelection = !addToSelection;
+
+                                // We always include start and end cells.
+                                c.setSelected(true);
+                            }
+
+                            if (addToSelection) {
+                                c.setSelected(true);
+                            }
                         }
+
+                        break;
                     }
                 }
-            } else {
-                lastSelectedCell = cell;
             }
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to continous select cells", se);
+        } else {
+            lastSelectedCell = cell;
         }
     }
 

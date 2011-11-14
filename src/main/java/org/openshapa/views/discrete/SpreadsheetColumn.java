@@ -241,7 +241,7 @@ implements ExternalDataColumnListener,
         return workingList;
     }
 
-    public Variable getModel() {
+    public Variable getVariable() {
         return variable;
     }
 
@@ -360,10 +360,6 @@ implements ExternalDataColumnListener,
      */
     public ColumnDataPanel getDataPanel() {
         return datapanel;
-    }
-
-    public Variable getVariable() {
-        return variable;
     }
 
     /**

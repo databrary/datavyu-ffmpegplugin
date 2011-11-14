@@ -54,7 +54,7 @@ implements Variable,
     /** The legacy id of the column we are fetching data from. */
     private long legacyColumnId;
 
-    /** The list of variables stored in this database. */
+    /** The list of cells stored in this variable. */
     private List<Cell> cells;
 
     HashBiMap<Long, Cell> legacyToModelMap;
@@ -183,45 +183,19 @@ implements Variable,
 
     @Override
     public List<Cell> getCells() {
-        List<Cell> result = new ArrayList<Cell>();
-
-        try {
-            DataColumn variable = getLegacyVariable();
-            if (variable != null) {
-                int numCells = variable.getNumCells();
-                for (int i = 1; i < numCells + 1; i++) {
-                    database.Cell cell = legacyDB.getCell(variable.getID(), i);
-                    if (cell instanceof DataCell) {
-                        result.add(new DeprecatedCell((DataCell) cell));
-                    }
-                }                
-            }
-
-            // We always return an empty list - even when no cells exist.
-            return result;
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get cells.", e);
-            return new ArrayList<Cell>();
-        }
+        return cells;
     }
 
     @Override
     public Cell getCellTemporally(final int index) {
-        try {
-            int i = 0;
-            for (Long key : temporalIndex) {
-                for (Long cellID : temporalMap.get(key)) {
-                    if (i == index) {
-                        database.Cell cell = legacyDB.getCell(cellID);
-                        if (cell instanceof DataCell) {
-                            return new DeprecatedCell((DataCell) cell);
-                        }
-                    }
-                    i++;
+        int i = 0;
+        for (Long key : temporalIndex) {
+            for (Long cellID : temporalMap.get(key)) {
+                if (i == index) {
+                    return legacyToModelMap.get(cellID);
                 }
+                i++;
             }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get cell temporally", e);
         }
 
         return null;
@@ -241,21 +215,13 @@ implements Variable,
     public List<Cell> getCellsTemporally() {
         List<Cell> result = new ArrayList<Cell>();
 
-        try {
-            for (Long key : temporalIndex) {
-                for(Long cellID : temporalMap.get(key)) {
-                    database.Cell cell = legacyDB.getCell(cellID);
-                    if (cell instanceof DataCell) {
-                        result.add(new DeprecatedCell((DataCell) cell));
-                    }
-                }
+        for (Long key : temporalIndex) {
+            for(Long cellID : temporalMap.get(key)) {
+                result.add(legacyToModelMap.get(cellID));
             }
-
-            return result;
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get cells temporally", e);
-            return new ArrayList<Cell>();
         }
+
+        return result;
     }
 
     @Override
@@ -323,6 +289,8 @@ implements Variable,
     public void removeCell(final Cell cell) {
         try {
             DataCell dc = ((DeprecatedCell) cell).getLegacyCell();
+            cells.remove(cell);
+            legacyToModelMap.remove(dc.getID());
             legacyDB.removeCell(dc.getID());
 
             // notify listeners.
