@@ -61,7 +61,7 @@ import javax.swing.JOptionPane;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.DeprecatedVariable;
-import org.openshapa.models.db.VariableType.VariableType;
+import org.openshapa.models.db.Variable;
 import org.openshapa.util.VEList;
 import org.openshapa.views.discrete.datavalues.vocabelements.VENameEditor;
 
@@ -526,7 +526,7 @@ ExternalVocabListListener {
                             DataColumn dc = new DataColumn(getLegacyDB(),
                                                            ve.getName(),
                                                            MatrixVocabElement.MatrixType.MATRIX);
-                            DeprecatedVariable newVar = new DeprecatedVariable(dc, VariableType.type.MATRIX);
+                            DeprecatedVariable newVar = new DeprecatedVariable(dc, Variable.type.MATRIX);
                             db.addVariable(newVar);
 
                             //long colID = db.addColumn(dc);

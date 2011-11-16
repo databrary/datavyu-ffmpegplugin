@@ -56,16 +56,18 @@ import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStam
 
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.CellListener;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.DeprecatedDatabase;
+import org.openshapa.models.db.Value;
 
 
 /**
  * Visual representation of a spreadsheet cell.
  */
 public class SpreadsheetCell extends JPanel
-implements ExternalDataCellListener, MouseListener, FocusListener {
+implements ExternalDataCellListener, MouseListener, FocusListener, CellListener {
 
     /** Width of spacer between onset and offset timestamps. */
     private static final int TIME_SPACER = 5;
@@ -147,6 +149,8 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     /** Highlighted state of cell. */
     private boolean highlighted = false;
 
+    boolean isLaid = false;
+
     /** Component that sets the width of the cell. */
     private Filler stretcher;
 
@@ -158,6 +162,9 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
 
     /** The spreadsheet cell selection listener. */
     private CellSelectionListener cellSelL;
+
+    /** Onset has been processed and layout position calculated. */
+    private boolean onsetProcessed = false;
 
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetCell.class);
@@ -271,122 +278,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     }
 
     /**
-     * Creates new form SpreadsheetCell.
-     *
-     * @param cellDB Database the cell is in
-     * @param cell Cell to display
-     * @param listener The spreadsheet cell selection listener to notify of
-     * changes to cell selection.
-     * @throws SystemErrorException If trouble with db calls
-     */
-    @Deprecated
-    public SpreadsheetCell(final Database cellDB,
-                           final database.Cell cell,
-                           final CellSelectionListener listener)
-    throws SystemErrorException {
-        legacyDB = cellDB;
-        cellID = cell.getID();
-        setName(this.getClass().getSimpleName());
-
-        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
-                                      .getResourceMap(SpreadsheetCell.class);
-
-        // Register this view with the database so that we can get updates when
-        // the cell within the database changes.
-        DataCell dc = (DataCell) legacyDB.getCell(cellID);
-
-        // Check the selected state of the datacell
-        // If it is already selected in the database, we need to inform
-        // the selector, but not trigger a selection change or deselect others.
-        selected = dc.getSelected();
-        cellSelL = listener;
-
-        cellPanel = new JPanel();
-        cellPanel.addMouseListener(this);
-        strut = new Filler(new Dimension(0, 0),
-                           new Dimension(0, 0),
-                           new Dimension(Short.MAX_VALUE, 0));
-
-        setLayout(new BorderLayout());
-        this.add(strut, BorderLayout.NORTH);
-        this.add(cellPanel, BorderLayout.CENTER);
-
-        // Build components used for the spreadsheet cell.
-        topPanel = new JPanel();
-        topPanel.addMouseListener(this);
-        ord = new JLabel();
-        ord.setFont(Configuration.getInstance().getSSLabelFont());
-        ord.setForeground(Configuration.getInstance().getSSOrdinalColour());
-        ord.setToolTipText(rMap.getString("ord.tooltip"));
-        ord.addMouseListener(this);
-        ord.setFocusable(true);
-
-        onset = new TimeStampTextField(dc, TimeStampSource.Onset);
-        onset.setFont(Configuration.getInstance().getSSLabelFont());
-        onset.setForeground(Configuration.getInstance().getSSTimestampColour());
-        onset.setToolTipText(rMap.getString("onset.tooltip"));
-        onset.addFocusListener(this);
-        onset.addMouseListener(this);
-        onset.setName("onsetTextField");
-
-        offset = new TimeStampTextField(dc, TimeStampSource.Offset);
-        offset.setFont(Configuration.getInstance().getSSLabelFont());
-        offset.setForeground(Configuration.getInstance().getSSTimestampColour());
-        offset.setToolTipText(rMap.getString("offset.tooltip"));
-        offset.addFocusListener(this);
-        offset.addMouseListener(this);
-        offset.setName("offsetTextField");
-
-        dataPanel = new MatrixRootView(dc, null);
-        dataPanel.setFont(Configuration.getInstance().getSSDataFont());
-        dataPanel.setForeground(Configuration.getInstance().getSSForegroundColour());
-
-        dataPanel.setMatrix(dc.getVal());
-        dataPanel.setOpaque(false);
-        dataPanel.addFocusListener(this);
-        dataPanel.addMouseListener(this);
-        dataPanel.setName("cellValue");
-
-        // Set the appearance of the spreadsheet cell.
-        cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
-        // Cell is highlighted by default.
-        cellPanel.setBorder(HIGHLIGHT_BORDER);
-        highlighted = true;
-        cellPanel.setLayout(new BorderLayout());
-
-        // Set the apperance of the top panel and add child elements (ord, onset
-        // and offset).
-        topPanel.setOpaque(false);
-        topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
-        cellPanel.add(topPanel, BorderLayout.NORTH);
-        topPanel.add(ord);
-
-        Component strut1 = Box.createHorizontalStrut(TIME_SPACER);
-        topPanel.add(strut1);
-
-        Component glue = Box.createGlue();
-        topPanel.add(glue);
-
-        topPanel.add(onset);
-
-        Component strut2 = Box.createHorizontalStrut(TIME_SPACER);
-        topPanel.add(strut2);
-        topPanel.add(offset);
-
-        // Set the apperance of the data panel - add elements for dis6playing
-        // the actual data of the panel.
-        cellPanel.add(dataPanel, BorderLayout.CENTER);
-
-        Dimension d = new Dimension(229, 0);
-        stretcher = new Filler(d, d, d);
-        cellPanel.add(stretcher, BorderLayout.SOUTH);
-    }
-
-    /** Onset has been processed and layout position calculated. */
-    private boolean onsetProcessed = false;
-
-    /**
      * @return True if onset been processed and the layout position calculated.
      * false otherwise.
      */
@@ -403,8 +294,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
     public void setOnsetProcessed(final boolean isOnsetProcessed) {
         onsetProcessed = isOnsetProcessed;
     }
-
-    boolean isLaid = false;
 
     public void setLaid(final boolean newStatus) {
         isLaid = newStatus;
@@ -637,6 +526,30 @@ implements ExternalDataCellListener, MouseListener, FocusListener {
      */
     public boolean isSelected() {
         return (selected || highlighted);
+    }
+
+    // *************************************************************************
+    // VariableListener Overrides
+    // *************************************************************************
+    @Override
+    public void offsetChanged(final long newOffset) {
+    }
+
+    @Override
+    public void onsetChanged(final long newOnset) {
+    }
+
+    @Override
+    public void highlightingChange(final boolean isHighlighted) {
+    }
+
+    @Override
+    public void selectionChange(final boolean isSelected) {
+    }
+
+    @Override
+    public void valueChange(final Value newValue) {
+
     }
 
     /**

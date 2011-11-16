@@ -33,7 +33,6 @@ import database.Matrix;
 import database.MatrixVocabElement;
 import database.SystemErrorException;
 import database.TimeStamp;
-import org.openshapa.models.db.VariableType.VariableType;
 
 /**
  * Wrapper/adapter for deprecated data columns.
@@ -81,14 +80,14 @@ implements Variable,
     private List<VariableListener> listeners;
 
     /** The type of variable. */
-    private VariableType.type varType;
+    private Variable.type varType;
 
     /**
      * Constructor.
      *
      * @param newVariable The legacy variable that this Variable represents.
      */
-    public DeprecatedVariable(DataColumn newVariable, VariableType.type type) {
+    public DeprecatedVariable(DataColumn newVariable, Variable.type type) {
         colChanges = new VariableChanges();
         selectedCells = new ArrayList<Long>();
         temporalMap = ArrayListMultimap.create();
@@ -207,7 +206,7 @@ implements Variable,
     }
 
     @Override
-    public VariableType.type getVariableType() {
+    public Variable.type getVariableType() {
         return varType;
     }
 

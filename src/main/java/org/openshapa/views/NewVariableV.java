@@ -21,7 +21,7 @@ import com.usermetrix.jclient.UserMetrix;
 import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.UserWarningException;
-import org.openshapa.models.db.VariableType.VariableType;
+import org.openshapa.models.db.Variable;
 import org.openshapa.undoableedits.AddVariableEdit;
 
 /**
@@ -235,13 +235,13 @@ public final class NewVariableV extends OpenSHAPADialog {
     /**
      * @return The type of variable the user has selected to use.
      */
-    public VariableType.type getVariableType() {
+    public Variable.type getVariableType() {
         if (nominalTypeButton.isSelected()) {
-            return VariableType.type.NOMINAL;
+            return Variable.type.NOMINAL;
         } else if (matrixTypeButton.isSelected()) {
-            return VariableType.type.MATRIX;
+            return Variable.type.MATRIX;
         } else {
-            return VariableType.type.TEXT;
+            return Variable.type.TEXT;
         }
     }
 

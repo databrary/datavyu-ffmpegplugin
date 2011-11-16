@@ -22,6 +22,8 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import database.MatrixVocabElement;
 import database.TimeStamp;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -40,6 +42,9 @@ import database.TimeStamp;
     /** Is the cell highlighted or not? */
     boolean isHighlighted;
 
+    /** The list of listeners to be notified when this variable changes. */
+    private List<CellListener> listeners;
+
     /**
      * Construct a new Cell using the given reference DataCell.
      *
@@ -48,9 +53,9 @@ import database.TimeStamp;
      */
     public DeprecatedCell(final DataCell newCell) {
         setLegacyCell(newCell);
+        listeners = new ArrayList<CellListener>();
         isHighlighted = false;
     }
-
 
     @Override public String toString() {
         DataCell cell = getLegacyCell();
@@ -213,29 +218,31 @@ import database.TimeStamp;
         }
     }
 
-    /**
-     * @return True if the cell is highlighted, false otherwise.
-     */
     @Override
     public boolean isHighlighted() {
         return isHighlighted;
     }
 
-    /**
-     * Highlights the cell.
-     *
-     * @param higlighted True if this cell is highlighted, false otherwise.
-     */
     @Override
     public void setHighlighted(final boolean highlighted) {
         isHighlighted = highlighted;
     }
 
+    @Override
+    public void addListener(final CellListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(final CellListener listener) {
+        listeners.remove(listener);
+    }
+
     /**
      * Retrieve the DataCell represented by this Cell.
      */
-    @Deprecated public DataCell getLegacyCell() {
-
+    @Deprecated
+    public DataCell getLegacyCell() {
         try {
             return (DataCell) legacyDB.getCell(legacyCellId);
         } catch (SystemErrorException e) {

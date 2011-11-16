@@ -30,7 +30,6 @@ import com.usermetrix.jclient.UserMetrix;
 import java.io.FileInputStream;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedDatabase;
-import org.openshapa.models.db.DeprecatedVariable;
 
 import database.Column;
 import database.DataCell;
@@ -58,7 +57,8 @@ import database.TextStringDataValue;
 import database.TimeStamp;
 import database.VocabElement;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.VariableType.VariableType;
+import org.openshapa.models.db.DeprecatedVariable;
+import org.openshapa.models.db.Variable;
 
 
 /**
@@ -740,13 +740,13 @@ public final class OpenDatabaseFileC {
         dc.setHidden(!varVisible);
         dc.setComment(varComment);
 
-        VariableType.type newType;
+        Variable.type newType;
         if (legacyType == MatrixVocabElement.MatrixType.MATRIX) {
-            newType = VariableType.type.MATRIX;
+            newType = Variable.type.MATRIX;
         } else if (legacyType == MatrixVocabElement.MatrixType.NOMINAL) {
-            newType = VariableType.type.NOMINAL;
+            newType = Variable.type.NOMINAL;
         } else {
-            newType = VariableType.type.TEXT;
+            newType = Variable.type.TEXT;
         }
 
         DeprecatedVariable newVar = new DeprecatedVariable(dc, newType);

@@ -32,21 +32,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
-import org.openshapa.OpenSHAPA;
-
-import database.DataCell;
-import database.DataColumn;
-import database.Database;
-import database.SystemErrorException;
-
 import com.usermetrix.jclient.UserMetrix;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedCell;
-import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 import org.openshapa.util.Constants;
 
@@ -70,7 +61,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     private List<SpreadsheetCell> cells;
 
     /** The mapping between the database and the spreadsheet cells. */
-    private Map<Long, SpreadsheetCell> viewMap;
+    private Map<Cell, SpreadsheetCell> viewMap;
 
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(ColumnDataPanel.class);
@@ -99,7 +90,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         columnWidth = width;
         columnHeight = 0;
         cells = new ArrayList<SpreadsheetCell>();
-        viewMap = new HashMap();
+        viewMap = new HashMap<Cell, SpreadsheetCell>();
         cellSelectionL = cellSelL;
         model = variable;
 
@@ -124,17 +115,17 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      * this class of events.
      */
     public void registerListeners() {
-        KeyboardFocusManager m = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        m.addKeyEventDispatcher(this);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                            .addKeyEventDispatcher(this);
     }
 
     /**
      * Deregisters this column data panel with everything that is currently
-     * notiying it of events.
+     * notifying this class of events.
      */
     public void deregisterListeners() {
-        KeyboardFocusManager m = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        m.removeKeyEventDispatcher(this);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                            .removeKeyEventDispatcher(this);
     }
 
     /**
@@ -148,50 +139,38 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     private void buildDataPanelCells(final Datastore db,
                                      final Variable variable,
                                      final CellSelectionListener cellSelL) {
-        try {
-            // traverse and build the cells
-            for (Cell cell : variable.getCellsTemporally()) {
-                DataColumn dbColumn = ((DeprecatedVariable) variable).getLegacyVariable();
-                DataCell dCell = ((DeprecatedCell) cell).getLegacyCell();
 
-                SpreadsheetCell sc = new SpreadsheetCell(db, cell, cellSelL);
-                dbColumn.getDB().registerDataCellListener(dCell.getID(), sc);
+        // traverse and build the cells
+        for (Cell cell : variable.getCellsTemporally()) {
+            SpreadsheetCell sc = new SpreadsheetCell(db, cell, cellSelL);
+            cell.addListener(sc);
 
-                // add cell to the JPanel
-                this.add(sc);
+            // add cell to the JPanel
+            this.add(sc);
 
-                // and add it to our reference list
-                cells.add(sc);
+            // and add it to our reference list
+            cells.add(sc);
 
-                // Add the ID's to the mapping.
-                viewMap.put(dCell.getID(), sc);
-                columnHeight += sc.getHeight();
-            }
-
-            this.add(newCellButton);
-            this.setSize(columnWidth, columnHeight);
-        } catch (SystemErrorException e) {
-            LOGGER.error("Failed to populate Spreadsheet.", e);
+            // Add the ID's to the mapping.
+            viewMap.put(cell, sc);
+            columnHeight += sc.getHeight();
         }
+
+        this.add(newCellButton);
+        this.setSize(columnWidth, columnHeight);
     }
 
     /**
      * Clears the cells stored in the column data panel.
      */
     public void clear() {
-        try {
-            for (SpreadsheetCell cell : cells) {
-                // Need to deregister data cell listener here.
-                OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-                         .deregisterDataCellListener(cell.getCellID(), cell);
-                this.remove(cell);
-            }
-
-            cells.clear();
-            viewMap.clear();
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to delete all cells", se);
+        for (SpreadsheetCell cell : cells) {
+            cell.getCell().removeListener(cell);
+            this.remove(cell);
         }
+
+        cells.clear();
+        viewMap.clear();
     }
 
     /**
@@ -200,11 +179,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      * @param cell The cell to find and delete from the column data panel.
      */
     public void deleteCell(final Cell cell) {
-
-//        SpreadsheetCell cell = viewMap.get(cellID);
-//        this.remove(cell);
-//        cells.remove(cell);
-//        viewMap.remove(cellID);
+        SpreadsheetCell sCell = viewMap.get(cell);
+        cell.removeListener(sCell);
+        this.remove(sCell);
+        cells.remove(sCell);
+        viewMap.remove(cell);
     }
 
     /**
@@ -222,11 +201,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
         SpreadsheetCell nCell = new SpreadsheetCell(ds, cell, cellSelL);
         nCell.setWidth(this.getWidth());
-
-        // TODO wire up cell listener.
+        cell.addListener(nCell);
 
         nCell.setAlignmentX(Component.RIGHT_ALIGNMENT);
         this.add(nCell);
+        viewMap.put(cell, nCell);
         nCell.requestFocus();
 
 //        try {
@@ -284,8 +263,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     }
 
     public SpreadsheetCell getCellTemporally(final int index) {
-        DeprecatedCell dc = (DeprecatedCell) model.getCellTemporally(index);
-        return viewMap.get(dc.getLegacyCell().getID());
+        return viewMap.get(model.getCellTemporally(index));
     }
 
     /**
@@ -295,8 +273,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         ArrayList<SpreadsheetCell> result = new ArrayList<SpreadsheetCell>();
 
         for (Cell c : model.getCellsTemporally()) {
-            DeprecatedCell dc = (DeprecatedCell) c;
-            result.add(viewMap.get(dc.getLegacyCell().getID()));
+            result.add(viewMap.get(c));
         }
 
         return result;

@@ -18,7 +18,6 @@ import com.google.common.collect.HashBiMap;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import database.Column;
-import database.DataCell;
 import database.DataColumn;
 import database.ExternalCascadeListener;
 import database.ExternalColumnListListener;
@@ -33,7 +32,6 @@ import database.MatrixVocabElement;
 import database.NominalFormalArg;
 import database.SystemErrorException;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.VariableType.VariableType;
 import org.openshapa.util.Constants;
 
 /**
@@ -205,16 +203,16 @@ import org.openshapa.util.Constants;
     }
 
     @Override
-    public Variable createVariable(final String name, final VariableType.type type)
+    public Variable createVariable(final String name, final Variable.type type)
     throws UserWarningException {
 
         try {
             MatrixVocabElement.MatrixType deprecatedType;
 
-            if (type.equals(VariableType.type.MATRIX)) {
+            if (type.equals(Variable.type.MATRIX)) {
                 deprecatedType = MatrixVocabElement.MatrixType.MATRIX;
 
-            } else if (type.equals(VariableType.type.NOMINAL)) {
+            } else if (type.equals(Variable.type.NOMINAL)) {
                 deprecatedType = MatrixVocabElement.MatrixType.NOMINAL;
 
             } else {
@@ -234,7 +232,7 @@ import org.openshapa.util.Constants;
 
             // If the column is a matrix - default to a single nominal variable
             // rather than untyped.
-            if (type.equals(VariableType.type.MATRIX)) {
+            if (type.equals(Variable.type.MATRIX)) {
                 MatrixVocabElement mve = legacyDB.getMatrixVE(dc.getItsMveID());
                 mve.deleteFormalArg(0);
                 mve.appendFormalArg(new NominalFormalArg(legacyDB, "<arg0>"));

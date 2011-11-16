@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
-import org.openshapa.models.db.VariableType.VariableType;
 
 /**
  *
@@ -32,9 +31,9 @@ public class AddVariableEdit extends SpreadsheetEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(AddVariableEdit.class);  
     private String varName;
-    private VariableType.type varType;
+    private Variable.type varType;
     
-    public AddVariableEdit(String variableName, VariableType.type variableType) {
+    public AddVariableEdit(String variableName, Variable.type variableType) {
         super();
         this.varName = variableName;
         this.varType = variableType;

@@ -31,7 +31,6 @@ import database.DataColumn;
 import database.DataColumnTO;
 import database.MatrixVocabElement;
 import database.SystemErrorException;
-import org.openshapa.models.db.VariableType.VariableType;
 
 
 /**
@@ -120,13 +119,13 @@ public class RunScriptEdit extends SpreadsheetEdit {
             for (DataColumnTO colTO : colsTO) {    
                 DataColumn dc = new DataColumn(db, colTO.name, colTO.itsMveType);
 
-                VariableType.type newType;
+                Variable.type newType;
                 if (colTO.itsMveType == MatrixVocabElement.MatrixType.MATRIX) {
-                    newType = VariableType.type.MATRIX;
+                    newType = Variable.type.MATRIX;
                 } else if (colTO.itsMveType == MatrixVocabElement.MatrixType.NOMINAL) {
-                    newType = VariableType.type.NOMINAL;
+                    newType = Variable.type.NOMINAL;
                 } else {
-                    newType = VariableType.type.TEXT;
+                    newType = Variable.type.TEXT;
                 }
 
                 DeprecatedVariable var = new DeprecatedVariable(dc, newType);
