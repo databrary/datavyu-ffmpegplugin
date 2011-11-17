@@ -22,8 +22,12 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import database.MatrixVocabElement;
 import database.TimeStamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 
 /**
@@ -97,6 +101,30 @@ import java.util.List;
         return null;
     }
 
+    private Long stringToMilli(final String words) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss:SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        try {
+            Date d = sdf.parse(words);
+            return d.getTime();
+        } catch (ParseException e) {
+            LOGGER.error("Unable to parse time stamp", e);
+        }
+
+        return 0L;
+    }
+
+    private String milliToString(final long milliseconds) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss:SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return sdf.format(milliseconds);
+    }
+
+    @Override
+    public String getOnsetString() {
+        return milliToString(getOnset());
+    }
+
     @Override public long getOnset() {
         DataCell cell = getLegacyCell();
 
@@ -127,6 +155,10 @@ import java.util.List;
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set onset", e);
         }
+
+        for (CellListener listener : listeners) {
+            listener.onsetChanged(stringToMilli(newOnset));
+        }
     }
 
     @Override public void setOnset(final long newOnset) {
@@ -143,6 +175,15 @@ import java.util.List;
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set onset", e);
         }
+
+        for (CellListener listener : listeners) {
+            listener.onsetChanged(newOnset);
+        }
+    }
+
+    @Override
+    public String getOffsetString() {
+        return milliToString(getOffset());
     }
 
     @Override public long getOffset() {
@@ -175,6 +216,10 @@ import java.util.List;
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set onset", e);
         }
+
+        for (CellListener listener : listeners) {
+            listener.offsetChanged(stringToMilli(newOffset));
+        }
     }
 
     @Override public void setOffset(final long newOffset) {
@@ -190,6 +235,10 @@ import java.util.List;
             legacyDB.replaceCell(cell);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set onset", e);
+        }
+
+        for (CellListener listener : listeners) {
+            listener.offsetChanged(newOffset);
         }
     }
 
@@ -215,6 +264,10 @@ import java.util.List;
             legacyDB.replaceCell(cell);
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set selected cell", e);
+        }
+
+        for (CellListener listener : listeners) {
+            listener.selectionChange(selected);
         }
     }
 

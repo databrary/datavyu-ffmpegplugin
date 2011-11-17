@@ -24,11 +24,11 @@ import java.awt.event.KeyListener;
 import javax.swing.JTextField;
 
 import org.openshapa.OpenSHAPA;
-import database.DataCell;
-import database.SystemErrorException;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
 
 import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.Variable;
 
 /**
  * JTextArea view of the Matrix (database cell) data.
@@ -37,7 +37,7 @@ public final class TimeStampTextField extends JTextField
 implements FocusListener, KeyListener {
 
     /** The parent cell for this JPanel. */
-    private long parentCell = -1;
+    private Cell parentCell = null;
 
     /** The editors that make up the representation of the data. */
     private TimeStampDataValueEditor myEditor;
@@ -51,10 +51,10 @@ implements FocusListener, KeyListener {
      * @param cell The parent datacell for this spreadsheet cell.
      * @param tsType Which TimeStamp of the cell to display. represent.
      */
-    public TimeStampTextField(final DataCell cell, final TimeStampSource tsType) {
+    public TimeStampTextField(final Cell cell, final TimeStampSource tsType) {
         super();
 
-        parentCell = cell.getID();
+        parentCell = cell;
         myEditor = new TimeStampDataValueEditor(this, cell, tsType);
 
         setValue();
@@ -85,133 +85,20 @@ implements FocusListener, KeyListener {
     }
 
     /**
-     * The action to invoke if the focus is gained by this MatrixRootView.
-     * 
-     * @param fe The Focus Event that triggered this action.
-     */
-    @Override
-    public void focusGained(final FocusEvent fe) {
-        try {
-            // We need to remember which cell should be duplicated if the user
-            // presses the enter key or selects New Cell from the menu.
-            if (parentCell != -1) {
-                // method names don't reflect usage - we didn't really create
-                // this
-                // cell just now.
-                DataCell c =
-                        (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-                                .getCell(parentCell);
-                OpenSHAPA.getProjectController().setLastCreatedColId(
-                        c.getItsColID());
-                OpenSHAPA.getProjectController().setLastSelectedCellId(
-                        parentCell);
-            }
-
-            myEditor.focusGained(fe);
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to gain focus", se);
-        }
-    }
-
-    /**
-     * The action to invoke if the focus is lost.
-     * 
-     * @param fe The FocusEvent that triggered this action.
-     */
-    @Override
-    public void focusLost(final FocusEvent fe) {
-        myEditor.focusLost(fe);
-    }
-
-    /**
-     * Process key events that have been dispatched to this component, pass them
-     * through to all listeners, and then if they are not consumed pass it onto
-     * the parent of this component.
-     * 
-     * @param ke They keyboard event that was dispatched to this component.
-     */
-    @Override
-    public void processKeyEvent(final KeyEvent ke) {
-
-        super.processKeyEvent(ke);
-
-        if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
-                || ke.getKeyCode() == KeyEvent.VK_DOWN) {
-            getParent().dispatchEvent(ke);
-        }
-    }
-
-    /**
-     * The action to invoke when a key is released.
-     * 
-     * @param e The KeyEvent that triggered this action.
-     */
-    @Override
-    public void keyReleased(final KeyEvent e) {
-        resetEditorText();
-        myEditor.keyReleased(e);
-    }
-
-    /**
-     * The action to invoke when a key is typed.
-     * 
-     * @param e The KeyEvent that triggered this action.
-     */
-    @Override
-    public void keyTyped(final KeyEvent e) {
-        myEditor.keyTyped(e);
-    }
-
-    /**
-     * The action to invoke when a key is pressed.
-     * 
-     * @param e The KeyEvent that triggered this action.
-     */
-    @Override
-    public void keyPressed(final KeyEvent e) {
-        switch (e.getKeyCode()) {
-
-        case KeyEvent.VK_ENTER:
-            if (!myEditor.isReturnKeyAccepted()) {
-                // help out the editors that don't want the return key
-                if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
-                    e.consume();
-                }
-            }
-            break;
-        case KeyEvent.VK_TAB:
-            myEditor.selectAll();
-            e.consume();
-            break;
-
-        default:
-            break;
-        }
-
-        if (!e.isConsumed()) {
-            myEditor.keyPressed(e);
-        }
-    }
-
-    /**
      * Calculate the currentEditor's text and call it's resetText method.
      */
     public void resetEditorText() {
         myEditor.resetText(getText());
     }
 
-    /**
-     * Cuts the current selection from the current time stam field into the
-     * clipboard.
-     */
+    // *************************************************************************
+    // Parent Class Overrides
+    // *************************************************************************
     @Override
     public void cut() {
         myEditor.cut();
     }
 
-    /**
-     * Pastes contents of the clipboard into the time stamp text field.
-     */
     @Override
     public void paste() {
         myEditor.paste();
@@ -235,5 +122,80 @@ implements FocusListener, KeyListener {
     public Dimension getMaximumSize() {
         Dimension mysize = super.getPreferredSize();
         return new Dimension(mysize.width, mysize.height);
+    }
+
+    // *************************************************************************
+    // FocusListener Overrides
+    // *************************************************************************
+    @Override
+    public void focusGained(final FocusEvent fe) {
+        // We need to remember which cell should be duplicated if the user
+        // presses the enter key or selects New Cell from the menu.
+        if (parentCell != null) {
+            // method names don't reflect usage - we didn't really create this
+            // cell just now.
+            Variable var = OpenSHAPA.getProjectController().getDB()
+                                    .getVariable(parentCell);
+
+            OpenSHAPA.getProjectController().setLastCreatedVariable(var);
+            OpenSHAPA.getProjectController().setLastSelectedCell(parentCell);
+        }
+
+        myEditor.focusGained(fe);
+    }
+
+
+    @Override
+    public void focusLost(final FocusEvent fe) {
+        myEditor.focusLost(fe);
+    }
+
+    // *************************************************************************
+    // KeyListener Overrides
+    // *************************************************************************
+    @Override
+    public void processKeyEvent(final KeyEvent ke) {
+        super.processKeyEvent(ke);
+
+        if (!ke.isConsumed() || ke.getKeyCode() == KeyEvent.VK_UP
+                || ke.getKeyCode() == KeyEvent.VK_DOWN) {
+            getParent().dispatchEvent(ke);
+        }
+    }
+
+    @Override
+    public void keyReleased(final KeyEvent e) {
+        resetEditorText();
+        myEditor.keyReleased(e);
+    }
+
+    @Override
+    public void keyTyped(final KeyEvent e) {
+        myEditor.keyTyped(e);
+    }
+
+    @Override
+    public void keyPressed(final KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_ENTER:
+                if (!myEditor.isReturnKeyAccepted()) {
+                    // help out the editors that don't want the return key
+                    if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
+                        e.consume();
+                    }
+                }
+                break;
+            case KeyEvent.VK_TAB:
+                myEditor.selectAll();
+                e.consume();
+                break;
+
+            default:
+                break;
+        }
+
+        if (!e.isConsumed()) {
+            myEditor.keyPressed(e);
+        }
     }
 }

@@ -44,9 +44,7 @@ import org.openshapa.OpenSHAPA;
 
 import database.DataCell;
 import database.Database;
-import database.ExternalDataCellListener;
 import database.Matrix;
-import database.ReferenceCell;
 import database.SystemErrorException;
 import database.TimeStamp;
 
@@ -67,7 +65,7 @@ import org.openshapa.models.db.Value;
  * Visual representation of a spreadsheet cell.
  */
 public class SpreadsheetCell extends JPanel
-implements ExternalDataCellListener, MouseListener, FocusListener, CellListener {
+implements MouseListener, FocusListener, CellListener {
 
     /** Width of spacer between onset and offset timestamps. */
     private static final int TIME_SPACER = 5;
@@ -133,9 +131,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener, CellListener 
     /** The Offset display component. */
     private TimeStampTextField offset;
 
-    /** The Database the cell belongs to. */
-    private Database legacyDB;
-
     private Datastore db;
 
     private Cell model;
@@ -173,7 +168,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener, CellListener 
                            final Cell cell,
                            final CellSelectionListener listener) {
 
-        legacyDB = ((DeprecatedDatabase) cellDB).getDatabase();
         cellID = ((DeprecatedCell) cell).getLegacyCell().getID();
         model = cell;
         setName(this.getClass().getSimpleName());
@@ -211,7 +205,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener, CellListener 
         ord.addMouseListener(this);
         ord.setFocusable(true);
 
-        onset = new TimeStampTextField(dc, TimeStampSource.Onset);
+        onset = new TimeStampTextField(model, TimeStampSource.Onset);
         onset.setFont(Configuration.getInstance().getSSLabelFont());
         onset.setForeground(Configuration.getInstance().getSSTimestampColour());
         onset.setToolTipText(rMap.getString("onset.tooltip"));
@@ -219,7 +213,7 @@ implements ExternalDataCellListener, MouseListener, FocusListener, CellListener 
         onset.addMouseListener(this);
         onset.setName("onsetTextField");
 
-        offset = new TimeStampTextField(dc, TimeStampSource.Offset);
+        offset = new TimeStampTextField(model, TimeStampSource.Offset);
         offset.setFont(Configuration.getInstance().getSSLabelFont());
         offset.setForeground(Configuration.getInstance().getSSTimestampColour());
         offset.setToolTipText(rMap.getString("offset.tooltip"));
@@ -373,15 +367,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener, CellListener 
     }
 
     /**
-     * @return Return the Ordinal value of the datacell as an IntDataValue.
-     */
-    public long getOrdinal() throws SystemErrorException {
-        DataCell dc = (DataCell) legacyDB.getCell(cellID);
-
-        return dc.getOrd();
-    }
-
-    /**
      * Set the width of the SpreadsheetCell.
      *
      * @param width New width of the SpreadsheetCell.
@@ -398,33 +383,16 @@ implements ExternalDataCellListener, MouseListener, FocusListener, CellListener 
      * cell is selected, false otherwise.
      */
     public void selectCellInDB(final boolean sel) {
-
         // Set the selection within the database.
-        try {
-            database.Cell cell = legacyDB.getCell(cellID);
-            DataCell dcell = null;
+        model.setSelected(sel);
 
-            if (cell instanceof DataCell) {
-                dcell = (DataCell) legacyDB.getCell(cell.getID());
-            } else {
-                dcell = (DataCell) legacyDB.getCell(((ReferenceCell) cell)
-                        .getTargetID());
-            }
-
-            dcell.setSelected(sel);
-            cell.getDB().replaceCell(dcell);
-
-            if (sel) {
-
-                // method names don't reflect usage - we didn't really create
-                // this cell just now.
-                OpenSHAPA.getProjectController().setLastCreatedColId(cell.getItsColID());
-                OpenSHAPA.getProjectController().setLastSelectedCellId(cell.getID());
-                OpenSHAPA.getDataController().setFindTime(dcell.getOnset().getTime());
-                OpenSHAPA.getDataController().setFindOffsetField(dcell.getOffset().getTime());
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Failed selected cell in SpreadsheetCell.", e);
+        if (sel) {
+            // method names don't reflect usage - we didn't really create
+            // this cell just now.
+            OpenSHAPA.getProjectController().setLastCreatedCell(model);
+            OpenSHAPA.getProjectController().setLastSelectedCell(model);
+            OpenSHAPA.getDataController().setFindTime(model.getOnset());
+            OpenSHAPA.getDataController().setFindOffsetField(model.getOffset());
         }
     }
 
@@ -528,216 +496,6 @@ implements ExternalDataCellListener, MouseListener, FocusListener, CellListener 
         return (selected || highlighted);
     }
 
-    // *************************************************************************
-    // VariableListener Overrides
-    // *************************************************************************
-    @Override
-    public void offsetChanged(final long newOffset) {
-    }
-
-    @Override
-    public void onsetChanged(final long newOnset) {
-    }
-
-    @Override
-    public void highlightingChange(final boolean isHighlighted) {
-    }
-
-    @Override
-    public void selectionChange(final boolean isSelected) {
-    }
-
-    @Override
-    public void valueChange(final Value newValue) {
-
-    }
-
-    /**
-     * Called if the DataCell of interest is changed. see
-     * ExternalDataCellListener.
-     */
-    @Override
-    public void DCellChanged(final Database db,
-                             final long colID,
-                             final long cellID,
-                             final boolean ordChanged,
-                             final int oldOrd,
-                             final int newOrd,
-                             final boolean onsetChanged,
-                             final TimeStamp oldOnset,
-                             final TimeStamp newOnset,
-                             final boolean offsetChanged,
-                             final TimeStamp oldOffset,
-                             final TimeStamp newOffset,
-                             final boolean valChanged,
-                             final Matrix oldVal,
-                             final Matrix newVal,
-                             final boolean selectedChanged,
-                             final boolean oldSelected,
-                             final boolean newSelected,
-                             final boolean commentChanged,
-                             final String oldComment,
-                             final String newComment) {
-
-        if (onsetChanged) {
-            onset.setValue();
-        }
-
-        if (offsetChanged) {
-            offset.setValue();
-        }
-
-        if (valChanged) {
-            dataPanel.setMatrix(newVal);
-        }
-
-        if (selectedChanged) {
-            selected = newSelected;
-        }
-
-        revalidate();
-    }
-
-    /**
-     * Called if the DataCell of interest is deleted.
-     */
-    @Override
-    public void DCellDeleted(final Database db, final long colID,
-        final long cellID) {
-        // TODO - Figure out how to work with cells that are deleted.
-    }
-
-    /**
-     * The action to invoke when the mouse enters this component.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    @Override
-    public void mouseEntered(final MouseEvent me) {
-    }
-
-    /**
-     * The action to invoke when the mouse exits this component.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    @Override
-    public void mouseExited(final MouseEvent me) {
-    }
-
-    /**
-     * The action to invoke when a mouse button is pressed.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    @Override
-    public void mousePressed(final MouseEvent me) {
-        int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-        boolean groupSel = (me.getModifiers() & keyMask) != 0;
-        boolean contSel = (me.getModifiers() & ActionEvent.SHIFT_MASK) != 0;
-
-        Class source = me.getSource().getClass();
-        boolean isEditorSrc = (source.equals(TimeStampTextField.class)
-                               || (source.equals(MatrixRootView.class)));
-
-        // User has clicked in magic spot, without modifier. Clear
-        // currently selected cells and select this cell.
-        if (!isEditorSrc && !groupSel && !contSel) {
-            ord.requestFocus();
-            cellSelL.clearCellSelection();
-            setSelected(!isSelected());
-
-            if (isSelected()) {
-                cellSelL.addCellToSelection(this);
-            }
-
-            // User has clicked on editor or magic spot with modifier. Add
-            // this cell to the current selection.
-        } else if (groupSel && !contSel) {
-            ord.requestFocus();
-            setSelected(!isSelected());
-
-            if (isSelected()) {
-                cellSelL.addCellToSelection(this);
-            }
-
-            // User has clicked on editor or magic spot with shift modifier.
-            // Add this cell and everything in between the current selection.
-        } else if (contSel) {
-            ord.requestFocus();
-            cellSelL.addCellToContinousSelection(this);
-
-            // User has clicked somewhere in the cell without modifier. This
-            // cell needs to be highlighted.
-        } else {
-            // Only change selection if not selected.
-            if (!isHighlighted()) {
-                // BugzID:320 - Deselect cells before selected cell contents.
-                cellSelL.clearCellSelection();
-                setHighlighted(true);
-                cellSelL.setHighlightedCell(this);
-            }
-        }
-    }
-
-    /**
-     * The action to invoke when a mouse button is released.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    @Override
-    public void mouseReleased(final MouseEvent me) {
-    }
-
-    /**
-     * The action to invoke when a mouse button is clicked.
-     *
-     * @param me The mouse event that triggered this action.
-     */
-    @Override
-    public void mouseClicked(final MouseEvent me) {
-    }
-
-    /**
-     * The action to invoke when the focus is gained on this component.
-     *
-     * @param e The focus event that triggered this action.
-     */
-    @Override
-    public void focusGained(final FocusEvent e) {
-
-        if (highlighted && (cellPanel.getBorder().equals(NORMAL_BORDER)
-                            || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
-            selectCellInDB(true);
-        }
-    }
-
-    /**
-     * The action to invoke when the focus is lost from this component.
-     *
-     * @param e The focus event that triggered this action.
-     */
-    @Override
-    public void focusLost(final FocusEvent e) {
-    }
-
-    /**
-     * @return True if this matrix view is the current focus owner, false
-     * otherwise.
-     */
-    @Override
-    public boolean isFocusOwner() {
-        return (onset.isFocusOwner() || offset.isFocusOwner() || dataPanel.isFocusOwner());
-    }
-
-    /**
-     * Request to focus this cell.
-     */
-    @Override
-    public void requestFocus() {
-        dataPanel.requestFocus();
-    }
-
     /**
      * Set the border of the cell.
      *
@@ -771,36 +529,199 @@ implements ExternalDataCellListener, MouseListener, FocusListener, CellListener 
         return dataPanel;
     }
 
-    /**
-     * Method to call when painting the component.
-     *
-     * @param g
-     */
-    @Override public void paint(final Graphics g) {
-        // BugzID:474 - Set the size at paint time - somewhere else may have
-        // altered the font.
-        dataPanel.setFont(Configuration.getInstance().getSSDataFont());
-        super.paint(g);
-    }
-    
     public void selectOnset() {
         onset.selectAll();
         offset.select(0,0);
         dataPanel.select(0,0);
         onset.requestFocusInWindow();
     }
-    
+
     public void selectOffset() {
         offset.selectAll();
         onset.select(0,0);
         dataPanel.select(0,0);
         offset.requestFocusInWindow();
     }
-    
+
     public void selectVal() {
         dataPanel.selectAll();
         onset.select(0,0);
         offset.select(0,0);
         dataPanel.requestFocusInWindow();
+    }
+
+    // *************************************************************************
+    // VariableListener Overrides
+    // *************************************************************************
+    @Override
+    public void offsetChanged(final long newOffset) {
+        offset.setValue();
+    }
+
+    @Override
+    public void onsetChanged(final long newOnset) {
+        onset.setValue();
+    }
+
+    @Override
+    public void highlightingChange(final boolean isHighlighted) {
+    }
+
+    @Override
+    public void selectionChange(final boolean isSelected) {
+        selected = isSelected;
+        revalidate();
+    }
+
+    @Override
+    public void valueChange(final Value newValue) {
+
+    }
+
+    /**
+     * Called if the DataCell of interest is changed. see
+     * ExternalDataCellListener.
+     */
+    public void DCellChanged(final Database db,
+                             final long colID,
+                             final long cellID,
+                             final boolean ordChanged,
+                             final int oldOrd,
+                             final int newOrd,
+                             final boolean onsetChanged,
+                             final TimeStamp oldOnset,
+                             final TimeStamp newOnset,
+                             final boolean offsetChanged,
+                             final TimeStamp oldOffset,
+                             final TimeStamp newOffset,
+                             final boolean valChanged,
+                             final Matrix oldVal,
+                             final Matrix newVal,
+                             final boolean selectedChanged,
+                             final boolean oldSelected,
+                             final boolean newSelected,
+                             final boolean commentChanged,
+                             final String oldComment,
+                             final String newComment) {
+
+        if (valChanged) {
+            dataPanel.setMatrix(newVal);
+        }
+
+        revalidate();
+    }
+
+    /**
+     * Called if the DataCell of interest is deleted.
+     */
+    public void DCellDeleted(final Database db, final long colID,
+        final long cellID) {
+        // TODO - Figure out how to work with cells that are deleted.
+    }
+
+    // *************************************************************************
+    // MouseListener Overrides
+    // *************************************************************************
+    @Override
+    public void mouseEntered(final MouseEvent me) {
+    }
+
+    @Override
+    public void mouseExited(final MouseEvent me) {
+    }
+
+    @Override
+    public void mousePressed(final MouseEvent me) {
+        int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+        boolean groupSel = (me.getModifiers() & keyMask) != 0;
+        boolean contSel = (me.getModifiers() & ActionEvent.SHIFT_MASK) != 0;
+
+        Class source = me.getSource().getClass();
+        boolean isEditorSrc = (source.equals(TimeStampTextField.class)
+                               || (source.equals(MatrixRootView.class)));
+
+        // User has clicked in magic spot, without modifier. Clear
+        // currently selected cells and select this cell.
+        if (!isEditorSrc && !groupSel && !contSel) {
+            ord.requestFocus();
+            cellSelL.clearCellSelection();
+            setSelected(!isSelected());
+
+            if (isSelected()) {
+                cellSelL.addCellToSelection(this);
+            }
+
+        // User has clicked on editor or magic spot with modifier. Add
+        // this cell to the current selection.
+        } else if (groupSel && !contSel) {
+            ord.requestFocus();
+            setSelected(!isSelected());
+
+            if (isSelected()) {
+                cellSelL.addCellToSelection(this);
+            }
+
+        // User has clicked on editor or magic spot with shift modifier.
+        // Add this cell and everything in between the current selection.
+        } else if (contSel) {
+            ord.requestFocus();
+            cellSelL.addCellToContinousSelection(this);
+
+        // User has clicked somewhere in the cell without modifier. This
+        // cell needs to be highlighted.
+        } else {
+            // Only change selection if not selected.
+            if (!isHighlighted()) {
+                // BugzID:320 - Deselect cells before selected cell contents.
+                cellSelL.clearCellSelection();
+                setHighlighted(true);
+                cellSelL.setHighlightedCell(this);
+            }
+        }
+    }
+
+    @Override
+    public void mouseReleased(final MouseEvent me) {
+    }
+
+    @Override
+    public void mouseClicked(final MouseEvent me) {
+    }
+
+    // *************************************************************************
+    // FocusListener Overrides
+    // *************************************************************************
+    @Override
+    public void focusGained(final FocusEvent e) {
+
+        if (highlighted && (cellPanel.getBorder().equals(NORMAL_BORDER)
+                            || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
+            selectCellInDB(true);
+        }
+    }
+
+    @Override
+    public void focusLost(final FocusEvent e) {
+    }
+
+    @Override
+    public boolean isFocusOwner() {
+        return (onset.isFocusOwner() || offset.isFocusOwner() || dataPanel.isFocusOwner());
+    }
+
+    @Override
+    public void requestFocus() {
+        dataPanel.requestFocus();
+    }
+
+    // *************************************************************************
+    // Parent Class Overrides
+    // *************************************************************************
+    @Override
+    public void paint(final Graphics g) {
+        // BugzID:474 - Set the size at paint time - somewhere else may have
+        // altered the font.
+        dataPanel.setFont(Configuration.getInstance().getSSDataFont());
+        super.paint(g);
     }
 }

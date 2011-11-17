@@ -18,23 +18,13 @@ import com.usermetrix.jclient.Logger;
 import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.logging.Level;
 
 import javax.swing.text.JTextComponent;
 
-import org.openshapa.OpenSHAPA;
-import database.DataCell;
-import database.DataValue;
-import database.SystemErrorException;
-import database.TimeStamp;
-import database.TimeStampDataValue;
 import org.openshapa.views.discrete.EditorComponent;
 
 import com.usermetrix.jclient.UserMetrix;
-import javax.swing.undo.UndoableEdit;
-import org.openshapa.undoableedits.ChangeCellEdit.Granularity;
-import org.openshapa.undoableedits.ChangeOffsetCellEdit;
-import org.openshapa.undoableedits.ChangeOnsetCellEdit;
+import org.openshapa.models.db.Cell;
 
 /**
  * This class is the character editor of a TimeStampDataValues.
@@ -44,30 +34,17 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(TimeStampDataValueEditor.class);
 
-    /** The TimeStampDataValue that this view represents. **/
-    private TimeStampDataValue model;
-
     /** The parent datacell for the TimeStamp that this view represents. */
-    private long parentCell;
+    private Cell parentCell;
 
     /** The source of the TimeStampDataValue being edited. */
     private TimeStampSource dataSourceType;
 
-    /** the previous version of the Cell. */
-    private DataCell cb = null;
-    
-    /**
-     *
-     */
     public enum TimeStampSource {
         /** Timestamp is the Onset of the datacell associated. */
         Onset,
         /** Timestamp is the Offset of the datacell associated. */
-        Offset,
-        /** Timestamp is an argument of a datacell's matrix. */
-        MatrixArg,
-        /** Timestamp is an argument of a predicate within a datacell. */
-        PredicateArg
+        Offset
     }
 
     /**
@@ -78,11 +55,11 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      * @param sourceType What timestamp are we displaying.
      */
     public TimeStampDataValueEditor(final JTextComponent ta,
-                                    final DataCell cell,
+                                    final Cell cell,
                                     final TimeStampSource sourceType) {
         super(ta);
         setEditable(true);
-        parentCell = cell.getID();
+        parentCell = cell;
         dataSourceType = sourceType;
         addPreservedChars(":");
         setDeleteChar('0');
@@ -90,79 +67,28 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     }
 
     /**
-     * @return The model that this data value view represents.
-     */
-    public DataValue getModel() {
-        return model;
-    }
-
-    /**
      * Reset the values by retrieving from the database.
      */
     public void resetValue() {
-        try {
-            // reget the parentCell in case other data items have changed
-            DataCell c =
-                    (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-                            .getCell(parentCell);
-
-            switch (dataSourceType) {
+        // reget the parentCell in case other data items have changed
+        switch (dataSourceType) {
             case Onset:
-                model = new TimeStampDataValue(c.getDB());
-                model.setItsValue(c.getOnset());
-                break;
-            case Offset:
-                model = new TimeStampDataValue(c.getDB());
-                model.setItsValue(c.getOffset());
+                setText(parentCell.getOnsetString());
                 break;
             default:
+                setText(parentCell.getOffsetString());
                 break;
-            }
-
-            setText(getModel().toString());
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to resetValue.", e);
         }
     }
 
-    /**
-     * Update the database with the model value.
-     */
-    public void updateDatabase() {
-        try {
-            // Reget the parentCell in case other data items have changed
-            DataCell c =
-                    (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-                            .getCell(parentCell);
-            
-            if (cb == null) {
-                cb = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
-            }
-            
-            
-            TimeStampDataValue tsdv = (TimeStampDataValue) getModel();
-            UndoableEdit edit = null;
-            switch (dataSourceType) {
+    private void setTimeStamp(final String value) {
+        switch (dataSourceType) {
             case Onset:
-                // record the effect
-                edit = new ChangeOnsetCellEdit(c, Granularity.FINEGRAINED);                
-                // perform the action
-                c.setOnset(tsdv.getItsValue());             
-                break;
-            case Offset:
-                // record the effect
-                edit = new ChangeOffsetCellEdit(c, Granularity.FINEGRAINED);                
-                // perform the action                
-                c.setOffset(tsdv.getItsValue());
+                parentCell.setOnset(value);
                 break;
             default:
+                parentCell.setOffset(value);
                 break;
-            }
-            c.getDB().replaceCell(c);
-            // notify the listeners
-            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to update Database: ", se);
         }
     }
 
@@ -173,7 +99,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      */
     @Override
     public void keyPressed(final KeyEvent e) {
-        TimeStampDataValue tdv = (TimeStampDataValue) getModel();
+        //TimeStampDataValue tdv = (TimeStampDataValue) getModel();
         switch (e.getKeyCode()) {
         // BugzID:708 - Force the Home key to behave correctly on OSX 10.4
         case KeyEvent.VK_HOME:
@@ -188,47 +114,27 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             break;
 
         case KeyEvent.VK_BACK_SPACE:
-            // Can't delete empty time stamp data value.
-            if (!tdv.isEmpty()) {
-                try {
-                    removeBehindCaret();
-                    tdv.setItsValue(new TimeStamp(getText()));
-                    updateDatabase();
-                    e.consume();
-                } catch (SystemErrorException ex) {
-                    java.util.logging.Logger.getLogger(
-                            TimeStampDataValueEditor.class.getName()).log(
-                            Level.SEVERE, null, ex);
-                }
-            }
+            removeBehindCaret();
+            setTimeStamp(getText());
+            e.consume();
             break;
         case KeyEvent.VK_DELETE:
-            // Can't delete empty time stamp data value.
-            if (!tdv.isEmpty()) {
-                try {
-                    int caret = getSelectionEnd();
-                    removeAheadOfCaret();
-                    setCaretPosition(caret);
-                    if (caret < getText().length()
-                            && isPreserved(getText().charAt(caret))) {
-                        setCaretPosition(getCaretPosition() + 1);
-                    }
-                    setCaretPosition(getCaretPosition() + 1);
-                    //Move an extra caret position if the next char is a ":"
-                    int c = Math.min(getText().length() - 1, getCaretPosition());
-                    if (isPreserved(getText().charAt(c))) {
-                        setCaretPosition(getCaretPosition() + 1);
-                    }
-
-                    tdv.setItsValue(new TimeStamp(getText()));
-                    updateDatabase();
-                    e.consume();
-                } catch (SystemErrorException ex) {
-                    java.util.logging.Logger.getLogger(
-                            TimeStampDataValueEditor.class.getName()).log(
-                            Level.SEVERE, null, ex);
-                }
+            int caret = getSelectionEnd();
+            removeAheadOfCaret();
+            setCaretPosition(caret);
+            if (caret < getText().length()
+                    && isPreserved(getText().charAt(caret))) {
+                setCaretPosition(getCaretPosition() + 1);
             }
+            setCaretPosition(getCaretPosition() + 1);
+            //Move an extra caret position if the next char is a ":"
+            int c = Math.min(getText().length() - 1, getCaretPosition());
+            if (isPreserved(getText().charAt(c))) {
+                setCaretPosition(getCaretPosition() + 1);
+            }
+
+            setTimeStamp(getText());
+            e.consume();
             break;
 
         case KeyEvent.VK_LEFT:
@@ -236,7 +142,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             int selectEnd = getSelectionEnd();
 
             // Move caret to the left.
-            int c = Math.max(0, getCaretPosition() - 1);
+            c = Math.max(0, getCaretPosition() - 1);
             setCaretPosition(c);
 
             // If after the move, we have a character to the left is
@@ -315,45 +221,31 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        try {
-            TimeStampDataValue tdv = (TimeStampDataValue) getModel();
-
-            // Key stoke is number - insert stroke at current caret position
-            // but only if their is room in the editor for the new digit.
-            if (Character.isDigit(e.getKeyChar())
-                    && getCaretPosition() <= getText().length()) {
-                removeAheadOfCaret();
-                StringBuilder currentValue = new StringBuilder(getText());
-                currentValue.deleteCharAt(getCaretPosition());
-                currentValue.insert(getCaretPosition(), e.getKeyChar());
+        // Key stoke is number - insert stroke at current caret position
+        // but only if their is room in the editor for the new digit.
+        if (Character.isDigit(e.getKeyChar()) && getCaretPosition() <= getText().length()) {
+            removeAheadOfCaret();
+            StringBuilder currentValue = new StringBuilder(getText());
+            currentValue.deleteCharAt(getCaretPosition());
+            currentValue.insert(getCaretPosition(), e.getKeyChar());
+            setCaretPosition(getCaretPosition() + 1);
+            //Move an extra caret position if the next char is a ":"
+            int c = Math.min(getText().length() - 1, getCaretPosition());
+            if (isPreserved(getText().charAt(c))) {
                 setCaretPosition(getCaretPosition() + 1);
-                //Move an extra caret position if the next char is a ":"
-                int c = Math.min(getText().length() - 1, getCaretPosition());
-                if (isPreserved(getText().charAt(c))) {
-                    setCaretPosition(getCaretPosition() + 1);
-                }
-
-                tdv.setItsValue(new TimeStamp(currentValue.toString()));
-                e.consume();
-
-                // Every other key stroke is ignored by the float editor.
-            } else {
-                e.consume();
-
-                // Nothing has changed - skip updating the database.
-                return;
             }
 
-            // Update the strings just in case we don't change the value.
-            setText(getModel().toString());
+            setTimeStamp(currentValue.toString());
+            e.consume();
 
-            // Push the value back into the database.
-            updateDatabase();
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to update TimeStampDataValue", se);
+        // Every other key stroke is ignored by the float editor.
+        } else {
+            e.consume();
+
+            // Nothing has changed - skip updating the database.
+            return;
         }
     }
-
  
     /**
      * focusSet is the signal that this editor has become "current".
@@ -362,12 +254,13 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      */
     @Override
     public void focusGained(final FocusEvent fe) {
-        cb = null;
+        //cb = null;
     }
     
     @Override
     public void focusLost(FocusEvent fe) {
         super.focusLost(fe);
+        /*
         if (cb != null) {
             try {
                 DataCell c = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
@@ -386,10 +279,8 @@ public final class TimeStampDataValueEditor extends EditorComponent {
             } catch (SystemErrorException e) {
                 LOGGER.error("Unable to create DataCell", e);
             }          
-        }
+        }*/
     }
-
-
 
     /**
      * Action to take by this editor when a key is released.

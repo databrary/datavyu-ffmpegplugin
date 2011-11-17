@@ -91,7 +91,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * @return true if a viewport should force the Scrollables width to match
-     *         its own.
+     * its own.
      */
     @Override
     public boolean getScrollableTracksViewportWidth() {
