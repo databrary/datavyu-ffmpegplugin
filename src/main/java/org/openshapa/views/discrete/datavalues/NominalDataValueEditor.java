@@ -14,18 +14,11 @@
  */
 package org.openshapa.views.discrete.datavalues;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 
-import database.DataCell;
-import database.Database;
-import database.Matrix;
-import database.NominalDataValue;
-import database.PredDataValue;
-import database.SystemErrorException;
+import org.openshapa.models.db.NominalValue;
 
 /**
  * This class is the character editor of a NominalDataValue.
@@ -35,81 +28,55 @@ public final class NominalDataValueEditor extends DataValueEditor {
     /**
      * String holding the reserved characters - these are characters that are
      * users are unable to enter into a nominal field.
+     *
+     * BugzID:524 - If Character is an escape key - ignore it.
      */
-    // BugzID:524 - If Character is an escape key - ignore it.
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n\"\u001B";
 
-    /** The logger for this class. */
-    private static Logger LOGGER = UserMetrix.getLogger(NominalDataValueEditor.class);
+    /** The model that this editor is manipulating */
+    NominalValue model;
 
     /**
      * Constructor.
      *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param cell The parent data cell this editor resides within.
-     * @param matrix Matrix holding the datavalue this editor will represent.
-     * @param matrixIndex The index of the datavalue within the matrix.
+     * @param ta The parent JTextComponent the editor resides within.
+     * @param NominalValue The value this editor manipulates.
      */
     public NominalDataValueEditor(final JTextComponent ta,
-                                  final DataCell cell,
-                                  final Matrix matrix,
-                                  final int matrixIndex) {
-        super(ta, cell, matrix, matrixIndex);
+                                  final NominalValue nv) {
+        super(ta, nv);
+        model = nv;
     }
 
     /**
-     * Constructor.
+     * @param aChar Character to test
      *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param cell The parent data cell this editor resides within.
-     * @param p The predicate holding the datavalue this editor will represent.
-     * @param pi The index of the datavalue within the predicate.
-     * @param matrix Matrix holding the datavalue this editor will represent.
-     * @param matrixIndex The index of the datavalue within the matrix.
+     * @return true if the character is a reserved character.
      */
-    public NominalDataValueEditor(final JTextComponent ta,
-                                  final DataCell cell,
-                                  final PredDataValue p,
-                                  final int pi,
-                                  final Matrix matrix,
-                                  final int matrixIndex) {
-        super(ta, cell, p, pi, matrix, matrixIndex);
+    public boolean isReserved(final char aChar) {
+        return (RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 
-    /**
-     * Action to take when focus is lost for this editor.
-     * @param fe Focus Event
-     */
+    // *************************************************************************
+    // Parent Class Overrides
+    // *************************************************************************
     @Override
     public void focusLost(final FocusEvent fe) {
         // BugzID:581 - Trim trailing spaces from nominal (apparently they are
-        // not permitted.
+        // not permitted).
         super.focusLost(fe);
-        try {
-            if (!Database.IsValidNominal(this.getText())
-                && !this.getText().equals(this.getNullArg())) {
-                NominalDataValue ndv = (NominalDataValue) getModel();
-                this.setText(ndv.getItsValue());
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to determine if nominal is valid", e);
+        if (!model.isValid(this.getText())) {
+            this.setText(model.toString());
         }
 
         super.focusLost(fe);
     }
 
-    /**
-     * The action to invoke when a key is typed.
-     *
-     * @param e The KeyEvent that triggered this action.
-     */
     @Override
     public void keyTyped(final KeyEvent e) {
         super.keyTyped(e);
 
         // Just a regular vanilla keystroke - insert it into nominal field.
-        NominalDataValue ndv = (NominalDataValue) getModel();
-
         if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
             && !isReserved(e.getKeyChar())) {
             this.removeSelectedText();
@@ -135,26 +102,16 @@ public final class NominalDataValueEditor extends DataValueEditor {
         }
 
         // Push the character changes into the database.
-        try {
-            if (Database.IsValidNominal(this.getText())) {
-                ndv.setItsValue(this.getText());
-                updateDatabase();
+        if (model.isValid(this.getText())) {
+            model.set(this.getText());
+            //ndv.setItsValue(this.getText());
+            //updateDatabase();
 
-            // BugzID:668 - The user is reverting back to a 'placeholder' state.
-            } else if (this.getText().equals("")) {
-                ndv.clearValue();
-                updateDatabase();
-            }
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to edit text string", se);
+        // BugzID:668 - The user is reverting back to a 'placeholder' state.
+        } else if (this.getText().equals("")) {
+            model.clear();
+            //ndv.clearValue();
+            //updateDatabase();
         }
-    }
-
-    /**
-     * @param aChar Character to test
-     * @return true if the character is a reserved character.
-     */
-    public boolean isReserved(final char aChar) {
-        return (RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 }

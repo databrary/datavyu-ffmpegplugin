@@ -574,7 +574,7 @@
                 <preCp>database-0.01.jar</preCp>
                 <preCp>jruby-complete-1.6.5.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
-                <preCp>openshapa-lib-0.0.71.jar</preCp>
+                <preCp>openshapa-lib-0.0.73.jar</preCp>
                 <preCp>openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</preCp>
                 <preCp>snakeyaml-1.7.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
@@ -625,9 +625,9 @@
     </dependency>
 
     <dependency>
-        <groupId>database</groupId>
-        <artifactId>database</artifactId>
-        <version>0.01</version>
+      <groupId>database</groupId>
+      <artifactId>database</artifactId>
+      <version>0.01</version>
     </dependency>
 
     <dependency>
@@ -645,7 +645,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.71</version>
+      <version>0.0.73</version>
     </dependency>
 
     <dependency>

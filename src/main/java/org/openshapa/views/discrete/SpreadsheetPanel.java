@@ -423,8 +423,7 @@ implements DatastoreListener,
 
                 // For each of the cells in the columns - look for the
                 // highlighted cell.
-                SpreadsheetCell cell = columns.get(colID).getCells().get(
-                        cellID);
+                SpreadsheetCell cell = columns.get(colID).getCells().get(cellID);
 
                 if (cell.getCellID() == highlightedCell.getCellID()) {
 

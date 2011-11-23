@@ -82,8 +82,14 @@ import java.util.TimeZone;
         return null;
     }
 
+    @Override
+    public Value getValue() {
+        return null;
+    }
 
-    @Override public String getValue() {
+
+    @Override
+    public String getValueAsString() {
         DataCell cell = getLegacyCell();
 
         if (cell == null) {

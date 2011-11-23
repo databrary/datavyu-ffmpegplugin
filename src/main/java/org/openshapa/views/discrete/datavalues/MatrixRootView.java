@@ -14,25 +14,20 @@
  */
 package org.openshapa.views.discrete.datavalues;
 
-import com.usermetrix.jclient.Logger;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.Vector;
 
 import javax.swing.JTextArea;
 
 import org.openshapa.OpenSHAPA;
-import database.DataCell;
-import database.Matrix;
-import database.PredDataValue;
-import database.Predicate;
-import database.SystemErrorException;
-import database.VocabElement;
-import database.FormalArgument.FArgType;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 
-import com.usermetrix.jclient.UserMetrix;
+import java.util.ArrayList;
+import java.util.List;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.Value;
+import org.openshapa.models.db.Variable;
 
 /**
  * JTextArea view of the Matrix (database cell) data.
@@ -40,48 +35,32 @@ import com.usermetrix.jclient.UserMetrix;
 public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /** The parent cell for this JPanel. */
-    private long parentCell = -1;
+    private Cell parentCell = null;
 
     /** All the editors that make up the representation of the data. */
-    private Vector<EditorComponent> allEditors;
+    private List<EditorComponent> allEditors;
 
     /** The editor tracker responsible for the editor components. */
     private EditorTracker edTracker;
 
-    /** The current vocab used for this matrix root view. */
-    private VocabElement ve;
-
-    /**
-     * The current number of predicate arguments used for this matrix root
-     * view... -1 If not a predicate.
-     */
-    private int numPredArgs;
-
-    /** The logger for this class. */
-    private static Logger LOGGER = UserMetrix.getLogger(MatrixRootView.class);
-
     /**
      * Creates a new instance of MatrixV.
      * 
-     * @param cell
-     *            The parent datacell for this spreadsheet cell.
-     * @param matrix
-     *            The Matrix holding datavalues that this view label will
-     *            represent.
+     * @param cell The parent cell for this spreadsheet cell.
+     * @param matrix The Matrix holding datavalues that this view label will
+     * represent.
      */
-    public MatrixRootView(final DataCell cell, final Matrix matrix) {
+    public MatrixRootView(final Cell cell, final Value value) {
         super();
 
         setLineWrap(true);
         setWrapStyleWord(true);
 
-        parentCell = cell.getID();
-        allEditors = new Vector<EditorComponent>();
+        parentCell = cell;
+        allEditors = new ArrayList<EditorComponent>();
         edTracker = new EditorTracker(this, allEditors);
-        ve = null;
-        numPredArgs = -1;
         
-        setMatrix(matrix);
+        setMatrix(value);
 
         addFocusListener(this);
         addFocusListener(edTracker);
@@ -99,90 +78,26 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     }
 
     /**
-     * Sets the matrix that this MatrixRootView will represent.
+     * Sets the value that this MatrixRootView will represent.
      * 
-     * @param m
-     *            The Matrix to display.
+     * @param v The Value to display.
      */
-    public void setMatrix(final Matrix m) {
+    public void setMatrix(final Value v) {
         // Determine selected editor, and internal caret position.
         int pos = getCaretPosition();
         EditorComponent comp = edTracker.findEditor(pos);
         int edPos = comp.getCaretPosition();
 
-        try {
-            if (m != null) {
-                // The vocab element changes before the matrix. We have no idea
-                // if the vocab element has changed ahead of time, so basically
-                // we need to store a local copy of the vocab element and
-                // locally determine if the vocab element has changed and update
-                // the editors accordingly.
-                VocabElement newVE = m.getDB().getVocabElement(m.getMveID());
-                boolean hasPredChanged = hasPredicateVocabChanged(m);
-
-                DataCell c =
-                        (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-                                .getCell(parentCell);
-
-                // No editors exist yet - build some to begin with.
-                if (allEditors.size() == 0) {
-                    allEditors.addAll(DataValueEditorFactory.buildMatrix(this,
-                            c, m));
-                    ve = newVE;
-
-                    // Check to see if the vocab for the matrix has changed - if
-                    // so
-                    // clear the current editors and start afresh.
-                } else if (ve != null && !ve.equals(newVE) || hasPredChanged) {
-                    if (hasPredChanged) {
-                        edPos = 0;
-                    }
-                    allEditors.clear();
-                    allEditors.addAll(DataValueEditorFactory.buildMatrix(this,
-                            c, m));
-                    ve = newVE;
-
-                    // Vocab hasn't changed - only values for the matrix. Simply
-                    // update the values.
-                } else {
-                    for (EditorComponent ed : allEditors) {
-                        ed.resetValue(c, m);
-                    }
-                }
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to set/reset Matrix for MatrixRootView.", e);
+        if (v != null) {
+            // No editors exist yet - build some to begin with.
+            allEditors.clear();
+            allEditors.addAll(DataValueEditorFactory.buildMatrix(this, parentCell));
         }
 
         rebuildText();
 
         // restore caret position inside current editor.
         comp.setCaretPosition(edPos);
-    }
-
-    /**
-     * Returns true if the vocab has changed for a predicate.
-     * 
-     * @param m
-     *            The matrix containing the predicate to alter.
-     * @return True if the predicate vocab has changed, false otherwise.
-     * @throws SystemErrorException
-     *             If unable to determine if the predicate vocab has changed.
-     */
-    public boolean hasPredicateVocabChanged(final Matrix m)
-            throws SystemErrorException {
-        boolean result = false;
-
-        if (m.getNumArgs() == 1
-                && m.getArgCopy(0).getItsFargType() == FArgType.PREDICATE) {
-            PredDataValue pdv = (PredDataValue) m.getArgCopy(0);
-            Predicate p = pdv.getItsValue();
-
-            result = (pdv.isEmpty() || p.getNumArgs() != numPredArgs);
-            numPredArgs = p.getNumArgs();
-        }
-
-        return result;
     }
 
     /**
@@ -205,54 +120,35 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         return edTracker;
     }
 
-    /**
-     * The action to invoke if the focus is gained by this MatrixRootView.
-     * 
-     * @param fe The Focus Event that triggered this action.
-     */
+    // *************************************************************************
+    // Focus Listener Overrides
+    // *************************************************************************
     @Override
     public void focusGained(final FocusEvent fe) {
-        try {
-            // We need to remember which cell should be duplicated if the user
-            // presses the enter key or selects New Cell from the menu.
-            if (parentCell != -1) {
-                // method names don't reflect usage - we didn't really create
-                // this cell just now.
-                DataCell c =
-                        (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase()
-                                .getCell(parentCell);
-                OpenSHAPA.getProjectController().setLastCreatedColId(
-                        c.getItsColID());
-                OpenSHAPA.getProjectController().setLastSelectedCellId(
-                        parentCell);
-            }
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to gain focus", se);
+        // We need to remember which cell should be duplicated if the user
+        // presses the enter key or selects New Cell from the menu.
+        if (parentCell != null) {
+            // method names don't reflect usage - we didn't really create
+            // this column just now.
+            Variable v = OpenSHAPA.getProjectController().getDB().getVariable(parentCell);
+            OpenSHAPA.getProjectController().setLastCreatedVariable(v);
+            OpenSHAPA.getProjectController().setLastSelectedCell(parentCell);
         }
     }
 
-    /**
-     * The action to invoke if the focus is lost.
-     * 
-     * @param fe The FocusEvent that triggered this action.
-     */
     @Override
     public void focusLost(final FocusEvent fe) {
         // do nothing
     }
 
-    /**
-     * Pastes contents of the clipboard into the editor tracker.
-     */
+    // *************************************************************************
+    // Parent Class Overrides
+    // *************************************************************************
     @Override
     public void paste() {
         edTracker.paste();
     }
 
-    /**
-     * Copies the current selection into the clipboard and then deletes the
-     * selection.
-     */
     @Override
     public void cut() {
         edTracker.cut();

@@ -21,7 +21,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Vector;
+import java.util.List;
 import javax.swing.text.JTextComponent;
 import org.openshapa.views.discrete.datavalues.NoEditor;
 
@@ -36,7 +36,7 @@ implements FocusListener, KeyListener, MouseListener {
     /** The JTextComponent that contains the EditorComponents. */
     private JTextComponent textArea;
     /** Vector of the EditorComponents. */
-    private Vector<EditorComponent> editors;
+    private List<EditorComponent> editors;
     /** Current EditorComponent. */
     private EditorComponent currentEditor = NO_EDITOR;
     /** Number of characters before of the current editor. */
@@ -57,7 +57,7 @@ implements FocusListener, KeyListener, MouseListener {
      * @param eds Vector of the EditorComponents.
      */
     public EditorTracker(final JTextComponent ta,
-                         final Vector<EditorComponent> eds) {
+                         final List<EditorComponent> eds) {
         textArea = ta;
         editors = eds;
     }
@@ -124,7 +124,7 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param eds The editors to add.
      */
-    public void addEditors(final Vector<EditorComponent> eds) {
+    public void addEditors(final List<EditorComponent> eds) {
         if (editors.addAll(eds)) {
             calculatePrePostCounts();
         }
@@ -135,7 +135,7 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param eds The editors to remove.
      */
-    public void removeEditors(final Vector<EditorComponent> eds) {
+    public void removeEditors(final List<EditorComponent> eds) {
         if (editors.removeAll(eds)) {
             calculatePrePostCounts();
         }
@@ -229,10 +229,40 @@ implements FocusListener, KeyListener, MouseListener {
     }
 
     /**
-     * Focus has been gained by the JTextComponent this tracker watches.
-     *
-     * @param fe The FocusEvent that triggered this action.
+     * Call the currentEditor to sanitize the text in the clipboard.
      */
+    public void paste() {
+        currentEditor.paste();
+    }
+
+    /**
+     * Cut text from the current editor.
+     */
+    public void cut() {
+        currentEditor.cut();
+    }
+
+    /**
+     * @return The current editor for this editor tracker.
+     */
+    public EditorComponent getCurrentEditor() {
+        return this.currentEditor;
+    }
+
+    /**
+     * Calculate the currentEditor's text and call it's resetText method.
+     */
+    public void resetEditorText() {
+        int newLength = textArea.getText().length()
+                        - (preCharCount + postCharCount);
+        currentEditor.resetText(textArea.getText()
+                     .substring(preCharCount, preCharCount + newLength));
+    }
+
+    // *************************************************************************
+    // FocusListener Overrides
+    // *************************************************************************
+    @Override
     public void focusGained(final FocusEvent fe) {
         if (currentEditor.equals(NO_EDITOR)) {
             setEditor(findEditor(0), 0, 0);
@@ -241,32 +271,22 @@ implements FocusListener, KeyListener, MouseListener {
         }
     }
 
-    /**
-     * Focus has been lost by the JTextComponent this tracker watches.
-     *
-     * @param fe The FocusEvent that triggered this action.
-     */
+    @Override
     public void focusLost(final FocusEvent fe) {
         currentEditor.focusLost(fe);
-//        currentEditor = NO_EDITOR;
     }
 
-    /**
-     * The action to invoke when a key is released.
-     *
-     * @param e The KeyEvent that triggered this action.
-     */
+    // *************************************************************************
+    // KeyListener Overrides
+    // *************************************************************************
+    @Override
     public void keyReleased(final KeyEvent e) {
         gotKeyUp = true;
         resetEditorText();
         currentEditor.keyReleased(e);
     }
 
-    /**
-     * The action to invoke when a key is typed.
-     *
-     * @param e The KeyEvent that triggered this action.
-     */
+    @Override
     public void keyTyped(KeyEvent e) {
         // Key stroke is NOT delete or backspace - handle this within the crazy
         // editors - otherwise we assume this has been handled by keyPressed.
@@ -275,11 +295,7 @@ implements FocusListener, KeyListener, MouseListener {
         }
     }
 
-    /**
-     * The action to invoke when a key is pressed.
-     *
-     * @param e The KeyEvent that triggered this action.
-     */
+    @Override
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
 
@@ -377,21 +393,10 @@ implements FocusListener, KeyListener, MouseListener {
         gotKeyUp = false;
     }
 
-    /**
-     * Calculate the currentEditor's text and call it's resetText method.
-     */
-    public void resetEditorText() {
-        int newLength = textArea.getText().length()
-                        - (preCharCount + postCharCount);
-        currentEditor.resetText(textArea.getText()
-                     .substring(preCharCount, preCharCount + newLength));
-    }
-
-    /**
-     * The action to invoke when a mouse button is pressed.
-     *
-     * @param me The mouse event that triggered this action.
-     */
+    // *************************************************************************
+    // MouseListener Overrides
+    // *************************************************************************
+    @Override
     public void mousePressed(final MouseEvent me) {
         int charPos = textArea.getCaretPosition();
         EditorComponent tempEC = findEditor(charPos);
@@ -404,11 +409,7 @@ implements FocusListener, KeyListener, MouseListener {
         }
     }
 
-    /**
-     * The action to invoke when a mouse button is released.
-     *
-     * @param me The mouse event that triggered this action.
-     */
+    @Override
     public void mouseReleased(final MouseEvent me) {
         me.consume();
 
@@ -418,11 +419,7 @@ implements FocusListener, KeyListener, MouseListener {
         }
     }
 
-    /**
-     * The action to invoke when a mouse button is clicked.
-     *
-     * @param me The mouse event that triggered this action.
-     */
+    @Override
     public void mouseClicked(final MouseEvent me) {
         if (me.getClickCount() == TRIPLE_CLICK_COUNT) {
             // Triple click selects all text (feature of JTextArea).
@@ -439,42 +436,15 @@ implements FocusListener, KeyListener, MouseListener {
         me.consume();
     }
 
-    /**
-     * The action to invoke when the mouse enters this component.
-     *tEdi
-     * @param me The mouse event that triggered this action.
-     */
+    @Override
     public void mouseEntered(final MouseEvent me) {
         // Currently we do nothing with the mouse entered event.
     }
 
-    /**
-     * The action to invoke when the mouse exits this component.
-     *
-     * @param me The mouse event that triggered this action.
-     */
+    @Override
     public void mouseExited(final MouseEvent me) {
         // Currently we do nothing with the mouse exited event.
     }
 
-    /**
-     * Call the currentEditor to sanitize the text in the clipboard.
-     */
-    public void paste() {
-        currentEditor.paste();
-    }
 
-    /**
-     * Cut text from the current editor.
-     */
-    public void cut() {
-        currentEditor.cut();
-    }
-
-    /**
-     * @return The current editor for this editor tracker.
-     */
-    public EditorComponent getCurrentEditor() {
-        return this.currentEditor;
-    }
 }

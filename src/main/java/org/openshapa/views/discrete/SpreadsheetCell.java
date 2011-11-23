@@ -42,12 +42,6 @@ import org.jdesktop.application.ResourceMap;
 import org.openshapa.Configuration;
 import org.openshapa.OpenSHAPA;
 
-import database.DataCell;
-import database.Database;
-import database.Matrix;
-import database.SystemErrorException;
-import database.TimeStamp;
-
 import org.openshapa.views.discrete.datavalues.MatrixRootView;
 import org.openshapa.views.discrete.datavalues.TimeStampTextField;
 import org.openshapa.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
@@ -57,7 +51,6 @@ import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.CellListener;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.DeprecatedCell;
-import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.Value;
 
 
@@ -175,10 +168,6 @@ implements MouseListener, FocusListener, CellListener {
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
                                       .getResourceMap(SpreadsheetCell.class);
 
-        // Register this view with the database so that we can get updates when
-        // the cell within the database changes.
-        DataCell dc = ((DeprecatedCell) cell).getLegacyCell();
-
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
         // the selector, but not trigger a selection change or deselect others.
@@ -221,15 +210,10 @@ implements MouseListener, FocusListener, CellListener {
         offset.addMouseListener(this);
         offset.setName("offsetTextField");
 
-        dataPanel = new MatrixRootView(dc, null);
+        dataPanel = new MatrixRootView(model, cell.getValue());
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());
         dataPanel.setForeground(Configuration.getInstance().getSSForegroundColour());
 
-        try {
-            dataPanel.setMatrix(dc.getVal());
-        } catch (SystemErrorException e) {
-            LOGGER.error("unable to set matrix", e);
-        }
         dataPanel.setOpaque(false);
         dataPanel.addFocusListener(this);
         dataPanel.addMouseListener(this);
@@ -350,7 +334,6 @@ implements MouseListener, FocusListener, CellListener {
      * Get the onset ticks
      *
      * @return Onset time as a long.
-     * @throws SystemErrorException
      */
     public long getOnsetTicks() {
         return model.getOnset();
@@ -360,7 +343,6 @@ implements MouseListener, FocusListener, CellListener {
      * Get the offset ticks
      *
      * @return Offset ticks as a long.
-     * @throws SystemErrorException
      */
     public long getOffsetTicks() {
         return model.getOffset();
@@ -575,48 +557,8 @@ implements MouseListener, FocusListener, CellListener {
 
     @Override
     public void valueChange(final Value newValue) {
-
-    }
-
-    /**
-     * Called if the DataCell of interest is changed. see
-     * ExternalDataCellListener.
-     */
-    public void DCellChanged(final Database db,
-                             final long colID,
-                             final long cellID,
-                             final boolean ordChanged,
-                             final int oldOrd,
-                             final int newOrd,
-                             final boolean onsetChanged,
-                             final TimeStamp oldOnset,
-                             final TimeStamp newOnset,
-                             final boolean offsetChanged,
-                             final TimeStamp oldOffset,
-                             final TimeStamp newOffset,
-                             final boolean valChanged,
-                             final Matrix oldVal,
-                             final Matrix newVal,
-                             final boolean selectedChanged,
-                             final boolean oldSelected,
-                             final boolean newSelected,
-                             final boolean commentChanged,
-                             final String oldComment,
-                             final String newComment) {
-
-        if (valChanged) {
-            dataPanel.setMatrix(newVal);
-        }
-
-        revalidate();
-    }
-
-    /**
-     * Called if the DataCell of interest is deleted.
-     */
-    public void DCellDeleted(final Database db, final long colID,
-        final long cellID) {
-        // TODO - Figure out how to work with cells that are deleted.
+        //dataPanel.setMatrix(newValue);
+        //revalidate();
     }
 
     // *************************************************************************

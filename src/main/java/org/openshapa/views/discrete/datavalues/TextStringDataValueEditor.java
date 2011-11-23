@@ -14,16 +14,10 @@
  */
 package org.openshapa.views.discrete.datavalues;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 
-import database.DataCell;
-import database.Matrix;
-import database.PredDataValue;
-import database.SystemErrorException;
-import database.TextStringDataValue;
+import org.openshapa.models.db.TextValue;
 
 /**
  * This class is the character editor of a TextStringDataValue.
@@ -33,59 +27,43 @@ public final class TextStringDataValueEditor extends DataValueEditor {
     /**
      * String holding the reserved characters - these are characters that are
      * users are unable to enter into a text field.
+     *
+     * BugzID:524 - If Character is an escape key - ignore it.
      */
-    // BugzID:524 - If Character is an escape key - ignore it.
     private static final String RESERVED_CHARS = "\u001B\t";
 
-    /** The logger for this class. */
-    private static Logger LOGGER = UserMetrix.getLogger(TextStringDataValueEditor.class);
+    /** The model that this editor is manipulating */
+    TextValue model;
 
     /**
      * Constructor.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param cell The parent data cell this editor resides within.
-     * @param matrix Matrix holding the datavalue this editor will represent.
-     * @param matrixIndex The index of the datavalue within the matrix.
+     * @param tv The value this editor manipulates
      */
     public TextStringDataValueEditor(final JTextComponent ta,
-                                     final DataCell cell,
-                                     final Matrix matrix,
-                                     final int matrixIndex) {
-        super(ta, cell, matrix, matrixIndex);
+                                     final TextValue tv) {
+        super(ta, tv);
         setAcceptReturnKey(true);
+        model = tv;
     }
 
     /**
-     * Constructor.
+     * @param aChar Character to test
      *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param cell The parent data cell this editor resides within.
-     * @param p The predicate holding the datavalue this editor will represent.
-     * @param pi The index of the datavalue within the predicate.
-     * @param matrix Matrix holding the datavalue this editor will represent.
-     * @param matrixIndex The index of the datavalue within the matrix.
+     * @return true if the character is a reserved character.
      */
-    public TextStringDataValueEditor(final JTextComponent ta,
-                                     final DataCell cell,
-                                     final PredDataValue p,
-                                     final int pi,
-                                     final Matrix matrix,
-                                     final int matrixIndex) {
-        super(ta, cell, p, pi, matrix, matrixIndex);
-        setAcceptReturnKey(true);
+    public boolean isReserved(final char aChar) {
+        return (RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 
-    /**
-     * The action to invoke when a key is typed.
-     *
-     * @param e The KeyEvent that triggered this action.
-     */
+    // *************************************************************************
+    // Parent Class Overrides
+    // *************************************************************************
     @Override
     public void keyTyped(final KeyEvent e) {
         super.keyTyped(e);
 
-        TextStringDataValue tsdv = (TextStringDataValue) getModel();
         // Just a regular vanilla keystroke - insert it into text field.
         if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
             && !isReserved(e.getKeyChar())) {
@@ -107,30 +85,16 @@ public final class TextStringDataValueEditor extends DataValueEditor {
             e.consume();
 
             // Push the character changes into the database.
-            try {
-                // BugzID:668 - The user is reverting back to a 'placeholder' state.
-                if (this.getText().equals("")) {
-                    tsdv.clearValue();
-                } else {
-                    tsdv.setItsValue(this.getText());
-                }
-                updateDatabase();
-            } catch (SystemErrorException se) {
-                LOGGER.error("Unable to edit text string", se);
+            // BugzID:668 - The user is reverting back to a 'placeholder' state.
+            if (this.getText().equals("")) {
+                model.clear();
+            } else {
+                model.set(this.getText());
             }
 
         // All other key strokes are consumed.
         } else {
             e.consume();
         }        
-    }
-
-
-    /**
-     * @param aChar Character to test
-     * @return true if the character is a reserved character.
-     */
-    public boolean isReserved(final char aChar) {
-        return (RESERVED_CHARS.indexOf(aChar) >= 0);
     }
 }

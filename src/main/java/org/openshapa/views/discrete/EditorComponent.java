@@ -26,8 +26,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.openshapa.Configuration;
-import database.DataCell;
-import database.Matrix;
 
 /**
  * EditorComponent - Abstract class for editing a segment of text within a
@@ -200,15 +198,6 @@ public abstract class EditorComponent implements ClipboardOwner {
      */
     public final void resetText(final String text) {
         editorText = text;
-    }
-
-    /**
-     * Reset the values by retrieving from the database.
-     *
-     * @param cell The Parent cell that holds the matrix.
-     * @param matrix The parent matrix that holds the DataValue.
-     */
-    public void resetValue(final DataCell cell, final Matrix matrix) {
     }
 
     /**

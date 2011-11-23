@@ -14,18 +14,15 @@
  */
 package org.openshapa.views.discrete.datavalues;
 
-import java.util.Vector;
-
 import javax.swing.text.JTextComponent;
 
-import database.DataCell;
-import database.DataValue;
-import database.Matrix;
-import database.NominalDataValue;
-import database.SystemErrorException;
-import database.TextStringDataValue;
-import database.UndefinedDataValue;
-
+import java.util.ArrayList;
+import java.util.List;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.MatrixValue;
+import org.openshapa.models.db.NominalValue;
+import org.openshapa.models.db.TextValue;
+import org.openshapa.models.db.Value;
 import org.openshapa.views.discrete.EditorComponent;
 
 
@@ -45,38 +42,35 @@ public class DataValueEditorFactory {
      * data cell.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param m The matrix in the data cell.
+     * @param c The parent cell the editors resides within.
      *
      * @return A vector of editor components to represent the matrix.
-     *
-     * @throws SystemErrorException If unable to build editor components from
-     * the supplied matrix.
      */
-    public static Vector<EditorComponent> buildMatrix(final JTextComponent ta,
-                                                      final DataCell c,
-                                                      final Matrix m)
-    throws SystemErrorException {
+    public static List<EditorComponent> buildMatrix(final JTextComponent ta,
+                                                    final Cell c) {
 
-        Vector<EditorComponent> eds = new Vector<EditorComponent>();
+        List<EditorComponent> eds = new ArrayList<EditorComponent>();
 
-        if (m != null) {
-
-            if (m.getNumArgs() > 1) {
+        if (c.getValue() != null) {
+            if (c.getValue() instanceof MatrixValue) {
+                MatrixValue mv = (MatrixValue) c.getValue();
                 eds.add(new FixedText(ta, "("));
-            }
 
-            // For each of the matrix arguments, build a view representation
-            for (int i = 0; i < m.getNumArgs(); i++) {
-                eds.addAll(buildMatrixArg(ta, c, m, i));
+                for (int i = 0; i < mv.getArguments().size(); i++) {
+                    eds.add(buildMatrixArg(ta, mv.getArguments().get(i)));
 
-                if ((m.getNumArgs() > 1) && (i < (m.getNumArgs() - 1))) {
-                    eds.add(new FixedText(ta, ", "));
+                    if ((mv.getArguments().size() > 1) && (i < (mv.getArguments().size() - 1))) {
+                        eds.add(new FixedText(ta, ", "));
+                    }
                 }
-            }
 
-            if (m.getNumArgs() > 1) {
                 eds.add(new FixedText(ta, ")"));
+
+            } else if (c.getValue() instanceof TextValue) {
+                eds.add(buildTextString(ta, (TextValue) c.getValue()));
+
+            } else {
+                eds.add(buildNominal(ta, (NominalValue) c.getValue()));
             }
         }
 
@@ -88,81 +82,43 @@ public class DataValueEditorFactory {
      * data cell's matrix.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param m The matrix containing the argument.
-     * @param i The index of the argument within the matrix.
+     * @param v The value that we are building an editor for.
      *
-     * @return A vector of editor components to represent the matrix argument.
+     * @return The editor component that represents the supplied value
      */
-    public static Vector<EditorComponent> buildMatrixArg(final JTextComponent ta,
-                                                         final DataCell c,
-                                                         final Matrix m,
-                                                         final int i)
-    throws SystemErrorException {
+    public static EditorComponent buildMatrixArg(final JTextComponent ta,
+                                                 final Value v) {
 
-        Vector<EditorComponent> eds = new Vector<EditorComponent>();
-
-        DataValue dv = m.getArgCopy(i);
-
-        if (dv.getClass() == TextStringDataValue.class) {
-            eds.add(buildTextString(ta, c, m, i));
-        } else if (dv.getClass() == NominalDataValue.class) {
-            eds.add(buildNominal(ta, c, m, i));
-        } else if (dv.getClass() == UndefinedDataValue.class) {
-            eds.add(buildUndefined(ta, c, m, i));
+        if (v instanceof TextValue) {
+            return buildTextString(ta, (TextValue) v);
+        } else {
+            return buildNominal(ta, (NominalValue) v);
         }
-
-        return eds;
     }
 
     /**
      * Creates a data value view from the specified data value within a matrix.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param m The matrix holding the datavalue this editor will represent.
-     * @param i The index of the datavalue within the matrix.
+     * @param v The value this editor manipulates
      *
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildTextString(final JTextComponent ta,
-                                                  final DataCell c,
-                                                  final Matrix m,
-                                                  final int i) {
-        return new TextStringDataValueEditor(ta, c, m, i);
+                                                  final TextValue v) {
+        return new TextStringDataValueEditor(ta, v);
     }
 
     /**
      * Creates a data value view from the specified data value within a matrix.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param m The matrix holding the datavalue this editor will represent.
-     * @param i The index of the datavalue within the matrix.
+     * @param v The value this editor manipulates
      *
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildNominal(final JTextComponent ta,
-                                               final DataCell c,
-                                               final Matrix m,
-                                               final int i) {
-        return new NominalDataValueEditor(ta, c, m, i);
-    }
-
-    /**
-     * Creates a data value view from the specified data value within a matrix.
-     *
-     * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent data cell this editor resides within.
-     * @param m The matrix holding the datavalue this editor will represent.
-     * @param i The index of the datavalue within the matrix.
-     *
-     * @return An editor component to represent the specified data value.
-     */
-    public static EditorComponent buildUndefined(final JTextComponent ta,
-                                                 final DataCell c,
-                                                 final Matrix m,
-                                                 final int i) {
-        return new UndefinedDataValueEditor(ta, c, m, i);
+                                               final NominalValue v) {
+        return new NominalDataValueEditor(ta, v);
     }
 }
