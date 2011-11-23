@@ -14,60 +14,51 @@
  */
 package org.openshapa.undoableedits;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import database.DataCell;
-import database.SystemErrorException;
-import database.TimeStamp;
+import org.openshapa.models.db.Cell;
+import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 /**
  *
  */
 public class ChangeOffsetCellEdit extends ChangeCellEdit {
-    /** The logger for this class. */
-    private static final Logger LOGGER = UserMetrix.getLogger(ChangeOffsetCellEdit.class);
-    
     /** offset of cell */
-    private TimeStamp offset = null;
-  
-    public ChangeOffsetCellEdit(DataCell c, Granularity granularity) {
-        super(c, granularity);
-        try {
-            this.offset = c.getOffset();
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to getOnset", e);
-        } finally {
+    private long offset = -1;
+    private String offsetString = null;
 
-        }
+    public ChangeOffsetCellEdit(Cell c, Granularity granularity) {
+        super(c, granularity);
+        this.offset = c.getOffset();
+        this.offsetString = c.getOffsetString();
     }
 
-    public ChangeOffsetCellEdit(DataCell c) {
+    public ChangeOffsetCellEdit(Cell c) {
         this(c,Granularity.COARSEGRAINED);
     }
-    
+
     @Override
     public String getPresentationName() {
-        return super.getPresentationName() + "Offset Cell (" + columnName + "," + rowIndex + ") to " + offset.toHMSFString();
+        return super.getPresentationName() + "Offset Cell (" + columnName + "," + rowIndex + ") to " + offsetString;
     }
-    
+
     @Override
-    protected void updateCell(DataCell cell) {
-        try {
-            TimeStamp currentOffset = cell.getOffset();
-            cell.setOffset(this.offset);
-            this.offset = currentOffset;
-            db.replaceCell(cell); 
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to getOnset", e);
-        }      
+    protected void updateCell(DataCell cell) {        
+        /*
+         * TODO: Port method declaration to new API.
+        long currentOffset = cell.getOffset();
+        String currentOffsetString = cell.getOffsetString();
+
+        cell.setOffset(this.offset);
+        this.offset = currentOffset;
+         */
     }
- 
+
     @Override
     protected void selectField(SpreadsheetCell sCell) {
         sCell.selectOffset();
     } 
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -77,7 +68,19 @@ public class ChangeOffsetCellEdit extends ChangeCellEdit {
             return false;
         }
         // Must be this class to be here
-        ChangeOffsetCellEdit t = (ChangeOffsetCellEdit) obj;       
-        return this.offset.equals(((ChangeOffsetCellEdit)t).offset);
+        ChangeOffsetCellEdit t = (ChangeOffsetCellEdit) obj;
+
+        return ((this.offset == t.offset)
+                && (this.offsetString.equals(t.offsetString)));
+    }
+
+    @Override
+    public int hashCode() {
+        double hash = super.hashCode();
+        hash += offset * Constants.SEED1;
+        hash += offsetString.hashCode() * Constants.SEED2;
+        long val = Double.doubleToLongBits(hash);
+
+        return (int) (val ^ (val >>> 32));
     }
 }

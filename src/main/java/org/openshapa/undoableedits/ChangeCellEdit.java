@@ -22,6 +22,7 @@ import javax.swing.undo.CannotUndoException;
 import database.Column;
 import database.DataCell;
 import database.SystemErrorException;
+import org.openshapa.models.db.Cell;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 /**
@@ -51,7 +52,11 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
     public enum Granularity {
         FINEGRAINED,
         COARSEGRAINED
-    }    
+    }
+    
+    public ChangeCellEdit(Cell c, Granularity granularity) {
+        // New constructor.
+    }
     
     public ChangeCellEdit(DataCell c, Granularity granularity) {
         super();

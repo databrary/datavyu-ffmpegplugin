@@ -14,55 +14,46 @@
  */
 package org.openshapa.undoableedits;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import database.DataCell;
-import database.SystemErrorException;
-import database.TimeStamp;
+import org.openshapa.models.db.Cell;
+import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 /**
  *
  */
 public class ChangeOnsetCellEdit extends ChangeCellEdit { 
-    /** The logger for this class. */
-    private static final Logger LOGGER = UserMetrix.getLogger(ChangeOnsetCellEdit.class);
-    
-    /** onset of cell */
-    private TimeStamp onset = null;
-  
-    public ChangeOnsetCellEdit(DataCell c, Granularity granularity) {
-        super(c, granularity);
-        try {
-            this.onset = c.getOnset();
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to getOnset", e);
-        } finally {
+    /** offset of cell */
+    private long onset = -1;
+    private String onsetString = null;
 
-        }
+    public ChangeOnsetCellEdit(Cell c, Granularity granularity) {
+        super(c, granularity);
+        this.onset = c.getOnset();
+        this.onsetString = c.getOnsetString();
     }
 
-    public ChangeOnsetCellEdit(DataCell c) {
+    public ChangeOnsetCellEdit(Cell c) {
         this(c, Granularity.COARSEGRAINED);
     }
-    
+
     @Override
     public String getPresentationName() {
-        return super.getPresentationName() + "Onset Cell (" + columnName + "," + rowIndex + ") to " + onset.toHMSFString();
+        return super.getPresentationName() + "Onset Cell (" + columnName + "," + rowIndex + ") to " + onsetString;
     }
-   
+
     @Override
     protected void updateCell(DataCell cell) {
-        try {
-            TimeStamp currentOnset = cell.getOnset();
-            cell.setOnset(this.onset);
-            this.onset = currentOnset;
-            db.replaceCell(cell); 
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to getOnset", e);
-        }      
+        /*
+         * TODO: Port method declaration to new API.
+        long currentOnset = cell.getOnset();
+        String currentOnsetString = cell.getOnsetString();
+        
+        cell.setOnset(this.onset);
+        this.onset = currentOnset;
+         */
     }
-    
+
     @Override
     protected void selectField(SpreadsheetCell sCell) {
         sCell.selectOnset();
@@ -76,9 +67,21 @@ public class ChangeOnsetCellEdit extends ChangeCellEdit {
         if ((obj == null) || (obj.getClass() != this.getClass())) {
             return false;
         }
+
         // Must be this class to be here
-        ChangeOnsetCellEdit t = (ChangeOnsetCellEdit) obj;       
-        return this.onset.equals(((ChangeOnsetCellEdit)t).onset);
-    }   
-    
+        ChangeOnsetCellEdit t = (ChangeOnsetCellEdit) obj; 
+
+        return ((this.onset == t.onset)
+                && (this.onsetString.equals(t.onsetString)));
+    }
+
+    @Override
+    public int hashCode() {
+        double hash = super.hashCode();
+        hash += onset * Constants.SEED1;
+        hash += onsetString.hashCode() * Constants.SEED2;
+        long val = Double.doubleToLongBits(hash);
+
+        return (int) (val ^ (val >>> 32));
+    }
 }

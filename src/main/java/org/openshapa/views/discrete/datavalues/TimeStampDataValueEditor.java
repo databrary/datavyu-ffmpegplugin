@@ -24,7 +24,12 @@ import javax.swing.text.JTextComponent;
 import org.openshapa.views.discrete.EditorComponent;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.undo.UndoableEdit;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Cell;
+import org.openshapa.undoableedits.ChangeCellEdit.Granularity;
+import org.openshapa.undoableedits.ChangeOffsetCellEdit;
+import org.openshapa.undoableedits.ChangeOnsetCellEdit;
 
 /**
  * This class is the character editor of a TimeStampDataValues.
@@ -82,14 +87,20 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     }
 
     private void setTimeStamp(final String value) {
+        UndoableEdit edit = null;
+
         switch (dataSourceType) {
             case Onset:
+                edit = new ChangeOnsetCellEdit(parentCell, Granularity.FINEGRAINED);
                 parentCell.setOnset(value);
                 break;
             default:
+                edit = new ChangeOffsetCellEdit(parentCell, Granularity.FINEGRAINED);
                 parentCell.setOffset(value);
                 break;
         }
+
+        OpenSHAPA.getView().getUndoSupport().postEdit(edit);
     }
 
     /**
