@@ -39,7 +39,8 @@ import database.SystemErrorException;
 public class RunScriptEdit extends SpreadsheetEdit {    
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(RunScriptEdit.class);
-    //private      
+
+    private Database db;
     private String scriptPath;
     private Vector<DataColumnTO> colsTO; // DataColumn relevant values 
             
@@ -47,7 +48,7 @@ public class RunScriptEdit extends SpreadsheetEdit {
         super();
         this.scriptPath = scriptPath;            
         colsTO = getSpreadsheetState();
-
+        db = controller.getLegacyDB().getDatabase();
     }
 
     @Override
