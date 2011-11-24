@@ -14,35 +14,30 @@
  */
 package org.openshapa.undoableedits;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
-import java.util.Vector;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import database.Column;
-import database.DataCell;
-import database.SystemErrorException;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.Variable;
+import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 /**
- *
- * @author harold
+ * An undoable edit for altering the contents of a cell.
  */
 abstract public class ChangeCellEdit extends SpreadsheetEdit {
-    /** The logger for this class. */
-    private static final Logger LOGGER = UserMetrix.getLogger(ChangeCellEdit.class);
     /** Column's index */
-    protected int colIndex = -1;       
-    /** Number of this cell in its host column. This number should be 1 + the
-     *  index of the cell in the column's vector of cells. It is set to -1
-     *  initially as it is an invalid value. */
+    protected int colIndex = -1;
+
+    /**
+     * Index of this cell in its host column. Initially set to -1 as this is not
+     * a valid index.
+     */
     protected int ord = -1;
-    /////
-    
+
     protected String columnName;
-    protected long rowIndex;
-    
+
+    /** The granularity of the edit - fine or coarse. */
     protected Granularity granularity;
 
     public Granularity getGranularity() {
@@ -56,36 +51,28 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
     
     public ChangeCellEdit(Cell c, Granularity granularity) {
         // New constructor.
-    }
-    
-    public ChangeCellEdit(DataCell c, Granularity granularity) {
         super();
         this.granularity = granularity;
-        try {
-           Column col = c.getDB().getColumn(c.getItsColID());
-           columnName = col.getName();
-           rowIndex = col.getNumCells() - c.getOrd() + 1;           
-           long colID = c.getItsColID();
-           Vector<Long> orderVector = c.getDB().getColOrderVector();
-           for (int i = 0; i < orderVector.size(); i++) {
-               if (orderVector.get(i).longValue() == colID) {
-                  this.colIndex = i;
-                  break;
-               }
-           }
-           this.ord = c.getOrd();                    
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to get DataCell", e);
-        } 
+
+        Variable var = OpenSHAPA.getProjectController().getDB().getVariable(c);
+        columnName = var.getName();
+
+        for(Cell cell : var.getCells()) {
+            ord++;
+
+            if (cell.equals(c)) {
+                return;
+            }
+        }
     }
-    
-    public ChangeCellEdit(DataCell c) {
+
+    public ChangeCellEdit(Cell c) {
         this(c, Granularity.COARSEGRAINED);
     }
 
     @Override
     public String getPresentationName() {
-        return "Change " /* + this.granularity */ + " ";
+        return "Change " + " ";
     }
 
     @Override
@@ -101,22 +88,18 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
     }
    
     protected void updateCell() {
-        try {
-            long colID = db.getDataColumn(this.db.getColOrderVector().get(this.colIndex)).getID();
-            // get a copy of the current cell
-            DataCell cell = (DataCell) db.getCell(colID, ord);
-            updateCell(cell);           
-            if (this.granularity == Granularity.COARSEGRAINED) {
-                updateSpreadsheetCell(cell);
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to update Cell", e);
-        }        
+        Variable var = OpenSHAPA.getProjectController().getDB().getVariable(columnName);
+        Cell cell = var.getCells().get(ord);
+        updateCell(cell);
+
+        if (this.granularity == Granularity.COARSEGRAINED) {
+            updateSpreadsheetCell(cell);
+        }
     }
     
-    abstract protected void updateCell(DataCell cell); 
+    abstract protected void updateCell(Cell cell);
     
-    protected void updateSpreadsheetCell(DataCell cell) {
+    protected void updateSpreadsheetCell(Cell cell) {
         unselectAll();
         SpreadsheetCell sCell = getSpreadsheetCell(cell);
         sCell.setHighlighted(true);
@@ -131,5 +114,13 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
         return (obj instanceof ChangeCellEdit) && 
                ((ChangeCellEdit)obj).granularity == this.granularity;
     }
-     
+
+    @Override
+    public int hashCode() {
+        double hash = super.hashCode();
+        hash += granularity.hashCode() * Constants.SEED1;
+        long val = Double.doubleToLongBits(hash);
+
+        return (int) (val ^ (val >>> 32));
+    }
 }

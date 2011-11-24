@@ -14,29 +14,21 @@
  */
 package org.openshapa.undoableedits;
 
-import com.usermetrix.jclient.Logger;//
-import com.usermetrix.jclient.UserMetrix;
-import java.util.List;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import org.openshapa.controllers.CreateNewCellC;
 import org.openshapa.models.db.Cell;
-import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.Variable;
-import database.DataCell;
-import database.SystemErrorException;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
-
 /**
- *
+ * An undoable edit for adding a cell to the spreadsheet.
  */
 public class AddCellEdit extends SpreadsheetEdit {
-    /** The logger for this class. */
-    private static final Logger LOGGER = UserMetrix.getLogger(AddCellEdit.class);
     /** Variable name **/
     private String varName;
-    
+
     public AddCellEdit(String varName) {
         super();
         this.varName = varName;
@@ -55,7 +47,7 @@ public class AddCellEdit extends SpreadsheetEdit {
         newCellController.createCell(var);
         unselectAll();
         if ((var.getCells() != null) && (var.getCells().size() > 0)) {
-            DataCell cell = (DataCell) var.getCells().get(var.getCells().size()-1);
+            Cell cell = var.getCells().get(var.getCells().size()-1);
             SpreadsheetCell sCell = getSpreadsheetCell(cell);
             sCell.requestFocusInWindow();
             sCell.setSelected(true);
@@ -65,19 +57,8 @@ public class AddCellEdit extends SpreadsheetEdit {
     @Override
     public void undo() throws CannotUndoException {
         super.undo();
-        try {
-            db.removeCell(getLastCellID());
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to removeCell", e);
-        }
-    }    
-    
-    private long getLastCellID() {
-        Variable v = model.getVariable(varName);
-        List<Cell> cells = v.getCells();
-        int numCells = v.getCells().size();
-        DeprecatedCell cell = (DeprecatedCell)cells.get(numCells - 1);
-        long cellID = cell.getLegacyCell().getID();
-        return cellID;
+        Variable var = model.getVariable(varName);
+        Cell cellToRemove = var.getCells().get(var.getCells().size() - 1);
+        OpenSHAPA.getProjectController().getDB().removeCell(cellToRemove);
     }
 }

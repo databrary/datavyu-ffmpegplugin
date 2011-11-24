@@ -27,6 +27,7 @@ import database.DataCell;
 import database.DataColumn;
 import database.Database;
 import database.SystemErrorException;
+import org.openshapa.models.db.Cell;
 import org.openshapa.views.OpenSHAPAView;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
@@ -76,18 +77,18 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
             return null;
         }
     } 
-    
-    protected SpreadsheetCell getSpreadsheetCell(DataCell cell) {
+
+    protected SpreadsheetCell getSpreadsheetCell(Cell cell) {
         for (SpreadsheetColumn sCol : getSpreadsheet().getColumns()) {
             for (SpreadsheetCell sCell : sCol.getCells()) {
-                if (sCell.getCellID() == cell.getID()) {   
+                if (sCell.getCell().equals(cell)) {
                     return sCell;
                 }
             }
         }  
         return null;
     }
-    
+
     protected SpreadsheetColumn getSpreadsheetColumn(String columnName) {
         for (SpreadsheetColumn sCol : getSpreadsheet().getColumns()) {
             if (sCol.getColumnName().equals(columnName)) {   

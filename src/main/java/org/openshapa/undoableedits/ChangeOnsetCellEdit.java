@@ -14,17 +14,18 @@
  */
 package org.openshapa.undoableedits;
 
-import database.DataCell;
 import org.openshapa.models.db.Cell;
 import org.openshapa.util.Constants;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
 /**
- *
+ * An undoable edit for changing the onset of a cell.
  */
 public class ChangeOnsetCellEdit extends ChangeCellEdit { 
-    /** offset of cell */
+    /** onset of cell */
     private long onset = -1;
+
+    /** string representation of onset. */
     private String onsetString = null;
 
     public ChangeOnsetCellEdit(Cell c, Granularity granularity) {
@@ -39,19 +40,17 @@ public class ChangeOnsetCellEdit extends ChangeCellEdit {
 
     @Override
     public String getPresentationName() {
-        return super.getPresentationName() + "Onset Cell (" + columnName + "," + rowIndex + ") to " + onsetString;
+        return super.getPresentationName() + "Onset Cell (" + columnName + ") to " + onsetString;
     }
 
     @Override
-    protected void updateCell(DataCell cell) {
-        /*
-         * TODO: Port method declaration to new API.
+    protected void updateCell(Cell cell) {
         long currentOnset = cell.getOnset();
         String currentOnsetString = cell.getOnsetString();
         
         cell.setOnset(this.onset);
         this.onset = currentOnset;
-         */
+        this.onsetString = currentOnsetString;
     }
 
     @Override
