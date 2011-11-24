@@ -29,6 +29,7 @@ import database.DataCell;
 import database.DataCellTO;
 import database.DataColumn;
 import database.DataColumnTO;
+import database.Database;
 import database.MatrixVocabElement;
 import database.SystemErrorException;
 
