@@ -14,7 +14,6 @@
  */
 package org.openshapa.models.db;
 
-import org.openshapa.models.db.UserWarningException;
 import java.util.List;
 import java.util.ArrayList;
 import org.testng.annotations.AfterMethod;
@@ -91,5 +90,24 @@ public class DatastoreTest {
         model.createVariable("foo", Variable.type.TEXT);
     }
 
-    
+    @Test
+    public void removeVariable() throws UserWarningException {
+        Variable var = model.createVariable("foo", Variable.type.TEXT);
+        List<Variable> varList = new ArrayList<Variable>();
+        varList.add(var);
+
+        assertEquals(model.getAllVariables(), varList);
+        verify(modelListener).variableAdded(var);
+
+        model.removeVariable(var);
+
+        assertEquals(model.getAllVariables().size(), 0);
+        assertEquals(model.getSelectedVariables().size(), 0);
+
+        verify(modelListener).variableRemoved(var);
+        verify(modelListener, times(0)).variableHidden(var);
+        verify(modelListener, times(0)).variableVisible(var);
+        verify(modelListener, times(0)).variableNameChange(var);
+        verify(modelListener, times(0)).variableOrderChanged();
+    }    
 }

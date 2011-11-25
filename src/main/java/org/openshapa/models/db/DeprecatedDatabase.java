@@ -174,6 +174,8 @@ import org.openshapa.util.Constants;
             variables.add(var);
             legacyToModelMap.put(colId, var);
 
+            legacyDB.registerDataColumnListener(colId, this);
+
             //notify listeners.
             for (DatastoreListener listener : listeners) {
                 listener.variableAdded(var);
@@ -280,7 +282,8 @@ import org.openshapa.util.Constants;
             // Check if a cell we are deleting is the last created cell...
             // Default this back to null.
             for (Cell c : var.getCells()) {
-                if (c.equals(OpenSHAPA.getProjectController().getLastCreatedCell())) {
+                if (OpenSHAPA.getProjectController() != null
+                    && c.equals(OpenSHAPA.getProjectController().getLastCreatedCell())) {
                     OpenSHAPA.getProjectController().setLastCreatedCell(null);
                 }
             }
@@ -293,10 +296,18 @@ import org.openshapa.util.Constants;
                 legacyDB.removeCell(c.getID());
                 dc = legacyDB.getDataColumn(dc.getID());
             }
+            
+            // Deregister column listener.
+            try {
+                legacyDB.deregisterDataColumnListener(dc.getID(), this);
+            } catch (SystemErrorException e) {
+                LOGGER.error("unable to degrester listener", e);
+            }
 
             // Check if the column we are deleting was the last created
             // column... Default this back to null if it is.
-            if (var.equals(OpenSHAPA.getProjectController().getLastCreatedVariable())) {
+            if (OpenSHAPA.getProjectController() != null
+                && var.equals(OpenSHAPA.getProjectController().getLastCreatedVariable())) {
                 OpenSHAPA.getProjectController().setLastCreatedVariable(null);
             }
 
@@ -372,12 +383,6 @@ import org.openshapa.util.Constants;
 
             }
         }
-
-        try {
-            legacyDB.registerDataColumnListener(colID, this);
-        } catch (SystemErrorException e) {
-            LOGGER.error("unable to register listener", e);
-        }
     }
 
     @Override
@@ -392,12 +397,6 @@ import org.openshapa.util.Constants;
                     listener.variableRemoved(var);
                 }
             }
-        }
-
-        try {
-            legacyDB.deregisterDataColumnListener(colID, this);
-        } catch (SystemErrorException e) {
-            LOGGER.error("unable to degrester listener", e);
         }
     }
 
