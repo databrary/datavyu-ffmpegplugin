@@ -14,6 +14,7 @@
  */
 package org.openshapa.models.db;
 
+import org.openshapa.models.db.UserWarningException;
 import java.util.List;
 import java.util.ArrayList;
 import org.testng.annotations.AfterMethod;
@@ -29,30 +30,36 @@ import static org.mockito.Mockito.*;
  * Tests for the Datastore interface.
  */
 public class DatastoreTest {
-    
+
+    /** The model we are testing. */
     private Datastore model;
-    
+
+    /** The modelListener we are testing. */
     private DatastoreListener modelListener;
-    
-    @BeforeMethod public void setUp() {
+
+    @BeforeMethod
+    public void setUp() {
         //model = mock(DeprecatedDatabase.class);
         model = new DeprecatedDatabase();
         modelListener = mock(DatastoreListener.class);
         model.addListener(modelListener);
     }
-    
-    @AfterMethod public void tearDown() {
+
+    @AfterMethod
+    public void tearDown() {
         model.removeListener(modelListener);
         modelListener = null;
         model = null;
     }
 
-    @Test public void testSetName() {
+    @Test
+    public void testSetName() {
         model.setName("testName");
         assertEquals(model.getName(), "testName");
     }
-    
-    @Test public void createVariable() throws UserWarningException {
+
+    @Test
+    public void createVariable() throws UserWarningException {
         model.createVariable("foo", Variable.type.TEXT);
         Variable var = model.getVariable("foo");
         List<Variable> varList = new ArrayList<Variable>();
@@ -77,4 +84,12 @@ public class DatastoreTest {
         verify(modelListener, times(0)).variableNameChange(var);
         verify(modelListener, times(0)).variableVisible(var);
     }
+
+    @Test (expectedExceptions = UserWarningException.class)
+    public void unableToCreateVariable() throws UserWarningException {
+        model.createVariable("foo", Variable.type.TEXT);
+        model.createVariable("foo", Variable.type.TEXT);
+    }
+
+    
 }
