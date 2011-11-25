@@ -669,8 +669,14 @@
     <dependency>
         <groupId>org.testng</groupId>
         <artifactId>testng</artifactId>
-        <version>5.10</version>
-        <classifier>jdk15</classifier>
+        <version>6.3</version>
+    </dependency>
+
+    <dependency>
+    	<groupId>org.mockito</groupId>
+    	<artifactId>mockito-all</artifactId>
+    	<version>1.9.0-rc1</version>
+    	<scope>test</scope>
     </dependency>
 
     <dependency>

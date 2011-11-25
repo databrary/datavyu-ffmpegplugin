@@ -164,16 +164,20 @@ import org.openshapa.util.Constants;
         DeprecatedVariable legacyVar = (DeprecatedVariable) var;
 
         try {
-            long colId = legacyDB.addColumn(legacyVar.getLegacyVariable());
-            legacyVar.setLegacyVariable(legacyDB.getDataColumn(colId));
+            long colId = legacyVar.getLegacyVariable().getID();
+
+            if (colId == 0) {
+                colId = legacyDB.addColumn(legacyVar.getLegacyVariable());
+                legacyVar.setLegacyVariable(legacyDB.getDataColumn(colId));
+            }
+
             variables.add(var);
             legacyToModelMap.put(colId, var);
 
             //notify listeners.
             for (DatastoreListener listener : listeners) {
                 listener.variableAdded(var);
-            }
-
+            }            
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to add variable", e);
         }
@@ -224,6 +228,9 @@ import org.openshapa.util.Constants;
             DataColumn dc = new DataColumn(legacyDB,
                                            name,
                                            deprecatedType);
+            long colId = legacyDB.addColumn(dc);
+            dc = legacyDB.getDataColumn(colId);
+
             // Return the freshly created variable.
             DeprecatedVariable var = new DeprecatedVariable(dc, type);
             var.setSelected(true);
@@ -249,7 +256,6 @@ import org.openshapa.util.Constants;
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to add variable to database", e);
             OpenSHAPA.getApplication().showErrorDialog();
-
         }
 
         return null;
