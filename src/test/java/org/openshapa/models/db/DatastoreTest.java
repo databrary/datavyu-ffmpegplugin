@@ -109,5 +109,7 @@ public class DatastoreTest {
         verify(modelListener, times(0)).variableVisible(var);
         verify(modelListener, times(0)).variableNameChange(var);
         verify(modelListener, times(0)).variableOrderChanged();
-    }    
+    }
+    
+    
 }
