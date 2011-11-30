@@ -52,8 +52,7 @@ import java.util.TimeZone;
     /**
      * Construct a new Cell using the given reference DataCell.
      *
-     * @param newCell
-     *            Reference cell. Cannot be null.
+     * @param newCell Reference cell. Cannot be null.
      */
     public DeprecatedCell(final DataCell newCell) {
         setLegacyCell(newCell);
@@ -285,6 +284,10 @@ import java.util.TimeZone;
     @Override
     public void setHighlighted(final boolean highlighted) {
         isHighlighted = highlighted;
+
+        for (CellListener listener : listeners) {
+            listener.highlightingChange(isHighlighted);
+        }
     }
 
     @Override
