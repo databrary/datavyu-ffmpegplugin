@@ -331,7 +331,6 @@ implements Variable,
                     temporalIndex = asSortedList(temporalMap.keySet());
                 }
 
-                legacyDB.deregisterDataCellListener(cellID, this);
             }
 
             for (Long cellID : colChanges.cellInserted) {

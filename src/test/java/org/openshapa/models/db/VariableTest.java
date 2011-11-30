@@ -23,6 +23,7 @@ import org.testng.annotations.Test;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertNotSame;
 //import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -89,7 +90,7 @@ public class VariableTest {
         verify(modelListener, times(0)).cellInserted(null);
         verify(modelListener, times(0)).cellRemoved(null);
     }
-    
+
     @Test
     public void testGetVariableType() {
         assertEquals(model.getVariableType(), Variable.type.TEXT);
@@ -107,5 +108,60 @@ public class VariableTest {
         verify(modelListener, times(0)).visibilityChanged(true);
         verify(modelListener, times(0)).nameChanged(null);
         verify(modelListener, times(0)).cellRemoved(null);
+    }
+
+    @Test
+    public void testRemoveCell() {
+        Cell c = model.createCell();
+        ds.removeCell(c);
+
+        assertFalse(model.contains(c));
+        assertEquals(model.getCells().size(), 0);
+        assertEquals(model.getCellsTemporally().size(), 0);
+
+        verify(modelListener).cellRemoved(c);
+        verify(modelListener).cellInserted(c);
+        verify(modelListener, times(0)).nameChanged(null);
+        verify(modelListener, times(0)).visibilityChanged(true);
+    }
+
+    @Test
+    public void testRemoveCell2() {
+        Cell c = model.createCell();
+        model.removeCell(c);
+
+        assertFalse(model.contains(c));
+        assertEquals(model.getCells().size(), 0);
+        assertEquals(model.getCellsTemporally().size(), 0);
+
+        verify(modelListener).cellRemoved(c);
+        verify(modelListener).cellInserted(c);
+        verify(modelListener, times(0)).nameChanged(null);
+        verify(modelListener, times(0)).visibilityChanged(true);
+    }
+
+    @Test
+    public void testTemporalOrder() {
+        List<Cell> cells = new ArrayList<Cell>();
+        List<Cell> orderedCells = new ArrayList<Cell>();
+        Cell c1 = model.createCell();
+        Cell c2 = model.createCell();
+
+        cells.add(c1);
+        cells.add(c2);
+
+        orderedCells.add(c2);
+        orderedCells.add(c1);
+
+        assertEquals(model.getCells(), cells);
+        assertEquals(model.getCellsTemporally(), cells);
+        assertNotSame(model.getCells(), orderedCells);
+        assertNotSame(model.getCellsTemporally(), orderedCells);
+
+        c1.setOnset(100);
+
+        assertEquals(model.getCells(), cells);
+        assertEquals(model.getCellsTemporally(), orderedCells);
+        assertEquals(model.getCellTemporally(0), c2);
     }
 }
