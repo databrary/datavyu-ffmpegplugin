@@ -49,15 +49,26 @@ import java.util.TimeZone;
     /** The list of listeners to be notified when this variable changes. */
     private List<CellListener> listeners;
 
+    /** The value of the cell. */
+    private Value cellValue;
+
     /**
      * Construct a new Cell using the given reference DataCell.
      *
      * @param newCell Reference cell. Cannot be null.
      */
-    public DeprecatedCell(final DataCell newCell) {
+    public DeprecatedCell(final DataCell newCell, final Variable.type newType) {
         setLegacyCell(newCell);
         listeners = new ArrayList<CellListener>();
         isHighlighted = false;
+
+        if (newType.equals(Variable.type.TEXT)) {
+            cellValue = new DeprecatedTextValue(legacyDB, legacyCellId);
+        } else if (newType.equals(Variable.type.NOMINAL)) {
+            cellValue = new DeprecatedNominalValue(legacyDB, legacyCellId);
+        } else {
+
+        }
     }
 
     @Override public String toString() {
@@ -83,7 +94,7 @@ import java.util.TimeZone;
 
     @Override
     public Value getValue() {
-        return null;
+        return cellValue;
     }
 
 

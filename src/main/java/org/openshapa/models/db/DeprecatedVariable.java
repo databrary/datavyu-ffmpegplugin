@@ -80,7 +80,7 @@ implements Variable,
     private List<VariableListener> listeners;
 
     /** The type of variable. */
-    private Variable.type varType;
+    private Variable.type varType;    
 
     /**
      * Constructor.
@@ -273,7 +273,7 @@ implements Variable,
                                             mve.getID());
             long cellID = legacyDB.appendCell(newCell);
             newCell = (DataCell) legacyDB.getCell(cellID);
-            result = new DeprecatedCell(newCell);
+            result = new DeprecatedCell(newCell, varType);
             cells.add(result);
             legacyToModelMap.put(cellID, result);
 
