@@ -17,62 +17,52 @@ package org.openshapa.models.db;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import database.DataCell;
-import database.DataColumn;
+import database.DataValue;
 import database.Database;
 import database.Matrix;
-import database.NominalDataValue;
 import database.SystemErrorException;
 
 /**
- * NominalValue Adapter
+ * Value Adapter
  */
 @Deprecated
-public class DeprecatedNominalValue extends DeprecatedValue implements NominalValue {
-
-    private static final Logger LOGGER = UserMetrix.getLogger(DeprecatedNominalValue.class);
-
-    public DeprecatedNominalValue(final Database db, final long cellID) {
-        super(db, cellID);
+public abstract class DeprecatedValue implements Value {
+    
+    private static final Logger LOGGER = UserMetrix.getLogger(DeprecatedValue.class);
+    
+    protected Database legacyDB;
+    
+    protected long legacyCellID;
+    
+    public DeprecatedValue(final Database db, final long cellID) {
+        legacyDB = db;
+        legacyCellID = cellID;
     }
 
     @Override
-    public boolean isValid(final String value) {
-        return true;
-    }
-
-    @Override
-    public void set(final String value) {
+    public void clear() {
         try {
             DataCell dc = (DataCell) legacyDB.getCell(legacyCellID);
             Matrix m = dc.getVal();
-            NominalDataValue dv = (NominalDataValue) m.getArgCopy(0);
-            dv.setItsValue(value);
+            DataValue dv = m.getArgCopy(0);
+            dv.clearValue();
             m.replaceArg(0, dv);
             dc.setVal(m);
             legacyDB.replaceCell(dc);
         } catch(SystemErrorException se) {
-            LOGGER.error("unable to set text data value", se);
+            LOGGER.error("unable to clear text data value", se);
         }
     }
 
     @Override
-    public String toString() {
+    public boolean isEmpty() {
         try {
             DataCell dc = (DataCell) legacyDB.getCell(legacyCellID);
-
-            if (isEmpty()) {
-                DataColumn col = legacyDB.getDataColumn(dc.getItsColID());
-                return "<" + col.getName() + ">";
-            } else {
-                Matrix m = dc.getVal();
-                NominalDataValue dv = (NominalDataValue) m.getArgCopy(0);
-                return dv.getItsValue();
-            }
-
-        } catch(SystemErrorException se) {
-            LOGGER.error("unable to toString data value", se);
+            return dc.getVal().getArgCopy(0).isEmpty();
+        } catch (SystemErrorException se) {
+            LOGGER.error("unable to determine if data value is empty", se);
         }
 
-        return "<ERROR - RESTART OPENSHAPA>";
+        return false;
     }
 }

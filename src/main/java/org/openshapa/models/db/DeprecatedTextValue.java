@@ -28,50 +28,18 @@ import database.TextStringDataValue;
  * TextValue Adapter
  */
 @Deprecated
-public class DeprecatedTextValue implements TextValue {
-    
+public class DeprecatedTextValue extends DeprecatedValue implements TextValue {
+
     private static final Logger LOGGER = UserMetrix.getLogger(DeprecatedTextValue.class);
-    
-    Database legacyDB;
-    
-    private long legacyCellID;
-    
+
     public DeprecatedTextValue(final Database db, final long cellID) {
-        legacyDB = db;
-        legacyCellID = cellID;
+        super(db, cellID);
     }
 
     @Override
     public boolean isValid(final String value) {
         // I Think I might want to deprecated this.
         return true;
-    }
-
-    @Override
-    public void clear() {
-        try {
-            DataCell dc = (DataCell) legacyDB.getCell(legacyCellID);
-            Matrix m = dc.getVal();
-            DataValue dv = m.getArgCopy(0);
-            dv.clearValue();
-            m.replaceArg(0, dv);
-            dc.setVal(m);
-            legacyDB.replaceCell(dc);
-        } catch(SystemErrorException se) {
-            LOGGER.error("unable to clear text data value", se);
-        }
-    }
-
-    @Override
-    public boolean isEmpty() {
-        try {
-            DataCell dc = (DataCell) legacyDB.getCell(legacyCellID);
-            return dc.getVal().getArgCopy(0).isEmpty();
-        } catch (SystemErrorException se) {
-            LOGGER.error("unable to determine if data value is empty", se);
-        }
-
-        return false;
     }
 
     @Override
