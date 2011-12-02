@@ -63,9 +63,6 @@ import org.openshapa.controllers.project.ProjectController;
 import org.openshapa.event.component.FileDropEvent;
 import org.openshapa.event.component.FileDropEventListener;
 
-import database.DataColumn;
-import database.SystemErrorException;
-
 import org.openshapa.util.ArrayDirection;
 import org.openshapa.util.FileFilters.CSVFilter;
 import org.openshapa.util.FileFilters.MODBFilter;
@@ -78,8 +75,6 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.DataCell;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.event.UndoableEditEvent;
@@ -90,8 +85,6 @@ import javax.swing.undo.UndoableEditSupport;
 import org.openshapa.controllers.AutosaveC;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedCell;
-import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
 import org.openshapa.undoableedits.RemoveCellEdit;
@@ -205,11 +198,11 @@ public final class OpenSHAPAView extends FrameView
                 /**
                  * Dispatches the keystroke to the correct action.
                  *
-                 * @param evt
-                 *            The event that triggered this action.
+                 * @param evt The event that triggered this action.
                  * @return true if the KeyboardFocusManager should take no further
-                 *         action with regard to the KeyEvent; false otherwise.
+                 * action with regard to the KeyEvent; false otherwise.
                  */
+                @Override
                 public boolean dispatchKeyEvent(final KeyEvent evt) {
 
                     // Pass the keyevent onto the keyswitchboard so that it can
@@ -351,7 +344,7 @@ public final class OpenSHAPAView extends FrameView
         // Show the project name instead of database.
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         ResourceMap rMap = OpenSHAPA.getApplication().getContext()
-            .getResourceMap(OpenSHAPA.class);
+                                    .getResourceMap(OpenSHAPA.class);
         String postFix = "";
         ProjectController projectController = OpenSHAPA.getProjectController();
 
@@ -429,15 +422,13 @@ public final class OpenSHAPAView extends FrameView
                     projController.updateProject();
                     projController.setLastSaveOption(OPFFilter.INSTANCE);
 
-                    saveController.saveProject(new File(
-                            projController.getProjectDirectory(),
-                            projController.getProjectName() + ".opf"),
-                        projController.getProject(),
-                        projController.getLegacyDB().getDatabase());
+                    saveController.saveProject(new File(projController.getProjectDirectory(),
+                                                        projController.getProjectName() + ".opf"),
+                                               projController.getProject(),
+                                               projController.getDB());
 
                     projController.markProjectAsUnchanged();
-                    projController.getLegacyDB().getDatabase()
-                        .markAsUnchanged();
+                    projController.getDB().markAsUnchanged();
 
                     // Update the application title
                     updateTitle();
@@ -445,13 +436,11 @@ public final class OpenSHAPAView extends FrameView
                     // Save content just as a database.
                 } else {
                     File file = new File(projController.getProjectDirectory(),
-                            projController.getDatabaseFileName());
-                    saveC.saveDatabase(file,
-                        projController.getLegacyDB().getDatabase());
+                                         projController.getDatabaseFileName());
+                    saveC.saveDatabase(file, projController.getDB());
 
                     projController.markProjectAsUnchanged();
-                    projController.getLegacyDB().getDatabase()
-                        .markAsUnchanged();
+                    projController.getDB().markAsUnchanged();
                 }
             }
 
@@ -508,13 +497,11 @@ public final class OpenSHAPAView extends FrameView
                 }
 
                 File f = new File(fc.getSelectedFile().getParent(), dbFileName);
-                saveC.saveDatabase(f,
-                    projController.getLegacyDB().getDatabase());
+                saveC.saveDatabase(f, projController.getDB());
 
-                projController.getLegacyDB().getDatabase().setName(dbFileName);
+                projController.getDB().setName(dbFileName);
                 projController.setProjectName(dbFileName);
-                projController.setProjectDirectory(fc.getSelectedFile()
-                    .getParent());
+                projController.setProjectDirectory(fc.getSelectedFile().getParent());
                 projController.setDatabaseFileName(dbFileName);
 
                 // Save as a ODB database
@@ -532,15 +519,14 @@ public final class OpenSHAPAView extends FrameView
                 }
 
                 File f = new File(fc.getSelectedFile().getParent(), dbFileName);
-                saveC.saveDatabase(f,
-                    projController.getLegacyDB().getDatabase());
+                saveC.saveDatabase(f, projController.getDB());
 
                 if (dbFileName.lastIndexOf('.') != -1) {
                     dbFileName = dbFileName.substring(0,
                             dbFileName.lastIndexOf('.'));
                 }
 
-                projController.getLegacyDB().getDatabase().setName(dbFileName);
+                projController.getDB().setName(dbFileName);
                 projController.setProjectDirectory(fc.getSelectedFile()
                     .getParent());
                 projController.setDatabaseFileName(dbFileName);
@@ -571,22 +557,20 @@ public final class OpenSHAPAView extends FrameView
 
                 projController.updateProject();
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
-                        archiveName), projController.getProject(),
-                    projController.getLegacyDB().getDatabase());
-                projController.setProjectDirectory(fc.getSelectedFile()
-                    .getParent());
+                                           archiveName),
+                                  projController.getProject(),
+                                  projController.getDB());
+                projController.setProjectDirectory(fc.getSelectedFile().getParent());
 
             }
 
             projController.setLastSaveOption(filter);
             projController.markProjectAsUnchanged();
-            projController.getLegacyDB().getDatabase().markAsUnchanged();
+            projController.getDB().markAsUnchanged();
             updateTitle();
 
         } catch (UserWarningException e) {
             OpenSHAPA.getApplication().showWarningDialog(e);
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to save.", e);
         }
     }
 
@@ -669,7 +653,7 @@ public final class OpenSHAPAView extends FrameView
         pController.setProjectName(jd.getSelectedFile().getName());
         pController.setLastSaveOption(filter);
         pController.markProjectAsUnchanged();
-        pController.getLegacyDB().getDatabase().markAsUnchanged();
+        pController.getDB().markAsUnchanged();
         updateTitle();
 
         // Display any changes to the database.
@@ -742,8 +726,7 @@ public final class OpenSHAPAView extends FrameView
         if ((openC.getProject() != null) && (openC.getDatastore() != null)) {
             OpenSHAPA.newProjectController(openC.getProject());
             OpenSHAPA.getProjectController().setDatastore(openC.getDatastore());
-            OpenSHAPA.getProjectController().setProjectDirectory(
-                projectFile.getParent());
+            OpenSHAPA.getProjectController().setProjectDirectory(projectFile.getParent());
             OpenSHAPA.getProjectController().loadProject();
             
             // Reset the undo manager
@@ -1551,7 +1534,7 @@ public final class OpenSHAPAView extends FrameView
         final javax.swing.event.MenuEvent evt) { // GEN-FIRST:event_spreadsheetMenuMenuSelected
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
-            .getResourceMap(OpenSHAPAView.class);
+                                      .getResourceMap(OpenSHAPAView.class);
 
         List<Variable> selectedCols = OpenSHAPA.getProjectController().getDB()
                                                .getSelectedVariables();
@@ -1803,6 +1786,4 @@ public final class OpenSHAPAView extends FrameView
      	refreshUndoRedo();
      }
   }
- 
-
 }

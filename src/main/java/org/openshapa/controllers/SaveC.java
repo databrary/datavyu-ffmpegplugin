@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import database.MacshapaDatabase;
 import org.openshapa.models.project.Project;
 import org.openshapa.models.project.ViewerSetting;
 
@@ -35,6 +34,8 @@ import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
 import org.openshapa.RecentFiles;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.UserWarningException;
 
 
@@ -50,46 +51,47 @@ public final class SaveC {
      * Saves only a database to disk.
      *
      * @param databaseFile The location to save the database too.
-     * @param database The database to save to disk.
+     * @param datastore The datastore to save to disk.
      *
      * @throws UswerWarningException If unable to save the database.
      */
     public void saveDatabase(final String databaseFile,
-                             final MacshapaDatabase database)
+                             final Datastore datastore)
     throws UserWarningException {
-        this.saveDatabase(new File(databaseFile), database);
+        this.saveDatabase(new File(databaseFile), datastore);
     }
 
     /**
      * Saves only a database to disk.
      *
      * @param databaseFile The location to save the database too.
-     * @param database The database to save to disk.
+     * @param datastore The datastore to save to disk.
      *
      * @throws UserWarningException If unable to save the database.
      */
     public void saveDatabase(final File databaseFile,
-                             final MacshapaDatabase database)
+                             final Datastore datastore)
     throws UserWarningException {
-            saveDatabase(databaseFile, database, true);
+        saveDatabase(databaseFile, datastore, true);
     }
 
     /**
      * Saves only a database to disk.
      *
      * @param databaseFile The location to save the database too.
-     * @param database The database to save to disk.
+     * @param datastore The datastore to save to disk.
      * @param remember Add this project to the rememberProject list.
      * @throws UserWarningException If unable to save the database.
      */
     public void saveDatabase(final File databaseFile,
-                             final MacshapaDatabase database,
+                             final Datastore datastore,
                              boolean remember)
     throws UserWarningException {
         LOGGER.event("saving database");
 
+        DeprecatedDatabase ds = (DeprecatedDatabase) datastore;
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
-        saveDBC.saveDatabase(databaseFile, database);
+        saveDBC.saveDatabase(databaseFile, ds);
         if (remember) {
             RecentFiles.rememberProject(databaseFile);
         }    
@@ -101,16 +103,16 @@ public final class SaveC {
      *
      * @param projectFile The destination to save the project too.
      * @param project The project to save to disk.
-     * @param database The database to save to disk.
+     * @param datastore The datastore to save to disk.
      *
      * @throws UserWarningException If unable to save the entire project to
      * disk.
      */
     public void saveProject(final File projectFile,
                             final Project project,
-                            final MacshapaDatabase database)
+                            final Datastore datastore)
     throws UserWarningException {
-        saveProject(projectFile, project, database, true);
+        saveProject(projectFile, project, datastore, true);
     }
 
     /**
@@ -118,7 +120,7 @@ public final class SaveC {
      *
      * @param projectFile The destination to save the project too.
      * @param project The project to save to disk.
-     * @param database The database to save to disk.
+     * @param datastore The datastore to save to disk.
      * @param remember Add this project to the rememberProject list.
      * 
      * @throws UserWarningException If unable to save the entire project to
@@ -126,11 +128,12 @@ public final class SaveC {
      */
     public void saveProject(final File projectFile,
                             final Project project,
-                            final MacshapaDatabase database,
+                            final Datastore datastore,
                             boolean remember) throws UserWarningException {
 
         try {
             LOGGER.event("save project");
+            DeprecatedDatabase ds = (DeprecatedDatabase) datastore;
 
             FileOutputStream fos = new FileOutputStream(projectFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
@@ -142,7 +145,7 @@ public final class SaveC {
 
             ZipEntry dbEntry = new ZipEntry("db");
             zos.putNextEntry(dbEntry);
-            new SaveDatabaseFileC().saveAsCSV(zos, database);
+            new SaveDatabaseFileC().saveAsCSV(zos, ds);
             zos.closeEntry();
 
             // BugzID:1806

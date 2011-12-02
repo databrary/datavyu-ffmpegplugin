@@ -76,9 +76,8 @@ public class AutosaveC implements ActionListener {
                 baseName = "~noname_"; 
                 ext = ".opf";
                 f = File.createTempFile(baseName, ext);         
-                saveController.saveProject(f,
-                               projController.getProject(),
-                               projController.getLegacyDB().getDatabase(), false);   
+                saveController.saveProject(f, projController.getProject(),
+                                           projController.getDB(), false);
             } else {
                 if ((projController.getLastSaveOption() instanceof SHAPAFilter)
                         || (projController.getLastSaveOption()
@@ -86,17 +85,15 @@ public class AutosaveC implements ActionListener {
                     baseName = "~" + projController.getProjectName() + "_";
                     ext = ".opf"; 
                     f = File.createTempFile(baseName, ext);          
-                    saveController.saveProject(f,
-                               projController.getProject(),
-                               projController.getLegacyDB().getDatabase(), false);   
+                    saveController.saveProject(f, projController.getProject(),
+                                               projController.getDB(), false);
                 // Save content just as a database.                          
                 } else {               
                     String filename = "~" + projController.getDatabaseFileName();
                     baseName = FilenameUtils.getBaseName(filename) + "_";
                     ext = "." + FilenameUtils.getExtension(filename);
                     f = File.createTempFile(baseName, ext);
-                    saveController.saveDatabase(f,
-                        projController.getLegacyDB().getDatabase(), false);
+                    saveController.saveDatabase(f, projController.getDB(), false);
                 }                        
             }
         } catch (UserWarningException lee) {

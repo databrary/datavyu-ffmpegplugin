@@ -31,7 +31,6 @@ import org.openshapa.OpenSHAPA;
 import database.DataCell;
 import database.DataColumn;
 import database.FormalArgument;
-import database.MacshapaDatabase;
 import database.MatrixVocabElement;
 import database.PredicateVocabElement;
 import database.SystemErrorException;
@@ -40,8 +39,11 @@ import database.MatrixVocabElement.MatrixType;
 
 import com.usermetrix.jclient.UserMetrix;
 
+import database.MacshapaDatabase;
 import java.io.FileOutputStream;
 
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.UserWarningException;
 import org.openshapa.util.StringUtils;
 
@@ -60,13 +62,13 @@ public final class SaveDatabaseFileC {
      * .odb, the database is saved in a MacSHAPA format.
      *
      * @param destinationFile The destination to save the database too.
-     * @param db The database to save to disk.
+     * @param ds The datastore to save to disk.
      *
      * @throws UserWarningException If unable to save the database to the
      * desired location.
      */
     public void saveDatabase(final File destinationFile,
-                             final MacshapaDatabase db)
+                             final Datastore ds)
     throws UserWarningException {
 
         // We bypass any overwrite checks here.
@@ -74,9 +76,9 @@ public final class SaveDatabaseFileC {
         String extension = outputFile.substring(outputFile.lastIndexOf('.'), outputFile.length());
 
         if (extension.equals(".csv")) {
-            saveAsCSV(destinationFile.toString(), db);
+            saveAsCSV(destinationFile.toString(), ds);
         } else if (extension.equals(".odb")) {
-            saveAsMacSHAPADB(destinationFile.toString(), db);
+            saveAsMacSHAPADB(destinationFile.toString(), ds);
         }
     }
 
@@ -84,19 +86,19 @@ public final class SaveDatabaseFileC {
      * Saves the database to the specified destination in a MacSHAPA format.
      *
      * @param outFile The path of the file to use when writing to disk.
-     * @param db The database to save as a MacSHAPA db format.
+     * @param ds The datastore to save as a MacSHAPA db format.
      * @throws UserWarningException When unable to save the database as a
      * macshapa database to disk (usually because of permissions errors).
      */
     public void saveAsMacSHAPADB(final String outFile,
-                                 final MacshapaDatabase db)
+                                 final Datastore ds)
     throws UserWarningException {
 
         try {
             LOGGER.event("save database as ODB");
 
             PrintStream outStream = new PrintStream(outFile);
-            db.toMODBFile(outStream, "\r");
+            ((DeprecatedDatabase) ds).getDatabase().toMODBFile(outStream, "\r");
             outStream.close();
 
         } catch (FileNotFoundException e) {
@@ -118,16 +120,16 @@ public final class SaveDatabaseFileC {
      * Saves the database to the specified destination in a CSV format.
      *
      * @param outFile The path of the file to use when writing to disk.
-     * @param db The database to save as a CSV file.
+     * @param ds The datastore to save as a CSV file.
      * @throws UserWarningException When unable to save the database as a CSV to
      * disk (usually because of permissions errors).
      */
-    public void saveAsCSV(final String outFile, final MacshapaDatabase db)
+    public void saveAsCSV(final String outFile, final Datastore ds)
     throws UserWarningException {
 
         try {
             FileOutputStream fos = new FileOutputStream(outFile);
-            saveAsCSV(fos, db);
+            saveAsCSV(fos, ds);
             fos.close();
         } catch (IOException ie) {
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
@@ -140,15 +142,15 @@ public final class SaveDatabaseFileC {
      * Serialize the database to the specified stream in a CSV format.
      *
      * @param outStream The stream to use when serializing.
-     * @param db The database to save as a CSV file.
+     * @param ds The datastore to save as a CSV file.
      * @throws UserWarningException When unable to save the database as a CSV to
      * disk (usually because of permissions errors).
      */
-    public void saveAsCSV(final OutputStream outStream,
-                          final MacshapaDatabase db)
+    public void saveAsCSV(final OutputStream outStream, final Datastore ds)
     throws UserWarningException {
 
         try {
+            MacshapaDatabase db = ((DeprecatedDatabase) ds).getDatabase();
             LOGGER.event("save database as CSV to stream");
 
             // Dump out an identifier for the version of file.

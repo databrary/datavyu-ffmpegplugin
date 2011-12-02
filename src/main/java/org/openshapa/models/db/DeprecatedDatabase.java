@@ -148,6 +148,10 @@ import org.openshapa.util.Constants;
         }
     }
 
+    @Override public void markAsUnchanged() {
+        legacyDB.markAsUnchanged();
+    }
+
     @Override public boolean isChanged() {
         return legacyDB.isChanged();
     }
