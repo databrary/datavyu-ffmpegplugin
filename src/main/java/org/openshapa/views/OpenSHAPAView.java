@@ -440,8 +440,10 @@ public final class OpenSHAPAView extends FrameView
                                                projController.getDB());
 
                     projController.markProjectAsUnchanged();
+/*DatabaseProblem
                     projController.getDB().markAsUnchanged();
-
+*/
+                    
                     // Update the application title
                     updateTitle();
 
@@ -452,7 +454,9 @@ public final class OpenSHAPAView extends FrameView
                     saveC.saveDatabase(file, projController.getDB());
 
                     projController.markProjectAsUnchanged();
+/*DatabaseProblem
                     projController.getDB().markAsUnchanged();
+*/
                 }
             }
 
@@ -578,7 +582,9 @@ public final class OpenSHAPAView extends FrameView
 
             projController.setLastSaveOption(filter);
             projController.markProjectAsUnchanged();
+/*DatabaseProblem
             projController.getDB().markAsUnchanged();
+*/
             updateTitle();
 
         } catch (UserWarningException e) {
@@ -665,7 +671,9 @@ public final class OpenSHAPAView extends FrameView
         pController.setProjectName(jd.getSelectedFile().getName());
         pController.setLastSaveOption(filter);
         pController.markProjectAsUnchanged();
+/*DatabaseProblem
         pController.getDB().markAsUnchanged();
+*/        
         updateTitle();
 
         // Display any changes to the database.

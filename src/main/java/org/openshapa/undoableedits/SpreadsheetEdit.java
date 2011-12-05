@@ -15,6 +15,8 @@
 package org.openshapa.undoableedits;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -30,13 +32,16 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 /**
  * An undoable edit for altering the contents of a spreadsheet.
  */
-public abstract class SpreadsheetEdit extends AbstractUndoableEdit {
+public abstract class SpreadsheetEdit extends AbstractUndoableEdit {    
+    private Date timestamp; // when the action was done
+    
     protected ProjectController controller;
     protected Datastore model;    
     protected OpenSHAPAView view;
 
     public SpreadsheetEdit() {
         super();
+        timestamp = new Date();
         controller = OpenSHAPA.getProjectController();
         model = controller.getDB();        
         view = OpenSHAPA.getView();
@@ -94,4 +99,46 @@ public abstract class SpreadsheetEdit extends AbstractUndoableEdit {
     protected SpreadsheetPanel getSpreadsheet() {
         return view.getSpreadsheetPanel();
     }
+    
+    protected String getStyle() {
+        String style;
+        if (this.canUndo()) {
+            style = "color='#000000'";
+        } else {
+            style = "color='#C0C0C0'";            
+        }
+        return style;
+    }
+    
+    @Override
+    public String toString() {        
+        String msg;
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");    
+        if (this instanceof AddCellEdit) {
+            msg = ((AddCellEdit)this).getPresentationName();                   
+        }else if (this instanceof AddVariableEdit) {
+            msg = ((AddVariableEdit)this).getPresentationName();                   
+        }else if (this instanceof ChangeNameVariableEdit) {
+            msg = ((ChangeNameVariableEdit)this).getPresentationName();                   
+        }else if (this instanceof ChangeOffsetCellEdit) {
+            msg = ((ChangeOffsetCellEdit)this).getPresentationName();                   
+        }else if (this instanceof ChangeOnsetCellEdit) {
+            msg = ((ChangeOnsetCellEdit)this).getPresentationName();                   
+        }else if (this instanceof ChangeValCellEdit) {
+            msg = ((ChangeValCellEdit)this).getPresentationName();                   
+        }else if (this instanceof RemoveCellEdit) {
+            msg = ((RemoveCellEdit)this).getPresentationName();                   
+        }else if (this instanceof RemoveVariableEdit) {
+            msg = ((RemoveVariableEdit)this).getPresentationName();                   
+        }else if (this instanceof RunScriptEdit) {
+            msg = ((RunScriptEdit)this).getPresentationName();                   
+        }else if (this instanceof VocabEditorEdit) {
+            msg = ((VocabEditorEdit)this).getPresentationName();        
+        }else {
+            msg = "";   
+        }
+        return "<html><font " + getStyle() + ">" + formatter.format(this.timestamp) 
+                + "\t" + msg + "</font></html>";
+    }
+ 
 }

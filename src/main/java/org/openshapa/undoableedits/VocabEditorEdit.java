@@ -16,13 +16,13 @@ package org.openshapa.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import database.Cell;
 import java.util.List;
 import java.util.logging.Level;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
-import database.Cell; 
 import database.DataCell;
 import database.DataCellTO;
 import database.DataColumn;
@@ -43,11 +43,11 @@ public class VocabEditorEdit extends SpreadsheetEdit {
     private static final Logger LOGGER = UserMetrix.getLogger(VocabEditorEdit.class);
     //private      
     private Database db;
-    private List<DataColumnTO> colsTO; // DataColumn relevant values 
-      
+    private List<Variable> vars;
+    
     public VocabEditorEdit() { 
         super();         
-        colsTO = getSpreadsheetState();
+        vars = getSpreadsheetState();
     }
 
     @Override
@@ -68,42 +68,13 @@ public class VocabEditorEdit extends SpreadsheetEdit {
     } 
     
     private void toogleSpreadsheetState() {
-        List<DataColumnTO> tempColsTO = this.getSpreadsheetState();
-        setSpreadsheetState(colsTO);
-        colsTO = tempColsTO;       
+        List<Variable> tempVars = this.getSpreadsheetState();
+        setSpreadsheetState(vars);
+        vars = tempVars;       
     }
     
-    private List<DataColumnTO> getSpreadsheetState() {
-         List<DataColumnTO> colsTO = new ArrayList<DataColumnTO>();
-         try {            
-            List<Variable> vars = new ArrayList(model.getAllVariables());
-            List<DataColumn> colsToDelete = new ArrayList<DataColumn>();
-            for (Variable var : vars) {
-                String name = var.getName();
-                for (DataColumn dc : db.getDataColumns()) {
-                    if (name.equals(dc.getName())) {
-                        colsToDelete.add(dc);    
-                    }
-                }
-            }
-     
-            // Add the cells to each Column
-            for (DataColumn col : colsToDelete) {
-                DataColumnTO colTO = new DataColumnTO(col);               
-                int numCells = col.getNumCells(); 
-                colTO.dataCellsTO.clear();
-                for (int i = 0; i < numCells; i++) {
-                        Cell c = db.getCell(col.getID(), i+1);
-                        DataCellTO cTO = new DataCellTO((DataCell)c);
-                        colTO.dataCellsTO.add(cTO);
-                }
-                colsTO.add(colTO);                    
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to getSpreadsheetState.", e);
-        } finally {
-            return colsTO;
-        }       
+    private List<Variable> getSpreadsheetState() {           
+            return new ArrayList(model.getAllVariables());     
     }
 
 /*    
@@ -168,37 +139,20 @@ public class VocabEditorEdit extends SpreadsheetEdit {
     }
 */ 
     
-    private void setSpreadsheetState(List<DataColumnTO> colsTO) {
-        try {           
+    private void setSpreadsheetState(List<Variable> vars) {        
             new DeleteColumnC(new ArrayList(model.getAllVariables()));
-
-            for (DataColumnTO colTO : colsTO) {    
-                DataColumn dc = new DataColumn(db, colTO.name, colTO.itsMveType);
-
-                Variable.type newType;
-                if (colTO.itsMveType == MatrixVocabElement.MatrixType.MATRIX) {
-                    newType = Variable.type.MATRIX;
-                } else if (colTO.itsMveType == MatrixVocabElement.MatrixType.NOMINAL) {
-                    newType = Variable.type.NOMINAL;
-                } else {
-                    newType = Variable.type.TEXT;
+            for (Variable variable : vars) {    
+            try {
+                model.createVariable(variable.getName(), variable.getVariableType());
+/*              for(Cell cell : variable.getCells()) {
+                    
                 }
-
-                DeprecatedVariable var = new DeprecatedVariable(dc, newType);
-                model.addVariable(var);
-                dc = db.getDataColumn(dc.getName());             
-                for (DataCellTO cellTO : colTO.dataCellsTO) {                 
-                    DataCell newCell = new DataCell(db,dc.getID(), dc.getItsMveID());
-                    long cellID = ((DeprecatedDatabase) model).getDatabase().appendCell(newCell);
-                    newCell = (DataCell)((DeprecatedDatabase) model).getDatabase().getCell(cellID); 
-                    newCell.setDataCellData(cellTO);                   
-                    db.replaceCell(newCell);  
-                }                   
-            } 
-            unselectAll();            
-        } catch (SystemErrorException e) {
+ */
+            } catch (UserWarningException e) {
                 LOGGER.error("Unable to setSpreadsheetState.", e);
-        }        
+            }
+            } 
+            unselectAll();                   
     }
     
 }
