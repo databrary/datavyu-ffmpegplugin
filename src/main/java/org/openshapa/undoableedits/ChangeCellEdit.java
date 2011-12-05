@@ -120,7 +120,6 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
         double hash = super.hashCode();
         hash += granularity.hashCode() * Constants.SEED1;
         long val = Double.doubleToLongBits(hash);
-
         return (int) (val ^ (val >>> 32));
     }
 }

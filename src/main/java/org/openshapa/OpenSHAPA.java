@@ -70,6 +70,8 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.TitleNotifier;
 import org.openshapa.models.db.UserWarningException;
+import org.openshapa.undoableedits.SpreadsheetUndoManager;
+import org.openshapa.views.UndoHistoryWindow;
 
 /**
  * The main class of the application.
@@ -152,6 +154,9 @@ public final class OpenSHAPA extends SingleFrameApplication
     /** The view to use when listing all variables in the database. */
     private VariableListV listVarView;
 
+    /** The view to use when listing all the undoable actions. */
+    private UndoHistoryWindow history;
+    
     /** The view to use for the quick time video controller. */
     private DataControllerV dataController;
 
@@ -539,7 +544,20 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         OpenSHAPA.getApplication().show(listVarView);
     }
-
+    
+    
+    /**
+     * Action for showing the Undo History.
+     */
+    public void showHistory() {
+        JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+        SpreadsheetUndoManager undomanager = OpenSHAPA.getApplication().getView().getSpreadsheetUndoManager();
+        history = new UndoHistoryWindow(mainFrame, true, undomanager);
+        OpenSHAPA.getApplication().show(history);
+    }     
+    
+    
+    
     /**
      * Action for showing the about window.
      */

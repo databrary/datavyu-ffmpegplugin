@@ -59,7 +59,6 @@ public class AddVariableEdit extends SpreadsheetEdit {
     @Override
     public void undo() throws CannotUndoException {
         super.undo();
-
         List<Variable> cols = new ArrayList<Variable>();
         cols.add(model.getVariable(varName));
         new DeleteColumnC(cols);

@@ -91,6 +91,8 @@ import org.openshapa.undoableedits.RemoveCellEdit;
 import org.openshapa.undoableedits.RemoveVariableEdit;
 import org.openshapa.undoableedits.RunScriptEdit;
 import org.openshapa.undoableedits.SpreadsheetUndoManager;
+import javax.swing.JOptionPane;
+import org.openshapa.jackrabbit.Jackrabbit;
 
 
 /**
@@ -120,7 +122,13 @@ public final class OpenSHAPAView extends FrameView
     /**
      * undo system elements
      */
-    UndoManager spreadsheetUndoManager; // history list
+    SpreadsheetUndoManager spreadsheetUndoManager; // history list
+
+    public SpreadsheetUndoManager getSpreadsheetUndoManager() {
+        return spreadsheetUndoManager;
+    }
+   
+    
     UndoableEditSupport undoSupport; // event support
     
     public UndoableEditSupport getUndoSupport() {
@@ -138,10 +146,14 @@ public final class OpenSHAPAView extends FrameView
     private javax.swing.JMenuItem favScripts;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem hideSelectedColumnsMenuItem;
+    private javax.swing.JMenuItem historySpreadSheetMenuItem;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator10;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
@@ -950,6 +962,14 @@ public final class OpenSHAPAView extends FrameView
     /**
      * Undo Action.
      */
+    @Action public void history() {
+        //JOptionPane.showMessageDialog(null, "Undo History.", "History", JOptionPane.INFORMATION_MESSAGE);
+        OpenSHAPA.getApplication().showHistory();
+    }     
+    
+    /**
+     * Undo Action.
+     */
     @Action public void undo() {
          spreadsheetUndoManager.undo();
          refreshUndoRedo();
@@ -963,6 +983,23 @@ public final class OpenSHAPAView extends FrameView
          refreshUndoRedo();
     }  
     
+    /**
+     * Push Action.
+     */
+    @Action public void push() {
+        System.out.println("push");
+        Jackrabbit jr = Jackrabbit.getJackRabbit();
+        jr.push();
+    } 
+    
+    /**
+     * Redo Action.
+     */
+    @Action public void pull() {
+        System.out.println("pull");
+        Jackrabbit jr = Jackrabbit.getJackRabbit();
+        jr.pull();
+    }     
     
     private void resetUndoManager() {
         spreadsheetUndoManager.discardAllEdits();
@@ -1012,6 +1049,7 @@ public final class OpenSHAPAView extends FrameView
         deleteColumnMenuItem = new javax.swing.JMenuItem();
         deleteCellMenuItem = new javax.swing.JMenuItem();
         jSeparator6 = new javax.swing.JSeparator();
+        historySpreadSheetMenuItem = new javax.swing.JMenuItem();
         undoSpreadSheetMenuItem = new javax.swing.JMenuItem();
         redoSpreadSheetMenuItem = new javax.swing.JMenuItem();
         jSeparator9 = new javax.swing.JPopupMenu.Separator();
@@ -1022,6 +1060,9 @@ public final class OpenSHAPAView extends FrameView
         zoomOutMenuItem = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JSeparator();
         resetZoomMenuItem = new javax.swing.JMenuItem();
+        jSeparator10 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
         controllerMenu = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
@@ -1215,6 +1256,10 @@ public final class OpenSHAPAView extends FrameView
         jSeparator6.setName("jSeparator6"); // NOI18N
         spreadsheetMenu.add(jSeparator6);
 
+        historySpreadSheetMenuItem.setAction(actionMap.get("history")); // NOI18N
+        historySpreadSheetMenuItem.setName("historySpreadSheetMenuItem"); // NOI18N
+        spreadsheetMenu.add(historySpreadSheetMenuItem);
+
         undoSpreadSheetMenuItem.setAction(actionMap.get("undo")); // NOI18N
         undoSpreadSheetMenuItem.setName("undoSpreadSheetMenuItem"); // NOI18N
         spreadsheetMenu.add(undoSpreadSheetMenuItem);
@@ -1272,6 +1317,17 @@ public final class OpenSHAPAView extends FrameView
         zoomMenu.add(resetZoomMenuItem);
 
         spreadsheetMenu.add(zoomMenu);
+
+        jSeparator10.setName("jSeparator10"); // NOI18N
+        spreadsheetMenu.add(jSeparator10);
+
+        jMenuItem3.setAction(actionMap.get("push")); // NOI18N
+        jMenuItem3.setName("jMenuItem3"); // NOI18N
+        spreadsheetMenu.add(jMenuItem3);
+
+        jMenuItem4.setAction(actionMap.get("pull")); // NOI18N
+        jMenuItem4.setName("jMenuItem4"); // NOI18N
+        spreadsheetMenu.add(jMenuItem4);
 
         menuBar.add(spreadsheetMenu);
 

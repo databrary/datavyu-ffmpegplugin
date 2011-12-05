@@ -30,7 +30,7 @@ import org.openshapa.views.discrete.SpreadsheetPanel;
 /**
  * An undoable edit for altering the contents of a spreadsheet.
  */
-abstract class SpreadsheetEdit extends AbstractUndoableEdit {
+public abstract class SpreadsheetEdit extends AbstractUndoableEdit {
     protected ProjectController controller;
     protected Datastore model;    
     protected OpenSHAPAView view;

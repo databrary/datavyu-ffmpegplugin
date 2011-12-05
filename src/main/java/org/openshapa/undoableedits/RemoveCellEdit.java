@@ -18,7 +18,6 @@ package org.openshapa.undoableedits;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import database.DataCell;

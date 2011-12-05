@@ -17,13 +17,12 @@ package org.openshapa.undoableedits;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import org.openshapa.controllers.DeleteColumnC;
-import org.openshapa.models.db.DeprecatedDatabase;
-import org.openshapa.models.db.DeprecatedVariable;
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
-import database.Cell;
+import database.Cell; 
 import database.DataCell;
 import database.DataCellTO;
 import database.DataColumn;
@@ -32,35 +31,28 @@ import database.Database;
 import database.MatrixVocabElement;
 import database.SystemErrorException;
 import java.util.ArrayList;
-
+import org.openshapa.controllers.DeleteColumnC;
+import org.openshapa.models.db.DeprecatedDatabase;
+import org.openshapa.models.db.DeprecatedVariable;
 
 /**
  *
  */
-public class RunScriptEdit extends SpreadsheetEdit {    
+public class VocabEditorEdit extends SpreadsheetEdit {    
     /** The logger for this class. */
-    private static final Logger LOGGER = UserMetrix.getLogger(RunScriptEdit.class);
-
+    private static final Logger LOGGER = UserMetrix.getLogger(VocabEditorEdit.class);
+    //private      
     private Database db;
-    private String scriptPath;
     private List<DataColumnTO> colsTO; // DataColumn relevant values 
-            
-    public RunScriptEdit(String scriptPath) { 
-        super();
-        this.scriptPath = scriptPath;            
+      
+    public VocabEditorEdit() { 
+        super();         
         colsTO = getSpreadsheetState();
-        db = controller.getLegacyDB().getDatabase();
     }
 
     @Override
     public String getPresentationName() {
-        /*
-        File file = new File(scriptPath);
-        String fileName = file.getName();        
-        return "Run Script \"" + fileName + "\"";
-         * 
-         */
-        return "Changes due to \"" + this.scriptPath + "\"";
+        return "Vocab Editor actions";
     }
 
     @Override
@@ -114,6 +106,68 @@ public class RunScriptEdit extends SpreadsheetEdit {
         }       
     }
 
+/*    
+    private void setSpreadsheetState(ArrayList<DataColumnTO> colsTO) {          
+            new DeleteColumnC(new ArrayList<Variable>(model.getAllVariables()));
+            
+            for (DataColumnTO colTO : colsTO) {                
+            try {
+                Variable.type newType;
+                if (colTO.itsMveType == MatrixVocabElement.MatrixType.MATRIX) {
+                    newType = Variable.type.MATRIX;
+                } else if (colTO.itsMveType == MatrixVocabElement.MatrixType.NOMINAL) {
+                    newType = Variable.type.NOMINAL;
+                } else {
+                    newType = Variable.type.TEXT;
+                }
+                Variable var = model.createVariable(colTO.name, newType);
+           
+                for (DataCellTO cellTO : colTO.dataCellsTO) {                 
+                    Cell c = var.createCell();
+                    c.setValue();
+                    
+                    //DataCell newCell = new DataCell(db,dc.getID(), dc.getItsMveID());
+                    //long cellID = ((DeprecatedDatabase) model).getDatabase().appendCell(newCell);
+                    //newCell = (DataCell)((DeprecatedDatabase) model).getDatabase().getCell(cellID); 
+                    //newCell.setDataCellData(cellTO);                   
+                    //db.replaceCell(newCell);  
+                }
+            } catch (UserWarningException ex) {
+                LOGGER.error("Unable to setSpreadsheetState.", e);
+            }
+            }
+            
+/*
+            for (DataColumnTO colTO : colsTO) {
+                
+                
+                DataColumn dc = new DataColumn(db, colTO.name, colTO.itsMveType);
+
+                Variable.type newType;
+                if (colTO.itsMveType == MatrixVocabElement.MatrixType.MATRIX) {
+                    newType = Variable.type.MATRIX;
+                } else if (colTO.itsMveType == MatrixVocabElement.MatrixType.NOMINAL) {
+                    newType = Variable.type.NOMINAL;
+                } else {
+                    newType = Variable.type.TEXT;
+                }
+
+                DeprecatedVariable var = new DeprecatedVariable(dc, newType);
+                model.addVariable(var);
+                dc = db.getDataColumn(dc.getName());             
+                for (DataCellTO cellTO : colTO.dataCellsTO) {                 
+                    DataCell newCell = new DataCell(db,dc.getID(), dc.getItsMveID());
+                    long cellID = ((DeprecatedDatabase) model).getDatabase().appendCell(newCell);
+                    newCell = (DataCell)((DeprecatedDatabase) model).getDatabase().getCell(cellID); 
+                    newCell.setDataCellData(cellTO);                   
+                    db.replaceCell(newCell);  
+                }                   
+            }
+
+            unselectAll();              
+    }
+*/ 
+    
     private void setSpreadsheetState(List<DataColumnTO> colsTO) {
         try {           
             new DeleteColumnC(new ArrayList(model.getAllVariables()));
@@ -148,3 +202,4 @@ public class RunScriptEdit extends SpreadsheetEdit {
     }
     
 }
+

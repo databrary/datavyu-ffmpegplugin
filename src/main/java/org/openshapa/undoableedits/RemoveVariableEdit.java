@@ -17,7 +17,6 @@ package org.openshapa.undoableedits;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import org.openshapa.controllers.DeleteColumnC;
@@ -32,11 +31,11 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(RemoveVariableEdit.class);
     //private      
-    private Vector<DataColumnTO> colsTO; // DataColumn relevant values
-    private Vector<Long> colOrderVec;    // Order Vector before deleting the variables
-    private List<Variable> vars;         // Vars vector   
+    private List<DataColumnTO> colsTO; // DataColumn relevant values
+    private List<Long> colOrderVec;    // Order List before deleting the variables
+    private List<Variable> vars;         // Vars List   
     private List<Variable> varsTo;       // Variables to delete.
-    private Vector<Integer> indexV;      // indexes of the columns to delete on the spreadsheet 
+    private List<Integer> indexV;      // indexes of the columns to delete on the spreadsheet 
     
     public RemoveVariableEdit(List<Variable> varsToDelete) {
         super();
@@ -88,7 +87,7 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     public String getPresentationName() {
         String msg;
         if (colsTO.size() == 1) {
-            msg = "Delete Variable \"" + colsTO.elementAt(0).name + "\""; 
+            msg = "Delete Variable \"" + colsTO.get(0).name + "\""; 
         }
         else { // > 1
             msg = "Delete " + colsTO.size() + " Variables";

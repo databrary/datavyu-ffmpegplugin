@@ -14,7 +14,12 @@
  */
 package org.openshapa.undoableedits;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.ListModel;
+import javax.swing.event.ListDataListener;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import org.openshapa.undoableedits.ChangeCellEdit.Granularity;
@@ -22,11 +27,23 @@ import org.openshapa.undoableedits.ChangeCellEdit.Granularity;
 /**
  *
  */
-public class SpreadsheetUndoManager  extends UndoManager{
+public class SpreadsheetUndoManager  extends UndoManager implements ListModel {
 
     public SpreadsheetUndoManager() {
     }
 
+    @Override
+    public synchronized void undo() throws CannotUndoException {
+//        ((SpreadsheetEdit)this.editToBeUndone()).displayFeedback = true;
+        super.undo();
+    }
+
+    @Override
+    public synchronized void redo() throws CannotRedoException {
+//        ((SpreadsheetEdit)this.editToBeRedone()).displayFeedback = true;
+        super.redo();
+    }
+        
     @Override
     public synchronized boolean addEdit(UndoableEdit ue) {
         boolean addEdit = true;
@@ -35,28 +52,25 @@ public class SpreadsheetUndoManager  extends UndoManager{
         if ((edits != null) && (edits.size() > 0)) {
             UndoableEdit prevEdit = edits.lastElement();
             // Do not insert duplicated edits
-            if ((ue instanceof ChangeCellEdit) && 
-                (ue.getClass() == prevEdit.getClass())) {
+            if ((ue instanceof ChangeCellEdit)
+                    && (ue.getClass() == prevEdit.getClass())) {
                 ChangeCellEdit cce = (ChangeCellEdit) ue;
-                if (!prevEdit.equals(cce)) {
-                   // Remove previous finegrained ChangeCellEdit of the same type
-                   if (cce.getGranularity() == Granularity.COARSEGRAINED) {
-                       // Take the last element
-                       do {
-                            Object o = edits.lastElement();
-                            cond =  (ue.getClass() == o.getClass()) && 
-                                    (((ChangeCellEdit)o).granularity == Granularity.FINEGRAINED);
-                            if (cond) {
-                                edits.removeElement(o);
-                            }
-                       } while (cond && edits.size() > 0);
-                   }    
-               } else { // the new one is equals to the previous one
-                   addEdit = false;
-               }
+                // Remove previous finegrained ChangeCellEdit of the same type
+                if (cce.getGranularity() == Granularity.COARSEGRAINED) {
+                    // Take the last element
+                    do {
+                        Object o = edits.lastElement();
+                        cond = (ue.getClass() == o.getClass())
+                                && (((ChangeCellEdit) o).granularity == Granularity.FINEGRAINED);
+                        if (cond) {
+                            edits.removeElementAt(edits.size()-1);
+                        }
+                    } while (cond && edits.size() > 0);
+                } else if (prevEdit.equals(cce)) { // FINEGRAINED
+                    addEdit = false;
+                }
             }
         }
-        
         if (addEdit) {
             result = super.addEdit(ue);
         } else {
@@ -82,37 +96,31 @@ public class SpreadsheetUndoManager  extends UndoManager{
     edits.copyInto(array);
     return array;
   }
-
-  // Return all currently significant undoable edits. The first edit is the
-  // next one to be undone.
-  public synchronized UndoableEdit[] getUndoableEdits() {
+  
+  public synchronized List<UndoableEdit> getUndoableEdits() {
     int size = edits.size();
-    Vector v = new Vector(size);
+    List<UndoableEdit> v = new ArrayList<UndoableEdit>(size);
     for (int i=size-1;i>=0;i--) {
       UndoableEdit u = (UndoableEdit)edits.elementAt(i);
       if (u.canUndo() && u.isSignificant())
-        v.addElement(u);
+        v.add(u);
     }
-    UndoableEdit[] array = new UndoableEdit[v.size()];
-    v.copyInto(array);
-    return array;
+    return v;
   }
 
   // Return all currently significant redoable edits. The first edit is the
   // next one to be redone.
-  public synchronized UndoableEdit[] getRedoableEdits() {
+  public synchronized List<UndoableEdit> getRedoableEdits() {
     int size = edits.size();
-    Vector v = new Vector(size);
+    List<UndoableEdit> v = new ArrayList<UndoableEdit>(size);
     for (int i=0; i<size; i++) {
       UndoableEdit u = (UndoableEdit)edits.elementAt(i);
       if (u.canRedo() && u.isSignificant())
-        v.addElement(u);
+        v.add(u);
     }
-    UndoableEdit[] array = new UndoableEdit[v.size()];
-    v.copyInto(array);
-    return array;
-  }    
-  
+    return v;    
+  }      
+
   private void printEdits() {
       UndoableEdit[] editsV = getEdits();
       System.out.println("Edit List");
@@ -120,6 +128,39 @@ public class SpreadsheetUndoManager  extends UndoManager{
           System.out.println(ue.getPresentationName());
       }
       System.out.println();
+  }
+    
+  
+  // ListModel Methods
+  @Override
+  public Object getElementAt(int index) {
+    return edits.get(index);
+}
+
+  @Override
+  public int getSize() {
+    return edits.size();
+  }
+
+  @Override
+  public void addListDataListener(ListDataListener l) {
+  
+  }
+  
+  
+  @Override
+  public void removeListDataListener(ListDataListener l) {
+  
+  }
+  
+  public void goTo(SpreadsheetEdit edit) {
+      System.out.println("GOTO !!!");
+//      edit.displayFeedback = true;          
+      if (edit.canUndo()) {
+          this.undoTo(edit);
+      } else if (edit.canRedo()) {
+          this.redoTo(edit);
+      }
   }
     
 }
