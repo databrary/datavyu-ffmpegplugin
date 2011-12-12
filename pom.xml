@@ -805,7 +805,11 @@
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <version>1.5.8</version>
-    </dependency>          
-
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>openshapa-lib</artifactId>
+      <version>0.0.74</version>
+    </dependency>
   </dependencies>
 </project>

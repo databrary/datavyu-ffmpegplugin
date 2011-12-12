@@ -128,9 +128,7 @@ ExternalVocabListListener {
                 //determine what key was pressed
                 if(ke.getID()== KeyEvent.KEY_RELEASED){
                     switch (ke.getKeyCode()){
-                        case KeyEvent.VK_ENTER:
-                            ok();
-                            break;
+
                         case KeyEvent.VK_ESCAPE:
                             closeWindow();
                             break;
@@ -205,7 +203,6 @@ ExternalVocabListListener {
         holdPanel.add(verticalFrame, BorderLayout.NORTH);
         currentVocabList.setViewportView(holdPanel);
         updateDialogState();
-        getRootPane().setDefaultButton(okButton);
 
         // Hide all the broken stuff.
         varyArgCheckBox.setVisible(false);
@@ -248,6 +245,7 @@ ExternalVocabListListener {
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to create matrix vocab element", e);
         }
+        applyChanges();
         updateDialogState();
     }
 
@@ -327,6 +325,7 @@ ExternalVocabListListener {
             FormalArgument fa = ve.getFormalArgCopy(selectedArgumentI-1);
             selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(fa));
 
+            applyChanges();
             updateDialogState();
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to move formal argument left", e);
@@ -351,6 +350,7 @@ ExternalVocabListListener {
             FormalArgument fa = ve.getFormalArgCopy(selectedArgumentI+1);
             selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(fa));
 
+            applyChanges();
             updateDialogState();
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to move formal argument right", e);
@@ -387,6 +387,8 @@ ExternalVocabListListener {
             selectedVocabElement.requestFocus();
             FormalArgEditor faV = selectedVocabElement.getArgumentView(fa);
             selectedVocabElement.requestArgFocus(faV);
+            
+            applyChanges();
             updateDialogState();
             
         } catch (SystemErrorException e) {
@@ -441,6 +443,7 @@ ExternalVocabListListener {
             }
         }
 
+        applyChanges();
         updateDialogState();
     }
 
@@ -550,9 +553,11 @@ ExternalVocabListListener {
         return errors;
     }
 
+
     /**
      * The action to invoke when the user presses the OK button.
      */
+    
     @Action
     public void ok() {
         LOGGER.event("vocEd - ok");
@@ -566,6 +571,7 @@ ExternalVocabListListener {
         }
     }
 
+    
     /**
      * The action to invoke when the user presses the cancel button.
      */
@@ -615,18 +621,17 @@ ExternalVocabListListener {
                 containsC = true;
             }
         }
-
+/*New
         if (containsC) {
             closeButton.setText(rMap.getString("closeButton.cancelText"));
             closeButton.setToolTipText(rMap.getString("closeButton.cancelTip"));
-            okButton.setEnabled(true);
             
         } else {
             closeButton.setText(rMap.getString("closeButton.cancelText"));
             closeButton.setToolTipText(rMap.getString("closeButton.cancelTip"));
-            okButton.setEnabled(false);
         }
-
+*/
+        
         // If we have a selected vocab element - we can enable additional
         // functionality.
         if (selectedVocabElement != null) {
@@ -707,7 +712,6 @@ ExternalVocabListListener {
         varyArgCheckBox = new javax.swing.JCheckBox();
         deleteButton = new javax.swing.JButton();
         currentVocabList = new javax.swing.JScrollPane();
-        okButton = new javax.swing.JButton();
         closeButton = new javax.swing.JButton();
         statusBar = new javax.swing.JLabel();
         statusSeperator = new javax.swing.JSeparator();
@@ -837,17 +841,6 @@ ExternalVocabListListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(currentVocabList, gridBagConstraints);
 
-        okButton.setAction(actionMap.get("ok")); // NOI18N
-        okButton.setText(bundle.getString("okButton.text")); // NOI18N
-        okButton.setToolTipText(bundle.getString("okButton.tip")); // NOI18N
-        okButton.setName("okButton"); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 5;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-        getContentPane().add(okButton, gridBagConstraints);
-
         closeButton.setAction(actionMap.get("closeWindow")); // NOI18N
         closeButton.setText(bundle.getString("closeButton.closeText")); // NOI18N
         closeButton.setToolTipText(bundle.getString("closeButton.closeTip")); // NOI18N
@@ -855,7 +848,7 @@ ExternalVocabListListener {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
         getContentPane().add(closeButton, gridBagConstraints);
 
@@ -967,7 +960,6 @@ ExternalVocabListListener {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JButton moveArgLeftButton;
     private javax.swing.JButton moveArgRightButton;
-    private javax.swing.JButton okButton;
     private javax.swing.JLabel statusBar;
     private javax.swing.JSeparator statusSeperator;
     private javax.swing.JCheckBox varyArgCheckBox;
@@ -984,7 +976,7 @@ ExternalVocabListListener {
             public void mouseEntered(MouseEvent me){
                 String component = me.getComponent().getName();
                 if(component.equals("closeButton")){
-                    statusBar.setText("Cancel all changes and close the editor");
+                    statusBar.setText("Close the editor");
                 }
                 else if(component.equals("addPredicateButton")){
                     statusBar.setText("Add a new predicate definition. Hotkey: ctrl + P");
@@ -1033,7 +1025,6 @@ ExternalVocabListListener {
         currentVocabList.addMouseListener(ma);
         addMatrixButton.addMouseListener(ma);
         deleteButton.addMouseListener(ma);
-        okButton.addMouseListener(ma);
         closeButton.addMouseListener(ma);
         addArgButton.addMouseListener(ma);
         moveArgLeftButton.addMouseListener(ma);

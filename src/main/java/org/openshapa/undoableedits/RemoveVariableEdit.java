@@ -17,11 +17,15 @@ package org.openshapa.undoableedits;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import org.openshapa.controllers.DeleteColumnC;
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
 import database.DataColumnTO;
+import java.util.ArrayList;
+import org.openshapa.models.db.Cell;
 
 
 /**
@@ -31,66 +35,26 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(RemoveVariableEdit.class);
     //private      
-    private List<DataColumnTO> colsTO; // DataColumn relevant values
-    private List<Long> colOrderVec;    // Order List before deleting the variables
-    private List<Variable> vars;         // Vars List   
-    private List<Variable> varsTo;       // Variables to delete.
-    private List<Integer> indexV;      // indexes of the columns to delete on the spreadsheet 
+    private List<Variable> varsToDelete;       // Variables to delete.
+    private List<String>   varNames;           // Spreadsheet variable names.
+
     
     public RemoveVariableEdit(List<Variable> varsToDelete) {
-        super();
-        /*
-        try {
-            varsTo = varsToDelete;
-            colsTO = new Vector<DataColumnTO>();
-            indexV = new Vector<Integer>(); 
-            colOrderVec = db.getColOrderVector();            
-            vars = new ArrayList<Variable>(model.getAllVariables());
-
-            Vector<DataColumn> colsToDelete = new Vector<DataColumn>();
-            for (Variable var : varsToDelete) {
-                colsToDelete.add(((DeprecatedVariable) var).getLegacyVariable());
-            }
-
-            // Add the cells to each Column
-            for (DataColumn col : colsToDelete) {
-                DataColumnTO colTO = new DataColumnTO(col);  
-                List<SpreadsheetColumn> columns = getSpreadsheet().getColumns();
-
-                // What index does the given column sit at
-                int columnIndex = -1;
-                for (int i = 0; i < columns.size(); i++) {
-                    if (columns.get(i).getColID() == col.getID()) {
-                        columnIndex = i;
-                        indexV.add(columnIndex);
-                        break;
-                    }
-                }                
-                int numCells = col.getNumCells(); 
-                colTO.dataCellsTO.clear();
-                for (int i = 0; i < numCells; i++) {
-                        Cell c = db.getCell(col.getID(), i+1);
-                        DataCellTO cTO = new DataCellTO((DataCell)c);
-                        colTO.dataCellsTO.add(cTO);
-                }
-                colsTO.add(colTO);                    
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to construct RemoveVariableEdit.", e);
-        } finally {
-
+        this.varsToDelete = varsToDelete;
+        varNames = new ArrayList<String>();
+        for (Variable var : model.getAllVariables()) {
+            varNames.add(var.getName());
         }
-         */
     }
 
     @Override
     public String getPresentationName() {
         String msg;
-        if (colsTO.size() == 1) {
-            msg = "Delete Variable \"" + colsTO.get(0).name + "\""; 
+        if (varsToDelete.size() == 1) {
+            msg = "Delete Variable \"" + varsToDelete.get(0).getName() + "\""; 
         }
         else { // > 1
-            msg = "Delete " + colsTO.size() + " Variables";
+            msg = "Delete " + varsToDelete.size() + " Variables";
         }
         return msg;
     }
@@ -98,6 +62,25 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     @Override
     public void undo() throws CannotRedoException {
         super.undo();
+        for (Variable var : varsToDelete) {
+            try {
+                
+                Variable newVar = model.createVariable(var.getName(), var.getVariableType());
+                //unimplemented 
+                // how to set the variable's position back
+                for (Cell cell : var.getCells()) {
+                    Cell newCell = newVar.createCell();
+                    newCell.setOnset(cell.getOnset());
+                    newCell.setOffset(cell.getOffset());
+                    //unimplemented
+                    //newCell.setValue(cell.getValue());
+                }
+                
+            } catch (UserWarningException e) {
+                LOGGER.error("Unable to undo.", e);
+            }
+        }
+        
         /*
         try {
             int j = 0;
@@ -142,8 +125,7 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     @Override 
     public void redo() throws CannotUndoException {        
         super.redo();
-
-        new DeleteColumnC(varsTo);
+        new DeleteColumnC(varsToDelete);
         unselectAll();
     }   
 }

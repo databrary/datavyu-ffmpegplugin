@@ -143,11 +143,18 @@ public class VocabEditorEdit extends SpreadsheetEdit {
             new DeleteColumnC(new ArrayList(model.getAllVariables()));
             for (Variable variable : vars) {    
             try {
-                model.createVariable(variable.getName(), variable.getVariableType());
-/*              for(Cell cell : variable.getCells()) {
-                    
-                }
+                //model.addVariable(variable);
+               
+                
+              Variable newVar = model.createVariable(variable.getName(), variable.getVariableType());
+/*                                 
+               for (org.openshapa.models.db.Cell cell : variable.getCells()) {
+                   org.openshapa.models.db.Cell newCell = newVar.createCell();
+                   newCell.setOnset(cell.getOnset());
+                   newCell.setOffset(cell.getOffset());
+               }
  */
+ 
             } catch (UserWarningException e) {
                 LOGGER.error("Unable to setSpreadsheetState.", e);
             }

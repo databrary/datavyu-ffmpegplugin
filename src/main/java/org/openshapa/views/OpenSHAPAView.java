@@ -150,8 +150,6 @@ public final class OpenSHAPAView extends FrameView
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator10;
     private javax.swing.JSeparator jSeparator2;
@@ -171,6 +169,8 @@ public final class OpenSHAPAView extends FrameView
     private javax.swing.JMenuItem newVariableMenuItem;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenu openRecentFileMenu;
+    private javax.swing.JMenuItem pullMenuItem;
+    private javax.swing.JMenuItem pushMenuItem;
     private javax.swing.JMenuItem qtControllerItem;
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenuItem redoSpreadSheetMenuItem;
@@ -285,9 +285,9 @@ public final class OpenSHAPAView extends FrameView
         undoSpreadSheetMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_Z, keyMask));
 
-        // Set the redo accelerator to keyMask + shift + 'Z'
+        // Set the redo accelerator to keyMask + 'Y'
         redoSpreadSheetMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_Z, InputEvent.SHIFT_MASK | keyMask));
+                KeyEvent.VK_Y, keyMask));
 
         
         if (panel != null) {
@@ -305,7 +305,13 @@ public final class OpenSHAPAView extends FrameView
         undoSupport = new UndoableEditSupport();
         undoSupport.addUndoableEditListener(new UndoAdapter());
         refreshUndoRedo();
-        //////        
+        ////// 
+        
+        //Jakrabbit Menu
+        pushMenuItem.setVisible(false);                 
+        pullMenuItem.setVisible(false);                 
+        jSeparator10.setVisible(false); 
+      
     }
     
     
@@ -440,9 +446,9 @@ public final class OpenSHAPAView extends FrameView
                                                projController.getDB());
 
                     projController.markProjectAsUnchanged();
-/*DatabaseProblem
+
                     projController.getDB().markAsUnchanged();
-*/
+
                     
                     // Update the application title
                     updateTitle();
@@ -454,9 +460,9 @@ public final class OpenSHAPAView extends FrameView
                     saveC.saveDatabase(file, projController.getDB());
 
                     projController.markProjectAsUnchanged();
-/*DatabaseProblem
+
                     projController.getDB().markAsUnchanged();
-*/
+
                 }
             }
 
@@ -582,9 +588,9 @@ public final class OpenSHAPAView extends FrameView
 
             projController.setLastSaveOption(filter);
             projController.markProjectAsUnchanged();
-/*DatabaseProblem
+
             projController.getDB().markAsUnchanged();
-*/
+
             updateTitle();
 
         } catch (UserWarningException e) {
@@ -671,9 +677,9 @@ public final class OpenSHAPAView extends FrameView
         pController.setProjectName(jd.getSelectedFile().getName());
         pController.setLastSaveOption(filter);
         pController.markProjectAsUnchanged();
-/*DatabaseProblem
+
         pController.getDB().markAsUnchanged();
-*/        
+        
         updateTitle();
 
         // Display any changes to the database.
@@ -1069,8 +1075,8 @@ public final class OpenSHAPAView extends FrameView
         jSeparator5 = new javax.swing.JSeparator();
         resetZoomMenuItem = new javax.swing.JMenuItem();
         jSeparator10 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
+        pushMenuItem = new javax.swing.JMenuItem();
+        pullMenuItem = new javax.swing.JMenuItem();
         controllerMenu = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
@@ -1329,13 +1335,13 @@ public final class OpenSHAPAView extends FrameView
         jSeparator10.setName("jSeparator10"); // NOI18N
         spreadsheetMenu.add(jSeparator10);
 
-        jMenuItem3.setAction(actionMap.get("push")); // NOI18N
-        jMenuItem3.setName("jMenuItem3"); // NOI18N
-        spreadsheetMenu.add(jMenuItem3);
+        pushMenuItem.setAction(actionMap.get("push")); // NOI18N
+        pushMenuItem.setName("pushMenuItem"); // NOI18N
+        spreadsheetMenu.add(pushMenuItem);
 
-        jMenuItem4.setAction(actionMap.get("pull")); // NOI18N
-        jMenuItem4.setName("jMenuItem4"); // NOI18N
-        spreadsheetMenu.add(jMenuItem4);
+        pullMenuItem.setAction(actionMap.get("pull")); // NOI18N
+        pullMenuItem.setName("pullMenuItem"); // NOI18N
+        spreadsheetMenu.add(pullMenuItem);
 
         menuBar.add(spreadsheetMenu);
 

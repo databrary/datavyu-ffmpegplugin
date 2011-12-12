@@ -43,11 +43,11 @@ public class RemoveCellEdit extends SpreadsheetEdit {
       super();
       //cellPosV = new Vector<CellPos>();
       cellTOV = new ArrayList<DataCellTO>();
-      /*
+/*      
       for (DataCell cell : cells) {
           cellTOV.add(cell.getDataCellData());
-      }*/
-
+      }
+*/
     }
 
     @Override
