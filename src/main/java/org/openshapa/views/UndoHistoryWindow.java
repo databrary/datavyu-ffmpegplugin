@@ -123,17 +123,6 @@ public class UndoHistoryWindow extends OpenSHAPADialog {
         }
     }//GEN-LAST:event_formWindowGainedFocus
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                new UndoHistoryWindow().setVisible(true);
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList undoHistoryList;
     private javax.swing.JScrollPane undoHistoryScrollPane;
