@@ -14,93 +14,93 @@
  */
 package org.openshapa.undoableedits;
 
-
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import database.DataCell;
-import database.DataCellTO;
-import database.DataColumn;
-import database.SystemErrorException;
 import java.util.ArrayList;
+import org.openshapa.controllers.DeleteCellC;
 import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.Variable;
 import org.openshapa.views.discrete.SpreadsheetCell;
 
-
 /**
- *
+ * Undoable edit for removing cells.
  */
 public class RemoveCellEdit extends SpreadsheetEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(RemoveCellEdit.class);
+
+    private List<CellTO> cellTOV;
     
-    //private List<CellPos> cellPosV;
-    private List<DataCellTO> cellTOV;
-    
+    /**
+     * Constructor.
+     *
+     * @param cells The cells that are being removed.
+     */
     public RemoveCellEdit(List<Cell> cells) {
       super();
-      //cellPosV = new Vector<CellPos>();
-      cellTOV = new ArrayList<DataCellTO>();
-/*      
-      for (DataCell cell : cells) {
-          cellTOV.add(cell.getDataCellData());
+
+      cellTOV = new ArrayList<CellTO>();
+      for (Cell cell : cells) {
+          cellTOV.add(new CellTO(cell, model.getVariable(cell)));
       }
-*/
     }
 
     @Override
     public String getPresentationName() {
         String msg = "nothing";
-        /*
-        if ((cellPosV != null) && (cellPosV.size() > 1)) {
-            msg = "Delete " + cellPosV.size() + " Cells";
+
+        if ((cellTOV != null) && (cellTOV.size() > 1)) {
+            msg = "Delete " + cellTOV.size() + " Cells";
+        } else {
+            msg = "Delete Cell (" + cellTOV.get(0).getValue() + ")";
         }
-        else { // one cell
-            msg = "Delete Cell (" + cellPosV.get(0).varName + "," + cellPosV.get(0).ord + ")";
-        }*/
+
         return msg;
     }
 
     @Override
     public void redo() throws CannotRedoException {
         super.redo();
-        /*
-        List<DataCell> cellsToDelete = new Vector<DataCell>();
-        for (CellPos cellPos : cellPosV) {
-            cellsToDelete.add(getDataCell(cellPos));
-        }*/
-        
-        //
-        // TODO.
-        //new DeleteCellC(cellsToDelete);
-    }          
+        LOGGER.event("Redoing remove cells");
+
+        List<Cell> cellsToDelete = new ArrayList<Cell>();
+
+        for (CellTO cellTO : cellTOV) {
+            Variable var = model.getVariable(cellTO.getParentVariableName());
+
+            for (Cell cell : var.getCells()) {
+                if (cell.getOnset() == cellTO.getOnset() &&
+                    cell.getOffset() == cellTO.getOffset() &&
+                    cell.getValueAsString().equals(cellTO.getValue())) {
+
+                    cellsToDelete.add(cell);
+                    break;
+                }
+            }
+        }
+
+        new DeleteCellC(cellsToDelete);
+    }
 
     @Override
     public void undo() throws CannotUndoException {  
         super.undo();
-        /*
+        LOGGER.event("Undoing remove cells");
+
         unselectAll();
-        for (int i = 0; i < cellPosV.size(); i++) {
-            try {
-                CellPos cellPos = cellPosV.get(i);
-                DataColumn col = db.getDataColumn(cellPos.varName);
-                long colID = col.getID();
-                long mveID = col.getItsMveID();
-                DataCell newCell = new DataCell(db, colID, mveID);
-                long cellID = db.insertdCell(newCell, cellPos.ord);
-                newCell = (DataCell)db.getCell(cellID);                
-                DataCellTO cellTO = cellTOV.get(i);
-                newCell.setDataCellData(cellTO);
-                db.replaceCell(newCell);               
-                SpreadsheetCell sCell = getSpreadsheetCell(newCell);
-                sCell.requestFocus();
-                sCell.setSelected(true);        
-            } catch (SystemErrorException e) {
-                LOGGER.error("Unable to undo Remove Cell.", e);
-            }
-        }*/          
+        for (CellTO cellTO : cellTOV) {
+            Variable var = model.getVariable(cellTO.getParentVariableName());
+            Cell newCell = var.createCell();
+            newCell.setOnset(cellTO.getOnset());
+            newCell.setOffset(cellTO.getOffset());
+            newCell.getValue().set(cellTO.getValue());
+
+            SpreadsheetCell sCell = getSpreadsheetCell(newCell);
+            sCell.requestFocus();
+            sCell.setSelected(true);
+        }
     }
-    
 }

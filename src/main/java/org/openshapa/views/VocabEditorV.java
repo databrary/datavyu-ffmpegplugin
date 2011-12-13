@@ -205,7 +205,7 @@ ExternalVocabListListener {
         updateDialogState();
 
         // Hide all the broken stuff.
-        varyArgCheckBox.setVisible(false);
+        //varyArgCheckBox.setVisible(false);
     }
 
     @Deprecated public Database getLegacyDB() {
@@ -393,25 +393,6 @@ ExternalVocabListListener {
             
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to create formal argument.", e);
-        }
-    }
-
-    /**
-     * The action to invoke when the user toggles the varying argument state.
-     */
-    @Action
-    public void setVaryingArgs() {
-        LOGGER.event("vocEd - toggle vary args");
-        if (selectedVocabElement != null) {
-            try {
-                selectedVocabElement.getModel().setVarLen(
-                        varyArgCheckBox.isSelected());
-                selectedVocabElement.requestFocus();
-                selectedVocabElement.setHasChanged(true);
-                selectedVocabElement.rebuildContents();  
-            } catch (SystemErrorException e) {
-                LOGGER.error("Unable to set varying arguments.", e);
-            }
         }
     }
 
@@ -634,6 +615,7 @@ ExternalVocabListListener {
         
         // If we have a selected vocab element - we can enable additional
         // functionality.
+/*        
         if (selectedVocabElement != null) {
             addArgButton.setEnabled(true);
             argTypeComboBox.setEnabled(true);
@@ -647,7 +629,7 @@ ExternalVocabListListener {
             deleteButton.setEnabled(false);
             varyArgCheckBox.setEnabled(false);
         }
-
+*/
         if (selectedArgument != null) {
             FormalArgument fa = selectedArgument.getModel();
 
@@ -709,7 +691,6 @@ ExternalVocabListListener {
         moveArgRightButton = new javax.swing.JButton();
         addArgButton = new javax.swing.JButton();
         argTypeComboBox = new javax.swing.JComboBox();
-        varyArgCheckBox = new javax.swing.JCheckBox();
         deleteButton = new javax.swing.JButton();
         currentVocabList = new javax.swing.JScrollPane();
         closeButton = new javax.swing.JButton();
@@ -801,16 +782,6 @@ ExternalVocabListListener {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         getContentPane().add(argTypeComboBox, gridBagConstraints);
-
-        varyArgCheckBox.setAction(actionMap.get("setVaryingArgs")); // NOI18N
-        varyArgCheckBox.setText(bundle.getString("varyArgCheckBox.text")); // NOI18N
-        varyArgCheckBox.setToolTipText(bundle.getString("varyArgCheckBox.tip")); // NOI18N
-        varyArgCheckBox.setName("varyArgCheckBox"); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(varyArgCheckBox, gridBagConstraints);
 
         deleteButton.setAction(actionMap.get("delete")); // NOI18N
         deleteButton.setText(bundle.getString("deleteButton.text")); // NOI18N
@@ -962,7 +933,6 @@ ExternalVocabListListener {
     private javax.swing.JButton moveArgRightButton;
     private javax.swing.JLabel statusBar;
     private javax.swing.JSeparator statusSeperator;
-    private javax.swing.JCheckBox varyArgCheckBox;
     // End of variables declaration//GEN-END:variables
 
 
@@ -1029,7 +999,7 @@ ExternalVocabListListener {
         addArgButton.addMouseListener(ma);
         moveArgLeftButton.addMouseListener(ma);
         moveArgRightButton.addMouseListener(ma);
-        varyArgCheckBox.addMouseListener(ma);
+        //varyArgCheckBox.addMouseListener(ma);
 
     }
 

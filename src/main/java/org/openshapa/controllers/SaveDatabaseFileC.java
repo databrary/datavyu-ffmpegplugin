@@ -77,42 +77,6 @@ public final class SaveDatabaseFileC {
 
         if (extension.equals(".csv")) {
             saveAsCSV(destinationFile.toString(), ds);
-        } else if (extension.equals(".odb")) {
-            saveAsMacSHAPADB(destinationFile.toString(), ds);
-        }
-    }
-
-    /**
-     * Saves the database to the specified destination in a MacSHAPA format.
-     *
-     * @param outFile The path of the file to use when writing to disk.
-     * @param ds The datastore to save as a MacSHAPA db format.
-     * @throws UserWarningException When unable to save the database as a
-     * macshapa database to disk (usually because of permissions errors).
-     */
-    public void saveAsMacSHAPADB(final String outFile,
-                                 final Datastore ds)
-    throws UserWarningException {
-
-        try {
-            LOGGER.event("save database as ODB");
-
-            PrintStream outStream = new PrintStream(outFile);
-            ((DeprecatedDatabase) ds).getDatabase().toMODBFile(outStream, "\r");
-            outStream.close();
-
-        } catch (FileNotFoundException e) {
-            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                           .getContext().getResourceMap(OpenSHAPA.class);
-            throw new UserWarningException(rMap.getString("UnableToSave.message", outFile), e);
-
-        } catch (IOException e) {
-            ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                          .getContext().getResourceMap(OpenSHAPA.class);
-            throw new UserWarningException(rMap.getString("UnableToSave.message", outFile), e);
-
-        } catch (SystemErrorException e) {
-            LOGGER.error("Can't write macshapa db file '" + outFile + "'", e);
         }
     }
 
