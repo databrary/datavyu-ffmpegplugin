@@ -17,44 +17,39 @@ package org.openshapa.undoableedits;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
-import database.DataColumnTO;
 import java.util.ArrayList;
 import org.openshapa.models.db.Cell;
 
-
 /**
- *
+ * Undoable edit for removing cells from the spreadsheet.
  */
 public class RemoveVariableEdit extends SpreadsheetEdit {    
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(RemoveVariableEdit.class);
-    //private      
-    private List<Variable> varsToDelete;       // Variables to delete.
-    private List<String>   varNames;           // Spreadsheet variable names.
 
-    
+    private List<VariableTO> variableTOs;
+
     public RemoveVariableEdit(List<Variable> varsToDelete) {
-        this.varsToDelete = varsToDelete;
-        varNames = new ArrayList<String>();
+        variableTOs = new ArrayList<VariableTO>();
+        int pos = 0;
         for (Variable var : model.getAllVariables()) {
-            varNames.add(var.getName());
+            variableTOs.add(new VariableTO(var, pos));
+            pos++;
         }
     }
 
     @Override
     public String getPresentationName() {
         String msg;
-        if (varsToDelete.size() == 1) {
-            msg = "Delete Variable \"" + varsToDelete.get(0).getName() + "\""; 
-        }
-        else { // > 1
-            msg = "Delete " + varsToDelete.size() + " Variables";
+        if (variableTOs.size() == 1) {
+            msg = "Delete Variable \"" + variableTOs.get(0).getName() + "\"";
+        } else {
+            msg = "Delete " + variableTOs.size() + " Variables";
         }
         return msg;
     }
@@ -62,69 +57,34 @@ public class RemoveVariableEdit extends SpreadsheetEdit {
     @Override
     public void undo() throws CannotRedoException {
         super.undo();
-        for (Variable var : varsToDelete) {
+        for (VariableTO varTO : variableTOs) {
             try {
-                
-                Variable newVar = model.createVariable(var.getName(), var.getVariableType());
-                //unimplemented 
-                // how to set the variable's position back
-                for (Cell cell : var.getCells()) {
+                Variable newVar = model.createVariable(varTO.getName(), varTO.getType());
+                model.getAllVariables().remove(newVar);
+                model.getAllVariables().add(varTO.getPosition(), newVar);
+
+                for (CellTO c : varTO.getTOCells()) {
                     Cell newCell = newVar.createCell();
-                    newCell.setOnset(cell.getOnset());
-                    newCell.setOffset(cell.getOffset());
-                    //unimplemented
-                    //newCell.setValue(cell.getValue());
+                    newCell.setOnset(c.getOnset());
+                    newCell.setOffset(c.getOffset());
+                    newCell.getValue().set(c.getValue());
                 }
-                
+
             } catch (UserWarningException e) {
                 LOGGER.error("Unable to undo.", e);
             }
         }
-        
-        /*
-        try {
-            int j = 0;
-            for (DataColumnTO colTO : colsTO) {    
-                DataColumn dc = new DataColumn(db, colTO.name, colTO.itsMveType);
-                VariableType.type newType;
-                if (colTO.itsMveType == MatrixVocabElement.MatrixType.MATRIX) {
-                    newType = VariableType.type.MATRIX;
-                } else if (colTO.itsMveType == MatrixVocabElement.MatrixType.NOMINAL) {
-                    newType = VariableType.type.NOMINAL;
-                } else {
-                    newType = VariableType.type.TEXT;
-                }
-
-                DeprecatedVariable var = new DeprecatedVariable(dc, newType);
-                model.addVariable(var);
-                vars.set(indexV.get(j), var);
-                dc = db.getDataColumn(dc.getName()); 
-                for (DataCellTO cellTO : colTO.dataCellsTO) {                 
-                    DataCell newCell = new DataCell(db,dc.getID(), dc.getItsMveID());
-                    long cellID = ((DeprecatedDatabase) model).getDatabase().appendCell(newCell);
-                    newCell = (DataCell)((DeprecatedDatabase) model).getDatabase().getCell(cellID); 
-                    newCell.setDataCellData(cellTO);                   
-                    db.replaceCell(newCell);  
-                }                   
-                colOrderVec.setElementAt(dc.getID(), indexV.get(j++));
-            }
-            getSpreadsheet().reorderColumns(colOrderVec); 
-            unselectAll();
-            for (DataColumnTO colTO : colsTO) {
-                SpreadsheetColumn sCol = this.getSpreadsheetColumn(colTO.name);
-                sCol.setSelected(true);
-            }
-            ((DeprecatedDatabase)model).setVariables(vars);
-            
-        } catch (SystemErrorException e) {
-                LOGGER.error("Unable to undo.", e);
-        }
-         */
     }
 
     @Override 
     public void redo() throws CannotUndoException {        
         super.redo();
+
+        List<Variable> varsToDelete = new ArrayList<Variable>();
+        for (VariableTO varTO : variableTOs) {
+            varsToDelete.add(model.getVariable(varTO.getName()));
+        }
+
         new DeleteColumnC(varsToDelete);
         unselectAll();
     }   

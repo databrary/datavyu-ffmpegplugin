@@ -22,60 +22,67 @@
  */
 package org.openshapa.undoableedits;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Variable;
 
 /**
- * Cell Transfer Object for holding the changes that need to be transfered from
- * undo / redo states to the datastore.
+ * Variable Transfer Object for holding changes that need to be transferred
+ * from undo/redo states to the datastore.
  */
-public final class CellTO {
-    private long onset;
+public final class VariableTO {
 
-    private long offset;
+    private List<CellTO> cellTOs;
 
-    private String value;
-    
-    private String variableName;
+    private String name;
+
+    private Variable.type type;
+
+    private int variablePosition;
 
     /**
      * Constructor.
-     * 
-     * @param newCell The cell that you using to transfer around undo / redo
-     * states.
+     *
+     * @param var The variable we are creating a transfer object for.
+     * @param varPosition The position of the variable in the spreadsheet.
      */
-    public CellTO(final Cell newCell, final Variable parentVariable) {
-        onset = newCell.getOnset();
-        offset = newCell.getOffset();
-        value = newCell.getValueAsString();
-        variableName = parentVariable.getName();
+    public VariableTO(final Variable var, final int varPosition) {
+        name = var.getName();
+        type = var.getVariableType();
+        cellTOs = new ArrayList<CellTO>();
+        variablePosition = varPosition;
+
+        for(Cell c : var.getCells()) {
+            cellTOs.add(new CellTO(c, var));
+        }
     }
 
     /**
-     * @return The onset this object is transferring.
+     * @return The list of Cell Transfer Objects that belong to this variable.
      */
-    public long getOnset() {
-        return onset;
+    public List<CellTO> getTOCells() {
+        return cellTOs;
     }
 
     /**
-     * @return The offset this object is transferring.
+     * @return The name of variable
      */
-    public long getOffset() {
-        return offset;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @return The value this object is transferring.
+     * @return The type of the VariableTO.
      */
-    public String getValue() {
-        return value;
+    public Variable.type getType() {
+        return type;
     }
 
     /**
-     * @return The parent variable name for this transfer object.
+     * @return The position of the variable in the spreadsheet.
      */
-    public String getParentVariableName() {
-        return variableName;
+    public int getPosition() {
+        return variablePosition;
     }
 }
