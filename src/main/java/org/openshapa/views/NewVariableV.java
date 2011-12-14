@@ -202,7 +202,7 @@ public final class NewVariableV extends OpenSHAPADialog {
             UndoableEdit edit = new AddVariableEdit(getVariableName(), getVariableType());
 
             // Display any changes.
-            OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
+            OpenSHAPA.getApplication().getMainView().getComponent().revalidate();           
             OpenSHAPA.getView().getUndoSupport().postEdit(edit);
 
             dispose();

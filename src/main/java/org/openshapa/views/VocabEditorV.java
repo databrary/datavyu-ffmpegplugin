@@ -56,13 +56,13 @@ import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
-import java.util.Stack;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoableEdit;
-import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedDatabase;
-import org.openshapa.models.db.DeprecatedVariable;
-import org.openshapa.models.db.Variable;
+import org.openshapa.controllers.DeleteColumnC;
+import org.openshapa.models.db.*;
+import org.openshapa.undoableedits.AddVariableEdit;
+import org.openshapa.undoableedits.RemoveVariableEdit;
 import org.openshapa.undoableedits.VocabEditorEdit;
 import org.openshapa.util.VEList;
 import org.openshapa.views.discrete.datavalues.vocabelements.VENameEditor;
@@ -88,13 +88,17 @@ ExternalVocabListListener {
     /** Vertical frame for holding the current listing of Vocab elements. */
     private JPanel verticalFrame;
     /** Array of veViews used to track changes for the undo function */
-    
+      
     //*private Stack<VEList> undoStack;
     //*private Stack<VEList> redoStack;
     
     /** The handler for all keyboard shortcuts */
     private KeyEventDispatcher ked;
 
+    /** Model */
+    Datastore ds;
+      
+    
     /**
      * Constructor.
      * 
@@ -108,8 +112,10 @@ ExternalVocabListListener {
 
         LOGGER.event("vocEd - show");
 
-
+        
         db = OpenSHAPA.getProjectController().getDB();
+        ds = OpenSHAPA.getProjectController().getDB();
+        
         initComponents();
         componentListnersInit();
         setName(this.getClass().getSimpleName());
@@ -144,12 +150,6 @@ ExternalVocabListListener {
                             break;
                         case KeyEvent.VK_A:
                             if(selectedVocabElement!=null){addArgument();}
-                            break;
-                        case KeyEvent.VK_Z:
-                            undoChange();
-                            break;
-                        case KeyEvent.VK_Y:
-                            redoChange();
                             break;
                         case KeyEvent.VK_S:
                             applyChanges();
@@ -234,19 +234,21 @@ ExternalVocabListListener {
      * The action to invoke when the user clicks on the add matrix button.
      */
     @Action
-    public void addMatrix() {
+    public void addMatrix() {     
+        String varName = "matrix" + getMatNameNum();
         try {
             LOGGER.event("vocEd - add matrix");
-            MatrixVocabElement mve =
-                    new MatrixVocabElement(getLegacyDB(),
-                                           "matrix" + getMatNameNum());
-            mve.setType(MatrixType.MATRIX);
-            addVocabElement(mve);
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to create matrix vocab element", e);
+            // perform the action
+            ds.createVariable(varName, Variable.type.MATRIX);    
+            updateDialogState();        
+            // record the effect
+            UndoableEdit edit = new AddVariableEdit(varName, Variable.type.MATRIX);
+            // notify the listeners 
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);           
+        // Whoops, user has done something strange - show warning dialog.
+        } catch (UserWarningException fe) {
+            OpenSHAPA.getApplication().showWarningDialog(fe);
         }
-        applyChanges();
-        updateDialogState();
     }
 
     public void disposeAll() {        
@@ -301,7 +303,6 @@ ExternalVocabListListener {
             }
         });
 
-        // add the current vocab list state to an array of states for undo/redo
         VENameEditor veNEd = vev.getNameComponent();
         vev.requestFocus(veNEd);
 
@@ -400,18 +401,25 @@ ExternalVocabListListener {
      * The action to invoke when the user presses the delete button.
      */
     @Action
-    public void delete() {
+    public void delete() {        
+        UndoableEdit edit = null;
         // User has vocab element selected - delete it from the editor.
         if (selectedVocabElement != null && selectedArgument == null) {
-                LOGGER.event("vocEd - delete element");
-                selectedVocabElement.setDeleted(true);
-                try{
-                    selectedVocabElement.getDataView().getEditors().get(0).selectAll();
-                }catch(Exception e){
-                    LOGGER.error("veViews is empty.", e);
-                }
-                verticalFrame.revalidate();                
-                // User has argument selected - delete it from the vocab element.
+            LOGGER.event("vocEd - delete element");
+            // record the effect
+            List<Variable> varsToDelete = new ArrayList<Variable>();
+            varsToDelete.add(ds
+                    .getVariable(selectedVocabElement.getModel().getName()));         
+            edit = new RemoveVariableEdit(varsToDelete);
+            selectedVocabElement.setDeleted(true);
+            try {
+                selectedVocabElement.getDataView().getEditors().get(0).selectAll();
+            } catch (Exception e) {
+                LOGGER.error("veViews is empty.", e);
+            }
+            verticalFrame.revalidate();
+            new DeleteColumnC(varsToDelete);
+            // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             LOGGER.event("vocEd - delete argument");
             VocabElement ve = selectedVocabElement.getModel();
@@ -419,13 +427,16 @@ ExternalVocabListListener {
                 ve.deleteFormalArg(selectedArgumentI);
                 selectedVocabElement.setHasChanged(true);
                 selectedVocabElement.rebuildContents();
+                applyChanges();
             } catch (SystemErrorException e) {
                 LOGGER.error("Unable to selected argument", e);
             }
         }
-
-        applyChanges();
-        updateDialogState();
+        updateDialogState();        
+        if (edit != null) {
+            // notify the listeners
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit); 
+        }
     }
 
     /**
@@ -434,12 +445,7 @@ ExternalVocabListListener {
     @Action
     public int applyChanges() {
         LOGGER.event("vocEd - apply");
-        
-        // record the effect
-        UndoableEdit edit = new VocabEditorEdit();
-        // notify the listeners
-        OpenSHAPA.getView().getUndoSupport().postEdit(edit);        
-        
+             
         int errors = 0;
         try {
 
@@ -504,7 +510,7 @@ ExternalVocabListListener {
             updateDialogState();
             ((OpenSHAPAView) OpenSHAPA.getApplication().getMainView())
                     .showSpreadsheet();
-
+             
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to apply vocab changes", e);
         } catch (LogicErrorException le) {
@@ -1001,45 +1007,6 @@ ExternalVocabListListener {
         moveArgRightButton.addMouseListener(ma);
         //varyArgCheckBox.addMouseListener(ma);
 
-    }
-
-    /**
-     * The action to invoke when the user presses the undo button.
-     */
-    @Action
-    public void undoChange() {
-        // set all the correct values for hte vocab elements
-        veViews.setClone();
-        // rebuild the vocab list
-        verticalFrame.removeAll();
-        for(VocabElementV vev: veViews){
-            verticalFrame.add(vev);
-        }
-        verticalFrame.revalidate();
-        try{
-            veViews.lastElement().requestFocus();
-        }catch(Exception e){}
-        updateDialogState();
-    }
-
-    /**
-     * The action to invoke when the user presses the redo button.
-     */
-    @Action
-    public void redoChange() {
-        //get allt the correct values for the vocab elements
-        veViews.setClone();
-
-        // rebuild the vocab list
-        verticalFrame.removeAll();
-        for(VocabElementV vev: veViews){
-            verticalFrame.add(vev);
-        }
-        verticalFrame.revalidate();
-        if(veViews.lastElement() != null){
-            veViews.lastElement().requestFocus();
-        }
-        updateDialogState();
     }
 
     /**

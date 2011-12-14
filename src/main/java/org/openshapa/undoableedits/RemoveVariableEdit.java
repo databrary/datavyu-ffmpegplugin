@@ -28,7 +28,7 @@ import org.openshapa.models.db.Cell;
 /**
  * Undoable edit for removing cells from the spreadsheet.
  */
-public class RemoveVariableEdit extends SpreadsheetEdit {    
+public class RemoveVariableEdit extends VocabEditorEdit {    
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(RemoveVariableEdit.class);
 

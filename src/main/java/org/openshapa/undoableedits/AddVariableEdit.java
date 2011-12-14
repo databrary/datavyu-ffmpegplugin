@@ -27,7 +27,7 @@ import org.openshapa.models.db.Variable;
 /**
  *
  */
-public class AddVariableEdit extends SpreadsheetEdit {
+public class AddVariableEdit extends VocabEditorEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(AddVariableEdit.class);  
     private String varName;

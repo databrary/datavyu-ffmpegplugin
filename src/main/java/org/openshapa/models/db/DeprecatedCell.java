@@ -66,7 +66,7 @@ import java.util.TimeZone;
             cellValue = new DeprecatedTextValue(legacyDB, legacyCellId);
         } else if (newType.equals(Variable.type.NOMINAL)) {
             cellValue = new DeprecatedNominalValue(legacyDB, legacyCellId);
-        } else {
+        } else { // How about MATRIX type ???
 
         }
     }

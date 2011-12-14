@@ -23,11 +23,11 @@ import javax.swing.undo.CannotUndoException;
 /**
  *
  */
-public abstract class VocabEditorEdit extends SpreadsheetEdit {    
+public abstract class MoveArgumentLeftEdit extends VocabEditorEdit {    
     /** The logger for this class. */
-    private static final Logger LOGGER = UserMetrix.getLogger(VocabEditorEdit.class);
+    private static final Logger LOGGER = UserMetrix.getLogger(MoveArgumentLeftEdit.class);
     
-    public VocabEditorEdit() { 
+    public MoveArgumentLeftEdit() { 
         super();         
     }
 
