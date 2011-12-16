@@ -239,7 +239,8 @@ ExternalVocabListListener {
         try {
             LOGGER.event("vocEd - add matrix");
             // perform the action
-            ds.createVariable(varName, Variable.type.MATRIX);    
+            Variable v = ds.createVariable(varName, Variable.type.MATRIX);
+//            mv.addArg(Argument.type.NOMINAL);
             updateDialogState();        
             // record the effect
             UndoableEdit edit = new AddVariableEdit(varName, Variable.type.MATRIX);
