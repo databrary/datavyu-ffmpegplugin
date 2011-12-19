@@ -31,7 +31,7 @@ import org.openshapa.models.db.Variable;
  * Variable Transfer Object for holding changes that need to be transferred
  * from undo/redo states to the datastore.
  */
-public final class VariableTO {
+public final class VariableTO implements Comparable<VariableTO>{
 
     private List<CellTO> cellTOs;
 
@@ -85,4 +85,10 @@ public final class VariableTO {
     public int getPosition() {
         return variablePosition;
     }
+
+    @Override
+    public int compareTo(VariableTO t) {
+       return this.variablePosition - t.variablePosition;
+    }
+    
 }

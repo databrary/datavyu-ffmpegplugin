@@ -1835,8 +1835,9 @@ public final class OpenSHAPAView extends FrameView
      redoSpreadSheetMenuItem.setEnabled( spreadsheetUndoManager.canRedo() );
      
      // Display any changes.
-     panel.revalidate();
-     panel.repaint();  
+     showSpreadsheet();
+     //panel.revalidate();
+     //panel.repaint();  
   
   }    
   

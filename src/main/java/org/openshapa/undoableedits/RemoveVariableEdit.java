@@ -23,6 +23,7 @@ import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
 import java.util.ArrayList;
+import java.util.Collections;
 import org.openshapa.models.db.Cell;
 
 /**
@@ -32,24 +33,32 @@ public class RemoveVariableEdit extends VocabEditorEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(RemoveVariableEdit.class);
 
-    private List<VariableTO> variableTOs;
+    private List<VariableTO> varToDeleteTOs;
 
     public RemoveVariableEdit(List<Variable> varsToDelete) {
-        variableTOs = new ArrayList<VariableTO>();
-        int pos = 0;
-        for (Variable var : model.getAllVariables()) {
-            variableTOs.add(new VariableTO(var, pos));
-            pos++;
+        varToDeleteTOs = new ArrayList<VariableTO>();
+        
+        for (Variable var : varsToDelete) {
+            int pos = 0;
+            for (Variable var2 : model.getAllVariables()) {
+                if (var2.getName().equals(var.getName())) {
+                    break;
+                } else {
+                    pos++;
+                }
+            }
+            varToDeleteTOs.add(new VariableTO(var, pos));
         }
+        Collections.sort(varToDeleteTOs);
     }
 
     @Override
     public String getPresentationName() {
         String msg;
-        if (variableTOs.size() == 1) {
-            msg = "Delete Variable \"" + variableTOs.get(0).getName() + "\"";
+        if (varToDeleteTOs.size() == 1) {
+            msg = "Delete Variable \"" + varToDeleteTOs.get(0).getName() + "\"";
         } else {
-            msg = "Delete " + variableTOs.size() + " Variables";
+            msg = "Delete " + varToDeleteTOs.size() + " Variables";
         }
         return msg;
     }
@@ -57,7 +66,7 @@ public class RemoveVariableEdit extends VocabEditorEdit {
     @Override
     public void undo() throws CannotRedoException {
         super.undo();
-        for (VariableTO varTO : variableTOs) {
+        for (VariableTO varTO : varToDeleteTOs) {
             try {
                 Variable newVar = model.createVariable(varTO.getName(), varTO.getType());
                 model.getAllVariables().remove(newVar);
@@ -81,7 +90,7 @@ public class RemoveVariableEdit extends VocabEditorEdit {
         super.redo();
 
         List<Variable> varsToDelete = new ArrayList<Variable>();
-        for (VariableTO varTO : variableTOs) {
+        for (VariableTO varTO : varToDeleteTOs) {
             varsToDelete.add(model.getVariable(varTO.getName()));
         }
 

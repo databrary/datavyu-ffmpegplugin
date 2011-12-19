@@ -433,7 +433,6 @@ implements Variable,
                                        long cellID) {
     }
 
-
     /**
      * Private class for recording the changes reported by the listener call
      * backs on this column. end cascade is when we can actually apply these

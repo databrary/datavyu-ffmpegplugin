@@ -48,6 +48,8 @@ public final class CellTO {
         onset = newCell.getOnset();
         offset = newCell.getOffset();
         value = newCell.getValueAsString();
+        //Remove ()
+        value = value.substring(1, value.length()-1);
         variableName = parentVariable.getName();
     }
 

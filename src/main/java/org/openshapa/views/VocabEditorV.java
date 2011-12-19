@@ -366,6 +366,9 @@ ExternalVocabListListener {
     public void addArgument() {
         try {
             VocabElement ve = selectedVocabElement.getModel();
+            
+            //Variable v = ds.getVariable(ve.getName());
+            
             String type = (String) argTypeComboBox.getSelectedItem();
             LOGGER.event("vocEd - add argument:" + type);
             String newArgName = "<arg" + ve.getNumFormalArgs() + ">";

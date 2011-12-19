@@ -38,7 +38,7 @@ public class DeprecatedMatrixValue extends DeprecatedValue implements MatrixValu
         return true;
     }
 
-    // Set the first element (it should be rethinking later)
+    // Set the first element
     @Override
     public void set(final String value) {
         try {
