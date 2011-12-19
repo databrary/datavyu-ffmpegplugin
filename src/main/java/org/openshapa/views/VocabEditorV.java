@@ -411,24 +411,21 @@ ExternalVocabListListener {
             List<Variable> varsToDelete = new ArrayList<Variable>();
             varsToDelete.add(ds
                     .getVariable(selectedVocabElement.getModel().getName()));         
-            edit = new RemoveVariableEdit(varsToDelete);
-            selectedVocabElement.setDeleted(true);
-            try {
-                selectedVocabElement.getDataView().getEditors().get(0).selectAll();
-            } catch (Exception e) {
-                LOGGER.error("veViews is empty.", e);
-            }
-            verticalFrame.revalidate();
+            edit = new RemoveVariableEdit(varsToDelete);            
             new DeleteColumnC(varsToDelete);
             // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             LOGGER.event("vocEd - delete argument");
             VocabElement ve = selectedVocabElement.getModel();
             try {
+                
+                //Refactor this
                 ve.deleteFormalArg(selectedArgumentI);
                 selectedVocabElement.setHasChanged(true);
                 selectedVocabElement.rebuildContents();
                 applyChanges();
+                //
+                
             } catch (SystemErrorException e) {
                 LOGGER.error("Unable to selected argument", e);
             }
