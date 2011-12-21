@@ -48,9 +48,6 @@ public class AddCellEdit extends SpreadsheetEdit {
         unselectAll();
         if ((var.getCells() != null) && (var.getCells().size() > 0)) {
             Cell cell = var.getCells().get(var.getCells().size()-1);
-            SpreadsheetCell sCell = getSpreadsheetCell(cell);
-            sCell.requestFocusInWindow();
-            sCell.setSelected(true);
         }
     }
 

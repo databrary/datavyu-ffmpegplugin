@@ -73,6 +73,14 @@ public final class CellTO {
     public String getValue() {
         return value;
     }
+    
+    /**
+     * @return The value this object is transferring as string.
+     */
+    public String getValueAsString() {
+        return "(" + value + ")";
+    }
+    
 
     /**
      * @return The parent variable name for this transfer object.

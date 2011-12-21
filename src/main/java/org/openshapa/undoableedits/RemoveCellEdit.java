@@ -41,7 +41,6 @@ public class RemoveCellEdit extends SpreadsheetEdit {
      */
     public RemoveCellEdit(List<Cell> cells) {
       super();
-
       cellTOV = new ArrayList<CellTO>();
       for (Cell cell : cells) {
           cellTOV.add(new CellTO(cell, model.getVariable(cell)));
@@ -74,8 +73,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
             for (Cell cell : var.getCells()) {
                 if (cell.getOnset() == cellTO.getOnset() &&
                     cell.getOffset() == cellTO.getOffset() &&
-                    cell.getValueAsString().equals(cellTO.getValue())) {
-
+                    cell.getValueAsString().equals(cellTO.getValueAsString())) {
                     cellsToDelete.add(cell);
                     break;
                 }
@@ -89,7 +87,6 @@ public class RemoveCellEdit extends SpreadsheetEdit {
     public void undo() throws CannotUndoException {  
         super.undo();
         LOGGER.event("Undoing remove cells");
-
         unselectAll();
         for (CellTO cellTO : cellTOV) {
             Variable var = model.getVariable(cellTO.getParentVariableName());
@@ -97,10 +94,6 @@ public class RemoveCellEdit extends SpreadsheetEdit {
             newCell.setOnset(cellTO.getOnset());
             newCell.setOffset(cellTO.getOffset());
             newCell.getValue().set(cellTO.getValue());
-
-            SpreadsheetCell sCell = getSpreadsheetCell(newCell);
-            sCell.requestFocus();
-            sCell.setSelected(true);
         }
     }
 }

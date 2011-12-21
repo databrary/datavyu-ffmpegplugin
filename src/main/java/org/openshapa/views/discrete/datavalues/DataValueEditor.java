@@ -24,6 +24,8 @@ import javax.swing.text.JTextComponent;
 import org.openshapa.views.discrete.EditorComponent;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.undo.UndoableEdit;
+import org.openshapa.OpenSHAPA;
 
 import org.openshapa.models.db.MatrixValue;
 import org.openshapa.models.db.NominalValue;
@@ -38,7 +40,7 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /** The value that this view represents. */
     private Value model = null;
-
+    
     /** The specific type of model this view represents. */
     private Class modelType = null;
 
@@ -46,12 +48,7 @@ public abstract class DataValueEditor extends EditorComponent {
     private String textOnFocus;
 
     /** The logger for this class. */
-    private static Logger LOGGER = UserMetrix.getLogger(DataValueEditor.class);
-    
-    /** the previous version of the Cell. */
-    //private DataCell cb = null;
-    //private DataCell ca_old = null;       
-    //private DataCell cb_old = null;       
+    private static Logger LOGGER = UserMetrix.getLogger(DataValueEditor.class);   
 
     /**
      * Constructor.
@@ -93,7 +90,6 @@ public abstract class DataValueEditor extends EditorComponent {
     // *************************************************************************
     @Override
     public void focusGained(final FocusEvent fe) {        
-        //cb = null;
         textOnFocus = getText();
     }
 
@@ -101,33 +97,13 @@ public abstract class DataValueEditor extends EditorComponent {
     public void focusLost(final FocusEvent fe) {
         super.focusLost(fe);
         if (!getText().equals(textOnFocus)) {
-            /*
-             TODO Restore undo stuff.
-            if (cb != null) {
-                try {
-                    DataCell c = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
-                    // record the effect
-                    if (!(cb.getVal().toString().equals(c.getVal().toString()))) {
-                       if (((ca_old == null)&&(cb_old == null)) ||
-                           (
-                            (ca_old != null)&&(cb_old != null) && 
-                            (!ca_old.getVal().toString().equals(c.getVal().toString())) &&
-                            (!cb_old.getVal().toString().equals(cb.getVal().toString())) 
-                           )     
-                          ) {    
-                                UndoableEdit edit = new ChangeValCellEdit(cb);                        
-                                // notify the listeners
-                                OpenSHAPA.getView().getUndoSupport().postEdit(edit);
-                                ca_old = new DataCell(c);
-                                cb_old = new DataCell(cb);
-                       }         
-                     }            
-            
-                } catch (SystemErrorException e) {
-                    LOGGER.error("Unable to create DataCell", e);
-                }          
-            }*/
-        }
+/*  
+            //Q: How can I get the Cell reference from the value
+            UndoableEdit edit = new ChangeValCellEdit(cell);                        
+            // notify the listeners
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+*/
+        }   
     }
 
     // *************************************************************************
