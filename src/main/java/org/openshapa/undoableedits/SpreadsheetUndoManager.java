@@ -154,7 +154,6 @@ public class SpreadsheetUndoManager  extends UndoManager implements ListModel {
   }
   
   public void goTo(SpreadsheetEdit edit) {
-      System.out.println("GOTO !!!");
 //      edit.displayFeedback = true;          
       if (edit.canUndo()) {
           this.undoTo(edit);

@@ -45,12 +45,16 @@ public final class CellTO {
      * states.
      */
     public CellTO(final Cell newCell, final Variable parentVariable) {
+        variableName = parentVariable.getName();
         onset = newCell.getOnset();
         offset = newCell.getOffset();
         value = newCell.getValueAsString();
         //Remove ()
-        value = value.substring(1, value.length()-1);
-        variableName = parentVariable.getName();
+        if (newCell.getValue().isEmpty()) {
+            value = "<" + variableName + ">";
+        }   else if ((value.length() > 0) && (value.charAt(0) == '(')) {
+            value = value.substring(1, value.length()-1);
+        }
     }
 
     /**

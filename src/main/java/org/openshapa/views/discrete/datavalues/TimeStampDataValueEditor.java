@@ -44,7 +44,13 @@ public final class TimeStampDataValueEditor extends EditorComponent {
 
     /** The source of the TimeStampDataValue being edited. */
     private TimeStampSource dataSourceType;
-
+    
+    /** Text when editor gained focus (became current editor). */
+    private String textOnFocus;    
+    
+    /** UndoableEdit */
+    private UndoableEdit edit = null;
+    
     public enum TimeStampSource {
         /** Timestamp is the Onset of the datacell associated. */
         Onset,
@@ -265,32 +271,23 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      */
     @Override
     public void focusGained(final FocusEvent fe) {
-        //cb = null;
+        textOnFocus = getText();
+        switch (dataSourceType) {
+            case Onset:
+                edit = new ChangeOnsetCellEdit(parentCell, Granularity.COARSEGRAINED);
+                break;
+            default:
+                edit = new ChangeOffsetCellEdit(parentCell, Granularity.COARSEGRAINED);
+                break;
+        }
     }
     
     @Override
     public void focusLost(FocusEvent fe) {
         super.focusLost(fe);
-        /*
-        if (cb != null) {
-            try {
-                DataCell c = (DataCell) OpenSHAPA.getProjectController().getLegacyDB().getDatabase().getCell(parentCell);
-                // record the effect
-                if (cb.getOnset().getTime()  != c.getOnset().getTime()) {
-                   UndoableEdit edit = new ChangeOnsetCellEdit(cb);                        
-                   
-                   // notify the listeners
-                   OpenSHAPA.getView().getUndoSupport().postEdit(edit);
-                } else if (cb.getOffset().getTime() != c.getOffset().getTime())   {
-                   UndoableEdit edit = new ChangeOffsetCellEdit(cb);                       
-                   // notify the listeners
-                   OpenSHAPA.getView().getUndoSupport().postEdit(edit);                    
-                }        
-            
-            } catch (SystemErrorException e) {
-                LOGGER.error("Unable to create DataCell", e);
-            }          
-        }*/
+        if (!getText().equals(textOnFocus)) {
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+        }
     }
 
     /**

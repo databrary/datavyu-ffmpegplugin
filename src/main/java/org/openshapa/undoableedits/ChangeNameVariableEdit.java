@@ -60,7 +60,7 @@ public class ChangeNameVariableEdit extends SpreadsheetEdit {
             Variable var = model.getVariable(oldVarName);
             var.setName(newVarName);
             unselectAll();
-            selectVarName(newVarName);
+            //selectVarName(newVarName);
         } catch (UserWarningException uwe) {
             OpenSHAPA.getApplication().showWarningDialog(uwe);
             throw new CannotRedoException();
@@ -75,7 +75,7 @@ public class ChangeNameVariableEdit extends SpreadsheetEdit {
             Variable var = model.getVariable(newVarName);
             var.setName(oldVarName);
             unselectAll();
-            selectVarName(oldVarName);
+            //selectVarName(oldVarName);
         } catch (UserWarningException uwe) {
              OpenSHAPA.getApplication().showWarningDialog(uwe);
              throw new CannotRedoException();

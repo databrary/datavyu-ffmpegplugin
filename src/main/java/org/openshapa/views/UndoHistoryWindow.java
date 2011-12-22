@@ -14,6 +14,8 @@
  */
 package org.openshapa.views;
 
+import java.awt.Cursor;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
@@ -30,8 +32,9 @@ import org.openshapa.undoableedits.SpreadsheetUndoManager;
  * @author harold
  */
 public class UndoHistoryWindow extends OpenSHAPADialog {
-    SpreadsheetUndoManager undomanager;
-    
+    private Frame parent;
+    private SpreadsheetUndoManager undomanager;    
+    private boolean firstClickOnItem;
     
     
     public UndoHistoryWindow() {
@@ -42,6 +45,7 @@ public class UndoHistoryWindow extends OpenSHAPADialog {
     public UndoHistoryWindow(final java.awt.Frame parent,
                             final boolean modal, final SpreadsheetUndoManager undomanager) {
         super(parent, modal);
+        this.parent = parent;
         this.undomanager = undomanager;
         initComponents();
         this.setLocation(Toolkit.getDefaultToolkit().getScreenSize().width - this.getSize().width,this.getLocation().y) ;
@@ -96,14 +100,8 @@ public class UndoHistoryWindow extends OpenSHAPADialog {
         // TODO add your handling code here:
         if (evt.getValueIsAdjusting() == false) {
             if (undoHistoryList.getSelectedIndex() > -1) {
-                //System.out.println("ValueChanged " + undoHistoryList.getSelectedIndex() + " , " + undoHistoryList.getSelectedValue().toString());            
-                undomanager.goTo((SpreadsheetEdit)undoHistoryList.getSelectedValue());
-                OpenSHAPA.getView().refreshUndoRedo();
-                OpenSHAPA.getView().getSpreadsheetPanel().revalidate();
-                OpenSHAPA.getView().getSpreadsheetPanel().repaint();
-                this.rootPane.revalidate();
-                this.rootPane.repaint();
-                this.undoHistoryList.requestFocus();
+                go();
+                this.firstClickOnItem = true;
             }
 
         }
@@ -111,8 +109,29 @@ public class UndoHistoryWindow extends OpenSHAPADialog {
 
     private void undoHistoryListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_undoHistoryListMouseClicked
         // TODO add your handling code here:
+        if (!this.firstClickOnItem) {
+            go();
+        }
+        this.firstClickOnItem = false;
     }//GEN-LAST:event_undoHistoryListMouseClicked
 
+    
+    private void go() {
+        //System.out.println("ValueChanged " + undoHistoryList.getSelectedIndex() + " , " + undoHistoryList.getSelectedValue().toString());            
+        parent.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        this.undoHistoryList.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        undomanager.goTo((SpreadsheetEdit) undoHistoryList.getSelectedValue());
+        OpenSHAPA.getView().refreshUndoRedo();
+        //OpenSHAPA.getView().getSpreadsheetPanel().revalidate();
+        //OpenSHAPA.getView().getSpreadsheetPanel().repaint();
+        OpenSHAPA.getView().showSpreadsheet();
+        this.rootPane.revalidate();
+        this.rootPane.repaint();
+        this.undoHistoryList.requestFocus();
+        parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        this.undoHistoryList.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+    
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
         // TODO add your handling code here:
         int selected = undoHistoryList.getSelectedIndex();

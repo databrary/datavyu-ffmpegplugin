@@ -91,10 +91,11 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
         Variable var = OpenSHAPA.getProjectController().getDB().getVariable(columnName);
         Cell cell = var.getCells().get(ord);
         updateCell(cell);
-
+/*
         if (this.granularity == Granularity.COARSEGRAINED) {
             updateSpreadsheetCell(cell);
         }
+*/
     }
     
     abstract protected void updateCell(Cell cell);

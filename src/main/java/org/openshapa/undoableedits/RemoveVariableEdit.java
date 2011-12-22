@@ -24,6 +24,7 @@ import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Cell;
 
 /**
@@ -83,6 +84,7 @@ public class RemoveVariableEdit extends VocabEditorEdit {
                 LOGGER.error("Unable to undo.", e);
             }
         }
+        OpenSHAPA.getView().showSpreadsheet();
     }
 
     @Override 

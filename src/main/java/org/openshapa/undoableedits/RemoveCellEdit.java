@@ -20,6 +20,7 @@ import java.util.List;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import java.util.ArrayList;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.DeleteCellC;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Variable;
@@ -79,15 +80,13 @@ public class RemoveCellEdit extends SpreadsheetEdit {
                 }
             }
         }
-
-        new DeleteCellC(cellsToDelete);
+        new DeleteCellC(cellsToDelete);      
     }
 
     @Override
     public void undo() throws CannotUndoException {  
         super.undo();
         LOGGER.event("Undoing remove cells");
-        unselectAll();
         for (CellTO cellTO : cellTOV) {
             Variable var = model.getVariable(cellTO.getParentVariableName());
             Cell newCell = var.createCell();
@@ -95,5 +94,6 @@ public class RemoveCellEdit extends SpreadsheetEdit {
             newCell.setOffset(cellTO.getOffset());
             newCell.getValue().set(cellTO.getValue());
         }
+        view.showSpreadsheet();
     }
 }
