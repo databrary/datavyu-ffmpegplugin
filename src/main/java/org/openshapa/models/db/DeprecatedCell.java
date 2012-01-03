@@ -57,19 +57,17 @@ import java.util.TimeZone;
      *
      * @param newCell Reference cell. Cannot be null.
      */
-    public DeprecatedCell(final DataCell newCell, final Variable.type newType) {
+    public DeprecatedCell(final DataCell newCell, final Argument newType) {
         setLegacyCell(newCell);
         listeners = new ArrayList<CellListener>();
         isHighlighted = false;
 
-        if (newType.equals(Variable.type.TEXT)) {
+        if (newType.type.equals(Argument.Type.TEXT)) {
             cellValue = new DeprecatedTextValue(legacyDB, legacyCellId);
-        } else if (newType.equals(Variable.type.NOMINAL)) {
+        } else if (newType.type.equals(Argument.Type.NOMINAL)) {
             cellValue = new DeprecatedNominalValue(legacyDB, legacyCellId);
-        } else if (newType.equals(Variable.type.MATRIX)) {
+        } else if (newType.type.equals(Argument.Type.MATRIX)) {
             cellValue = new DeprecatedMatrixValue(legacyDB, legacyCellId);
-        } else {
-
         }
     }
 

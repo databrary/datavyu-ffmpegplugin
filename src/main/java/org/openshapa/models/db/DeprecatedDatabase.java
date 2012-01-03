@@ -213,16 +213,16 @@ import org.openshapa.util.Constants;
     }
 
     @Override
-    public Variable createVariable(final String name, final Variable.type type)
+    public Variable createVariable(final String name, final Argument.Type type)
     throws UserWarningException {
 
         try {
             MatrixVocabElement.MatrixType deprecatedType;
 
-            if (type.equals(Variable.type.MATRIX)) {
+            if (type.equals(Argument.Type.MATRIX)) {
                 deprecatedType = MatrixVocabElement.MatrixType.MATRIX;
 
-            } else if (type.equals(Variable.type.NOMINAL)) {
+            } else if (type.equals(Argument.Type.NOMINAL)) {
                 deprecatedType = MatrixVocabElement.MatrixType.NOMINAL;
 
             } else {
@@ -245,7 +245,7 @@ import org.openshapa.util.Constants;
 
             // If the column is a matrix - default to a single nominal variable
             // rather than untyped.
-            if (type.equals(Variable.type.MATRIX)) {
+            if (type.equals(Argument.Type.MATRIX)) {
                 MatrixVocabElement mve = legacyDB.getMatrixVE(dc.getItsMveID());
                 mve.deleteFormalArg(0);
                 mve.appendFormalArg(new NominalFormalArg(legacyDB, "<arg0>"));

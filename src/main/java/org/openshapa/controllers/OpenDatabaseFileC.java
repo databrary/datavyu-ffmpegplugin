@@ -57,6 +57,7 @@ import database.TextStringDataValue;
 import database.TimeStamp;
 import database.VocabElement;
 import org.openshapa.OpenSHAPA;
+import org.openshapa.models.db.Argument;
 import org.openshapa.models.db.DeprecatedVariable;
 import org.openshapa.models.db.Variable;
 
@@ -740,13 +741,13 @@ public final class OpenDatabaseFileC {
         dc.setHidden(!varVisible);
         dc.setComment(varComment);
 
-        Variable.type newType;
+        Argument.Type newType;
         if (legacyType == MatrixVocabElement.MatrixType.MATRIX) {
-            newType = Variable.type.MATRIX;
+            newType = Argument.Type.MATRIX;
         } else if (legacyType == MatrixVocabElement.MatrixType.NOMINAL) {
-            newType = Variable.type.NOMINAL;
+            newType = Argument.Type.NOMINAL;
         } else {
-            newType = Variable.type.TEXT;
+            newType = Argument.Type.TEXT;
         }
 
         DeprecatedVariable newVar = new DeprecatedVariable(dc, newType);

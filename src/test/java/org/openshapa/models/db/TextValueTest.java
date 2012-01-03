@@ -41,7 +41,7 @@ public class TextValueTest {
     @BeforeMethod
     public void setUp() throws UserWarningException {
         ds = new DeprecatedDatabase();
-        var = ds.createVariable("test", Variable.type.TEXT);
+        var = ds.createVariable("test", Argument.Type.TEXT);
         cell = var.createCell();
         model = cell.getValue();
     }

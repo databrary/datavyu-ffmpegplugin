@@ -21,6 +21,7 @@ import javax.swing.undo.CannotUndoException;
 import org.openshapa.controllers.DeleteColumnC;
 import java.util.ArrayList;
 import java.util.List;
+import org.openshapa.models.db.Argument;
 import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
 
@@ -31,9 +32,9 @@ public class AddVariableEdit extends VocabEditorEdit {
     /** The logger for this class. */
     private static final Logger LOGGER = UserMetrix.getLogger(AddVariableEdit.class);  
     private String varName;
-    private Variable.type varType;
+    private Argument.Type varType;
     
-    public AddVariableEdit(String variableName, Variable.type variableType) {
+    public AddVariableEdit(String variableName, Argument.Type variableType) {
         super();
         this.varName = variableName;
         this.varType = variableType;

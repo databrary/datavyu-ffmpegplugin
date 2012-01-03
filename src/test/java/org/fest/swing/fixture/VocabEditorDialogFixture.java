@@ -14,7 +14,8 @@
  */
 package org.fest.swing.fixture;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.fest.swing.core.Robot;
 
@@ -47,11 +48,10 @@ public class VocabEditorDialogFixture extends DialogFixture {
      * @return VocabElementFixture with name, or null if not found
      */
     public final VocabElementFixture vocabElement(final String elementName) {
-        Vector<VocabElementV> vocEls = veDialog.getVocabElements();
+        List<VocabElementV> vocEls = veDialog.getVocabElements();
 
         for (VocabElementV v : vocEls) {
-            String vocName = v.getDataView().getEditors().elementAt(0)
-                .getText();
+            String vocName = v.getDataView().getEditors().elementAt(0).getText();
 
             if (vocName.equalsIgnoreCase(elementName)) {
                 return new VocabElementFixture(robot, v);
@@ -65,9 +65,9 @@ public class VocabEditorDialogFixture extends DialogFixture {
      * Returns a vector of all VocabElement Fixtures.
      * @return Vector of all VocabElements
      */
-    public final Vector<VocabElementFixture> allVocabElements() {
-        Vector<VocabElementV> vocEls = veDialog.getVocabElements();
-        Vector<VocabElementFixture> result = new Vector<VocabElementFixture>();
+    public final List<VocabElementFixture> allVocabElements() {
+        List<VocabElementV> vocEls = veDialog.getVocabElements();
+        ArrayList<VocabElementFixture> result = new ArrayList<VocabElementFixture>();
 
         for (VocabElementV v : vocEls) {
             result.add(new VocabElementFixture(robot, v));

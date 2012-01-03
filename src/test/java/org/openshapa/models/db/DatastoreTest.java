@@ -58,7 +58,7 @@ public class DatastoreTest {
 
     @Test
     public void createVariable() throws UserWarningException {
-        model.createVariable("foo", Variable.type.TEXT);
+        model.createVariable("foo", Argument.Type.TEXT);
         Variable var = model.getVariable("foo");
         List<Variable> varList = new ArrayList<Variable>();
         varList.add(var);
@@ -71,7 +71,7 @@ public class DatastoreTest {
         assertEquals(model.getSelectedVariables(), varList);
         assertEquals(model.getAllVariables(), varList);
         assertEquals(var.getName(), "foo");
-        assertEquals(var.getVariableType(), Variable.type.TEXT);
+        assertEquals(var.getVariableType().type, Argument.Type.TEXT);
         assertTrue(var.isSelected());
         assertTrue(!var.isHidden());
         assertEquals(var.getCells().size(), 0);
@@ -85,13 +85,13 @@ public class DatastoreTest {
 
     @Test (expectedExceptions = UserWarningException.class)
     public void unableToCreateVariable() throws UserWarningException {
-        model.createVariable("foo", Variable.type.TEXT);
-        model.createVariable("foo", Variable.type.TEXT);
+        model.createVariable("foo", Argument.Type.TEXT);
+        model.createVariable("foo", Argument.Type.TEXT);
     }
 
     @Test
     public void removeVariable() throws UserWarningException {
-        Variable var = model.createVariable("foo", Variable.type.TEXT);
+        Variable var = model.createVariable("foo", Argument.Type.TEXT);
         List<Variable> varList = new ArrayList<Variable>();
         varList.add(var);
 

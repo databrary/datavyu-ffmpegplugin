@@ -279,8 +279,7 @@ public final class UIZoomTest extends OpenSHAPATestClass {
 
         // 3a. Get initial zoom size of vocab editor window
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
-        int veFontSize = veDialog.allVocabElements().firstElement().value()
-            .font().target().getSize();
+        int veFontSize = veDialog.allVocabElements().get(0).value().font().target().getSize();
 
         // Confirm that all VEs are the same size.
         for (VocabElementFixture v : veDialog.allVocabElements()) {

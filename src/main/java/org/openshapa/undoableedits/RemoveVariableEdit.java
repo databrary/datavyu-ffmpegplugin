@@ -69,7 +69,7 @@ public class RemoveVariableEdit extends VocabEditorEdit {
         super.undo();
         for (VariableTO varTO : varToDeleteTOs) {
             try {
-                Variable newVar = model.createVariable(varTO.getName(), varTO.getType());
+                Variable newVar = model.createVariable(varTO.getName(), varTO.getType().type);
                 model.getAllVariables().remove(newVar);
                 model.getAllVariables().add(varTO.getPosition(), newVar);
 

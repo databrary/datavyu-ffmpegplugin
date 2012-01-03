@@ -80,20 +80,20 @@ implements Variable,
     private List<VariableListener> listeners;
 
     /** The type of variable. */
-    private Variable.type varType;    
+    private Argument varType;
 
     /**
      * Constructor.
      *
      * @param newVariable The legacy variable that this Variable represents.
      */
-    public DeprecatedVariable(DataColumn newVariable, Variable.type type) {
+    public DeprecatedVariable(DataColumn newVariable, Argument.Type type) {
         colChanges = new VariableChanges();
         selectedCells = new ArrayList<Long>();
         temporalMap = ArrayListMultimap.create();
         temporalIndex = asSortedList(temporalMap.keySet());
         legacyColumn = newVariable;
-        varType = type;
+        varType = new Argument(newVariable.getName(), type);
         listeners = new ArrayList<VariableListener>();
         this.setLegacyVariable(newVariable);
 
@@ -206,8 +206,15 @@ implements Variable,
     }
 
     @Override
-    public Variable.type getVariableType() {
+    public Argument getVariableType() {
         return varType;
+    }
+    
+    @Override
+    public void setVariableType(final Argument type) {
+        varType = type;
+        
+        //TODO edit the cells / database to match the new argument type.
     }
 
     @Override

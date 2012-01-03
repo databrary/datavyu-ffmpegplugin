@@ -134,7 +134,7 @@ implements VariableListener,
         setMinimumSize(this.getHeaderSize());
         setPreferredSize(this.getHeaderSize());
         setMaximumSize(this.getHeaderSize());
-        setText(var.getName() + "  (" + var.getVariableType() + ")");
+        setText(var.getName() + "  (" + var.getVariableType().type + ")");
 
         datapanel = new ColumnDataPanel(db, width, var, cellSelL);
         this.setVisible(!var.isHidden());
@@ -444,7 +444,7 @@ implements VariableListener,
     // *************************************************************************
     @Override
     public void nameChanged(final String newName) {
-        this.setText(newName + "  (" + variable.getVariableType() + ")");
+        this.setText(newName + "  (" + variable.getVariableType().type + ")");
     }
 
     @Override

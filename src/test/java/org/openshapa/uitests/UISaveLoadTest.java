@@ -41,6 +41,7 @@ import org.openshapa.controllers.project.ProjectController;
 
 import database.LogicErrorException;
 import database.SystemErrorException;
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.project.Project;
 
 import org.openshapa.util.UIUtils;
@@ -332,9 +333,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      *             If unable to save file.
      * @throws LogicalErrorException on SaveC exception
      */
-    private void loadTest(final String inputFile,
-        final String expectedOutputFile) throws IOException,
-        LogicErrorException {
+    private void loadTest(final String inputFile, 
+                          final String expectedOutputFile)
+    throws IOException, LogicErrorException, UserWarningException {
         final String root = testFolder + "/ui/";
 
 
@@ -383,7 +384,7 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
 
             saveController.saveProject(savedSHAPA,
                 OpenSHAPA.getProjectController().getProject(),
-                OpenSHAPA.getProjectController().getLegacyDB().getDatabase());
+                OpenSHAPA.getProjectController().getDB());
         } else {
             mainFrameFixture.clickMenuItemWithPath("File", "Save As...");
             mainFrameFixture.fileChooser().component().setFileFilter(

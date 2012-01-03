@@ -17,6 +17,7 @@ package org.openshapa.uitests;
 import java.awt.event.KeyEvent;
 
 import java.io.File;
+import java.util.List;
 
 import java.util.Vector;
 import java.util.logging.Level;
@@ -99,7 +100,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         veDialog.addPredicateButton().click();
 
-        String veName = veDialog.allVocabElements().elementAt(0).getVEName();
+        String veName = veDialog.allVocabElements().get(0).getVEName();
         veDialog.okButton().click();
 
         // 2. Create new predicate variable and cell
@@ -128,7 +129,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         veDialog.addPredicateButton().click();
 
-        String oldVEName = veDialog.allVocabElements().elementAt(0).getVEName();
+        String oldVEName = veDialog.allVocabElements().get(0).getVEName();
 
         String newVEName = "newName";
 
@@ -170,12 +171,12 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         veDialog.addPredicateButton().click();
 
-        String oldVEName = veDialog.allVocabElements().elementAt(0).getVEName();
+        String oldVEName = veDialog.allVocabElements().get(0).getVEName();
 
         String addVEName = "newName";
         veDialog.vocabElement(oldVEName).value().enterText(addVEName);
 
-        String newVEName = veDialog.allVocabElements().elementAt(0).getVEName();
+        String newVEName = veDialog.allVocabElements().get(0).getVEName();
         Assert.assertTrue((addVEName + oldVEName).equals(newVEName));
 
         veDialog.okButton().click();
@@ -206,8 +207,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         veDialog.addPredicateButton().click();
 
-        String oldVEArgName = veDialog.allVocabElements().elementAt(0)
-            .getArgument(0);
+        String oldVEArgName = veDialog.allVocabElements().get(0).getArgument(0);
         String veName = "predicate1";
 
         String addVEName = "newName";
@@ -225,8 +225,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
             .getSelectedText());
         veDialog.vocabElement(veName).value().enterText(addVEName);
 
-        String newVEArgName = veDialog.allVocabElements().elementAt(0)
-            .getArgument(0);
+        String newVEArgName = veDialog.allVocabElements().get(0).getArgument(0);
         Assert.assertTrue((addVEName + oldVEArgName).equals(newVEArgName));
 
         veDialog.okButton().click();
@@ -258,8 +257,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         veDialog.addPredicateButton().click();
 
-        String oldVEArgName = veDialog.allVocabElements().elementAt(0)
-            .getArgument(0);
+        String oldVEArgName = veDialog.allVocabElements().get(0).getArgument(0);
         String veName = "predicate1";
 
         String replaceVEName = "newName";
@@ -277,8 +275,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
             .getSelectedText(), oldVEArgName);
         veDialog.vocabElement(veName).value().enterText(replaceVEName);
 
-        String newVEArgName = veDialog.allVocabElements().elementAt(0)
-            .getArgument(0);
+        String newVEArgName = veDialog.allVocabElements().get(0).getArgument(0);
         Assert.assertTrue(replaceVEName.equals(newVEArgName));
 
         veDialog.okButton().click();
@@ -325,12 +322,12 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // 2. Get current data
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
-        Vector<VocabElementFixture> vve = veDialog.allVocabElements();
+        List<VocabElementFixture> vve = veDialog.allVocabElements();
         int numElements = vve.size();
         String[] originalData = new String[numElements];
 
         for (int i = 0; i < numElements; i++) {
-            originalData[i] = vve.elementAt(i).value().text();
+            originalData[i] = vve.get(i).value().text();
         }
 
         // TEST 1: Make multiple addition changes
@@ -344,7 +341,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes occurred
         for (int i = 0; i < vve.size(); i++) {
-            Assert.assertFalse(vve.elementAt(i).value().text().equals(
+            Assert.assertFalse(vve.get(i).value().text().equals(
                     originalData[i]));
         }
 
@@ -353,8 +350,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes have been reverted
         for (int i = 0; i < vve.size(); i++) {
-            Assert.assertTrue(vve.elementAt(i).value().text().equals(
-                    originalData[i]));
+            Assert.assertTrue(vve.get(i).value().text().equals(originalData[i]));
         }
     }
 
@@ -385,12 +381,12 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // 2. Get current data
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
-        Vector<VocabElementFixture> vve = veDialog.allVocabElements();
+        List<VocabElementFixture> vve = veDialog.allVocabElements();
         int numElements = vve.size();
         String[] originalData = new String[numElements];
 
         for (int i = 0; i < numElements; i++) {
-            originalData[i] = vve.elementAt(i).value().text();
+            originalData[i] = vve.get(i).value().text();
         }
 
         // TEST 2a: Make single addition change to vocab name
@@ -400,7 +396,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes occurred
         for (int i = 0; i < numElements; i++) {
-            Assert.assertFalse(vve.elementAt(i).value().text().equals(
+            Assert.assertFalse(vve.get(i).value().text().equals(
                     originalData[i]));
         }
 
@@ -409,7 +405,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes have been reverted
         for (int i = 0; i < vve.size(); i++) {
-            Assert.assertTrue(vve.elementAt(i).value().text().equals(
+            Assert.assertTrue(vve.get(i).value().text().equals(
                     originalData[i]));
         }
 
@@ -423,7 +419,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
             // Check that changes occurred
             for (int j = 0; j < numElements; j++) {
-                Assert.assertFalse(vve.elementAt(j).value().text().equals(
+                Assert.assertFalse(vve.get(j).value().text().equals(
                         originalData[j]));
             }
 
@@ -432,7 +428,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
             // Check that changes have been reverted
             for (int j = 0; j < vve.size(); j++) {
-                Assert.assertTrue(vve.elementAt(j).value().text().equals(
+                Assert.assertTrue(vve.get(j).value().text().equals(
                         originalData[j]));
             }
         }
@@ -452,7 +448,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes occurred
         for (int i = 0; i < numElements; i++) {
-            Assert.assertFalse(vve.elementAt(i).value().text().equals(
+            Assert.assertFalse(vve.get(i).value().text().equals(
                     originalData[i]));
         }
 
@@ -461,7 +457,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes have been reverted
         for (int i = 0; i < vve.size(); i++) {
-            Assert.assertTrue(vve.elementAt(i).value().text().equals(
+            Assert.assertTrue(vve.get(i).value().text().equals(
                     originalData[i]));
         }
 
@@ -475,7 +471,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
             // Check that changes occurred
             for (int j = 0; j < numElements; j++) {
-                Assert.assertFalse(vve.elementAt(j).value().text().equals(
+                Assert.assertFalse(vve.get(j).value().text().equals(
                         originalData[j]));
             }
 
@@ -484,7 +480,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
             // Check that changes have been reverted
             for (int j = 0; j < vve.size(); j++) {
-                Assert.assertTrue(vve.elementAt(j).value().text().equals(
+                Assert.assertTrue(vve.get(j).value().text().equals(
                         originalData[j]));
             }
         }
@@ -517,12 +513,12 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // 2. Get current data
         VocabEditorDialogFixture veDialog = mainFrameFixture.openVocabEditor();
-        Vector<VocabElementFixture> vve = veDialog.allVocabElements();
+        List<VocabElementFixture> vve = veDialog.allVocabElements();
         int numElements = vve.size();
         String[] originalData = new String[numElements];
 
         for (int i = 0; i < numElements; i++) {
-            originalData[i] = vve.elementAt(i).value().text();
+            originalData[i] = vve.get(i).value().text();
         }
 
         // TEST 3a: Delete: delete key all ve name
@@ -539,7 +535,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes occurred
         for (int i = 0; i < numElements; i++) {
-            Assert.assertFalse(vve.elementAt(i).value().text().equals(
+            Assert.assertFalse(vve.get(i).value().text().equals(
                     originalData[i]));
         }
 
@@ -548,7 +544,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes have been reverted
         for (int i = 0; i < vve.size(); i++) {
-            Assert.assertTrue(vve.elementAt(i).value().text().equals(
+            Assert.assertTrue(vve.get(i).value().text().equals(
                     originalData[i]));
         }
 
@@ -570,7 +566,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes occurred
         for (int j = 0; j < numElements; j++) {
-            Assert.assertFalse(vve.elementAt(j).value().text().equals(
+            Assert.assertFalse(vve.get(j).value().text().equals(
                     originalData[j]));
         }
 
@@ -579,7 +575,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes have been reverted
         for (int j = 0; j < vve.size(); j++) {
-            Assert.assertTrue(vve.elementAt(j).value().text().equals(
+            Assert.assertTrue(vve.get(j).value().text().equals(
                     originalData[j]));
         }
 
@@ -597,7 +593,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes occurred
         for (int i = 0; i < numElements; i++) {
-            Assert.assertFalse(vve.elementAt(i).value().text().equals(
+            Assert.assertFalse(vve.get(i).value().text().equals(
                     originalData[i]));
         }
 
@@ -606,7 +602,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes have been reverted
         for (int i = 0; i < vve.size(); i++) {
-            Assert.assertTrue(vve.elementAt(i).value().text().equals(
+            Assert.assertTrue(vve.get(i).value().text().equals(
                     originalData[i]));
         }
 
@@ -628,7 +624,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes occurred
         for (int j = 0; j < numElements; j++) {
-            Assert.assertFalse(vve.elementAt(j).value().text().equals(
+            Assert.assertFalse(vve.get(j).value().text().equals(
                     originalData[j]));
         }
 
@@ -637,7 +633,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
 
         // Check that changes have been reverted
         for (int j = 0; j < vve.size(); j++) {
-            Assert.assertTrue(vve.elementAt(j).value().text().equals(
+            Assert.assertTrue(vve.get(j).value().text().equals(
                     originalData[j]));
         }
     }
@@ -910,8 +906,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         // Check that VE exists
         Assert.assertTrue(veDialog.numOfVocabElements() == (origNumVEs + 1));
 
-        String matrixName = veDialog.allVocabElements().lastElement()
-            .getVEName();
+        List<VocabElementFixture> vef = veDialog.allVocabElements();
+        String matrixName = vef.get(vef.size() - 1).getVEName();
 
         // Click Apply
         veDialog.applyButton().click();
@@ -925,8 +921,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         mainFrameFixture.clickMenuItemWithPath("Spreadsheet", "New Cell");
 
         SpreadsheetCellFixture cell = matrixCol.cell(1);
-        String argName = veDialog.allVocabElements().lastElement().getArgument(
-                0);
+        String argName = vef.get(vef.size() - 1).getArgument(0);
         Assert.assertEquals(cell.cellValue().text(), "<" + argName + ">");
     }
 
@@ -961,8 +956,8 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         // Check that VE exists
         Assert.assertTrue(veDialog.numOfVocabElements() == (origNumVEs + 1));
 
-        String matrixName = veDialog.allVocabElements().lastElement()
-            .getVEName();
+        List<VocabElementFixture> vef = veDialog.allVocabElements();
+        String matrixName = vef.get(vef.size() - 1).getVEName();
 
         // Click Apply
         veDialog.applyButton().click();
@@ -991,8 +986,7 @@ public final class UIVocabEditorTest extends OpenSHAPATestClass {
         // Check that VE exists
         Assert.assertTrue(veDialog.numOfVocabElements() == (numVEs + 1));
 
-        Assert.assertEquals(veDialog.allVocabElements().lastElement()
-            .getVEName(), matrixName);
+        Assert.assertEquals(vef.get(vef.size() - 1).getVEName(), matrixName);
 
         // Click Apply
         veDialog.applyButton().click();

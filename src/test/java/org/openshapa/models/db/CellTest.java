@@ -43,7 +43,7 @@ public class CellTest {
     @BeforeMethod
     public void setUp() throws UserWarningException {
         ds = new DeprecatedDatabase();
-        var = ds.createVariable("test", Variable.type.TEXT);
+        var = ds.createVariable("test", Argument.Type.TEXT);
         model = var.createCell();
 
         modelListener = mock(CellListener.class);

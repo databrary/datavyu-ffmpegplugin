@@ -97,25 +97,21 @@ ExternalVocabListListener {
 
     /** Model */
     Datastore ds;
-      
-    
+
     /**
      * Constructor.
      * 
-     * @param parent
-     *            The parent frame for the vocab editor.
-     * @param modal
-     *            Is this dialog to be modal or not?
+     * @param parent The parent frame for the vocab editor.
+     * @param modal Is this dialog to be modal or not?
      */
     public VocabEditorV(final Frame parent, final boolean modal) {
         super(parent, modal);
 
         LOGGER.event("vocEd - show");
 
-        
         db = OpenSHAPA.getProjectController().getDB();
         ds = OpenSHAPA.getProjectController().getDB();
-        
+
         initComponents();
         componentListnersInit();
         setName(this.getClass().getSimpleName());
@@ -239,11 +235,14 @@ ExternalVocabListListener {
         try {
             LOGGER.event("vocEd - add matrix");
             // perform the action
-            Variable v = ds.createVariable(varName, Variable.type.MATRIX);
-//            mv.addArg(Argument.type.NOMINAL);
+            Variable v = ds.createVariable(varName, Argument.Type.MATRIX);
+
+            // Need to get the template from the variable.
+            //Matrix m = v.getValue();                        
+            //m.createArgument(Argument.type.NOMINAL);
             updateDialogState();        
             // record the effect
-            UndoableEdit edit = new AddVariableEdit(varName, Variable.type.MATRIX);
+            UndoableEdit edit = new AddVariableEdit(varName, Argument.Type.MATRIX);
             // notify the listeners 
             OpenSHAPA.getView().getUndoSupport().postEdit(edit);           
         // Whoops, user has done something strange - show warning dialog.
@@ -472,7 +471,7 @@ ExternalVocabListListener {
                             DataColumn dc = new DataColumn(getLegacyDB(),
                                                            ve.getName(),
                                                            MatrixVocabElement.MatrixType.MATRIX);
-                            DeprecatedVariable newVar = new DeprecatedVariable(dc, Variable.type.MATRIX);
+                            DeprecatedVariable newVar = new DeprecatedVariable(dc, Argument.Type.MATRIX);
                             db.addVariable(newVar);
 
                             //long colID = db.addColumn(dc);
@@ -580,7 +579,7 @@ ExternalVocabListListener {
      * 
      * @return veViews Vector of VocabElementVs
      */
-    public Vector<VocabElementV> getVocabElements() {
+    public List<VocabElementV> getVocabElements() {
         return veViews;
     }
 

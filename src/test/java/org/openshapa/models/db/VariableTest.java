@@ -42,7 +42,7 @@ public class VariableTest {
     @BeforeMethod
     public void setUp() throws UserWarningException {
         ds = new DeprecatedDatabase();
-        model = ds.createVariable("test", Variable.type.TEXT);
+        model = ds.createVariable("test", Argument.Type.TEXT);
         modelListener = mock(VariableListener.class);
         model.addListener(modelListener);
     }
@@ -92,7 +92,7 @@ public class VariableTest {
 
     @Test
     public void testGetVariableType() {
-        assertEquals(model.getVariableType(), Variable.type.TEXT);
+        assertEquals(model.getVariableType().type, Argument.Type.TEXT);
     }
 
     @Test

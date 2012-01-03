@@ -19,7 +19,6 @@ import com.usermetrix.jclient.UserMetrix;
 import database.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * NominalValue Adapter
@@ -73,6 +72,11 @@ public class DeprecatedMatrixValue extends DeprecatedValue implements MatrixValu
         }
 
         return "<ERROR - RESTART OPENSHAPA>";
+    }
+
+    @Override
+    public Value createArgument(Argument.Type argType) {
+        return null;
     }
 
     @Override

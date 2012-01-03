@@ -24,6 +24,7 @@ package org.openshapa.undoableedits;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.openshapa.models.db.Argument;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Variable;
 
@@ -37,7 +38,7 @@ public final class VariableTO implements Comparable<VariableTO>{
 
     private String name;
 
-    private Variable.type type;
+    private Argument type;
 
     private int variablePosition;
 
@@ -75,7 +76,7 @@ public final class VariableTO implements Comparable<VariableTO>{
     /**
      * @return The type of the VariableTO.
      */
-    public Variable.type getType() {
+    public Argument getType() {
         return type;
     }
 
