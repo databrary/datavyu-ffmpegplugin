@@ -14,64 +14,33 @@
  */
 package org.openshapa;
 
+import ch.randelshofer.quaqua.QuaquaManager;
+import com.sun.script.jruby.JRubyScriptEngineManager;
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-
 import java.io.File;
-
-
 import java.util.EventObject;
 import java.util.Stack;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-
-import org.jdesktop.application.Application;
-import org.jdesktop.application.LocalStorage;
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.SessionStorage;
-import org.jdesktop.application.SingleFrameApplication;
-
+import javax.swing.*;
+import org.jdesktop.application.*;
 import org.openshapa.controllers.project.ProjectController;
-
-import database.LogicErrorException;
+import org.openshapa.models.db.TitleNotifier;
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.project.Project;
-
 import org.openshapa.plugins.PluginManager;
-
+import org.openshapa.undoableedits.SpreadsheetUndoManager;
 import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
 import org.openshapa.util.WindowsKeyChar;
-
-import org.openshapa.views.AboutV;
-import org.openshapa.views.DataControllerV;
-import org.openshapa.views.OpenSHAPAView;
-import org.openshapa.views.UserMetrixV;
-import org.openshapa.views.VariableListV;
-
-
-import ch.randelshofer.quaqua.QuaquaManager;
-
-import com.sun.script.jruby.JRubyScriptEngineManager;
-
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
-import org.openshapa.models.db.TitleNotifier;
-import org.openshapa.models.db.UserWarningException;
-import org.openshapa.undoableedits.SpreadsheetUndoManager;
-import org.openshapa.views.UndoHistoryWindow;
+import org.openshapa.views.*;
 
 /**
  * The main class of the application.
@@ -181,11 +150,11 @@ public final class OpenSHAPA extends SingleFrameApplication
     /**
      * Dispatches the keystroke to the correct action.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      * @return true if the KeyboardFocusManager should take no further action
      *         with regard to the KeyEvent; false otherwise
      */
+    @Override
     public boolean dispatchKeyEvent(final KeyEvent evt) {
 
         /**
@@ -582,15 +551,6 @@ public final class OpenSHAPA extends SingleFrameApplication
     /**
      * Show a warning dialog to the user.
      *
-     * @param e The LogicErrorException to present to the user.
-     */
-    public void showWarningDialog(final LogicErrorException e) {
-        showWarningDialog(e.getMessage());
-    }
-
-    /**
-     * Show a warning dialog to the user.
-     *
      * @param e The UserWarningException to present to the user.
      */
     public void showWarningDialog(final UserWarningException e) {
@@ -771,7 +731,7 @@ public final class OpenSHAPA extends SingleFrameApplication
         // Whoops - JRubyScriptEngineManager may have failed, if that does
         // not construct engines for jruby correctly, switch to
         // javax.script.ScriptEngineManager
-        if (m.getEngineFactories().size() == 0) {
+        if (m.getEngineFactories().isEmpty()) {
             m2 = new ScriptEngineManager();
             rubyEngine = m2.getEngineByName("jruby");
         } else {
@@ -1068,10 +1028,11 @@ public final class OpenSHAPA extends SingleFrameApplication
         /**
          * Calls safeQuit to check if we can exit.
          *
-         * @param arg0
-         *            The event generating the quit call.
+         * @param arg0 The event generating the quit call.
+         *
          * @return True if the application can quit, false otherwise.
          */
+        @Override
         public boolean canExit(final EventObject arg0) {
             return safeQuit();
         }
@@ -1079,9 +1040,9 @@ public final class OpenSHAPA extends SingleFrameApplication
         /**
          * Cleanup would occur here, but we choose to do nothing for now.
          *
-         * @param arg0
-         *            The event generating the quit call.
+         * @param arg0 The event generating the quit call.
          */
+        @Override
         public void willExit(final EventObject arg0) {
         }
     }

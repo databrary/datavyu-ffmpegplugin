@@ -514,7 +514,8 @@ ExternalVocabListListener {
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to apply vocab changes", e);
         } catch (LogicErrorException le) {
-            OpenSHAPA.getApplication().showWarningDialog(le);
+            // TODO: Switch over to User Warning Exception.
+            //OpenSHAPA.getApplication().showWarningDialog(le);
         }
         try{
         for(int i = veViews.size()-1; i>= 0; i--){
