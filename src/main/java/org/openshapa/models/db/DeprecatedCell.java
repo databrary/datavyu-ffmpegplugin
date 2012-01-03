@@ -14,21 +14,15 @@
  */
 package org.openshapa.models.db;
 
-import database.DataCell;
-import database.Database;
-import database.SystemErrorException;
-
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.MatrixVocabElement;
-import database.TimeStamp;
+import database.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-
 
 /**
  * {@link DataCell} adapter.
@@ -97,7 +91,6 @@ import java.util.TimeZone;
         return cellValue;
     }
 
-
     @Override
     public String getValueAsString() {
         DataCell cell = getLegacyCell();
@@ -107,9 +100,10 @@ import java.util.TimeZone;
         }
 
         try {
+            String result = cell.getVal().toString();
+            result = result.substring(1, result.length() - 1);
+            return result;
 
-            return cell.getVal().toString();
-            //
         } catch (SystemErrorException e) {
             LOGGER.error("Accessing cell value failed", e);
         }

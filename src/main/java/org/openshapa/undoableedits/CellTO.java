@@ -52,8 +52,6 @@ public final class CellTO {
         //Remove ()
         if (newCell.getValue().isEmpty()) {
             value = "<" + variableName + ">";
-        }   else if ((value.length() > 0) && (value.charAt(0) == '(')) {
-            value = value.substring(1, value.length()-1);
         }
     }
 
@@ -77,14 +75,6 @@ public final class CellTO {
     public String getValue() {
         return value;
     }
-    
-    /**
-     * @return The value this object is transferring as string.
-     */
-    public String getValueAsString() {
-        return "(" + value + ")";
-    }
-    
 
     /**
      * @return The parent variable name for this transfer object.

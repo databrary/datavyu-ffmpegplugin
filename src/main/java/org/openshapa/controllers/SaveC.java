@@ -15,29 +15,21 @@
 package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
-
+import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import org.openshapa.models.project.Project;
-import org.openshapa.models.project.ViewerSetting;
-
-import com.usermetrix.jclient.UserMetrix;
-
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-
 import org.openshapa.OpenSHAPA;
 import org.openshapa.RecentFiles;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedDatabase;
 import org.openshapa.models.db.UserWarningException;
-
+import org.openshapa.models.project.Project;
+import org.openshapa.models.project.ViewerSetting;
 
 /**
  * Master controller for handling project and database file saving logic.
@@ -89,9 +81,8 @@ public final class SaveC {
     throws UserWarningException {
         LOGGER.event("saving database");
 
-        DeprecatedDatabase ds = (DeprecatedDatabase) datastore;
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
-        saveDBC.saveDatabase(databaseFile, ds);
+        saveDBC.saveDatabase(databaseFile, datastore);
         if (remember) {
             RecentFiles.rememberProject(databaseFile);
         }    
@@ -133,7 +124,6 @@ public final class SaveC {
 
         try {
             LOGGER.event("save project");
-            DeprecatedDatabase ds = (DeprecatedDatabase) datastore;
 
             FileOutputStream fos = new FileOutputStream(projectFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
@@ -145,7 +135,7 @@ public final class SaveC {
 
             ZipEntry dbEntry = new ZipEntry("db");
             zos.putNextEntry(dbEntry);
-            new SaveDatabaseFileC().saveAsCSV(zos, ds);
+            new SaveDatabaseFileC().saveAsCSV(zos, datastore);
             zos.closeEntry();
 
             // BugzID:1806

@@ -15,36 +15,12 @@
 package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
-import java.util.Vector;
-
+import com.usermetrix.jclient.UserMetrix;
+import java.io.*;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-
 import org.openshapa.OpenSHAPA;
-
-import database.DataCell;
-import database.DataColumn;
-import database.FormalArgument;
-import database.MatrixVocabElement;
-import database.PredicateVocabElement;
-import database.SystemErrorException;
-import database.FormalArgument.FArgType;
-import database.MatrixVocabElement.MatrixType;
-
-import com.usermetrix.jclient.UserMetrix;
-
-import database.MacshapaDatabase;
-import java.io.FileOutputStream;
-
-import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedDatabase;
-import org.openshapa.models.db.UserWarningException;
+import org.openshapa.models.db.*;
 import org.openshapa.util.StringUtils;
 
 
@@ -58,8 +34,7 @@ public final class SaveDatabaseFileC {
 
     /**
      * Saves the database to the specified destination, if the file ends with
-     * .csv, the database is saved in a CSV format, if the database ends with
-     * .odb, the database is saved in a MacSHAPA format.
+     * .csv, the database is saved in a CSV format.
      *
      * @param destinationFile The destination to save the database too.
      * @param ds The datastore to save to disk.
@@ -85,6 +60,7 @@ public final class SaveDatabaseFileC {
      *
      * @param outFile The path of the file to use when writing to disk.
      * @param ds The datastore to save as a CSV file.
+     *
      * @throws UserWarningException When unable to save the database as a CSV to
      * disk (usually because of permissions errors).
      */
@@ -97,7 +73,7 @@ public final class SaveDatabaseFileC {
             fos.close();
         } catch (IOException ie) {
             ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-                                           .getContext().getResourceMap(OpenSHAPA.class);
+                                          .getContext().getResourceMap(OpenSHAPA.class);
             throw new UserWarningException(rMap.getString("UnableToSave.message", outFile), ie);
         }
     }
@@ -107,113 +83,89 @@ public final class SaveDatabaseFileC {
      *
      * @param outStream The stream to use when serializing.
      * @param ds The datastore to save as a CSV file.
+     *
      * @throws UserWarningException When unable to save the database as a CSV to
      * disk (usually because of permissions errors).
      */
     public void saveAsCSV(final OutputStream outStream, final Datastore ds)
     throws UserWarningException {
+        LOGGER.event("save database as CSV to stream");
 
-        try {
-            MacshapaDatabase db = ((DeprecatedDatabase) ds).getDatabase();
-            LOGGER.event("save database as CSV to stream");
+        // Dump out an identifier for the version of file.
+        PrintStream ps = new PrintStream(outStream);
+        ps.println("#4");
 
-            // Dump out an identifier for the version of file.
-            PrintStream ps = new PrintStream(outStream);
-            ps.println("#4");
+        /**
+        PREDICATES CURRENTLY UNSUPPORTED - TODO REIMPLEMENT.
 
-            // Dump out all the predicates held within the database.
-            Vector<PredicateVocabElement> predicates = db.getPredVEs();
+        // Dump out all the predicates held within the database.
+        Vector<PredicateVocabElement> predicates = db.getPredVEs();
+        if (predicates.size() > 0) {
+            int counter = 0;
 
-            if (predicates.size() > 0) {
-                int counter = 0;
+            //Read them in reverse because they're loaded in reverse.
+            //This can be resolved by finding why they're loaded in reverse (database)
+            //for (PredicateVocabElement pve : predicates) {\
+            for (int i = predicates.size() - 1; i >= 0; i--) {
+                PredicateVocabElement pve = predicates.elementAt(i);
+                ps.printf("%d:%s-", counter,
+                    StringUtils.escapeCSV(pve.getName()));
 
-                //Read them in reverse because they're loaded in reverse.
-                //This can be resolved by finding why they're loaded in reverse (database)
-                //for (PredicateVocabElement pve : predicates) {\
-                for (int i = predicates.size() - 1; i >= 0; i--) {
-                    PredicateVocabElement pve = predicates.elementAt(i);
-                    ps.printf("%d:%s-", counter,
-                        StringUtils.escapeCSV(pve.getName()));
-
-                    for (int j = 0; j < pve.getNumFormalArgs(); j++) {
-                        FormalArgument fa = pve.getFormalArgCopy(j);
-                        String name = fa.getFargName().substring(1,
-                                fa.getFargName().length() - 1);
-                        if (fa.getFargType() == FArgType.UNTYPED || fa.getFargType() == FArgType.UNDEFINED) {
-                            ps.printf("%s|%s", StringUtils.escapeCSV(name),
-                                FArgType.NOMINAL.toString());
-                        } else {
-                            ps.printf("%s|%s", StringUtils.escapeCSV(name),
-                                fa.getFargType().toString());
-                        }
-
-                        if (j < (pve.getNumFormalArgs() - 1)) {
-                            ps.print(',');
-                        }
+                for (int j = 0; j < pve.getNumFormalArgs(); j++) {
+                    FormalArgument fa = pve.getFormalArgCopy(j);
+                    String name = fa.getFargName().substring(1,
+                            fa.getFargName().length() - 1);
+                    if (fa.getFargType() == FArgType.UNTYPED || fa.getFargType() == FArgType.UNDEFINED) {
+                        ps.printf("%s|%s", StringUtils.escapeCSV(name),
+                            FArgType.NOMINAL.toString());
+                    } else {
+                        ps.printf("%s|%s", StringUtils.escapeCSV(name),
+                            fa.getFargType().toString());
                     }
 
-                    ps.println();
-                    counter++;
-                }
-            }
-
-            // Dump out the data from all the columns.
-            Vector<Long> colIds = db.getColOrderVector();
-
-            for (int i = 0; i < colIds.size(); i++) {
-                DataColumn dc = db.getDataColumn(colIds.get(i));
-                boolean isMatrix = false;
-                if (dc.getItsMveType() == MatrixType.UNDEFINED) {
-                    ps.printf("%s (%s,%s,%s)", StringUtils.escapeCSV(dc.getName()),
-                        MatrixType.NOMINAL, !dc.getHidden(), dc.getComment());
-                } else {
-                    ps.printf("%s (%s,%s,%s)", StringUtils.escapeCSV(dc.getName()),
-                        dc.getItsMveType(), !dc.getHidden(), dc.getComment());
-                }
-
-                // If we a matrix type - we need to dump the formal args.
-                MatrixVocabElement mve = db.getMatrixVE(dc.getItsMveID());
-
-                if (dc.getItsMveType() == MatrixType.MATRIX) {
-                    isMatrix = true;
-                    ps.print('-');
-
-                    for (int j = 0; j < mve.getNumFormalArgs(); j++) {
-                        FormalArgument fa = mve.getFormalArgCopy(j);
-                        String name = fa.getFargName().substring(1,
-                                fa.getFargName().length() - 1);
-                        if (fa.getFargType() == FArgType.UNTYPED || fa.getFargType() == FArgType.UNDEFINED) {
-                            ps.printf("%s|%s", StringUtils.escapeCSV(name),
-                                FArgType.NOMINAL.toString());
-                        } else {
-                            ps.printf("%s|%s", StringUtils.escapeCSV(name),
-                                fa.getFargType().toString());
-                        }
-
-                        if (j < (mve.getNumFormalArgs() - 1)) {
-                            ps.print(',');
-                        }
+                    if (j < (pve.getNumFormalArgs() - 1)) {
+                        ps.print(',');
                     }
                 }
 
                 ps.println();
+                counter++;
+            }
+        }
+        */
 
-                for (int j = 1; j <= dc.getNumCells(); j++) {
-                    DataCell c = (DataCell) dc.getDB().getCell(dc.getID(), j);
+        for (Variable variable : ds.getAllVariables()) {
+            ps.printf("%s (%s,%s,%s)",
+                        StringUtils.escapeCSV(variable.getName()),
+                        variable.getVariableType().type,
+                        !variable.isHidden(),
+                        "");
 
-                    String value = c.getVal().toEscapedString();
+            if (variable.getVariableType().type == Argument.Type.MATRIX) {
+                ps.print('-');
 
-                    if (!isMatrix) {
-                        value = value.substring(1, value.length() - 1);
+                int numArgs = 0;
+                for (Argument arg : variable.getVariableType().childArguments) {
+                    ps.printf("%s|%s",
+                              StringUtils.escapeCSV(arg.name),
+                              arg.type);
+
+                    if (numArgs < (variable.getVariableType().childArguments.size() - 1)) {
+                        ps.print(',');
                     }
-
-                    ps.printf("%s,%s,%s", c.getOnset().toString(),
-                        c.getOffset().toString(), value);
-                    ps.println();
+                    numArgs++;
                 }
             }
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to save database as CSV file", se);
+
+            ps.println();
+
+            for (Cell cell : variable.getCells()) {
+                ps.printf("%s,%s,%s",
+                          cell.getOnsetString(),
+                          cell.getOffsetString(),
+                          cell.getValueAsString());
+                ps.println();
+            }
         }
     }
 }

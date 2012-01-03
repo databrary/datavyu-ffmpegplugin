@@ -16,13 +16,7 @@ package org.openshapa.models.db;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.DataCell;
-import database.DataColumn;
-import database.DataValue;
-import database.Database;
-import database.Matrix;
-import database.SystemErrorException;
-import database.TextStringDataValue;
+import database.*;
 
 /**
  * TextValue Adapter

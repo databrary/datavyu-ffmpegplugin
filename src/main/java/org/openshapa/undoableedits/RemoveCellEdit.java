@@ -74,7 +74,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
             for (Cell cell : var.getCells()) {
                 if (cell.getOnset() == cellTO.getOnset() &&
                     cell.getOffset() == cellTO.getOffset() &&
-                    cell.getValueAsString().equals(cellTO.getValueAsString())) {
+                    cell.getValueAsString().equals(cellTO.getValue())) {
                     cellsToDelete.add(cell);
                     break;
                 }
