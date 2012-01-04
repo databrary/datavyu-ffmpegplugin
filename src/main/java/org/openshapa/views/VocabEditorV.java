@@ -15,66 +15,33 @@
 package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.event.ItemEvent;
-import java.awt.event.MouseEvent;
-import java.awt.KeyEventDispatcher;
+import com.usermetrix.jclient.UserMetrix;
+import database.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
-
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-
+import javax.swing.*;
+import javax.swing.undo.UndoableEdit;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
-import database.Column;
-import database.DBIndex;
-import database.DataColumn;
-import database.Database;
-import database.ExternalVocabListListener;
-import database.FloatFormalArg;
-import database.FormalArgument;
-import database.IntFormalArg;
-import database.LogicErrorException;
-import database.MatrixVocabElement;
-import database.NominalFormalArg;
-import database.PredicateVocabElement;
-import database.QuoteStringFormalArg;
-import database.SystemErrorException;
-import database.UnTypedFormalArg;
-import database.VocabElement;
-import database.MatrixVocabElement.MatrixType;
-import org.openshapa.views.discrete.datavalues.vocabelements.FormalArgEditor;
-import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
-
-import com.usermetrix.jclient.UserMetrix;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.util.List;
-import javax.swing.JOptionPane;
-import javax.swing.undo.UndoableEdit;
 import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.models.db.*;
 import org.openshapa.undoableedits.AddVariableEdit;
 import org.openshapa.undoableedits.RemoveVariableEdit;
-import org.openshapa.undoableedits.VocabEditorEdit;
 import org.openshapa.util.VEList;
+import org.openshapa.views.discrete.datavalues.vocabelements.FormalArgEditor;
 import org.openshapa.views.discrete.datavalues.vocabelements.VENameEditor;
+import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
 
 /**
  * A view for editing the database vocab.
  */
-public final class VocabEditorV extends OpenSHAPADialog implements
-ExternalVocabListListener {
+public final class VocabEditorV extends OpenSHAPADialog {
 
-    /** The database that this vocab editor is manipulating. */
-    private Datastore db;
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(VocabEditorV.class);
     /** The currently selected vocab element. */
@@ -86,17 +53,26 @@ ExternalVocabListListener {
     /** The collection of vocab element views in the current vocab listing. */
     private VEList veViews;
     /** Vertical frame for holding the current listing of Vocab elements. */
-    private JPanel verticalFrame;
-    /** Array of veViews used to track changes for the undo function */
-      
-    //*private Stack<VEList> undoStack;
-    //*private Stack<VEList> redoStack;
-    
+    private JPanel verticalFrame;    
     /** The handler for all keyboard shortcuts */
     private KeyEventDispatcher ked;
-
     /** Model */
     Datastore ds;
+
+    /** Swing components. */
+    private JButton addArgButton;
+    private JButton addMatrixButton;
+    private JComboBox argTypeComboBox;
+    private JButton closeButton;
+    private JScrollPane currentVocabList;
+    private JButton deleteButton;
+    private JLabel jLabel1;
+    private JScrollPane jScrollPane1;
+    private JTextArea jTextArea1;
+    private JButton moveArgLeftButton;
+    private JButton moveArgRightButton;
+    private JLabel statusBar;
+    private JSeparator statusSeperator;
 
     /**
      * Constructor.
@@ -108,8 +84,6 @@ ExternalVocabListListener {
         super(parent, modal);
 
         LOGGER.event("vocEd - show");
-
-        db = OpenSHAPA.getProjectController().getDB();
         ds = OpenSHAPA.getProjectController().getDB();
 
         initComponents();
@@ -141,9 +115,6 @@ ExternalVocabListListener {
                         case KeyEvent.VK_M:
                             addMatrix();
                             break;
-                        case KeyEvent.VK_P:
-                            addPredicate();
-                            break;
                         case KeyEvent.VK_A:
                             if(selectedVocabElement!=null){addArgument();}
                             break;
@@ -164,7 +135,6 @@ ExternalVocabListListener {
                 return result;
             }
         });
-
 
         // Populate current vocab list with vocab data from the database.
         veViews = new VEList();
@@ -205,12 +175,14 @@ ExternalVocabListListener {
     }
 
     @Deprecated public Database getLegacyDB() {
-        return ((DeprecatedDatabase) db).getDatabase();
+        return ((DeprecatedDatabase) ds).getDatabase();
     }
 
     /**
      * The action to invoke when the user clicks on the add predicate button.
      */
+    /*
+     * TODO: ADD PREDICATE SUPPORT
     @Action
     public void addPredicate() {
         try {
@@ -224,7 +196,7 @@ ExternalVocabListListener {
             LOGGER.error("Unable to create predicate vocab element", e);
         }
         updateDialogState();
-    }
+    }*/
 
     /**
      * The action to invoke when the user clicks on the add matrix button.
@@ -260,13 +232,13 @@ ExternalVocabListListener {
     /**
      * Adds a vocab element to the vocab editor panel.
      * 
-     * @param ve
-     *            The vocab element to add to the vocab editor.
-     * @throws SystemErrorException
-     *             If unable to add the vocab element to the vocab editor.
+     * @param ve The vocab element to add to the vocab editor.
+     *
+     * @throws SystemErrorException If unable to add the vocab element to the
+     * vocab editor.
      */
     public void addVocabElement(final VocabElement ve)
-            throws SystemErrorException {
+    throws SystemErrorException {
         // The database dictates that vocab elements must have a single argument
         // add a default to get started.
         ve.appendFormalArg(new NominalFormalArg(getLegacyDB(), "<arg0>"));
@@ -281,7 +253,7 @@ ExternalVocabListListener {
             @Override
             public void keyReleased(KeyEvent ke){
                 if(ke.isShiftDown()){
-                    if(ke.getKeyCode()==KeyEvent.VK_COMMA|| ke.getKeyCode()==KeyEvent.VK_PERIOD){
+                    if(ke.getKeyCode()==KeyEvent.VK_COMMA || ke.getKeyCode()==KeyEvent.VK_PERIOD){
                         addArgument();
                     }
                 }
@@ -412,7 +384,7 @@ ExternalVocabListListener {
             // record the effect
             List<Variable> varsToDelete = new ArrayList<Variable>();
             varsToDelete.add(ds
-                    .getVariable(selectedVocabElement.getModel().getName()));         
+                    .getVariable(selectedVocabElement.getModel().getName()));
             edit = new RemoveVariableEdit(varsToDelete);            
             new DeleteColumnC(varsToDelete);
             // User has argument selected - delete it from the vocab element.
@@ -420,14 +392,12 @@ ExternalVocabListListener {
             LOGGER.event("vocEd - delete argument");
             VocabElement ve = selectedVocabElement.getModel();
             try {
-                
                 //Refactor this
                 ve.deleteFormalArg(selectedArgumentI);
                 selectedVocabElement.setHasChanged(true);
                 selectedVocabElement.rebuildContents();
                 applyChanges();
-                //
-                
+
             } catch (SystemErrorException e) {
                 LOGGER.error("Unable to selected argument", e);
             }
@@ -445,10 +415,9 @@ ExternalVocabListListener {
     @Action
     public int applyChanges() {
         LOGGER.event("vocEd - apply");
-             
+
         int errors = 0;
         try {
-
             for (int index=0; index<veViews.size();index++) {
                 VocabElementV vev = veViews.get(index);
                 if (vev.hasChanged()) {
@@ -472,7 +441,7 @@ ExternalVocabListListener {
                                                            ve.getName(),
                                                            MatrixVocabElement.MatrixType.MATRIX);
                             DeprecatedVariable newVar = new DeprecatedVariable(dc, Argument.Type.MATRIX);
-                            db.addVariable(newVar);
+                            ds.addVariable(newVar);
 
                             //long colID = db.addColumn(dc);
                             //dc = db.getDataColumn(colID);
@@ -515,7 +484,7 @@ ExternalVocabListListener {
             LOGGER.error("Unable to apply vocab changes", e);
         } catch (LogicErrorException le) {
             // TODO: Switch over to User Warning Exception.
-            //OpenSHAPA.getApplication().showWarningDialog(le);
+            // OpenSHAPA.getApplication().showWarningDialog(le);
         }
         try{
         for(int i = veViews.size()-1; i>= 0; i--){
@@ -541,24 +510,20 @@ ExternalVocabListListener {
         return errors;
     }
 
-
     /**
      * The action to invoke when the user presses the OK button.
      */
-    
     @Action
     public void ok() {
         LOGGER.event("vocEd - ok");
         if(applyChanges()==0){
             try {
                 disposeAll();
-                finalize();
             } catch (Throwable e) {
                 LOGGER.error("Unable to destroy vocab editor view.", e);
             }
         }
     }
-
     
     /**
      * The action to invoke when the user presses the cancel button.
@@ -568,8 +533,6 @@ ExternalVocabListListener {
         LOGGER.event("vocEd - close");
         try {
             disposeAll();
-            finalize();
-
         } catch (Throwable e) {
             LOGGER.error("Unable to destroy vocab editor view.", e);
         }
@@ -682,12 +645,7 @@ ExternalVocabListListener {
 
     /**
      * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
      */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed"
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
@@ -868,17 +826,14 @@ ExternalVocabListListener {
         getContentPane().add(jLabel1, gridBagConstraints);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
     /**
      * The action to invoke when the user changes the formal argument dropdown.
      * 
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
-    private void argTypeComboBoxItemStateChanged(
-            final java.awt.event.ItemEvent evt) {// GEN-FIRST:event_argTypeComboBoxItemStateChanged
-        
+    private void argTypeComboBoxItemStateChanged(final java.awt.event.ItemEvent evt) {        
         if (selectedVocabElement != null && selectedArgument != null
                 && evt.getStateChange() == ItemEvent.SELECTED) {
 
@@ -924,24 +879,7 @@ ExternalVocabListListener {
                 LOGGER.error("Unable to alter selected argument.", se);
             }
         }
-    }// GEN-LAST:event_argTypeComboBoxItemStateChanged
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addArgButton;
-    private javax.swing.JButton addMatrixButton;
-    private javax.swing.JComboBox argTypeComboBox;
-    private javax.swing.JButton closeButton;
-    private javax.swing.JScrollPane currentVocabList;
-    private javax.swing.JButton deleteButton;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JButton moveArgLeftButton;
-    private javax.swing.JButton moveArgRightButton;
-    private javax.swing.JLabel statusBar;
-    private javax.swing.JSeparator statusSeperator;
-    // End of variables declaration//GEN-END:variables
-
+    }
 
     /**
      * Initialization of mouse listeners on swing elements
@@ -1015,44 +953,49 @@ ExternalVocabListListener {
      */
     private int getMatNameNum(){
         int max = 0;
-        for(VocabElementV vev : veViews){
-            if(vev.getModel() instanceof MatrixVocabElement){
+        for (VocabElementV vev : veViews) {
+            if (vev.getModel() instanceof MatrixVocabElement) {
                 String name = vev.getModel().getName();
-                for(int i = name.length();i>0;i--){
-                    if(Character.isDigit(name.charAt(i-1))){
+                for (int i = name.length();i>0;i--) {
+                    if (Character.isDigit(name.charAt(i-1))) {
                         String numericPart = name.substring(i-1);
                         int check = Integer.parseInt(numericPart);
-                        if(check > max){
+                        if (check > max) {
                             max = check;
                         }
-                    }else{ break;}
+                    } else {
+                        break;
+                    }
                 }
             }
         }
 
-        return max+1;
+        return max + 1;
     }
 
     /**
      * Determine the number of the next predicate added to the vocab list
-     */
+     */    
     private int getPredNameNum(){
         int max = 0;
-        for(VocabElementV vev : veViews){
-            if(vev.getModel() instanceof PredicateVocabElement){
+        for (VocabElementV vev : veViews) {
+            if (vev.getModel() instanceof PredicateVocabElement) {
                 String name = vev.getModel().getName();
-                for(int i = name.length();i>0;i--){
-                    if(Character.isDigit(name.charAt(i-1))){
+                for (int i = name.length();i>0;i--) {
+                    if (Character.isDigit(name.charAt(i-1))) {
                         String numericPart = name.substring(i-1);
                         int check = Integer.parseInt(numericPart);
-                        if(check > max){
+                        if (check > max) {
                             max = check;
                         }
-                    }else{ break;}
+                    } else {
+                        break;
+                    }
                 }
             }
         }
-        return max+1;
+
+        return max + 1;
     }
 
     /**
@@ -1060,7 +1003,7 @@ ExternalVocabListListener {
      *
      * @param db the current database
      * @param VEID the id of the vocab element to be deleted
-     */
+     *//*
     @Override
     public void VLDeletion(Database db, long VEID) {
         try{
@@ -1084,14 +1027,14 @@ ExternalVocabListListener {
         }catch(Exception e){
             LOGGER.error("could not delete VE from DB" +e);
         }
-    }
+    }*/
 
     /**
      * Determine what action to perform when a VocabElement is replaced in the vocab list
      *
      * @param db the database currently being used
      * @param VEID the id of the vocab element that has changed
-     */
+     *//*
     @Override
     public void VLReplace(Database db, long VEID) {
         try{
@@ -1109,14 +1052,14 @@ ExternalVocabListListener {
         }catch(Exception e){
             LOGGER.error("problem replacing vocab element"+e);
         }
-    }
+    }*/
 
     /**
      * Determine what action to perform when a VocabElement is added to the vocab list
      *
      * @param db the current database
      * @param VEID the id of the vocab element being inserted
-     */
+     *//*
     @Override
     public void VLInsertion(Database db, long VEID) {
         try {
@@ -1148,7 +1091,5 @@ ExternalVocabListListener {
         } catch (SystemErrorException ex) {
                 LOGGER.error("could not add vocab element"+ex);
         }
-    }
-
-
+    }*/
 }
