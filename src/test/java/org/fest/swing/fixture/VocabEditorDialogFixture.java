@@ -51,7 +51,7 @@ public class VocabEditorDialogFixture extends DialogFixture {
         List<VocabElementV> vocEls = veDialog.getVocabElements();
 
         for (VocabElementV v : vocEls) {
-            String vocName = v.getDataView().getEditors().elementAt(0).getText();
+            String vocName = v.getDataView().getEditors().get(0).getText();
 
             if (vocName.equalsIgnoreCase(elementName)) {
                 return new VocabElementFixture(robot, v);

@@ -84,8 +84,7 @@ public class VocabElementFixture extends JPanelFixture {
      * @return vocab element name
      */
     public final String getVEName() {
-        return ((VocabElementV) target).getDataView().getEditors().elementAt(0)
-            .getText();
+        return ((VocabElementV) target).getDataView().getEditors().get(0).getText();
     }
 
     /**
@@ -96,8 +95,7 @@ public class VocabElementFixture extends JPanelFixture {
     public final String getArgument(final int arg) {
         int editorNum = (arg * 6) + 3;
 
-        return ((VocabElementV) target).getDataView().getEditors().elementAt(
-                editorNum).getText();
+        return ((VocabElementV) target).getDataView().getEditors().get(editorNum).getText();
     }
 
     /**

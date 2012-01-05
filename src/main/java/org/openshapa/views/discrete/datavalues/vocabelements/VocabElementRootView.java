@@ -16,12 +16,12 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.SystemErrorException;
-import database.VocabElement;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
+import org.openshapa.models.db.Argument;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 
@@ -31,7 +31,7 @@ import org.openshapa.views.discrete.EditorTracker;
 public final class VocabElementRootView extends JTextArea  {
 
     /** The editors that make up the representation of the data. */
-    private Vector<EditorComponent> editors;
+    private List<EditorComponent> editors;
 
     /** The editor tracker responsible for the editor components. */
     private EditorTracker edTracker;
@@ -40,17 +40,14 @@ public final class VocabElementRootView extends JTextArea  {
     private static Logger LOGGER = UserMetrix.getLogger(VocabElementRootView.class);
 
     /** Border to set the text area more aligned to the icons. */
-    private static Border GAP_BORDER =
-                                   BorderFactory.createEmptyBorder(2, 0, 0, 0);
+    private static Border GAP_BORDER = BorderFactory.createEmptyBorder(2, 0, 0, 0);
     /**
-     * Creates a new instance of MatrixV.
+     * Constructor
      *
-     * @param cellSelection The parent selection for spreadsheet cells.
-     * @param cell The parent datacell for this spreadsheet cell.
-     * @param matrix The Matrix holding datavalues that this view label will
-     * represent.
+     * @param vocabElement The vocab element that this root view is representing.
+     * @param pv The parent view that this root view belongs too.
      */
-    public VocabElementRootView(final VocabElement vocabElement,
+    public VocabElementRootView(final Argument vocabElement,
                                 final VocabElementV pv) {
         super();
         setLineWrap(true);
@@ -58,7 +55,7 @@ public final class VocabElementRootView extends JTextArea  {
         // just push down a little bit
         setBorder(GAP_BORDER);
 
-        editors = new Vector<EditorComponent>();
+        editors = new ArrayList<EditorComponent>();
         edTracker = new EditorTracker(this, editors);
 
         setVocabElement(vocabElement, pv);
@@ -78,17 +75,15 @@ public final class VocabElementRootView extends JTextArea  {
     }
 
     /**
-     * Sets the matrix that this MatrixRootView will represent.
-     * @param m The Matrix to display.
+     * Sets the argument that this VocabElementRootView will represent.
+     *
+     * @param ve The new vocab element that his root view will represent.
+     * @param pv The parent view for this root view.
      */
-    public void setVocabElement(final VocabElement ve, VocabElementV pv) {
-        try {
-            editors.clear();
-            if (editors.size() == 0) {
-                editors.addAll(VocabElementEditorFactory.buildVocabElement(this, ve, pv));
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to set/reset VocabE for VERootView.", e);
+    public void setVocabElement(final Argument ve, VocabElementV pv) {
+        editors.clear();
+        if (editors.isEmpty()) {
+            editors.addAll(VocabElementEditorFactory.buildVocabElement(this, ve, pv));
         }
 
         rebuildText();
@@ -106,7 +101,6 @@ public final class VocabElementRootView extends JTextArea  {
     }
 
     /**
-     * Used in the UISpec4j tests.
      * @return The editor tracker for this MatrixRootView.
      */
     public EditorTracker getEdTracker() {
@@ -114,11 +108,9 @@ public final class VocabElementRootView extends JTextArea  {
     }
 
     /**
-     * Used in VocabElementV.
-     * @return the editors.
+     * @return The editors used for this root view.
      */
-    public Vector<EditorComponent> getEditors() {
+    public List<EditorComponent> getEditors() {
         return editors;
     }
-
 }
