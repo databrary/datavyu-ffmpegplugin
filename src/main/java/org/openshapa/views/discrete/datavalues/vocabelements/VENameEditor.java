@@ -16,11 +16,10 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.SystemErrorException;
-import database.VocabElement;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
+import org.openshapa.models.db.Argument;
 import org.openshapa.util.SequentialNumberGenerator;
 import org.openshapa.views.discrete.EditorComponent;
 
@@ -30,7 +29,7 @@ import org.openshapa.views.discrete.EditorComponent;
 public final class VENameEditor extends EditorComponent {
 
     /** Parent Vocab Element. */
-    private VocabElement model;
+    private Argument model;
 
     /** String holding the reserved characters. */
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
@@ -45,17 +44,17 @@ public final class VENameEditor extends EditorComponent {
      * Constructor.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param ve The parent VocabElement the editor is in.
+     * @param ve The parent Argument the editor is in.
      * @param pv The parent VocabElementV the editor is in.
      */
     public VENameEditor(final JTextComponent ta,
-                        final VocabElement ve,
+                        final Argument ve,
                         final VocabElementV pv) {
         super(ta);
         setEditable(true);
         parentView = pv;
         model = ve;
-        setText(model.getName());
+        setText(model.name);
     }
 
     /**
@@ -77,22 +76,18 @@ public final class VENameEditor extends EditorComponent {
     public void keyTyped(final KeyEvent e) {
         // The backspace key removes digits from behind the caret.
         if (!this.isReserved(e.getKeyChar())) {
-            try {
-                removeSelectedText();
-                StringBuilder currentValue = new StringBuilder(getText());
-                currentValue.insert(getCaretPosition(), e.getKeyChar());
-                model.setName(currentValue.toString());
+            removeSelectedText();
+            StringBuilder currentValue = new StringBuilder(getText());
+            currentValue.insert(getCaretPosition(), e.getKeyChar());
+            model.name = currentValue.toString();
 
-                // Advance caret over the top of the new char.
-                int pos = this.getCaretPosition() + 1;
-                this.setText(currentValue.toString());
-                this.setCaretPosition(pos);
+            // Advance caret over the top of the new char.
+            int pos = this.getCaretPosition() + 1;
+            this.setText(currentValue.toString());
+            this.setCaretPosition(pos);
 
-                parentView.setHasChanged(true);
-                parentView.getParentDialog().updateDialogState();
-            } catch (SystemErrorException se) {
-                LOGGER.error("Unable to set new predicate name", se);
-            }
+            parentView.setHasChanged(true);
+            parentView.getParentDialog().updateDialogState();
         }
 
         e.consume();
@@ -115,33 +110,27 @@ public final class VENameEditor extends EditorComponent {
     public void keyPressed(final KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
-                try {
-                    removeBehindCaret();
-                    if(!getText().equals("")){
-                        model.setName(getText());
-                    }else{
-                        model.setName("unnamed"+ Integer.toString(SequentialNumberGenerator.getNextSeqNum()));
-                    }
-                    parentView.setHasChanged(true);
-                    parentView.getParentDialog().updateDialogState();
-                } catch (SystemErrorException se) {
-                    LOGGER.error("Unable to backspace from predicate name", se);
+                removeBehindCaret();
+                if(!getText().equals("")){
+                    model.name = getText();
+                }else{
+                    model.name = "unnamed"+ Integer.toString(SequentialNumberGenerator.getNextSeqNum());
                 }
+                parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
+
                 e.consume();
                 break;
             case KeyEvent.VK_DELETE:
-                try {
-                    removeAheadOfCaret();
-                    if(!getText().equals("")){
-                        model.setName(getText());
-                    }else{
-                        model.setName("unnamed"+ Integer.toString(SequentialNumberGenerator.getNextSeqNum()));
-                    }
-                    parentView.setHasChanged(true);
-                    parentView.getParentDialog().updateDialogState();
-                } catch (SystemErrorException se) {
-                    LOGGER.error("Unable to delete from predicate name", se);
+                removeAheadOfCaret();
+                if(!getText().equals("")){
+                    model.name = getText();
+                }else{
+                    model.name = "unnamed"+ Integer.toString(SequentialNumberGenerator.getNextSeqNum());
                 }
+                parentView.setHasChanged(true);
+                parentView.getParentDialog().updateDialogState();
+
                 e.consume();
                 break;
             default:
