@@ -16,13 +16,12 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import javax.swing.text.JTextComponent;
-
 import database.FormalArgument;
 import database.SystemErrorException;
 import database.VocabElement;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.text.JTextComponent;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**

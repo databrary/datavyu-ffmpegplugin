@@ -206,17 +206,18 @@ public final class VocabEditorV extends OpenSHAPADialog {
         String varName = "matrix" + getMatNameNum();
         try {
             LOGGER.event("vocEd - add matrix");
+
             // perform the action
             Variable v = ds.createVariable(varName, Argument.Type.MATRIX);
-
             // Need to get the template from the variable.
             //Matrix m = v.getValue();                        
             //m.createArgument(Argument.type.NOMINAL);
-            updateDialogState();        
+
             // record the effect
             UndoableEdit edit = new AddVariableEdit(varName, Argument.Type.MATRIX);
-            // notify the listeners 
-            OpenSHAPA.getView().getUndoSupport().postEdit(edit);           
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+            updateDialogState();
+
         // Whoops, user has done something strange - show warning dialog.
         } catch (UserWarningException fe) {
             OpenSHAPA.getApplication().showWarningDialog(fe);
@@ -289,8 +290,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             LOGGER.error("vocEd - move argument left");
             VocabElement ve = selectedVocabElement.getModel();
             ve.deleteFormalArg(selectedArgumentI);
-            ve.insertFormalArg(selectedArgument.getModel(),
-                    (selectedArgumentI - 1));
+            ve.insertFormalArg(selectedArgument.getModel(), (selectedArgumentI - 1));
             selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
 
@@ -552,9 +552,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * model.
      */
     public void updateDialogState() {
-        ResourceMap rMap =
-                Application.getInstance(OpenSHAPA.class).getContext()
-                        .getResourceMap(VocabEditorV.class);
+        ResourceMap rMap = Application.getInstance(OpenSHAPA.class).getContext()
+                                      .getResourceMap(VocabEditorV.class);
 
         boolean containsC = false;
         selectedVocabElement = null;
@@ -617,9 +616,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
             // W00t - argument is selected - populate the index so that the user
             // can shift the argument around.
-            selectedArgumentI =
-                    selectedVocabElement.getModel().findFormalArgIndex(
-                            selectedArgument.getModel());
+            selectedArgumentI = selectedVocabElement.getModel()
+                                                    .findFormalArgIndex(selectedArgument.getModel());
 
             if (selectedArgumentI > 0) {
                 moveArgLeftButton.setEnabled(true);
@@ -628,8 +626,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             }
 
             try {
-                if (selectedArgumentI < (selectedVocabElement.getModel()
-                        .getNumFormalArgs() - 1)) {
+                if (selectedArgumentI < (selectedVocabElement.getModel().getNumFormalArgs() - 1)) {
                     moveArgRightButton.setEnabled(true);
                 } else {
                     moveArgRightButton.setEnabled(false);

@@ -14,11 +14,10 @@
  */
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
-import java.util.Vector;
-import javax.swing.text.JTextComponent;
-
 import database.SystemErrorException;
 import database.VocabElement;
+import java.util.Vector;
+import javax.swing.text.JTextComponent;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.datavalues.FixedText;
 

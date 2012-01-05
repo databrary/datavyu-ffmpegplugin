@@ -16,13 +16,12 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import database.SystemErrorException;
+import database.VocabElement;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
-
-import database.SystemErrorException;
-import database.VocabElement;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 
@@ -86,8 +85,7 @@ public final class VocabElementRootView extends JTextArea  {
         try {
             editors.clear();
             if (editors.size() == 0) {
-                editors.addAll(VocabElementEditorFactory.
-                                   buildVocabElement(this, ve, pv));
+                editors.addAll(VocabElementEditorFactory.buildVocabElement(this, ve, pv));
             }
         } catch (SystemErrorException e) {
             LOGGER.error("Unable to set/reset VocabE for VERootView.", e);

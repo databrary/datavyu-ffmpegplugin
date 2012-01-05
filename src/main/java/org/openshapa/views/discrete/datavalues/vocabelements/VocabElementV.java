@@ -16,9 +16,10 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import database.FormalArgument;
+import database.MatrixVocabElement;
+import database.VocabElement;
 import java.awt.BorderLayout;
-import org.openshapa.OpenSHAPA;
-import org.openshapa.views.VocabEditorV;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -32,9 +33,9 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import database.FormalArgument;
-import database.MatrixVocabElement;
-import database.VocabElement;
+import org.openshapa.OpenSHAPA;
+import org.openshapa.models.db.Argument;
+import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
@@ -74,7 +75,7 @@ public class VocabElementV extends JPanel {
     private boolean deleteVE;
 
     /** The underlying model that this vocab element view represents. */
-    private VocabElement veModel;
+    private Argument veModel;
 
     /** The parent editor for this vocab element view. */
     private VocabEditorV parentEditor;
@@ -92,7 +93,8 @@ public class VocabElementV extends JPanel {
     private static Color lightBlue = new Color(224,248,255,255);
     private static Color lightRed = new Color(255,200,200,255);
 
-    public VocabElementV(VocabElement vocabElement, VocabEditorV vev) {
+    public VocabElementV(Argument vocabArgument, VocabEditorV vev) {
+
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
                                       .getResourceMap(VocabElementV.class);
@@ -101,7 +103,7 @@ public class VocabElementV extends JPanel {
         deltaImageIcon = new ImageIcon(iconURL);
         hasVEChanged = false;
         deleteVE = false;
-        veModel = vocabElement;
+        veModel = vocabArgument;
         parentEditor = vev;
 
         deltaIcon = new JLabel();
@@ -116,12 +118,7 @@ public class VocabElementV extends JPanel {
         typeIcon.setPreferredSize(ICON_SIZE);
         typeIcon.setToolTipText(rMap.getString("type.tooltip"));
 
-        URL typeIconURL;
-        if (veModel.getClass() == MatrixVocabElement.class) {
-            typeIconURL = getClass().getResource("/icons/m_16.png");
-        } else {
-            typeIconURL = getClass().getResource("/icons/p_16.png");
-        }
+        URL typeIconURL = getClass().getResource("/icons/m_16.png");
         ImageIcon typeImageIcon = new ImageIcon(typeIconURL);
         this.setTypeIcon(typeImageIcon);
 
@@ -130,7 +127,7 @@ public class VocabElementV extends JPanel {
         deleteIcon.setMinimumSize(ICON_SIZE);
         deleteIcon.setPreferredSize(ICON_SIZE);
 
-        veRootView = new VocabElementRootView(vocabElement, this);
+        veRootView = new VocabElementRootView(vocabArgument, this);
 
         JPanel leftPanel = new JPanel();
         FlowLayout flayout = new FlowLayout(FlowLayout.LEFT, 5, 0);
@@ -177,10 +174,10 @@ public class VocabElementV extends JPanel {
     /**
      * Replaces the model used for this vocab element view.
      *
-     * @param vocabElement The new model to use with this view.
+     * @param vocabArgument The new model to use with this view.
      */
-    public final void setModel(final VocabElement vocabElement) {
-        veModel = vocabElement;
+    public final void setModel(final Argument vocabArgument) {
+        veModel = vocabArgument;
         this.rebuildContents();
     }
 
@@ -229,6 +226,7 @@ public class VocabElementV extends JPanel {
      * Gets a view for the supplied formal argument.
      *
      * @param fa The formal argument for which we want a view for.
+     *
      * @return The view for the supplied formal argument if it exists, null
      * otherwise.
      */
@@ -247,7 +245,7 @@ public class VocabElementV extends JPanel {
     /**
      * @return The model (VocabElement) that this view represents.
      */
-    public final VocabElement getModel() {
+    public final Argument getModel() {
         return veModel;
     }
 
@@ -348,6 +346,8 @@ public class VocabElementV extends JPanel {
     public final void setBG(Color col){
         this.setBackground(col);
     }
+
+    @Override
     public final void requestFocus(){
         veRootView.requestFocus();
     }
