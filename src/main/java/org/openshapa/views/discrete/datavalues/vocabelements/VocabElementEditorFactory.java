@@ -14,10 +14,10 @@
  */
 package org.openshapa.views.discrete.datavalues.vocabelements;
 
-import database.SystemErrorException;
-import database.VocabElement;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.text.JTextComponent;
+import org.openshapa.models.db.Argument;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.datavalues.FixedText;
 
@@ -39,35 +39,26 @@ public class VocabElementEditorFactory {
      * @param ta The parent JTextComponent the editor is in.
      * @param ve The parent VocabElement the editor is in.
      * @param pv The parent VocabElementV the editor is in.
-     * @throws SystemErrorException if problem getting vocab element from db.
+     *
      * @return A vector of editor components to represent the element.
      */
-    public static Vector<EditorComponent> buildVocabElement(
-                                                        final JTextComponent ta,
-                                                        final VocabElement ve,
-                                                        final VocabElementV pv)
-    throws SystemErrorException {
+    public static List<EditorComponent> buildVocabElement(final JTextComponent ta,
+                                                          final Argument ve,
+                                                          final VocabElementV pv) {
 
-        Vector<EditorComponent> eds = new Vector<EditorComponent>();
+        List<EditorComponent> eds = new ArrayList<EditorComponent>();
 
         if (ve != null) {
             eds.add(new VENameEditor(ta, ve, pv));
             eds.add(new FixedText(ta, "("));
 
-            int numArgs = ve.getNumFormalArgs();
+            int numArgs = ve.childArguments.size();
             // For each of the arguments, build a view representation
             for (int i = 0; i < numArgs; i++) {
                 eds.addAll(buildFormalArg(ta, ve, i, pv));
                 if (numArgs > 1 && i < (numArgs - 1)) {
                     eds.add(new FixedText(ta, ","));
                 }
-            }
-            // check for variable args flag and show indicator
-            if (ve.getVarLen()) {
-                if (numArgs > 0) {
-                    eds.add(new FixedText(ta, ","));
-                }
-                eds.add(new FixedText(ta, "..."));
             }
 
             eds.add(new FixedText(ta, ")"));
@@ -83,15 +74,14 @@ public class VocabElementEditorFactory {
      * @param ve The parent VocabElement the editor is in.
      * @param i The index of the argument within the element.
      * @param pv The parent VocabElementV the editor is in.
-     * @throws SystemErrorException if problem getting vocab element from db.
+     *
      * @return A vector of editor components to represent the argument.
      */
-    public static Vector<EditorComponent> buildFormalArg(JTextComponent ta,
-                                                         VocabElement ve,
+    public static List<EditorComponent> buildFormalArg(JTextComponent ta,
+                                                         Argument ve,
                                                          int i,
-                                                         VocabElementV pv)
-    throws SystemErrorException {
-        Vector<EditorComponent> eds = new Vector<EditorComponent>();
+                                                         VocabElementV pv) {
+        List<EditorComponent> eds = new ArrayList<EditorComponent>();
 
         eds.add(new FixedText(ta, "<"));
         eds.add(new FormalArgEditor(ta, ve, i, pv));
