@@ -16,12 +16,10 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.FormalArgument;
-import database.SystemErrorException;
-import database.VocabElement;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
+import org.openshapa.models.db.Argument;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
@@ -30,13 +28,13 @@ import org.openshapa.views.discrete.EditorComponent;
 public final class FormalArgEditor extends EditorComponent {
 
     /** Parent Vocab Element. */
-    private VocabElement vocabElement;
+    private Argument parentArgument;
 
     /** Index of the formal arg. */
     private int argIndex;
 
     /** Model this editor represents. */
-    private FormalArgument model = null;
+    private Argument model = null;
 
     /** String holding the reserved characters. */
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
@@ -49,20 +47,20 @@ public final class FormalArgEditor extends EditorComponent {
 
     /**
      * @param ta The JTextComponent that this virtual editor floats ontop.
-     * @param ve The parent vocab element that this argument belongs too.
+     * @param pa The parent that this argument belongs too.
      * @param index The index of the argument within the parent vocabelement
      * that this Editor will represent.
      * @param pv The parent vocab element view that this editor belongs too.
      */
     public FormalArgEditor(final JTextComponent ta,
-                           final VocabElement ve,
+                           final Argument pa,
                            final int index,
                            final VocabElementV pv) {
         super(ta);
         setEditable(true);
         argIndex = index;
         parentView = pv;
-        vocabElement = ve;
+        parentArgument = pa;
         resetValue();
     }
 
@@ -70,26 +68,18 @@ public final class FormalArgEditor extends EditorComponent {
      * Resets the text value of this editor.
      */
     public void resetValue() {
-        try {
-            model = vocabElement.getFormalArgCopy(argIndex);
-
-            // Formal argument name contains "<" and ">" characters which we
-            // don't actually want.
-            String fargName = "";
-            if (model != null) {
-                fargName = model.getFargName()
-                                .substring(1, model.getFargName().length() - 1);
-            }
-            setText(fargName);
-        } catch (SystemErrorException se) {
-            LOGGER.error("Unable to resetValue", se);
+        model = parentArgument.childArguments.get(argIndex);
+        String argName = "";
+        if (model != null) {
+            argName = model.name;
         }
+        setText(argName);
     }
 
     /**
      * @return the model.
      */
-    public FormalArgument getModel() {
+    public Argument getModel() {
         return model;
     }
 
@@ -117,25 +107,22 @@ public final class FormalArgEditor extends EditorComponent {
      */
     @Override
     public void keyTyped(KeyEvent e) {
-            if (!this.isReserved(e.getKeyChar())) {
+        if (!this.isReserved(e.getKeyChar())) {
 
-            try {
-                removeSelectedText();
-                StringBuilder currentValue = new StringBuilder(getText());
-                currentValue.insert(getCaretPosition(), e.getKeyChar());
-                model.setFargName("<" + currentValue.toString() + ">");
-                vocabElement.replaceFormalArg(model, argIndex);
+            removeSelectedText();
+            StringBuilder currentValue = new StringBuilder(getText());
+            currentValue.insert(getCaretPosition(), e.getKeyChar());
 
-                // Advance caret over the top of the new char.
-                int pos = this.getCaretPosition() + 1;
-                this.setText(currentValue.toString());
-                this.setCaretPosition(pos);
+            model.name = currentValue.toString();
+            //vocabElement.replaceFormalArg(model, argIndex);
 
-                parentView.setHasChanged(true);
-                parentView.getParentDialog().updateDialogState();
-            } catch (SystemErrorException se) {
-                LOGGER.error("Unable to set new predicate name", se);
-            }
+            // Advance caret over the top of the new char.
+            int pos = this.getCaretPosition() + 1;
+            this.setText(currentValue.toString());
+            this.setCaretPosition(pos);
+
+            parentView.setHasChanged(true);
+            parentView.getParentDialog().updateDialogState();
         }
 
         e.consume();
@@ -159,27 +146,24 @@ public final class FormalArgEditor extends EditorComponent {
     public void keyPressed(final KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
-                try {
                 removeBehindCaret();
-                model.setFargName("<" + getText() + ">");
-                vocabElement.replaceFormalArg(model, argIndex);
+
+                model.name = getText();
+                //vocabElement.replaceFormalArg(model, argIndex);
+
                 parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
-            } catch (SystemErrorException se) {
-                LOGGER.error("Unable to backspace from predicate name", se);
-            }
+
                 e.consume();
                 break;
             case KeyEvent.VK_DELETE:
-                try {
                 removeAheadOfCaret();
-                model.setFargName("<" + getText() + ">");
-                vocabElement.replaceFormalArg(model, argIndex);
+
+                model.name = getText();
+                //vocabElement.replaceFormalArg(model, argIndex);
+
                 parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
-            } catch (SystemErrorException se) {
-                LOGGER.error("Unable to delete from predicate name", se);
-            }
                 e.consume();
                 break;
             default:

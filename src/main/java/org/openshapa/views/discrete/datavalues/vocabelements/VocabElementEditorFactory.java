@@ -78,9 +78,9 @@ public class VocabElementEditorFactory {
      * @return A vector of editor components to represent the argument.
      */
     public static List<EditorComponent> buildFormalArg(JTextComponent ta,
-                                                         Argument ve,
-                                                         int i,
-                                                         VocabElementV pv) {
+                                                       Argument ve,
+                                                       int i,
+                                                       VocabElementV pv) {
         List<EditorComponent> eds = new ArrayList<EditorComponent>();
 
         eds.add(new FixedText(ta, "<"));

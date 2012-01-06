@@ -16,13 +16,10 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.FormalArgument;
-import database.FormalArgument.FArgType;
-import database.SystemErrorException;
-import database.VocabElement;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
+import org.openshapa.models.db.Argument;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
@@ -31,7 +28,7 @@ import org.openshapa.views.discrete.EditorComponent;
 public final class FormalArgTypeEditor extends EditorComponent {
 
     /** Parent Vocab Element. */
-    private VocabElement vocabElement;
+    private Argument parentArgument;
 
     /** Index of the formal arg. */
     private int argIndex;
@@ -40,26 +37,24 @@ public final class FormalArgTypeEditor extends EditorComponent {
     private static Logger LOGGER = UserMetrix.getLogger(FormalArgTypeEditor.class);
 
     public FormalArgTypeEditor(final JTextComponent ta,
-                               final VocabElement ve,
+                               final Argument pa,
                                final int index,
                                final VocabElementV pv) {
         super(ta);
         argIndex = index;
-        resetValue(ve);
+        resetValue(pa);
     }
 
-    public final void resetValue(final VocabElement ve) {
-        vocabElement = ve;
+    public final void resetValue(final Argument pa) {
+        parentArgument = pa;
 
-        String fargType = "";
-        try {
-            FormalArgument model = vocabElement.getFormalArgCopy(argIndex);
-            FArgType ft = model.getFargType();
-            fargType = ft.toString().substring(0, 1);
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to reset value", e);
+        String argType = "";
+        Argument model = parentArgument.childArguments.get(argIndex);
+        if (model != null) {
+            argType = model.type.toString().substring(0, 1);
         }
-        setText(fargType);
+
+        setText(argType);
     }
 
     /**

@@ -40,6 +40,18 @@
     </developer>
 
     <developer>
+      <id>Harold</id>
+      <name>Harold Cruz</name>
+      <email>harold.cruz@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+
+    <developer>
       <id>phil</id>
       <name>Phil Waller</name>
       <email>philip.waller@_no_spam_nicta.com.au</email>
@@ -574,7 +586,7 @@
                 <preCp>database-0.01.jar</preCp>
                 <preCp>jruby-complete-1.6.5.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
-                <preCp>openshapa-lib-0.0.75.jar</preCp>
+                <preCp>openshapa-lib-0.0.76.jar</preCp>
                 <preCp>openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</preCp>
                 <preCp>snakeyaml-1.7.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
@@ -645,7 +657,7 @@
     <dependency>
       <groupId>org.openshapa</groupId>
       <artifactId>openshapa-lib</artifactId>
-      <version>0.0.75</version>
+      <version>0.0.76</version>
     </dependency>
 
     <dependency>
