@@ -21,7 +21,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.*;
 import javax.swing.undo.UndoableEdit;
 import org.jdesktop.application.Action;
@@ -32,7 +31,6 @@ import org.openshapa.controllers.DeleteColumnC;
 import org.openshapa.models.db.*;
 import org.openshapa.undoableedits.AddVariableEdit;
 import org.openshapa.undoableedits.RemoveVariableEdit;
-import org.openshapa.util.VEList;
 import org.openshapa.views.discrete.datavalues.vocabelements.FormalArgEditor;
 import org.openshapa.views.discrete.datavalues.vocabelements.VENameEditor;
 import org.openshapa.views.discrete.datavalues.vocabelements.VocabElementV;
@@ -44,14 +42,14 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(VocabEditorV.class);
+    /** All the vocab views displayed in the editor. */
+    private List<VocabElementV> veViews;
     /** The currently selected vocab element. */
     private VocabElementV selectedVocabElement;
     /** The currently selected formal argument. */
     private FormalArgEditor selectedArgument;
     /** Index of the currently selected formal argument within the element. */
     private int selectedArgumentI;
-    /** The collection of vocab element views in the current vocab listing. */
-    private VEList veViews;
     /** Vertical frame for holding the current listing of Vocab elements. */
     private JPanel verticalFrame;    
     /** The handler for all keyboard shortcuts */
@@ -137,29 +135,18 @@ public final class VocabEditorV extends OpenSHAPADialog {
         });
 
         // Populate current vocab list with vocab data from the database.
-        veViews = new VEList();
+        veViews = new ArrayList<VocabElementV>();
         verticalFrame = new JPanel();
         verticalFrame.setName("verticalFrame");
         verticalFrame.setLayout(new BoxLayout(verticalFrame, BoxLayout.Y_AXIS));
-
-        try {
-            Vector<MatrixVocabElement> matVEs = getLegacyDB().getMatrixVEs();
-            for (int i = matVEs.size() - 1; i >= 0; i--) {
-                MatrixVocabElement mve = matVEs.elementAt(i);
-                VocabElementV matrixV = new VocabElementV(mve, this);
+        
+        for (Variable var : ds.getAllVariables()) {
+            Argument argument = var.getVariableType();
+            if (argument.type.equals(Argument.Type.MATRIX)) {
+                VocabElementV matrixV = new VocabElementV(argument, this);
                 verticalFrame.add(matrixV);
                 veViews.add(matrixV);
             }
-
-            Vector<PredicateVocabElement> predVEs = getLegacyDB().getPredVEs();
-            for (int i = predVEs.size() - 1; i >= 0; i--) {
-                PredicateVocabElement pve = predVEs.elementAt(i);
-                VocabElementV predicateV = new VocabElementV(pve, this);
-                verticalFrame.add(predicateV);
-                veViews.add(predicateV);
-            }
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to populate current vocab list", e);
         }
 
         // Add a pad cell to fill out the bottom of the vertical frame.
@@ -169,9 +156,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
         holdPanel.add(verticalFrame, BorderLayout.NORTH);
         currentVocabList.setViewportView(holdPanel);
         updateDialogState();
-
-        // Hide all the broken stuff.
-        //varyArgCheckBox.setVisible(false);
     }
 
     @Deprecated public Database getLegacyDB() {
@@ -233,18 +217,18 @@ public final class VocabEditorV extends OpenSHAPADialog {
     /**
      * Adds a vocab element to the vocab editor panel.
      * 
-     * @param ve The vocab element to add to the vocab editor.
+     * @param va The vocab argument to add to the vocab editor.
      *
      * @throws SystemErrorException If unable to add the vocab element to the
      * vocab editor.
      */
-    public void addVocabElement(final VocabElement ve)
-    throws SystemErrorException {
+    public void addVocabElement(final Argument va) {
         // The database dictates that vocab elements must have a single argument
         // add a default to get started.
-        ve.appendFormalArg(new NominalFormalArg(getLegacyDB(), "<arg0>"));
+        Argument newChild = new Argument("<arg0>", Argument.Type.NOMINAL);
+        va.childArguments.add(newChild);
 
-        VocabElementV vev = new VocabElementV(ve, this);
+        VocabElementV vev = new VocabElementV(va, this);
         vev.setHasChanged(true);
         verticalFrame.add(vev);
         verticalFrame.validate();
@@ -336,7 +320,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void addArgument() {
         try {
-            VocabElement ve = selectedVocabElement.getModel();
+            Argument va = selectedVocabElement.getModel();
             
             //Variable v = ds.getVariable(ve.getName());
             
@@ -345,14 +329,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
             String newArgName = "<arg" + ve.getNumFormalArgs() + ">";
             FormalArgument fa;
 
-            if (type.equals("Text")) {
-                fa = new QuoteStringFormalArg(getLegacyDB(), newArgName);
-            } else if (type.equals("Nominal")) {
+            if (type.equals("Nominal")) {
                 fa = new NominalFormalArg(getLegacyDB(), newArgName);
-            } else if (type.equals("Integer")) {
-                fa = new IntFormalArg(getLegacyDB(), newArgName);
-            } else {
-                fa = new FloatFormalArg(getLegacyDB(), newArgName);
             }
 
             ve.appendFormalArg(fa);
