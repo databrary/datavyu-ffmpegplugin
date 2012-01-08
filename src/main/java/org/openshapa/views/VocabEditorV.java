@@ -270,23 +270,22 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void moveArgumentLeft() {
-        try {
-            LOGGER.error("vocEd - move argument left");
-            VocabElement ve = selectedVocabElement.getModel();
-            ve.deleteFormalArg(selectedArgumentI);
-            ve.insertFormalArg(selectedArgument.getModel(), (selectedArgumentI - 1));
-            selectedVocabElement.setHasChanged(true);
-            selectedVocabElement.rebuildContents();
+        LOGGER.error("vocEd - move argument left");
 
-            selectedVocabElement.requestFocus();
-            FormalArgument fa = ve.getFormalArgCopy(selectedArgumentI-1);
-            selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(fa));
+        Argument va = selectedVocabElement.getModel();            
+        Argument ra = va.childArguments.remove(selectedArgumentI);
+        va.childArguments.add((selectedArgumentI - 1), ra);
+        //VocabElement ve = selectedVocabElement.getModel();
+        //ve.deleteFormalArg(selectedArgumentI);
+        //ve.insertFormalArg(selectedArgument.getModel(), (selectedArgumentI - 1));
+        //selectedVocabElement.setHasChanged(true);
+        selectedVocabElement.rebuildContents();
 
-            applyChanges();
-            updateDialogState();
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to move formal argument left", e);
-        }
+        selectedVocabElement.requestFocus();
+        selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(ra));
+
+        applyChanges();
+        updateDialogState();
     }
 
     /**
@@ -294,24 +293,18 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void moveArgumentRight() {
-        try {
-            LOGGER.error("vocEd - move argument right");
-            VocabElement ve = selectedVocabElement.getModel();
-            ve.deleteFormalArg(selectedArgumentI);
-            ve.insertFormalArg(selectedArgument.getModel(),
-                    (selectedArgumentI + 1));
-            selectedVocabElement.setHasChanged(true);
-            selectedVocabElement.rebuildContents();
+        LOGGER.error("vocEd - move argument right");
+        Argument va = selectedVocabElement.getModel();
+        Argument ra = va.childArguments.remove(selectedArgumentI);
+        va.childArguments.add((selectedArgumentI + 1), ra);
+        //selectedVocabElement.setHasChanged(true);
+        selectedVocabElement.rebuildContents();
 
-            selectedVocabElement.requestFocus();
-            FormalArgument fa = ve.getFormalArgCopy(selectedArgumentI+1);
-            selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(fa));
+        selectedVocabElement.requestFocus();
+        selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(ra));
 
-            applyChanges();
-            updateDialogState();
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to move formal argument right", e);
-        }
+        applyChanges();
+        updateDialogState();
     }
 
     /**
@@ -319,68 +312,54 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void addArgument() {
-        try {
-            Argument va = selectedVocabElement.getModel();
-            
-            //Variable v = ds.getVariable(ve.getName());
-            
-            String type = (String) argTypeComboBox.getSelectedItem();
-            LOGGER.event("vocEd - add argument:" + type);
-            String newArgName = "<arg" + ve.getNumFormalArgs() + ">";
-            FormalArgument fa;
+        Argument va = selectedVocabElement.getModel();
 
-            if (type.equals("Nominal")) {
-                fa = new NominalFormalArg(getLegacyDB(), newArgName);
-            }
+        String type = (String) argTypeComboBox.getSelectedItem();
+        LOGGER.event("vocEd - add argument:" + type);
+        String newArgName = "<arg" + va.childArguments.size() + ">";
 
-            ve.appendFormalArg(fa);
-            selectedVocabElement.setHasChanged(true);
-            selectedVocabElement.rebuildContents();
+        Argument fa = new Argument(newArgName, Argument.Type.NOMINAL);
+        va.childArguments.add(fa);
 
-            // Select the contents of the newly created formal argument.
-            selectedVocabElement.requestFocus();
-            FormalArgEditor faV = selectedVocabElement.getArgumentView(fa);
-            selectedVocabElement.requestArgFocus(faV);
-            
-            applyChanges();
-            updateDialogState();
-            
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to create formal argument.", e);
-        }
+        //selectedVocabElement.setHasChanged(true);
+        selectedVocabElement.rebuildContents();
+
+        // Select the contents of the newly created formal argument.
+        selectedVocabElement.requestFocus();
+        FormalArgEditor faV = selectedVocabElement.getArgumentView(fa);
+        selectedVocabElement.requestArgFocus(faV);
+
+        applyChanges();
+        updateDialogState();
     }
 
     /**
      * The action to invoke when the user presses the delete button.
      */
     @Action
-    public void delete() {        
+    public void delete() {
+
         UndoableEdit edit = null;
         // User has vocab element selected - delete it from the editor.
         if (selectedVocabElement != null && selectedArgument == null) {
             LOGGER.event("vocEd - delete element");
             // record the effect
             List<Variable> varsToDelete = new ArrayList<Variable>();
-            varsToDelete.add(ds
-                    .getVariable(selectedVocabElement.getModel().getName()));
+            varsToDelete.add(ds.getVariable(selectedVocabElement.getName()));
             edit = new RemoveVariableEdit(varsToDelete);            
             new DeleteColumnC(varsToDelete);
             // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             LOGGER.event("vocEd - delete argument");
-            VocabElement ve = selectedVocabElement.getModel();
-            try {
-                //Refactor this
-                ve.deleteFormalArg(selectedArgumentI);
-                selectedVocabElement.setHasChanged(true);
-                selectedVocabElement.rebuildContents();
-                applyChanges();
-
-            } catch (SystemErrorException e) {
-                LOGGER.error("Unable to selected argument", e);
-            }
+            Argument va = selectedVocabElement.getModel();
+            //Refactor this
+            va.childArguments.remove(selectedArgumentI);
+            //selectedVocabElement.setHasChanged(true);
+            selectedVocabElement.rebuildContents();
+            applyChanges();
         }
-        updateDialogState();        
+
+        updateDialogState();
         if (edit != null) {
             // notify the listeners
             OpenSHAPA.getView().getUndoSupport().postEdit(edit); 
@@ -394,86 +373,76 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public int applyChanges() {
         LOGGER.event("vocEd - apply");
 
-        int errors = 0;
-        try {
-            for (int index=0; index<veViews.size();index++) {
+        int errors = 0;        
+            for (int index=0; index < veViews.size();index++) {
                 VocabElementV vev = veViews.get(index);
-                if (vev.hasChanged()) {
-
-                    VocabElement ve = vev.getModel();
-                    // identify if any of the arguments have the same name
-                    if(vev.getModel().hasDuplicateArgNames()){
-                        errors = 2;
-                    }else
-                    if (ve.getID() == DBIndex.INVALID_ID) {
-                        if ((getLegacyDB().colNameInUse(ve.getName()) ||
-                            (getLegacyDB().predNameInUse(ve.getName())))) {
-                            errors = 1;
-                        }else                      
-                        // If the new vocab element is a matrix vocab element,
-                        // we actually need to create a column.
-                        if (ve.getClass() == MatrixVocabElement.class) {
-                            Column.isValidColumnName(OpenSHAPA.getProjectController().getLegacyDB().getDatabase(),
-                                                     ve.getName());
-                            DataColumn dc = new DataColumn(getLegacyDB(),
-                                                           ve.getName(),
-                                                           MatrixVocabElement.MatrixType.MATRIX);
-                            DeprecatedVariable newVar = new DeprecatedVariable(dc, Argument.Type.MATRIX);
-                            ds.addVariable(newVar);
-
-                            //long colID = db.addColumn(dc);
-                            //dc = db.getDataColumn(colID);
-                            long mveID = newVar.getLegacyVariable().getItsMveID();
-                            MatrixVocabElement mve = getLegacyDB().getMatrixVE(mveID);
-                            // Delete default formal argument.
-                            mve.deleteFormalArg(0);
-
-                            // Add the formal arguments from the editor into
-                            // the database vocab element.
-                            for (int i = 0; i < ve.getNumFormalArgs(); i++) {
-                                mve.appendFormalArg(ve.getFormalArgCopy(i));
-                            }
-                            mve.setVarLen(ve.getVarLen());
-                            getLegacyDB().replaceVocabElement(mve);
-                            mve = getLegacyDB().getMatrixVE(mve.getID());
-                            vev.setModel(mve);
-                            vev.setHasChanged(false);
-                            // Otherwise just a predicate - add the new vocab
-                            // element to the database.
-                        } else {
-                            long id = getLegacyDB().addVocabElement(ve);
-                            vev.setModel(getLegacyDB().getVocabElement(id));
-                            vev.setHasChanged(false);
-                        }
-
-                    } else {
-                        getLegacyDB().replaceVocabElement(ve);
-                        ve = getLegacyDB().getVocabElement(ve.getID());
-                        vev.setModel(ve);
-                        vev.setHasChanged(false);
-                    }
-                }
+//                if (vev.hasChanged()) {
+//                    VocabElement ve = vev.getModel();
+//                    // identify if any of the arguments have the same name
+//                    if (vev.getModel().hasDuplicateArgNames()){
+//                        errors = 2;
+//                    } else if (ve.getID() == DBIndex.INVALID_ID) {
+//                        if ((getLegacyDB().colNameInUse(ve.getName()) ||
+//                            (getLegacyDB().predNameInUse(ve.getName())))) {
+//                            errors = 1;
+//                        }else                      
+//                        // If the new vocab element is a matrix vocab element,
+//                        // we actually need to create a column.
+//                        if (ve.getClass() == MatrixVocabElement.class) {
+//                            Column.isValidColumnName(OpenSHAPA.getProjectController().getLegacyDB().getDatabase(),
+//                                                     ve.getName());
+//                            DataColumn dc = new DataColumn(getLegacyDB(),
+//                                                           ve.getName(),
+//                                                           MatrixVocabElement.MatrixType.MATRIX);
+//                            DeprecatedVariable newVar = new DeprecatedVariable(dc, Argument.Type.MATRIX);
+//                            ds.addVariable(newVar);
+//
+//                            //long colID = db.addColumn(dc);
+//                            //dc = db.getDataColumn(colID);
+//                            long mveID = newVar.getLegacyVariable().getItsMveID();
+//                            MatrixVocabElement mve = getLegacyDB().getMatrixVE(mveID);
+//                            // Delete default formal argument.
+//                            mve.deleteFormalArg(0);
+//
+//                            // Add the formal arguments from the editor into
+//                            // the database vocab element.
+//                            for (int i = 0; i < ve.getNumFormalArgs(); i++) {
+//                                mve.appendFormalArg(ve.getFormalArgCopy(i));
+//                            }
+//                            mve.setVarLen(ve.getVarLen());
+//                            getLegacyDB().replaceVocabElement(mve);
+//                            mve = getLegacyDB().getMatrixVE(mve.getID());
+//                            vev.setModel(mve);
+//                            vev.setHasChanged(false);
+//                            // Otherwise just a predicate - add the new vocab
+//                            // element to the database.
+//                        } else {
+//                            //long id = getLegacyDB().addVocabElement(ve);
+//                            //vev.setModel(getLegacyDB().getVocabElement(id));
+//                            //vev.setHasChanged(false);
+//                        }
+//
+//                    } else {
+//                        //getLegacyDB().replaceVocabElement(ve);
+//                        //ve = getLegacyDB().getVocabElement(ve.getID());
+//                        //vev.setModel(ve);
+//                        //vev.setHasChanged(false);
+//                    }
+//                }
             }
             updateDialogState();
             ((OpenSHAPAView) OpenSHAPA.getApplication().getMainView())
                     .showSpreadsheet();
              
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to apply vocab changes", e);
-        } catch (LogicErrorException le) {
-            // TODO: Switch over to User Warning Exception.
-            // OpenSHAPA.getApplication().showWarningDialog(le);
-        }
-        try{
+
+
         for(int i = veViews.size()-1; i>= 0; i--){
             VocabElementV vev = veViews.get(i);
             if(vev.isDeletable()){
-                getLegacyDB().removeVocabElement(vev.getModel().getID());
+                //getLegacyDB().removeVocabElement(vev.getModel().getID());
             }
         }
-        }catch(Exception e){
-            LOGGER.error("Unable to delete ve");
-        }
+
         if(errors!=0){
             switch(errors){
                 case 1:
@@ -578,39 +547,27 @@ public final class VocabEditorV extends OpenSHAPADialog {
         }
 */
         if (selectedArgument != null) {
-            FormalArgument fa = selectedArgument.getModel();
+            Argument fa = selectedArgument.getModel();
 
-            if (fa.getClass().equals(IntFormalArg.class)) {
-                argTypeComboBox.setSelectedItem("Integer");
-            } else if (fa.getClass().equals(FloatFormalArg.class)) {
-                argTypeComboBox.setSelectedItem("Float");
-            } else if (fa.getClass().equals(NominalFormalArg.class)) {
+            if (fa.type.equals(Argument.Type.NOMINAL)) {
                 argTypeComboBox.setSelectedItem("Nominal");
-            } else if (fa.getClass().equals(QuoteStringFormalArg.class)) {
-                argTypeComboBox.setSelectedItem("Text");
             } else {
                 argTypeComboBox.setSelectedItem("Untyped");
             }
 
             // W00t - argument is selected - populate the index so that the user
             // can shift the argument around.
-            selectedArgumentI = selectedVocabElement.getModel()
-                                                    .findFormalArgIndex(selectedArgument.getModel());
-
+            selectedVocabElement.getModel().childArguments.lastIndexOf(selectedArgument.getModel());
             if (selectedArgumentI > 0) {
                 moveArgLeftButton.setEnabled(true);
             } else {
                 moveArgLeftButton.setEnabled(false);
             }
 
-            try {
-                if (selectedArgumentI < (selectedVocabElement.getModel().getNumFormalArgs() - 1)) {
-                    moveArgRightButton.setEnabled(true);
-                } else {
-                    moveArgRightButton.setEnabled(false);
-                }
-            } catch (SystemErrorException e) {
-                LOGGER.error("Unable to get num of formal args", e);
+            if (selectedArgumentI < (selectedVocabElement.getModel().childArguments.size() - 1)) {
+                moveArgRightButton.setEnabled(true);
+            } else {
+                moveArgRightButton.setEnabled(false);
             }
         } else {
             moveArgLeftButton.setEnabled(false);
@@ -808,7 +765,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * 
      * @param evt The event that triggered this action.
      */
-    private void argTypeComboBoxItemStateChanged(final java.awt.event.ItemEvent evt) {        
+    private void argTypeComboBoxItemStateChanged(final java.awt.event.ItemEvent evt) {
+        /*
         if (selectedVocabElement != null && selectedArgument != null
                 && evt.getStateChange() == ItemEvent.SELECTED) {
 
@@ -854,6 +812,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                 LOGGER.error("Unable to alter selected argument.", se);
             }
         }
+        */
     }
 
     /**
@@ -929,8 +888,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
     private int getMatNameNum(){
         int max = 0;
         for (VocabElementV vev : veViews) {
-            if (vev.getModel() instanceof MatrixVocabElement) {
-                String name = vev.getModel().getName();
+            if (vev.getModel().type.equals(Argument.Type.MATRIX)) {
+                String name = vev.getModel().name;
                 for (int i = name.length();i>0;i--) {
                     if (Character.isDigit(name.charAt(i-1))) {
                         String numericPart = name.substring(i-1);
@@ -953,9 +912,12 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */    
     private int getPredNameNum(){
         int max = 0;
+        /*
+         * TODO: Predicate unsupported.
+         * 
         for (VocabElementV vev : veViews) {
-            if (vev.getModel() instanceof PredicateVocabElement) {
-                String name = vev.getModel().getName();
+            if (vev.getModel().type.equals(Argument.Type.PREDICATE)) {
+                String name = vev.getModel().name;
                 for (int i = name.length();i>0;i--) {
                     if (Character.isDigit(name.charAt(i-1))) {
                         String numericPart = name.substring(i-1);
@@ -969,6 +931,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                 }
             }
         }
+        */
 
         return max + 1;
     }

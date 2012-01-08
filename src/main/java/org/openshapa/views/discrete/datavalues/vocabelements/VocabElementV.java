@@ -225,15 +225,16 @@ public class VocabElementV extends JPanel {
     /**
      * Gets a view for the supplied formal argument.
      *
-     * @param fa The formal argument for which we want a view for.
+     * @param fa The argument that we want a view for.
      *
      * @return The view for the supplied formal argument if it exists, null
      * otherwise.
      */
-    public final FormalArgEditor getArgumentView(final FormalArgument fa) {
+    public final FormalArgEditor getArgumentView(final Argument fa) {
         for (EditorComponent ed : veRootView.getEditors()) {
             if (ed.getClass() == FormalArgEditor.class) {
                 FormalArgEditor fArgEd = (FormalArgEditor) ed;
+
                 if (fArgEd.getModel().equals(fa)) {
                     return fArgEd;
                 }
