@@ -635,13 +635,13 @@
         <artifactId>jruby-complete</artifactId>
         <version>1.6.5</version>
     </dependency>
-
+<!--
     <dependency>
       <groupId>database</groupId>
       <artifactId>database</artifactId>
       <version>0.01</version>
     </dependency>
-
+-->
     <dependency>
       <groupId>org.jdesktop</groupId>
       <artifactId>appframework</artifactId>
