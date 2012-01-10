@@ -41,7 +41,7 @@ public class VariableTest {
 
     @BeforeMethod
     public void setUp() throws UserWarningException {
-        ds = new DeprecatedDatabase();
+        ds = DatastoreFactory.newDatastore();
         model = ds.createVariable("test", Argument.Type.TEXT);
         modelListener = mock(VariableListener.class);
         model.addListener(modelListener);

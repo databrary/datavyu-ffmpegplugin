@@ -38,7 +38,7 @@ public class DatastoreTest {
 
     @BeforeMethod
     public void setUp() {
-        model = new DeprecatedDatabase();
+        model = DatastoreFactory.newDatastore();
         modelListener = mock(DatastoreListener.class);
         model.addListener(modelListener);
     }

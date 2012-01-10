@@ -52,11 +52,7 @@ import org.openshapa.views.DataControllerV;
 
 import com.google.common.collect.Lists;
 
-import org.openshapa.models.db.Cell;
-import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedDatabase;
-
-import org.openshapa.models.db.Variable;
+import org.openshapa.models.db.*;
 import org.openshapa.plugins.DataViewer;
 import org.openshapa.plugins.Plugin;
 
@@ -70,7 +66,7 @@ public final class ProjectController {
     private Project project;
 
     /** The current database we are working on. */
-    private Datastore db = new DeprecatedDatabase();
+    private Datastore db = DatastoreFactory.newDatastore();
 
     /** The id of the last selected cell. */
     @Deprecated private long lastSelectedCellID;
@@ -383,7 +379,7 @@ public final class ProjectController {
                 missingFilesList.add(setting.getFilePath());
                 continue;
             }
-            
+
             Plugin plugin = pm.getAssociatedPlugin(setting.getPluginName());
 
             // BugzID:2110

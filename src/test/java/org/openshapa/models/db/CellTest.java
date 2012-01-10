@@ -42,7 +42,7 @@ public class CellTest {
 
     @BeforeMethod
     public void setUp() throws UserWarningException {
-        ds = new DeprecatedDatabase();
+        ds = DatastoreFactory.newDatastore();
         var = ds.createVariable("test", Argument.Type.TEXT);
         model = var.createCell();
 

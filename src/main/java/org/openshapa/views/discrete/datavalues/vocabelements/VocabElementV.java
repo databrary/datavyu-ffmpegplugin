@@ -16,9 +16,6 @@ package org.openshapa.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.FormalArgument;
-import database.MatrixVocabElement;
-import database.VocabElement;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

@@ -16,9 +16,11 @@ package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import database.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -28,7 +30,10 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.DeleteColumnC;
-import org.openshapa.models.db.*;
+import org.openshapa.models.db.Argument;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.UserWarningException;
+import org.openshapa.models.db.Variable;
 import org.openshapa.undoableedits.AddVariableEdit;
 import org.openshapa.undoableedits.RemoveVariableEdit;
 import org.openshapa.views.discrete.datavalues.vocabelements.FormalArgEditor;
@@ -51,7 +56,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     /** Index of the currently selected formal argument within the element. */
     private int selectedArgumentI;
     /** Vertical frame for holding the current listing of Vocab elements. */
-    private JPanel verticalFrame;    
+    private JPanel verticalFrame;
     /** The handler for all keyboard shortcuts */
     private KeyEventDispatcher ked;
     /** Model */
@@ -74,7 +79,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
     /**
      * Constructor.
-     * 
+     *
      * @param parent The parent frame for the vocab editor.
      * @param modal Is this dialog to be modal or not?
      */
@@ -139,7 +144,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         verticalFrame = new JPanel();
         verticalFrame.setName("verticalFrame");
         verticalFrame.setLayout(new BoxLayout(verticalFrame, BoxLayout.Y_AXIS));
-        
+
         for (Variable var : ds.getAllVariables()) {
             Argument argument = var.getVariableType();
             if (argument.type.equals(Argument.Type.MATRIX)) {
@@ -156,10 +161,6 @@ public final class VocabEditorV extends OpenSHAPADialog {
         holdPanel.add(verticalFrame, BorderLayout.NORTH);
         currentVocabList.setViewportView(holdPanel);
         updateDialogState();
-    }
-
-    @Deprecated public Database getLegacyDB() {
-        return ((DeprecatedDatabase) ds).getDatabase();
     }
 
     /**
@@ -186,7 +187,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * The action to invoke when the user clicks on the add matrix button.
      */
     @Action
-    public void addMatrix() {     
+    public void addMatrix() {
         String varName = "matrix" + getMatNameNum();
         try {
             LOGGER.event("vocEd - add matrix");
@@ -194,7 +195,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             // perform the action
             Variable v = ds.createVariable(varName, Argument.Type.MATRIX);
             // Need to get the template from the variable.
-            //Matrix m = v.getValue();                        
+            //Matrix m = v.getValue();
             //m.createArgument(Argument.type.NOMINAL);
 
             // record the effect
@@ -208,7 +209,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         }
     }
 
-    public void disposeAll() {        
+    public void disposeAll() {
         KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         kfm.removeKeyEventDispatcher(ked);
         dispose();
@@ -216,7 +217,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
     /**
      * Adds a vocab element to the vocab editor panel.
-     * 
+     *
      * @param va The vocab argument to add to the vocab editor.
      *
      * @throws SystemErrorException If unable to add the vocab element to the
@@ -242,7 +243,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                         addArgument();
                     }
                 }
-                else if(ke.getKeyCode()==KeyEvent.VK_COMMA || 
+                else if(ke.getKeyCode()==KeyEvent.VK_COMMA ||
                         ke.getKeyCode()==KeyEvent.VK_LEFT_PARENTHESIS ||
                         ke.getKeyCode()==KeyEvent.VK_RIGHT_PARENTHESIS){
                     addArgument();
@@ -272,7 +273,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public void moveArgumentLeft() {
         LOGGER.error("vocEd - move argument left");
 
-        Argument va = selectedVocabElement.getModel();            
+        Argument va = selectedVocabElement.getModel();
         Argument ra = va.childArguments.remove(selectedArgumentI);
         va.childArguments.add((selectedArgumentI - 1), ra);
         //VocabElement ve = selectedVocabElement.getModel();
@@ -346,7 +347,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             // record the effect
             List<Variable> varsToDelete = new ArrayList<Variable>();
             varsToDelete.add(ds.getVariable(selectedVocabElement.getName()));
-            edit = new RemoveVariableEdit(varsToDelete);            
+            edit = new RemoveVariableEdit(varsToDelete);
             new DeleteColumnC(varsToDelete);
             // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
@@ -362,7 +363,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         updateDialogState();
         if (edit != null) {
             // notify the listeners
-            OpenSHAPA.getView().getUndoSupport().postEdit(edit); 
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
         }
     }
 
@@ -373,7 +374,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
     public int applyChanges() {
         LOGGER.event("vocEd - apply");
 
-        int errors = 0;        
+        int errors = 0;
             for (int index=0; index < veViews.size();index++) {
                 VocabElementV vev = veViews.get(index);
 //                if (vev.hasChanged()) {
@@ -385,7 +386,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 //                        if ((getLegacyDB().colNameInUse(ve.getName()) ||
 //                            (getLegacyDB().predNameInUse(ve.getName())))) {
 //                            errors = 1;
-//                        }else                      
+//                        }else
 //                        // If the new vocab element is a matrix vocab element,
 //                        // we actually need to create a column.
 //                        if (ve.getClass() == MatrixVocabElement.class) {
@@ -433,7 +434,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             updateDialogState();
             ((OpenSHAPAView) OpenSHAPA.getApplication().getMainView())
                     .showSpreadsheet();
-             
+
 
 
         for(int i = veViews.size()-1; i>= 0; i--){
@@ -452,7 +453,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
                     JOptionPane.showMessageDialog(this, "Argument name in use.","Duplicate argument name", 2);
                     break;
             }
-            
+
         }
         return errors;
     }
@@ -471,7 +472,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             }
         }
     }
-    
+
     /**
      * The action to invoke when the user presses the cancel button.
      */
@@ -487,7 +488,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
     /**
      * Returns vector of VocabElementVs
-     * 
+     *
      * @return veViews Vector of VocabElementVs
      */
     public List<VocabElementV> getVocabElements() {
@@ -522,16 +523,16 @@ public final class VocabEditorV extends OpenSHAPADialog {
         if (containsC) {
             closeButton.setText(rMap.getString("closeButton.cancelText"));
             closeButton.setToolTipText(rMap.getString("closeButton.cancelTip"));
-            
+
         } else {
             closeButton.setText(rMap.getString("closeButton.cancelText"));
             closeButton.setToolTipText(rMap.getString("closeButton.cancelTip"));
         }
 */
-        
+
         // If we have a selected vocab element - we can enable additional
         // functionality.
-/*        
+/*
         if (selectedVocabElement != null) {
             addArgButton.setEnabled(true);
             argTypeComboBox.setEnabled(true);
@@ -762,7 +763,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
     /**
      * The action to invoke when the user changes the formal argument dropdown.
-     * 
+     *
      * @param evt The event that triggered this action.
      */
     private void argTypeComboBoxItemStateChanged(final java.awt.event.ItemEvent evt) {
@@ -862,14 +863,14 @@ public final class VocabEditorV extends OpenSHAPADialog {
                 }
                 else if(component.equals("argTypeComboBox")){
                     statusBar.setText("Select the argument type.");
-                }       
+                }
             }
             @Override
             public void mouseExited(MouseEvent me){
                 statusBar.setText(" ");
             }
         };
-        
+
         argTypeComboBox.addMouseListener(ma);
         currentVocabList.addMouseListener(ma);
         addMatrixButton.addMouseListener(ma);
@@ -909,12 +910,12 @@ public final class VocabEditorV extends OpenSHAPADialog {
 
     /**
      * Determine the number of the next predicate added to the vocab list
-     */    
+     */
     private int getPredNameNum(){
         int max = 0;
         /*
          * TODO: Predicate unsupported.
-         * 
+         *
         for (VocabElementV vev : veViews) {
             if (vev.getModel().type.equals(Argument.Type.PREDICATE)) {
                 String name = vev.getModel().name;

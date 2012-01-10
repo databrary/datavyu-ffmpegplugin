@@ -15,51 +15,10 @@
 package org.openshapa.controllers;
 
 import com.usermetrix.jclient.Logger;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import java.util.Vector;
-
-
 import com.usermetrix.jclient.UserMetrix;
-
-import java.io.FileInputStream;
-import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedDatabase;
-
-import database.Column;
-import database.DataCell;
-import database.DataColumn;
-import database.DataValue;
-import database.Database;
-import database.FloatDataValue;
-import database.FloatFormalArg;
-import database.FormalArgument;
-import database.IntDataValue;
-import database.IntFormalArg;
-import database.LogicErrorException;
-import database.MacshapaDatabase;
-import database.Matrix;
-import database.MatrixVocabElement;
-import database.NominalDataValue;
-import database.NominalFormalArg;
-import database.PredDataValue;
-import database.Predicate;
-import database.PredicateVocabElement;
-import database.QuoteStringDataValue;
-import database.QuoteStringFormalArg;
-import database.SystemErrorException;
-import database.TextStringDataValue;
-import database.TimeStamp;
-import database.VocabElement;
+import java.io.*;
 import org.openshapa.OpenSHAPA;
-import org.openshapa.models.db.Argument;
-import org.openshapa.models.db.DeprecatedVariable;
-import org.openshapa.models.db.Variable;
+import org.openshapa.models.db.*;
 
 
 /**
@@ -150,17 +109,15 @@ public final class OpenDatabaseFileC {
      * spreadsheet) with data. The caller is responsible for managing the
      * stream.
      *
-     * @param inStream
-     *            The stream to deserialized when populating the database.
+     * @param inStream The stream to deserialized when populating the database.
      *
      * @return populated database on sucess, null otherwise.
      */
     public Datastore openAsCSV(final InputStream inStream) {
-
         try {
             LOGGER.event("open csv database from stream");
 
-            DeprecatedDatabase db = new DeprecatedDatabase();
+            Datastore db = DatastoreFactory.newDatastore();
             db.setTitleNotifier(OpenSHAPA.getApplication());
             InputStreamReader isr = new InputStreamReader(inStream);
             BufferedReader csvFile = new BufferedReader(isr);
@@ -173,7 +130,7 @@ public final class OpenDatabaseFileC {
             if ("#4".equalsIgnoreCase(line)) {
 
                 //Version 4 includes a comment for columns.
-                line = parseDefinitions(csvFile, db.getDatabase());
+                line = parseDefinitions(csvFile, db);
 
                 while (line != null) {
                     line = parseVariable(csvFile, line, db, "#4");
@@ -182,7 +139,7 @@ public final class OpenDatabaseFileC {
 
                 //Version 3 includes column visible status after the column type
                 // Parse predicate definitions first.
-                line = parseDefinitions(csvFile, db.getDatabase());
+                line = parseDefinitions(csvFile, db);
 
                 while (line != null) {
                     line = parseVariable(csvFile, line, db, "#3");
@@ -190,7 +147,7 @@ public final class OpenDatabaseFileC {
             } else if ("#2".equalsIgnoreCase(line)) {
 
                 // Parse predicate definitions first.
-                line = parseDefinitions(csvFile, db.getDatabase());
+                line = parseDefinitions(csvFile, db);
 
                 while (line != null) {
                     line = parseVariable(csvFile, line, db);
@@ -211,10 +168,8 @@ public final class OpenDatabaseFileC {
             return db;
         } catch (IOException e) {
             LOGGER.error("Unable to read line from CSV file", e);
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to populate databse from CSV file", e);
-        } catch (LogicErrorException e) {
-            LOGGER.error("Corrupted CSV file", e);
+        } catch (UserWarningException e) {
+            LOGGER.error("Unable to create new variable.", e);
         }
 
         // Error encountered - return null.
@@ -224,9 +179,9 @@ public final class OpenDatabaseFileC {
     /**
      * Strips escape characters from a line of text.
      *
-     * @param line
-     *            The line of text to strip escape characters from.
-     * @return The line free fo escape characters, i.e. '\'.
+     * @param line The line of text to strip escape characters from.
+     *
+     * @return The line free of escape characters, i.e. '\'.
      */
     private String stripEscChars(final String line) {
         String result = null;
@@ -275,20 +230,18 @@ public final class OpenDatabaseFileC {
      * Method to invoke when we encounter a block of text in the CSV file that
      * is the contents of a predicate variable.
      *
-     * @param csvFile
-     *            The csvFile we are currently parsing.
-     * @param dc
-     *            The datacolumn that we will be adding cells too.
+     * @param csvFile The csvFile we are currently parsing.
+     * @param dc The variable that we will be adding cells too.
+     *
      * @return The next line in the file that is not part of the block of text
      *         in the CSV file.
-     * @throws IOException
-     *             If unable to read the file correctly.
-     * @throws SystemErrorException
-     *             If unable to update the database with the predicate variable
-     *             data.
+     *
+     * @throws IOException If unable to read the file correctly.
      */
+    /* TODO: PREDICATE VARIABLES CURRENTLY UNSUPPORTED
     private String parsePredicateVariable(final BufferedReader csvFile,
-        final DataColumn dc) throws IOException, SystemErrorException {
+                                          final DataColumn dc)
+    throws IOException, SystemErrorException {
 
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
@@ -343,128 +296,51 @@ public final class OpenDatabaseFileC {
 
         return line;
     }
+    */
 
     /**
      * Method to create data values for the formal arguments of a vocab element.
      *
-     * @param tokens
-     *            The array of string tokens.
-     * @param startI
-     *            The starting index to
-     * @param targetCol
-     *            The target column for the parsed formal arguments.
-     * @param patternVE
-     *            The pattern vocab element that the formal arguments must match
-     *            when being parsed from a file.
-     * @return An array of data values that suitably matches the formal
-     *         arguments of the pattern vocab element.
-     * @throws SystemErrorException
-     *             If unable to create the data values from the supplied tokens.
+     * @param tokens The array of string tokens.
+     * @param startI The starting index to
+     * @param destValue The destination value that we are populating.
      */
-    private Vector<DataValue> parseFormalArgs(final String[] tokens,
-        final int startI, final DataColumn targetCol,
-        final VocabElement patternVE) throws SystemErrorException {
-        Vector<DataValue> arguments = new Vector<DataValue>();
-        Database db = targetCol.getDB();
+    private void parseFormalArgs(final String[] tokens,
+                                 final int startI,
+                                 final Argument destPattern,
+                                 final MatrixValue destValue) {
 
-        for (int i = 0; i < patternVE.getNumFormalArgs(); i++) {
-            FormalArgument fa = patternVE.getFormalArgCopy(i);
+        for (int i = 0; i < destValue.getArguments().size(); i++) {
+            Argument fa = destPattern.childArguments.get(i);
             boolean emptyArg = false;
 
             // If the field doesn't contain anything or matches the FargName
             // we consider the argument to be 'empty'.
-            if ((tokens[startI + i].length() == 0)
-                    || tokens[startI + i].equals(fa.getFargName())) {
+            if ((tokens[startI + i].length() == 0) || tokens[startI + i].equals(fa.name)) {
                 emptyArg = true;
             }
 
             tokens[startI + i] = tokens[startI + i].trim();
-
-            switch (fa.getFargType()) {
-
-            case TEXT:
-            case QUOTE_STRING:
-
-                QuoteStringDataValue qsdv = new QuoteStringDataValue(db);
-
-                if (!emptyArg) {
-
-                    // Strip quotes from quote string.
-                    int newL = tokens[startI + i].length() - 1;
-                    qsdv.setItsValue(tokens[startI + i].substring(1, newL));
-                }
-
-                arguments.add(qsdv);
-
-                break;
-
-            case INTEGER:
-
-                IntDataValue idv = new IntDataValue(db);
-
-                if (!emptyArg) {
-                    idv.setItsValue(tokens[startI + i]);
-                }
-
-                arguments.add(idv);
-
-                break;
-
-            case FLOAT:
-
-                FloatDataValue fdv = new FloatDataValue(db);
-
-                if (!emptyArg) {
-                    fdv.setItsValue(tokens[startI + i]);
-                }
-
-                arguments.add(fdv);
-
-                break;
-
-            // BugzID:1703 - Default everything to a nominal. We don't "do"
-            // untyped in OpenSHAPA.
-            case NOMINAL:
-            default:
-
-                NominalDataValue ndv = new NominalDataValue(db);
-
-                if (!emptyArg) {
-                    ndv.setItsValue(tokens[startI + i]);
-                }
-
-                arguments.add(ndv);
-
-                break;
-            }
+            destValue.getArguments().get(i).set(tokens[startI + i]);
         }
-
-        return arguments;
     }
 
     /**
      * Method to invoke when we encounter a block of text in the CSV file that
      * is the contents of a predicate variable.
      *
-     * @param csvFile
-     *            The csvFile we are currently parsing.
-     * @param dc
-     *            The datacolumn that we will be adding cells too.
-     * @param mve
-     *            The matrix vocab we are using when parsing individual matrix
-     *            elements to put in the spreadsheet.
+     * @param csvFile The csvFile we are currently parsing.
+     * @param var The variable that we will be adding cells too.
+     * @param arg The matrix template we are using when parsing individual
+     * matrix elements to put in the spreadsheet.
      * @return The next line in the file that is not part of the block of text
-     *         in the CSV file.
-     * @throws IOException
-     *             If unable to read the file correctly.
-     * @throws SystemErrorException
-     *             If unable to update the database with the predicate variable
-     *             data. Changes: Replace call to vocabElement.getFormalArg()
-     *             with call to vocabElement.getFormalArgCopy().
+     * in the CSV file.
+     *
+     * @throws IOException If unable to read the file correctly.
      */
     private String parseMatrixVariable(final BufferedReader csvFile,
-        final DataColumn dc, final MatrixVocabElement mve) throws IOException,
-        SystemErrorException {
+                                       final Variable var,
+                                       final Argument arg) throws IOException {
         String line = csvFile.readLine();
 
         while ((line != null) && Character.isDigit(line.charAt(0))) {
@@ -472,27 +348,17 @@ public final class OpenDatabaseFileC {
             // Split the line into tokens using a comma delimiter.
             String[] tokens = line.split(",");
 
-            // Create the data cell from line in the CSV file.
-            DataCell cell = new DataCell(dc.getDB(), dc.getID(),
-                    dc.getItsMveID());
-
+            Cell newCell = var.createCell();
             // Set the onset and offset from tokens in the line.
-            cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
-            cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
+            newCell.setOnset(tokens[DATA_ONSET]);
+            newCell.setOffset(tokens[DATA_OFFSET]);
 
             // Strip the brackets from the first and last argument.
-            tokens[DATA_INDEX] = tokens[DATA_INDEX].substring(1,
-                    tokens[DATA_INDEX].length());
+            tokens[DATA_INDEX] = tokens[DATA_INDEX].substring(1, tokens[DATA_INDEX].length());
 
             int end = tokens.length - 1;
             tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
-
-            Matrix m = new Matrix(dc.getDB(), mve.getID(),
-                    parseFormalArgs(tokens, DATA_INDEX, dc, mve));
-            cell.setVal(m);
-
-            // Add the populated cell to the database.
-            dc.getDB().appendCell(cell);
+            parseFormalArgs(tokens, DATA_INDEX, var.getVariableType(), (MatrixValue) newCell.getValue());
 
             // Get the next line in the file for reading.
             line = csvFile.readLine();
@@ -506,7 +372,7 @@ public final class OpenDatabaseFileC {
      * is the contents of a variable.
      *
      * @param csvFile The csvFile we are currently parsing.
-     * @param dc The datacolumn that we will be adding cells too.
+     * @param var The variable that we will be adding cells too.
      * @param The populator to use when converting the contents of the cell into
      * a datavalue that can be inserted into the spreadsheet.
      *
@@ -514,13 +380,11 @@ public final class OpenDatabaseFileC {
      * in the CSV file.
      *
      * @throws IOException If unable to read the file correctly.
-     * @throws SystemErrorException If unable to update the database with the
-     * datavalues we are creating from the populator.
      */
     private String parseEntries(final BufferedReader csvFile,
-                                final DataColumn dc,
+                                final Variable var,
                                 final EntryPopulator populator)
-    throws IOException, SystemErrorException {
+    throws IOException {
 
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
@@ -543,22 +407,12 @@ public final class OpenDatabaseFileC {
                 tokens[tokens.length - 1] = content + '\n' + line;
             }
 
-            // Create the data cell from line in the CSV file.
-            DataCell cell = new DataCell(dc.getDB(), dc.getID(),
-                    dc.getItsMveID());
+            Cell newCell = var.createCell();
 
             // Set the onset and offset from tokens in the line.
-            cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
-            cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
-
-            // Insert the datavalue in the cell.
-            long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
-            Matrix m = Matrix.Construct(dc.getDB(), mveId,
-                    populator.createValue(tokens));
-            cell.setVal(m);
-
-            // Add the populated cell to the database.
-            dc.getDB().appendCell(cell);
+            newCell.setOnset(tokens[DATA_ONSET]);
+            newCell.setOffset(tokens[DATA_OFFSET]);
+            populator.populate(tokens, newCell.getValue());
 
             // Get the next line in the file for reading.
             line = csvFile.readLine();
@@ -570,20 +424,17 @@ public final class OpenDatabaseFileC {
     /**
      * Parses the predicate definitions from the CSV file.
      *
-     * @param csvFile
-     *            The buffered reader containing the contents of the CSV file we
-     *            are trying parse.
-     * @param db
-     *            The destination database for the csv file.
+     * @param csvFile The buffered reader containing the contents of the CSV
+     * file we are trying parse.
+     * @param ds The destination datastore for the csv file.
+     *
      * @return The next line to be parsed from the file.
-     * @throws IOException
-     *             If unable to read from the csvFile.
-     * @throws SystemErrorException
-     *             If unable to create the predicate vocab element to add to the
-     *             database.
+     *
+     * @throws IOException If unable to read from the csvFile.
      */
     private String parseDefinitions(final BufferedReader csvFile,
-        final Database db) throws IOException, SystemErrorException {
+                                    final Datastore db)
+    throws IOException {
 
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
@@ -592,6 +443,9 @@ public final class OpenDatabaseFileC {
 
         while ((line != null) && Character.isDigit(line.charAt(0))) {
 
+            /*
+             * TODO Parsing predicates.
+             *
             // Parse arguments - for predicate vocab element.
             String[] token = line.split(":|(?<!\\\\)-");
             PredicateVocabElement pve = new PredicateVocabElement(db,
@@ -602,6 +456,7 @@ public final class OpenDatabaseFileC {
             }
 
             db.addPredVE(pve);
+            */
 
             // Get the next line in the file for reading.
             line = csvFile.readLine();
@@ -613,40 +468,31 @@ public final class OpenDatabaseFileC {
     /**
      * Method to build a formal argument.
      *
-     * @param content
-     *            The string holding the formal argument content to be parsed.
-     * @param db
-     *            The parent database for the formal argument.
+     * @param content The string holding the formal argument content to be parsed.
+     * @param db The parent database for the formal argument.
+     *
      * @return The formal argument.
-     * @throws SystemErrorException
-     *             If unable to create a formal argument from the supplied
-     *             content.
      */
-    private FormalArgument parseFormalArgument(final String content,
-        final Database db) throws SystemErrorException {
-        FormalArgument fa;
+    private Argument parseFormalArgument(final String content) {
+        Argument fa;
         String[] formalArgument = content.split("\\|");
         formalArgument[0] = this.stripEscChars(formalArgument[0]);
 
         // Add text formal argument.
         if (formalArgument[1].equalsIgnoreCase("quote_string")) {
-            fa = new QuoteStringFormalArg(db, "<" + formalArgument[0] + ">");
+            fa = null;
 
         } else if (formalArgument[1].equalsIgnoreCase("integer")) {
-
             // Add integer formal argument.
-            fa = new IntFormalArg(db, "<" + formalArgument[0] + ">");
+            fa = null;
 
         } else if (formalArgument[1].equalsIgnoreCase("float")) {
-
             // Add float formal argument.
-            fa = new FloatFormalArg(db, "<" + formalArgument[0] + ">");
+            fa = null;
 
         } else {
-
-            // BugzID:1703 - Not sure what it is - add default nominal arg,
-            // OpenSHAPA doesn't "do" untyped arguments.
-            fa = new NominalFormalArg(db, "<" + formalArgument[0] + ">");
+            // Add nominal formal argument.
+            fa = new Argument(formalArgument[0], Argument.Type.NOMINAL);
         }
 
         return fa;
@@ -663,15 +509,12 @@ public final class OpenDatabaseFileC {
      * we are parsing.
      *
      * @throws IOException When we are unable to read from the csvFile.
-     * @throws SystemErrorException When we are unable to populate the variable
-     * with information from the CSV file.
-     * @throws LogicErrorException When we are unable to create a new variable
-     * from the CSV file (i.e the variable already exists in the database).
+     * @throws UserWarningException When we are unable to create a new variable.
      */
     private String parseVariable(final BufferedReader csvFile,
                                  final String line,
                                  final Datastore db)
-    throws IOException, SystemErrorException, LogicErrorException {
+    throws IOException, UserWarningException {
         return parseVariable(csvFile, line, db, "#2");
     }
 
@@ -686,17 +529,14 @@ public final class OpenDatabaseFileC {
      * we are parsing.
      *
      * @throws IOException When we are unable to read from the csvFile.
-     * @throws SystemErrorException When we are unable to populate the variable
-     * with information from the CSV file.
-     * @throws LogicErrorException When we are unable to create a new variable
-     * from the CSV file (i.e the variable already exists in the database).
+     *
+     * @throws UserWarningException When we are unable to create variables.
      */
     private String parseVariable(final BufferedReader csvFile,
                                  final String line,
-                                 final Datastore db,
+                                 final Datastore ds,
                                  final String version)
-    throws IOException, SystemErrorException, LogicErrorException {
-
+    throws IOException, UserWarningException {
         // Determine the variable name and type.
         String[] tokens = line.split("\\(");
         String varName = this.stripEscChars(tokens[0].trim());
@@ -733,43 +573,25 @@ public final class OpenDatabaseFileC {
         }
 
         // Create variable to put cells within.
-        MacshapaDatabase legacyDb = ((DeprecatedDatabase) db).getDatabase();
-        Column.isValidColumnName(legacyDb, varName);
-
-        MatrixVocabElement.MatrixType legacyType = getVarType(varType);
-        DataColumn dc = new DataColumn(legacyDb, varName, legacyType);
-        dc.setHidden(!varVisible);
-        dc.setComment(varComment);
-
-        Argument.Type newType;
-        if (legacyType == MatrixVocabElement.MatrixType.MATRIX) {
-            newType = Argument.Type.MATRIX;
-        } else if (legacyType == MatrixVocabElement.MatrixType.NOMINAL) {
-            newType = Argument.Type.NOMINAL;
-        } else {
-            newType = Argument.Type.TEXT;
-        }
-
-        DeprecatedVariable newVar = new DeprecatedVariable(dc, newType);
-        db.addVariable(newVar);
+        //MacshapaDatabase legacyDb = ((DeprecatedDatabase) db).getDatabase();
+        Argument.Type variableType = getVarType(varType);
+        Variable newVar = ds.createVariable(varName, variableType);
+        newVar.setHidden(!varVisible);
 
         // Read text variable.
-        if (getVarType(varType) == MatrixVocabElement.MatrixType.TEXT) {
+        if (variableType == Argument.Type.TEXT) {
             return parseEntries(csvFile,
-                                newVar.getLegacyVariable(),
-                                new PopulateText(legacyDb));
+                                newVar,
+                                new PopulateText());
 
-        } else if (getVarType(varType)
-                == MatrixVocabElement.MatrixType.NOMINAL) {
-
+        } else if (variableType == Argument.Type.NOMINAL) {
             // Read nominal variable.
             return parseEntries(csvFile,
-                                newVar.getLegacyVariable(),
-                                new PopulateNominal(legacyDb));
+                                newVar,
+                                new PopulateNominal());
 
-        } else if (getVarType(varType)
+        }/* else if (getVarType(varType)
                 == MatrixVocabElement.MatrixType.INTEGER) {
-
             // Read integer variable.
             return parseEntries(csvFile,
                                 newVar.getLegacyVariable(),
@@ -780,65 +602,66 @@ public final class OpenDatabaseFileC {
                                 newVar.getLegacyVariable(),
                                 new PopulateFloat(legacyDb));
 
-        } else if (getVarType(varType)
-                == MatrixVocabElement.MatrixType.MATRIX) {
+        }*/ else if (variableType == Argument.Type.MATRIX) {
 
             // Read matrix variable - Build vocab for matrix.
             String[] vocabString = tokens[1].split("(?<!\\\\)-");
 
             // Get the vocab element for the matrix and clean it up to be
             // populated with arguments from the CSV file.
-            MatrixVocabElement mve = legacyDb.getMatrixVE(varName);
-            mve.deleteFormalArg(0);
+            Argument newArg = newVar.getVariableType();
+            //MatrixVocabElement mve = legacyDb.getMatrixVE(varName);
+            //mve.deleteFormalArg(0);
 
             // For each of the formal arguments in the file - parse it and
             // create a formal argument in the matrix vocab element.
             for (String arg : vocabString[1].split(",")) {
-                mve.appendFormalArg(parseFormalArgument(arg, legacyDb));
+                newArg.childArguments.add(parseFormalArgument(arg));
             }
+            newVar.setVariableType(newArg);
 
-            legacyDb.replaceMatrixVE(mve);
-            mve = legacyDb.getMatrixVE(varName);
-
-            return parseMatrixVariable(csvFile, newVar.getLegacyVariable(), mve);
+            return parseMatrixVariable(csvFile, newVar, newArg);
 
             // Read predicate variable.
-        } else if (getVarType(varType)
+        } /*else if (getVarType(varType)
                 == MatrixVocabElement.MatrixType.PREDICATE) {
             return parsePredicateVariable(csvFile, newVar.getLegacyVariable());
-        }
+        }*/
 
         throw new IllegalStateException("Unknown variable type.");
     }
 
     /**
-     * @param type
-     *            The string containing the variable type.
-     * @return The MatrixType of the variable.
+     * @param type The string containing the variable type.
+     *
+     * @return The type of the variable.
      */
-    private MatrixVocabElement.MatrixType getVarType(final String type) {
+    private Argument.Type getVarType(final String type) {
 
         if (type.equalsIgnoreCase("text")) {
-            return MatrixVocabElement.MatrixType.TEXT;
+            return Argument.Type.TEXT;
 
         } else if (type.equalsIgnoreCase("nominal")) {
-            return MatrixVocabElement.MatrixType.NOMINAL;
+            return Argument.Type.NOMINAL;
 
         } else if (type.equalsIgnoreCase("predicate")) {
-            return MatrixVocabElement.MatrixType.PREDICATE;
+            // TODO - support predicate types.
+            return null;
 
         } else if (type.equalsIgnoreCase("matrix")) {
-            return MatrixVocabElement.MatrixType.MATRIX;
+            return Argument.Type.MATRIX;
 
         } else if (type.equalsIgnoreCase("integer")) {
-            return MatrixVocabElement.MatrixType.INTEGER;
+            // TODO - support integer types.
+            return null;
 
         } else if (type.equalsIgnoreCase("float")) {
-            return MatrixVocabElement.MatrixType.FLOAT;
+            // TODO - support float types.
+            return null;
         }
 
-        // Unknown type.
-        return MatrixVocabElement.MatrixType.UNDEFINED;
+        // Error - Unknown type.
+        return null;
     }
 
     /**
@@ -846,37 +669,14 @@ public final class OpenDatabaseFileC {
      * database spreadsheet cells.
      */
     private abstract class EntryPopulator {
-        private Database db;
 
         /**
-         * Constructor.
+         * Populates a DataValue from the supplied array of tokens.
          *
-         * @param targetDB
-         *            The destination database for data values.
+         * @param tokens The tokens to use when building a DataValue.
+         * @param destValue That this populator is filling with content.
          */
-        public EntryPopulator(final Database targetDB) {
-            db = targetDB;
-        }
-
-        /**
-         * @return The database that this populator is filling.
-         */
-        Database getDatabase() {
-            return db;
-        }
-
-        /**
-         * Creates a DataValue from the supplied array of tokens.
-         *
-         * @param tokens
-         *            The tokens to use when building a DataValue.
-         * @return A DataValue that can be used for a new SpreadsheetCell.
-         * @throws SystemErrorException
-         *             When unable to create the DataValue from the supplied
-         *             array of tokens.
-         */
-        abstract DataValue createValue(final String[] tokens)
-            throws SystemErrorException;
+        abstract void populate(final String[] tokens, final Value destValue);
     }
 
     /**
@@ -885,27 +685,14 @@ public final class OpenDatabaseFileC {
     private class PopulateInteger extends EntryPopulator {
 
         /**
-         * Constructor.
+         * Populates a DataValue from the supplied array of tokens.
          *
-         * @param targetDB
-         *            The destination database for integer data values.
+         * @param tokens The tokens to use when building a DataValue.
+         * @param destValue That this populator is filling with content.
          */
-        public PopulateInteger(final Database targetDB) {
-            super(targetDB);
-        }
-
-        /**
-         * Creates a IntDataValue from the supplied array of tokens.
-         *
-         * @param tokens
-         *            The tokens to use when building a IntDataValue
-         * @return A IntDataValue that can be used in a SpreadsheetCell.
-         * @throws SystemErrorException
-         *             When unable to create the IntDataValue from the supplied
-         *             array of tokens.
-         */
-        @Override public DataValue createValue(final String[] tokens)
-            throws SystemErrorException {
+        @Override
+        void populate(final String[] tokens, final Value destValue) {
+            /*
             IntDataValue idv = new IntDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file
@@ -914,6 +701,9 @@ public final class OpenDatabaseFileC {
             }
 
             return idv;
+            */
+
+            // TODO: Support integer values.
         }
     }
 
@@ -923,27 +713,14 @@ public final class OpenDatabaseFileC {
     private class PopulateFloat extends EntryPopulator {
 
         /**
-         * Constructor.
+         * Populates a DataValue from the supplied array of tokens.
          *
-         * @param targetDB
-         *            The destination database for float data values.
+         * @param tokens The tokens to use when building a DataValue.
+         * @param destValue That this populator is filling with content.
          */
-        public PopulateFloat(final Database targetDB) {
-            super(targetDB);
-        }
-
-        /**
-         * Creates a FloatDataValue from the supplied array of tokens.
-         *
-         * @param tokens
-         *            The tokens to use when building a FloatDataValue.
-         * @return A FloatDataValue that can be used in a SpreadsheetCell.
-         * @throws SystemErrorException
-         *             When unable to create the FloatDataValue from the
-         *             supplied array of tokens.
-         */
-        @Override public DataValue createValue(final String[] tokens)
-            throws SystemErrorException {
+        @Override
+        void populate(final String[] tokens, final Value destValue) {
+            /*
             FloatDataValue fdv = new FloatDataValue(getDatabase());
 
             // BugzID:722 - Only populate the value if we have one from the file
@@ -952,6 +729,9 @@ public final class OpenDatabaseFileC {
             }
 
             return fdv;
+            */
+
+            // TODO - Implement.
         }
     }
 
@@ -961,35 +741,17 @@ public final class OpenDatabaseFileC {
     private class PopulateNominal extends EntryPopulator {
 
         /**
-         * Constructor.
+         * Populates a DataValue from the supplied array of tokens.
          *
-         * @param targetDB
-         *            The destination database for nominal data values.
+         * @param tokens The tokens to use when building a DataValue.
+         * @param destValue That this populator is filling with content.
          */
-        public PopulateNominal(final Database targetDB) {
-            super(targetDB);
-        }
-
-        /**
-         * Creates a NominalDataValue from the supplied array of tokens.
-         *
-         * @param tokens
-         *            The tokens to use when building a NominalDataValue.
-         * @return A NominalDataValue that can be used in a SpreadsheetCell.
-         * @throws SystemErrorException
-         *             When unable to create the NominalDataValue from the
-         *             supplied array of tokens.
-         */
-        @Override public DataValue createValue(final String[] tokens)
-            throws SystemErrorException {
-            NominalDataValue ndv = new NominalDataValue(getDatabase());
-
+        @Override
+        void populate(final String[] tokens, final Value destValue) {
             // BugzID:722 - Only populate the value if we have one from the file
             if (tokens.length > DATA_INDEX) {
-                ndv.setItsValue(stripEscChars(tokens[DATA_INDEX]));
+                destValue.set(stripEscChars(tokens[DATA_INDEX]));
             }
-
-            return ndv;
         }
     }
 
@@ -999,29 +761,13 @@ public final class OpenDatabaseFileC {
     private class PopulateText extends EntryPopulator {
 
         /**
-         * Constructor.
+         * Populates a DataValue from the supplied array of tokens.
          *
-         * @param targetDB
-         *            The destination database for the text data values.
+         * @param tokens The tokens to use when building a DataValue.
+         * @param destValue That this populator is filling with content.
          */
-        public PopulateText(final Database targetDB) {
-            super(targetDB);
-        }
-
-        /**
-         * Creates a TextStringDataValue from the supplied array of tokens.
-         *
-         * @param tokens
-         *            The tokens to use when building a TextStringDataValue.
-         * @return A TextStringDataValue that can be used in a SpreadsheetCell.
-         * @throws SystemErrorException
-         *             When unable to create the TextStringDataValue from the
-         *             supplied array of tokens.
-         */
-        @Override public DataValue createValue(final String[] tokens)
-            throws SystemErrorException {
-            TextStringDataValue tsdv = new TextStringDataValue(getDatabase());
-
+        @Override
+        void populate(final String[] tokens, final Value destValue) {
             // BugzID:722 - Only populate the value if we have one from the file
             if (tokens.length > DATA_INDEX) {
                 String text = "";
@@ -1034,10 +780,8 @@ public final class OpenDatabaseFileC {
                     }
                 }
 
-                tsdv.setItsValue(stripEscChars(text));
+                destValue.set(stripEscChars(text));
             }
-
-            return tsdv;
         }
     }
 }

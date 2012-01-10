@@ -15,23 +15,16 @@
 package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
-
-import java.awt.Frame;
-
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
-import org.openshapa.OpenSHAPA;
-
-
 import com.usermetrix.jclient.UserMetrix;
-
+import java.awt.Frame;
 import javax.swing.GroupLayout;
 import javax.swing.LayoutStyle;
-
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.controllers.NewProjectC;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedDatabase;
+import org.openshapa.models.db.DatastoreFactory;
 
 
 /**
@@ -215,7 +208,7 @@ public final class NewProjectV extends OpenSHAPADialog {
             // new spreadsheet.
             s.clearSpreadsheet();
 
-            Datastore ds = new DeprecatedDatabase();
+            Datastore ds = DatastoreFactory.newDatastore();
             ds.setName(getProjectName());
             ds.setTitleNotifier(OpenSHAPA.getApplication());
 

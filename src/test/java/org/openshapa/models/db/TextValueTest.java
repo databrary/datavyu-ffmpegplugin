@@ -40,7 +40,7 @@ public class TextValueTest {
 
     @BeforeMethod
     public void setUp() throws UserWarningException {
-        ds = new DeprecatedDatabase();
+        ds = DatastoreFactory.newDatastore();
         var = ds.createVariable("test", Argument.Type.TEXT);
         cell = var.createCell();
         model = cell.getValue();
