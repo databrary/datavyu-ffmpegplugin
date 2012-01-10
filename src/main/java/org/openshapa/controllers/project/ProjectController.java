@@ -68,12 +68,6 @@ public final class ProjectController {
     /** The current database we are working on. */
     private Datastore db = DatastoreFactory.newDatastore();
 
-    /** The id of the last selected cell. */
-    @Deprecated private long lastSelectedCellID;
-
-    /** The id of the last datacell that was created. */
-    @Deprecated private long lastCreatedColID;
-
     /** The last cell that was created. */
     private Cell lastCreatedCell;
 
@@ -162,16 +156,6 @@ public final class ProjectController {
     }
 
     /**
-     * @return The deprecated database.
-     *
-     * @deprecated Should be using getDB - we are moving away from the legacy
-     * database.
-     */
-    @Deprecated public DeprecatedDatabase getLegacyDB() {
-        return (DeprecatedDatabase) db;
-    }
-
-    /**
      * Sets the datastore to use with this project. This is used when loading a
      * database from file.
      * @param newDS
@@ -226,25 +210,6 @@ public final class ProjectController {
      */
     public void setLastCreatedVariable(final Variable newVariable) {
         lastCreatedVariable = newVariable;
-    }
-
-    /**
-     * Sets the id of the last selected cell to the specified parameter.
-     *
-     * @param newId The id of the newly selected cell.
-     */
-    @Deprecated public void setLastSelectedCellId(final long newId) {
-        lastSelectedCellID = newId;
-    }
-
-    /**
-     * Sets the id of the last created column to the specified parameter.
-     *
-     * @param newId
-     *            The Id of the newly created column.
-     */
-    @Deprecated public void setLastCreatedColId(final long newId) {
-        lastCreatedColID = newId;
     }
 
     /**

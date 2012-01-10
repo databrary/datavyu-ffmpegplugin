@@ -92,7 +92,6 @@ import org.openshapa.undoableedits.RemoveVariableEdit;
 import org.openshapa.undoableedits.RunScriptEdit;
 import org.openshapa.undoableedits.SpreadsheetUndoManager;
 import javax.swing.JOptionPane;
-import org.openshapa.jackrabbit.Jackrabbit;
 
 
 /**
@@ -1001,9 +1000,11 @@ public final class OpenSHAPAView extends FrameView
      * Push Action.
      */
     @Action public void push() {
+/*
         System.out.println("push");
         Jackrabbit jr = Jackrabbit.getJackRabbit();
         jr.push();
+*/
     } 
     
     /**
@@ -1011,8 +1012,10 @@ public final class OpenSHAPAView extends FrameView
      */
     @Action public void pull() {
         System.out.println("pull");
+/*
         Jackrabbit jr = Jackrabbit.getJackRabbit();
         jr.pull();
+*/
     }     
     
     private void resetUndoManager() {
