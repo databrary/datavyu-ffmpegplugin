@@ -136,6 +136,11 @@ import org.openshapa.util.Constants;
         }
     }
 
+    @Override
+    public void canSetUnsaved(final boolean canSet) {
+        legacyDB.canSetUnsaved(canSet);
+    }
+
     @Override public String getName() {
         return legacyDB.getName();
     }

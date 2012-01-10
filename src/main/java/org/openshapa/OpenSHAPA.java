@@ -775,7 +775,7 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         // Allow changes to the database to propagate up and signify db modified
         canSetUnsaved = true;
-        projectController.getLegacyDB().getDatabase().canSetUnsaved(canSetUnsaved);
+        projectController.getDB().canSetUnsaved(canSetUnsaved);
 
         addExitListener(new ExitListenerImpl());
 

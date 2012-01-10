@@ -573,7 +573,6 @@ public final class OpenDatabaseFileC {
         }
 
         // Create variable to put cells within.
-        //MacshapaDatabase legacyDb = ((DeprecatedDatabase) db).getDatabase();
         Argument.Type variableType = getVarType(varType);
         Variable newVar = ds.createVariable(varName, variableType);
         newVar.setHidden(!varVisible);
