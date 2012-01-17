@@ -19,6 +19,6 @@ package org.openshapa.models.db;
  */
 public class DatastoreFactory {
     public static Datastore newDatastore() {
-        return new DeprecatedDatabase();
+        return new MongoDatastore();
     }
 }

@@ -125,7 +125,7 @@ public final class OpenSHAPA extends SingleFrameApplication
 
     /** The view to use when listing all the undoable actions. */
     private UndoHistoryWindow history;
-    
+
     /** The view to use for the quick time video controller. */
     private DataControllerV dataController;
 
@@ -513,8 +513,8 @@ public final class OpenSHAPA extends SingleFrameApplication
 
         OpenSHAPA.getApplication().show(listVarView);
     }
-    
-    
+
+
     /**
      * Action for showing the Undo History.
      */
@@ -523,10 +523,10 @@ public final class OpenSHAPA extends SingleFrameApplication
         SpreadsheetUndoManager undomanager = OpenSHAPA.getApplication().getView().getSpreadsheetUndoManager();
         history = new UndoHistoryWindow(mainFrame, true, undomanager);
         OpenSHAPA.getApplication().show(history);
-    }     
-    
-    
-    
+    }
+
+
+
     /**
      * Action for showing the about window.
      */
@@ -817,8 +817,7 @@ public final class OpenSHAPA extends SingleFrameApplication
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
      *
-     * @param root
-     *            The parent window.
+     * @param root The parent window.
      */
     @Override protected void configureWindow(final java.awt.Window root) {
     }
@@ -934,37 +933,30 @@ public final class OpenSHAPA extends SingleFrameApplication
     /**
      * Main method launching the application.
      *
-     * @param args
-     *            The command line arguments passed to OpenSHAPA.
+     * @param args The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
 
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {
-
             System.setProperty("apple.laf.useScreenMenuBar", "true");
-            System.setProperty(
-                "com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
             System.setProperty("Quaqua.jniIsPreloaded", "true");
 
-            final String jnaLibraryPath = System.getProperty(
-                    "jna.library.path");
-            final StringBuilder newJnaLibraryPath = new StringBuilder(
-                    (jnaLibraryPath != null) ? (jnaLibraryPath + ":") : "");
+            final String jnaLibraryPath = System.getProperty("jna.library.path");
+            final StringBuilder newJnaLibraryPath = new StringBuilder((jnaLibraryPath != null) ? (jnaLibraryPath + ":") : "");
             newJnaLibraryPath.append(
                 "/System/Library/Frameworks/GStreamer.framework/Versions/0.10-"
                 + (com.sun.jna.Platform.is64Bit() ? "x64" : "i386") + "/lib:");
 
             try {
-                newJnaLibraryPath.append(NativeLoader.unpackNativeApp(
-                        "openshapa-nativelibs-osx64-0.2") + ":");
+                newJnaLibraryPath.append(NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.2") + ":");
             } catch (Exception e) {
                 System.err.println("Could not unpack native libraries:");
                 e.printStackTrace();
             }
 
-            System.setProperty("jna.library.path",
-                newJnaLibraryPath.toString());
+            System.setProperty("jna.library.path", newJnaLibraryPath.toString());
         }
 
         launch(OpenSHAPA.class, args);

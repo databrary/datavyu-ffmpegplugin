@@ -252,7 +252,7 @@
       <url>http://usermetrix.com/maven2</url>
       <layout>default</layout>
     </repository>
-    
+
     <repository>
       <id>hello2morrorw</id>
       <url>http://maven.hello2morrow.com/repository</url>
@@ -295,7 +295,7 @@
           <artifactId>openshapa-nativelibs-osx64</artifactId>
           <version>0.2</version> <!--  NB: You'll need to update org.openshapa.OpenSHAPA when this changes. -->
         </dependency>
-        
+
         <dependency>
           <groupId>ch.randelshofer.quaqua</groupId>
           <artifactId>quaqua-osx64</artifactId>
@@ -583,7 +583,7 @@
               <mainClass>org.openshapa.OpenSHAPA</mainClass>
                 <preCp>jna-3.2.7.jar</preCp>
                 <preCp>jruby-engine-1.1.6.jar</preCp>
-                <preCp>database-0.01.jar</preCp>
+                <preCp>mongodb-java-driver-2.7.2.jar</preCp>
                 <preCp>jruby-complete-1.6.5.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>openshapa-lib-0.0.76.jar</preCp>
@@ -635,13 +635,19 @@
         <artifactId>jruby-complete</artifactId>
         <version>1.6.5</version>
     </dependency>
-<!--
+
     <dependency>
-      <groupId>database</groupId>
-      <artifactId>database</artifactId>
-      <version>0.01</version>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-osx64</artifactId>
+        <version>2.0.2</version>
     </dependency>
--->
+
+    <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongo-java-driver</artifactId>
+        <version>2.7.2</version>
+    </dependency>
+
     <dependency>
       <groupId>org.jdesktop</groupId>
       <artifactId>appframework</artifactId>
@@ -727,19 +733,19 @@
     	<artifactId>commons-lang</artifactId>
     	<version>2.5</version>
     </dependency>
-    
+
     <dependency>
       <groupId>quicktime</groupId>
       <artifactId>QTJava</artifactId>
       <version>7</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.rococoa</groupId>
       <artifactId>rococoa-core</artifactId>
       <version>0.5.1x3</version>
     </dependency>
- 
+
     <dependency>
       <groupId>org.rococoa</groupId>
       <artifactId>rococoa-cocoa</artifactId>
@@ -757,66 +763,17 @@
       <artifactId>trove</artifactId>
       <version>2.1.0</version>
     </dependency>
-    
+
     <dependency>
       <groupId>ch.randelshofer.quaqua</groupId>
       <artifactId>quaqua-filechooser-only</artifactId>
       <version>7.0.1</version>
     </dependency>
-    
+
     <dependency>
       <groupId>ca.beq</groupId>
       <artifactId>jregistrykey</artifactId>
       <version>1.4.5</version>
-    </dependency>
-    
-    <!-- Jackrabbit Dependencies -->
-    <dependency>
-      <groupId>javax.jcr</groupId>
-      <artifactId>jcr</artifactId>
-      <version>2.0</version>
-    </dependency>
-   
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-jcr-rmi</artifactId>
-      <version>2.3.0</version>
-    </dependency>               
-
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
-      <version>2.3.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-ocm</artifactId>
-      <version>1.5.3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.5.8</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.5.8</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>1.5.8</version>
     </dependency>
   </dependencies>
 </project>

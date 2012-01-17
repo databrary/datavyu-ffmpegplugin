@@ -425,7 +425,7 @@ implements DatastoreListener,
                 // highlighted cell.
                 SpreadsheetCell cell = columns.get(colID).getCells().get(cellID);
 
-                if (cell.getCellID() == highlightedCell.getCellID()) {
+                if (cell.getCell().equals(highlightedCell.getCell())) {
 
                     // Find column in the desired direction
                     int newColID = colID + direction;
@@ -604,7 +604,7 @@ implements DatastoreListener,
 
         // Reorder the header components
         List<Component> newHeaders = new ArrayList<Component>(Arrays.asList(headerView.getComponents()));
-        
+
         Component sourceHeaderComponent = newHeaders.get(source + 1);
         newHeaders.remove(source + 1);
         newHeaders.add(destination + 1, sourceHeaderComponent);
@@ -612,7 +612,7 @@ implements DatastoreListener,
         headerView.removeAll();
         for (Component header : newHeaders) {
             headerView.add(header);
-        }        
+        }
 
         // Reorder the data components
         List<Component> newData = new ArrayList<Component>(Arrays.asList(mainView.getComponents()));
@@ -632,7 +632,7 @@ implements DatastoreListener,
     public void reorderColumns(List<Long> newOrderVec) {
         // No longer supported.
     }
-    
+
     /**
      * Returns the cells of the supplied column as ordered by the current
      * layout.

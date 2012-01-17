@@ -50,7 +50,6 @@ import com.usermetrix.jclient.UserMetrix;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.CellListener;
 import org.openshapa.models.db.Datastore;
-import org.openshapa.models.db.DeprecatedCell;
 import org.openshapa.models.db.Value;
 
 
@@ -128,9 +127,6 @@ implements MouseListener, FocusListener, CellListener {
 
     private Cell model;
 
-    /** The cellID for retrieving the cell from the database. */
-    private long cellID;
-
     /** selected state of cell. */
     private boolean selected = false;
 
@@ -161,7 +157,6 @@ implements MouseListener, FocusListener, CellListener {
                            final Cell cell,
                            final CellSelectionListener listener) {
 
-        cellID = ((DeprecatedCell) cell).getLegacyCell().getID();
         model = cell;
         setName(this.getClass().getSimpleName());
 
@@ -298,13 +293,6 @@ implements MouseListener, FocusListener, CellListener {
      */
     public Cell getCell() {
         return model;
-    }
-
-    /**
-     * @return CellID of the SpreadsheetCell.
-     */
-    public long getCellID() {
-        return cellID;
     }
 
     /**

@@ -14,22 +14,18 @@
  */
 package org.openshapa.util;
 
+import com.google.common.collect.Iterables;
+import com.sun.jna.Platform;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import com.google.common.collect.Iterables;
-
-import com.sun.jna.Platform;
 
 
 public class NativeLoader {
@@ -46,11 +42,10 @@ public class NativeLoader {
     /**
      * Load the given native library.
      *
-     * @param libName
-     *            Name of the library, extensions (dll, jnilib) removed. OSX
-     *            libraries should have the "lib" suffix removed.
-     * @throws Exception
-     *             If the library cannot be loaded.
+     * @param libName Name of the library, extensions (dll, jnilib) removed. OSX
+     * libraries should have the "lib" suffix removed.
+     *
+     * @throws Exception If the library cannot be loaded.
      */
     public static void LoadNativeLib(final String libName) throws Exception {
         Enumeration<URL> resources;
@@ -58,13 +53,13 @@ public class NativeLoader {
 
         if (System.getProperty("os.name").contains("Mac")) {
             extension = ".jnilib";
-            resources = NativeLoader.class.getClassLoader().getResources("lib"
-                    + libName + extension);
+            resources = NativeLoader.class.getClassLoader()
+                                    .getResources("lib" + libName + extension);
 
         } else {
             extension = ".dll";
-            resources = NativeLoader.class.getClassLoader().getResources(libName
-                    + extension);
+            resources = NativeLoader.class.getClassLoader()
+                                    .getResources(libName + extension);
         }
 
         int count;
@@ -76,7 +71,7 @@ public class NativeLoader {
 
             InputStream in = u.openStream();
             File outfile = new File(System.getProperty("java.io.tmpdir"),
-                    libName + extension);
+                                    libName + extension);
 
             // Create a temporary output location for the library.
             FileOutputStream out = new FileOutputStream(outfile);
@@ -134,19 +129,18 @@ public class NativeLoader {
      * Unpacks a native application to a temporary location so that it can be
      * utilized from within java code.
      *
-     * @param appJar
-     *            The jar containing the native app that you want to unpack.
+     * @param appJar The jar containing the native app that you want to unpack.
      * @return The path of the native app as unpacked to a temporary location.
      *
-     * @throws Exception
-     *             If unable to unpack the native app to a temporary location.
+     * @throws Exception If unable to unpack the native app to a temporary
+     * location.
      */
     public static String unpackNativeApp(final String appJar) throws Exception {
         final String nativeLibraryPath;
 
         if (nativeLibFolder == null) {
             nativeLibraryPath = System.getProperty("java.io.tmpdir")
-                + UUID.randomUUID().toString() + "nativelibs";
+                                + UUID.randomUUID().toString() + "nativelibs";
             nativeLibFolder = new File(nativeLibraryPath);
 
             if (!nativeLibFolder.exists()) {
@@ -157,9 +151,7 @@ public class NativeLoader {
         // Search the class path for the application jar.
         JarFile jar = null;
 
-        for (String s
-            : System.getProperty("java.class.path").split(File.pathSeparator)) {
-
+        for (String s : System.getProperty("java.class.path").split(File.pathSeparator)) {
             // Success! We found a matching jar.
             if (s.endsWith(appJar + ".jar")) {
                 jar = new JarFile(s);
@@ -173,7 +165,6 @@ public class NativeLoader {
 
             while (entries.hasMoreElements()) {
                 JarEntry inFile = entries.nextElement();
-
                 File outFile = new File(nativeLibFolder, inFile.getName());
 
                 // If the file from the jar is a directory, create it.
@@ -187,7 +178,7 @@ public class NativeLoader {
                     // Create a temporary output location for the library.
                     FileOutputStream out = new FileOutputStream(outFile);
                     BufferedOutputStream dest = new BufferedOutputStream(out,
-                            BUFFER);
+                                                                         BUFFER);
                     int count;
                     byte[] data = new byte[BUFFER];
 
@@ -207,16 +198,13 @@ public class NativeLoader {
             // Unable to find jar file - abort decompression.
         } else {
             System.err.println("Unable to find jar file for unpacking: "
-                + appJar + ". Java classpath is:");
+                               + appJar + ". Java classpath is:");
 
-            for (String s
-                : System.getProperty("java.class.path").split(
-                    File.pathSeparator)) {
+            for (String s : System.getProperty("java.class.path").split(File.pathSeparator)) {
                 System.err.println("    " + s);
             }
 
-            throw new Exception("Unable to find '" + appJar
-                + "' for unpacking.");
+            throw new Exception("Unable to find '" + appJar + "' for unpacking.");
         }
 
         return nativeLibFolder.getAbsolutePath();
@@ -236,8 +224,7 @@ public class NativeLoader {
         }
 
         if ((nativeLibFolder != null) && !nativeLibFolder.delete()) {
-            System.err.println("Unable to delete temp folder: + "
-                + nativeLibFolder);
+            System.err.println("Unable to delete temp folder: + " + nativeLibFolder);
         }
     }
 

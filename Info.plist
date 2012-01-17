@@ -90,7 +90,8 @@
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.6.5/jruby-complete-1.6.5.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
-        <string>$JAVAROOT/repo/database/database/0.01/database-0.01.jar</string>
+        <string>$JAVAROOT/repo/org/mongodb/mongodb-osx64/2.0.2/mongodb-osx64-2.0.2.jar</string>
+        <string>$JAVAROOT/repo/org/mongodb/mongodb-java-driver/2.7.2/mongodb-java-driver-2.7.2.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.76/openshapa-lib-0.0.76.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-gstreamer-java/1.5-SNAPSHOT-a/openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.7/snakeyaml-1.7.jar</string>
