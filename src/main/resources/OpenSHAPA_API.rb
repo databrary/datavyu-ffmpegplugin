@@ -1,9 +1,21 @@
 #-------------------------------------------------------------------
-# OpenSHAPA API v 0.983
+# OpenSHAPA API v 0.993
 
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 0.993 11/28/11 - Fixed typo in Mutex, added in mutex error checking,
+#                  and made all print statements available only when $debug=true
+# 0.992 9/13/11 - CreateMutuallyExclusive now adds proper ordinals on
+# 0.991 8/26/11 - Fixed an edge case where mutexing would miss a cell it should get.
+#                 Also made the function jump times.  Should be MUCH faster.
+# 0.99 7/6/11 - Totally rewrote create_mutually_exclusive function so it is faster
+#                 and now works with point cells.  Also made some fixes in
+#                 preparation for OpenSHAPA 2.00.
+# 0.984 2/16/11 - Fixed a heap error bug in mutex, several bugs with editing
+#                 variable arguments.  Added functions for adding variable
+#                 arguments, and framework for generic print script.  Several
+#                 versions of incremental fixes.
 # 0.98 10/10/10 - Added function to get list of columns, fixed up the import
 #                 Macshapa function.  It should work for most files now.
 # 0.97 8/11/10 -  Added a function to check for valid codes in a variable,
@@ -45,37 +57,23 @@
 require 'java'
 require 'csv'
 require 'time'
+require 'date'
 #require 'ftools'
+import 'org.openshapa.models.db.Cell'
+import 'org.openshapa.models.db.Variable'
+import 'org.openshapa.models.db.Argument'
+import 'org.openshapa.models.db.DataStore'
+import 'org.openshapa.models.db.MatrixValue'
+import 'org.openshapa.models.db.NominalValue'
+import 'org.openshapa.models.db.TextValue'
+import 'org.openshapa.models.db.Value'
 
-import 'org.openshapa.models.db.legacy.Database'
-import 'org.openshapa.models.db.legacy.DataColumn'
-import 'org.openshapa.models.db.legacy.MacshapaDatabase'
-import 'org.openshapa.models.db.legacy.MatrixVocabElement'
-import 'org.openshapa.models.db.legacy.Matrix'
-import 'org.openshapa.models.db.legacy.FloatDataValue'
-import 'org.openshapa.models.db.legacy.IntDataValue'
-import 'org.openshapa.models.db.legacy.TextStringDataValue'
-import 'org.openshapa.models.db.legacy.QuoteStringDataValue'
-import 'org.openshapa.models.db.legacy.UndefinedDataValue'
-import 'org.openshapa.models.db.legacy.NominalDataValue'
-import 'org.openshapa.models.db.legacy.PredDataValue'
-import 'org.openshapa.models.db.legacy.Predicate'
-import 'org.openshapa.models.db.legacy.PredicateVocabElement'
-import 'org.openshapa.models.db.legacy.FloatFormalArg'
-import 'org.openshapa.models.db.legacy.IntFormalArg'
-import 'org.openshapa.models.db.legacy.NominalFormalArg'
-import 'org.openshapa.models.db.legacy.PredFormalArg'
-import 'org.openshapa.models.db.legacy.QuoteStringFormalArg'
-import 'org.openshapa.models.db.legacy.UnTypedFormalArg'
-import 'org.openshapa.models.db.legacy.DBElement'
-import 'org.openshapa.models.db.legacy.TimeStamp'
-import 'org.openshapa.models.db.legacy.DataCell'
-import 'org.openshapa.models.db.legacy.SystemErrorException'
-import 'org.openshapa.models.project.Project'
-import 'org.openshapa.controllers.SaveC'
-import 'org.openshapa.controllers.OpenC'
-import 'org.openshapa.controllers.project.ProjectController'
-include_class(['java.lang.Object', 'java.awt.event.ActionListener', 'javax.swing.JFrame','javax.swing.JLabel','javax.swing.JComboBox','javax.swing.JButton','javax.swing.JPanel','javax.swing.JTable','javax.swing.JTextField', 'java.awt.GridBagLayout', 'java.awt.GridBagConstraints'])
+$debug = false
+def print_debug(*s)
+    if $debug == true
+        print_debug s
+    end
+end
 
 class Cell
 
@@ -116,6 +114,22 @@ class Cell
          i += 1
       end
    end
+
+
+   def change_arg_name(i, new_name)
+      instance_eval "def #{new_name}; return argvals[#{i}]; end"
+   end
+
+   def add_arg(new_name)
+      @argvals << ""
+      i = argvals.length - 1
+      instance_eval "def #{new_name}; return argvals[#{i}]; end"
+   end
+
+   def get_arg(name)
+     return argvals[arglist.index(name)]
+   end
+
 
    #-------------------------------------------------------------------
    # Method name: change_arg
@@ -183,7 +197,7 @@ end
 
 class Variable
 
-   attr_accessor :name, :type, :cells, :arglist, :old_args
+    attr_accessor :name, :type, :cells, :arglist, :old_args, :dirty
 
    #-------------------------------------------------------------------
    # NOTE: This function is not for general use.
@@ -201,7 +215,7 @@ class Variable
       arglist.each do |arg|
          # Regex to delete any character not a-z,0-9,or _
          if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[1].chr)
-            arg = arg[2..arg.length]
+            arg = "_" + arg
          end
          @arglist << arg.gsub(/(\W)+/,"").downcase
       end
@@ -258,19 +272,42 @@ class Variable
    #
    #-------------------------------------------------------------------
    def change_arg_name(old_name, new_name)
-      for c in cells
-         d = Cell.new
+      i = @old_args.index("<"+old_name+">")
+      @old_args[i] = "<"+new_name+">"
+      if ["0","1","2","3","4","5","6","7","8","9"].include?(old_name[1].chr)
+            old_name = "_" + old_name
       end
+      old_name = old_name.gsub(/(\W)+/,"").downcase
+
+      i = @arglist.index(old_name)
+      @arglist[i] = new_name
+      for cell in @cells
+        cell.change_arg_name(i, new_name)
+      end
+
+      @dirty = true
    end
 
-   def sort_cells()
-      cells.sort! { |a,b| a.onset <=> b.onset }
+   def add_arg(name)
+      @old_args << "<"+name+">"
+      if ["0","1","2","3","4","5","6","7","8","9"].include?(name[1].chr)
+            name = "_" + name
+      end
+      name = name.gsub(/(\W)+/,"").downcase
+
+      @arglist << name
+      for cell in @cells
+        cell.add_arg(name)
+      end
+
+      @dirty = true
    end
+
 end
 
 #-------------------------------------------------------------------
 # Method name: getVariable
-# Function: getVariable retrieves a variable from the database and puts it into a Ruby object.
+# Function: getVariable retrieves a variable from the database and print_debug it into a Ruby object.
 # Arguments:
 # => name (required): The OpenSHAPA name of the variable being retrieved
 # Returns:
@@ -283,47 +320,21 @@ def getVariable(name)
    index = -1
 
    # Find the internal database index of the column we are looking for.
-   $db.get_col_order_vector.each do |col_index|
-      if name == $db.get_data_column(col_index).get_name
-         index = col_index
+   $db.getAllVariables().each do |v|
+      if name == variable.getName()
+        variable = v
       end
    end
-
-   #puts "Got column index."
-   #puts index
-
-
-   dc = $db.get_data_column(index)
-   mve = $db.get_matrix_ve(dc.get_its_mve_id)
 
    # Convert each cell into an array and store in an array of arrays
-   cells = Array.new
-   arg_names = Array.new
-
-   if dc.get_its_mve_type == MatrixVocabElement::MatrixType::MATRIX
-      for i in (0 .. (mve.get_num_formal_args - 1))
-         fa = mve.get_formal_arg_copy(i)
-         arg_names << fa.get_farg_name
-      end
-   end
-
-   for i in (1 .. dc.get_num_cells)
-      cell = dc.get_db.get_cell(dc.get_id, i)
-      c = Array.new
-      c << cell.get_onset.get_time
-      c << cell.get_offset.get_time
-      c << cell.get_val.to_escaped_string.tr_s("(", "").tr_s(")", "").split(",")
-      c << i
-      cells << c
-   end
-
+   cells = variable.getCellsTemporally()
 
    v = Variable.new
    v.name = name
    v.old_args = arg_names
-   #v.type = dc.get_its_mve_type
-   v.set_cells(cells, arg_names)
-
+   v.set_cells(cells)
+   v.sort_cells
+   v.dirty = false
 
    return v
 end
@@ -344,86 +355,21 @@ end
 
 def setVariable(name, var)
 
-   # Since this code was already written for three separate values,
-   # I'm just splitting it back up for now.
+  if var.dirty
+    delete_column(name)
+  end
 
-   arg_names = var.old_args
-   cells = Array.new
-   var.cells.each do |cell|
-      c = Array.new
-      c << cell.onset
-      c << cell.offset
-      c << Array.new
-      var.arglist.each do |arg|
-         t = eval "cell.#{arg}"
-         c[2] << t.to_s()
-      end
-      cells << c
-   end
-    print "creating column"
-   # If the column already exists, delete it and build a new one.
-   # If it doesn't, just add a new one.
-   if not $db.col_name_in_use(name)
-      col = DataColumn.new($db, name, MatrixVocabElement::MatrixType::MATRIX)
-      $db.add_column(col)
-   else
-      oldcol = $db.get_column(name)
-      numcells = oldcol.get_num_cells
-      numcells.downto(1) do |i|
-         $db.remove_cell($db.get_cell(oldcol.get_id, i).get_id)
-      end
-      #$db.remove_column(oldcol.get_id)
+  col = $db.getVariable(name)
+  if col != nil
+    # Then we have the column from the DB. Replace the cells and go.
+    for cell in var.cells
+      java_cell = col.createCell()
+      # Now set all of the arguments of the java cell
+    end
+  else
+    # Then we are setting a new column. Make a new variable and write it.
+  end
 
-      #col = DataColumn.new($db, name, MatrixVocabElement::MatrixType::MATRIX)
-      #$db.add_column(col)
-   end
-   # Check if matrix already defined
-   col = $db.get_column(name)
-   mve0 = $db.get_matrix_ve(col.its_mve_id)
-   if mve0.get_num_formal_args() == 1
-      # Setup structure of matrix column
-      mve0 = MatrixVocabElement.new(mve0)
-
-      mve0.delete_formal_arg(0)
-      arg_names.each do |arg|
-         farg = NominalFormalArg.new($db, arg)
-         mve0.append_formal_arg(farg)
-      end
-
-      $db.replace_matrix_ve(mve0)
-   end
-   col = $db.get_column(name)
-   mve0 = $db.get_matrix_ve(col.its_mve_id)
-   matID0 = mve0.get_id()
-   cells.each do |cell|
-       print "writing cell"
-      c = DataCell.new($db, col.get_id, matID0)
-      mat = Matrix.new($db, matID0)
-
-      if cell[0].to_i > 0
-         c.onset = TimeStamp.new(1000, cell[0].to_i)
-      end
-      if cell[1].to_i > 0
-         c.offset = TimeStamp.new(1000, cell[1].to_i)
-      end
-
-      narg = 0
-      cell[2].each do |dv|
-         argid = mve0.get_formal_arg(narg).get_id()
-         if dv == "" or dv == nil
-            a = arg_names[narg]
-            fdv = NominalDataValue.new($db, argid)
-            fdv.clearValue()
-         else
-            fdv = NominalDataValue.new($db, argid, dv)
-         end
-
-         mat.replaceArg(narg,fdv)
-         narg += 1
-      end
-      c.set_val(mat)
-      $db.append_cell(c)
-   end
 end
 
 #-------------------------------------------------------------------
@@ -621,6 +567,8 @@ def add_args_to_var(var, *args)
    return var_new
 end
 
+
+
 #-------------------------------------------------------------------
 # Method name: create_mutually_exclusive
 # Function: Create a new column from two others, mixing their cells together
@@ -640,430 +588,355 @@ end
 # test = create_mutually_exclusive("test", "var1", "var2")
 # setVariable("test",test)
 # -------------------------------------------------------------------
-def create_mutually_exclusive(name, var1name, var2name)
-   if var1name.class == "".class
-      var1 = getVariable(var1name)
-   end
-   if var2name.class == "".class
-      var2 = getVariable(var2name)
-   end
 
-   var1_argprefix = var1.name.gsub(/(\W)+/,"").downcase + "_"
-   var2_argprefix = var2.name.gsub(/(\W)+/,"").downcase + "_"
-   puts var2_argprefix
-
-   var1_argprefix.gsub(".", "")
-   var2_argprefix.gsub(".","")
-
-   v1arglist = var1.arglist.map { |arg| var1_argprefix + arg }
-   v2arglist = var2.arglist.map { |arg| var2_argprefix + arg }
-
-   puts v1arglist, v2arglist
-   args = Array.new
-   args << (var1_argprefix + "ordinal")
-   args += v1arglist
-
-   args << (var2_argprefix + "ordinal")
-   args += v2arglist
-
-   puts "Creating mutex var", var1.arglist
-   mutex = createNewVariable(name, args)
-   puts "Mutex var created"
-
-   # Now we have to go thru var1 and var2 and modify the argument names
-
-   usedV1Cells = Array.new
-   usedV2Cells = Array.new
-   for i in 0..var1.cells.length - 1
-      v1cell = var1.cells[i]
-      prev_over = false
-      within = false
-      next_over = false
-
-      # Figure out the cell relations
-      for v2cell in var2.cells
-         if v1cell.onset > v2cell.onset and v1cell.onset < v2cell.offset \
-            and v1cell.offset > v2cell.offset
-            prev_over = v2cell
-         elsif v2cell.onset >= v1cell.onset and v2cell.onset <= v1cell.offset \
-            and v2cell.offset <= v1cell.offset and v2cell.offset >= v1cell.onset
-            if within == false
-               within = Array.new
-            end
-            within << v2cell
-         elsif v1cell.offset > v2cell.onset and v1cell.offset < v2cell.offset \
-            and v1cell.onset < v2cell.onset
-            next_over = v2cell
-         end
-      end
-      v1_new_onset = v1cell.onset
-      v1_new_offset = 0
-
-      puts "Finding and adding previous crossover cells"
-      # Create the prev cells
-      if prev_over != false
-         # Make the cell that overlaps the beginning of this one
-
-         # This is the overlap cell
-         cell2 = mutex.make_new_cell()
-         cell2.change_arg("onset", v1cell.onset)
-         cell2.change_arg("offset", prev_over.offset)
-         for arg in mutex.arglist
-            v = nil
-            if arg.index(var2_argprefix) == 0
-
-               a = arg.gsub(var2_argprefix, "")
-               puts "Argname:" + arg
-               v = eval "prev_over.#{a}"
-            elsif arg.index(var1_argprefix) == 0
-
-               a = arg.gsub(var1_argprefix, "")
-               puts "Argname:" + arg
-               v = eval "v1cell.#{a}"
-            end
-            cell2.change_arg(arg, v)
-         end
-
-         # cell3 = mutex.make_new_cell()
-         # cell3.change_arg("onset", v1cell.offset)
-         # cell3.change_arg("offset", prev_over.offset)
-         v1_new_onset = prev_over.offset + 1
-
-         printf("PREV V1:on=%d off=%d, cell1:on=%d off=%d\n", \
-                v1cell.onset, v1cell.offset, cell2.onset, cell2.offset)
-
-         # printf("PREV V1:on=%d off=%d, cell1:on=%d off=%d, cell2:on=%d off=%d\n", \
-         #         v1cell.onset, v1cell.offset, cell1.onset, cell1.offset, cell2.onset, cell2.offset)
-
-         usedV2Cells << prev_over
-      end
-
-      puts "Finding and adding cells within cells"
-      if within != false
-         # Make cells for each cell within the main cell
-         for wcell in within
-
-            cell1 = mutex.make_new_cell()
-            cell1.change_arg("onset", wcell.onset)
-            cell1.change_arg("offset", wcell.offset)
-            for arg in mutex.arglist
-               v = nil
-               if arg.index(var2_argprefix) == 0
-                  a = arg.gsub(var2_argprefix, "")
-                  v = eval "wcell.#{a}"
-               elsif arg.index(var1_argprefix) == 0
-               a = arg.gsub(var1_argprefix, "")
-                  v = eval "v1cell.#{a}"
-               end
-               cell1.change_arg(arg, v)
-            end
-
-            printf("WITHIN V2:on=%d off=%d, cell1:on=%d off=%d, new:on=%d, off=:%d\n", \
-                   v1cell.onset, v1cell.offset, cell1.onset, cell1.offset, wcell.onset, wcell.offset)
-
-            usedV2Cells << wcell
-            usedV1Cells << v1cell
-         end
-      end
-
-      puts "Finding and adding next crossing cells for onset V1: onset=" + v1cell.onset.to_s + " off=" + v1cell.offset.to_s
-      if next_over != false
-         # Make cells for cell overlapping end
-         cell1 = mutex.make_new_cell()
-         cell1.change_arg("onset", next_over.onset)
-         cell1.change_arg("offset", v1cell.offset)
-         for arg in mutex.arglist
-            v = nil
-            if arg.index(var2_argprefix) == 0
-               a = arg.gsub(var2_argprefix, "")
-               v = eval "next_over.#{a}"
-            elsif arg.index(var1_argprefix) == 0
-               a = arg.gsub(var1_argprefix, "")
-               v = eval "v1cell.#{a}"
-            end
-            puts arg, v
-            cell1.change_arg(arg, v)
-         end
-
-         # cell2 = mutex.make_new_cell()
-         #       cell2.change_arg("onset", v1cell.offset)
-         #       cell2.change_arg("offset", next_over.offset)
-
-         v1_new_onset = next_over.onset + 1
-
-         usedV2Cells << next_over
-
-         # printf("NEXT V1:on=%d off=%d, cell1:on=%d off=%d, cell2:on=%d off=%d\n", \
-         #        v1cell.onset, v1cell.offset, cell1.onset, cell1.offset, cell2.onset, cell2.offset)
-         printf("NEXT V1:on=%d off=%d, cell1:on=%d off=%d\n", \
-                v1cell.onset, v1cell.offset, cell1.onset, cell1.offset)
-      end
-      if prev_over != false or within != false or next_over != false
-         usedV1Cells << v1cell
-      end
-   end
-
-   puts "Adding V2 within cells"
-   # Now add in the v1 cells that are within v2 cells
-   for i in 0..var2.cells.length - 1
-      within = Array.new
-      v2cell = var2.cells[i]
-
-      for v1cell in var1.cells
-         if v1cell.onset >= v2cell.onset and v1cell.onset <= v2cell.offset \
-            and v1cell.offset <= v2cell.offset and v1cell.offset >= v2cell.onset \
-            and not (v1cell.onset == v2cell.onset and v1cell.offset == v2cell.offset)
-            within << v1cell
-         end
-      end
-
-      if within.length > 0
-         # Make cells for each cell within the main cell
-         for wcell in within
-
-            cell1 = mutex.make_new_cell()
-            cell1.change_arg("onset", wcell.onset)
-            cell1.change_arg("offset", wcell.offset)
-            for arg in mutex.arglist
-               v = nil
-               if arg.index(var1_argprefix) == 0
-
-                  a = arg.gsub(var1_argprefix, "")
-                  v = eval "wcell.#{a}"
-               elsif arg.index(var2_argprefix) == 0
-
-                  a = arg.gsub(var2_argprefix, "")
-                  v = eval "v2cell.#{a}"
-               end
-               cell1.change_arg(arg, v)
-            end
-
-            printf("WITHIN V2:on=%d off=%d, cell1:on=%d off=%d, new:on=%d, off=:%d\n", \
-                   v1cell.onset, v1cell.offset, cell1.onset, cell1.offset, wcell.onset, wcell.offset)
-
-            usedV1Cells << wcell
-            usedV2Cells << v2cell
-         end
-      end
-
-   end
-
-   puts "Erasing dupes."
-   # Erase dupes
-   usedV1Cells.uniq!
-   usedV2Cells.uniq!
-
-   for c in usedV2Cells
-      var2.cells.delete(c)
-   end
-   for c in usedV1Cells
-      var1.cells.delete(c)
-   end
-   for c in var1.cells
-      cell = mutex.make_new_cell()
-      cell.change_arg("onset", c.onset)
-      cell.change_arg("offset", c.offset)
-      for arg in mutex.arglist
-         if arg.index(var1_argprefix) == 0
-
-            puts "C:",arg, v, c.arglist
-
-            a = arg.gsub(var1_argprefix, "")
-            v = eval "c.#{a}"
-            cell.change_arg(arg, v)
-         end
-      end
-   end
-   for c in var2.cells
-      cell = mutex.make_new_cell()
-      cell.change_arg("onset", c.onset)
-      cell.change_arg("offset", c.offset)
-      for arg in mutex.arglist
-         if arg.index(var2_argprefix) == 0
-
-            puts arg, v, c.arglist
-
-            a = arg.gsub(var2_argprefix, "")
-            v = eval "c.#{a}"
-            cell.change_arg(arg, v)
-         end
-      end
-   end
-
-   # Now we sort the cells in mutex so we can
-   # search thru what we have and add in blocks
-   mutex.sort_cells()
-
-   # Calculate and add cells for gaps in v1
-   var1 = getVariable(var1name)
-
-
-   for v1cell in var1.cells
-      dirty = false
-      for i in 0...mutex.cells.length-1
-         if dirty == true
-            mutex.sort_cells()
-            dirty = false
-         end
-         mcell_cur = mutex.cells[i]
-         mcell_next = mutex.cells[i+1]
-         # puts "V1:" + v1cell.onset.to_s + " " + v1cell.offset.to_s
-         # puts mcell_cur.onset.to_s + " " + mcell_cur.offset.to_s \
-         #     + "/" + mcell_next.onset.to_s + " " + mcell_next.offset.to_s
-
-         v1range = (v1cell.onset..v1cell.offset).to_a
-         if v1range.include?(mcell_cur.onset) and \
-            v1range.include?(mcell_cur.offset) and \
-            v1range.include?(mcell_next.onset) and \
-            v1range.include?(mcell_next.offset)
-
-            if mcell_cur.offset + 1 < mcell_next.onset - 1
-               cell = mutex.make_new_cell()
-               cell.change_arg("onset", mcell_cur.offset + 1)
-               cell.change_arg("offset", mcell_next.onset - 1)
-               for arg in mutex.arglist
-                  a = arg.gsub(var1_argprefix, "")
-                  if arg.index(var1_argprefix) == 0
-
-                     puts "ONE SIDE +1-1:", arg, v, cell.onset, cell.offset
-                     v = eval "v1cell.#{a}"
-                     cell.change_arg(arg, v)
-                     dirty = true
-                  end
-               end
-            end
-         elsif v1range.include?(mcell_cur.onset) and \
-            v1range.include?(mcell_cur.offset) and \
-            mcell_next.onset - 1 > mcell_cur.offset
-
-            if mcell_cur.onset == v1cell.onset
-               if mcell_cur.offset + 1 < v1cell.offset
-                  cell = mutex.make_new_cell()
-                  cell.change_arg("onset", mcell_cur.offset + 1)
-                  cell.change_arg("offset", v1cell.offset)
-                  for arg in mutex.arglist
-                     a = arg.gsub(var1_argprefix, "")
-                     if arg.index(var1_argprefix) == 0
-
-                        puts "ONE SIDE ==on:" , arg, v, v1cell.arglist, cell.onset, cell.offset
-                        v = eval "v1cell.#{a}"
-                        cell.change_arg(arg, v)
-                        dirty = true
-                     end
-                  end
-               end
-               # elsif mcell_cur.offset == v1cell.offset
-               #           if v1cell.onset < mcell_cur.onset - 1
-               #             cell = mutex.make_new_cell()
-               #             cell.change_arg("onset", v1cell.onset)
-               #             cell.change_arg("offset", mcell_cur.onset - 1)
-               #             for arg in mutex.arglist
-               #               a = arg.gsub(var1_argprefix, "")
-               #               if arg.include?(var1_argprefix)
-               #                 v = eval "v1cell.#{a}"
-               #                 puts "ONE SIDE ==off:", arg, v, v1cell.onset, v1cell.offset, cell.onset, cell.offset, mcell_cur.onset, mcell_cur.offset
-               #                 cell.change_arg(arg, v)
-               #                 dirty = true
-               #               end
-               #             end
-               #           end
-            end
-         end
-      end
-   end
-
-   mutex.sort_cells()
-   var2 = getVariable(var2name)
-
-   for v2cell in var2.cells
-      dirty = false
-      for i in 0...mutex.cells.length-1
-         if dirty == true
-            mutex.sort_cells()
-            dirty = false
-         end
-         mcell_cur = mutex.cells[i]
-         mcell_next = mutex.cells[i+1]
-         # puts "V2:" + v2cell.onset.to_s + " " + v2cell.offset.to_s
-         # puts mcell_cur.onset.to_s + " " + mcell_cur.offset.to_s \
-         #     + "/" + mcell_next.onset.to_s + " " + mcell_next.offset.to_s
-
-         v2range = (v2cell.onset..v2cell.offset).to_a
-         if v2range.include?(mcell_cur.onset) and \
-            v2range.include?(mcell_cur.offset) and \
-            v2range.include?(mcell_next.onset) and \
-            v2range.include?(mcell_next.offset)
-
-            if mcell_cur.offset + 1 < mcell_next.onset - 1
-               cell = mutex.make_new_cell()
-               cell.change_arg("onset", mcell_cur.offset + 1)
-               cell.change_arg("offset", mcell_next.onset - 1)
-               for arg in mutex.arglist
-                  a = arg.gsub(var2_argprefix, "")
-                  if arg.index(var2_argprefix) == 0
-
-                     v = eval "v2cell.#{a}"
-                     puts "V2 Single:", arg, v, v2cell.arglist, cell.onset, cell.offset
-                     cell.change_arg(arg, v)
-                     dirty = true
-                  end
-               end
-            end
-         elsif v2range.include?(mcell_cur.onset) and \
-            v2range.include?(mcell_cur.offset) and \
-            mcell_next.onset - 1 > mcell_cur.offset
-
-            if mcell_cur.onset == v2cell.onset
-               if mcell_cur.offset + 1 < v2cell.offset
-                  cell = mutex.make_new_cell()
-                  cell.change_arg("onset", mcell_cur.offset + 1)
-                  cell.change_arg("offset", v2cell.offset)
-                  for arg in mutex.arglist
-                     a = arg.gsub(var2_argprefix, "")
-                     if arg.index(var2_argprefix) == 0
-
-                        v = eval "v2cell.#{a}"
-                        puts "V2 Single:",arg, v, v2cell.arglist, cell.onset, cell.offset
-                        cell.change_arg(arg, v)
-                        dirty = true
-                     end
-                  end
-               end
-            end
-            if mcell_next.offset == v2cell.offset
-               if v2cell.onset < mcell_next.onset - 1
-
-
-                  cell = mutex.make_new_cell()
-                  cell.change_arg("onset", v2cell.onset)
-                  cell.change_arg("offset", mcell_next.onset - 1)
-                  for arg in mutex.arglist
-                     a = arg.gsub(var2_argprefix, "")
-                     if arg.index(var2_argprefix) == 0
-
-                        v = eval "v2cell.#{a}"
-                        puts "V2 Single:", arg, v, v2cell.arglist, cell.onset, cell.offset
-                        cell.change_arg(arg, v)
-                        dirty = true
-                     end
-                  end
-               end
-            end
-         end
-      end
-   end
-
-   mutex.sort_cells()
-
-   puts "MUTEX FINISHED"
-
-   return mutex
-
-   # Have it write ordinals in at end
-   # Have it put ordinals of original cells in
-   # Have it have two arguments to name the prefixes for the arguments
-   #
+def combine_columns(name, varnames)
+    stationary_var = varnames[0]
+    for i in 1..varnames.length
+        next_var = varnames[i]
+        create_mutually_exclusive(name, stationary_var, next_var, "")
+    end
 end
+
+def scan_for_bad_cells(col)
+    error = false
+    for cell in col.cells
+        if cell.onset > cell.offset
+            puts "ERROR AT CELL " + cell.ordinal.to_s + " IN COLUMN " + col.name + ", the onset is > than the offset."
+            error = true
+        end
+        if error
+            puts "Please fix these errors, as the script cannot continue until then."
+            exit
+        end
+    end
+end
+
+def get_later_overlapping_cell(col)
+    col.sort_cells()
+    overlapping_cells = Array.new
+    for i in 0..col.cells.length - 2
+        cell1 = col.cells[i]
+        cell2 = col.cells[i+1]
+        if (cell1.onset <= cell2.onset and cell1.offset >= cell2.onset)
+            overlapping_cells << cell2
+        end
+    end
+    return overlapping_cells
+end
+
+def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2_argprefix=nil)
+    if var1name.class == "".class
+        var1 = getVariable(var1name)
+        else
+        var1 = var1name
+    end
+    if var2name.class == "".class
+        var2 = getVariable(var2name)
+        else
+        var2 = var2name
+    end
+
+    scan_for_bad_cells(var1)
+    scan_for_bad_cells(var2)
+
+    for i in 0..var1.cells.length-2
+        cell1 = var1.cells[i]
+        cell2 = var1.cells[i+1]
+        if cell1.offset == cell2.onset
+            puts "WARNING: Found cells with the same onset/offset.  Adjusting onset by 1."
+            cell2.change_arg("onset", cell2.onset+1)
+        end
+    end
+    for cell in var1.cells
+        if cell.offset == 0
+            puts "ERROR: CELL IN " + var1.name + " ORD: " + cell.ordinal.to_s + "HAS BLANK OFFSET, EXITING"
+            exit
+        end
+    end
+
+    for cell in var2.cells
+        if cell.offset == 0
+            puts "ERROR: CELL IN " + var2.name + " ORD: " + cell.ordinal.to_s + "HAS BLANK OFFSET, EXITING"
+            exit
+        end
+    end
+
+    for i in 0..var2.cells.length-2
+        cell1 = var2.cells[i]
+        cell2 = var2.cells[i+1]
+        if cell1.offset == cell2.onset
+            puts "WARNING: Found cells with the same onset/offset.  Adjusting onset by 1."
+            cell2.change_arg("onset", cell2.onset+1)
+        end
+    end
+
+    # Handle special cases where one or both of columns have no cells
+
+    # Handle special case where column has a cell with negative time
+
+    # Get the earliest time between the two cols
+    time1_on = 9999999999
+    time2_on = 9999999999
+
+    time1_off = 0
+    time2_off = 0
+    if var1.cells.length > 0
+        time1_on = var1.cells[0].onset
+        time1_off = var1.cells[var1.cells.length-1].offset
+    end
+    if var2.cells.length > 0
+        time2_on = var2.cells[0].onset
+        time2_off = var2.cells[var2.cells.length-1].offset
+    end
+    start_time = [time1_on, time2_on].min
+
+    # And the end time
+    end_time = [time1_off, time2_off].max
+
+
+    # Create the new variable
+    if var1_argprefix == nil
+        var1_argprefix = var1.name.gsub(/(\W)+/,"").downcase + "_"
+        var1_argprefix.gsub(".", "")
+    end
+    if var2_argprefix == nil
+        var2_argprefix = var2.name.gsub(/(\W)+/,"").downcase + "_"
+        var2_argprefix.gsub(".","")
+    end
+
+    v1arglist = var1.arglist.map { |arg| var1_argprefix + arg }
+    v2arglist = var2.arglist.map { |arg| var2_argprefix + arg }
+
+    puts "NEW ARGUMENT NAMES:", v1arglist, v2arglist
+    args = Array.new
+    args << (var1_argprefix + "ordinal")
+    args += v1arglist
+
+    args << (var2_argprefix + "ordinal")
+    args += v2arglist
+
+    puts "Creating mutex var", var1.arglist
+    mutex = createNewVariable(name, args)
+    puts "Mutex var created"
+
+    # And finally begin creating new cells
+    v1cell = nil
+    v2cell = nil
+    next_v1cell_ind = nil
+    next_v2cell_ind = nil
+
+    time = start_time
+    puts "Start time", start_time
+    puts "End time", end_time
+
+    flag = false
+
+    count = 0
+    while time < end_time
+        print_debug "BEGINNING LOOP AT TIME : " + time.to_s
+        count += 1
+
+
+        if count > 400
+            puts "ERROR: Infinite loop?  Aborting."
+            exit
+        end
+        # Get var1 cell at this time
+        v1cell = nil
+        v2cell = nil
+        next_v1cell_ind = nil
+        next_v2cell_ind = nil
+
+        puts "ON ITERATION ", count
+
+        for i in 0...var1.cells.length
+            v1c = var1.cells[i]
+            if (v1c.onset <= time and v1c.offset > time)
+                v1cell = v1c
+                break
+            end
+        end
+
+        for i in 0...var2.cells.length
+            v2c = var2.cells[i]
+            if (v2c.onset <= time and v2c.offset > time)
+                v2cell = v2c
+                break
+            end
+        end
+
+        new_onset = time
+        print_debug "NEW ONSET TIME:"
+        print_debug new_onset
+
+        if v1cell != nil and v2cell != nil
+            new_offset = [v1cell.offset, v2cell.offset].min
+            # Now create a cell with args from both cells
+            puts "NEW OFFSET for dual cell:", new_offset
+
+            cell = mutex.make_new_cell()
+            cell.change_arg("onset", new_onset)
+            cell.change_arg("offset", new_offset)
+            for arg in mutex.arglist
+                a = arg.gsub(var1_argprefix, "")
+                if arg.index(var1_argprefix) == 0
+                    v = eval "v1cell.#{a}"
+                    cell.change_arg(arg, v)
+                end
+
+                a = arg.gsub(var2_argprefix, "")
+                if arg.index(var2_argprefix) == 0
+                    v = eval "v2cell.#{a}"
+                    cell.change_arg(arg, v)
+                end
+            end
+
+            elsif v1cell != nil and v2cell == nil
+            # Check to see if there is a cell within this one
+            new_offset = v1cell.offset
+            for v2c in var2.cells
+                if (time..v1cell.offset) === v2c.onset
+                    new_offset = v2c.onset - 1
+                    break
+                end
+            end
+            # Now create a cell with args from only v1
+
+            cell = mutex.make_new_cell()
+            cell.change_arg("onset", new_onset)
+            cell.change_arg("offset", new_offset)
+            for arg in mutex.arglist
+                a = arg.gsub(var1_argprefix, "")
+                if arg.index(var1_argprefix) == 0
+                    v = eval "v1cell.#{a}"
+                    cell.change_arg(arg, v)
+                end
+            end
+
+            elsif v1cell == nil and v2cell != nil
+            new_offset = v2cell.offset
+            for v1c in var1.cells
+                if (time..v2cell.offset) === v1c.onset
+                    new_offset = v1c.onset - 1
+                    break
+                end
+            end
+            # Now create a cell with args from only v2
+
+            cell = mutex.make_new_cell()
+            cell.change_arg("onset", new_onset)
+            cell.change_arg("offset", new_offset)
+            for arg in mutex.arglist
+                a = arg.gsub(var2_argprefix, "")
+                if arg.index(var2_argprefix) == 0
+                    v = eval "v2cell.#{a}"
+                    cell.change_arg(arg, v)
+                end
+            end
+        end
+
+        if not flag
+            time = new_offset
+            time += 1
+            flag = true
+            next
+            elsif flag
+            time = new_offset
+            print_debug "AT TIME " + time.to_s
+            #time += 1
+            #next
+            v1jump = nil
+            v2jump = nil
+            print_debug var1
+            print_debug var2
+            for v1c in var1.cells
+                # get next v1c after time
+                if v1c.onset > time
+                    v1jump = v1c.onset
+                    break
+                    elsif v1c.offset > time
+                    v1jump = v1c.offset
+                    print_debug "FOUND V1 NEXT TIME " + v1jump.to_s + " " + time.to_s
+                    break
+                end
+            end
+            print_debug "Cycling var2"
+            for v2c in var2.cells
+                if v2c.onset > time
+                    v2jump = v2c.onset
+                    break
+                    elsif v2c.offset > time
+                    v2jump = v2c.offset
+                    print_debug "FOUND V2 NEXT TIME " + v2jump.to_s + " " + time.to_s
+                    break
+                end
+            end
+            print_debug "Finding next jump " + v1jump.to_s + " " + v2jump.to_s
+            if v1jump != nil and v2jump != nil
+                time = [v1jump, v2jump].min
+                print_debug "TAKING MIN OF TIME: " + time.to_s
+                elsif v1jump != nil and v2jump == nil
+                time = v1jump
+                print_debug "ASSIGNED NEW TIME FROM V1 CELL " + time.to_s
+                elsif v1jump == nil and v2jump != nil
+                time = v2jump
+                print_debug "ASSIGNED NEW TIME FROM V2 CELL " + time.to_s
+                else
+                time += 1
+            end
+            print_debug "V1J:" + v1jump.to_s + " V2J:" + v2jump.to_s
+            flag = false
+        end
+
+
+        #time = new_offset
+        #puts "ONSET:",new_onset, "OFFSET:",new_offset
+        ## FIND THE NEXT CELL TO JUMP TO IF WE'RE JUST BETWEEN CELLS
+        ## FIND THE ONSET OF THE NEXT CELL
+        #v1jump = nil
+        #v2jump = nil
+        #for v1c in var1.cells
+        #if v1c.offset > time
+        #v1jump = v1c.offset
+        #break
+        #end
+        #end
+        #for v2c in var2.cells
+        #if v2c.offset > time
+        #v2jump = v2c.offset
+        #break
+        #end
+        #end
+
+        #if v1jump == nil and v2jump != nil
+        #time = v2jump
+        #elsif v1jump != nil and v2jump == nil
+        #time = v1jump
+        #elsif v1jump != nil and v2jump != nil
+        #time = [v1jump, v2jump].min + 1
+        #else
+        #time += 1
+        #next
+        #end
+
+        ##time += 1
+
+        if count == 700
+            print_debug "ERROR MAX ITERATIONS REACHED, POSSIBLE INF LOOP"
+        end
+
+    end
+
+    for i in 0..mutex.cells.length-1
+        c = mutex.cells[i]
+        c.change_arg("ordinal", i+1)
+    end
+    puts "Created a column with ", mutex.cells.length, " cells."
+
+    return mutex
+end
+
+
 
 #-------------------------------------------------------------------
 # Method name: load_db
@@ -1093,7 +966,7 @@ def load_db(filename)
    #
    # Main body of example script:
    #
-   puts "Opening Project: "
+   print_debug "Opening Project: "
 
    # Create the controller that holds all the logic for opening projects and
    # databases.
@@ -1122,13 +995,12 @@ def load_db(filename)
    # If the open went well - query the database, do calculations or whatever
    unless db.nil?
       # This just prints the number of columns in the database.
-      puts "Opened a project with '" + db.get_columns.length.to_s + "' columns!"
+      print_debug "SUCCESSFULLY Opened a project with '" + db.get_columns.length.to_s + "' columns!"
    else
-      puts "Unable to open the project '" + filename + "'"
-      exit
+      print_debug "Unable to open the project '" + filename + "'"
    end
 
-   puts filename + " has been loaded."
+   print_debug filename + " has been loaded."
 
    return db, proj
 end
@@ -1153,7 +1025,7 @@ def save_db(filename)
    #
    # Main body of example script:
    #
-   puts "Saving Database: " + filename
+   print_debug "Saving Database: " + filename
 
    # Create the controller that holds all the logic for opening projects and
    # databases.
@@ -1167,17 +1039,17 @@ def save_db(filename)
    if filename.include?('.csv')
       save_c.save_database(filename, $db)
    else
-      if $pj == nil or $pj.getDatabaseFileName == nil
+      #if $pj == nil or $pj.getDatabaseFileName == nil
          $pj = Project.new()
          $pj.setDatabaseFileName("db")
          dbname = filename[filename.rindex("/")+1..filename.length]
          $pj.setProjectName(dbname)
-      end
+      #end
       save_file = java.io.File.new(filename)
       save_c.save_project(save_file, $pj, $db)
    end
 
-   puts "Save successful."
+   print_debug "Save successful."
 
 end
 
@@ -1214,7 +1086,7 @@ end
 # Example:
 # $db,$pj = load_db("/Users/username/Desktop/test.opf")
 # -------------------------------------------------------------------
-def load_macshapa_db(filename, write_to_gui)
+def load_macshapa_db(filename, write_to_gui, *ignore_vars)
 
 
    # Create a new DB for us to use so we don't touch the GUI... some of these
@@ -1232,8 +1104,11 @@ def load_macshapa_db(filename, write_to_gui)
 
    # Read and split file by lines.  '\r' is used because that is the default
    # format for OS9 files.
-   file = f.gets
-   lines = file.split(/\r/)
+   lines = ""
+   while (line = f.gets)
+       lines += line
+   end
+   lines = lines.split(/[\r\n]/)
 
    # Find the variable names in the file and use these to create and set up
    # our columns.
@@ -1248,7 +1123,9 @@ def load_macshapa_db(filename, write_to_gui)
    while predIndex < varIndex
       l = lines[predIndex].split(/ /)[5]
       varname = l[0..l.index("(") - 1]
-      if varname != "###QueryVar###" and varname != "div" and varname != "qnotes"
+      if varname != "###QueryVar###" and varname != "div" and varname != "qnotes" \
+          and not ignore_vars.include?(varname)
+          print_debug varname
          variables[varname] = l[l.index("(")+1..l.length-2].split(/,/)
          varIdent << l
       end
@@ -1272,7 +1149,7 @@ def load_macshapa_db(filename, write_to_gui)
             # Strip out the ordinal, onset, and offset.  These will be handled on a
             # cell by cell basis.
             if v != "<ord>" and v != "<onset>" and v != "<offset>"
-               #puts v
+               #print_debug v
                farg = NominalFormalArg.new($db, v)
                mve0.append_formal_arg(farg)
             end
@@ -1294,7 +1171,7 @@ def load_macshapa_db(filename, write_to_gui)
       varSection.each do |l|
          line = l.split(/[\t\s]/)
          if line[2] == id
-            #puts varname
+            #print_debug varname
             start = varSection.index(l) + 1
 
             stringCol = false
@@ -1328,6 +1205,7 @@ def load_macshapa_db(filename, write_to_gui)
 
                # Split up cell data
                data = cellData[cellData.length - 1]
+               print_debug data
                if stringCol == false
                   data = data[1..data.length-2]
                   data = data.gsub(/[() ]*/, "")
@@ -1346,13 +1224,15 @@ def load_macshapa_db(filename, write_to_gui)
                   data = Array.new
                   data << nil
                end
-
                # Cycle thru cell data arguments and fill them into the cell matrix
                narg = 0
                data.each do |d|
                   fargid = mve.get_formal_arg(narg).get_id()
-                  d = d.strip()
-                  if d == "" or d == nil or d.index("<") != nil
+                  if d == nil
+                     fdv = NominalDataValue.new($db, fargid)
+                     fdv.clearValue()
+                  elsif d == "" or d.index("<") != nil
+                     d = d.strip()
                      fdv = NominalDataValue.new($db, fargid)
                      fdv.clearValue()
                   else
@@ -1405,11 +1285,11 @@ end
 #  and leave test.opf intact with no modifications.
 # -------------------------------------------------------------------
 def transfer_columns(db1, db2, remove, *varnames)
-   puts "Transfering the following columns from " + db1 + " to " + db2 + ":"
-   puts varnames
+   print_debug "Transfering the following columns from " + db1 + " to " + db2 + ":"
+   print_debug varnames
 
    if remove
-      puts "WARNING: These columns will be deleted from " + db1
+      print_debug "WARNING: These columns will be deleted from " + db1
    end
 
    if db1 == ""
@@ -1439,7 +1319,7 @@ def transfer_columns(db1, db2, remove, *varnames)
       setVariable(varnames[i],vars_to_trans[i])
    end
    if db2 != ""
-      puts "Saving " + db2
+      print_debug "Saving " + db2
       save_db(db2)
    end
 
@@ -1453,12 +1333,12 @@ def transfer_columns(db1, db2, remove, *varnames)
          end
       end
       if db1 != ""
-         puts "Saving " + db1
+         print_debug "Saving " + db1
          save_db(db1)
       end
    end
 
-   puts "Columns transferred successfully."
+   print_debug "Columns transferred successfully."
 end
 
 
@@ -1563,9 +1443,9 @@ def check_rel(main_col, rel_col, match_arg, time_tolerance, *dump_file)
       print str
       if dump_file != nil
          dump_file.write(str)
+         dump_file.flush()
       end
    end
-dump_file.flush()
 end
 
 #-------------------------------------------------------------------
@@ -1600,7 +1480,7 @@ def check_valid_codes(var, dump_file, *arg_code_pairs)
    for i in 0...arg_code_pairs.length
       if i % 2 == 0
          if arg_code_pairs[i].class != "".class
-            puts 'FATAL ERROR in argument/valid code array.  Exiting.  Please check to make sure it is in the format "argumentname", ["valid","codes"]'
+            print_debug 'FATAL ERROR in argument/valid code array.  Exiting.  Please check to make sure it is in the format "argumentname", ["valid","codes"]'
             exit
          end
          arg = arg_code_pairs[i]
@@ -1628,7 +1508,7 @@ def check_valid_codes(var, dump_file, *arg_code_pairs)
       end
    end
    if not errors
-      puts "No errors found."
+      print_debug "No errors found."
    end
 end
 
@@ -1642,20 +1522,72 @@ def getColumnList()
    return col_list
 end
 
-# This requires a column where the first cell in the column is the onset
-# of the sync point, where 0 turns to 1 in the video.  If you just want to
-# match the first motion point with the first frame of video, then leave
-# this argument blank.
-def importDataSource(file, *sync_column)
+def printAllNested(file)
+    columns = getColumnList()
+    columns.sort! # This is just so everything is the same across runs, regardless of column order
+    # Scan each column, getting a list of how many cells the cells of that
+    # contain and how much time the cells of that column fill
 
+    times = Hash.new
+
+    for outer_col in columns
+        collected_time = 0
+        for cell in outer_col.cells
+            collected_time += cell.offset - cell.onset
+        end
+        times[outer_col.name] = collected_time
+    end
+
+    # Now, we want to loop over the columns in the order of the amount of data
+    # that they take up.
 
 end
 
-#-----------------------------------------------------------------
-# USER EDITABLE SECTION: Use this section between begin and end
-# to make your scripts.
-#-----------------------------------------------------------------
+def printCell(cell, file)
+
+end
+
+def smoothColumn(colname, tol=33)
+    col = getVariable(colname)
+    for i in 0..col.cells.length-2
+        curcell = col.cells[i]
+        nextcell = col.cells[i+1]
+
+        if nextcell.onset - curcell.offset < tol
+            nextcell.change_arg("onset", curcell.offset)
+        end
+    end
+    setVariable(colname, col)
+end
+
+###################################################################################
+# USER EDITABLE SECTION.  PLEASE PLACE YOUR SCRIPT BETWEEN BEGIN AND END BELOW.
+# #################################################################################
+
+def getCellFromTime(col, time)
+  for cell in col.cells
+    if cell.onset <= time and cell.offset >= time
+      return cell
+    end
+  end
+  return nil
+end
+
+def printCellArgs(cell)
+  s = Array.new
+  s << cell.ordinal.to_s
+  s << cell.onset.to_s
+  s << cell.offset.to_s
+  for arg in cell.arglist
+    s << cell.get_arg(arg)
+  end
+  return s
+end
 
 begin
+    #$debug = true
+
+
+
 
 end
