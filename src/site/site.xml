@@ -12,7 +12,7 @@
       <item name="Support" href="https://openshapa.org/support" />
       <item name="Issue Database" href="https://openshapa.org/fogbugz/" />
       <item name="Code Coverage" href="http://www.openshapa.org/clover" />
-      <item name="Build Server" href="http://www.openshapa.org/hudson/" />
+      <item name="Source Code" href="https://github.com/OpenSHAPA" />
     </menu>
   </body>
 </project>

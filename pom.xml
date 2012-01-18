@@ -4,7 +4,7 @@
   <groupId>org.openshapa</groupId>
   <artifactId>openshapa</artifactId>
   <packaging>jar</packaging>
-  <version>2.00</version>
+  <version>1.12</version>
   <name>openshapa</name>
   <url>http://openshapa.org</url>
 
@@ -21,28 +21,6 @@
       <id>clinton</id>
       <name>Clinton Freeman</name>
       <email>clinton.freeman@_no_spam_nicta.com.au</email>
-      <organization>NICTA</organization>
-      <organizationUrl>www.nicta.com.au</organizationUrl>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+10</timezone>
-    </developer>
-
-    <developer>
-      <id>John</id>
-      <name>John Mainzer</name>
-      <email>jrm@_no_spam_phoenix.hdfgroup.uiuc.edu</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-6</timezone>
-    </developer>
-
-    <developer>
-      <id>Harold</id>
-      <name>Harold Cruz</name>
-      <email>harold.cruz@_no_spam_nicta.com.au</email>
       <organization>NICTA</organization>
       <organizationUrl>www.nicta.com.au</organizationUrl>
       <roles>
@@ -71,6 +49,28 @@
         <role>Developer</role>
       </roles>
       <timezone>-5</timezone>
+    </developer>
+
+    <developer>
+      <id>John</id>
+      <name>John Mainzer</name>
+      <email>jrm@_no_spam_phoenix.hdfgroup.uiuc.edu</email>
+      <roles>
+        <role>Former Developer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+
+    <developer>
+      <id>Harold</id>
+      <name>Harold Cruz</name>
+      <email>harold.cruz@_no_spam_nicta.com.au</email>
+      <organization>NICTA</organization>
+      <organizationUrl>www.nicta.com.au</organizationUrl>
+      <roles>
+        <role>Former Developer</role>
+      </roles>
+      <timezone>+10</timezone>
     </developer>
 
     <developer>

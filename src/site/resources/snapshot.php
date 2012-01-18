@@ -177,7 +177,14 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 This page contains the latest snapshot builds for OpenSHAPA, they contain the
 very latest development work, and are a little unstable. However we need your
 help to try and test the latest features.
+<br/><br/>
 
+At present we're deprecating a third-party dependency that is incompatible with
+the Open Source license we are using with OpenSHAPA. The development snapshots
+listed below are free of that dependency, and are freely accessible to everyone
+(without password)! However, they are rough around the edges and would love your
+help testing and repairing them. Very soon the development snapshots will match
+the functionality and stability of pre Open Source versions of OpenSHAPA.
 <br/><br/>
 <h3>Development Snapshot Download:</h3>
 <?php
