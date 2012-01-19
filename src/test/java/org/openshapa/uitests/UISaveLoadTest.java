@@ -39,8 +39,6 @@ import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.project.OpenSHAPAProjectRepresenter;
 import org.openshapa.controllers.project.ProjectController;
 
-import database.LogicErrorException;
-import database.SystemErrorException;
 import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.project.Project;
 
@@ -333,9 +331,9 @@ public final class UISaveLoadTest extends OpenSHAPATestClass {
      *             If unable to save file.
      * @throws LogicalErrorException on SaveC exception
      */
-    private void loadTest(final String inputFile, 
+    private void loadTest(final String inputFile,
                           final String expectedOutputFile)
-    throws IOException, LogicErrorException, UserWarningException {
+    throws IOException, UserWarningException {
         final String root = testFolder + "/ui/";
 
 

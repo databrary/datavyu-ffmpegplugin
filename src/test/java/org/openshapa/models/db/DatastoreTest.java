@@ -24,6 +24,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
+import org.testng.annotations.*;
 
 /**
  * Tests for the Datastore interface.
@@ -35,6 +36,16 @@ public class DatastoreTest {
 
     /** The modelListener we are testing. */
     private DatastoreListener modelListener;
+
+    @BeforeClass
+    public void spinUp() {
+        //MongoDatastore.startMongo();
+    }
+
+    @AfterClass
+    public void spinDown() {
+        //MongoDatastore.stopMongo();
+    }
 
     @BeforeMethod
     public void setUp() {
@@ -109,6 +120,6 @@ public class DatastoreTest {
         verify(modelListener, times(0)).variableNameChange(var);
         verify(modelListener, times(0)).variableOrderChanged();
     }
-    
-    
+
+
 }

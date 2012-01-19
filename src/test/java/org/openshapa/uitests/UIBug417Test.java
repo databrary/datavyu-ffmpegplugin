@@ -22,8 +22,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 import org.openshapa.OpenSHAPA;
-
-import database.Column;
+import org.openshapa.models.db.Variable;
 
 import org.testng.Assert;
 
@@ -48,7 +47,7 @@ public final class UIBug417Test extends OpenSHAPATestClass {
      * Resource map to access error messages in resources.
      */
     private ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
-        .getContext().getResourceMap(Column.class);
+        .getContext().getResourceMap(Variable.class);
 
     /**
      * Test creating a variable with the same name. Type is selected randomly

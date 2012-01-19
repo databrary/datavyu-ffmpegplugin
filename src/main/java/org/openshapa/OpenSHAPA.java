@@ -32,6 +32,7 @@ import javax.script.ScriptEngineManager;
 import javax.swing.*;
 import org.jdesktop.application.*;
 import org.openshapa.controllers.project.ProjectController;
+import org.openshapa.models.db.MongoDatastore;
 import org.openshapa.models.db.TitleNotifier;
 import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.project.Project;
@@ -809,6 +810,7 @@ public final class OpenSHAPA extends SingleFrameApplication
      */
     @Override protected void shutdown() {
         NativeLoader.cleanAllTmpFiles();
+        MongoDatastore.stopMongo();
         super.shutdown();
     }
 
@@ -936,6 +938,8 @@ public final class OpenSHAPA extends SingleFrameApplication
      * @param args The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
+        // Spin up the mongo process
+        MongoDatastore.startMongo();
 
         // If we are running on a MAC set some additional properties:
         if (OpenSHAPA.getPlatform() == Platform.MAC) {

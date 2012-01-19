@@ -14,17 +14,15 @@
  */
 package org.openshapa.util;
 
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
 import org.openshapa.OpenSHAPA;
-
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.openshapa.models.db.MongoDatastore;
 
 
 /**
@@ -114,6 +112,7 @@ public class MacHandler {
                         OpenSHAPA.getApplication().getMainFrame().setVisible(
                             false);
                         NativeLoader.cleanAllTmpFiles();
+                        MongoDatastore.stopMongo();
                         UserMetrix.shutdown();
                     }
 
