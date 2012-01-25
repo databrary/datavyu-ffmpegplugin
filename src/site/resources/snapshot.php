@@ -138,7 +138,7 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 				<div id="header">
 					<h1 class="sitename"><span>OpenSHAPA</span></h1>
 					<div class="tagline">
-						Making Research Easier<em> Exploratory Sequential Data Analysis</em>
+						Discovering more, faster<em> Exploratory Sequential Data Analysis</em>
 					</div>
 					<div class="clear"></div>
 				</div>
