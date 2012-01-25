@@ -104,7 +104,7 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
-		<title>OpenSHAPA - Making Research Easier</title>
+		<title>OpenSHAPA - Discovering more, faster</title>
   		<link href="openshapa.css" media="screen" rel="stylesheet" type="text/css" />
   		<!--[if lte IE 6]>
   		  	<link href="openshapa-ie6.css" media="screen" rel="stylesheet" type="text/css" />
@@ -172,6 +172,15 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 					<!-- /sidebar -->
 					<div id="content">
 
+<h2>Why is there a password?</h2>
+At present we're deprecating a third-party dependency that is incompatible with
+the Open Source license we are using with OpenSHAPA (GPLv3). The development snapshots
+listed below are free of that dependency, and are freely accessible to everyone 
+without password! However, they are rough around the edges and we would love your
+help testing and repairing them. Very soon the development snapshots will match
+the functionality and stability of pre Open Source versions of OpenSHAPA.
+<br/><br/>
+
 <h2>Latest snapshot build for release - <?= $matching_release ?></h2>
 <h3>Due <?php print date("jS F o", strtotime($release_date)); ?>:</h3>
 This page contains the latest snapshot builds for OpenSHAPA, they contain the
@@ -179,13 +188,7 @@ very latest development work, and are a little unstable. However we need your
 help to try and test the latest features.
 <br/><br/>
 
-At present we're deprecating a third-party dependency that is incompatible with
-the Open Source license we are using with OpenSHAPA. The development snapshots
-listed below are free of that dependency, and are freely accessible to everyone
-(without password)! However, they are rough around the edges and would love your
-help testing and repairing them. Very soon the development snapshots will match
-the functionality and stability of pre Open Source versions of OpenSHAPA.
-<br/><br/>
+
 <h3>Development Snapshot Download:</h3>
 <?php
 foreach($last_build_file as $file) {
