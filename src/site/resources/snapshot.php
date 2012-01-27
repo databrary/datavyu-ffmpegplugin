@@ -147,16 +147,16 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 					<div id="sidebar">
 						<div id="navigation">
 							<ul id="mainNav">
-								<li><a href="index.html">Introduction</a></li>
+                                                                <li><a href="index.html">Introduction</a></li>
 								<li><a href="http://www.openshapa.org/news">News</a></li>
-								<li class="current"><a href="http://www.openshapa.org/dev/snapshot.php">Development Snapshots</a></li>
-                                                                <li><a href="publications.html">Publications</a></li>
-                                                                <li><a href="workshop.html">Workshop 2011</a></li>
+								<li class="current"><a href="http://www.openshapa.org/snapshot.php">Development Snapshots</a></li>                                                                
 								<li><a href="https://openshapa.org/fogbugz/default.php?W19" target="_blank">User Guide</a></li>
 								<li><a href="https://openshapa.org/fogbugz/default.php?W20" target="_blank">Contributer Guide</a></li>
 								<li><a href="https://openshapa.org/support" target="_blank">Support</a></li>
 								<li><a href="https://openshapa.org/fogbugz/" target="_blank">Issue Database</a></li>
 								<li><a href="https://github.com/OpenSHAPA" target="_blank">Source Code</a></li>
+                                                                <li><a href="workshop.html">Workshop 2011</a></li>
+                                                                <li><a href="https://openshapa.org/share"><b>OpenSHARE</b></a></li>
 							</ul>
 						</div>
 						<div id="sidebar-content">

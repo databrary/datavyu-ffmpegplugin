@@ -4,14 +4,14 @@
     <menu name="OpenSHAPA">
       <item name="Introduction" href="index.html"/>
       <item name="News" href="http://www.openshapa.org/news" />
-      <item name="Development Snapshots" href="http://www.openshapa.org/snapshot.php"/>
-      <item name="Publications" href="publications.html" />
-      <item name="Workshop 2011" href="workshop.html" />      
+      <item name="Development Snapshots" href="http://www.openshapa.org/snapshot.php"/>      
       <item name="User Guide" href="https://openshapa.org/fogbugz/default.php?W19" />
       <item name="Contributor Guide" href="https://openshapa.org/fogbugz/default.php?W20" />
       <item name="Support" href="https://openshapa.org/support" />
       <item name="Issue Database" href="https://openshapa.org/fogbugz/" />
       <item name="Source Code" href="https://github.com/OpenSHAPA" />
+      <item name="Workshop 2011" href="workshop.html" />
+      <item name="OpenSHARE" href="https://openshapa.org/share" />
     </menu>
   </body>
 </project>
