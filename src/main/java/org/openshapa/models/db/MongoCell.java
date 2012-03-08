@@ -1,23 +1,33 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.openshapa.models.db;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import java.util.Vector;
 import org.bson.types.ObjectId;
 
-/**
- *
- * @author jesse
- */
+
 public class MongoCell extends BasicDBObject implements Cell {
     
     DBCollection matrix_value_collection = MongoDatastore.getDB().getCollection("matrix_values");
     DBCollection nominal_value_collection = MongoDatastore.getDB().getCollection("nominal_values");
     DBCollection text_value_collection = MongoDatastore.getDB().getCollection("text_values");
+    
+    Vector<CellListener> listeners = new Vector<CellListener>();
     
     
     public MongoCell() { }
@@ -25,6 +35,7 @@ public class MongoCell extends BasicDBObject implements Cell {
     public MongoCell(ObjectId variable_id, Argument type) {
         this.put("variable_id", variable_id);
         this.put("type", type.type.ordinal());
+        this.put("selected", false);
         
         // Necessary to be given an _id by Mongo
         this.save();
@@ -91,6 +102,10 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOffset(final long newOffset) {
         this.put("offset", newOffset);
+        
+        for(CellListener cl : this.listeners ) {
+            cl.offsetChanged(newOffset);
+        }
     }
     
     /**
@@ -103,6 +118,10 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOffset(final String newOffset) {
         this.put("offset", Long.getLong(newOffset));
+        
+        for(CellListener cl : this.listeners ) {
+            cl.offsetChanged(Long.getLong(newOffset));
+        }
     }
 
     /**
@@ -134,6 +153,10 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOnset(final String newOnset) {
         this.put("onset", Long.getLong(newOnset));
+        
+        for(CellListener cl : this.listeners ) {
+            cl.onsetChanged(Long.getLong(newOnset));
+        }
     }
     
     /**
@@ -145,6 +168,10 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOnset(final long newOnset) {
         this.put("onset", newOnset);
+        
+        for(CellListener cl : this.listeners ) {
+            cl.onsetChanged(newOnset);
+        }
     }
 
     /**
@@ -201,6 +228,10 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setSelected(final boolean selected) {
         this.put("selected", selected);
+        
+        for(CellListener cl : this.listeners ) {
+            cl.selectionChange(selected);
+        }
     }
 
     /**
@@ -219,6 +250,10 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setHighlighted(final boolean highlighted) {
         this.put("highlighted", highlighted);
+        
+        for(CellListener cl : this.listeners ) {
+            cl.highlightingChange(highlighted);
+        }
     }
 
     /**
@@ -226,7 +261,7 @@ public class MongoCell extends BasicDBObject implements Cell {
      */
     @Override
     public void addListener(final CellListener listener) {
-        
+        listeners.add(listener);
     }
 
     /**
@@ -235,7 +270,9 @@ public class MongoCell extends BasicDBObject implements Cell {
      */
     @Override
     public void removeListener(final CellListener listener) {
-        
+        if(listeners.contains(listener)) {
+            listeners.remove(listener);
+        }
     }
 }
 
