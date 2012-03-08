@@ -115,6 +115,10 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         
         cell_collection.save((MongoCell)c);
         
+        for(VariableListener vl : this.listeners ) {
+            vl.cellInserted(c);
+        }
+        
         return c;
     }
     
@@ -126,7 +130,13 @@ public class MongoVariable extends BasicDBObject implements Variable  {
      */
     @Override
     public void removeCell(final Cell cell) {
-        // TODO: removecell
+        DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
+        
+        cell_collection.remove((MongoCell)cell);
+        
+        for(VariableListener vl : this.listeners ) {
+            vl.cellRemoved(cell);
+        }
     }
 
     
