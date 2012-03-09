@@ -30,7 +30,6 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +37,6 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import org.openshapa.util.NativeLoader;
 
 /**
@@ -58,8 +56,9 @@ public class MongoDatastore implements Datastore {
     
     // Only a single instance of the mongo DB exists.
     private static DB mongoDB = null;
-    
-    private Vector<DatastoreListener> dbListeners = new Vector<DatastoreListener>();
+
+    // 
+    private List<DatastoreListener> dbListeners = new ArrayList<DatastoreListener>();
 
     public MongoDatastore () {
         // Clear documents if any.
@@ -273,6 +272,13 @@ public class MongoDatastore implements Datastore {
     public Variable createVariable(final String name, final Argument.Type type)
     throws UserWarningException {
         DBCollection varCollection = mongoDB.getCollection("variables");
+        
+        // Check to make sure the variable name is not already in use:
+        Variable varTest = getVariable(name);
+        if (varTest != null) {
+            throw new UserWarningException("Unable to add variable, one with the same name already exists.");
+        }
+        
         Variable v = new MongoVariable(name, new Argument("arg01", type));
         
         varCollection.save((MongoVariable)v);
