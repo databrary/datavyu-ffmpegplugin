@@ -1,30 +1,44 @@
-/**
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+/*
+ * Copyright (c) 2011 OpenSHAPA Foundation, http://openshapa.org
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package org.openshapa.models.db;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import org.openshapa.util.NativeLoader;
 
 /**
@@ -41,11 +55,16 @@ public class MongoDatastore implements Datastore {
 
     // Only a single instance of the mongo driver exists.
     private static Mongo mongoDriver = null;
+    
+    // Only a single instance of the mongo DB exists.
+    private static DB mongoDB = null;
+    
+    private Vector<DatastoreListener> dbListeners = new Vector<DatastoreListener>();
 
     public MongoDatastore () {
 
     }
-
+    
     /**
      * Spin up the mongo instance so that we can query and do stuff with it.
      */
@@ -60,8 +79,11 @@ public class MongoDatastore implements Datastore {
 
             // Spin up a new mongo instance.
             File mongoD = new File(mongoDir);
+            int port = findFreePort(27019);
+            
             mongoProcess = new ProcessBuilder(f.getAbsolutePath(),
                                               "--dbpath", mongoD.getAbsolutePath(),
+                                              "--port", String.valueOf(port),
                                               "--directoryperdb").start();
             InputStream in = mongoProcess.getInputStream();
             InputStreamReader isr = new InputStreamReader(in);
@@ -73,7 +95,30 @@ public class MongoDatastore implements Datastore {
                 System.err.println(line);
             }
 
-            mongoDriver = new Mongo();
+            System.out.println("Starting mongo driver.");
+            mongoDriver = new Mongo("localhost", port);
+            
+            System.out.println("Getting DB");
+            mongoDriver.dropDatabase("openshapa");
+            mongoDB = mongoDriver.getDB("openshapa");
+            DBCollection varCollection = mongoDB.getCollection("variables");
+            varCollection.setObjectClass(MongoVariable.class);
+            
+            DBCollection cellCollection = mongoDB.getCollection("cells");
+            cellCollection.setObjectClass(MongoCell.class);
+            
+            DBCollection matrixCollection = mongoDB.getCollection("matrix_values");
+            matrixCollection.setObjectClass(MongoMatrixValue.class);
+            
+            DBCollection nominalCollection = mongoDB.getCollection("nominal_values");
+            nominalCollection.setObjectClass(MongoNominalValue.class);
+            
+            DBCollection textCollection = mongoDB.getCollection("text_values");
+            textCollection.setObjectClass(MongoTextValue.class);
+            
+            
+            
+            System.out.println("Got DB");
 
         } catch (Exception e) {
             System.err.println("Unable to fire up the mongo datastore.");
@@ -81,6 +126,23 @@ public class MongoDatastore implements Datastore {
         }
     }
 
+    public static int findFreePort(int port) throws IOException {
+      int free_port = 0;
+      while (free_port == 0) {
+          try {
+              ServerSocket server = new ServerSocket(port);
+              server.close();
+              
+              free_port = port;
+              System.out.println("---Selected port " + String.valueOf(port));
+          } catch (IOException io) {
+              port += 1;
+              System.out.println("---ERROR: Port in use. Trying port " + String.valueOf(port));
+          }
+      }
+      return free_port;
+    }
+    
     public static void stopMongo() {
         try {
             DB db = mongoDriver.getDB("admin");
@@ -92,12 +154,41 @@ public class MongoDatastore implements Datastore {
             mongoProcess.destroy();
         }
     }
+    
+    public static DB getDB() {
+        return mongoDB;
+    }
+    
+    public static DBCollection getCellCollection() {
+        return mongoDB.getCollection("cells");
+    }
+    public static DBCollection getVariableCollection() {
+        return mongoDB.getCollection("variables");
+    }
+    public static DBCollection getMatrixValuesCollection() {
+        return mongoDB.getCollection("matrix_values");
+    }
+    public static DBCollection getNominalValuesCollection() {
+        return mongoDB.getCollection("nominal_values");
+    }
+    public static DBCollection getTextValuesCollection() {
+        return mongoDB.getCollection("text_values");
+    }
+    
 
     @Override
     public List<Variable> getAllVariables() {
-        List<Variable> variables = new ArrayList<Variable>();
-
-        return variables;
+        
+        DBCollection varCollection = mongoDB.getCollection("variables");
+        DBCursor varCursor = varCollection.find();
+        
+        List<Variable> varList = new ArrayList<Variable>();
+        while(varCursor.hasNext()) {
+            MongoVariable v = (MongoVariable)varCursor.next();
+            varList.add(v);
+            
+        }
+        return varList;
     }
 
     @Override
@@ -116,31 +207,73 @@ public class MongoDatastore implements Datastore {
 
     @Override
     public Variable getVariable(String varName) {
-        return null;
+        DBCollection varCollection = mongoDB.getCollection("variables");
+        BasicDBObject query = new BasicDBObject();
+        query.put("name", varName);
+        
+        DBCursor varCursor = varCollection.find(query);
+        
+        if (varCursor.hasNext()) {
+            return (Variable)varCursor.next();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Variable getVariable(Cell cell) {
-        return null;
+        // We need to use a mongo-specific function to do the lookup
+        MongoCell mcell = (MongoCell)cell;
+        
+        // Form the query
+        DBCollection varCollection = mongoDB.getCollection("variables");
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", mcell.getVariableID());
+        
+        DBCursor varCursor = varCollection.find(query);
+        
+        if (varCursor.hasNext()) {
+            return (Variable)varCursor.next();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Variable createVariable(final String name, final Argument.Type type)
     throws UserWarningException {
-        return null;
+        DBCollection varCollection = mongoDB.getCollection("variables");
+        Variable v = new MongoVariable(name, new Argument("arg01", type));
+        
+        varCollection.save((MongoVariable)v);
+        
+        for(DatastoreListener dbl : this.dbListeners ) {
+            dbl.variableAdded(v);
+        }
+
+        return v;
     }
 
     @Override
     @Deprecated
     public void addVariable(final Variable var) {
+
     }
 
     @Override
     public void removeVariable(final Variable var) {
+        DBCollection varCollection = mongoDB.getCollection("variables");
+
+        varCollection.remove((MongoVariable)var);
+
+        for(DatastoreListener dbl : this.dbListeners ) {
+            dbl.variableRemoved(var);
+        }
     }
 
     @Override
     public void removeCell(final Cell cell) {
+        getVariable(cell).removeCell(cell);
     }
 
     @Override
@@ -171,9 +304,13 @@ public class MongoDatastore implements Datastore {
 
     @Override
     public void addListener(final DatastoreListener listener) {
+        dbListeners.add(listener);
     }
 
     @Override
     public void removeListener(final DatastoreListener listener) {
+        if(dbListeners.contains(listener)) {
+            dbListeners.remove(listener);
+        }
     }
 }
