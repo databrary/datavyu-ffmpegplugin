@@ -32,6 +32,13 @@ public final class MongoTextValue extends MongoValue implements TextValue {
     public MongoTextValue(ObjectId parent_id) {
         this.put("value", null);
         this.put("parent_id", parent_id);
+        this.put("name", "val");
+        this.save();
+    }
+    
+    public MongoTextValue(ObjectId parent_id, String name) {
+        this(parent_id);
+        this.put("name", name);
         this.save();
     }
     
@@ -54,6 +61,10 @@ public final class MongoTextValue extends MongoValue implements TextValue {
     
     @Override
     public String toString() {
+        String val = (String)this.get("value");
+        if(val == null) {
+            return (String)this.get("name");
+        }
         return (String)this.get("value");
     }
 }
