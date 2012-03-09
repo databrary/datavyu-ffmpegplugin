@@ -56,6 +56,9 @@ public class MongoDatastore implements Datastore {
     
     // Only a single instance of the mongo DB exists.
     private static DB mongoDB = null;
+    
+    // Name of the datastore - does not need to persist - is used for file names.
+    private String name = "untitled";
 
     // 
     private List<DatastoreListener> dbListeners = new ArrayList<DatastoreListener>();
@@ -314,7 +317,7 @@ public class MongoDatastore implements Datastore {
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
@@ -332,6 +335,7 @@ public class MongoDatastore implements Datastore {
 
     @Override
     public void setName(final String datastoreName) {
+        name = datastoreName;
     }
 
     @Override
