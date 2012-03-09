@@ -151,7 +151,14 @@ public class NativeLoader {
         // Search the class path for the application jar.
         JarFile jar = null;
 
-        for (String s : System.getProperty("java.class.path").split(File.pathSeparator)) {
+        // BugID: 26178921 -- We need to inspect the surefire test class path as
+        // well as the regular class path property so that we can scan dependencies
+        // during tests.
+        String searchPath = System.getProperty("surefire.test.class.path")
+                            + File.pathSeparator
+                            + System.getProperty("java.class.path");
+
+        for (String s : searchPath.split(File.pathSeparator)) {
             // Success! We found a matching jar.
             if (s.endsWith(appJar + ".jar")) {
                 jar = new JarFile(s);
