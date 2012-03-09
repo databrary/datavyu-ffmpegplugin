@@ -156,7 +156,7 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 								<li><a href="https://www.pivotaltracker.com/projects/495691" target="_blank">Issue Database</a></li>
 								<li><a href="https://github.com/OpenSHAPA" target="_blank">Source Code</a></li>
                                                                 <li><a href="workshop.html">Workshop 2011</a></li>
-                                                                <li><a href="https://openshapa.org/share"><b>OpenSHARE</b></a></li>
+                                                                <li><a href="https://openshapa.org/share"><b>Databrary</b></a></li>
 							</ul>
 						</div>
 						<div id="sidebar-content">
