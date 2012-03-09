@@ -90,10 +90,14 @@ public class MongoDatastore implements Datastore {
             BufferedReader br = new BufferedReader(isr);
             String line;
 
-            System.err.println("Output of running is:");
-            while ((line = br.readLine()) != null) {
-                System.err.println(line);
-            }
+            // Commented out because when Mongo is first initialized it seems
+            // to block on waiting for connections, putting this loop to sleep
+            // and preventing the rest of the application from initializing.
+            
+//            System.err.println("Output of running is:");
+//            while ((line = br.readLine()) != null) {
+//                System.err.println(line);
+//            }
 
             System.out.println("Starting mongo driver.");
             mongoDriver = new Mongo("localhost", port);
