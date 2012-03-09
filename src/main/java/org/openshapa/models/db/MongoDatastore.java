@@ -87,17 +87,6 @@ public class MongoDatastore implements Datastore {
                                               "--directoryperdb").start();
             InputStream in = mongoProcess.getInputStream();
             InputStreamReader isr = new InputStreamReader(in);
-            BufferedReader br = new BufferedReader(isr);
-            String line;
-
-            // Commented out because when Mongo is first initialized it seems
-            // to block on waiting for connections, putting this loop to sleep
-            // and preventing the rest of the application from initializing.
-            
-//            System.err.println("Output of running is:");
-//            while ((line = br.readLine()) != null) {
-//                System.err.println(line);
-//            }
 
             System.out.println("Starting mongo driver.");
             mongoDriver = new Mongo("localhost", port);
@@ -198,6 +187,15 @@ public class MongoDatastore implements Datastore {
     @Override
     public List<Variable> getSelectedVariables() {
         List<Variable> selectedVariables = new ArrayList<Variable>();
+
+        DBCollection varCollection = mongoDB.getCollection("variables");
+        BasicDBObject query = new BasicDBObject();
+        query.put("selected", true);
+        DBCursor varCursor = varCollection.find(query);
+
+        while (varCursor.hasNext()) {
+            selectedVariables.add((MongoVariable) varCursor.next());
+        }
 
         return selectedVariables;
     }

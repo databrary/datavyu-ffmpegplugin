@@ -34,9 +34,7 @@ import org.bson.types.ObjectId;
  
  */
 public class MongoVariable extends BasicDBObject implements Variable  {
-    
-//    DB db;
-    
+    // Listeners we need to notify of changes to this variable.
     List<VariableListener> listeners = new ArrayList<VariableListener>();
     
     public MongoVariable() {
@@ -47,7 +45,7 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         this.put("name", name);
         this.put("type", serializeArgument(type));
         this.put("hidden", false);
-        this.put("selected", false);
+        this.put("selected", true);
         
         this.save();
     }

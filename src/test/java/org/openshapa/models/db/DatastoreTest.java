@@ -39,12 +39,12 @@ public class DatastoreTest {
 
     @BeforeClass
     public void spinUp() {
-        //MongoDatastore.startMongo();
+        MongoDatastore.startMongo();
     }
 
     @AfterClass
     public void spinDown() {
-        //MongoDatastore.stopMongo();
+        MongoDatastore.stopMongo();
     }
 
     @BeforeMethod
