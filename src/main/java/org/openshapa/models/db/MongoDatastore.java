@@ -62,7 +62,36 @@ public class MongoDatastore implements Datastore {
     private Vector<DatastoreListener> dbListeners = new Vector<DatastoreListener>();
 
     public MongoDatastore () {
+        // Clear documents if any.
+        DBCollection varCollection = mongoDB.getCollection("variables");
+        DBCursor varCursor = varCollection.find();
+        while (varCursor.hasNext()) {
+            varCollection.remove(varCursor.next());
+        }
 
+        DBCollection cellCollection = mongoDB.getCollection("cells");
+        DBCursor cellCursor = cellCollection.find();
+        while (cellCursor.hasNext()) {
+            cellCollection.remove(cellCursor.next());
+        }
+
+        DBCollection matrixCollection = mongoDB.getCollection("matrix_values");
+        DBCursor matrixCursor = matrixCollection.find();
+        while (matrixCursor.hasNext()) {
+            matrixCollection.remove(matrixCursor.next());
+        }
+
+        DBCollection nominalCollection = mongoDB.getCollection("nominal_values");
+        DBCursor nominalCursor = nominalCollection.find();
+        while (nominalCursor.hasNext()) {
+            nominalCollection.remove(nominalCursor.next());
+        }
+
+        DBCollection textCollection = mongoDB.getCollection("text_values");
+        DBCursor textCursor = textCollection.find();
+        while (textCursor.hasNext()) {
+            textCollection.remove(textCursor.next());
+        }
     }
     
     /**
@@ -167,7 +196,6 @@ public class MongoDatastore implements Datastore {
     public static DBCollection getTextValuesCollection() {
         return mongoDB.getCollection("text_values");
     }
-    
 
     @Override
     public List<Variable> getAllVariables() {
