@@ -188,6 +188,15 @@ public class MongoDatastore implements Datastore {
     public List<Variable> getSelectedVariables() {
         List<Variable> selectedVariables = new ArrayList<Variable>();
 
+        DBCollection varCollection = mongoDB.getCollection("variables");
+        BasicDBObject query = new BasicDBObject();
+        query.put("selected", true);
+        DBCursor varCursor = varCollection.find(query);
+
+        while (varCursor.hasNext()) {
+            selectedVariables.add((MongoVariable) varCursor.next());
+        }
+
         return selectedVariables;
     }
 
