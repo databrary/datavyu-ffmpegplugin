@@ -153,7 +153,7 @@ $raw = file_get_contents($FOGBUGZ_URL."api.php?cmd=logoff&token=".$token);
 								<li><a href="https://openshapa.org/fogbugz/default.php?W19" target="_blank">User Guide</a></li>
 								<li><a href="https://openshapa.org/fogbugz/default.php?W20" target="_blank">Contributer Guide</a></li>
 								<li><a href="https://openshapa.org/support" target="_blank">Support</a></li>
-								<li><a href="https://openshapa.org/fogbugz/" target="_blank">Issue Database</a></li>
+								<li><a href="https://www.pivotaltracker.com/projects/495691" target="_blank">Issue Database</a></li>
 								<li><a href="https://github.com/OpenSHAPA" target="_blank">Source Code</a></li>
                                                                 <li><a href="workshop.html">Workshop 2011</a></li>
                                                                 <li><a href="https://openshapa.org/share"><b>OpenSHARE</b></a></li>
