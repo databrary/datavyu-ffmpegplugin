@@ -19,6 +19,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import java.util.Vector;
 import org.bson.types.ObjectId;
+import java.lang.Math;
 
 
 public class MongoCell extends BasicDBObject implements Cell {
@@ -34,8 +35,11 @@ public class MongoCell extends BasicDBObject implements Cell {
     
     public MongoCell(ObjectId variable_id, Argument type) {
         this.put("variable_id", variable_id);
+        this.put("onset", 0L);
+        this.put("offset", 0L);
         this.put("type", type.type.ordinal());
         this.put("selected", false);
+        this.put("highlighted", false);
         
         // Necessary to be given an _id by Mongo
         this.save();
@@ -68,6 +72,32 @@ public class MongoCell extends BasicDBObject implements Cell {
         return (ObjectId)this.get("variable_id");
     }
     
+//     #onset = float(onset)
+//    #minutes = math.floor((onset/1000.0/60.0))
+//    #seconds = math.floor(onset/1000.0 - (minutes * 60))
+//    #mseconds = math.floor(onset - (minutes*60*1000) - (seconds*1000))
+//    #onset = "{0}_{1}_{2}".format(minutes, seconds, mseconds)
+
+    private String convertMStoTimestamp(long time) {
+        long hours = Math.round(Math.floor((time/1000.0/60.0/60.0)));
+        long minutes = Math.round(Math.floor(time/1000.0/60.0 - (hours * 60)));
+        long seconds = Math.round(Math.floor(time/1000.0 - (hours*60*60) - (minutes * 60)));
+        long mseconds = Math.round(Math.floor(time - (hours *60*60*1000) - (minutes*60*1000) - (seconds*1000)));
+        
+        return String.format("%02d:%02d:%02d:%03d", hours, minutes, seconds, mseconds);
+    }
+    
+    private long convertTimestampToMS(String timestamp) {
+        
+        String[] s = timestamp.split(":");
+        long hours = Long.valueOf(s[0]) * 60 * 60 * 1000;
+        long minutes = Long.valueOf(s[1]) * 60 * 1000;
+        long seconds = Long.valueOf(s[2]) * 1000;
+        long mseconds = Long.valueOf(s[3]);
+        
+        return hours + minutes + seconds + mseconds;
+    }
+    
 
     /**
      * @return the offset timestamp in a HH:mm:ss:SSS format, where HH is 24 hour
@@ -76,7 +106,7 @@ public class MongoCell extends BasicDBObject implements Cell {
      */
     @Override
     public String getOffsetString() {
-        return String.valueOf((Long)this.get("offset"));
+        return convertMStoTimestamp((Long)this.get("offset"));
     }
 
     /**
@@ -103,6 +133,8 @@ public class MongoCell extends BasicDBObject implements Cell {
     public void setOffset(final long newOffset) {
         this.put("offset", newOffset);
         
+        this.save();
+        
         for(CellListener cl : this.listeners ) {
             cl.offsetChanged(newOffset);
         }
@@ -117,10 +149,12 @@ public class MongoCell extends BasicDBObject implements Cell {
      */
     @Override
     public void setOffset(final String newOffset) {
-        this.put("offset", Long.getLong(newOffset));
+        this.put("offset", convertTimestampToMS(newOffset));
+        
+        this.save();
         
         for(CellListener cl : this.listeners ) {
-            cl.offsetChanged(Long.getLong(newOffset));
+            cl.offsetChanged(convertTimestampToMS(newOffset));
         }
     }
 
@@ -140,7 +174,7 @@ public class MongoCell extends BasicDBObject implements Cell {
      */
     @Override
     public String getOnsetString() {
-        return String.valueOf((Long)this.get("onset"));
+        return convertMStoTimestamp((Long)this.get("onset"));
     }
 
     /**
@@ -152,11 +186,15 @@ public class MongoCell extends BasicDBObject implements Cell {
      */
     @Override
     public void setOnset(final String newOnset) {
-        this.put("onset", Long.getLong(newOnset));
+        this.put("onset", convertTimestampToMS(newOnset));
+        
+        this.save();
         
         for(CellListener cl : this.listeners ) {
-            cl.onsetChanged(Long.getLong(newOnset));
+            cl.onsetChanged(convertTimestampToMS(newOnset));
         }
+        
+        this.save();
     }
     
     /**
@@ -168,6 +206,8 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOnset(final long newOnset) {
         this.put("onset", newOnset);
+        
+        this.save();
         
         for(CellListener cl : this.listeners ) {
             cl.onsetChanged(newOnset);
