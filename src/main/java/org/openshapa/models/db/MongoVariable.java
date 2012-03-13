@@ -58,8 +58,8 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         MongoDatastore.getVariableCollection().save(this);
     }
     
-    public int getVariableID() {
-        return (Integer)this.get("_id");
+    public ObjectId getID() {
+        return (ObjectId)this.get("_id");
     }
     
     private BasicDBObject serializeArgument(Argument type) {
@@ -167,7 +167,25 @@ public class MongoVariable extends BasicDBObject implements Variable  {
      * @return The cell.
      */
     public Cell getCellTemporally(final int index) {
-        // TODO: getcellstemp
+        List<Cell> cells = new ArrayList<Cell>();
+        
+        DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
+        BasicDBObject query = new BasicDBObject();
+        BasicDBObject sort = new BasicDBObject();
+
+        query.put("variable_id", this.get("_id"));  // e.g. find all where i > 50
+        sort.put("onset", 1);
+        
+        DBCursor cur = cell_collection.find(query).sort(sort);
+        
+        int i = 0;
+        while(cur.hasNext()) {
+            if(i == index) {
+                return (MongoCell)cur.next();
+            }
+            i++;
+        }
+        
         return null;
     }
 
@@ -187,12 +205,34 @@ public class MongoVariable extends BasicDBObject implements Variable  {
     @Override
     public List<Cell> getCellsTemporally() {
         List<Cell> cells = new ArrayList<Cell>();
+        
+        DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
+        BasicDBObject query = new BasicDBObject();
+        BasicDBObject sort = new BasicDBObject();
 
+        query.put("variable_id", this.get("_id"));  // e.g. find all where i > 50
+        sort.put("onset", 1);
+        
+        DBCursor cur = cell_collection.find(query).sort(sort);
+        
+        while(cur.hasNext()) {
+            cells.add((MongoCell)cur.next());
+        }
+        
         return cells;
     }
 
     @Override
     public boolean contains(final Cell c) {
+        DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
+        DBCursor cur = cell_collection.find((MongoCell)c);
+        
+        if(cur.hasNext()) {
+            MongoCell found = (MongoCell)cur.next();
+            if(found.getVariableID().equals(this.getID())) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -211,6 +251,10 @@ public class MongoVariable extends BasicDBObject implements Variable  {
     public void setHidden(final boolean hidden) {
         this.put("hidden", hidden);
         this.save();
+        
+        for(VariableListener vl : this.listeners ) {
+            vl.visibilityChanged(hidden);
+        }
     }
 
     @Override
@@ -228,6 +272,10 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         // TODO: Add code to check to make sure this name is OK
         this.put("name", newName);
         this.save();
+        
+        for(VariableListener vl : this.listeners ) {
+            vl.nameChanged(newName);
+        }
     }
 
     @Override
