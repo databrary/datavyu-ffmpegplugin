@@ -57,13 +57,20 @@ public class MongoDatastore implements Datastore {
     // Only a single instance of the mongo DB exists.
     private static DB mongoDB = null;
     
+    // The current status of the database.
+    private static boolean running = false;
+    
     // Name of the datastore - does not need to persist - is used for file names.
     private String name = "untitled";
-
+    
     // 
     private List<DatastoreListener> dbListeners = new ArrayList<DatastoreListener>();
 
     public MongoDatastore () {
+        if(!running) {
+            this.startMongo();
+        }
+        
         // Clear documents if any.
         DBCollection varCollection = mongoDB.getCollection("variables");
         DBCursor varCursor = varCollection.find();
@@ -123,8 +130,10 @@ public class MongoDatastore implements Datastore {
             mongoDriver = new Mongo("localhost", port);
             
             System.out.println("Getting DB");
-            mongoDriver.dropDatabase("openshapa");
+            
+            // Start with a clean DB
             mongoDB = mongoDriver.getDB("openshapa");
+            
             DBCollection varCollection = mongoDB.getCollection("variables");
             varCollection.setObjectClass(MongoVariable.class);
             
@@ -143,6 +152,7 @@ public class MongoDatastore implements Datastore {
             
             
             System.out.println("Got DB");
+            running = true;
 
         } catch (Exception e) {
             System.err.println("Unable to fire up the mongo datastore.");
@@ -171,6 +181,7 @@ public class MongoDatastore implements Datastore {
         try {
             DB db = mongoDriver.getDB("admin");
             db.command(new BasicDBObject( "shutdown" , 1  ));
+            running = false;
             mongoDriver.close();
         } catch (Exception e) {
             LOGGER.error("Unable to cleanly take down mongo", e);
