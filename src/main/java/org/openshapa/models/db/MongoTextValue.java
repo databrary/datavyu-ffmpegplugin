@@ -50,8 +50,10 @@ public final class MongoTextValue extends MongoValue implements TextValue {
      */
     @Override
     public void set(final String value) {
-        this.put("value", value);
-        this.save();
+        if(isValid(value)){
+            this.put("value", value);
+            this.save();
+        }
     }
     
     @Override

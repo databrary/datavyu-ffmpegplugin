@@ -44,14 +44,14 @@ public abstract class MongoValue extends BasicDBObject implements Value, Seriali
      * Clears the contents of the value and returns it to a 'null'/Empty state.
      */
     public void clear() {
-        value = null;
+        this.put("value", null);
     }
 
     /**
      * @return True if the value is empty/'null' false otherwise.
      */
     public boolean isEmpty() {
-        if(value == null) {
+        if(this.get("value") == null) {
             return true;
         } else {
             return false;
