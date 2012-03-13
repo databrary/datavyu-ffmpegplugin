@@ -168,10 +168,8 @@ public class MongoDatastore implements Datastore {
               server.close();
               
               free_port = port;
-              System.out.println("---Selected port " + String.valueOf(port));
           } catch (IOException io) {
               port += 1;
-              System.out.println("---ERROR: Port in use. Trying port " + String.valueOf(port));
           }
       }
       return free_port;
@@ -183,6 +181,10 @@ public class MongoDatastore implements Datastore {
             db.command(new BasicDBObject( "shutdown" , 1  ));
             running = false;
             mongoDriver.close();
+            
+            // Sleep for just a little bit before closing. Let everything
+            // finish.
+            Thread.sleep(1000);
         } catch (Exception e) {
             LOGGER.error("Unable to cleanly take down mongo", e);
         } finally {
