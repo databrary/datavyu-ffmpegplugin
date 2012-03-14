@@ -55,6 +55,13 @@ public class MongoVariable extends BasicDBObject implements Variable  {
 
         return result;
     }
+    
+    /**
+     * Removes all the listeners for all the variables.
+     */
+    public static void clearListeners() {
+        allListeners.clear();
+    }
 
     /**
      * Default constructor.

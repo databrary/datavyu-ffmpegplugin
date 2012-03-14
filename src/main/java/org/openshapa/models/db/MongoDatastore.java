@@ -101,6 +101,9 @@ public class MongoDatastore implements Datastore {
         while (textCursor.hasNext()) {
             textCollection.remove(textCursor.next());
         }
+
+        // Clear variable listeners.
+        MongoVariable.clearListeners();
     }
     
     /**
