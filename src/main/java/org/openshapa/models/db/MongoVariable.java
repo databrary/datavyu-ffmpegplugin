@@ -27,20 +27,48 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.bson.types.ObjectId;
 
 /**
- 
+ * Maps a variable object to a mongo powered datastore.
  */
 public class MongoVariable extends BasicDBObject implements Variable  {
-    // Listeners we need to notify of changes to this variable.
-    List<VariableListener> listeners = new ArrayList<VariableListener>();
-    
+    // All the listeners for variables in teh datastore.
+    static Map<ObjectId, List<VariableListener>> allListeners =
+                                new HashMap<ObjectId, List<VariableListener>>();
+
+    /**
+     * @param variableId The ID of the variable we want the listeners for.
+     *
+     * @return The list of listeners for the specified variableId.
+     */
+    private static List<VariableListener> getListeners(ObjectId variableId) {
+        List<VariableListener> result = allListeners.get(variableId);
+
+        if (result == null) {
+            result = new ArrayList<VariableListener>();
+            allListeners.put(variableId, result);
+        }
+
+        return result;
+    }
+
+    /**
+     * Default constructor.
+     */
     public MongoVariable() {
         
     }
-    
+
+    /**
+     * Constructor.
+     *
+     * @param name The name to use for the variable being constructed.
+     * @param type The type to use for the variable being constructed.
+     */
     public MongoVariable(String name, Argument type) {
         this.put("name", name);
         this.put("type", serializeArgument(type));
@@ -49,19 +77,29 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         
         this.save();
     }
-    
+
     /** 
      * Helper method to save this variable to the DB.
      * This must be run after any changes to the variable.
      */
-    public void save() {
+    public final void save() {
         MongoDatastore.getVariableCollection().save(this);
     }
-    
+
+    /**
+     * @return The internal ID (mongo id) for this variable.
+     */
     public ObjectId getID() {
-        return (ObjectId)this.get("_id");
+        return (ObjectId) this.get("_id");
     }
-    
+
+    /**
+     * Serializes the argument into a mongo object.
+     *
+     * @param type The Argument being serialized into a mongo object.
+     *
+     * @return The serialized argument.
+     */
     private BasicDBObject serializeArgument(Argument type) {
         BasicDBObject serial_type = new BasicDBObject();
         
@@ -79,7 +117,14 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         
         return serial_type;
     }
-    
+
+    /**
+     * Deserializes a mongo object into an Argument.
+     *
+     * @param serial_type The serialized argument.
+     *
+     * @return The argument held inside the mongo object.
+     */
     private Argument deserializeArgument(BasicDBObject serial_type) {
         
         String name = (String)serial_type.get("name");
@@ -100,47 +145,32 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         
         return arg;
     }
-    
-    /**
-     * Creates and inserts a cell into the variable.
-     *
-     * @return The newly created cell.
-     */
+
     @Override
     public Cell createCell() {
         Cell c = new MongoCell((ObjectId)this.get("_id"), deserializeArgument((BasicDBObject)this.get("type")));
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
-        
+
         cell_collection.save((MongoCell)c);
-        
-        for(VariableListener vl : this.listeners ) {
+
+        for(VariableListener vl : getListeners(getID()) ) {
             vl.cellInserted(c);
         }
         
         return c;
     }
-    
-    
-    /**
-     * Removes a cell from the variable.
-     *
-     * @param The cell to remove from the variable.
-     */
+
     @Override
     public void removeCell(final Cell cell) {
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
-        
+
         cell_collection.remove((MongoCell)cell);
-        
-        for(VariableListener vl : this.listeners ) {
+
+        for(VariableListener vl : getListeners(getID()) ) {
             vl.cellRemoved(cell);
         }
     }
 
-    
-    /**
-     * @return All the cells stored in the variable.
-     */
     @Override
     public List<Cell> getCells() {
         List<Cell> cells = new ArrayList<Cell>();
@@ -159,16 +189,8 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         return cells;
     }
 
-    /**
-     * Gets the 'index' cell from the variable that has been sorted temporally.
-     *
-     * @param index The index (from first onset to last offset) of the cell.
-     *
-     * @return The cell.
-     */
+    @Override
     public Cell getCellTemporally(final int index) {
-        List<Cell> cells = new ArrayList<Cell>();
-        
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
         BasicDBObject query = new BasicDBObject();
         BasicDBObject sort = new BasicDBObject();
@@ -189,9 +211,6 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         return null;
     }
 
-    /**
-     * @return The type of the variable.
-     */
     @Override
     public Argument getVariableType() {
         return deserializeArgument((BasicDBObject)this.get("type"));
@@ -252,7 +271,7 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         this.put("hidden", hidden);
         this.save();
         
-        for(VariableListener vl : this.listeners ) {
+        for(VariableListener vl : getListeners(getID()) ) {
             vl.visibilityChanged(hidden);
         }
     }
@@ -269,22 +288,21 @@ public class MongoVariable extends BasicDBObject implements Variable  {
 
     @Override
     public void setName(final String newName) throws UserWarningException {
-        // TODO: Add code to check to make sure this name is OK
         this.put("name", newName);
         this.save();
         
-        for(VariableListener vl : this.listeners ) {
+        for(VariableListener vl : getListeners(getID()) ) {
             vl.nameChanged(newName);
         }
     }
 
     @Override
     public void addListener(final VariableListener listener) {
-        listeners.add(listener);
+        getListeners(getID()).add(listener);
     }
 
     @Override
     public void removeListener(final VariableListener listener) {
-        listeners.remove(listener);
+        getListeners(getID()).remove(listener);
     }
 }
