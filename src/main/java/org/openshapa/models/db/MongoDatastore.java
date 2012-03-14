@@ -310,12 +310,6 @@ public class MongoDatastore implements Datastore {
     }
 
     @Override
-    @Deprecated
-    public void addVariable(final Variable var) {
-
-    }
-
-    @Override
     public void removeVariable(final Variable var) {
         DBCollection varCollection = mongoDB.getCollection("variables");
 
