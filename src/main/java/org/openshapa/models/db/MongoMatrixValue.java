@@ -47,13 +47,7 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
         }
         
     }
-    
-    /**
-     * Sets the value, this method leaves the value unchanged if the supplied
-     * input is invalid. Use isValid to test.
-     *
-     * @param value The new content to use for this value.
-     */
+
     @Override
     public void set(final String value) {
         this.put("value", value);
@@ -62,25 +56,23 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
     
     @Override
     public String toString() {
-        String s = "";
+        String result = "";
         List<Value> values = getArguments();
         for(int i = 0; i < values.size(); i++) {
             Value v = values.get(i);
             if (v.toString() == null) {
-                s += "<arg"+String.valueOf(i)+">";
+                result += "<arg"+String.valueOf(i)+">";
             } else {
-                s += v.toString();
+                result += v.toString();
             }
             if (i < values.size() - 1) {
-                s += ",";
+                result += ",";
             }
         }
-        return value;
+
+        return result;
     }
-    
-    /**
-     * @return All the argument values that make up this matrix.
-     */
+
     @Override
     public List<Value> getArguments() {
         List<Value> values = new ArrayList<Value>();
@@ -113,15 +105,6 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
         MongoDatastore.getDB().getCollection("matrix_values").save(this);
     }
 
-    /**
-     * Creates and adds a new argument to the matrix. The name of the new
-     * argument will be 'arg1' if this is the first argument added to the matrix
-     * 'arg2' if the second, and so on.
-     *
-     * @param argType The type of argument to add to the matrix.
-     *
-     * @return The newly created argument that was added to this matrix.
-     */
     @Override
     public Value createArgument(Argument.Type argType) {
         Value val = null;
@@ -134,5 +117,4 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
         this.save();
         return val;
     }
-    
 }

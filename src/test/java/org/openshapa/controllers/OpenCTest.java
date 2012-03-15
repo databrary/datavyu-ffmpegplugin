@@ -114,11 +114,11 @@ public class OpenCTest {
         assertEquals(cells.size(), 1);
         assertEquals(cells.get(0).getValueAsString(), "cellC");
         
-        assertEquals(vars.get(2).isHidden(), false);
+        assertEquals(vars.get(3).isHidden(), false);
         assertEquals(vars.get(3).getName(), "hiddenColumn");
         assertEquals(vars.get(3).getVariableType().type, Argument.Type.TEXT);
         assertEquals(vars.get(3).isHidden(), true);
-        cells = vars.get(0).getCells();
+        cells = vars.get(3).getCells();
         assertEquals(cells.size(), 0);
     }
 }

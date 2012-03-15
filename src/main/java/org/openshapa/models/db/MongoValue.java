@@ -29,27 +29,19 @@ import java.io.Serializable;
 
 public abstract class MongoValue extends BasicDBObject implements Value, Serializable {
     
-     String value;
+    String value;
     
-     /**
-     * @param value The string to test if it is valid.
-     *
-     * @return True if the supplied value is a valid substitute 
-     */
+    @Override
     public boolean isValid(final String value) {
         return true;
     } 
 
-    /**
-     * Clears the contents of the value and returns it to a 'null'/Empty state.
-     */
+    @Override
     public void clear() {
         this.put("value", null);
     }
 
-    /**
-     * @return True if the value is empty/'null' false otherwise.
-     */
+    @Override
     public boolean isEmpty() {
         if(this.get("value") == null) {
             return true;
@@ -60,18 +52,9 @@ public abstract class MongoValue extends BasicDBObject implements Value, Seriali
     
     public abstract void save();
 
-    /**
-     * Sets the value, this method leaves the value unchanged if the supplied
-     * input is invalid. Use isValid to test.
-     *
-     * @param value The new content to use for this value.
-     */
+    @Override
     public abstract void set(final String value);
 
-    /**
-     * @return must override toString in such a way that when isEmpty == true,
-     * toString returns a valid empty value i.e. "<argName>"
-     */
-    
+    @Override
     public abstract String toString();
 }
