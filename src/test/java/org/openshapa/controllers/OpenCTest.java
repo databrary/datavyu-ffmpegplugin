@@ -14,6 +14,7 @@
  */
 package org.openshapa.controllers;
 
+import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
 import java.util.List;
 import org.openshapa.models.db.Datastore;
@@ -21,8 +22,8 @@ import org.openshapa.models.db.Variable;
 import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
-import org.openshapa.models.db.Argument;
-import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.*;
+import org.testng.annotations.*;
 
 /**
  * Tests for opening OpenSHAPA project and CSV files.
@@ -31,6 +32,18 @@ public class OpenCTest {
 
     // The location of the test files.
     private static final String TEST_FOLDER = System.getProperty("testPath");
+
+    @BeforeClass
+    public void spinUp() {
+        com.usermetrix.jclient.Configuration config = new com.usermetrix.jclient.Configuration(2);
+        UserMetrix.initalise(config);
+        UserMetrix.setCanSendLogs(false);
+    }
+
+    @AfterClass
+    public void spinDown() {
+        UserMetrix.shutdown();
+    }
 
     @Test
     public void testLoadCSV() {
@@ -99,7 +112,7 @@ public class OpenCTest {
         assertEquals(vars.get(2).getVariableType().type, Argument.Type.MATRIX);
         cells = vars.get(2).getCells();
         assertEquals(cells.size(), 1);
-        assertEquals(cells.get(2).getValueAsString(), "cellC");
+        assertEquals(cells.get(0).getValueAsString(), "cellC");
         
         assertEquals(vars.get(2).isHidden(), false);
         assertEquals(vars.get(3).getName(), "hiddenColumn");
