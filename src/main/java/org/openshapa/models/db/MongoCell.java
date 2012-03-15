@@ -247,7 +247,6 @@ public class MongoCell extends BasicDBObject implements Cell {
         MongoCell otherC = (MongoCell) other;
         
         if(otherC.getMongoID().toString().equals(this.getMongoID().toString())) {
-            System.out.println("RETURNING TRUE");
             return true;
         } else {
             return false;
