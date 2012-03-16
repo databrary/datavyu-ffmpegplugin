@@ -17,22 +17,38 @@ package org.openshapa.models.db;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
-import java.util.Vector;
 import org.bson.types.ObjectId;
 import java.lang.Math;
+import java.util.*;
 
 
 public class MongoCell extends BasicDBObject implements Cell {
-    
     DBCollection matrix_value_collection = MongoDatastore.getDB().getCollection("matrix_values");
     DBCollection nominal_value_collection = MongoDatastore.getDB().getCollection("nominal_values");
     DBCollection text_value_collection = MongoDatastore.getDB().getCollection("text_values");
-    
-    Vector<CellListener> listeners = new Vector<CellListener>();
-    
-    
+
+    static Map<ObjectId, List<CellListener>> allListeners = new
+                                        HashMap<ObjectId, List<CellListener>>();
+
+    /**
+     * @param cellId The ID of the variable we want the listeners for.
+     *
+     * @return The list of listeners for the specified cellId.
+     */
+    private static List<CellListener> getListeners(ObjectId cellId) {
+        List<CellListener> result = allListeners.get(cellId);
+
+        if (result == null) {
+            result = new ArrayList<CellListener>();
+            allListeners.put(cellId, result);
+        }
+
+        return result;
+    }
+
+
     public MongoCell() { }
-    
+
     public MongoCell(ObjectId variable_id, Argument type) {
         this.put("variable_id", variable_id);
         this.put("onset", 0L);
@@ -40,12 +56,12 @@ public class MongoCell extends BasicDBObject implements Cell {
         this.put("type", type.type.ordinal());
         this.put("selected", false);
         this.put("highlighted", false);
-        
+
         // Necessary to be given an _id by Mongo
         this.save();
-        
+
         // Build argument list from the argument given
-        
+
         if (type.type == Argument.Type.NOMINAL) {
             nominal_value_collection.save(new MongoNominalValue((ObjectId)this.get("_id")));
         } else if (type.type == Argument.Type.TEXT) {
@@ -54,12 +70,12 @@ public class MongoCell extends BasicDBObject implements Cell {
             matrix_value_collection.save(new MongoMatrixValue((ObjectId)this.get("_id"), type));
         }
     }
-    
+
 
     public void save() {
         MongoDatastore.getCellCollection().save(this);
     }
-    
+
     public ObjectId getVariableID() {
         return (ObjectId)this.get("variable_id");
     }
@@ -69,21 +85,21 @@ public class MongoCell extends BasicDBObject implements Cell {
         long minutes = Math.round(Math.floor(time/1000.0/60.0 - (hours * 60)));
         long seconds = Math.round(Math.floor(time/1000.0 - (hours*60*60) - (minutes * 60)));
         long mseconds = Math.round(Math.floor(time - (hours *60*60*1000) - (minutes*60*1000) - (seconds*1000)));
-        
+
         return String.format("%02d:%02d:%02d:%03d", hours, minutes, seconds, mseconds);
     }
-    
+
     private long convertTimestampToMS(String timestamp) {
-        
+
         String[] s = timestamp.split(":");
         long hours = Long.valueOf(s[0]) * 60 * 60 * 1000;
         long minutes = Long.valueOf(s[1]) * 60 * 1000;
         long seconds = Long.valueOf(s[2]) * 1000;
         long mseconds = Long.valueOf(s[3]);
-        
+
         return hours + minutes + seconds + mseconds;
     }
-    
+
 
     @Override
     public String getOffsetString() {
@@ -91,33 +107,31 @@ public class MongoCell extends BasicDBObject implements Cell {
     }
 
     @Override
-    public long getOffset() { 
+    public long getOffset() {
         return (Long)this.get("offset");
     }
-    
-    
+
+
     public void setVariableID(int variable_id) {
         this.put("variable_id", variable_id);
     }
-    
+
     @Override
     public void setOffset(final long newOffset) {
         this.put("offset", newOffset);
-        
         this.save();
-        
-        for(CellListener cl : this.listeners ) {
+
+        for(CellListener cl : getListeners(getID())) {
             cl.offsetChanged(newOffset);
         }
     }
-    
+
     @Override
     public void setOffset(final String newOffset) {
         this.put("offset", convertTimestampToMS(newOffset));
-        
         this.save();
-        
-        for(CellListener cl : this.listeners ) {
+
+        for(CellListener cl : getListeners(getID())) {
             cl.offsetChanged(convertTimestampToMS(newOffset));
         }
     }
@@ -135,23 +149,21 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOnset(final String newOnset) {
         this.put("onset", convertTimestampToMS(newOnset));
-        
         this.save();
-        
-        for(CellListener cl : this.listeners ) {
+
+        for(CellListener cl : getListeners(getID())) {
             cl.onsetChanged(convertTimestampToMS(newOnset));
         }
-        
+
         this.save();
     }
 
     @Override
     public void setOnset(final long newOnset) {
         this.put("onset", newOnset);
-        
         this.save();
-        
-        for(CellListener cl : this.listeners ) {
+
+        for(CellListener cl : getListeners(getID()) ) {
             cl.onsetChanged(newOnset);
         }
     }
@@ -166,7 +178,7 @@ public class MongoCell extends BasicDBObject implements Cell {
         Value value = null;
         BasicDBObject query = new BasicDBObject();
         query.put("parent_id", this.get("_id"));
-        
+
         if((Integer)this.get("type") == Argument.Type.MATRIX.ordinal()) {
             DBCursor cur = matrix_value_collection.find(query);
             if(cur.hasNext()) {
@@ -182,8 +194,8 @@ public class MongoCell extends BasicDBObject implements Cell {
             if(cur.hasNext()) {
                 value = (MongoTextValue)cur.next();
             }
-        } 
-        
+        }
+
         return value;
     }
 
@@ -195,9 +207,18 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setSelected(final boolean selected) {
         this.put("selected", selected);
-        
-        for(CellListener cl : this.listeners ) {
+
+        // If a cell is deselected, it must also not be highlighted.
+        if (!selected) {
+            this.put("highlighted", selected);
+        }
+        this.save();
+
+        for(CellListener cl : getListeners(getID()) ) {
             cl.selectionChange(selected);
+            if (!selected) {
+                cl.highlightingChange(selected);
+            }
         }
     }
 
@@ -209,34 +230,41 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setHighlighted(final boolean highlighted) {
         this.put("highlighted", highlighted);
-        
-        for(CellListener cl : this.listeners ) {
+
+        // If the cell is highlighted, it must also be selected.
+        if (highlighted) {
+            this.put("selected", highlighted);
+        }
+        this.save();
+
+        for(CellListener cl : getListeners(getID()) ) {
             cl.highlightingChange(highlighted);
+            if (highlighted) {
+                cl.selectionChange(highlighted);
+            }
         }
     }
 
     @Override
     public void addListener(final CellListener listener) {
-        listeners.add(listener);
+        getListeners(getID()).add(listener);
     }
 
     @Override
     public void removeListener(final CellListener listener) {
-        if(listeners.contains(listener)) {
-            listeners.remove(listener);
-        }
+        getListeners(getID()).remove(listener);
     }
-    
-    public ObjectId getMongoID() {
+
+    public ObjectId getID() {
         return ((ObjectId)this.get("_id"));
     }
-    
+
     @Override
     public int hashCode() {
-        return this.getMongoID().hashCode();
+        return this.getID().hashCode();
     }
-    
-    @Override 
+
+    @Override
     public boolean equals(Object other) {
         if (this == other) {
             return true;
@@ -245,8 +273,8 @@ public class MongoCell extends BasicDBObject implements Cell {
             return false;
         }
         MongoCell otherC = (MongoCell) other;
-        
-        if(otherC.getMongoID().toString().equals(this.getMongoID().toString())) {
+
+        if(otherC.getID().toString().equals(this.getID().toString())) {
             return true;
         } else {
             return false;

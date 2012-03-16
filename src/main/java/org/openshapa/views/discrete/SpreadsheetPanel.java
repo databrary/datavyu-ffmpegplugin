@@ -290,13 +290,11 @@ implements DatastoreListener,
      */
     public void deselectAll() {
         for (SpreadsheetColumn col : columns) {
-
             if (col.isSelected()) {
                 col.setSelected(false);
             }
 
             for (SpreadsheetCell cell : col.getCells()) {
-
                 if (cell.isSelected()) {
                     cell.setSelected(false);
                 }

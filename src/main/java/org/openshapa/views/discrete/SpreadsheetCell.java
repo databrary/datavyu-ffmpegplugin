@@ -351,7 +351,10 @@ implements MouseListener, FocusListener, CellListener {
      *
      * @param sel The selection state to use when marking the cell. True if the
      * cell is selected, false otherwise.
+     *
+     * @Deprecated should manipulate the model directly, not the view.
      */
+    @Deprecated
     public void selectCellInDB(final boolean sel) {
         // Set the selection within the database.
         model.setSelected(sel);
@@ -372,7 +375,10 @@ implements MouseListener, FocusListener, CellListener {
      *
      * @param isHighlighted The highlighted state of the cell, true when the
      * cell is highlighted false otherwise.
+     *
+     * @Deprecated should manipulate the model directly, not the view.
      */
+    @Deprecated
     public void setHighlighted(final boolean sel) {
         // If selection state is unchanged - exit, we aren't changing anything
         if (highlighted == sel) {
@@ -380,7 +386,7 @@ implements MouseListener, FocusListener, CellListener {
         }
 
         highlighted = sel;
-        selectCellInDB(highlighted);
+        //selectCellInDB(highlighted);
 
         // Update the visual representation of the SpreadsheetCell.
         if (highlighted) {
@@ -403,14 +409,20 @@ implements MouseListener, FocusListener, CellListener {
 
     /**
      * @return True if the cell is highlighted, false otherwise.
+     *
+     * @Deprecated should manipulate the model directly, not the view.
      */
+    @Deprecated
     public boolean isHighlighted() {
         return highlighted;
     }
 
     /**
      * @return True if the cell is filled, false otherwise.
+     *
+     * @Deprecated should manipulate the model directly, not the view.
      */
+    @Deprecated
     public boolean isFilled() {
 
         if (!highlighted && selected) {
@@ -426,7 +438,10 @@ implements MouseListener, FocusListener, CellListener {
      *
      * @param sel  The selection state of the cell, when true the cell is
      * selected false otherwise.
+     *
+     * @Deprecated Should query the model, not the view.
      */
+    @Deprecated
     public void setSelected(final boolean sel) {
         // If selection state is not changing - don't bother doing anything.
         if (selected == sel) {
@@ -434,7 +449,7 @@ implements MouseListener, FocusListener, CellListener {
         }
 
         selected = sel;
-        selectCellInDB(selected);
+        //selectCellInDB(selected);
 
         // Update the visual representation of the SpreadsheetCell.
         if (selected) {
@@ -461,7 +476,10 @@ implements MouseListener, FocusListener, CellListener {
 
     /**
      * @return True if the cell is selected, false otherwise.
+     *
+     * @Deprecated Should query the model, not the view.
      */
+    @Deprecated
     public boolean isSelected() {
         return (selected || highlighted);
     }
@@ -535,11 +553,13 @@ implements MouseListener, FocusListener, CellListener {
 
     @Override
     public void highlightingChange(final boolean isHighlighted) {
+        setHighlighted(isHighlighted);
+        revalidate();
     }
 
     @Override
     public void selectionChange(final boolean isSelected) {
-        selected = isSelected;
+        setSelected(isSelected);
         revalidate();
     }
 

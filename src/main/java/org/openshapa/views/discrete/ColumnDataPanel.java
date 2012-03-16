@@ -207,29 +207,6 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         this.add(nCell);
         viewMap.put(cell, nCell);
         nCell.requestFocus();
-
-//        try {
-//            DataCell dc = (DataCell) db.getCell(cellID);
-//            SpreadsheetCell nCell = new SpreadsheetCell(db, dc, cellSelL);
-//            nCell.setWidth(this.getWidth());
-//            db.registerDataCellListener(dc.getID(), nCell);
-//
-//            Long newOrd = new Long(dc.getOrd());
-//            nCell.setAlignmentX(Component.RIGHT_ALIGNMENT);
-//
-//            if (cells.size() > newOrd.intValue()) {
-//                cells.add(newOrd.intValue() - 1, nCell);
-//                this.add(nCell, newOrd.intValue() - 1);
-//            } else {
-//                cells.add(nCell);
-//                this.add(nCell);
-//            }
-//            viewMap.put(cellID, nCell);
-//
-//            nCell.requestFocus();
-//        } catch (SystemErrorException e) {
-//            LOGGER.error("Problem inserting a new SpreadsheetCell", e);
-//        }
     }
 
     /**

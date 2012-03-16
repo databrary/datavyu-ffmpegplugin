@@ -88,20 +88,18 @@ public final class CreateNewCellC {
      *
      * @param v The variable we are adding a cell to the end of.
      */
-    public void createDefaultCell(final Variable v) {       
+    public void createDefaultCell(final Variable v) {
+        model.deselectAll();
         Cell newCell = createCell(v);
-
-        view.deselectAll();
-        view.highlightCell(newCell);
+        newCell.setHighlighted(true);
 
         // record the effect
-        UndoableEdit edit = new AddCellEdit(v.getName());            
+        UndoableEdit edit = new AddCellEdit(v.getName());
 
         // Display any changes.
         OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
         // notify the listeners
         OpenSHAPA.getView().getUndoSupport().postEdit(edit);
-    
     }
 
     /**
@@ -113,7 +111,7 @@ public final class CreateNewCellC {
             if (v.isSelected()) {
                 newCell = createCell(v);
                 // record the effect
-                UndoableEdit edit = new AddCellEdit(v.getName());            
+                UndoableEdit edit = new AddCellEdit(v.getName());
 
                 // Display any changes.
                 OpenSHAPA.getApplication().getMainView().getComponent().revalidate();

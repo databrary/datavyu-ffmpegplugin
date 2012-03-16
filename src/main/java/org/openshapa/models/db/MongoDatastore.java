@@ -53,24 +53,24 @@ public class MongoDatastore implements Datastore {
 
     // Only a single instance of the mongo driver exists.
     private static Mongo mongoDriver = null;
-    
+
     // Only a single instance of the mongo DB exists.
     private static DB mongoDB = null;
-    
+
     // The current status of the database.
     private static boolean running = false;
-    
+
     // Name of the datastore - does not need to persist - is used for file names.
     private String name = "untitled";
-    
-    // 
+
+    //
     private List<DatastoreListener> dbListeners = new ArrayList<DatastoreListener>();
 
     public MongoDatastore () {
         if(!running) {
             this.startMongo();
         }
-        
+
         // Clear documents if any.
         DBCollection varCollection = mongoDB.getCollection("variables");
         DBCursor varCursor = varCollection.find();
@@ -105,7 +105,7 @@ public class MongoDatastore implements Datastore {
         // Clear variable listeners.
         MongoVariable.clearListeners();
     }
-    
+
     /**
      * Spin up the mongo instance so that we can query and do stuff with it.
      */
@@ -121,7 +121,7 @@ public class MongoDatastore implements Datastore {
             // Spin up a new mongo instance.
             File mongoD = new File(mongoDir);
             int port = findFreePort(27019);
-            
+
             mongoProcess = new ProcessBuilder(f.getAbsolutePath(),
                                               "--dbpath", mongoD.getAbsolutePath(),
                                               "--port", String.valueOf(port),
@@ -131,29 +131,29 @@ public class MongoDatastore implements Datastore {
 
             System.out.println("Starting mongo driver.");
             mongoDriver = new Mongo("localhost", port);
-            
+
             System.out.println("Getting DB");
-            
+
             // Start with a clean DB
             mongoDB = mongoDriver.getDB("openshapa");
-            
+
             DBCollection varCollection = mongoDB.getCollection("variables");
             varCollection.setObjectClass(MongoVariable.class);
-            
+
             DBCollection cellCollection = mongoDB.getCollection("cells");
             cellCollection.setObjectClass(MongoCell.class);
-            
+
             DBCollection matrixCollection = mongoDB.getCollection("matrix_values");
             matrixCollection.setObjectClass(MongoMatrixValue.class);
-            
+
             DBCollection nominalCollection = mongoDB.getCollection("nominal_values");
             nominalCollection.setObjectClass(MongoNominalValue.class);
-            
+
             DBCollection textCollection = mongoDB.getCollection("text_values");
             textCollection.setObjectClass(MongoTextValue.class);
-            
-            
-            
+
+
+
             System.out.println("Got DB");
             running = true;
 
@@ -169,7 +169,7 @@ public class MongoDatastore implements Datastore {
           try {
               ServerSocket server = new ServerSocket(port);
               server.close();
-              
+
               free_port = port;
           } catch (IOException io) {
               port += 1;
@@ -177,14 +177,14 @@ public class MongoDatastore implements Datastore {
       }
       return free_port;
     }
-    
+
     public static void stopMongo() {
         try {
             DB db = mongoDriver.getDB("admin");
             db.command(new BasicDBObject( "shutdown" , 1  ));
             running = false;
             mongoDriver.close();
-            
+
             // Sleep for just a little bit before closing. Let everything
             // finish.
             Thread.sleep(1000);
@@ -194,11 +194,11 @@ public class MongoDatastore implements Datastore {
             mongoProcess.destroy();
         }
     }
-    
+
     public static DB getDB() {
         return mongoDB;
     }
-    
+
     public static DBCollection getCellCollection() {
         return mongoDB.getCollection("cells");
     }
@@ -217,15 +217,15 @@ public class MongoDatastore implements Datastore {
 
     @Override
     public List<Variable> getAllVariables() {
-        
+
         DBCollection varCollection = mongoDB.getCollection("variables");
         DBCursor varCursor = varCollection.find();
-        
+
         List<Variable> varList = new ArrayList<Variable>();
         while(varCursor.hasNext()) {
             MongoVariable v = (MongoVariable)varCursor.next();
             varList.add(v);
-            
+
         }
         return varList;
     }
@@ -247,10 +247,49 @@ public class MongoDatastore implements Datastore {
     }
 
     @Override
+    public void clearVariableSelection() {
+        DBCollection varCollection = mongoDB.getCollection("variables");
+        BasicDBObject query = new BasicDBObject();
+        query.put("selected", true);
+        DBCursor varCursor = varCollection.find(query);
+
+        while (varCursor.hasNext()) {
+            ((MongoVariable) varCursor.next()).setSelected(false);
+        }
+    }
+
+    @Override
     public List<Cell> getSelectedCells() {
         List<Cell> selectedCells = new ArrayList<Cell>();
 
+        DBCollection cellCollection = mongoDB.getCollection("cells");
+        BasicDBObject query = new BasicDBObject();
+        query.put("selected", true);
+        DBCursor cellCursor = cellCollection.find(query);
+
+        while (cellCursor.hasNext()) {
+            selectedCells.add((MongoCell) cellCursor.next());
+        }
+
         return selectedCells;
+    }
+
+    @Override
+    public void clearCellSelection() {
+        DBCollection cellCollection = mongoDB.getCollection("cells");
+        BasicDBObject query = new BasicDBObject();
+        query.put("selected", true);
+        DBCursor cellCursor = cellCollection.find(query);
+
+        while (cellCursor.hasNext()) {
+            ((MongoCell) cellCursor.next()).setSelected(false);
+        }
+    }
+
+    @Override
+    public void deselectAll() {
+        this.clearCellSelection();
+        this.clearVariableSelection();
     }
 
     @Override
@@ -258,9 +297,9 @@ public class MongoDatastore implements Datastore {
         DBCollection varCollection = mongoDB.getCollection("variables");
         BasicDBObject query = new BasicDBObject();
         query.put("name", varName);
-        
+
         DBCursor varCursor = varCollection.find(query);
-        
+
         if (varCursor.hasNext()) {
             return (Variable)varCursor.next();
         } else {
@@ -272,14 +311,14 @@ public class MongoDatastore implements Datastore {
     public Variable getVariable(Cell cell) {
         // We need to use a mongo-specific function to do the lookup
         MongoCell mcell = (MongoCell)cell;
-        
+
         // Form the query
         DBCollection varCollection = mongoDB.getCollection("variables");
         BasicDBObject query = new BasicDBObject();
         query.put("_id", mcell.getVariableID());
-        
+
         DBCursor varCursor = varCollection.find(query);
-        
+
         if (varCursor.hasNext()) {
             return (Variable)varCursor.next();
         } else {
@@ -291,17 +330,17 @@ public class MongoDatastore implements Datastore {
     public Variable createVariable(final String name, final Argument.Type type)
     throws UserWarningException {
         DBCollection varCollection = mongoDB.getCollection("variables");
-        
+
         // Check to make sure the variable name is not already in use:
         Variable varTest = getVariable(name);
         if (varTest != null) {
             throw new UserWarningException("Unable to add variable, one with the same name already exists.");
         }
-        
+
         Variable v = new MongoVariable(name, new Argument("arg01", type));
-        
+
         varCollection.save((MongoVariable)v);
-        
+
         for(DatastoreListener dbl : this.dbListeners ) {
             dbl.variableAdded(v);
         }

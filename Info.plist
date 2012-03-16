@@ -92,7 +92,7 @@
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/mongodb/mongodb-osx64/2.0.2/mongodb-osx64-2.0.2.jar</string>
         <string>$JAVAROOT/repo/org/mongodb/mongodb-java-driver/2.7.2/mongodb-java-driver-2.7.2.jar</string>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.77/openshapa-lib-0.0.77.jar</string>
+        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.78/openshapa-lib-0.0.78.jar</string>
         <string>$JAVAROOT/repo/org/openshapa/openshapa-gstreamer-java/1.5-SNAPSHOT-a/openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.7/snakeyaml-1.7.jar</string>
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.6/UserMetrix-jclient-0.0.6.jar</string>
