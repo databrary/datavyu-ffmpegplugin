@@ -23,6 +23,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import static junit.framework.Assert.assertTrue;
+import org.openshapa.models.project.Project;
 
 /**
  * Tests for saving OpenSHAPA project and CSV files.
@@ -51,7 +52,7 @@ public class SaveCTest {
             outFile.delete();
         }
         File demoFile = new File(TEST_FOLDER + "IO/simple1.csv");
-        
+
         Datastore ds = DatastoreFactory.newDatastore();
         Variable var = ds.createVariable("TestColumn", Argument.Type.TEXT);
         Cell c = var.createCell();
@@ -64,6 +65,61 @@ public class SaveCTest {
 
         assertTrue(UIUtils.areFilesSameLineComp(outFile, demoFile));
     }
-    
-    
+
+    @Test
+    public void testLoadOPF() throws UserWarningException, IOException {
+        File outFile = new File("target/test2.opf");
+        if (outFile.exists()) {
+            outFile.delete();
+        }
+        File demoFile = new File(TEST_FOLDER + "IO/simple2.opf");
+
+        Project p = new Project();
+        p.setProjectName("simple2");
+        p.setDatabaseFileName("simple1.csv");
+        p.setOriginalProjectDirectory("/Users/cfreeman/Projects/OpenSHAPA/code/openshapa/src/test/resources/IO");
+        Datastore ds = DatastoreFactory.newDatastore();
+        Variable var = ds.createVariable("TestColumn", Argument.Type.TEXT);
+        Cell c = var.createCell();
+        c.setOnset("00:01:00:000");
+        c.setOffset("00:02:00:000");
+        c.getValue().set("This is a test cell.");
+
+        SaveC savec = new SaveC();
+        savec.saveProject(outFile, p, ds);
+        assertTrue(UIUtils.areFilesSameByteComp(outFile, demoFile));
+    }
+
+    @Test
+    public void testLoadOPF2() throws UserWarningException, IOException {
+        File outFile = new File("target/test3.opf");
+        if (outFile.exists()) {
+            outFile.delete();
+        }
+        File demoFile = new File(TEST_FOLDER + "IO/simple3.opf");
+
+        Project p = new Project();
+        p.setProjectName("simple3");
+        p.setOriginalProjectDirectory("/Users/cfreeman/Projects/OpenSHAPA/code/openshapa/src/test/resources/IO");
+
+        Datastore ds = DatastoreFactory.newDatastore();
+        Variable var = ds.createVariable("testColumn", Argument.Type.TEXT);
+        Cell c = var.createCell();
+        c.getValue().set("cellA");
+
+        var = ds.createVariable("testColumn2", Argument.Type.NOMINAL);
+        c = var.createCell();
+        c.getValue().set("cellB");
+
+        var = ds.createVariable("testColumn3", Argument.Type.MATRIX);
+        c = var.createCell();
+        c.getValue().set("cellC");
+
+        var = ds.createVariable("hiddenColumn", Argument.Type.TEXT);
+        var.setHidden(true);
+
+        SaveC savec = new SaveC();
+        savec.saveProject(outFile, p, ds);
+        assertTrue(UIUtils.areFilesSameByteComp(outFile, demoFile));
+    }
 }
