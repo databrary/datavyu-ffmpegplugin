@@ -90,8 +90,7 @@ public final class CreateNewCellC {
      */
     public void createDefaultCell(final Variable v) {
         model.deselectAll();
-        Cell newCell = createCell(v);
-        newCell.setHighlighted(true);
+        createCell(v);
 
         // record the effect
         UndoableEdit edit = new AddCellEdit(v.getName());

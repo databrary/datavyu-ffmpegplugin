@@ -123,8 +123,6 @@ implements MouseListener, FocusListener, CellListener {
     /** The Offset display component. */
     private TimeStampTextField offset;
 
-    private Datastore db;
-
     private Cell model;
 
     /** selected state of cell. */
@@ -495,14 +493,13 @@ implements MouseListener, FocusListener, CellListener {
 
         if (cellOverlap) {
 
-            if (highlighted) {
+            if (model.isHighlighted()) {
                 cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
             } else {
                 cellPanel.setBorder(OVERLAP_BORDER);
             }
         } else {
-
-            if (highlighted) {
+            if (model.isHighlighted()) {
                 cellPanel.setBorder(HIGHLIGHT_BORDER);
             } else {
                 cellPanel.setBorder(NORMAL_BORDER);
@@ -538,6 +535,38 @@ implements MouseListener, FocusListener, CellListener {
         dataPanel.requestFocusInWindow();
     }
 
+    private void updateSelectionDisplay() {
+        if (model.isHighlighted()) {
+            if (cellOverlap) {
+                cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
+            } else {
+                cellPanel.setBorder(HIGHLIGHT_BORDER);
+            }
+        } else if (model.isSelected() && !model.isHighlighted()) {
+            if (cellOverlap) {
+                cellPanel.setBorder(FILL_OVERLAP_BORDER);
+            } else {
+                cellPanel.setBorder(FILL_BORDER);
+            }
+
+            cellPanel.setBackground(Configuration.getInstance().getSSSelectedColour());
+        } else {
+            dataPanel.select(0, 0);
+
+            if (cellOverlap) {
+                cellPanel.setBorder(OVERLAP_BORDER);
+            } else {
+                cellPanel.setBorder(NORMAL_BORDER);
+            }
+
+            cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
+        }
+
+        this.revalidate();
+        this.repaint();
+
+    }
+
     // *************************************************************************
     // VariableListener Overrides
     // *************************************************************************
@@ -553,14 +582,12 @@ implements MouseListener, FocusListener, CellListener {
 
     @Override
     public void highlightingChange(final boolean isHighlighted) {
-        setHighlighted(isHighlighted);
-        revalidate();
+        updateSelectionDisplay();
     }
 
     @Override
     public void selectionChange(final boolean isSelected) {
-        setSelected(isSelected);
-        revalidate();
+        updateSelectionDisplay();
     }
 
     @Override

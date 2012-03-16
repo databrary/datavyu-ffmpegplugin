@@ -46,7 +46,6 @@ public class MongoCell extends BasicDBObject implements Cell {
         return result;
     }
 
-
     public MongoCell() { }
 
     public MongoCell(ObjectId variable_id, Argument type) {
@@ -54,8 +53,10 @@ public class MongoCell extends BasicDBObject implements Cell {
         this.put("onset", 0L);
         this.put("offset", 0L);
         this.put("type", type.type.ordinal());
-        this.put("selected", false);
-        this.put("highlighted", false);
+        this.put("selected", true);
+        this.put("highlighted", true);
+
+
 
         // Necessary to be given an _id by Mongo
         this.save();
@@ -76,8 +77,12 @@ public class MongoCell extends BasicDBObject implements Cell {
         MongoDatastore.getCellCollection().save(this);
     }
 
+    private MongoCell getLatest() {
+        return (MongoCell) MongoDatastore.getCellCollection().findOne((ObjectId) this.get("_id"));
+    }
+
     public ObjectId getVariableID() {
-        return (ObjectId)this.get("variable_id");
+        return (ObjectId) getLatest().get("variable_id");
     }
 
     private String convertMStoTimestamp(long time) {
@@ -103,14 +108,13 @@ public class MongoCell extends BasicDBObject implements Cell {
 
     @Override
     public String getOffsetString() {
-        return convertMStoTimestamp((Long)this.get("offset"));
+        return convertMStoTimestamp((Long) getLatest().get("offset"));
     }
 
     @Override
     public long getOffset() {
-        return (Long)this.get("offset");
+        return (Long) getLatest().get("offset");
     }
-
 
     public void setVariableID(int variable_id) {
         this.put("variable_id", variable_id);
@@ -138,12 +142,12 @@ public class MongoCell extends BasicDBObject implements Cell {
 
     @Override
     public long getOnset() {
-        return (Long)this.get("onset");
+        return (Long) getLatest().get("onset");
     }
 
     @Override
     public String getOnsetString() {
-        return convertMStoTimestamp((Long)this.get("onset"));
+        return convertMStoTimestamp((Long) getLatest().get("onset"));
     }
 
     @Override
@@ -177,19 +181,19 @@ public class MongoCell extends BasicDBObject implements Cell {
     public Value getValue() {
         Value value = null;
         BasicDBObject query = new BasicDBObject();
-        query.put("parent_id", this.get("_id"));
+        query.put("parent_id", getLatest().get("_id"));
 
         if((Integer)this.get("type") == Argument.Type.MATRIX.ordinal()) {
             DBCursor cur = matrix_value_collection.find(query);
             if(cur.hasNext()) {
                 value = (MongoMatrixValue)cur.next();
             }
-        } else if((Integer)this.get("type") == Argument.Type.NOMINAL.ordinal()) {
+        } else if((Integer) getLatest().get("type") == Argument.Type.NOMINAL.ordinal()) {
             DBCursor cur = nominal_value_collection.find(query);
             if(cur.hasNext()) {
                 value = (MongoNominalValue)cur.next();
             }
-        } else if((Integer)this.get("type") == Argument.Type.TEXT.ordinal()) {
+        } else if((Integer) getLatest().get("type") == Argument.Type.TEXT.ordinal()) {
             DBCursor cur = text_value_collection.find(query);
             if(cur.hasNext()) {
                 value = (MongoTextValue)cur.next();
@@ -201,7 +205,8 @@ public class MongoCell extends BasicDBObject implements Cell {
 
     @Override
     public boolean isSelected() {
-        return (Boolean)this.get("selected");
+        MongoCell dbCell = (MongoCell) MongoDatastore.getCellCollection().findOne((ObjectId) this.get("_id"));
+        return (Boolean) dbCell.get("selected");
     }
 
     @Override
@@ -216,15 +221,13 @@ public class MongoCell extends BasicDBObject implements Cell {
 
         for(CellListener cl : getListeners(getID()) ) {
             cl.selectionChange(selected);
-            if (!selected) {
-                cl.highlightingChange(selected);
-            }
         }
     }
 
     @Override
     public boolean isHighlighted() {
-        return (Boolean)this.get("highlighted");
+        MongoCell dbCell = (MongoCell) MongoDatastore.getCellCollection().findOne((ObjectId) this.get("_id"));
+        return (Boolean) dbCell.get("highlighted");
     }
 
     @Override
@@ -239,9 +242,6 @@ public class MongoCell extends BasicDBObject implements Cell {
 
         for(CellListener cl : getListeners(getID()) ) {
             cl.highlightingChange(highlighted);
-            if (highlighted) {
-                cl.selectionChange(highlighted);
-            }
         }
     }
 
@@ -256,7 +256,7 @@ public class MongoCell extends BasicDBObject implements Cell {
     }
 
     public ObjectId getID() {
-        return ((ObjectId)this.get("_id"));
+        return ((ObjectId) getLatest().get("_id"));
     }
 
     @Override
