@@ -123,13 +123,8 @@ implements MouseListener, FocusListener, CellListener {
     /** The Offset display component. */
     private TimeStampTextField offset;
 
+    /** The cell that this SpreadsheetCell represents. */
     private Cell model;
-
-    /** selected state of cell. */
-    private boolean selected = false;
-
-    /** Highlighted state of cell. */
-    private boolean highlighted = false;
 
     boolean isLaid = false;
 
@@ -164,7 +159,6 @@ implements MouseListener, FocusListener, CellListener {
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
         // the selector, but not trigger a selection change or deselect others.
-        selected = cell.isSelected();
         cellSelL = listener;
 
         cellPanel = new JPanel();
@@ -216,7 +210,6 @@ implements MouseListener, FocusListener, CellListener {
         cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
         // Cell is highlighted by default.
         cellPanel.setBorder(HIGHLIGHT_BORDER);
-        highlighted = true;
         cellPanel.setLayout(new BorderLayout());
 
         // Set the apperance of the top panel and add child elements (ord, onset
@@ -368,121 +361,6 @@ implements MouseListener, FocusListener, CellListener {
     }
 
     /**
-     * Set this cell as highlighted, a highlighted cell has a difference
-     * appearance to unselected (or fill selected) cell.
-     *
-     * @param isHighlighted The highlighted state of the cell, true when the
-     * cell is highlighted false otherwise.
-     *
-     * @Deprecated should manipulate the model directly, not the view.
-     */
-    @Deprecated
-    public void setHighlighted(final boolean sel) {
-        // If selection state is unchanged - exit, we aren't changing anything
-        if (highlighted == sel) {
-            return;
-        }
-
-        highlighted = sel;
-        //selectCellInDB(highlighted);
-
-        // Update the visual representation of the SpreadsheetCell.
-        if (highlighted) {
-
-            if (cellOverlap) {
-                cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
-            } else {
-                cellPanel.setBorder(HIGHLIGHT_BORDER);
-            }
-        } else {
-            dataPanel.select(0, 0);
-
-            if (cellOverlap) {
-                cellPanel.setBorder(OVERLAP_BORDER);
-            } else {
-                cellPanel.setBorder(NORMAL_BORDER);
-            }
-        }
-    }
-
-    /**
-     * @return True if the cell is highlighted, false otherwise.
-     *
-     * @Deprecated should manipulate the model directly, not the view.
-     */
-    @Deprecated
-    public boolean isHighlighted() {
-        return highlighted;
-    }
-
-    /**
-     * @return True if the cell is filled, false otherwise.
-     *
-     * @Deprecated should manipulate the model directly, not the view.
-     */
-    @Deprecated
-    public boolean isFilled() {
-
-        if (!highlighted && selected) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Set this cell as selected, a selected cell has a different appearance to
-     * an unselcted one (typically colour).
-     *
-     * @param sel  The selection state of the cell, when true the cell is
-     * selected false otherwise.
-     *
-     * @Deprecated Should query the model, not the view.
-     */
-    @Deprecated
-    public void setSelected(final boolean sel) {
-        // If selection state is not changing - don't bother doing anything.
-        if (selected == sel) {
-            return;
-        }
-
-        selected = sel;
-        //selectCellInDB(selected);
-
-        // Update the visual representation of the SpreadsheetCell.
-        if (selected) {
-
-            if (cellOverlap) {
-                cellPanel.setBorder(FILL_OVERLAP_BORDER);
-            } else {
-                cellPanel.setBorder(FILL_BORDER);
-            }
-
-            cellPanel.setBackground(Configuration.getInstance().getSSSelectedColour());
-        } else {
-            dataPanel.select(0, 0);
-
-            if (cellOverlap) {
-                cellPanel.setBorder(OVERLAP_BORDER);
-            } else {
-                cellPanel.setBorder(NORMAL_BORDER);
-            }
-
-            cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
-        }
-    }
-
-    /**
-     * @return True if the cell is selected, false otherwise.
-     *
-     * @Deprecated Should query the model, not the view.
-     */
-    @Deprecated
-    public boolean isSelected() {
-        return (selected || highlighted);
-    }
-
-    /**
      * Set the border of the cell.
      *
      * @param overlap true if the cell overlaps with the following cell, false
@@ -563,8 +441,6 @@ implements MouseListener, FocusListener, CellListener {
         }
 
         this.revalidate();
-        this.repaint();
-
     }
 
     // *************************************************************************
@@ -622,9 +498,9 @@ implements MouseListener, FocusListener, CellListener {
         if (!isEditorSrc && !groupSel && !contSel) {
             ord.requestFocus();
             cellSelL.clearCellSelection();
-            setSelected(!isSelected());
+            model.setHighlighted(!model.isSelected());
 
-            if (isSelected()) {
+            if (model.isSelected()) {
                 cellSelL.addCellToSelection(this);
             }
 
@@ -632,9 +508,9 @@ implements MouseListener, FocusListener, CellListener {
         // this cell to the current selection.
         } else if (groupSel && !contSel) {
             ord.requestFocus();
-            setSelected(!isSelected());
+            model.setHighlighted(!model.isSelected());
 
-            if (isSelected()) {
+            if (model.isSelected()) {
                 cellSelL.addCellToSelection(this);
             }
 
@@ -648,10 +524,10 @@ implements MouseListener, FocusListener, CellListener {
         // cell needs to be highlighted.
         } else {
             // Only change selection if not selected.
-            if (!isHighlighted()) {
+            if (!model.isHighlighted()) {
                 // BugzID:320 - Deselect cells before selected cell contents.
                 cellSelL.clearCellSelection();
-                setHighlighted(true);
+                model.setHighlighted(true);
                 cellSelL.setHighlightedCell(this);
             }
         }
@@ -670,10 +546,9 @@ implements MouseListener, FocusListener, CellListener {
     // *************************************************************************
     @Override
     public void focusGained(final FocusEvent e) {
-
-        if (highlighted && (cellPanel.getBorder().equals(NORMAL_BORDER)
+        if (model.isHighlighted() && (cellPanel.getBorder().equals(NORMAL_BORDER)
                             || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
-            selectCellInDB(true);
+            model.setSelected(true);
         }
     }
 

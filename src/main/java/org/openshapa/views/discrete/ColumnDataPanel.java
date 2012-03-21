@@ -277,7 +277,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         AbstractList<SpreadsheetCell> selectedCells = new ArrayList<SpreadsheetCell>();
 
         for (SpreadsheetCell c : selectedCells) {
-            if (c.isSelected()) {
+            if (c.getCell().isSelected()) {
                 selectedCells.add(c);
             }
         }
@@ -352,7 +352,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                             // editor.
                             ec.setCaretPosition(newPos);
                             sc.requestFocus();
-                            sc.setHighlighted(true);
+                            sc.getCell().setHighlighted(true);
                             cellSelectionL.setHighlightedCell(sc);
 
                             e.consume();
@@ -416,7 +416,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                             // editor.
                             ec.setCaretPosition(newPos);
                             sc.requestFocus();
-                            sc.setHighlighted(true);
+                            sc.getCell().setHighlighted(true);
                             cellSelectionL.setHighlightedCell(sc);
 
                             e.consume();
@@ -452,11 +452,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                                 ec = et.findEditor(absolutePos);
                                 et.setEditor(ec);
                                 ec.setCaretPosition(relativePos);
-                                sc.setHighlighted(true);
+                                sc.getCell().setHighlighted(true);
                                 cellSelectionL.setHighlightedCell(sc);
                             } else {
                                 sc = (SpreadsheetCell) components[i];
-                                sc.setHighlighted(false);
+                                sc.getCell().setHighlighted(false);
                                 cellSelectionL.clearCellSelection();
                             }
 

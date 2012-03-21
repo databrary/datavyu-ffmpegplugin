@@ -120,8 +120,8 @@ public final class CreateNewCellC {
         }
 
         if (newCell != null) {
-            view.deselectAll();
-            view.highlightCell(newCell);
+            model.deselectAll();
+            newCell.setHighlighted(true);
         }
     }
 
@@ -177,8 +177,8 @@ public final class CreateNewCellC {
             }
         }
 
-        view.deselectAll();
-        view.highlightCell(newCell);
+        model.deselectAll();
+        newCell.setHighlighted(true);
     }
 
     /**
@@ -334,7 +334,7 @@ public final class CreateNewCellC {
             OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
         }
 
-        view.deselectAll();
-        view.highlightCell(newCell);
+        model.deselectAll();
+        newCell.setHighlighted(true);
     }
 }

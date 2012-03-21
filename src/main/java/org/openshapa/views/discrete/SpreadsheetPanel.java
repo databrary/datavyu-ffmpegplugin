@@ -289,17 +289,8 @@ implements DatastoreListener,
      * Deselect all selected items in the Spreadsheet.
      */
     public void deselectAll() {
-        for (SpreadsheetColumn col : columns) {
-            if (col.isSelected()) {
-                col.setSelected(false);
-            }
-
-            for (SpreadsheetCell cell : col.getCells()) {
-                if (cell.isSelected()) {
-                    cell.setSelected(false);
-                }
-            }
-        }
+        datastore.clearCellSelection();
+        datastore.clearVariableSelection();
     }
 
     /**
@@ -319,7 +310,7 @@ implements DatastoreListener,
 
         // setName to remember screen locations
         setName(this.getClass().getSimpleName() + db.getName());
-        deselectAll();
+        db.deselectAll();
     }
 
     /**
@@ -438,7 +429,6 @@ implements DatastoreListener,
                         SpreadsheetCell newCell = columns.get(newColID)
                             .getCells().get(newCellID);
                         newCell.requestFocus();
-                        newCell.setHighlighted(true);
                         setHighlightedCell(newCell);
 
                         return;
@@ -490,7 +480,6 @@ implements DatastoreListener,
         for (SpreadsheetColumn col : getColumns()) {
             for (SpreadsheetCell spreadsheetCell : col.getCells()) {
                 if (cell != null && spreadsheetCell.getCell().equals(cell)) {
-                    spreadsheetCell.setHighlighted(true);
                     setHighlightedCell(spreadsheetCell);
 
                     return;
@@ -626,11 +615,6 @@ implements DatastoreListener,
         revalidate();
     }
 
-    @Deprecated
-    public void reorderColumns(List<Long> newOrderVec) {
-        // No longer supported.
-    }
-
     /**
      * Returns the cells of the supplied column as ordered by the current
      * layout.
@@ -668,8 +652,8 @@ implements DatastoreListener,
 
                 // Deselect the highlighted cell.
                 if (highlightedCell != null) {
-                    highlightedCell.setHighlighted(false);
-                    highlightedCell.setSelected(true);
+                    highlightedCell.getCell().setHighlighted(false);
+                    highlightedCell.getCell().setSelected(true);
                     highlightedCell = null;
                 }
 
@@ -683,18 +667,18 @@ implements DatastoreListener,
                         for (SpreadsheetCell c : getOrderedCells(col)) {
 
                             if (!addToSelection) {
-                                c.setSelected(false);
+                                c.getCell().setSelected(false);
                             }
 
                             if (c.equals(cell) || c.equals(lastSelectedCell)) {
                                 addToSelection = !addToSelection;
 
                                 // We always include start and end cells.
-                                c.setSelected(true);
+                                c.getCell().setSelected(true);
                             }
 
                             if (addToSelection) {
-                                c.setSelected(true);
+                                c.getCell().setSelected(true);
                             }
                         }
 
@@ -717,9 +701,8 @@ implements DatastoreListener,
         clearColumnSelection();
 
         if (highlightedCell != null) {
-            highlightedCell.setHighlighted(false);
-            highlightedCell.setSelected(true);
-
+            highlightedCell.getCell().setSelected(true);
+            highlightedCell.getCell().setHighlighted(false);
             highlightedCell = null;
         }
 
@@ -734,13 +717,13 @@ implements DatastoreListener,
     @Override
     public void setHighlightedCell(final SpreadsheetCell cell) {
         if (highlightedCell != null) {
-            highlightedCell.setSelected(false);
-            highlightedCell.setHighlighted(false);
+            highlightedCell.getCell().setSelected(false);
             highlightedCell.invalidate();
         }
 
         highlightedCell = cell;
         lastSelectedCell = cell;
+        highlightedCell.getCell().setHighlighted(true);
         clearColumnSelection();
     }
 
@@ -752,12 +735,7 @@ implements DatastoreListener,
         highlightedCell = null;
         lastSelectedCell = null;
 
-        for (SpreadsheetColumn col : getColumns()) {
-            for (SpreadsheetCell cell : col.getCells()) {
-                cell.setSelected(false);
-                cell.setHighlighted(false);
-            }
-        }
+        datastore.clearCellSelection();
     }
 
     /**

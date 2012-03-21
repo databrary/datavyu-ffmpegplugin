@@ -103,7 +103,7 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
     protected void updateSpreadsheetCell(Cell cell) {
         unselectAll();
         SpreadsheetCell sCell = getSpreadsheetCell(cell);
-        sCell.setHighlighted(true);
+        cell.setHighlighted(true);
         sCell.requestFocusInWindow();
         selectField(sCell);    
     }

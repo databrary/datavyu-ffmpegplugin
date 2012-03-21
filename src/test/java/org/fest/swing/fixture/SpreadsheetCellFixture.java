@@ -61,17 +61,17 @@ public class SpreadsheetCellFixture extends JPanelFixture {
      */
     public final void fillSelectCell(final boolean select) {
 
-        if ((select && !((SpreadsheetCell) target).isFilled())
-                || (!select && ((SpreadsheetCell) target).isFilled())) {
-            JLabel ordinalLabel = ordinalLabel().target;
-            Point labelPosition = ordinalLabel.getLocation();
-            Point clickPosition = new Point(labelPosition.x
-                    + ImageObserver.WIDTH + 25,
-                    labelPosition.y + 5);
-            robot.pressKey(Platform.controlOrCommandKey());
-            robot.click(component(), clickPosition);
-            robot.releaseKey(Platform.controlOrCommandKey());
-        }
+//        if ((select && !((SpreadsheetCell) target).isFilled())
+//                || (!select && ((SpreadsheetCell) target).isFilled())) {
+//            JLabel ordinalLabel = ordinalLabel().target;
+//            Point labelPosition = ordinalLabel.getLocation();
+//            Point clickPosition = new Point(labelPosition.x
+//                    + ImageObserver.WIDTH + 25,
+//                    labelPosition.y + 5);
+//            robot.pressKey(Platform.controlOrCommandKey());
+//            robot.click(component(), clickPosition);
+//            robot.releaseKey(Platform.controlOrCommandKey());
+//        }
     }
 
     /**
@@ -79,8 +79,8 @@ public class SpreadsheetCellFixture extends JPanelFixture {
      */
     public final void borderSelectCell(final boolean select) {
 
-        if ((select && !((SpreadsheetCell) target).isHighlighted())
-                || (!select && ((SpreadsheetCell) target).isHighlighted())) {
+        if ((select && !((SpreadsheetCell) target).getCell().isHighlighted())
+         || (!select && ((SpreadsheetCell) target).getCell().isHighlighted())) {
             cellValue().click();
         }
     }
@@ -252,7 +252,7 @@ public class SpreadsheetCellFixture extends JPanelFixture {
      * @return true if cell is highlight or fill selected, else false
      */
     public boolean isSelected() {
-        return ((SpreadsheetCell) target).isSelected();
+        return ((SpreadsheetCell) target).getCell().isSelected();
     }
 
     /**
