@@ -43,9 +43,6 @@ public final class ViewerSetting {
     /** Absolute file path to the data source */
     private String filePath;
 
-    /** MD5 digest of the data source - BugzID:2482 */
-    private String digest;
-
     /** Playback offset in milliseconds */
     private long offset;
 
@@ -69,7 +66,6 @@ public final class ViewerSetting {
         pluginName = other.pluginName;
         pluginClassifier = other.pluginClassifier;
         filePath = other.filePath;
-        digest = other.digest;  // BugzID:2482
         offset = other.offset;
         settingsId = other.settingsId;
     }
@@ -102,22 +98,6 @@ public final class ViewerSetting {
      */
     public void setFilePath(final String filePath) {
         this.filePath = filePath;
-    }
-
-    /**
-     * BugzID:2482
-     * @return MD5 digest of the data source.
-     */
-    public String getDigest() {
-        return digest;
-    }
-
-    /**
-     * BugzID:2482
-     * @param digest MD5 digest of the data source.
-     */
-    public void setDigest(final String digest) {
-        this.digest = digest;
     }
 
     /**

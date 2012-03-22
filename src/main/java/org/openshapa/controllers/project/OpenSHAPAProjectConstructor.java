@@ -90,9 +90,6 @@ public class OpenSHAPAProjectConstructor extends Constructor {
             vs.setFilePath((String) values.get("feed"));
             vs.setPluginName((String) values.get("plugin"));
 
-            // BugzID:2482
-            vs.setDigest((String) values.get("digest"));
-
             // WARNING: SnakeYAML refuses to parse this as a Long.
             // TODO: remove this
             String offset = (String) values.get("offset");

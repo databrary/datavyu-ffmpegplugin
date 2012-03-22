@@ -69,9 +69,6 @@ public class OpenSHAPAProjectRepresenter extends Representer {
             map.put("feed", viewerSetting.getFilePath());
             map.put("plugin", viewerSetting.getPluginName());
 
-            // BugzID:2482
-            map.put("digest", viewerSetting.getDigest());
-            
             // BugzID:2108
             map.put("classifier", viewerSetting.getPluginClassifier());
 
