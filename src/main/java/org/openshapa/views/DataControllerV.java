@@ -36,7 +36,6 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
 
@@ -58,7 +57,6 @@ import org.openshapa.controllers.SetSelectedCellStartTimeC;
 import org.openshapa.controllers.SetSelectedCellStopTimeC;
 import org.openshapa.controllers.component.MixerController;
 import org.openshapa.controllers.id.IDController;
-import org.openshapa.controllers.layout.SingleWindowTiler;
 
 import org.openshapa.event.component.CarriageEvent;
 import org.openshapa.event.component.TimescaleEvent;
@@ -1542,13 +1540,6 @@ public final class DataControllerV extends OpenSHAPADialog
 
         mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(
             maxDuration, true);
-
-        SwingUtilities.invokeLater(new Runnable() {
-                @Override public void run() {
-                    SingleWindowTiler swt = new SingleWindowTiler();
-                    swt.tile(viewer.getParentJDialog());
-                }
-            });
     }
 
     /**

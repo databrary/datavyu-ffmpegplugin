@@ -57,7 +57,6 @@ import org.openshapa.controllers.OpenC;
 import org.openshapa.controllers.RunScriptC;
 import org.openshapa.controllers.SaveC;
 import org.openshapa.controllers.VocabEditorC;
-import org.openshapa.controllers.layout.AutoWindowTiler;
 import org.openshapa.controllers.project.ProjectController;
 
 import org.openshapa.event.component.FileDropEvent;
@@ -76,10 +75,8 @@ import org.openshapa.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
-import javax.swing.JOptionPane;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 import org.openshapa.controllers.AutosaveC;
@@ -126,15 +123,15 @@ public final class OpenSHAPAView extends FrameView
     public SpreadsheetUndoManager getSpreadsheetUndoManager() {
         return spreadsheetUndoManager;
     }
-   
-    
+
+
     UndoableEditSupport undoSupport; // event support
-    
+
     public UndoableEditSupport getUndoSupport() {
         return undoSupport;
     }
-      
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem ShowAllVariablesMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -182,7 +179,6 @@ public final class OpenSHAPAView extends FrameView
     private javax.swing.JMenuItem showSpreadsheetMenuItem;
     private javax.swing.JMenu spreadsheetMenu;
     private javax.swing.JCheckBoxMenuItem strongTemporalOrderMenuItem;
-    private javax.swing.JMenuItem tileWindowsMenuItem;
     private javax.swing.JMenuItem undoSpreadSheetMenuItem;
     private javax.swing.JMenuItem vocabEditorMenuItem;
     private javax.swing.JCheckBoxMenuItem weakTemporalOrderMenuItem;
@@ -288,7 +284,7 @@ public final class OpenSHAPAView extends FrameView
         redoSpreadSheetMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_Y, keyMask));
 
-        
+
         if (panel != null) {
             panel.deregisterListeners();
             panel.removeFileDropEventListener(this);
@@ -304,16 +300,16 @@ public final class OpenSHAPAView extends FrameView
         undoSupport = new UndoableEditSupport();
         undoSupport.addUndoableEditListener(new UndoAdapter());
         refreshUndoRedo();
-        ////// 
-        
+        //////
+
         //Jakrabbit Menu
-        pushMenuItem.setVisible(false);                 
-        pullMenuItem.setVisible(false);                 
-        jSeparator10.setVisible(false); 
-      
+        pushMenuItem.setVisible(false);
+        pullMenuItem.setVisible(false);
+        jSeparator10.setVisible(false);
+
     }
-    
-    
+
+
     public void checkForAutosavedFile() {
         // Check for autosaved file (crash condition)
         try {
@@ -329,15 +325,15 @@ public final class OpenSHAPAView extends FrameView
                       (FilenameUtils.wildcardMatchOnSystem(f.getName(), "~*.csv"))
                      )
                    ) { // the last time openshapa crashed
-                    
+
                    // Show the Dialog
-                   if (JOptionPane.showConfirmDialog(null, 
-                           "Openshapa has detected an unsaved file. Would you like recover this file ?", 
+                   if (JOptionPane.showConfirmDialog(null,
+                           "Openshapa has detected an unsaved file. Would you like recover this file ?",
                            "OpenShapa",
                            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                         openRecoveredFile(f);
                         this.saveAs();
-                   } 
+                   }
                    // delete the recovered file
                    f.delete();
                 }
@@ -345,14 +341,14 @@ public final class OpenSHAPAView extends FrameView
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(OpenSHAPAView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
+
+
         // initialize autosave feature
-        AutosaveC.setInterval(1); // five minutes        
+        AutosaveC.setInterval(1); // five minutes
     }
 
-    
-    
+
+
     /**
      * Update the title of the application.
      */
@@ -448,7 +444,7 @@ public final class OpenSHAPAView extends FrameView
 
                     projController.getDB().markAsUnchanged();
 
-                    
+
                     // Update the application title
                     updateTitle();
 
@@ -678,7 +674,7 @@ public final class OpenSHAPAView extends FrameView
         pController.markProjectAsUnchanged();
 
         pController.getDB().markAsUnchanged();
-        
+
         updateTitle();
 
         // Display any changes to the database.
@@ -703,7 +699,7 @@ public final class OpenSHAPAView extends FrameView
         // Clear the current spreadsheet before loading the new content - we
         // need to clean up resources.
         clearSpreadsheet();
-        String filename = FilenameUtils.getBaseName(f.getAbsolutePath()); 
+        String filename = FilenameUtils.getBaseName(f.getAbsolutePath());
         String ext = FilenameUtils.getExtension(f.getAbsolutePath());
         //ext = ext.substring(10);
         //f.renameTo(new File(filename + "." + ext));
@@ -720,10 +716,10 @@ public final class OpenSHAPAView extends FrameView
 
         // Default is to highlight cells when created - clear selection on load.
         panel.clearCellSelection();
-    }    
-    
-    
-    
+    }
+
+
+
     private void openDatabase(final File databaseFile) {
 
         // Set the database to the freshly loaded database.
@@ -738,10 +734,10 @@ public final class OpenSHAPAView extends FrameView
         projController.setDatastore(openC.getDatastore());
         projController.setProjectDirectory(databaseFile.getParent());
         projController.setDatabaseFileName(databaseFile.getName());
-        
+
         // Reset the undo manager
         resetUndoManager();
-        
+
     }
 
     private void openProject(final File projectFile) {
@@ -753,9 +749,9 @@ public final class OpenSHAPAView extends FrameView
             OpenSHAPA.getProjectController().setDatastore(openC.getDatastore());
             OpenSHAPA.getProjectController().setProjectDirectory(projectFile.getParent());
             OpenSHAPA.getProjectController().loadProject();
-            
+
             // Reset the undo manager
-            resetUndoManager();            
+            resetUndoManager();
         }
     }
 
@@ -978,15 +974,15 @@ public final class OpenSHAPAView extends FrameView
     @Action public void history() {
         //JOptionPane.showMessageDialog(null, "Undo History.", "History", JOptionPane.INFORMATION_MESSAGE);
         OpenSHAPA.getApplication().showHistory();
-    }     
-    
+    }
+
     /**
      * Undo Action.
      */
     @Action public void undo() {
          spreadsheetUndoManager.undo();
          refreshUndoRedo();
-    }    
+    }
 
     /**
      * Redo Action.
@@ -994,8 +990,8 @@ public final class OpenSHAPAView extends FrameView
     @Action public void redo() {
          spreadsheetUndoManager.redo();
          refreshUndoRedo();
-    }  
-    
+    }
+
     /**
      * Push Action.
      */
@@ -1005,8 +1001,8 @@ public final class OpenSHAPAView extends FrameView
         Jackrabbit jr = Jackrabbit.getJackRabbit();
         jr.push();
 */
-    } 
-    
+    }
+
     /**
      * Redo Action.
      */
@@ -1016,14 +1012,14 @@ public final class OpenSHAPAView extends FrameView
         Jackrabbit jr = Jackrabbit.getJackRabbit();
         jr.pull();
 */
-    }     
-    
+    }
+
     private void resetUndoManager() {
         spreadsheetUndoManager.discardAllEdits();
         refreshUndoRedo();
-    } 
-    
-    
+    }
+
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1089,7 +1085,6 @@ public final class OpenSHAPAView extends FrameView
         jSeparator4 = new javax.swing.JSeparator();
         favScripts = new javax.swing.JMenuItem();
         windowMenu = new javax.swing.JMenu();
-        tileWindowsMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -1399,14 +1394,6 @@ public final class OpenSHAPAView extends FrameView
 
         windowMenu.setName("windowMenu"); // NOI18N
 
-        tileWindowsMenuItem.setName("tileWindowsMenuItem"); // NOI18N
-        tileWindowsMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tileWindowsMenuItemActionPerformed(evt);
-            }
-        });
-        windowMenu.add(tileWindowsMenuItem);
-
         menuBar.add(windowMenu);
 
         helpMenu.setAction(actionMap.get("showVariableList")); // NOI18N
@@ -1459,9 +1446,6 @@ public final class OpenSHAPAView extends FrameView
 
     private void tileWindowsMenuItemActionPerformed(
         final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_tileWindowsMenuItemActionPerformed
-
-        AutoWindowTiler tiler = new AutoWindowTiler();
-        tiler.tile();
     } // GEN-LAST:event_tileWindowsMenuItemActionPerformed
 
     /**
@@ -1805,13 +1789,13 @@ public final class OpenSHAPAView extends FrameView
             // record the effect
             UndoableEdit edit = new RunScriptEdit(evt.getActionCommand());
             ////
-            
+
             RunScriptC scriptC = new RunScriptC(evt.getActionCommand());
-            
+
             // notify the listeners
-            OpenSHAPA.getView().getUndoSupport().postEdit(edit);           
-            /////            
-            
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+            /////
+
             scriptC.execute();
         } catch (IOException e) {
             LOGGER.error("Unable to run recent script", e);
@@ -1826,7 +1810,7 @@ public final class OpenSHAPAView extends FrameView
     public SpreadsheetPanel getSpreadsheetPanel() {
         return panel;
     }
-    
+
   public void refreshUndoRedo() {
 
      // refresh undo
@@ -1836,15 +1820,15 @@ public final class OpenSHAPAView extends FrameView
      // refresh redo
      redoSpreadSheetMenuItem.setText( spreadsheetUndoManager.getRedoPresentationName() );
      redoSpreadSheetMenuItem.setEnabled( spreadsheetUndoManager.canRedo() );
-     
+
      // Display any changes.
      //showSpreadsheet();
-           
+
      panel.revalidate();
-     panel.repaint();  
-    
-  }    
-  
+     panel.repaint();
+
+  }
+
 
   /**
   * An undo/redo adapter. The adapter is notified when
