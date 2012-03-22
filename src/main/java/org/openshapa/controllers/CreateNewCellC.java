@@ -106,17 +106,14 @@ public final class CreateNewCellC {
      */
     public void createDefaultCell() {
         Cell newCell = null;
-        for (Variable v : model.getAllVariables()) {
-            if (v.isSelected()) {
-                newCell = createCell(v);
-                // record the effect
-                UndoableEdit edit = new AddCellEdit(v.getName());
+        Variable v = OpenSHAPA.getProjectController().getLastCreatedVariable();
+        if (v != null) {
+            newCell = createCell(v);
 
-                // Display any changes.
-                OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
-                // notify the listeners
-                OpenSHAPA.getView().getUndoSupport().postEdit(edit);
-            }
+            // record the effect
+            UndoableEdit edit = new AddCellEdit(v.getName());
+            OpenSHAPA.getApplication().getMainView().getComponent().revalidate();
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
         }
 
         if (newCell != null) {

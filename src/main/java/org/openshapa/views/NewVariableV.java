@@ -22,6 +22,7 @@ import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Argument;
 import org.openshapa.models.db.Datastore;
 import org.openshapa.models.db.UserWarningException;
+import org.openshapa.models.db.Variable;
 import org.openshapa.undoableedits.AddVariableEdit;
 
 /**
@@ -196,7 +197,8 @@ public final class NewVariableV extends OpenSHAPADialog {
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
         try {
             LOGGER.event("newVar - create column:" + getVariableType());
-            model.createVariable(getVariableName(), getVariableType());
+            Variable var = model.createVariable(getVariableName(), getVariableType());
+            OpenSHAPA.getProjectController().setLastCreatedVariable(var);
 
             // record the effect
             UndoableEdit edit = new AddVariableEdit(getVariableName(), getVariableType());
