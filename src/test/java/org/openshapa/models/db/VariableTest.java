@@ -163,4 +163,50 @@ public class VariableTest {
         assertEquals(model.getCellsTemporally(), orderedCells);
         assertEquals(model.getCellTemporally(0), c2);
     }
+
+     @Test(expectedExceptions = UserWarningException.class)
+     public void uniqueVariableNames() throws UserWarningException {
+         ds.createVariable("test", Argument.Type.TEXT);
+     }
+
+     @Test(expectedExceptions = UserWarningException.class)
+     public void nameWithCharacters() throws UserWarningException {
+         ds.createVariable("", Argument.Type.TEXT);
+     }
+
+     @Test
+     public void trimWhiteSpace() throws UserWarningException {
+         Variable var = ds.createVariable(" blah ", Argument.Type.TEXT);
+         assertEquals(var.getName(), "blah");
+     }
+
+     @Test(expectedExceptions = UserWarningException.class)
+     public void badCharacter1() throws UserWarningException {
+         ds.createVariable("as)ds", Argument.Type.TEXT);
+     }
+
+     @Test(expectedExceptions = UserWarningException.class)
+     public void badCharacter2() throws UserWarningException {
+         ds.createVariable("ac(dc", Argument.Type.TEXT);
+     }
+
+     @Test(expectedExceptions = UserWarningException.class)
+     public void badCharacter3() throws UserWarningException {
+         ds.createVariable("ac>dc", Argument.Type.TEXT);
+     }
+
+     @Test(expectedExceptions = UserWarningException.class)
+     public void badCharacter4() throws UserWarningException {
+         ds.createVariable("ac<dc", Argument.Type.TEXT);
+     }
+
+     @Test(expectedExceptions = UserWarningException.class)
+     public void badCharacter5() throws UserWarningException {
+         ds.createVariable("ac,dc", Argument.Type.TEXT);
+     }
+
+     @Test(expectedExceptions = UserWarningException.class)
+     public void badCharacter6() throws UserWarningException {
+         ds.createVariable("ac\"dc", Argument.Type.TEXT);
+     }
 }

@@ -35,7 +35,7 @@ import org.bson.types.ObjectId;
 /**
  * Maps a variable object to a mongo powered datastore.
  */
-public class MongoVariable extends BasicDBObject implements Variable  {
+public final class MongoVariable extends BasicDBObject implements Variable  {
     // All the listeners for variables in teh datastore.
     static Map<ObjectId, List<VariableListener>> allListeners =
                                 new HashMap<ObjectId, List<VariableListener>>();
@@ -55,7 +55,7 @@ public class MongoVariable extends BasicDBObject implements Variable  {
 
         return result;
     }
-    
+
     /**
      * Removes all the listeners for all the variables.
      */
@@ -67,7 +67,7 @@ public class MongoVariable extends BasicDBObject implements Variable  {
      * Default constructor.
      */
     public MongoVariable() {
-        
+
     }
 
     /**
@@ -76,16 +76,16 @@ public class MongoVariable extends BasicDBObject implements Variable  {
      * @param name The name to use for the variable being constructed.
      * @param type The type to use for the variable being constructed.
      */
-    public MongoVariable(String name, Argument type) {
-        this.put("name", name);
+    public MongoVariable(String name, Argument type) throws UserWarningException {
+        this.setName(name);
         this.put("type", serializeArgument(type));
         this.put("hidden", false);
         this.put("selected", true);
-        
+
         this.save();
     }
 
-    /** 
+    /**
      * Helper method to save this variable to the DB.
      * This must be run after any changes to the variable.
      */
@@ -109,10 +109,10 @@ public class MongoVariable extends BasicDBObject implements Variable  {
      */
     private BasicDBObject serializeArgument(Argument type) {
         BasicDBObject serial_type = new BasicDBObject();
-        
+
         serial_type.put("type_ordinal", type.type.ordinal());
         serial_type.put("name", type.name);
-        
+
         List<BasicDBObject> childArguments = new ArrayList<BasicDBObject>();
         if(type.childArguments.size() > 0) {
 
@@ -121,7 +121,7 @@ public class MongoVariable extends BasicDBObject implements Variable  {
             }
         }
         serial_type.put("child_arguments", childArguments);
-        
+
         return serial_type;
     }
 
@@ -133,23 +133,23 @@ public class MongoVariable extends BasicDBObject implements Variable  {
      * @return The argument held inside the mongo object.
      */
     private Argument deserializeArgument(BasicDBObject serial_type) {
-        
+
         String name = (String)serial_type.get("name");
         int type_ordinal = (Integer)serial_type.get("type_ordinal");
         Argument.Type type = Argument.Type.values()[type_ordinal];
-        
+
         Argument arg = new Argument(name, type);
-        
+
         if(type == Argument.Type.MATRIX) {
             List<BasicDBObject> DBchildArguments = (ArrayList<BasicDBObject>)serial_type.get("child_arguments");
             List<Argument> childArguments = new ArrayList<Argument>();
-            
+
             for (BasicDBObject child : DBchildArguments) {
                 childArguments.add(deserializeArgument(child));
             }
             arg.childArguments = childArguments;
         }
-        
+
         return arg;
     }
 
@@ -163,7 +163,7 @@ public class MongoVariable extends BasicDBObject implements Variable  {
         for(VariableListener vl : getListeners(getID()) ) {
             vl.cellInserted(c);
         }
-        
+
         return c;
     }
 
@@ -181,18 +181,18 @@ public class MongoVariable extends BasicDBObject implements Variable  {
     @Override
     public List<Cell> getCells() {
         List<Cell> cells = new ArrayList<Cell>();
-        
+
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
         BasicDBObject query = new BasicDBObject();
 
         query.put("variable_id", this.get("_id"));  // e.g. find all where i > 50
-        
+
         DBCursor cur = cell_collection.find(query);
-        
+
         while(cur.hasNext()) {
             cells.add((MongoCell)cur.next());
         }
-        
+
         return cells;
     }
 
@@ -204,9 +204,9 @@ public class MongoVariable extends BasicDBObject implements Variable  {
 
         query.put("variable_id", this.get("_id"));  // e.g. find all where i > 50
         sort.put("onset", 1);
-        
+
         DBCursor cur = cell_collection.find(query).sort(sort);
-        
+
         int i = 0;
         while(cur.hasNext()) {
             if(i == index) {
@@ -214,7 +214,7 @@ public class MongoVariable extends BasicDBObject implements Variable  {
             }
             i++;
         }
-        
+
         return null;
     }
 
@@ -231,20 +231,20 @@ public class MongoVariable extends BasicDBObject implements Variable  {
     @Override
     public List<Cell> getCellsTemporally() {
         List<Cell> cells = new ArrayList<Cell>();
-        
+
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
         BasicDBObject query = new BasicDBObject();
         BasicDBObject sort = new BasicDBObject();
 
         query.put("variable_id", this.get("_id"));  // e.g. find all where i > 50
         sort.put("onset", 1);
-        
+
         DBCursor cur = cell_collection.find(query).sort(sort);
-        
+
         while(cur.hasNext()) {
             cells.add((MongoCell)cur.next());
         }
-        
+
         return cells;
     }
 
@@ -252,7 +252,7 @@ public class MongoVariable extends BasicDBObject implements Variable  {
     public boolean contains(final Cell c) {
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
         DBCursor cur = cell_collection.find((MongoCell)c);
-        
+
         if(cur.hasNext()) {
             MongoCell found = (MongoCell)cur.next();
             if(found.getVariableID().equals(this.getID())) {
@@ -277,7 +277,7 @@ public class MongoVariable extends BasicDBObject implements Variable  {
     public void setHidden(final boolean hidden) {
         this.put("hidden", hidden);
         this.save();
-        
+
         for(VariableListener vl : getListeners(getID()) ) {
             vl.visibilityChanged(hidden);
         }
@@ -295,9 +295,19 @@ public class MongoVariable extends BasicDBObject implements Variable  {
 
     @Override
     public void setName(final String newName) throws UserWarningException {
-        this.put("name", newName);
+        // Pre-conditions, the newName must have at least one character.
+        if (newName.length() < 1) {
+            throw new UserWarningException("Unable to add variable, a name must be supplied.");
+        }
+
+        // Pre-conditions, check to make sure newName doesn't contain invalid chars.
+        if (newName.contains("(") || newName.contains(")") || newName.contains("<") || newName.contains(">") || newName.contains(",") || newName.contains("\"")) {
+            throw new UserWarningException("Unable to add variable, name must not contain any: ') ( > < , \"'");
+        }
+
+        this.put("name", newName.trim());
         this.save();
-        
+
         for(VariableListener vl : getListeners(getID()) ) {
             vl.nameChanged(newName);
         }
