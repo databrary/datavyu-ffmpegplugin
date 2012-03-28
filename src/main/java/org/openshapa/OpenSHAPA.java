@@ -47,36 +47,19 @@ import org.openshapa.views.*;
  * The main class of the application.
  */
 public final class OpenSHAPA extends SingleFrameApplication
-    implements KeyEventDispatcher, TitleNotifier {
+implements KeyEventDispatcher, TitleNotifier {
 
     /** Load required native libraries (JNI). */
     static {
-
         switch (getPlatform()) {
+            case MAC:
+                try {
+                    NativeLoader.LoadNativeLib("quaqua64");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-        case MAC: {
-
-            try {
-                NativeLoader.LoadNativeLib("quaqua64");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        break;
-
-        // This is for BugzID:1288.
-//        case WINDOWS: {
-//
-//            try {
-//                NativeLoader.loadLibFromResource("jRegistryKey");
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        break;
-//
+                break;
         }
     }
 
@@ -946,21 +929,6 @@ public final class OpenSHAPA extends SingleFrameApplication
             System.setProperty("apple.laf.useScreenMenuBar", "true");
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "OpenSHAPA");
             System.setProperty("Quaqua.jniIsPreloaded", "true");
-
-            final String jnaLibraryPath = System.getProperty("jna.library.path");
-            final StringBuilder newJnaLibraryPath = new StringBuilder((jnaLibraryPath != null) ? (jnaLibraryPath + ":") : "");
-            newJnaLibraryPath.append(
-                "/System/Library/Frameworks/GStreamer.framework/Versions/0.10-"
-                + (com.sun.jna.Platform.is64Bit() ? "x64" : "i386") + "/lib:");
-
-            try {
-                newJnaLibraryPath.append(NativeLoader.unpackNativeApp("openshapa-nativelibs-osx64-0.2") + ":");
-            } catch (Exception e) {
-                System.err.println("Could not unpack native libraries:");
-                e.printStackTrace();
-            }
-
-            System.setProperty("jna.library.path", newJnaLibraryPath.toString());
         }
 
         launch(OpenSHAPA.class, args);

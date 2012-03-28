@@ -62,66 +62,45 @@ public class NativeLoader {
                                     .getResources(libName + extension);
         }
 
-        int count;
-        byte[] data = new byte[BUFFER];
-
+        File outfile;
         while (resources.hasMoreElements()) {
-            URL u = resources.nextElement();
-            System.err.println("Attempting to load: " + u.toString());
-
-            InputStream in = u.openStream();
-            File outfile = new File(System.getProperty("java.io.tmpdir"),
-                                    libName + extension);
-
-            // Create a temporary output location for the library.
-            FileOutputStream out = new FileOutputStream(outfile);
-            BufferedOutputStream dest = new BufferedOutputStream(out, BUFFER);
-
-            while ((count = in.read(data, 0, BUFFER)) != -1) {
-                dest.write(data, 0, count);
-            }
-
-            dest.flush();
-            dest.close();
-            out.close();
-            in.close();
-
-            loadedLibs.add(outfile);
-            System.err.println("Temp File:" + outfile);
-            System.load(outfile.toString());
-            System.err.println("Extracted lib: " + outfile);
+            outfile = copyFileToTmp((libName + extension), resources.nextElement());
         }
     }
 
-    public static void loadLibFromResource(final String libName)
-        throws Exception {
+    private static File copyFileToTmp(final String destName, final URL u) throws Exception {
+        System.err.println("Attempting to load: " + u.toString());
 
-        if (!Platform.isMac() && !Platform.isWindows()) {
-            throw new UnsupportedOperationException("Unsupported OS");
+        InputStream in = u.openStream();
+        File outfile = new File(System.getProperty("java.io.tmpdir"), destName);
+
+        // Create a temporary output location for the library.
+        FileOutputStream out = new FileOutputStream(outfile);
+        BufferedOutputStream dest = new BufferedOutputStream(out, BUFFER);
+
+        int count;
+        byte[] data = new byte[BUFFER];
+        while ((count = in.read(data, 0, BUFFER)) != -1) {
+            dest.write(data, 0, count);
         }
 
-        String prefix = Platform.isMac() ? "lib" : "";
-        String extension = Platform.isMac() ? ".jnilib" : ".dll";
+        dest.flush();
+        dest.close();
+        out.close();
+        in.close();
 
-        String lib = prefix + libName + extension;
+        loadedLibs.add(outfile);
+        System.err.println("Temp File:" + outfile);
+        System.load(outfile.toString());
+        System.err.println("Extracted lib: " + outfile);
+        return outfile;
+    }
 
-        InputStream is = NativeLoader.class.getResourceAsStream(lib);
+    public static void unpackNativeLib(final String libName) throws Exception {
+        Enumeration<URL> resources = NativeLoader.class.getClassLoader().getResources(libName);
 
-        if (is != null) {
-            System.err.println("Loading: " + lib);
-
-            File outFile = new File(System.getProperty("java.io.tmpdir"), lib);
-            outFile.deleteOnExit();
-            outFile.setWritable(true);
-
-            org.apache.commons.io.FileUtils.copyInputStreamToFile(is, outFile);
-
-            loadedLibs.add(outFile);
-            System.err.println("Temp File: " + outFile);
-            System.load(outFile.toString());
-            System.err.println("Loaded lib: " + lib);
-        } else {
-            throw new IllegalArgumentException("No such lib:" + lib);
+        while (resources.hasMoreElements()) {
+            copyFileToTmp(libName, resources.nextElement());
         }
     }
 

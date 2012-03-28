@@ -280,7 +280,7 @@
   <!-- Use an optimized build for releases. -->
   <profiles>
 
-    <!-- Platform specific dependencies, package gstreamer with osx64. -->
+    <!-- Platform specific dependencies. -->
     <profile>
       <id>mac</id>
       <activation>
@@ -291,9 +291,9 @@
 
       <dependencies>
         <dependency>
-          <groupId>org.openshapa</groupId>
-          <artifactId>openshapa-nativelibs-osx64</artifactId>
-          <version>0.2</version> <!--  NB: You'll need to update org.openshapa.OpenSHAPA when this changes. -->
+          <groupId>org.mongodb</groupId>
+          <artifactId>mongodb-osx64</artifactId>
+          <version>2.0.2</version>
         </dependency>
 
         <dependency>
@@ -587,7 +587,6 @@
                 <preCp>jruby-complete-1.6.5.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>openshapa-lib-0.0.78.jar</preCp>
-                <preCp>openshapa-gstreamer-java-1.5-SNAPSHOT-a.jar</preCp>
                 <preCp>snakeyaml-1.7.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
                 <preCp>miglayout-3.7.3.1-swing.jar</preCp>
@@ -638,12 +637,6 @@
 
     <dependency>
         <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-osx64</artifactId>
-        <version>2.0.2</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.mongodb</groupId>
         <artifactId>mongo-java-driver</artifactId>
         <version>2.7.2</version>
     </dependency>
@@ -667,12 +660,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.openshapa</groupId>
-      <artifactId>openshapa-gstreamer-java</artifactId>
-      <version>1.5-SNAPSHOT-a</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
       <version>1.7</version>
@@ -682,12 +669,14 @@
         <groupId>org.easytesting</groupId>
         <artifactId>fest-swing-testng</artifactId>
         <version>1.2a4</version>
+        <scope>test</scope>
     </dependency>
 
     <dependency>
         <groupId>org.testng</groupId>
         <artifactId>testng</artifactId>
         <version>6.3</version>
+        <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -701,6 +690,7 @@
         <groupId>junit-addons</groupId>
         <artifactId>junit-addons</artifactId>
         <version>1.4</version>
+        <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -738,18 +728,6 @@
       <groupId>quicktime</groupId>
       <artifactId>QTJava</artifactId>
       <version>7</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.rococoa</groupId>
-      <artifactId>rococoa-core</artifactId>
-      <version>0.5.1x3</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.rococoa</groupId>
-      <artifactId>rococoa-cocoa</artifactId>
-      <version>0.5.1x3</version>
     </dependency>
 
     <dependency>

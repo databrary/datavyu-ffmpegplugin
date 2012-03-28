@@ -40,7 +40,7 @@ import org.jdesktop.application.LocalStorage;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.views.continuous.quicktime.QTDataViewer;
+import org.openshapa.plugins.quicktime.QTDataViewer;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;

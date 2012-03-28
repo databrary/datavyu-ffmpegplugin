@@ -361,13 +361,7 @@ public abstract class BaseQuickTimeDataViewer extends OpenSHAPADialog
         return this;
     }
 
-    /**
-     * Method to open a media file for playback.
-     *
-     * @param mediaFile
-     *            The media file that this viewer is going to play to the
-     *            user.
-     */
+    @Override
     public void setDataFeed(final File mediaFile) {
         this.mediaFile = mediaFile;
         setTitle(mediaFile.getName());

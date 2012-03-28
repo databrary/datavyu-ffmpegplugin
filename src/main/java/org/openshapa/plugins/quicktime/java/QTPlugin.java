@@ -34,7 +34,7 @@ import org.openshapa.plugins.Filter;
 import org.openshapa.plugins.FilterNames;
 import org.openshapa.plugins.Plugin;
 
-import org.openshapa.views.continuous.quicktime.QTDataViewer;
+import org.openshapa.plugins.quicktime.QTDataViewer;
 
 
 public final class QTPlugin implements Plugin {
