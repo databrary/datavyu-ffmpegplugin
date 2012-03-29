@@ -27,7 +27,7 @@ import com.mongodb.BasicDBObject;
 import java.io.Serializable;
 
 
-public abstract class MongoValue extends BasicDBObject implements Value, Serializable {
+public abstract class MongoValue extends BasicDBObject implements Value, Serializable, Comparable<MongoValue> {
     
     String value;
     
@@ -39,6 +39,7 @@ public abstract class MongoValue extends BasicDBObject implements Value, Seriali
     @Override
     public void clear() {
         this.put("value", null);
+        this.save();
     }
 
     @Override
@@ -50,7 +51,27 @@ public abstract class MongoValue extends BasicDBObject implements Value, Seriali
         }
     }
     
+    public int getIndex() {
+        return (Integer)this.get("index");
+    }
+    
+    public void setIndex(int index) {
+        this.put("index", index);
+        this.save();
+    }
+    
     public abstract void save();
+    
+    @Override
+    public int compareTo(MongoValue v) {
+        if (this.getIndex() < v.getIndex()) {
+            return -1;
+        } else if (this.getIndex() > v.getIndex()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
     @Override
     public abstract void set(final String value);

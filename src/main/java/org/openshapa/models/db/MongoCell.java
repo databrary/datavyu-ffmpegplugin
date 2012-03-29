@@ -244,6 +244,56 @@ public class MongoCell extends BasicDBObject implements Cell {
             cl.highlightingChange(highlighted);
         }
     }
+    
+    @Override
+    public void addMatrixValue(final Argument.Type type) {
+        MongoMatrixValue val = (MongoMatrixValue)getValue();
+        val.createArgument(type);
+        val.save();
+    }
+    
+    @Override
+    public void moveMatrixValue(final int old_index, int new_index){
+        MongoMatrixValue val = (MongoMatrixValue)getValue();
+        List<Value> values = val.getArguments();
+        Value v = values.get(old_index);
+        
+        values.remove(old_index);
+        values.add(new_index, v);
+        
+        System.out.println(((MongoMatrixValue)this.getValue()).getArguments());
+        for(int i = 0; i < values.size(); i++) {
+            ((MongoValue)values.get(i)).setIndex(i);
+        }
+        System.out.println(((MongoMatrixValue)this.getValue()).getArguments());
+        val.save();
+    }
+    
+    @Override
+    public void removeMatrixValue(final int index) {
+        ((MongoMatrixValue)getValue()).removeArgument(index);
+    }
+    
+    @Override
+    public void setMatrixValue(final int index, final String v) {
+        MongoMatrixValue val = (MongoMatrixValue)getValue();
+        List<Value> values = val.getArguments();
+        values.get(index).set(v);
+        val.save();
+    }
+    
+    @Override
+    public Value getMatrixValue(final int index) {
+        return ((MongoMatrixValue)getValue()).getArguments().get(index);
+    }
+    
+    @Override
+    public void clearMatrixValue(final int index) {
+        MongoMatrixValue val = (MongoMatrixValue)getValue();
+        List<Value> values = val.getArguments();
+        values.get(index).clear();
+        val.save();
+    }
 
     @Override
     public void addListener(final CellListener listener) {
