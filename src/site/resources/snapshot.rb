@@ -130,7 +130,7 @@ Content-type: text/html
 							<ul id="mainNav">
                                                                 <li><a href="index.html">Introduction</a></li>
 								<li><a href="http://www.openshapa.org/news">News</a></li>
-								<li class="current"><a href="http://www.openshapa.org/snapshot.php">Development Snapshots</a></li>
+								<li class="current"><a href="http://www.openshapa.org/snapshot.rb">Development Snapshots</a></li>
 								<li><a href="https://openshapa.org/fogbugz/default.php?W19" target="_blank">User Guide</a></li>
 								<li><a href="https://openshapa.org/fogbugz/default.php?W20" target="_blank">Contributer Guide</a></li>
 								<li><a href="https://openshapa.org/support" target="_blank">Support</a></li>
@@ -172,13 +172,13 @@ help to try and test the latest features.
 EOS
 
 snapshot_downloads.each do |download|
-  puts "<strong<a href=\"#{$DOWNLOAD_URL + download[:file]}\">#{download[:file]}</a></strong><br/>"
+  puts "<strong><a href=\"#{$DOWNLOAD_URL + download[:file]}\">#{download[:file]}</a></strong><br/>"
 end
 
 puts <<EOS
 <br/><br/>
 <h3>Devlopment Snapshot Status:</h3>
-<table class="bodyTable"><tr class="a"><th>Fixes included in this build that require verfication:</th></tr>
+<table class="bodyTable"><tr class="a"><th>Fixes included in this build that require verification:</th></tr>
 <tr>Nothing needs to be verified.</tr>
 </table>
 <br/><br/>

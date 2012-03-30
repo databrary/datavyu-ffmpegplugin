@@ -4,7 +4,7 @@
     <menu name="OpenSHAPA">
       <item name="Introduction" href="index.html"/>
       <item name="News" href="http://www.openshapa.org/news" />
-      <item name="Development Snapshots" href="http://www.openshapa.org/snapshot.php"/>      
+      <item name="Development Snapshots" href="https://openshapa.org/snapshot.rb"/>      
       <item name="User Guide" href="https://openshapa.org/fogbugz/default.php?W19" />
       <item name="Contributor Guide" href="https://openshapa.org/fogbugz/default.php?W20" />
       <item name="Support" href="https://openshapa.org/support" />
