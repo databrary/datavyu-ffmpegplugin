@@ -33,12 +33,14 @@ public final class MongoNominalValue extends MongoValue implements NominalValue 
         this.put("value", null);
         this.put("parent_id", parent_id);
         this.put("name", "val");
+        this.put("index", -1);
         this.save();
     }
     
-    public MongoNominalValue(ObjectId parent_id, String name) {
+    public MongoNominalValue(ObjectId parent_id, String name, int index) {
         this(parent_id);
         this.put("name", name);
+        this.put("index", index);
         this.save();
     }
     

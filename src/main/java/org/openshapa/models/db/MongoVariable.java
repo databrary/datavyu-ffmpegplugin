@@ -225,7 +225,8 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
 
     @Override
     public void setVariableType(final Argument newType) {
-        this.put("argument", serializeArgument(newType));
+        this.put("type", serializeArgument(newType));
+        this.save();
     }
 
     @Override
@@ -311,6 +312,73 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
         for(VariableListener vl : getListeners(getID()) ) {
             vl.nameChanged(newName);
         }
+    }
+    
+    @Override
+    public void addArgument(final Argument.Type type) {
+        Argument arg = getVariableType();
+        arg.addChildArgument(type);
+        
+        for(Cell cell : getCells()) {
+            cell.addMatrixValue(type);
+        }
+        
+        this.setVariableType(arg);
+        this.save();
+        
+        // TODO: Notify listeners
+        
+    }
+    
+    @Override
+    public void moveArgument(final int old_index, final int new_index) {
+        Argument arg = getVariableType();
+        Argument moved_arg = arg.childArguments.get(old_index);
+        arg.childArguments.remove(moved_arg);
+        arg.childArguments.add(new_index, moved_arg);
+        
+        // Move in all cells
+        for(Cell cell : getCells()) {
+            cell.moveMatrixValue(old_index, new_index);
+        }
+        this.setVariableType(arg);
+        this.save();
+        
+        // TODO: Notify listeners
+    }
+    
+    @Override
+    public void moveArgument(final String name, final int new_index) {
+        int old_index = getArgumentIndex(name);
+        moveArgument(old_index, new_index);
+    }
+    
+    @Override
+    public void removeArgument(final String name) {
+        Argument arg = getVariableType();
+        int arg_index = getArgumentIndex(name);
+        arg.childArguments.remove(arg_index);
+        
+        // Now send this change to the cells
+        for(Cell cell : getCells()) {
+            cell.removeMatrixValue(arg_index);
+        }
+        
+        this.setVariableType(arg);
+        this.save();
+        
+        // TODO: Notify appropriate listeners that this happened.
+    }
+    
+    @Override
+    public int getArgumentIndex(final String name) {
+        Argument arg = getVariableType();
+        for(int i = 0; i < arg.childArguments.size(); i++) {
+            if(arg.childArguments.get(i).name.equals(name)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override

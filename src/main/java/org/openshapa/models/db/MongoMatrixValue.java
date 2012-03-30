@@ -26,6 +26,7 @@ package org.openshapa.models.db;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.bson.types.ObjectId;
 
@@ -75,6 +76,7 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
 
     @Override
     public List<Value> getArguments() {
+        List<MongoValue> mongo_values = new ArrayList<MongoValue>();
         List<Value> values = new ArrayList<Value>();
         BasicDBObject query = new BasicDBObject();
         query.put("parent_id", this.get("_id"));
@@ -82,19 +84,32 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
         
         DBCursor cur = MongoDatastore.getDB().getCollection("matrix_values").find(query);
         while(cur.hasNext()) {
-            values.add( (MongoMatrixValue)cur.next() );
+            mongo_values.add( (MongoMatrixValue)cur.next() );
         }
 
         cur = MongoDatastore.getDB().getCollection("nominal_values").find(query);
         while(cur.hasNext()) {
-            values.add( (MongoNominalValue)cur.next() );
+            mongo_values.add( (MongoNominalValue)cur.next() );
         }
 
         cur = MongoDatastore.getDB().getCollection("text_values").find(query);
         while(cur.hasNext()) {
-            values.add( (MongoTextValue)cur.next() );
+            mongo_values.add( (MongoTextValue)cur.next() );
         }
         
+        System.out.println("UNSORTED");
+        System.out.println(mongo_values);
+        Collections.sort(mongo_values);
+        System.out.println("SORTED");
+        
+        for(MongoValue v : mongo_values) {
+            System.out.println(v.getIndex());
+        }
+
+        System.out.println(mongo_values);
+        for(Value v : mongo_values) {
+            values.add(v);
+        }
         System.out.println("Got " + String.valueOf(values.size()) + " values belonging to matrix");
         
         return values;
@@ -108,13 +123,25 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
     @Override
     public Value createArgument(Argument.Type argType) {
         Value val = null;
-        String name = "arg" + Integer.toString(getArguments().size());
+        String name = String.format("arg%02d", getArguments().size() + 1);
         if(argType == Argument.Type.NOMINAL) {
-            val = new MongoNominalValue((ObjectId)this.get("_id"), name);
+            val = new MongoNominalValue((ObjectId)this.get("_id"), name, getArguments().size());
         } else if(argType == Argument.Type.TEXT) {
-            val = new MongoTextValue((ObjectId)this.get("_id"), name);
+            val = new MongoTextValue((ObjectId)this.get("_id"), name, getArguments().size());
         }
+        this.getArguments().add(val);
         this.save();
         return val;
+    }
+    
+    @Override
+    public void removeArgument(final int index) {
+        Value val = this.getArguments().get(index);
+        if(val instanceof MongoNominalValue) {
+            MongoDatastore.getNominalValuesCollection().remove((MongoNominalValue)val);
+        } else if (val instanceof MongoTextValue) {
+            MongoDatastore.getTextValuesCollection().remove((MongoTextValue)val);
+        }
+        this.save();
     }
 }

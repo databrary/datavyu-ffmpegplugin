@@ -33,12 +33,14 @@ public final class MongoTextValue extends MongoValue implements TextValue {
         this.put("value", null);
         this.put("parent_id", parent_id);
         this.put("name", "val");
+        this.put("index", -1);
         this.save();
     }
     
-    public MongoTextValue(ObjectId parent_id, String name) {
+    public MongoTextValue(ObjectId parent_id, String name, int index) {
         this(parent_id);
         this.put("name", name);
+        this.put("index", index);
         this.save();
     }
     
