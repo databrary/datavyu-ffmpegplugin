@@ -58,7 +58,7 @@ public class DataValueEditorFactory {
 
                 for (int i = 0; i < mv.getArguments().size(); i++) {
                     // TODO update.
-                    //eds.add(buildMatrixArg(ta, mv.getArguments().get(i)));
+                    eds.add(buildMatrixArg(ta, mv.getArguments().get(i)));
 
                     if ((mv.getArguments().size() > 1) && (i < (mv.getArguments().size() - 1))) {
                         eds.add(new FixedText(ta, ", "));
