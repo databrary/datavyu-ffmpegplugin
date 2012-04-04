@@ -56,10 +56,7 @@ public final class MongoNominalValue extends MongoValue implements NominalValue 
         this.save();
     }
     
-    @Override
-    public String toString() {
-        return (String)this.get("value");
-    }
+    
     
     @Override
     public void save() {

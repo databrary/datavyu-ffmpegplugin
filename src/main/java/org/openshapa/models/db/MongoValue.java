@@ -77,5 +77,12 @@ public abstract class MongoValue extends BasicDBObject implements Value, Seriali
     public abstract void set(final String value);
 
     @Override
-    public abstract String toString();
+    public String toString() {
+        if(this.get("value") != null)
+            return (String)this.get("value");
+        else if((Integer)this.get("index") != -1)
+            return String.format("arg%02d", (Integer)this.get("index") + 1);
+        else
+            return "var";
+    }
 }

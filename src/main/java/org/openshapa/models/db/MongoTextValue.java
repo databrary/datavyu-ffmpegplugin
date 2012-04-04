@@ -63,12 +63,5 @@ public final class MongoTextValue extends MongoValue implements TextValue {
         MongoDatastore.getDB().getCollection("text_values").save(this);
     }
     
-    @Override
-    public String toString() {
-        String val = (String)this.get("value");
-        if(val == null) {
-            return (String)this.get("name");
-        }
-        return (String)this.get("value");
-    }
+
 }
