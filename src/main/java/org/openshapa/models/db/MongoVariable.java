@@ -315,7 +315,7 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
     }
     
     @Override
-    public void addArgument(final Argument.Type type) {
+    public Argument addArgument(final Argument.Type type) {
         Argument arg = getVariableType();
         arg.addChildArgument(type);
         
@@ -326,8 +326,7 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
         this.setVariableType(arg);
         this.save();
         
-        // TODO: Notify listeners
-        
+        return arg;
     }
     
     @Override
