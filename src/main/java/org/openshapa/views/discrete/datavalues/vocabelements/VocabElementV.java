@@ -72,9 +72,7 @@ public class VocabElementV extends JPanel {
     /** Is this vocab element view marked for removal? */
     private boolean deleteVE;
 
-    /** The underlying model that this vocab element view represents. */
-//    private Argument veModel;
-    
+    /** The underlying variable model that this vocab element view represents. */    
     private Variable varModel;
 
     /** The parent editor for this vocab element view. */
@@ -103,7 +101,6 @@ public class VocabElementV extends JPanel {
         deltaImageIcon = new ImageIcon(iconURL);
         hasVEChanged = false;
         deleteVE = false;
-//        veModel = vocabArgument;
         parentEditor = vev;
         varModel = var;
 
