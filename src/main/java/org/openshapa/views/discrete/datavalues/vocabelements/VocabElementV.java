@@ -32,6 +32,7 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.models.db.Argument;
+import org.openshapa.models.db.Variable;
 import org.openshapa.views.VocabEditorV;
 import org.openshapa.views.discrete.EditorComponent;
 
@@ -72,7 +73,9 @@ public class VocabElementV extends JPanel {
     private boolean deleteVE;
 
     /** The underlying model that this vocab element view represents. */
-    private Argument veModel;
+//    private Argument veModel;
+    
+    private Variable varModel;
 
     /** The parent editor for this vocab element view. */
     private VocabEditorV parentEditor;
@@ -90,7 +93,7 @@ public class VocabElementV extends JPanel {
     private static Color lightBlue = new Color(224,248,255,255);
     private static Color lightRed = new Color(255,200,200,255);
 
-    public VocabElementV(Argument vocabArgument, VocabEditorV vev) {
+    public VocabElementV(Argument vocabArgument, Variable var, VocabEditorV vev) {
 
         ResourceMap rMap = Application.getInstance(OpenSHAPA.class)
                                       .getContext()
@@ -100,8 +103,9 @@ public class VocabElementV extends JPanel {
         deltaImageIcon = new ImageIcon(iconURL);
         hasVEChanged = false;
         deleteVE = false;
-        veModel = vocabArgument;
+//        veModel = vocabArgument;
         parentEditor = vev;
+        varModel = var;
 
         deltaIcon = new JLabel();
         deltaIcon.setMaximumSize(ICON_SIZE);
@@ -174,7 +178,7 @@ public class VocabElementV extends JPanel {
      * @param vocabArgument The new model to use with this view.
      */
     public final void setModel(final Argument vocabArgument) {
-        veModel = vocabArgument;
+        varModel.setVariableType(vocabArgument);
         this.rebuildContents();
     }
 
@@ -191,7 +195,7 @@ public class VocabElementV extends JPanel {
      * Updates the display of the vocab element view by rebuilding its contents.
      */
     public final void rebuildContents() {
-        veRootView.setVocabElement(veModel, this);
+        veRootView.setVocabElement(varModel.getVariableType(), this);
     }
 
     /**
@@ -244,7 +248,11 @@ public class VocabElementV extends JPanel {
      * @return The model (VocabElement) that this view represents.
      */
     public final Argument getModel() {
-        return veModel;
+        return varModel.getVariableType();
+    }
+    
+    public final Variable getVariable() {
+        return varModel;
     }
 
     /**

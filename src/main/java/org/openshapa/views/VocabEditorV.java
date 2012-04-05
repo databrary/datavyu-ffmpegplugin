@@ -148,7 +148,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         for (Variable var : ds.getAllVariables()) {
             Argument argument = var.getVariableType();
             if (argument.type.equals(Argument.Type.MATRIX)) {
-                VocabElementV matrixV = new VocabElementV(argument, this);
+                VocabElementV matrixV = new VocabElementV(argument, var, this);
                 verticalFrame.add(matrixV);
                 veViews.add(matrixV);
             }
@@ -223,18 +223,17 @@ public final class VocabEditorV extends OpenSHAPADialog {
      * @throws SystemErrorException If unable to add the vocab element to the
      * vocab editor.
      */
-    public void addVocabElement(final Argument va) {
+    public void addVocabElement(final Variable var, final Argument va) {
         // The database dictates that vocab elements must have a single argument
         // add a default to get started.
-        Argument newChild = new Argument("<arg0>", Argument.Type.NOMINAL);
-        va.childArguments.add(newChild);
+        var.addArgument(Argument.Type.NOMINAL);
 
-        VocabElementV vev = new VocabElementV(va, this);
+        VocabElementV vev = new VocabElementV(va, var, this);
         vev.setHasChanged(true);
         verticalFrame.add(vev);
         verticalFrame.validate();
         veViews.add(vev);
-
+        
         vev.getDataView().addKeyListener(new KeyAdapter(){
             @Override
             public void keyReleased(KeyEvent ke){
@@ -313,22 +312,23 @@ public final class VocabEditorV extends OpenSHAPADialog {
      */
     @Action
     public void addArgument() {
-        Argument va = selectedVocabElement.getModel();
+        Variable var = selectedVocabElement.getVariable();
+        Argument fa = var.addArgument(Argument.Type.NOMINAL);
+        selectedVocabElement.setModel(var.getVariableType());
 
         String type = (String) argTypeComboBox.getSelectedItem();
         LOGGER.event("vocEd - add argument:" + type);
-        String newArgName = "<arg" + va.childArguments.size() + ">";
 
-        Argument fa = new Argument(newArgName, Argument.Type.NOMINAL);
-        va.childArguments.add(fa);
-
-        //selectedVocabElement.setHasChanged(true);
+        selectedVocabElement.setHasChanged(true);
         selectedVocabElement.rebuildContents();
 
         // Select the contents of the newly created formal argument.
         selectedVocabElement.requestFocus();
         FormalArgEditor faV = selectedVocabElement.getArgumentView(fa);
-        selectedVocabElement.requestArgFocus(faV);
+        
+        /* TODO: Fix this so it doesn't explode with a NullPointerException because
+           we've destroyed the argument it is listening to. */
+//        selectedVocabElement.requestArgFocus(faV);
 
         applyChanges();
         updateDialogState();
