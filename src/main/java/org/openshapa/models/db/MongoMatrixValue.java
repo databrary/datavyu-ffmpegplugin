@@ -48,7 +48,7 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
         }
         
     }
-
+    
     @Override
     public void set(final String value) {
         this.put("value", value);
@@ -96,21 +96,10 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
         while(cur.hasNext()) {
             mongo_values.add( (MongoTextValue)cur.next() );
         }
-        
-        System.out.println("UNSORTED");
-        System.out.println(mongo_values);
-        Collections.sort(mongo_values);
-        System.out.println("SORTED");
-        
-        for(MongoValue v : mongo_values) {
-            System.out.println(v.getIndex());
-        }
 
-        System.out.println(mongo_values);
         for(Value v : mongo_values) {
             values.add(v);
         }
-        System.out.println("Got " + String.valueOf(values.size()) + " values belonging to matrix");
         
         return values;
     }

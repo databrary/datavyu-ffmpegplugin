@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.text.JTextComponent;
 import org.openshapa.models.db.Argument;
+import org.openshapa.models.db.Variable;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.datavalues.FixedText;
 
@@ -43,19 +44,20 @@ public class VocabElementEditorFactory {
      * @return A vector of editor components to represent the element.
      */
     public static List<EditorComponent> buildVocabElement(final JTextComponent ta,
+                                                          final Variable var,
                                                           final Argument ve,
                                                           final VocabElementV pv) {
 
         List<EditorComponent> eds = new ArrayList<EditorComponent>();
 
         if (ve != null) {
-            eds.add(new VENameEditor(ta, ve, pv));
+            eds.add(new VENameEditor(ta, ve, var, pv));
             eds.add(new FixedText(ta, "("));
 
             int numArgs = ve.childArguments.size();
             // For each of the arguments, build a view representation
             for (int i = 0; i < numArgs; i++) {
-                eds.addAll(buildFormalArg(ta, ve, i, pv));
+                eds.addAll(buildFormalArg(ta, ve, var, i, pv));
                 if (numArgs > 1 && i < (numArgs - 1)) {
                     eds.add(new FixedText(ta, ","));
                 }
@@ -79,12 +81,13 @@ public class VocabElementEditorFactory {
      */
     public static List<EditorComponent> buildFormalArg(JTextComponent ta,
                                                        Argument ve,
+                                                       Variable var,
                                                        int i,
                                                        VocabElementV pv) {
         List<EditorComponent> eds = new ArrayList<EditorComponent>();
 
         eds.add(new FixedText(ta, "<"));
-        eds.add(new FormalArgEditor(ta, ve, i, pv));
+        eds.add(new FormalArgEditor(ta, var, i, pv));
         eds.add(new FixedText(ta, ":"));
         eds.add(new FormalArgTypeEditor(ta, ve, i, pv));
         eds.add(new FixedText(ta, ">"));

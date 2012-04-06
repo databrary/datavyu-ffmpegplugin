@@ -20,6 +20,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.text.JTextComponent;
 import org.openshapa.models.db.Argument;
+import org.openshapa.models.db.Variable;
 import org.openshapa.util.SequentialNumberGenerator;
 import org.openshapa.views.discrete.EditorComponent;
 
@@ -30,6 +31,9 @@ public final class VENameEditor extends EditorComponent {
 
     /** Parent Vocab Element. */
     private Argument model;
+    
+    /** Parent Variable. */
+    private Variable varModel;
 
     /** String holding the reserved characters. */
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
@@ -49,11 +53,13 @@ public final class VENameEditor extends EditorComponent {
      */
     public VENameEditor(final JTextComponent ta,
                         final Argument ve,
+                        final Variable var,
                         final VocabElementV pv) {
         super(ta);
         setEditable(true);
         parentView = pv;
         model = ve;
+        varModel = var;
         setText(model.name);
     }
 
@@ -79,6 +85,13 @@ public final class VENameEditor extends EditorComponent {
             removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
+            
+            for(Argument arg : varModel.getVariableType().childArguments) {
+                if(arg.name.equals(model.name)) {
+                    arg.name = currentValue.toString();
+                }
+            }
+            
             model.name = currentValue.toString();
 
             // Advance caret over the top of the new char.

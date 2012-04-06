@@ -261,11 +261,9 @@ public class MongoCell extends BasicDBObject implements Cell {
         values.remove(old_index);
         values.add(new_index, v);
         
-        System.out.println(((MongoMatrixValue)this.getValue()).getArguments());
         for(int i = 0; i < values.size(); i++) {
             ((MongoValue)values.get(i)).setIndex(i);
         }
-        System.out.println(((MongoMatrixValue)this.getValue()).getArguments());
         val.save();
     }
     

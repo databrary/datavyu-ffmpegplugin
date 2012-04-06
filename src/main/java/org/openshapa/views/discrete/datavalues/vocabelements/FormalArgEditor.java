@@ -18,23 +18,22 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import javax.swing.text.JTextComponent;
 import org.openshapa.models.db.Argument;
+import org.openshapa.models.db.Variable;
 import org.openshapa.views.discrete.EditorComponent;
 
 /**
  * This class is the character editor of a NominalDataValue.
  */
 public final class FormalArgEditor extends EditorComponent {
-
-    /** Parent Vocab Element. */
-    private Argument parentArgument;
+    
+    /** Parent Vocab Variable. */
+    private Variable parentVariable;
 
     /** Index of the formal arg. */
     private int argIndex;
-
-    /** Model this editor represents. */
-    private Argument model = null;
 
     /** String holding the reserved characters. */
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
@@ -53,14 +52,14 @@ public final class FormalArgEditor extends EditorComponent {
      * @param pv The parent vocab element view that this editor belongs too.
      */
     public FormalArgEditor(final JTextComponent ta,
-                           final Argument pa,
+                           final Variable var,
                            final int index,
                            final VocabElementV pv) {
         super(ta);
         setEditable(true);
         argIndex = index;
         parentView = pv;
-        parentArgument = pa;
+        parentVariable = var;
         resetValue();
     }
 
@@ -68,7 +67,7 @@ public final class FormalArgEditor extends EditorComponent {
      * Resets the text value of this editor.
      */
     public void resetValue() {
-        model = parentArgument.childArguments.get(argIndex);
+        Argument model = parentVariable.getVariableType().childArguments.get(argIndex);
         String argName = "";
         if (model != null) {
             argName = model.name;
@@ -80,7 +79,7 @@ public final class FormalArgEditor extends EditorComponent {
      * @return the model.
      */
     public Argument getModel() {
-        return model;
+        return parentVariable.getVariableType();
     }
 
     /**
@@ -88,6 +87,12 @@ public final class FormalArgEditor extends EditorComponent {
      */
     public int getArgPos() {
         return argIndex;
+    }
+    
+    public void updateArgName(String newValue) {
+        Argument current_arg = parentVariable.getVariableType();
+        current_arg.childArguments.get(argIndex).name = newValue;
+        parentVariable.setVariableType(current_arg);
     }
 
     /**
@@ -112,10 +117,9 @@ public final class FormalArgEditor extends EditorComponent {
             removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
-
-            model.name = currentValue.toString();
-            //vocabElement.replaceFormalArg(model, argIndex);
-
+                        
+            updateArgName(currentValue.toString());
+            
             // Advance caret over the top of the new char.
             int pos = this.getCaretPosition() + 1;
             this.setText(currentValue.toString());
@@ -148,7 +152,7 @@ public final class FormalArgEditor extends EditorComponent {
             case KeyEvent.VK_BACK_SPACE:
                 removeBehindCaret();
 
-                model.name = getText();
+                updateArgName(getText());
                 //vocabElement.replaceFormalArg(model, argIndex);
 
                 parentView.setHasChanged(true);
@@ -159,7 +163,7 @@ public final class FormalArgEditor extends EditorComponent {
             case KeyEvent.VK_DELETE:
                 removeAheadOfCaret();
 
-                model.name = getText();
+                updateArgName(getText());
                 //vocabElement.replaceFormalArg(model, argIndex);
 
                 parentView.setHasChanged(true);

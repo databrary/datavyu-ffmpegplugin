@@ -125,7 +125,7 @@ public class VocabElementV extends JPanel {
         deleteIcon.setMinimumSize(ICON_SIZE);
         deleteIcon.setPreferredSize(ICON_SIZE);
 
-        veRootView = new VocabElementRootView(vocabArgument, this);
+        veRootView = new VocabElementRootView(var, this);
 
         JPanel leftPanel = new JPanel();
         FlowLayout flayout = new FlowLayout(FlowLayout.LEFT, 5, 0);
@@ -192,7 +192,7 @@ public class VocabElementV extends JPanel {
      * Updates the display of the vocab element view by rebuilding its contents.
      */
     public final void rebuildContents() {
-        veRootView.setVocabElement(varModel.getVariableType(), this);
+        veRootView.setVocabElement(varModel, this);
     }
 
     /**

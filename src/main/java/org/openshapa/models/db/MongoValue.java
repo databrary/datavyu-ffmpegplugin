@@ -24,7 +24,9 @@
 package org.openshapa.models.db;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 import java.io.Serializable;
+import org.bson.types.ObjectId;
 
 
 public abstract class MongoValue extends BasicDBObject implements Value, Serializable, Comparable<MongoValue> {
@@ -60,6 +62,27 @@ public abstract class MongoValue extends BasicDBObject implements Value, Seriali
         this.save();
     }
     
+    public Variable getParentVariable() {
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", (ObjectId)this.get("parent_id"));
+        DBCursor cur = MongoDatastore.getVariableCollection().find(query);
+        if(cur.hasNext())
+            return (Variable)cur.next();
+        else { // We have an argument in a matrix, so fetch that.
+            cur = MongoDatastore.getMatrixValuesCollection().find(query);
+            query.put("_id", (ObjectId)cur.next().get("parent_id"));
+            cur = MongoDatastore.getCellCollection().find(query);
+            query.put("_id", (ObjectId)cur.next().get("variable_id"));
+            cur = MongoDatastore.getVariableCollection().find(query);
+            return (Variable)cur.next();
+        }
+            
+    }
+    
+    public String getArgName(final int index) {
+        return getParentVariable().getVariableType().childArguments.get(index).name;
+    }
+    
     public abstract void save();
     
     @Override
@@ -81,8 +104,8 @@ public abstract class MongoValue extends BasicDBObject implements Value, Seriali
         if(this.get("value") != null)
             return (String)this.get("value");
         else if((Integer)this.get("index") != -1)
-            return String.format("arg%02d", (Integer)this.get("index") + 1);
+            return "<" + getArgName((Integer)this.get("index")) + ">";
         else
-            return "var";
+            return "<var>";
     }
 }

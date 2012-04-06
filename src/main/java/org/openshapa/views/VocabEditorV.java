@@ -197,12 +197,21 @@ public final class VocabEditorV extends OpenSHAPADialog {
             // Need to get the template from the variable.
             //Matrix m = v.getValue();
             //m.createArgument(Argument.type.NOMINAL);
+            
+            VocabElementV matrixV = new VocabElementV(v.getVariableType(), v, this);
+            verticalFrame.add(matrixV);
+            veViews.add(matrixV);
 
             // record the effect
             UndoableEdit edit = new AddVariableEdit(varName, Argument.Type.MATRIX);
             OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+            
+            matrixV.requestFocus();
+            matrixV.rebuildContents();
+            
+            applyChanges();
             updateDialogState();
-
+            
         // Whoops, user has done something strange - show warning dialog.
         } catch (UserWarningException fe) {
             OpenSHAPA.getApplication().showWarningDialog(fe);
@@ -484,6 +493,8 @@ public final class VocabEditorV extends OpenSHAPADialog {
         } catch (Throwable e) {
             LOGGER.error("Unable to destroy vocab editor view.", e);
         }
+        applyChanges();
+        updateDialogState();
     }
 
     /**
@@ -890,18 +901,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         int max = 0;
         for (VocabElementV vev : veViews) {
             if (vev.getModel().type.equals(Argument.Type.MATRIX)) {
-                String name = vev.getModel().name;
-                for (int i = name.length();i>0;i--) {
-                    if (Character.isDigit(name.charAt(i-1))) {
-                        String numericPart = name.substring(i-1);
-                        int check = Integer.parseInt(numericPart);
-                        if (check > max) {
-                            max = check;
-                        }
-                    } else {
-                        break;
-                    }
-                }
+                max += 1;
             }
         }
 

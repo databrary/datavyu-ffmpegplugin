@@ -22,6 +22,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
 import org.openshapa.models.db.Argument;
+import org.openshapa.models.db.Variable;
 import org.openshapa.views.discrete.EditorComponent;
 import org.openshapa.views.discrete.EditorTracker;
 
@@ -41,24 +42,28 @@ public final class VocabElementRootView extends JTextArea  {
 
     /** Border to set the text area more aligned to the icons. */
     private static Border GAP_BORDER = BorderFactory.createEmptyBorder(2, 0, 0, 0);
+    
+    private VocabElementV pv;
     /**
      * Constructor
      *
      * @param vocabElement The vocab element that this root view is representing.
      * @param pv The parent view that this root view belongs too.
      */
-    public VocabElementRootView(final Argument vocabElement,
+    public VocabElementRootView(final Variable vocabVariable,
                                 final VocabElementV pv) {
         super();
         setLineWrap(true);
         setWrapStyleWord(true);
         // just push down a little bit
         setBorder(GAP_BORDER);
+        
+        this.pv = pv;
 
         editors = new ArrayList<EditorComponent>();
         edTracker = new EditorTracker(this, editors);
 
-        setVocabElement(vocabElement, pv);
+        setVocabElement(vocabVariable, pv);
 
         this.addFocusListener(edTracker);
         this.addKeyListener(edTracker);
@@ -80,10 +85,10 @@ public final class VocabElementRootView extends JTextArea  {
      * @param ve The new vocab element that his root view will represent.
      * @param pv The parent view for this root view.
      */
-    public void setVocabElement(final Argument ve, VocabElementV pv) {
+    public void setVocabElement(final Variable var, VocabElementV pv) {
         editors.clear();
         if (editors.isEmpty()) {
-            editors.addAll(VocabElementEditorFactory.buildVocabElement(this, ve, pv));
+            editors.addAll(VocabElementEditorFactory.buildVocabElement(this, var, var.getVariableType(), pv));
         }
 
         rebuildText();
