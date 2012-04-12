@@ -18,8 +18,10 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.util.logging.Level;
 import javax.swing.text.JTextComponent;
 import org.openshapa.models.db.Argument;
+import org.openshapa.models.db.UserWarningException;
 import org.openshapa.models.db.Variable;
 import org.openshapa.util.SequentialNumberGenerator;
 import org.openshapa.views.discrete.EditorComponent;
@@ -60,7 +62,7 @@ public final class VENameEditor extends EditorComponent {
         parentView = pv;
         model = ve;
         varModel = var;
-        setText(model.name);
+        setText(varModel.getName());
     }
 
     /**
@@ -92,7 +94,11 @@ public final class VENameEditor extends EditorComponent {
                 }
             }
             
-            model.name = currentValue.toString();
+            try {
+                varModel.setName(currentValue.toString());
+            } catch (UserWarningException ex) {
+                java.util.logging.Logger.getLogger(VENameEditor.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             // Advance caret over the top of the new char.
             int pos = this.getCaretPosition() + 1;
