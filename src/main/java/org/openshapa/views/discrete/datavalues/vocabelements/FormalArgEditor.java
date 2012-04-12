@@ -79,7 +79,7 @@ public final class FormalArgEditor extends EditorComponent {
      * @return the model.
      */
     public Argument getModel() {
-        return parentVariable.getVariableType();
+        return parentVariable.getVariableType().childArguments.get(argIndex);
     }
 
     /**

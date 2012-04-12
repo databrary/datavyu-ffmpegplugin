@@ -233,7 +233,7 @@ public class VocabElementV extends JPanel {
             if (ed.getClass() == FormalArgEditor.class) {
                 FormalArgEditor fArgEd = (FormalArgEditor) ed;
 
-                if (fArgEd.getModel().equals(fa)) {
+                if (fArgEd.getModel().equals(fa)) {                    
                     return fArgEd;
                 }
             }

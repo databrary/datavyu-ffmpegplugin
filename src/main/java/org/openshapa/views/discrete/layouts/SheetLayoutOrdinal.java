@@ -87,7 +87,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
                 int ord = 1;
                 int currentHeight = 0;
                 SpreadsheetCell prevCell = null;
-
+                
                 for (SpreadsheetCell cell : col.getCellsTemporally()) {
                     Dimension d = cell.getPreferredSize();
                     if (cell.getCell().isSelected() && currentHeight != cell.getBounds().y) {

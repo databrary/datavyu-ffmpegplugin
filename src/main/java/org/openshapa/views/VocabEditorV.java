@@ -280,18 +280,15 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void moveArgumentLeft() {
         LOGGER.error("vocEd - move argument left");
-
-        Argument va = selectedVocabElement.getModel();
-        Argument ra = va.childArguments.remove(selectedArgumentI);
-        va.childArguments.add((selectedArgumentI - 1), ra);
-        //VocabElement ve = selectedVocabElement.getModel();
-        //ve.deleteFormalArg(selectedArgumentI);
-        //ve.insertFormalArg(selectedArgument.getModel(), (selectedArgumentI - 1));
-        //selectedVocabElement.setHasChanged(true);
+        Argument va = selectedVocabElement.getModel().childArguments.get(selectedArgumentI);
+        Variable var = selectedVocabElement.getVariable();
+        var.moveArgument(va.name, var.getArgumentIndex(va.name) - 1);
+        
         selectedVocabElement.rebuildContents();
 
         selectedVocabElement.requestFocus();
-        selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(ra));
+        
+        selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(va));
 
         applyChanges();
         updateDialogState();
@@ -303,14 +300,15 @@ public final class VocabEditorV extends OpenSHAPADialog {
     @Action
     public void moveArgumentRight() {
         LOGGER.error("vocEd - move argument right");
-        Argument va = selectedVocabElement.getModel();
-        Argument ra = va.childArguments.remove(selectedArgumentI);
-        va.childArguments.add((selectedArgumentI + 1), ra);
-        //selectedVocabElement.setHasChanged(true);
+        Argument va = selectedVocabElement.getModel().childArguments.get(selectedArgumentI);
+        Variable var = selectedVocabElement.getVariable();
+        var.moveArgument(va.name, var.getArgumentIndex(va.name) + 1);
+        
         selectedVocabElement.rebuildContents();
 
         selectedVocabElement.requestFocus();
-        selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(ra));
+        
+        selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(va));
 
         applyChanges();
         updateDialogState();
@@ -334,10 +332,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
         // Select the contents of the newly created formal argument.
         selectedVocabElement.requestFocus();
         FormalArgEditor faV = selectedVocabElement.getArgumentView(fa);
-        
-        /* TODO: Fix this so it doesn't explode with a NullPointerException because
-           we've destroyed the argument it is listening to. */
-//        selectedVocabElement.requestArgFocus(faV);
+        selectedVocabElement.requestArgFocus(faV);
 
         applyChanges();
         updateDialogState();
@@ -523,6 +518,7 @@ public final class VocabEditorV extends OpenSHAPADialog {
             if (vev.hasFocus()) {
                 selectedVocabElement = vev;
                 selectedArgument = vev.getArgWithFocus();
+                selectedArgumentI = vev.getArgWithFocus().getArgPos();
             }
 
             // A vocab element contains a change - enable certain things.

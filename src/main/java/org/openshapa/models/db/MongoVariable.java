@@ -112,6 +112,7 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
 
         serial_type.put("type_ordinal", type.type.ordinal());
         serial_type.put("name", type.name);
+        serial_type.put("id", type.id);
 
         List<BasicDBObject> childArguments = new ArrayList<BasicDBObject>();
         if(type.childArguments.size() > 0) {
@@ -137,8 +138,9 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
         String name = (String)serial_type.get("name");
         int type_ordinal = (Integer)serial_type.get("type_ordinal");
         Argument.Type type = Argument.Type.values()[type_ordinal];
+        long id = (Long)serial_type.get("id");
 
-        Argument arg = new Argument(name, type);
+        Argument arg = new Argument(name, type, id);
 
         if(type == Argument.Type.MATRIX) {
             List<BasicDBObject> DBchildArguments = (ArrayList<BasicDBObject>)serial_type.get("child_arguments");
@@ -326,12 +328,18 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
         this.setVariableType(arg);
         this.save();
         
-        return arg;
+        return arg.childArguments.get(arg.childArguments.size()-1);
     }
     
     @Override
     public void moveArgument(final int old_index, final int new_index) {
         Argument arg = getVariableType();
+        
+        // Test to see if this is out of bounds
+        if(new_index > arg.childArguments.size() - 1 || new_index < 0) {
+            return;
+        }
+        
         Argument moved_arg = arg.childArguments.get(old_index);
         arg.childArguments.remove(moved_arg);
         arg.childArguments.add(new_index, moved_arg);
