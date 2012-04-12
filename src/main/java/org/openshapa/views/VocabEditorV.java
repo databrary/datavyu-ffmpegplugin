@@ -350,16 +350,16 @@ public final class VocabEditorV extends OpenSHAPADialog {
             LOGGER.event("vocEd - delete element");
             // record the effect
             List<Variable> varsToDelete = new ArrayList<Variable>();
-            varsToDelete.add(ds.getVariable(selectedVocabElement.getName()));
+            varsToDelete.add(selectedVocabElement.getVariable());
             edit = new RemoveVariableEdit(varsToDelete);
             new DeleteColumnC(varsToDelete);
-            // User has argument selected - delete it from the vocab element.
+            applyChanges();
+            
+        // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             LOGGER.event("vocEd - delete argument");
-            Argument va = selectedVocabElement.getModel();
-            //Refactor this
-            va.childArguments.remove(selectedArgumentI);
-            //selectedVocabElement.setHasChanged(true);
+            selectedVocabElement.getVariable().removeArgument(selectedArgument.getModel().name);
+            selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
             applyChanges();
         }
@@ -518,7 +518,10 @@ public final class VocabEditorV extends OpenSHAPADialog {
             if (vev.hasFocus()) {
                 selectedVocabElement = vev;
                 selectedArgument = vev.getArgWithFocus();
-                selectedArgumentI = vev.getArgWithFocus().getArgPos();
+                if(selectedArgument != null)
+                    selectedArgumentI = vev.getArgWithFocus().getArgPos();
+                else
+                    selectedArgumentI = -1;
             }
 
             // A vocab element contains a change - enable certain things.

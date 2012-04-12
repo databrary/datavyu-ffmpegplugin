@@ -128,9 +128,21 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
         Value val = this.getArguments().get(index);
         if(val instanceof MongoNominalValue) {
             MongoDatastore.getNominalValuesCollection().remove((MongoNominalValue)val);
+            System.out.println("VALUE REMOVED");
         } else if (val instanceof MongoTextValue) {
             MongoDatastore.getTextValuesCollection().remove((MongoTextValue)val);
         }
+        
+        // GO OVER THE REST OF THE VALUES AFTER THIS ONE AND DECREMENT THEIR INDEX
+        
+        List<Value> args = getArguments();
+        Value v;
+        for(int i = 0; i < args.size(); i++) {
+            v = args.get(i);
+            ((MongoNominalValue)v).setIndex(i);
+            ((MongoNominalValue)v).save();
+        }
+        
         this.save();
     }
 }
