@@ -27,6 +27,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.bson.types.ObjectId;
 
@@ -80,6 +81,8 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
         List<Value> values = new ArrayList<Value>();
         BasicDBObject query = new BasicDBObject();
         query.put("parent_id", this.get("_id"));
+        BasicDBObject sortOrder = new BasicDBObject();
+        sortOrder.put("index", 1);
         
         
         DBCursor cur = MongoDatastore.getDB().getCollection("matrix_values").find(query);
@@ -101,8 +104,30 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
             values.add(v);
         }
         
+        order(values);
+        
         return values;
     }
+    
+    // Method to order the values coming out of the DB.
+    private static void order(List<Value> values) {
+
+        Collections.sort(values, new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+
+                int x1 = ((MongoValue) o1).getIndex();
+                int x2 = ((MongoValue) o2).getIndex();
+
+                if (x1 != x2) {
+                    return x1 - x2;
+                } else {
+                    return 0;
+                }
+            }
+    });
+}
+
     
     @Override
     public void save() {
