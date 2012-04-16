@@ -348,7 +348,6 @@ public class MongoDatastore implements Datastore {
     public void removeVariable(final Variable var) {
         DBCollection varCollection = mongoDB.getCollection("variables");
 
-        System.out.println("REMOVING");
         BasicDBObject query = new BasicDBObject();
         
         for(Cell c : var.getCells()) {

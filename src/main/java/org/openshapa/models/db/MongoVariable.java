@@ -172,8 +172,6 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
     @Override
     public void removeCell(final Cell cell) {
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
-
-        System.out.println("REMOVING CELL " + ((MongoCell)cell).getID().toString());
         
         for(VariableListener vl : getListeners(getID()) ) {
             vl.cellRemoved(cell);
