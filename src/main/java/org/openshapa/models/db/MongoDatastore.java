@@ -23,11 +23,7 @@
 
 package org.openshapa.models.db;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.Mongo;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
+import com.mongodb.*;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
@@ -352,11 +348,21 @@ public class MongoDatastore implements Datastore {
     public void removeVariable(final Variable var) {
         DBCollection varCollection = mongoDB.getCollection("variables");
 
-        varCollection.remove((MongoVariable)var);
-
+        System.out.println("REMOVING");
+        BasicDBObject query = new BasicDBObject();
+        
+        for(Cell c : var.getCells()) {
+            var.removeCell(c);
+        }
+        
         for(DatastoreListener dbl : this.dbListeners ) {
             dbl.variableRemoved(var);
         }
+        
+        query.put("_id", ((MongoVariable)var).getID());
+        varCollection.remove(query);
+        
+        
     }
 
     @Override
