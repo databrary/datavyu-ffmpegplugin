@@ -205,6 +205,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
         nCell.setAlignmentX(Component.RIGHT_ALIGNMENT);
         this.add(nCell);
+        this.cells.add(nCell);
         viewMap.put(cell, nCell);
         nCell.requestFocus();
     }
