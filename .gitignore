@@ -24,3 +24,4 @@ test-output/
 cop.sh
 out.csv
 usermetrix.id
+/.idea/

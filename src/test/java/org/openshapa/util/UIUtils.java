@@ -48,7 +48,6 @@ import org.apache.commons.lang.NotImplementedException;
 
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
-import org.fest.swing.fixture.DataControllerFixture;
 import org.fest.swing.fixture.JFileChooserFixture;
 import org.fest.swing.util.Platform;
 
@@ -309,60 +308,5 @@ public final class UIUtils {
         }
 
         return s.toString();
-    }
-
-    /**
-     * TODO: FIX this to use the new plugin chooser.
-     * Open data using data controller.
-     *
-     * @param videoFile
-     *            file to open
-     * @param dcf
-     *            DataControllerFixture
-     */
-    public static void openData(final File videoFile,
-        final DataControllerFixture dcf) {
-        throw new NotImplementedException(
-            "Re-implement to use plugin chooser.");
-
-        // if (Platform.isOSX()) {
-        // final PluginManager pm = PluginManager.getInstance();
-        // GuiActionRunner.execute(new GuiTask() {
-        //
-        // public void executeInEDT() {
-        // OpenSHAPAFileChooser fc = new OpenSHAPAFileChooser();
-        // fc.setVisible(false);
-        //
-        //
-        // // for (FileFilter f : pm.getPluginFileFilters()) {
-        // // fc.addChoosableFileFilter(f);
-        // // }
-        //
-        // fc.setSelectedFile(videoFile);
-        // method("openVideo").withParameterTypes(
-        // OpenSHAPAFileChooser.class).in(
-        // (DataControllerV) dcf.component()).invoke(fc);
-        // }
-        // });
-        // } else {
-        // boolean worked = false;
-        // JFileChooserFixture jfcf = null;
-        //
-        // final long startTime = System.currentTimeMillis();
-        // final long maxTestRunTime = 5 * 1000;
-        //
-        // do {
-        // dcf.button("addDataButton").click();
-        //
-        // try {
-        // jfcf = dcf.fileChooser();
-        // jfcf.selectFile(videoFile).approve();
-        // worked = true;
-        // } catch (Exception e) {
-        // // keep trying
-        // }
-        // } while ((worked == false)
-        // && (System.currentTimeMillis() < (startTime + maxTestRunTime)));
-        // }
     }
 }
