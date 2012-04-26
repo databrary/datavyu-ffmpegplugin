@@ -609,8 +609,7 @@ public final class OpenDatabaseFileC {
             // Get the vocab element for the matrix and clean it up to be
             // populated with arguments from the CSV file.
             Argument newArg = newVar.getVariableType();
-            //MatrixVocabElement mve = legacyDb.getMatrixVE(varName);
-            //mve.deleteFormalArg(0);
+            newArg.clearChildArguments();
 
             // For each of the formal arguments in the file - parse it and
             // create a formal argument in the matrix vocab element.

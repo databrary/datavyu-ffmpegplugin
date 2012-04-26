@@ -215,7 +215,9 @@ public class MongoDatastore implements Datastore {
     public List<Variable> getAllVariables() {
 
         DBCollection varCollection = mongoDB.getCollection("variables");
-        DBCursor varCursor = varCollection.find();
+        BasicDBObject query = new BasicDBObject();
+        query.put("_id", true);
+        DBCursor varCursor = varCollection.find().sort(query);
 
         List<Variable> varList = new ArrayList<Variable>();
         while(varCursor.hasNext()) {
