@@ -216,6 +216,7 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
             if(i == index) {
                 return (MongoCell)cur.next();
             }
+            cur.next();
             i++;
         }
 
