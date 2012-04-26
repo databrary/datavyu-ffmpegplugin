@@ -404,9 +404,7 @@
           </resources>
           <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
           <dictionaryFile>${basedir}/Info.plist</dictionaryFile>
-          <!-- All mvn assembly:assembly first - so that the output directory
-               for the DMG is first created, otherwise this line will do
-               nothing. -->
+          <!-- see teh antrun goal - need to create snapshot directory before this will work. -->
           <diskImageFile>${project.build.directory}/site/snapshots/${project.build.finalName}-OSX-${buildNumber}.dmg</diskImageFile>
         </configuration>
       </plugin>
@@ -417,7 +415,7 @@
           <descriptors>
             <descriptor>${assembly-config}</descriptor>
           </descriptors>
-          <outputDirectory>target/site/download</outputDirectory>
+          <outputDirectory>target/site/snapshots</outputDirectory>
         </configuration>
       </plugin>
 
@@ -509,7 +507,7 @@
                  replace="Application.build = b:${buildNumber}"/>
 
                 <!-- BugzID:304 - Create output directory for DMG. -->
-                <mkdir dir="${project.build.directory}/site/download/"/>
+                <mkdir dir="${project.build.directory}/site/snapshots/"/>
               </tasks>
             </configuration>
           </execution>
