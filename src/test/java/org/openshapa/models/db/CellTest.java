@@ -61,11 +61,11 @@ public class CellTest {
     
     @Test
     public void testIsSelected() {
-        assertFalse(model.isSelected());
-        model.setSelected(true);
         assertTrue(model.isSelected());
+        model.setSelected(false);
+        assertFalse(model.isSelected());
 
-        verify(modelListener).selectionChange(true);
+        verify(modelListener).selectionChange(false);
         verify(modelListener, times(0)).highlightingChange(true);
         verify(modelListener, times(0)).offsetChanged(0);
         verify(modelListener, times(0)).onsetChanged(0);
@@ -74,11 +74,11 @@ public class CellTest {
     
     @Test
     public void testIsHighlighted() {
-        assertFalse(model.isHighlighted());
-        model.setHighlighted(true);
         assertTrue(model.isHighlighted());
+        model.setHighlighted(false);
+        assertFalse(model.isHighlighted());
         
-        verify(modelListener).highlightingChange(true);
+        verify(modelListener).highlightingChange(false);
         verify(modelListener, times(0)).selectionChange(true);
         verify(modelListener, times(0)).offsetChanged(0);
         verify(modelListener, times(0)).onsetChanged(0);
