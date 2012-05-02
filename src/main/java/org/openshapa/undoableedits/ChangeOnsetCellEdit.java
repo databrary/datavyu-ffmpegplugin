@@ -23,34 +23,26 @@ import org.openshapa.views.discrete.SpreadsheetCell;
  */
 public class ChangeOnsetCellEdit extends ChangeCellEdit { 
     /** onset of cell */
-    private long onset = -1;
+    private long oldOnset = -1;
+    private long newOnset = -1;
 
-    /** string representation of onset. */
-    private String onsetString = null;
-
-    public ChangeOnsetCellEdit(Cell c, Granularity granularity) {
+    public ChangeOnsetCellEdit(Cell c, long oldOnset, long newOnset, Granularity granularity) {
         super(c, granularity);
-        this.onset = c.getOnset();
-        this.onsetString = c.getOnsetString();
-    }
-
-    public ChangeOnsetCellEdit(Cell c) {
-        this(c, Granularity.COARSEGRAINED);
+        this.oldOnset = oldOnset;
+        this.newOnset = newOnset;
     }
 
     @Override
     public String getPresentationName() {
-        return super.getPresentationName() + "Onset Cell (" + columnName + ") to " + onsetString;
+        return "Changed the onset of a cell within '" + columnName + "' to " + newOnset;
     }
 
     @Override
     protected void updateCell(Cell cell) {
         long currentOnset = cell.getOnset();
-        String currentOnsetString = cell.getOnsetString();
-        
-        cell.setOnset(this.onset);
-        this.onset = currentOnset;
-        this.onsetString = currentOnsetString;
+
+        cell.setOnset(this.oldOnset);
+        this.oldOnset = currentOnset;
     }
 
     @Override
@@ -70,15 +62,14 @@ public class ChangeOnsetCellEdit extends ChangeCellEdit {
         // Must be this class to be here
         ChangeOnsetCellEdit t = (ChangeOnsetCellEdit) obj; 
 
-        return ((this.onset == t.onset)
-                && (this.onsetString.equals(t.onsetString)));
+        return (this.oldOnset == t.oldOnset && this.newOnset == t.newOnset);
     }
 
     @Override
     public int hashCode() {
         double hash = super.hashCode();
-        hash += onset * Constants.SEED1;
-        hash += onsetString.hashCode() * Constants.SEED2;
+        hash += this.oldOnset * Constants.SEED1;
+        hash += this.newOnset * Constants.SEED2;
         long val = Double.doubleToLongBits(hash);
 
         return (int) (val ^ (val >>> 32));

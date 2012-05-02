@@ -97,8 +97,9 @@ public final class TimeStampDataValueEditor extends EditorComponent {
 
         switch (dataSourceType) {
             case Onset:
-                edit = new ChangeOnsetCellEdit(parentCell, Granularity.FINEGRAINED);
+                long oldOnset = parentCell.getOnset();
                 parentCell.setOnset(value);
+                edit = new ChangeOnsetCellEdit(parentCell, oldOnset, parentCell.getOnset(), Granularity.FINEGRAINED);
                 break;
             default:
                 edit = new ChangeOffsetCellEdit(parentCell, Granularity.FINEGRAINED);
@@ -274,7 +275,6 @@ public final class TimeStampDataValueEditor extends EditorComponent {
         textOnFocus = getText();
         switch (dataSourceType) {
             case Onset:
-                edit = new ChangeOnsetCellEdit(parentCell, Granularity.COARSEGRAINED);
                 break;
             default:
                 edit = new ChangeOffsetCellEdit(parentCell, Granularity.COARSEGRAINED);

@@ -318,7 +318,7 @@ implements KeyEventDispatcher, TitleNotifier {
             }
         }
 
-        if (evt.getKeyCode() == KeyEvent.VK_CLEAR) {
+        if (evt.getKeyCode() == KeyEvent.VK_CLEAR && evt.getID() == KeyEvent.KEY_PRESSED) {
             dataController.pressSetCellOnset();
         }
 

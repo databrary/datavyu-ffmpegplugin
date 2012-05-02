@@ -18,8 +18,11 @@ import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
+import org.openshapa.undoableedits.ChangeCellEdit.Granularity;
+import org.openshapa.undoableedits.ChangeOnsetCellEdit;
 
 /**
  * Controller for setting all selected cells to have the specified start time /
@@ -43,6 +46,10 @@ public class SetSelectedCellStartTimeC {
         Datastore datastore = OpenSHAPA.getProjectController().getDB();
 
         for (Cell c : datastore.getSelectedCells()) {
+            // record the effect
+            UndoableEdit edit = new ChangeOnsetCellEdit(c, c.getOnset(), milliseconds, Granularity.FINEGRAINED);
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+
             c.setOnset(milliseconds);
         }
     }
