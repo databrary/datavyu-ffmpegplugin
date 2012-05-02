@@ -29,21 +29,22 @@ import org.openshapa.undoableedits.ChangeCellEdit.Granularity;
  */
 public class SpreadsheetUndoManager  extends UndoManager implements ListModel {
 
+    List<ListDataListener> listeners;
+
     public SpreadsheetUndoManager() {
+        listeners = new ArrayList<ListDataListener>();
     }
 
     @Override
     public synchronized void undo() throws CannotUndoException {
-//        ((SpreadsheetEdit)this.editToBeUndone()).displayFeedback = true;
         super.undo();
     }
 
     @Override
     public synchronized void redo() throws CannotRedoException {
-//        ((SpreadsheetEdit)this.editToBeRedone()).displayFeedback = true;
         super.redo();
     }
-        
+
     @Override
     public synchronized boolean addEdit(UndoableEdit ue) {
         boolean addEdit = true;
@@ -76,90 +77,75 @@ public class SpreadsheetUndoManager  extends UndoManager implements ListModel {
         } else {
             result = false;
         }
-        //printEdits();
+
+        for (ListDataListener l : listeners) {
+            l.contentsChanged(null);
+        }
         return result;
     }
 
-    
-/*
+    // Return the complete list of edits in an array.
+    public synchronized UndoableEdit[] getEdits() {
+        UndoableEdit[] array = new UndoableEdit[edits.size()];
+        edits.copyInto(array);
+        return array;
+    }
+
+    public synchronized List<UndoableEdit> getUndoableEdits() {
+        int size = edits.size();
+        List<UndoableEdit> v = new ArrayList<UndoableEdit>(size);
+
+        for (int i=size-1; i>=0; i--) {
+            UndoableEdit u = (UndoableEdit)edits.elementAt(i);
+            if (u.canUndo() && u.isSignificant()) {
+                v.add(u);
+            }
+        }
+
+        return v;
+    }
+
+    // Return all currently significant redoable edits. The first edit is the
+    // next one to be redone.
+    public synchronized List<UndoableEdit> getRedoableEdits() {
+        int size = edits.size();
+        List<UndoableEdit> v = new ArrayList<UndoableEdit>(size);
+        for (int i=0; i<size; i++) {
+            UndoableEdit u = (UndoableEdit)edits.elementAt(i);
+            if (u.canRedo() && u.isSignificant()) {
+                v.add(u);
+            }
+        }
+
+        return v;
+    }
+
+    // ListModel Methods
     @Override
-    public synchronized boolean addEdit(UndoableEdit ue) {
-        boolean result = super.addEdit(ue);
-        printEdits();
-        return result;
+    public Object getElementAt(int index) {
+        return edits.get(index);
     }
-*/    
-      
-  // Return the complete list of edits in an array.
-  public synchronized UndoableEdit[] getEdits() {
-    UndoableEdit[] array = new UndoableEdit[edits.size()];
-    edits.copyInto(array);
-    return array;
-  }
-  
-  public synchronized List<UndoableEdit> getUndoableEdits() {
-    int size = edits.size();
-    List<UndoableEdit> v = new ArrayList<UndoableEdit>(size);
-    for (int i=size-1;i>=0;i--) {
-      UndoableEdit u = (UndoableEdit)edits.elementAt(i);
-      if (u.canUndo() && u.isSignificant())
-        v.add(u);
+
+    @Override
+    public int getSize() {
+        return edits.size();
     }
-    return v;
-  }
 
-  // Return all currently significant redoable edits. The first edit is the
-  // next one to be redone.
-  public synchronized List<UndoableEdit> getRedoableEdits() {
-    int size = edits.size();
-    List<UndoableEdit> v = new ArrayList<UndoableEdit>(size);
-    for (int i=0; i<size; i++) {
-      UndoableEdit u = (UndoableEdit)edits.elementAt(i);
-      if (u.canRedo() && u.isSignificant())
-        v.add(u);
+    @Override
+    public void addListDataListener(ListDataListener l) {
+        listeners.add(l);
     }
-    return v;    
-  }      
 
-  private void printEdits() {
-      UndoableEdit[] editsV = getEdits();
-      System.out.println("Edit List");
-      for (UndoableEdit ue : editsV) {
-          System.out.println(ue.getPresentationName());
-      }
-      System.out.println();
-  }
-    
-  
-  // ListModel Methods
-  @Override
-  public Object getElementAt(int index) {
-    return edits.get(index);
-}
+    @Override
+    public void removeListDataListener(ListDataListener l) {
+        listeners.remove(l);
+    }
 
-  @Override
-  public int getSize() {
-    return edits.size();
-  }
-
-  @Override
-  public void addListDataListener(ListDataListener l) {
-  
-  }
-  
-  
-  @Override
-  public void removeListDataListener(ListDataListener l) {
-  
-  }
-  
-  public void goTo(SpreadsheetEdit edit) {
-//      edit.displayFeedback = true;          
-      if (edit.canUndo()) {
-          this.undoTo(edit);
-      } else if (edit.canRedo()) {
-          this.redoTo(edit);
-      }
-  }
-    
+    public void goTo(SpreadsheetEdit edit) {
+        if (edit.canUndo()) {
+            this.undoTo(edit);
+        } else if (edit.canRedo()) {
+            this.redoTo(edit);
+        }
+    }
 }

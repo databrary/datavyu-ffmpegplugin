@@ -17,33 +17,22 @@ package org.openshapa.views;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.Toolkit;
-import java.awt.event.MouseEvent;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.ListModel;
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.UndoManager;
 import org.openshapa.OpenSHAPA;
 import org.openshapa.undoableedits.SpreadsheetEdit;
 import org.openshapa.undoableedits.SpreadsheetUndoManager;
 
 /**
- *
- * @author harold
+ * A window that displays the history of actions undertaken by the person using
+ * OpenSHAPA.
  */
 public class UndoHistoryWindow extends OpenSHAPADialog {
     private Frame parent;
-    private SpreadsheetUndoManager undomanager;    
+    private SpreadsheetUndoManager undomanager;
     private boolean firstClickOnItem;
-    
-    
-    public UndoHistoryWindow() {
-        super(null, true);
-        initComponents();   
-    }
-    
+
     public UndoHistoryWindow(final java.awt.Frame parent,
-                            final boolean modal, final SpreadsheetUndoManager undomanager) {
+                             final boolean modal,
+                             final SpreadsheetUndoManager undomanager) {
         super(parent, modal);
         this.parent = parent;
         this.undomanager = undomanager;
@@ -108,22 +97,17 @@ public class UndoHistoryWindow extends OpenSHAPADialog {
     }//GEN-LAST:event_undoHistoryListValueChanged
 
     private void undoHistoryListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_undoHistoryListMouseClicked
-        // TODO add your handling code here:
         if (!this.firstClickOnItem) {
             go();
         }
         this.firstClickOnItem = false;
     }//GEN-LAST:event_undoHistoryListMouseClicked
 
-    
     private void go() {
-        //System.out.println("ValueChanged " + undoHistoryList.getSelectedIndex() + " , " + undoHistoryList.getSelectedValue().toString());            
         parent.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         this.undoHistoryList.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         undomanager.goTo((SpreadsheetEdit) undoHistoryList.getSelectedValue());
         OpenSHAPA.getView().refreshUndoRedo();
-        //OpenSHAPA.getView().getSpreadsheetPanel().revalidate();
-        //OpenSHAPA.getView().getSpreadsheetPanel().repaint();
         OpenSHAPA.getView().showSpreadsheet();
         this.rootPane.revalidate();
         this.rootPane.repaint();
@@ -131,14 +115,14 @@ public class UndoHistoryWindow extends OpenSHAPADialog {
         parent.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         this.undoHistoryList.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
-    
+
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
         // TODO add your handling code here:
         int selected = undoHistoryList.getSelectedIndex();
         if (selected == -1) {
             undoHistoryList.ensureIndexIsVisible(undoHistoryList.getModel().getSize()-1);
         } else {
-            undoHistoryList.ensureIndexIsVisible(selected);            
+            undoHistoryList.ensureIndexIsVisible(selected);
         }
     }//GEN-LAST:event_formWindowGainedFocus
 
@@ -146,30 +130,4 @@ public class UndoHistoryWindow extends OpenSHAPADialog {
     private javax.swing.JList undoHistoryList;
     private javax.swing.JScrollPane undoHistoryScrollPane;
     // End of variables declaration//GEN-END:variables
-
-}
-
-class UndoList extends JList {
-
-    @Override
-    public String getToolTipText(MouseEvent me) {
-        String msg;
-        // Get item index
-        int index = locationToIndex(me.getPoint());
-        // Get item
-        Object item = getModel().getElementAt(index);
-        AbstractUndoableEdit edit = (AbstractUndoableEdit)item;
-        // Return the tool tip text
-        if (edit.canUndo()) {
-            msg = "Click to Undo";
-        } else if (edit.canRedo()){
-            msg = "Click to Redo";            
-        } else {
-            msg = null;
-        }    
-        return msg;                
-    }
-    
-    
-    
 }

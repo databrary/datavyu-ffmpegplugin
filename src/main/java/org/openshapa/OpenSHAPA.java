@@ -505,10 +505,9 @@ implements KeyEventDispatcher, TitleNotifier {
     public void showHistory() {
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         SpreadsheetUndoManager undomanager = OpenSHAPA.getApplication().getView().getSpreadsheetUndoManager();
-        history = new UndoHistoryWindow(mainFrame, true, undomanager);
+        history = new UndoHistoryWindow(mainFrame, false, undomanager);
         OpenSHAPA.getApplication().show(history);
     }
-
 
 
     /**
