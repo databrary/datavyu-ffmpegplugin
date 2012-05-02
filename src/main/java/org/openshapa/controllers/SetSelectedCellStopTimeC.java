@@ -18,8 +18,11 @@ import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Cell;
 import org.openshapa.models.db.Datastore;
+import org.openshapa.undoableedits.ChangeCellEdit;
+import org.openshapa.undoableedits.ChangeOffsetCellEdit;
 
 /**
  * Controller for setting all selected cells to have the specified stop time /
@@ -43,6 +46,10 @@ public class SetSelectedCellStopTimeC {
         Datastore datastore = OpenSHAPA.getProjectController().getDB();
 
         for (Cell c : datastore.getSelectedCells()) {
+            // record the effect
+            UndoableEdit edit = new ChangeOffsetCellEdit(c, c.getOffset(), milliseconds, ChangeCellEdit.Granularity.FINEGRAINED);
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+
             c.setOffset(milliseconds);
         }
     }

@@ -18,7 +18,10 @@ import com.usermetrix.jclient.Logger;
 import org.openshapa.OpenSHAPA;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.undo.UndoableEdit;
 import org.openshapa.models.db.Cell;
+import org.openshapa.undoableedits.ChangeCellEdit;
+import org.openshapa.undoableedits.ChangeOffsetCellEdit;
 
 /**
  * Controller for setting the stop time (offset) of a new cell.
@@ -37,7 +40,11 @@ public final class SetNewCellStopTimeC {
     public SetNewCellStopTimeC(final long milliseconds) {
         LOGGER.event("set new cell offset");
 
-        Cell dataCell = OpenSHAPA.getProjectController().getLastCreatedCell();
-        dataCell.setOffset(milliseconds);
+        Cell c = OpenSHAPA.getProjectController().getLastCreatedCell();
+        // record the effect
+        UndoableEdit edit = new ChangeOffsetCellEdit(c, c.getOffset(), milliseconds, ChangeCellEdit.Granularity.FINEGRAINED);
+        OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+
+        c.setOffset(milliseconds);
     }
 }

@@ -23,34 +23,27 @@ import org.openshapa.views.discrete.SpreadsheetCell;
  */
 public class ChangeOffsetCellEdit extends ChangeCellEdit {
     /** offset of cell */
-    private long offset = -1;
+    private long oldOffset = -1;
+    private long newOffset = -1;
 
-    /** string representation of offset. */
-    private String offsetString = null;
 
-    public ChangeOffsetCellEdit(Cell c, Granularity granularity) {
+    public ChangeOffsetCellEdit(Cell c, long oldOffset, long newOffset, Granularity granularity) {
         super(c, granularity);
-        this.offset = c.getOffset();
-        this.offsetString = c.getOffsetString();
-    }
-
-    public ChangeOffsetCellEdit(Cell c) {
-        this(c,Granularity.COARSEGRAINED);
+        this.oldOffset = oldOffset;
+        this.newOffset = newOffset;
     }
 
     @Override
     public String getPresentationName() {
-        return super.getPresentationName() + "Offset Cell (" + columnName + ") to " + offsetString;
+        return "Changed the offset of a cell within '" + columnName + "' to " + this.newOffset;
     }
 
     @Override
     protected void updateCell(Cell cell) {
         long currentOffset = cell.getOffset();
-        String currentOffsetString = cell.getOffsetString();
 
-        cell.setOffset(this.offset);
-        this.offset = currentOffset;
-        this.offsetString = currentOffsetString;
+        cell.setOffset(this.oldOffset);
+        this.oldOffset = currentOffset;
     }
 
     @Override
@@ -69,15 +62,15 @@ public class ChangeOffsetCellEdit extends ChangeCellEdit {
         // Must be this class to be here
         ChangeOffsetCellEdit t = (ChangeOffsetCellEdit) obj;
 
-        return ((this.offset == t.offset)
-                && (this.offsetString.equals(t.offsetString)));
+        return ((this.newOffset == t.newOffset)
+                && (this.oldOffset == t.oldOffset));
     }
 
     @Override
     public int hashCode() {
         double hash = super.hashCode();
-        hash += offset * Constants.SEED1;
-        hash += offsetString.hashCode() * Constants.SEED2;
+        hash += newOffset * Constants.SEED1;
+        hash += oldOffset * Constants.SEED2;
         long val = Double.doubleToLongBits(hash);
 
         return (int) (val ^ (val >>> 32));
