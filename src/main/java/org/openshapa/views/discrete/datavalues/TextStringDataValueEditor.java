@@ -67,7 +67,16 @@ public final class TextStringDataValueEditor extends DataValueEditor {
         // Just a regular vanilla keystroke - insert it into text field.
         if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
             && !isReserved(e.getKeyChar())) {
+
+            // BugID: 26057841 - if the model is empty and we get a new line, correctly
+            // empty the contents. (Selection gets all altered by java when new line
+            // is mashed into the edtior).
+            if (model.isEmpty() && e.getKeyChar() == '\n') {
+                getParentComponent().setText(getText());
+                this.selectAll();
+            }
             this.removeSelectedText();
+
             StringBuilder currentValue = new StringBuilder(getText());
 
             // If we have a delete or backspace key - do not insert.
@@ -95,6 +104,6 @@ public final class TextStringDataValueEditor extends DataValueEditor {
         // All other key strokes are consumed.
         } else {
             e.consume();
-        }        
+        }
     }
 }
