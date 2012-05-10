@@ -644,8 +644,7 @@ public final class OpenSHAPAView extends FrameView
     /**
      * Helper method for opening a file from disk.
      *
-     * @param jd
-     *            The file chooser to use.
+     * @param jd The file chooser to use.
      */
     private void open(final OpenSHAPAFileChooser jd) {
         OpenSHAPA.getApplication().resetApp();
