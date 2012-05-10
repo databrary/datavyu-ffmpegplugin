@@ -267,6 +267,10 @@ public final class CreateNewCellC {
             OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
             OpenSHAPA.getProjectController().setLastCreatedVariable(var);
 
+            // Add the undoable action
+            UndoableEdit edit = new AddCellEdit(var.getName());
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+
             newcelladded = true;
 
             if (!multiadd) {
@@ -288,6 +292,10 @@ public final class CreateNewCellC {
                 OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
                 OpenSHAPA.getProjectController().setLastCreatedVariable(var);
 
+                // Add the undoable action
+                UndoableEdit edit = new AddCellEdit(var.getName());
+                OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+
                 newcelladded = true;
 
                 if (!multiadd) {
@@ -307,6 +315,11 @@ public final class CreateNewCellC {
                     newCell.setOnset(onset);
                     OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
                     OpenSHAPA.getProjectController().setLastCreatedVariable(var);
+
+                    // Add the undoable action
+                    UndoableEdit edit = new AddCellEdit(var.getName());
+                    OpenSHAPA.getView().getUndoSupport().postEdit(edit);
+
                     newcelladded = true;
                 }
             }
@@ -329,6 +342,10 @@ public final class CreateNewCellC {
             newCell = OpenSHAPA.getProjectController().getLastCreatedVariable().createCell();
             newCell.setOnset(onset);
             OpenSHAPA.getProjectController().setLastCreatedCell(newCell);
+
+            // Add the undoable action
+            UndoableEdit edit = new AddCellEdit(OpenSHAPA.getProjectController().getLastCreatedVariable().getName());
+            OpenSHAPA.getView().getUndoSupport().postEdit(edit);
         }
 
         model.deselectAll();
