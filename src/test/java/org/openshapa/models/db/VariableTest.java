@@ -45,6 +45,7 @@ public class VariableTest {
         model = ds.createVariable("test", Argument.Type.TEXT);
         modelListener = mock(VariableListener.class);
         model.addListener(modelListener);
+        ds.markAsUnchanged();
     }
 
     @AfterMethod
@@ -57,7 +58,9 @@ public class VariableTest {
     @Test
     public void testSetName() throws UserWarningException {
         assertEquals(model.getName(), "test");
+        assertFalse(ds.isChanged());
         model.setName("test2");
+        assertTrue(ds.isChanged());
         assertEquals(model.getName(), "test2");
         verify(modelListener).nameChanged("test2");
         verify(modelListener, times(0)).visibilityChanged(true);
@@ -68,7 +71,9 @@ public class VariableTest {
     @Test
     public void testIsHidden() {
         assertFalse(model.isHidden());
+        assertFalse(ds.isChanged());
         model.setHidden(true);
+        assertTrue(ds.isChanged());
         assertTrue(model.isHidden());
         verify(modelListener).visibilityChanged(true);
         verify(modelListener, times(0)).nameChanged(null);
@@ -82,7 +87,9 @@ public class VariableTest {
         vars.add(model);
         assertTrue(model.isSelected());
         assertEquals(ds.getSelectedVariables(), vars);
+        assertFalse(ds.isChanged());
         model.setSelected(false);
+        assertTrue(ds.isChanged());
         assertFalse(model.isSelected());
         verify(modelListener, times(0)).visibilityChanged(true);
         verify(modelListener, times(0)).nameChanged(null);
@@ -98,7 +105,9 @@ public class VariableTest {
     @Test
     public void testCreateCell() {
         List<Cell> cells = new ArrayList<Cell>();
+        assertFalse(ds.isChanged());
         Cell c = model.createCell();
+        assertTrue(ds.isChanged());
         cells.add(c);
         assertTrue(model.contains(c));
         assertEquals(ds.getVariable(c), model);
@@ -112,7 +121,10 @@ public class VariableTest {
     @Test
     public void testRemoveCell() {
         Cell c = model.createCell();
+        ds.markAsUnchanged();
+        assertFalse(ds.isChanged());
         ds.removeCell(c);
+        assertTrue(ds.isChanged());
 
         assertFalse(model.contains(c));
         assertEquals(model.getCells().size(), 0);
@@ -127,7 +139,10 @@ public class VariableTest {
     @Test
     public void testRemoveCell2() {
         Cell c = model.createCell();
+        ds.markAsUnchanged();
+        assertFalse(ds.isChanged());
         model.removeCell(c);
+        assertTrue(ds.isChanged());
 
         assertFalse(model.contains(c));
         assertEquals(model.getCells().size(), 0);

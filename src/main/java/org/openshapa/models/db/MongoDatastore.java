@@ -106,6 +106,10 @@ public class MongoDatastore implements Datastore {
         MongoDatastore.changed = false;
     }
 
+    public static void markDBAsChanged() {
+        MongoDatastore.changed = true;
+    }
+
     /**
      * Spin up the mongo instance so that we can query and do stuff with it.
      */
