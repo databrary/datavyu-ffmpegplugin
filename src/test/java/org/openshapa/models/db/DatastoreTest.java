@@ -22,6 +22,7 @@ import org.testng.annotations.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 import org.testng.annotations.*;
@@ -69,7 +70,9 @@ public class DatastoreTest {
 
     @Test
     public void createVariable() throws UserWarningException {
+        assertFalse(model.isChanged());
         model.createVariable("foo", Argument.Type.TEXT);
+        assertTrue(model.isChanged());
         Variable var = model.getVariable("foo");
         List<Variable> varList = new ArrayList<Variable>();
         varList.add(var);
@@ -109,7 +112,10 @@ public class DatastoreTest {
         assertEquals(model.getAllVariables(), varList);
         verify(modelListener).variableAdded(var);
 
+        model.markAsUnchanged();
+        assertFalse(model.isChanged());
         model.removeVariable(var);
+        assertTrue(model.isChanged());
 
         assertEquals(model.getAllVariables().size(), 0);
         assertEquals(model.getSelectedVariables().size(), 0);
@@ -121,5 +127,12 @@ public class DatastoreTest {
         verify(modelListener, times(0)).variableOrderChanged();
     }
 
-
+    @Test
+    public void unchangedByDefault() throws UserWarningException {
+        assertFalse(model.isChanged());
+        model.createVariable("test", Argument.Type.TEXT);
+        assertTrue(model.isChanged());
+        model.markAsUnchanged();
+        assertFalse(model.isChanged());
+    }
 }

@@ -59,6 +59,9 @@ public class MongoDatastore implements Datastore {
     // Name of the datastore - does not need to persist - is used for file names.
     private String name = "untitled";
 
+    // Has tbhe datastore changed since it has last been marked as unchanged?
+    private static boolean changed;
+
     //
     private List<DatastoreListener> dbListeners = new ArrayList<DatastoreListener>();
 
@@ -100,6 +103,7 @@ public class MongoDatastore implements Datastore {
 
         // Clear variable listeners.
         MongoVariable.clearListeners();
+        MongoDatastore.changed = false;
     }
 
     /**
@@ -282,12 +286,14 @@ public class MongoDatastore implements Datastore {
         while (cellCursor.hasNext()) {
             ((MongoCell) cellCursor.next()).setSelected(false);
         }
+        MongoDatastore.changed = true;
     }
 
     @Override
     public void deselectAll() {
         this.clearCellSelection();
         this.clearVariableSelection();
+        MongoDatastore.changed = true;
     }
 
     @Override
@@ -343,6 +349,7 @@ public class MongoDatastore implements Datastore {
             dbl.variableAdded(v);
         }
 
+        MongoDatastore.changed = true;
         return v;
     }
 
@@ -351,24 +358,25 @@ public class MongoDatastore implements Datastore {
         DBCollection varCollection = mongoDB.getCollection("variables");
 
         BasicDBObject query = new BasicDBObject();
-        
+
         for(Cell c : var.getCells()) {
             var.removeCell(c);
         }
-        
+
         for(DatastoreListener dbl : this.dbListeners ) {
             dbl.variableRemoved(var);
         }
-        
+
         query.put("_id", ((MongoVariable)var).getID());
         varCollection.remove(query);
-        
-        
+        MongoDatastore.changed = true;
+
     }
 
     @Override
     public void removeCell(final Cell cell) {
         getVariable(cell).removeCell(cell);
+        MongoDatastore.changed = true;
     }
 
     @Override
@@ -382,11 +390,12 @@ public class MongoDatastore implements Datastore {
 
     @Override
     public void markAsUnchanged() {
+        MongoDatastore.changed = false;
     }
 
     @Override
     public boolean isChanged() {
-        return false;
+        return MongoDatastore.changed;
     }
 
     @Override
