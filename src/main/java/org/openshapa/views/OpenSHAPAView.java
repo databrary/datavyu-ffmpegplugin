@@ -353,7 +353,6 @@ public final class OpenSHAPAView extends FrameView
      * Update the title of the application.
      */
     public void updateTitle() {
-
         // Show the project name instead of database.
         JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
         ResourceMap rMap = OpenSHAPA.getApplication().getContext()
@@ -644,8 +643,7 @@ public final class OpenSHAPAView extends FrameView
     /**
      * Helper method for opening a file from disk.
      *
-     * @param jd
-     *            The file chooser to use.
+     * @param jd The file chooser to use.
      */
     private void open(final OpenSHAPAFileChooser jd) {
         OpenSHAPA.getApplication().resetApp();
@@ -690,12 +688,9 @@ public final class OpenSHAPAView extends FrameView
     /**
      * Method for opening a recovered file from disk.
      *
-     * @param f
-     *            The file to open.
+     * @param f The file to open.
      */
     public void openRecoveredFile(final File f) {
-        //OpenSHAPA.getApplication().resetApp();
-
         // Clear the current spreadsheet before loading the new content - we
         // need to clean up resources.
         clearSpreadsheet();
@@ -759,8 +754,7 @@ public final class OpenSHAPAView extends FrameView
      * Handles the event for files being dropped onto a component. Only the
      * first file received will be opened.
      *
-     * @param evt
-     *            The event to handle.
+     * @param evt The event to handle.
      */
     @Override
     public void filesDropped(final FileDropEvent evt) {

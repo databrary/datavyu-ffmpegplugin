@@ -121,4 +121,19 @@ public class OpenCTest {
         cells = vars.get(3).getCells();
         assertEquals(cells.size(), 0);
     }
+
+    @Test
+    public void testLoadOPF3() {
+        File demoFile = new File(TEST_FOLDER + "IO/simple4.opf");
+        OpenC openc = new OpenC();
+        openc.openProject(demoFile);
+
+        Datastore ds = openc.getDatastore();
+        List<Variable> vars = ds.getAllVariables();
+        assertEquals(vars.size(), 1);
+        assertEquals(vars.get(0).getName(), "blah");
+
+        List<Cell> cells = vars.get(0).getCells();
+        assertEquals(cells.size(), 1);
+    }
 }

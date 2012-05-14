@@ -67,7 +67,6 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
      * Default constructor.
      */
     public MongoVariable() {
-
     }
 
     /**
@@ -90,6 +89,7 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
      * This must be run after any changes to the variable.
      */
     public final void save() {
+        MongoDatastore.markDBAsChanged();
         MongoDatastore.getVariableCollection().save(this);
     }
 
@@ -166,20 +166,20 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
             vl.cellInserted(c);
         }
 
+        MongoDatastore.markDBAsChanged();
         return c;
     }
 
     @Override
     public void removeCell(final Cell cell) {
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
-        
+
         for(VariableListener vl : getListeners(getID()) ) {
             vl.cellRemoved(cell);
         }
-                
+
         cell_collection.remove((MongoCell)cell);
-
-
+        MongoDatastore.markDBAsChanged();
     }
 
     @Override
@@ -318,68 +318,68 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
             vl.nameChanged(newName);
         }
     }
-    
+
     @Override
     public Argument addArgument(final Argument.Type type) {
         Argument arg = getVariableType();
         arg.addChildArgument(type);
-        
+
         for(Cell cell : getCells()) {
             cell.addMatrixValue(type);
         }
-        
+
         this.setVariableType(arg);
         this.save();
-        
+
         return arg.childArguments.get(arg.childArguments.size()-1);
     }
-    
+
     @Override
     public void moveArgument(final int old_index, final int new_index) {
         Argument arg = getVariableType();
-        
+
         // Test to see if this is out of bounds
         if(new_index > arg.childArguments.size() - 1 || new_index < 0) {
             return;
         }
-        
+
         Argument moved_arg = arg.childArguments.get(old_index);
         arg.childArguments.remove(moved_arg);
         arg.childArguments.add(new_index, moved_arg);
-        
+
         // Move in all cells
         for(Cell cell : getCells()) {
             cell.moveMatrixValue(old_index, new_index);
         }
         this.setVariableType(arg);
         this.save();
-        
+
         // TODO: Notify listeners
     }
-    
+
     @Override
     public void moveArgument(final String name, final int new_index) {
         int old_index = getArgumentIndex(name);
         moveArgument(old_index, new_index);
     }
-    
+
     @Override
     public void removeArgument(final String name) {
         Argument arg = getVariableType();
         int arg_index = getArgumentIndex(name);
         arg.childArguments.remove(arg_index);
-        
+
         // Now send this change to the cells
         for(Cell cell : getCells()) {
             cell.removeMatrixValue(arg_index);
         }
-        
+
         this.setVariableType(arg);
         this.save();
-        
+
         // TODO: Notify appropriate listeners that this happened.
     }
-    
+
     @Override
     public int getArgumentIndex(final String name) {
         Argument arg = getVariableType();

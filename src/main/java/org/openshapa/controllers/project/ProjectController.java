@@ -65,7 +65,7 @@ public final class ProjectController {
     private Project project;
 
     /** The current database we are working on. */
-    private Datastore db = DatastoreFactory.newDatastore();
+    private Datastore db = null;
 
     /** The last cell that was created. */
     private Cell lastCreatedCell;
@@ -92,8 +92,10 @@ public final class ProjectController {
      * Default constructor.
      */
     public ProjectController() {
-        db.setTitleNotifier(OpenSHAPA.getApplication());
+
         project = new Project();
+        db = DatastoreFactory.newDatastore();
+        db.setTitleNotifier(OpenSHAPA.getApplication());
         changed = false;
         newProject = true;
         lastCreatedCell = null;
@@ -102,7 +104,6 @@ public final class ProjectController {
     }
 
     public ProjectController(final Project project) {
-        db.setTitleNotifier(OpenSHAPA.getApplication());
         this.project = project;
         changed = false;
         newProject = false;
@@ -157,10 +158,12 @@ public final class ProjectController {
     /**
      * Sets the datastore to use with this project. This is used when loading a
      * database from file.
-     * @param newDS
+     *
+     * @param newDS The new datastore we are using.
      */
     public void setDatastore(final Datastore newDS) {
         db = newDS;
+        db.setTitleNotifier(OpenSHAPA.getApplication());
     }
 
     /**

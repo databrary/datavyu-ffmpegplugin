@@ -756,10 +756,6 @@ implements KeyEventDispatcher, TitleNotifier {
 
         updateTitle();
 
-        // Allow changes to the database to propagate up and signify db modified
-        canSetUnsaved = true;
-        projectController.getDB().canSetUnsaved(canSetUnsaved);
-
         addExitListener(new ExitListenerImpl());
 
         // Create video controller.
@@ -812,15 +808,12 @@ implements KeyEventDispatcher, TitleNotifier {
     @Override
     public void updateTitle() {
         SwingUtilities.invokeLater(new Runnable() {
-
-                @Override public void run() {
-
-                    if (VIEW != null) {
-                        VIEW.updateTitle();
-                    }
+            @Override public void run() {
+                if (VIEW != null) {
+                    VIEW.updateTitle();
                 }
-            });
-
+            }
+        });
     }
 
     /** @return canSetUnsaved */
