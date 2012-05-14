@@ -142,6 +142,16 @@ implements MouseListener, FocusListener, CellListener {
 
     /** Onset has been processed and layout position calculated. */
     private boolean onsetProcessed = false;
+    
+    private boolean beingProcessed = false;
+
+    public boolean isBeingProcessed() {
+        return beingProcessed;
+    }
+
+    public void setBeingProcessed(boolean beingProcessed) {
+        this.beingProcessed = beingProcessed;
+    }
 
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetCell.class);
@@ -324,6 +334,9 @@ implements MouseListener, FocusListener, CellListener {
      * @return Offset ticks as a long.
      */
     public long getOffsetTicks() {
+        if(model.getOffset() == 0) {
+            return model.getOnset();
+        }
         return model.getOffset();
     }
 
@@ -440,7 +453,7 @@ implements MouseListener, FocusListener, CellListener {
             cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
         }
 
-        this.revalidate();
+//        this.revalidate();
     }
 
     // *************************************************************************

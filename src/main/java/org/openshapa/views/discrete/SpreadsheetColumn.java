@@ -226,9 +226,15 @@ implements VariableListener,
 
         return workingList;
     }
-
+    
     public Variable getVariable() {
         return variable;
+    }
+    
+    public void setAllCellsProcessed(boolean p) {
+        for(SpreadsheetCell c : getCells()) {
+            c.setBeingProcessed(p);
+        }
     }
 
     /**
@@ -347,7 +353,7 @@ implements VariableListener,
             setBackground(backColor);
         }
 
-        repaint();
+//        repaint();
     }
 
     /**

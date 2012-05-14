@@ -26,6 +26,8 @@ public class MongoCell extends BasicDBObject implements Cell {
     DBCollection matrix_value_collection = MongoDatastore.getDB().getCollection("matrix_values");
     DBCollection nominal_value_collection = MongoDatastore.getDB().getCollection("nominal_values");
     DBCollection text_value_collection = MongoDatastore.getDB().getCollection("text_values");
+    
+    BasicDBObject index = new BasicDBObject("onset", 1);
 
     static Map<ObjectId, List<CellListener>> allListeners = new
                                         HashMap<ObjectId, List<CellListener>>();
@@ -123,6 +125,7 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOffset(final long newOffset) {
         this.put("offset", newOffset);
+        MongoDatastore.getCellCollection().ensureIndex(index);
         this.save();
 
         for(CellListener cl : getListeners(getID())) {
@@ -133,6 +136,7 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOffset(final String newOffset) {
         this.put("offset", convertTimestampToMS(newOffset));
+        MongoDatastore.getCellCollection().ensureIndex(index);
         this.save();
 
         for(CellListener cl : getListeners(getID())) {
@@ -153,6 +157,7 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOnset(final String newOnset) {
         this.put("onset", convertTimestampToMS(newOnset));
+        MongoDatastore.getCellCollection().ensureIndex(index);
         this.save();
 
         for(CellListener cl : getListeners(getID())) {
@@ -165,6 +170,7 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOnset(final long newOnset) {
         this.put("onset", newOnset);
+        MongoDatastore.getCellCollection().ensureIndex(index);
         this.save();
 
         for(CellListener cl : getListeners(getID()) ) {

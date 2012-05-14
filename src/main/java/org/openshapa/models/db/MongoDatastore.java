@@ -79,6 +79,8 @@ public class MongoDatastore implements Datastore {
         while (cellCursor.hasNext()) {
             cellCollection.remove(cellCursor.next());
         }
+        cellCollection.createIndex(new BasicDBObject("onset", 1));
+        cellCollection.ensureIndex(new BasicDBObject("onset", 1));
 
         DBCollection matrixCollection = mongoDB.getCollection("matrix_values");
         DBCursor matrixCursor = matrixCollection.find();

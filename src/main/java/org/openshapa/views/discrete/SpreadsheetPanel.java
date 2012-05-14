@@ -145,6 +145,7 @@ implements DatastoreListener,
 
         columns = new ArrayList<SpreadsheetColumn>();
         scrollPane = new JScrollPane();
+        scrollPane.setDoubleBuffered(true);
         this.add(scrollPane, BorderLayout.CENTER);
         add(scrollPane);
         scrollPane.setViewportView(mainView);
