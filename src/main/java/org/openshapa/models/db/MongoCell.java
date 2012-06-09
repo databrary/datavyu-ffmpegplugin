@@ -312,6 +312,11 @@ public class MongoCell extends BasicDBObject implements Cell {
     public ObjectId getID() {
         return ((ObjectId) getLatest().get("_id"));
     }
+    
+    @Override
+    public String getCellID() {
+        return this.getID().toString();
+    }
 
     @Override
     public int hashCode() {

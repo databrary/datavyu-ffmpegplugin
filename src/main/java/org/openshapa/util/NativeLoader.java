@@ -15,7 +15,6 @@
 package org.openshapa.util;
 
 import com.google.common.collect.Iterables;
-import com.sun.jna.Platform;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,7 +49,7 @@ public class NativeLoader {
     public static void LoadNativeLib(final String libName) throws Exception {
         Enumeration<URL> resources;
         String extension;
-
+        
         if (System.getProperty("os.name").contains("Mac")) {
             extension = ".jnilib";
             resources = NativeLoader.class.getClassLoader()

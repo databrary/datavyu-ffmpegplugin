@@ -82,26 +82,44 @@ public class MongoDatastore implements Datastore {
         while (cellCursor.hasNext()) {
             cellCollection.remove(cellCursor.next());
         }
-        cellCollection.createIndex(new BasicDBObject("onset", 1));
+        
+        // Place indexes on the cell collection for fast querying
+        BasicDBObject cell_index = new BasicDBObject();
+        cell_index.put("variable_id", 1);
+        cell_index.put("onset", 1);
+        
+        cellCollection.ensureIndex(cell_index);
+        
+        cellCollection.ensureIndex(new BasicDBObject("variable_id", 1));
         cellCollection.ensureIndex(new BasicDBObject("onset", 1));
+        cellCollection.ensureIndex(new BasicDBObject("offset", 1));
+        
+        cell_index = new BasicDBObject();
+        cell_index.put("onset", 1);
+        cell_index.put("offset", 1);
+        cellCollection.ensureIndex(cell_index);
+        
 
         DBCollection matrixCollection = mongoDB.getCollection("matrix_values");
         DBCursor matrixCursor = matrixCollection.find();
         while (matrixCursor.hasNext()) {
             matrixCollection.remove(matrixCursor.next());
         }
+        matrixCollection.ensureIndex(new BasicDBObject("parent_id", 1));
 
         DBCollection nominalCollection = mongoDB.getCollection("nominal_values");
         DBCursor nominalCursor = nominalCollection.find();
         while (nominalCursor.hasNext()) {
             nominalCollection.remove(nominalCursor.next());
         }
+        nominalCollection.ensureIndex(new BasicDBObject("parent_id", 1));
 
         DBCollection textCollection = mongoDB.getCollection("text_values");
         DBCursor textCursor = textCollection.find();
         while (textCursor.hasNext()) {
             textCollection.remove(textCursor.next());
         }
+        textCollection.ensureIndex(new BasicDBObject("parent_id", 1));
 
         // Clear variable listeners.
         MongoVariable.clearListeners();

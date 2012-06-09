@@ -36,14 +36,30 @@ import org.openshapa.OpenSHAPA;
 import org.openshapa.RecentFiles;
 
 import org.openshapa.util.FileFilters.RBFilter;
+import org.openshapa.util.FileFilters.RFilter;
 
 import org.openshapa.views.ConsoleV;
 import org.openshapa.views.OpenSHAPAFileChooser;
 import org.openshapa.views.OpenSHAPAView;
 
 import com.usermetrix.jclient.UserMetrix;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.SwingWorker;
+import org.openshapa.models.db.Argument;
+import org.openshapa.models.db.Cell;
+import org.openshapa.models.db.Datastore;
+import org.openshapa.models.db.MatrixValue;
+import org.openshapa.models.db.Value;
+import org.openshapa.models.db.Variable;
+import rcaller.RCaller;
+import rcaller.RCode;
 
 
 /**
@@ -71,6 +87,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
     /** input stream for displaying messages from the scripting engine. */
     private PrintWriter consoleWriter;
+    
+    private OutputStream sIn;
 
     /**
      * Constructs and invokes the runscript controller.
@@ -79,8 +97,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      */
     public RunScriptC() throws IOException {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
+        jd.addChoosableFileFilter(RFilter.INSTANCE);
         jd.addChoosableFileFilter(RBFilter.INSTANCE);
-
+        
         int result = jd.showOpenDialog(OpenSHAPA.getApplication()
                 .getMainFrame());
 
@@ -119,7 +138,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         console = ConsoleV.getInstance().getConsole();
         consoleOutputStream = new PipedInputStream();
 
-        PipedOutputStream sIn = new PipedOutputStream(consoleOutputStream);
+        sIn = new PipedOutputStream(consoleOutputStream);
         consoleWriter = new PrintWriter(sIn);
     }
 
@@ -129,46 +148,171 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         ReaderThread t = new ReaderThread();
         t.start();
 
-        ScriptEngine rubyEngine = OpenSHAPA.getScriptingEngine();
-
         RecentFiles.rememberScript(scriptFile);
+        
+        if(scriptFile.getName().endsWith(".rb")) {
+            ScriptEngine rubyEngine = OpenSHAPA.getScriptingEngine();
+            try {
+                rubyEngine.getContext().setWriter(consoleWriter);
 
-        try {
-            rubyEngine.getContext().setWriter(consoleWriter);
+                // Place reference to various OpenSHAPA functionality.
+                rubyEngine.put("db", OpenSHAPA.getProjectController().getDB());
+                rubyEngine.put("pj", OpenSHAPA.getProjectController().getProject());
+                rubyEngine.put("mixer", OpenSHAPA.getDataController().getMixerController());
+                rubyEngine.put("viewers", OpenSHAPA.getDataController());
 
-            // Place reference to various OpenSHAPA functionality.
-            rubyEngine.put("db", OpenSHAPA.getProjectController().getDB());
-            rubyEngine.put("pj", OpenSHAPA.getProjectController().getProject());
-            rubyEngine.put("mixer", OpenSHAPA.getDataController().getMixerController());
-            rubyEngine.put("viewers", OpenSHAPA.getDataController());
+                FileReader reader = new FileReader(scriptFile);
+                rubyEngine.eval(reader);
+                reader = null;
 
-            FileReader reader = new FileReader(scriptFile);
-            rubyEngine.eval(reader);
-            reader = null;
+                // Remove references.
+                rubyEngine.put("db", null);
+                rubyEngine.put("pj", null);
+                rubyEngine.put("mixer", null);
+                rubyEngine.put("viewers", null);
 
-            // Remove references.
-            rubyEngine.put("db", null);
-            rubyEngine.put("pj", null);
-            rubyEngine.put("mixer", null);
-            rubyEngine.put("viewers", null);
+            } catch (ScriptException e) {
+                consoleWriter.println("***** SCRIPT ERRROR *****");
+                consoleWriter.println("@Line " + e.getLineNumber() + ":'"
+                    + e.getMessage() + "'");
+                consoleWriter.println("*************************");
+                consoleWriter.flush();
 
-        } catch (ScriptException e) {
-            consoleWriter.println("***** SCRIPT ERRROR *****");
-            consoleWriter.println("@Line " + e.getLineNumber() + ":'"
-                + e.getMessage() + "'");
-            consoleWriter.println("*************************");
-            consoleWriter.flush();
+                LOGGER.error("Unable to execute script: ", e);
+            } catch (FileNotFoundException e) {
+                LOGGER.error("Unable to execute script: ", e);
+            }
 
-            LOGGER.error("Unable to execute script: ", e);
-        } catch (FileNotFoundException e) {
-            LOGGER.error("Unable to execute script: ", e);
+            running = false;
+            
         }
+        else if(scriptFile.getName().endsWith(".r") || scriptFile.getName().endsWith(".R")) {
+            
+            // Initialize RCaller and tell it where the rscript application is
+            RCaller caller = new RCaller();
+            try {
+                caller.setRscriptExecutable("/usr/bin/rscript");
+            }
+            catch(Exception e) {
+                // Ut oh, R isn't installed.
+            }
+            caller.redirectROutputToStream(sIn);
+            
+            // Initialize our code buffer and database string representation
+            RCode code = new RCode();
+            HashMap db = convertDbToColStrings();
+            HashMap<String, File> temp_files = new HashMap<String, File>();
+            
+            // Write the database out to tempory files
+            Iterator it = db.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pairs = (Map.Entry)it.next();
+                
+                // Now write this out to a temporary file
+                File outfile = new File(System.getProperty("java.io.tmpdir"), (String)pairs.getKey());
+                try {
+                    BufferedWriter output = new BufferedWriter(new FileWriter(outfile));
+                    output.write((String)pairs.getValue());
+                    output.close();
+                    
+                    temp_files.put((String)pairs.getKey(), outfile);
+                }
+                catch(Exception e) {
+                    e.printStackTrace();
+                }
+                                
+                it.remove(); // avoids a ConcurrentModificationException
+            }
+            
+            // Create the R code to read in the temporary db files into a structure
+            // called db
+            code.addRCode("db <- list()");
+            try {
+                // Load each of the temporary files created above into R
+                it = temp_files.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pairs = (Map.Entry)it.next();
+                    
+                    String load = "db[[\"" + ((String)pairs.getKey()).toLowerCase() + "\"]] <- read.csv(\"" + ((File)pairs.getValue()).getPath() + "\",header=TRUE, sep=',')";
+                    code.addRCode(load);
 
-        running = false;
-
+                    it.remove(); // avoids a ConcurrentModificationException
+                }
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+            
+            // Set up plotting. If something gets plotted, display it.
+            // Otherwise, just run the code.
+            try {
+                File plt = code.startPlot();
+                code.R_source(scriptFile.getPath());
+                caller.setRCode(code);
+                caller.runOnly();
+                code.endPlot();
+                if(plt.length() > 0) {
+                    code.showPlot(plt);
+                }
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        // TODO: Read db back in to OpenSHAPA and update
+        
         return null;
     }
+    
+    // TODO
+    private void updateDbFromR() {
+        
+    }
+    
+    /** Convert the OpenSHAPA database to a csv file per column.
+        This allows for easy reading into R. */
+    private HashMap<String, String> convertDbToColStrings() {
+        Datastore db = OpenSHAPA.getProjectController().getDB();
+        HashMap<String, String> str_db = new HashMap<String, String>();
 
+        String str_var;
+        for(Variable v : db.getAllVariables()) {
+            str_var = "ordinal,onset,offset";
+            if(v.getVariableType().type == Argument.Type.MATRIX) {
+                for(Argument a : v.getVariableType().childArguments) {
+                    str_var += "," + a.name;
+                }
+            }
+            else {
+                str_var += ",arg";
+            }
+            str_var += "\n";
+            for(int i = 0; i < v.getCellsTemporally().size(); i++) {
+                Cell c = v.getCellsTemporally().get(i);
+                
+                String row = String.format("%d,%d,%d", i+1, c.getOnset(), c.getOffset());
+                if(v.getVariableType().type == Argument.Type.MATRIX) {
+                    for(Value val : ((MatrixValue)c.getValue()).getArguments()) {
+                        row += ",";
+                        if(!val.isEmpty())
+                            row += val.toString();
+                    }
+                }
+                else {
+                    row += ",";
+                    if(!c.getValue().isEmpty()) {
+                        row += c.getValue().toString();
+                    }
+                }
+                str_var += row + "\n";
+            }
+            str_db.put(v.getName(), str_var);
+        }
+        
+        return str_db;
+    }
+    
     @Override protected void done() {
 
         // Display any changes.

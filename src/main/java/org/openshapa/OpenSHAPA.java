@@ -18,6 +18,7 @@ import ch.randelshofer.quaqua.QuaquaManager;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import graphics.SkyTheme;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.Toolkit;
@@ -42,6 +43,9 @@ import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
 import org.openshapa.util.WindowsKeyChar;
 import org.openshapa.views.*;
+import rcaller.Globals;
+import rcaller.RCaller;
+import rcaller.RCode;
 
 /**
  * The main class of the application.
@@ -59,7 +63,7 @@ implements KeyEventDispatcher, TitleNotifier {
                     e.printStackTrace();
                 }
 
-                break;
+//                break;
         }
     }
 
@@ -97,10 +101,10 @@ implements KeyEventDispatcher, TitleNotifier {
 
     /** The scripting engine manager that we use with OpenSHAPA. */
     private ScriptEngineManager m2;
-
+    
     /** The JRuby scripting engine manager that we use with OpenSHAPA. */
     private JRubyScriptEngineManager m;
-
+    
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(OpenSHAPA.class);
 
@@ -710,7 +714,7 @@ implements KeyEventDispatcher, TitleNotifier {
         // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
         // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
         m = new JRubyScriptEngineManager();
-
+        
         // Whoops - JRubyScriptEngineManager may have failed, if that does
         // not construct engines for jruby correctly, switch to
         // javax.script.ScriptEngineManager

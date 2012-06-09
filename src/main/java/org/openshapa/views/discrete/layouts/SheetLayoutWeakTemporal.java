@@ -41,45 +41,22 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
     // The temporal ratio/scale we are using to display cells.
     double ratio;
-    
-    // Buffer for otherwise unknown gaps above/below cells.
-    double gapSize;
-    
-    // Denominator of overlap ratio
-    double overlapSize;
-    
-    // Hashmap where we will store neighbor and placement information for each cell
-    HashMap<SpreadsheetCell, RowInfo> rowmapping = new HashMap<SpreadsheetCell, RowInfo>();
-    
-    // Hashmap where we will store cells obtained from the database in temporal order.
-    HashMap<SpreadsheetColumn, List<SpreadsheetCell>> cellCache = new HashMap<SpreadsheetColumn, List<SpreadsheetCell>>();
 
     /**
      * Information on each element in the row we are currently processing.
      */ 
     private class RowInfo {
-        public RowInfo(SpreadsheetCell nCell, SpreadsheetCell pCell, List<SpreadsheetCell> tOCells, List<SpreadsheetCell> bOCells, List<SpreadsheetCell> cCells, List<SpreadsheetCell> cBCells, SpreadsheetColumn nCol) {
+        public RowInfo(SpreadsheetCell nCell, List<SpreadsheetCell> oCells, SpreadsheetColumn nCol) {
             cell = nCell;
-            prevCell = pCell;
             col = nCol;
-            bottomOverlappingCells = bOCells;
-            topOverlappingCells = tOCells;
-            containedCells = cCells;
-            containedByCells = cBCells;
+            overlappingCells = oCells;
         }
 
         // The cell that this row information is about.
-        public SpreadsheetCell cell, prevCell;
+        public SpreadsheetCell cell;
         
         // The cells that overlap the above cell.
-        public List<SpreadsheetCell> bottomOverlappingCells;
-        public List<SpreadsheetCell> topOverlappingCells;
-        
-        // The cells that are contained by the above cell.
-        public List<SpreadsheetCell> containedCells;
-        
-        // Cells that contain the above cell
-        public List<SpreadsheetCell> containedByCells;
+        public List<SpreadsheetCell> overlappingCells;
 
         // The column that the above cell belongs too.
         public SpreadsheetColumn col;
@@ -94,7 +71,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         marginSize = margin;
         laidCells = 0;
     }
-    
+
     @Override
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
@@ -118,56 +95,233 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         long ratioTicks = 0;    // The maximum offset used in the entire visible spreadsheet.
         int totalCells = 0;     // The total number of visible cells we are laying out on the spreadsheet.
         ratio = 1.0;            // The ratio / scale that we are using to position the cells temporally.
-        overlapSize = 2;
-        gapSize = 21;
-        rowmapping.clear();
-        cellCache.clear();
 
         for (SpreadsheetColumn c : mainView.getColumns()) {
-            
-            c.setWorkingHeight(0);
-            c.setWorkingOrd(0);
-            c.setWorkingOnsetPadding(0);
-            c.setWorkingOffsetPadding(0);
-            c.setAllCellsProcessed(false);
-            cellCache.put(c, c.getCellsTemporally());
-            
-        }
-        long startTime = System.currentTimeMillis();
+            // We only work with visible columns.
+            if (c.isVisible()) {
+                // Take this opportunity to initalise the working data we need for each of the columns.
+                c.setWorkingHeight(0);
+                c.setWorkingOrd(0);
+                c.setWorkingOnsetPadding(0);
+                c.setWorkingOffsetPadding(0);
 
-
-        List<SpreadsheetCell> cells;
-        SpreadsheetCell currCell = null;
-        SpreadsheetCell prevCell = null;
-        for (SpreadsheetColumn c : mainView.getColumns()) {
-            
-            prevCell = null;
-            cells = cellCache.get(c);
-            
-            for(int i = 0; i < cells.size(); i++) {
-                if( i > 0 ) {
-                    prevCell = cells.get(i-1);
+                // Determine the total height in pixels of the cells in this column.
+                List<SpreadsheetCell> colCells = c.getCellsTemporally();
+                int colHeight = 0;
+                for (SpreadsheetCell cell : colCells) {
+                    colHeight += cell.getPreferredSize().height;
                 }
-                currCell = cells.get(i);
-                rowmapping.put(currCell, getNeighbors(mainView, c, currCell, prevCell));
+
+                // Determine the maximum column height in pixels.
+                ratioHeight = Math.max(ratioHeight, colHeight);
+
+                // Determine the temporal length of the column in ticks.
+                if (colCells.size() > 0) {
+                    SpreadsheetCell lastCell = colCells.get((colCells.size() - 1));
+
+                    // If the offset is zero or smaller, we need to consider the
+                    // onset of the cell instead for determining the maximum offset
+                    // required to display the entire spreadsheet.
+                    if (lastCell.getOffsetTicks() <= 0) {
+                        ratioTicks = Math.max(ratioTicks, lastCell.getOnsetTicks());
+                    } else {
+                        ratioTicks = Math.max(ratioTicks, lastCell.getOffsetTicks());
+                    }
+                }
+                totalCells = totalCells + colCells.size();
+            }
+        }
+        // Determine the final temporal ratio/scale we are going to use for the spreadsheet.
+        if (ratioTicks > 0) {
+            ratio = ratioHeight / (double) ratioTicks;
+        }
+        System.err.println(ratio);
+
+        // Untill we have laid all the cells, we position each of them
+        // temporarily. We do this row by row with the cells sorted temporarily,
+        // untill we have no cells left to lay.
+        int pad = 0;    // The cumulative padding we need to apply to cell positioning - this is the total
+                        // amount of extra vertical space we have had to pad out, to make entire cells visible.
+
+        // This array is guaranteed initialized to 0 by the java lang spec
+        // Stores the current cell position for each col
+        int[] position_index = new int[mainView.getColumns().size()];
+        ArrayList<Integer> column_bottoms = new ArrayList<Integer>();
+        ArrayList<Long> current_offsets = new ArrayList<Long>();
+        SpreadsheetCell[] rowCells = new SpreadsheetCell[mainView.getColumns().size()];
+        SpreadsheetCell prevLaidCell = null;
+        SpreadsheetColumn prevLaidCol = null;
+        
+        int prev_t = 0;
+        int prev_b = 0;
+        
+        // Cell cache so we only have to get from the DB once.
+        // Greatly speeds up the algorithm.
+        // Redrawing would be even faster if this was only done on DB update
+        HashMap<Integer, List<SpreadsheetCell>> cellCache = new HashMap<Integer, List<SpreadsheetCell>>();
+        for(int i = 0; i < mainView.getColumns().size(); i++) {
+            cellCache.put(i, mainView.getColumns().get(i).getCellsTemporally());
+        }
+        
+//        long starttime = System.currentTimeMillis();
+        
+        // The size the of the gap to use between cells and as overlap on
+        // overlapping cells in different columns
+        int gapSize = 20;
+        
+        // This loop should place the cells in O(#cells * #cols)
+        // so once #cells >> #cols this actually places in O(#cells) :)
+        // Informal time mapping seems to confirm that the amount of time
+        // spend placing cells does indeed have linear growth.
+        while (laidCells < totalCells) {
+            SpreadsheetCell workingCell = null;
+            SpreadsheetColumn workingCol = null;
+            int currColIndex = -1;
+            
+            // Get the current row cells
+            long lowest_offset = Long.MAX_VALUE;
+            long lowest_onset = Long.MAX_VALUE;
+            for(int i = 0; i < mainView.getColumns().size(); i++) {
+                long currCellOnset = 0;
+                long currCellOffset = 0;
+                
+                if(cellCache.get(i).size() > position_index[i]) {
+                    rowCells[i] = cellCache.get(i).get(position_index[i]);
+                    currCellOnset = rowCells[i].getOnsetTicks();
+                    currCellOffset = rowCells[i].getOffsetTicks();
+                    if(currCellOffset == 0) {
+                        currCellOffset = currCellOnset;
+                    }
+                }
+                else {
+                    rowCells[i] = null;
+                }
+                
+                
+                // Do we want to position this cell at this time?
+                // If we don't, we should try to mark the current top position
+                // Find the cell in this row with the minimum offset.
+                if(rowCells[i] != null && currCellOffset <= lowest_offset) {
+                    lowest_offset = currCellOffset;
+                }
+                
+                // If the current cell contains any other cell
+           }
+            
+            // Get the minimum onset of the cells with this offset
+            for(int i = 0; i < mainView.getColumns().size(); i++) {
+                if(rowCells[i] != null && 
+                        rowCells[i].getOffsetTicks() == lowest_offset && 
+                        rowCells[i].getOnsetTicks() < lowest_onset) {
+                    lowest_onset = rowCells[i].getOnsetTicks();
+                    workingCell = rowCells[i];
+                    workingCol = mainView.getColumns().get(i);
+                    currColIndex = i;
+                }
+            }
+            
+            // Does the top of this cell overlap with the previously laid cell?
+            // If so, adjust the top a little bit so the two are overlapping
+            if(prevLaidCell != null && workingCell.getOnsetTicks() < prevLaidCell.getOffsetTicks()) {
+                prev_b = prev_b + gapSize;
+            }
+            
+            // Lay out the last cell and ready this one for layout
+            if(laidCells > 0) {
+                prevLaidCell.setBounds(0, prev_t, (prevLaidCol.getWidth() - marginSize), (prev_b - prev_t));
+                prevLaidCol.setWorkingHeight(prev_b);
+                workingCell.setBeingProcessed(false);
+//                System.out.println(String.format("Col %s\tOnset: %d\tOffset: %d\tTop: %d\tBottom: %d", 
+//                    prevLaidCol.getColumnName(), prevLaidCell.getOnsetTicks(), prevLaidCell.getOffsetTicks(), prev_t, prev_b));
+                maxHeight = Math.max(prevLaidCell.getY() + prevLaidCell.getHeight(), maxHeight);
+            }
+            
+            // Now that we're sure the previous column is updated, get the col bottoms
+            column_bottoms.clear();
+            for(int i = 0; i < mainView.getColumns().size(); i++) {
+                column_bottoms.add(mainView.getColumns().get(i).getWorkingHeight());
+            }
+            
+            // Go through all of the columns and set their working height
+            // if the onset of their next cell to be placed is greater than that
+            // of the cell currently being placed
+            for(int i = 0; i < mainView.getColumns().size(); i++) {
+                
+                if(workingCol != mainView.getColumns().get(i) 
+                        && cellCache.get(i).size() > position_index[i] 
+                        && !cellCache.get(i).get(position_index[i]).isBeingProcessed()) {
+                    
+                    long nextCellOnset = cellCache.get(i).get(position_index[i]).getOnsetTicks();
+                    
+                    if(nextCellOnset <= workingCell.getOffsetTicks() && 
+                            workingCell.getOnsetTicks() <= nextCellOnset &&
+                            workingCol.getWorkingHeight() > mainView.getColumns().get(i).getWorkingHeight()) {
+                        
+//                        System.out.println(String.format("Setting top of %s to %d because of %s", 
+//                            mainView.getColumns().get(i).getColumnName(), workingCol.getWorkingHeight(), workingCol.getColumnName()));
+                        
+                        mainView.getColumns().get(i).setWorkingHeight(workingCol.getWorkingHeight());
+                        
+                        cellCache.get(i).get(position_index[i]).setBeingProcessed(true);
+                    }
+                }
+                
+            }
+            
+            // Now that we've selected a cell for positioning, find its position
+            // We want to place it from the current bottom of the column it is in
+            // to the max bottom of the other columns so it encloses the other cells.
+            
+            int t = workingCol.getWorkingHeight();
+            
+            // Check to see if there is a gap between these two cells.
+            // If so, then use the top of the prevCell + gapsize to lay this one out.
+            if(prevLaidCell != null && workingCell.getOnsetTicks() - prevLaidCell.getOffsetTicks() > 1) {
+                long prevColCellOffset;
+                if(position_index[currColIndex] > 0) {
+                    prevColCellOffset = cellCache.get(currColIndex).get(position_index[currColIndex]-1).getOffsetTicks();
+                }
+                else {
+                    prevColCellOffset = -1;
+                }
+                 
+                if(prevColCellOffset == -1 || workingCell.getOnsetTicks() - prevColCellOffset > 1) {
+                    System.out.println(workingCell.getOnsetTicks());
+                    t = prevLaidCell.getY() + prevLaidCell.getHeight();
+                }
+            }
+            
+            
+            // Calculate b
+            int b = Collections.max(column_bottoms);
+            if(b < t + workingCell.getPreferredSize().height) {
+                b = t + workingCell.getPreferredSize().height;
+            }
+            
+            
+             // Update the previous dimensions and get ready to lay them next time around.
+            column_bottoms.clear();
+            position_index[currColIndex]++;
+            prevLaidCell = workingCell;
+            prevLaidCol = workingCol;
+            prev_t = t;
+            prev_b = b;
+            maxHeight = Math.max(workingCell.getY() + workingCell.getHeight(), maxHeight);
+            laidCells++;
+            
+            
+            // Lay out the final cell
+            if(laidCells == totalCells) {
+                workingCell.setBounds(0, t, (workingCol.getWidth() - marginSize), (b - t));
+                workingCol.setWorkingHeight(b);
+                workingCell.setBeingProcessed(false);
             }
         }
         
-        long endTime = System.currentTimeMillis();
-        System.out.println("FINISHED MAPPING ROWS");
-        System.out.println(endTime-startTime);
-        
-        for (SpreadsheetColumn c : mainView.getColumns()) {
-            
-            for(SpreadsheetCell cell : cellCache.get(c)) {
-                
-                layCell(mainView, c, cell, true);
-                
-            }
-            
-        }
-        
-        
+//        long endtime = System.currentTimeMillis();
+//        System.out.println(endtime-starttime);
+
+        // Pad the columns so that they are all the same length.
         padColumns(mainView, parent);
     }
 
@@ -181,204 +335,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         ri.col.setWorkingOrd(ri.col.getWorkingOrd() + 1);
         maxHeight = Math.max((ri.cell.getY() + ri.cell.getHeight()), maxHeight);
         ri.cell.setOrdinal(ri.col.getWorkingOrd());
-        laidCells++;      
-    }
-    
-    private SpreadsheetColumn getColFromCell(SpreadsheetView mainView, SpreadsheetCell cell) {
-        for(SpreadsheetColumn c : mainView.getColumns()) {
-            if(cellCache.get(c).contains(cell)) {
-                System.out.println(c.getName());
-                return c;
-            }
-        }
-        
-        return null;
-    }
-    
-    private void layCell(SpreadsheetView mainView, SpreadsheetColumn col, SpreadsheetCell cell, boolean recurse) {
-        if(cell.isBeingProcessed()) {
-            if(col.getWorkingOffsetPadding() < cell.getBounds().y) {
-                col.setWorkingOnsetPadding(cell.getBounds().y);
-                col.setWorkingOffsetPadding(cell.getBounds().y);
-            }
-            return;
-        }
-        
-        
-        
-        // Current top placement of cell
-        int t = col.getWorkingOffsetPadding();
-        
-        // Current bottom of cell
-        int b = col.getWorkingOffsetPadding() + cell.getPreferredSize().height;
-        
-        
-        
-        
-        // Get the neighbors that will decide the placement of this cell
-        RowInfo ri = this.rowmapping.get(cell);
-        List<Integer> neighborBottoms = new ArrayList<Integer>();
-        List<Integer> neighborTops = new ArrayList<Integer>();
-        
-        // Is there a gap between this cell and the previous one in the column?
-        // If so, distance them.
-        if(ri.prevCell != null) {
-            
-            // If we have no other placement references, place the previous
-            // cell and then use that as the reference.
-            
-            // If containedCells or overlappingCells is not empty, a cycle can
-            // occur.
-            if(!ri.prevCell.isBeingProcessed()) {
-                layCell(mainView, getColFromCell(mainView, ri.prevCell), ri.prevCell, false);
-            }
-            
-            t = ri.prevCell.getBounds().y + ri.prevCell.getSize().height;
-            b = ri.prevCell.getBounds().y + ri.prevCell.getSize().height;
-            
-            // Insert gap
-            if(ri.prevCell.getOffsetTicks() < cell.getOnsetTicks()) {
-                t += gapSize;
-                b += gapSize;
-                
-                if(ri.topOverlappingCells.size() > 0) {
-                    t += gapSize;
-                    b += gapSize;
-                }
-            }
-            
-        }
-        
-        // Check its overlapping cells and cells it is contained in to see if
-        // they've been placed yet. If so, adjust the current tops and bottoms
-        // to match.
-        
-        // Now check to see how many cells it contains so we can get the size of
-        // this cell
-        
-        for(SpreadsheetCell c : ri.containedCells) {
-            
-            // Are the child cells laid out? If not, recurse down through them
-            // and lay them out so we can get their position
-            if(!c.isBeingProcessed() && recurse) {
-                layCell(mainView, getColFromCell(mainView, c), c, true);
-            }
-            
-//            b += c.getPreferredSize().height;
-            
-            // Now that it is processed, add where it is to our lists.
-            neighborTops.add(c.getBounds().y);
-            neighborBottoms.add(c.getBounds().y + c.getSize().height);
-        }
-        
-        //If we have contained neighbors, line this cell up with them.
-        if(neighborTops.size() > 0) {
-            t = Collections.min(neighborTops);
-            b = Collections.max(neighborBottoms);
-        }
-        
-        // Do the same with the containedBy cells. If there is a gap then
-        // the top position will be determined by the outer container
-        
-       
+        laidCells++;
 
-        
-        // Does it overlap any cells on the bottom of each cell? If yes, add some padding for those
-        if(ri.bottomOverlappingCells.size() > 0) {
-            for(SpreadsheetCell c : ri.containedCells) {
-            
-            // Are the child cells laid out? If not, recurse down through them
-            // and lay them out so we can get their position
-                if(!c.isBeingProcessed() && recurse) {
-//                    layCell(mainView, getColFromCell(mainView, c), c, true);
-                }
-            }
-            b += ri.bottomOverlappingCells.get(0).getPreferredSize().height / overlapSize;
-        }
-        
-        // Finally, display it.
-        // This cell did not interact with any other cells, make it standard len
-        if(b - t < cell.getPreferredSize().height) {
-            b += cell.getPreferredSize().height;
-        }
-
-        
-        // If we are moving through this function canonically, then update the
-        // column params to reflect the current bottom position. All other position
-        // changes within the column will be made from related cells.
-        if(b > col.getWorkingOnsetPadding()) {
-            col.setWorkingOnsetPadding(b);
-            col.setWorkingOffsetPadding(b);
-        }
-                
-        cell.setBeingProcessed(true);
-        ri.cell.setBounds(0, t, (ri.col.getWidth() - marginSize), (b - t));
-        ri.col.setWorkingHeight(b);
-        markCellAsCompleted(ri);
-        
-    }
-    
-    /**
-     * Gathers information relevant to placing each cell.
-     *
-     */
-    private RowInfo getNeighbors(SpreadsheetView mainView, SpreadsheetColumn currCol, SpreadsheetCell currCell, SpreadsheetCell prevCell) {
-        ArrayList<SpreadsheetCell> containedCells = new ArrayList<SpreadsheetCell>();
-        ArrayList<SpreadsheetCell> containedByCells = new ArrayList<SpreadsheetCell>();
-        ArrayList<SpreadsheetCell> bottomOverlappingCells = new ArrayList<SpreadsheetCell>();
-        ArrayList<SpreadsheetCell> topOverlappingCells = new ArrayList<SpreadsheetCell>();
-
-        
-        Long currCellOnset = currCell.getOnsetTicks();
-        Long currCellOffset = currCell.getOffsetTicks();
-        
-        // If the cell is newly added 
-        if(currCellOffset < currCellOnset) {
-            currCellOffset = currCellOnset;
-        }
-        
-        for (SpreadsheetColumn col : mainView.getColumns()) {
-            for (SpreadsheetCell cell : cellCache.get(col)) {
-                if(col != currCol && cell != currCell) {
-                    
-                    Long cellOnset = cell.getOnsetTicks();
-                    Long cellOffset = cell.getOffsetTicks();
-                    
-                    if(cellOffset < cellOnset) {
-                        cellOffset = cellOnset;
-                    }
-                    
-                    // Check to see if currCell contains this cell
-                    if(cellOnset >= currCellOnset 
-                            && cellOffset <= currCellOffset) {
-                        containedCells.add(cell);
-                    }
-                    
-                    // Check to see if currCell is contained by this cell
-                    else if(cellOnset <= currCellOnset
-                            && cellOffset >= currCellOffset) {
-                        containedByCells.add(cell);
-                    }
-                    
-                    // Overlapping top
-                    else if(cellOnset < currCellOnset
-                            && cellOffset > currCellOnset
-                            && cellOffset < currCellOffset) {
-                        topOverlappingCells.add(cell);
-                    }
-                    
-                    // Overlapping bottom
-                    else if(cellOnset < currCellOffset
-                            && cellOnset > currCellOnset
-                            && cellOffset > currCellOffset) {
-                        bottomOverlappingCells.add(cell);
-                    }
-                }
-            }
-        }
-        
-
-        return new RowInfo(currCell, prevCell, topOverlappingCells, bottomOverlappingCells, containedCells, containedByCells, currCol);
+        for (SpreadsheetCell overlappingCell : ri.overlappingCells) {
+            laidCells++;
+        }        
     }
 
     /**
