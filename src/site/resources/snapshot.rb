@@ -131,7 +131,7 @@ Content-type: text/html
                                                                 <li><a href="index.html">Introduction</a></li>
 								<li><a href="http://www.openshapa.org/news">News</a></li>
 								<li class="current"><a href="http://www.openshapa.org/snapshot.rb">Development Snapshots</a></li>
-								<li><a href="https://openshapa.org/fogbugz/default.php?W20" target="_blank">Contributer Guide</a></li>
+								<li><a href="https://github.com/OpenSHAPA/openshapa/wiki" target="_blank">Contributer Guide</a></li>
 								<li><a href="https://openshapa.org/support" target="_blank">Support</a></li>
 								<li><a href="https://www.pivotaltracker.com/projects/495691" target="_blank">Issue Database</a></li>
 								<li><a href="https://github.com/OpenSHAPA" target="_blank">Source Code</a></li>
