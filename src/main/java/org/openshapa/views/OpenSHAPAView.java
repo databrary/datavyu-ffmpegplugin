@@ -114,6 +114,8 @@ public final class OpenSHAPAView extends FrameView
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
+    
+    private static boolean redraw = true;
 
     /**
      * undo system elements
@@ -952,7 +954,16 @@ public final class OpenSHAPAView extends FrameView
             type = SheetLayoutType.StrongTemporal;
         }
 
+        
         panel.setLayoutType(type);
+    }
+    
+    public void setRedraw(boolean b) {
+        redraw = b;
+    }
+    
+    public boolean getRedraw() {
+        return redraw;
     }
 
     /**
@@ -1449,7 +1460,9 @@ public final class OpenSHAPAView extends FrameView
      *            The event that fired this action.
      */
     private void strongTemporalMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_strongTemporalMenuItemActionPerformed
+        final java.awt.event.ActionEvent evt) { 
+        setRedraw(true);
+        // GEN-FIRST:event_strongTemporalMenuItemActionPerformed
         weakTemporalOrderMenuItem.setSelected(false);
         setSheetLayout();
     } // GEN-LAST:event_strongTemporalMenuItemActionPerformed
@@ -1461,7 +1474,9 @@ public final class OpenSHAPAView extends FrameView
      *            The event that fired this action.
      */
     private void weakTemporalMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_weakTemporalMenuItemActionPerformed
+        final java.awt.event.ActionEvent evt) { 
+        setRedraw(true);
+        // GEN-FIRST:event_weakTemporalMenuItemActionPerformed
         strongTemporalOrderMenuItem.setSelected(false);
         setSheetLayout();
     } // GEN-LAST:event_weakTemporalMenuItemActionPerformed

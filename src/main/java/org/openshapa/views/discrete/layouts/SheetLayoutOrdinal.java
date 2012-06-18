@@ -19,6 +19,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JScrollPane;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import org.openshapa.views.discrete.SpreadsheetView;
@@ -69,6 +70,8 @@ public class SheetLayoutOrdinal extends SheetLayout {
     @Override
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
+        
+        OpenSHAPA.getView().setRedraw(false);
 
         // This layout must be applied to a Spreadsheet panel.
         JScrollPane pane = (JScrollPane) parent;

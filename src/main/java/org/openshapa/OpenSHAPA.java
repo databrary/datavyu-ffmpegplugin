@@ -15,10 +15,10 @@
 package org.openshapa;
 
 import ch.randelshofer.quaqua.QuaquaManager;
+import com.mongodb.DB;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import graphics.SkyTheme;
 import java.awt.Dimension;
 import java.awt.KeyEventDispatcher;
 import java.awt.Toolkit;
@@ -43,9 +43,6 @@ import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
 import org.openshapa.util.WindowsKeyChar;
 import org.openshapa.views.*;
-import rcaller.Globals;
-import rcaller.RCaller;
-import rcaller.RCode;
 
 /**
  * The main class of the application.
@@ -823,6 +820,11 @@ implements KeyEventDispatcher, TitleNotifier {
     /** @return canSetUnsaved */
     public boolean getCanSetUnsaved() {
         return canSetUnsaved;
+    }
+    
+    /** @return database */
+    public DB getDatabase() {
+        return MongoDatastore.getDB();
     }
 
     /**

@@ -74,17 +74,12 @@ public class MongoCell extends BasicDBObject implements Cell {
         }
     }
 
-
     public void save() {
         MongoDatastore.getCellCollection().save(this);
     }
-
-    private MongoCell getLatest() {
-        return (MongoCell) MongoDatastore.getCellCollection().findOne((ObjectId) this.get("_id"));
-    }
-
+    
     public ObjectId getVariableID() {
-        return (ObjectId) getLatest().get("variable_id");
+        return (ObjectId) this.get("variable_id");
     }
 
     private String convertMStoTimestamp(long time) {
@@ -110,12 +105,12 @@ public class MongoCell extends BasicDBObject implements Cell {
 
     @Override
     public String getOffsetString() {
-        return convertMStoTimestamp((Long) getLatest().get("offset"));
+        return convertMStoTimestamp((Long) this.get("offset"));
     }
 
     @Override
     public long getOffset() {
-        return (Long) getLatest().get("offset");
+        return (Long) this.get("offset");
     }
 
     public void setVariableID(int variable_id) {
@@ -146,12 +141,12 @@ public class MongoCell extends BasicDBObject implements Cell {
 
     @Override
     public long getOnset() {
-        return (Long) getLatest().get("onset");
+        return (Long) this.get("onset");
     }
 
     @Override
     public String getOnsetString() {
-        return convertMStoTimestamp((Long) getLatest().get("onset"));
+        return convertMStoTimestamp((Long) this.get("onset"));
     }
 
     @Override
@@ -187,19 +182,19 @@ public class MongoCell extends BasicDBObject implements Cell {
     public Value getValue() {
         Value value = null;
         BasicDBObject query = new BasicDBObject();
-        query.put("parent_id", getLatest().get("_id"));
+        query.put("parent_id", this.get("_id"));
 
         if((Integer)this.get("type") == Argument.Type.MATRIX.ordinal()) {
             DBCursor cur = matrix_value_collection.find(query);
             if(cur.hasNext()) {
                 value = (MongoMatrixValue)cur.next();
             }
-        } else if((Integer) getLatest().get("type") == Argument.Type.NOMINAL.ordinal()) {
+        } else if((Integer) this.get("type") == Argument.Type.NOMINAL.ordinal()) {
             DBCursor cur = nominal_value_collection.find(query);
             if(cur.hasNext()) {
                 value = (MongoNominalValue)cur.next();
             }
-        } else if((Integer) getLatest().get("type") == Argument.Type.TEXT.ordinal()) {
+        } else if((Integer) this.get("type") == Argument.Type.TEXT.ordinal()) {
             DBCursor cur = text_value_collection.find(query);
             if(cur.hasNext()) {
                 value = (MongoTextValue)cur.next();
@@ -310,7 +305,7 @@ public class MongoCell extends BasicDBObject implements Cell {
     }
 
     public ObjectId getID() {
-        return ((ObjectId) getLatest().get("_id"));
+        return ((ObjectId) this.get("_id"));
     }
     
     @Override

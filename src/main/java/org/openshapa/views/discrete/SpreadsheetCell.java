@@ -334,7 +334,7 @@ implements MouseListener, FocusListener, CellListener {
      * @return Offset ticks as a long.
      */
     public long getOffsetTicks() {
-        if(model.getOffset() == 0) {
+        if(model.getOffset() < model.getOnset()) {
             return model.getOnset();
         }
         return model.getOffset();

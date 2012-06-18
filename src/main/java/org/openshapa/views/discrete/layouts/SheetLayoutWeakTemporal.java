@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JScrollPane;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.views.discrete.SpreadsheetCell;
 import org.openshapa.views.discrete.SpreadsheetColumn;
 import org.openshapa.views.discrete.SpreadsheetView;
@@ -45,21 +46,20 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     /**
      * Information on each element in the row we are currently processing.
      */ 
-    private class RowInfo {
-        public RowInfo(SpreadsheetCell nCell, List<SpreadsheetCell> oCells, SpreadsheetColumn nCol) {
+    private class CellInfo {
+        public CellInfo(SpreadsheetCell nCell, long onset, long offset) {
             cell = nCell;
-            col = nCol;
-            overlappingCells = oCells;
+            onset = cell.getOnsetTicks();
+            offset = cell.getOffsetTicks();
         }
 
         // The cell that this row information is about.
         public SpreadsheetCell cell;
         
-        // The cells that overlap the above cell.
-        public List<SpreadsheetCell> overlappingCells;
+        public long onset;
 
         // The column that the above cell belongs too.
-        public SpreadsheetColumn col;
+        public long offset;
     }
 
     /**
@@ -75,16 +75,23 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     @Override
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
-
-// TODO: DEBUGGING REMOVE
-//        System.err.println("================================ Laying container");
+        
+        long overallTime = System.currentTimeMillis();
 
         // This layout must be applied to a Spreadsheet panel.
         JScrollPane pane = (JScrollPane) parent;
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
                                                          .getView();
 
+        // See if we need to redraw this spreadsheet
+//        if(!OpenSHAPA.getProjectController().getDB().isChanged() && !OpenSHAPA.getView().getRedraw()) {
+//            return;
+//        }
+        OpenSHAPA.getProjectController().getDB().markAsUnchanged();
+//        OpenSHAPA.getView().setRedraw(false);
+        
         laidCells = 0;
+//        maxHeight = 0;
         maxHeight = parent.getHeight();
 
         // Determine the ratio/scale to use with temporal ordering, we pick the
@@ -98,7 +105,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
         for (SpreadsheetColumn c : mainView.getColumns()) {
             // We only work with visible columns.
-            if (c.isVisible()) {
+//            if (c.isVisible()) {
                 // Take this opportunity to initalise the working data we need for each of the columns.
                 c.setWorkingHeight(0);
                 c.setWorkingOrd(0);
@@ -129,13 +136,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     }
                 }
                 totalCells = totalCells + colCells.size();
-            }
+//            }
         }
         // Determine the final temporal ratio/scale we are going to use for the spreadsheet.
         if (ratioTicks > 0) {
             ratio = ratioHeight / (double) ratioTicks;
         }
-        System.err.println(ratio);
 
         // Untill we have laid all the cells, we position each of them
         // temporarily. We do this row by row with the cells sorted temporarily,
@@ -173,11 +179,13 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // so once #cells >> #cols this actually places in O(#cells) :)
         // Informal time mapping seems to confirm that the amount of time
         // spend placing cells does indeed have linear growth.
+        long[] timers = new long[4];
         while (laidCells < totalCells) {
             SpreadsheetCell workingCell = null;
             SpreadsheetColumn workingCol = null;
             int currColIndex = -1;
             
+
             // Get the current row cells
             long lowest_offset = Long.MAX_VALUE;
             long lowest_onset = Long.MAX_VALUE;
@@ -189,7 +197,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     rowCells[i] = cellCache.get(i).get(position_index[i]);
                     currCellOnset = rowCells[i].getOnsetTicks();
                     currCellOffset = rowCells[i].getOffsetTicks();
-                    if(currCellOffset == 0) {
+                    if(currCellOffset < currCellOnset) {
                         currCellOffset = currCellOnset;
                     }
                 }
@@ -231,10 +239,13 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 prevLaidCell.setBounds(0, prev_t, (prevLaidCol.getWidth() - marginSize), (prev_b - prev_t));
                 prevLaidCol.setWorkingHeight(prev_b);
                 workingCell.setBeingProcessed(false);
+                
 //                System.out.println(String.format("Col %s\tOnset: %d\tOffset: %d\tTop: %d\tBottom: %d", 
 //                    prevLaidCol.getColumnName(), prevLaidCell.getOnsetTicks(), prevLaidCell.getOffsetTicks(), prev_t, prev_b));
+                
                 maxHeight = Math.max(prevLaidCell.getY() + prevLaidCell.getHeight(), maxHeight);
             }
+            
             
             // Now that we're sure the previous column is updated, get the col bottoms
             column_bottoms.clear();
@@ -286,7 +297,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 }
                  
                 if(prevColCellOffset == -1 || workingCell.getOnsetTicks() - prevColCellOffset > 1) {
-                    System.out.println(workingCell.getOnsetTicks());
+//                    System.out.println(workingCell.getOnsetTicks());
                     t = prevLaidCell.getY() + prevLaidCell.getHeight();
                 }
             }
@@ -308,72 +319,30 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             prev_b = b;
             maxHeight = Math.max(workingCell.getY() + workingCell.getHeight(), maxHeight);
             laidCells++;
+//            System.out.println(String.format("Laid Cells: %d\tTotal Cells: %d",laidCells, totalCells));
             
             
             // Lay out the final cell
             if(laidCells == totalCells) {
                 workingCell.setBounds(0, t, (workingCol.getWidth() - marginSize), (b - t));
-                workingCol.setWorkingHeight(b);
+//                workingCol.setWorkingHeight(b);
                 workingCell.setBeingProcessed(false);
             }
         }
+        for(int i = 0; i < 4; i++) {
+            System.out.println(String.format("%d: %d", i, timers[i]));
+        }
+        System.out.println(timers);
+        System.out.println("BROKEN OUT OF LOOP");
         
 //        long endtime = System.currentTimeMillis();
 //        System.out.println(endtime-starttime);
 
         // Pad the columns so that they are all the same length.
         padColumns(mainView, parent);
+        
     }
-
-    /**
-     * Marks the cell in the current row info as completed.
-     *
-     * @param ri The row information containing the cell to mark as completed.
-     */
-    private void markCellAsCompleted(final RowInfo ri) {
-        ri.col.setWorkingOnsetPadding(ri.col.getWorkingOffsetPadding());
-        ri.col.setWorkingOrd(ri.col.getWorkingOrd() + 1);
-        maxHeight = Math.max((ri.cell.getY() + ri.cell.getHeight()), maxHeight);
-        ri.cell.setOrdinal(ri.col.getWorkingOrd());
-        laidCells++;
-
-        for (SpreadsheetCell overlappingCell : ri.overlappingCells) {
-            laidCells++;
-        }        
-    }
-
-    /**
-     * Performs a bubble sort of a row of cells by onset and offset. The collection
-     * of cells will be ordered by onset, if the onsets match, they will then be
-     * ordered by offset.
-     *
-     * @param row The row of cells to be ordered by onset and offset.
-     *
-     * @return A row of cells ordered by onset and offset.
-     */
-    private List<RowInfo> sortRow(List<RowInfo> row) {
-        boolean sorted;
-        do {
-            sorted = true;
-
-            for (int i = 0; i < (row.size() - 1); i++) {
-                RowInfo a = row.get(i);
-                RowInfo b = row.get(i + 1);
-
-                if (a.cell.getOnsetTicks() > b.cell.getOnsetTicks()) {
-                    sorted = false;
-                    row.set(i, b);
-                    row.set(i + 1, a);
-                } else if ((a.cell.getOnsetTicks() == b.cell.getOnsetTicks()) && (a.cell.getOffsetTicks() > b.cell.getOffsetTicks())) {
-                    sorted = false;
-                    row.set(i, b);
-                    row.set(i + 1, a);
-                }
-            }
-        } while (!sorted);
-
-        return row;
-    }
+    
 
     /**
      * Pads all the columns so that they all fill out to the maximum height of

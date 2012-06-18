@@ -25,3 +25,4 @@ cop.sh
 out.csv
 usermetrix.id
 /.idea/
+.RData

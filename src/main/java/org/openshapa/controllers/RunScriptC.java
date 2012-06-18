@@ -46,7 +46,6 @@ import com.usermetrix.jclient.UserMetrix;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
