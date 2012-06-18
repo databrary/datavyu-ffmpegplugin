@@ -302,13 +302,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 }
             }
             
-            
             // Calculate b
             int b = Collections.max(column_bottoms);
             if(b < t + workingCell.getPreferredSize().height) {
                 b = t + workingCell.getPreferredSize().height;
             }
-            
             
              // Update the previous dimensions and get ready to lay them next time around.
             column_bottoms.clear();
@@ -329,11 +327,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 workingCell.setBeingProcessed(false);
             }
         }
-        for(int i = 0; i < 4; i++) {
-            System.out.println(String.format("%d: %d", i, timers[i]));
-        }
-        System.out.println(timers);
-        System.out.println("BROKEN OUT OF LOOP");
         
 //        long endtime = System.currentTimeMillis();
 //        System.out.println(endtime-starttime);
