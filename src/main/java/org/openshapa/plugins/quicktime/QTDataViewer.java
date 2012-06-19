@@ -168,9 +168,14 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 	                    || (visualMedia.getSampleCount() == 1)) {
 	                fps = correctFPS();
 	            }
+                    
+                    if(fps == 1) {
+                        fps = 30;
+                    }
         	}
         } catch (QTException e) {
-            LOGGER.error("Unable to calculate FPS", e);
+            LOGGER.error("Unable to calculate FPS, assuming 30", e);
+            fps = 30;
         }
 
         return fps;
