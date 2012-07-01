@@ -157,6 +157,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         SpreadsheetCell[] rowCells = new SpreadsheetCell[mainView.getColumns().size()];
         SpreadsheetCell prevLaidCell = null;
         SpreadsheetColumn prevLaidCol = null;
+        int prevColIndex = -1;
         
         int prev_t = 0;
         int prev_b = 0;
@@ -221,6 +222,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 if(rowCells[i] != null && 
                         rowCells[i].getOffsetTicks() == lowest_offset && 
                         rowCells[i].getOnsetTicks() < lowest_onset) {
+                    
                     lowest_onset = rowCells[i].getOnsetTicks();
                     workingCell = rowCells[i];
                     workingCol = mainView.getColumns().get(i);
@@ -237,11 +239,19 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             // Lay out the last cell and ready this one for layout
             if(laidCells > 0) {
                 prevLaidCell.setBounds(0, prev_t, (prevLaidCol.getWidth() - marginSize), (prev_b - prev_t));
+                
+                // TODO: Fix this
+                if(position_index[prevColIndex] < cellCache.get(currColIndex).size()-1 && 
+                    prevLaidCell.getOnsetTicks() - cellCache.get(currColIndex).get(position_index[prevColIndex]+1).getOffsetTicks() > 1) {
+                SpreadsheetCell prevColCell = cellCache.get(currColIndex).get(position_index[currColIndex]-1);
+                    prev_b += gapSize;
+                }
+                
                 prevLaidCol.setWorkingHeight(prev_b);
                 workingCell.setBeingProcessed(false);
                 
-//                System.out.println(String.format("Col %s\tOnset: %d\tOffset: %d\tTop: %d\tBottom: %d", 
-//                    prevLaidCol.getColumnName(), prevLaidCell.getOnsetTicks(), prevLaidCell.getOffsetTicks(), prev_t, prev_b));
+                System.out.println(String.format("Col %s\tOnset: %d\tOffset: %d\tTop: %d\tBottom: %d", 
+                    prevLaidCol.getColumnName(), prevLaidCell.getOnsetTicks(), prevLaidCell.getOffsetTicks(), prev_t, prev_b));
                 
                 maxHeight = Math.max(prevLaidCell.getY() + prevLaidCell.getHeight(), maxHeight);
             }
@@ -295,12 +305,14 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 else {
                     prevColCellOffset = -1;
                 }
-                 
-                if(prevColCellOffset == -1 || workingCell.getOnsetTicks() - prevColCellOffset > 1) {
-//                    System.out.println(workingCell.getOnsetTicks());
+                if(prevLaidCol == workingCol) {
+                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + gapSize;
+                } else if(prevColCellOffset == -1 || workingCell.getOnsetTicks() - prevColCellOffset > 1) {
                     t = prevLaidCell.getY() + prevLaidCell.getHeight();
                 }
             }
+            
+            
             
             // Calculate b
             int b = Collections.max(column_bottoms);
@@ -311,6 +323,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
              // Update the previous dimensions and get ready to lay them next time around.
             column_bottoms.clear();
             position_index[currColIndex]++;
+            prevColIndex = currColIndex;
             prevLaidCell = workingCell;
             prevLaidCol = workingCol;
             prev_t = t;

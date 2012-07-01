@@ -56,6 +56,9 @@
         <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-filechooser-only/7.0.1/quaqua-filechooser-only-7.0.1.jar</string>
         <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-osx64/7.0.1/quaqua-osx64-7.0.1.jar</string>
         <string>$JAVAROOT/repo/ca/beq/jregistrykey/1.4.5/jregistrykey-1.4.5.jar</string>
+        <string>$JAVAROOT/repo/uk/co/caprica/vlcj/2.2.0-SNAPSHOT/vlcj-2.2.0-SNAPSHOT.jar</string>
+        <string>$JAVAROOT/rcaller/RCaller/2.1.1-SNAPSHOT/RCaller-2.1.1-SNAPSHOT.jar</string>
+        <string>$JAVAROOT/net/java/dev/jna/3.4.1/jna-3.4.1.jar</string>
       </array>
     </dict>
   </dict>

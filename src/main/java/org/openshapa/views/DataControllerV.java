@@ -421,6 +421,7 @@ public final class DataControllerV extends OpenSHAPADialog
                 LOGGER.error(t);
                 JOptionPane.showMessageDialog(null,
                     "Could not open data source: " + t.getMessage());
+		t.printStackTrace();
             }
         }
     }
@@ -736,6 +737,8 @@ public final class DataControllerV extends OpenSHAPADialog
         boolean removed = viewers.remove(viewer);
 
         if (removed) {
+		
+	    viewer.clearDataFeed();
 
             // BugzID:2000
             viewer.removeViewerStateListener(

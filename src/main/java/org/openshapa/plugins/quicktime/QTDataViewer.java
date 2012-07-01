@@ -20,7 +20,6 @@ import java.awt.Dimension;
 
 import java.io.File;
 
-import org.openshapa.plugins.quicktime.BaseQuickTimeDataViewer;
 
 import org.openshapa.util.Constants;
 
@@ -116,6 +115,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     protected void setQTDataFeed(final File videoFile) {
 
         try {
+	    QTFile v = new QTFile(videoFile);
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
             movie.setVolume(0.7F);

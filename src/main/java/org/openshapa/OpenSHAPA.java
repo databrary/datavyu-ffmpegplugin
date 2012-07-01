@@ -43,6 +43,7 @@ import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
 import org.openshapa.util.WindowsKeyChar;
 import org.openshapa.views.*;
+import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
 /**
  * The main class of the application.
@@ -919,6 +920,7 @@ implements KeyEventDispatcher, TitleNotifier {
      * @param args The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
+	
         // Spin up the mongo process
         MongoDatastore.startMongo();
 
