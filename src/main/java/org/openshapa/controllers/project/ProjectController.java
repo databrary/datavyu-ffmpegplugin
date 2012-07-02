@@ -638,25 +638,6 @@ public final class ProjectController {
             }
         }
 
-
-        // Solution 4: It is in an adjacent directory.
-        {
-            File parent = workingDir.getParentFile();
-
-            if (parent != null) {
-                Iterator<File> subFiles = FileUtils.iterateFiles(parent,
-                        fileNameFilter, TrueFileFilter.TRUE);
-
-                if (subFiles.hasNext()) {
-                    file = subFiles.next();
-                }
-            }
-
-            if (file.exists()) {
-                return file;
-            }
-        }
-
         return null;
     }
 
