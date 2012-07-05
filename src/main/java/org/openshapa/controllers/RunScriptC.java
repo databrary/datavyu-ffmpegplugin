@@ -150,10 +150,20 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         RecentFiles.rememberScript(scriptFile);
         
         if(scriptFile.getName().endsWith(".rb")) {
-            ScriptEngine rubyEngine = OpenSHAPA.getScriptingEngine();
+            runRubyScript(scriptFile);
+        }
+        else if(scriptFile.getName().endsWith(".r") || scriptFile.getName().endsWith(".R")) {
+            runRScript(scriptFile);
+        }
+                
+        return null;
+    }
+    
+    private void runRubyScript(File scriptFile) {
+	    ScriptEngine rubyEngine = OpenSHAPA.getScriptingEngine();
+	    rubyEngine.getContext().setWriter(consoleWriter);
             try {
-                rubyEngine.getContext().setWriter(consoleWriter);
-
+			
                 // Place reference to various OpenSHAPA functionality.
                 rubyEngine.put("db", OpenSHAPA.getProjectController().getDB());
                 rubyEngine.put("pj", OpenSHAPA.getProjectController().getProject());
@@ -163,34 +173,56 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 FileReader reader = new FileReader(scriptFile);
                 rubyEngine.eval(reader);
                 reader = null;
-
+		
                 // Remove references.
                 rubyEngine.put("db", null);
                 rubyEngine.put("pj", null);
                 rubyEngine.put("mixer", null);
                 rubyEngine.put("viewers", null);
+		
+		consoleWriter.println("\nScript completed successfully.");
 
             } catch (ScriptException e) {
                 consoleWriter.println("***** SCRIPT ERRROR *****");
-                consoleWriter.println("@Line " + e.getLineNumber() + ":'"
+                consoleWriter.println("@Line " + e.getLineNumber() + ":\n   '"
                     + e.getMessage() + "'");
                 consoleWriter.println("*************************");
                 consoleWriter.flush();
 
                 LOGGER.error("Unable to execute script: ", e);
             } catch (FileNotFoundException e) {
+		consoleWriter.println("File not found script");
                 LOGGER.error("Unable to execute script: ", e);
-            }
-
+	    }
             running = false;
-            
-        }
-        else if(scriptFile.getName().endsWith(".r") || scriptFile.getName().endsWith(".R")) {
-            
+    }
+    
+    private void runRScript(File scriptFile) {
+
             // Initialize RCaller and tell it where the rscript application is
             RCaller caller = new RCaller();
             try {
-                caller.setRscriptExecutable("/usr/bin/rscript");
+		if(System.getProperty("os.name").startsWith("Windows")) {
+			// We have to find it because Windows doesn't keep
+			// anything in reasonable places.
+			
+			// We will check in two places: Program Files and then
+			// Program Files (x86)
+			
+			
+			String program_files = System.getenv("ProgramFiles");
+			String program_files_x86 = System.getenv("ProgramFiles(x86)");
+			
+			if(new File(program_files + "/R/").exists()) {
+				// Loop over directories in here
+			} else if (program_files_x86 != null && new File(program_files_x86 + "/R/").exists()) {
+				// Loop over directories in here
+			}
+			
+			caller.setRscriptExecutable(null);
+		} else {
+			caller.setRscriptExecutable("/usr/bin/rscript");
+		}
             }
             catch(Exception e) {
                 // Ut oh, R isn't installed.
@@ -257,11 +289,6 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             catch(Exception e) {
                 e.printStackTrace();
             }
-        }
-        
-        // TODO: Read db back in to OpenSHAPA and update
-        
-        return null;
     }
     
     // TODO
