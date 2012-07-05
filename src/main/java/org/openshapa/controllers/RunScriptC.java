@@ -72,9 +72,6 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     /** The path to the script file we are executing. */
     private final File scriptFile;
 
-    /** Is the script currently running or not? */
-    private boolean running = true;
-
     /** The View that the results of the scripting engine are displayed too. */
     private JTextArea console = null;
 
@@ -98,7 +95,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
         jd.addChoosableFileFilter(RFilter.INSTANCE);
         jd.addChoosableFileFilter(RBFilter.INSTANCE);
-        
+	
         int result = jd.showOpenDialog(OpenSHAPA.getApplication()
                 .getMainFrame());
 
@@ -155,6 +152,13 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         else if(scriptFile.getName().endsWith(".r") || scriptFile.getName().endsWith(".R")) {
             runRScript(scriptFile);
         }
+	
+	// Close the output stream to kill our reader thread
+	try {
+	    consoleOutputStream.close();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
                 
         return null;
     }
@@ -194,7 +198,6 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 		consoleWriter.println("File not found script");
                 LOGGER.error("Unable to execute script: ", e);
 	    }
-            running = false;
     }
     
     private void runRScript(File scriptFile) {
@@ -372,14 +375,12 @@ public final class RunScriptC extends SwingWorker<Object, String> {
          */
         @Override public void run() {
             final byte[] buf = new byte[BUFFER_SIZE];
+	    
+	    int len;
 
             try {
-
-                while (running) {
-                    final int len = consoleOutputStream.read(buf);
-
+                while ((len = consoleOutputStream.read(buf)) != -1) {
                     if (len > 0) {
-
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
                         publish(s);
