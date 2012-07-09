@@ -201,10 +201,11 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     }
     
     private void runRScript(File scriptFile) {
-
             // Initialize RCaller and tell it where the rscript application is
-            RCaller caller = new RCaller();
+	    RCaller caller = new RCaller();
             try {
+		
+		
 		if(System.getProperty("os.name").startsWith("Windows")) {
 			// We have to find it because Windows doesn't keep
 			// anything in reasonable places.
@@ -229,6 +230,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             }
             catch(Exception e) {
                 // Ut oh, R isn't installed.
+		e.printStackTrace();
             }
             caller.redirectROutputToStream(sIn);
             
