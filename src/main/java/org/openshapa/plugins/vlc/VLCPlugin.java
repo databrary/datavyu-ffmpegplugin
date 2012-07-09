@@ -5,7 +5,6 @@ import java.awt.Frame;
 
 import java.io.FileFilter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -59,7 +58,7 @@ public class VLCPlugin implements Plugin {
     }
 
     @Override public String getPluginName() {
-        return "VLC Plugin";
+        return "VLC Video";
     }
 
     @Override public ImageIcon getTypeIcon() {
