@@ -250,8 +250,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 prevLaidCol.setWorkingHeight(prev_b);
                 workingCell.setBeingProcessed(false);
                 
-                System.out.println(String.format("Col %s\tOnset: %d\tOffset: %d\tTop: %d\tBottom: %d", 
-                    prevLaidCol.getColumnName(), prevLaidCell.getOnsetTicks(), prevLaidCell.getOffsetTicks(), prev_t, prev_b));
+//                System.out.println(String.format("Col %s\tOnset: %d\tOffset: %d\tTop: %d\tBottom: %d", 
+//                    prevLaidCol.getColumnName(), prevLaidCell.getOnsetTicks(), prevLaidCell.getOffsetTicks(), prev_t, prev_b));
                 
                 maxHeight = Math.max(prevLaidCell.getY() + prevLaidCell.getHeight(), maxHeight);
             }
