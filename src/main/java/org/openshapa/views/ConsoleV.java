@@ -16,6 +16,7 @@ package org.openshapa.views;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.Font;
 import javax.swing.GroupLayout;
 import org.openshapa.OpenSHAPA;
 import javax.swing.JFrame;
@@ -46,6 +47,7 @@ public final class ConsoleV extends OpenSHAPADialog {
         super(parent, modal);
         initComponents();
         setName(this.getClass().getSimpleName());
+	console.setFont(new Font("Monospaced", Font.PLAIN, 16));
     }
 
     /**
