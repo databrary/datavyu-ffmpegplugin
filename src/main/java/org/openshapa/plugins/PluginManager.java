@@ -40,8 +40,6 @@ import org.jdesktop.application.LocalStorage;
 
 import org.openshapa.OpenSHAPA;
 
-import org.openshapa.plugins.quicktime.QTDataViewer;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -399,11 +397,11 @@ public final class PluginManager {
                 @Override public int compare(final Plugin o1, final Plugin o2) {
 
                     // Want the QuickTime video plugin to always be first.
-                    if ("QuickTime Video".equals(o1.getPluginName())) {
+                    if ("VLC Video".equals(o1.getPluginName())) {
                         return -1;
                     }
 
-                    if ("QuickTime Video".equals(o2.getPluginName())) {
+                    if ("VLC Video".equals(o2.getPluginName())) {
                         return 1;
                     }
 
@@ -448,12 +446,6 @@ public final class PluginManager {
      *         {@code null} otherwise.
      */
     public Plugin getAssociatedPlugin(final String dataViewer) {
-
-        if ("org.openshapa.plugins.quicktime.java.QTJavaDataViewer".equals(
-                    dataViewer)) {
-            return pluginLookup.get(QTDataViewer.class.getCanonicalName());
-        }
-
         return pluginLookup.get(dataViewer);
     }
 
