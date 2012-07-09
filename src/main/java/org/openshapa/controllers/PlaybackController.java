@@ -934,7 +934,7 @@ public final class PlaybackController implements PlaybackListener,
         // the illusion of 'smooth'. We do this by stopping the dataviewer and
         // doing many seekTo's to grab individual frames.
 
-        if (Math.abs(rate) > 2.0) {
+        if (rate > 4.0 || rate < 0) {
             playbackModel.setFakePlayback(true);
 
             for (DataViewer viewer : viewers) {

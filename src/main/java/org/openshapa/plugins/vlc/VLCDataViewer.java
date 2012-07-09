@@ -85,6 +85,8 @@ public class VLCDataViewer implements DataViewer {
         VLC has issues when trying to go to the same spot multiple times */
     private long last_position;
     
+    private Thread vlcThread;
+    
     static {
 	// Try to load VLC libraries.
 	// This discovery function is platform independent
@@ -103,62 +105,57 @@ public class VLCDataViewer implements DataViewer {
 	playing = false;
 	vlcDialog = new JDialog(parent, modal);
 	vlcDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-	vlcDialog.setName("VLC Media Player");
+	vlcDialog.setName("VLC Video");
 	vlcDialog.setResizable(true);
 	
 	// Set an initial size
 	vlcDialog.setSize(800, 600);
 
-	Runnable edtTask = new Runnable() {
-                @Override public void run() {
-			videoSurface = new Canvas();
-			videoSurface.setBackground(Color.black);
+	videoSurface = new Canvas();
+	videoSurface.setBackground(Color.black);
 
-			// Set some options for libvlc
-			String[] libvlcArgs = {};
+	// Set some options for libvlc
+	String[] libvlcArgs = {"--vout=macosx","--no-video-title-show", "--quiet"};
 
-			// Create a factory instance (once), you can keep a reference to this
-			mediaPlayerFactory = new MediaPlayerFactory(libvlcArgs);
+	// Create a factory instance (once), you can keep a reference to this
+	mediaPlayerFactory = new MediaPlayerFactory(libvlcArgs);
 
-			// Create a full-screen strategy
-			fullScreenStrategy = new FullScreenStrategy() {
+	// Create a full-screen strategy
+	fullScreenStrategy = new FullScreenStrategy() {
 
-				@Override
-				public void enterFullScreenMode() {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							vlcDialog.toFront();
-							vlcDialog.setVisible(true);
-						}
-					});
+		@Override
+		public void enterFullScreenMode() {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					vlcDialog.toFront();
+					vlcDialog.setVisible(true);
 				}
+			});
+		}
 
-				@Override
-				public void exitFullScreenMode() {
-				}
+		@Override
+		public void exitFullScreenMode() {
+		}
 
-				@Override
-				public boolean isFullScreenMode() {
-					return false;
-				}
-			};
-
-
-			// Create a media player instance
-			mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer(fullScreenStrategy);
-
-			// Add it to the dialog and place the video onto the surface
-			vlcDialog.setLayout(new BorderLayout());
-			vlcDialog.add(videoSurface, BorderLayout.CENTER);
-			mediaPlayer.setVideoSurface(mediaPlayerFactory.newVideoSurface(videoSurface));
-			mediaPlayer.setFullScreen(false);
-
+		@Override
+		public boolean isFullScreenMode() {
+			return false;
 		}
 	};
 
+
+	// Create a media player instance
+	mediaPlayer = mediaPlayerFactory.newEmbeddedMediaPlayer();
+
+	// Add it to the dialog and place the video onto the surface
+	vlcDialog.setLayout(new BorderLayout());
+	vlcDialog.add(videoSurface, BorderLayout.CENTER);
+	mediaPlayer.setVideoSurface(mediaPlayerFactory.newVideoSurface(videoSurface));
+	mediaPlayer.setFullScreen(false);
+
+
         stateListeners = new ArrayList<ViewerStateListener>();
 		
-	launchEdtTaskNow(edtTask);
     }
 	
 private void launchEdtTaskNow(Runnable edtTask) {
@@ -218,44 +215,37 @@ private void launchEdtTaskLater(Runnable edtTask) {
     }
 
     @Override public void setDataFeed(final File dataFeed) {
-		Runnable edtTask = new Runnable() {
-			public void run() {
-				vlcDialog.setVisible(true);
-				mediaPlayer.startMedia(dataFeed.getAbsolutePath());
+	vlcDialog.setVisible(true);
+	mediaPlayer.startMedia(dataFeed.getAbsolutePath());
 
-				// Grab FPS and length
-				fps = mediaPlayer.getFps();
-				length = mediaPlayer.getLength();
-				Dimension d = mediaPlayer.getVideoDimension();
-				
-				System.out.println(d);
-				System.out.println(String.format("FPS: %f", fps));
-				System.out.println(String.format("Length: %d", length));
-				
-				// Stop the player. This will rewind whatever
-				// frames we just played to get the FPS and length
-				mediaPlayer.pause();
-				mediaPlayer.setTime(0);
-				
-				playing = false;
-				
-				// Test to make sure we got the framerate.
-				// If we didn't, alert the user that this
-				// may not work right.
-				if(fps < 1.0) {
-					// VLC can't read the framerate for this video for some reason.
-					// Set it to 29.97fps so it is still usable for coding.
-					fps = 29.97f;
-					JOptionPane.showMessageDialog(vlcDialog, 
-							"Warning: Unable to detect framerate in video.\n"
-							+ "This video may not behave properly. "
-							+ "Please try converting to H.264.\n\nSetting "
-							+ "framerate to 29.97.");
-				}
-			}
-		};
-		
-		launchEdtTaskNow(edtTask);
+	// Grab FPS and length
+	fps = mediaPlayer.getFps();
+	length = mediaPlayer.getLength();
+	Dimension d = mediaPlayer.getVideoDimension();
+
+	System.out.println(String.format("FPS: %f", fps));
+	System.out.println(String.format("Length: %d", length));
+	
+	// Stop the player. This will rewind whatever
+	// frames we just played to get the FPS and length
+	mediaPlayer.pause();
+	mediaPlayer.setTime(1);
+
+	playing = false;
+
+	// Test to make sure we got the framerate.
+	// If we didn't, alert the user that this
+	// may not work right.
+	if(fps < 1.0) {
+		// VLC can't read the framerate for this video for some reason.
+		// Set it to 29.97fps so it is still usable for coding.
+		fps = 29.97f;
+		JOptionPane.showMessageDialog(vlcDialog, 
+				"Warning: Unable to detect framerate in video.\n"
+				+ "This video may not behave properly. "
+				+ "Please try converting to H.264.\n\nSetting "
+				+ "framerate to 29.97.");
+	}		
     }
 
     @Override public File getDataFeed() {
@@ -271,14 +261,19 @@ private void launchEdtTaskLater(Runnable edtTask) {
     }
 
     @Override public void seekTo(final long position) {
-		Runnable edtTask = new Runnable() {
-			@Override public void run() {
-//				if(last_position != position && position > 0 && !playing)
+	Runnable edtTask = new Runnable() {
+		@Override public void run() {
+
+			if(!playing) {
+				if(position > 0)
 					mediaPlayer.setTime(position);
+				else
+					mediaPlayer.setTime(1);
 			}
-		};
-		
-		launchEdtTaskLater(edtTask);
+		}
+	};
+
+	launchEdtTaskLater(edtTask);
     }
 
     @Override public boolean isPlaying() {
@@ -290,7 +285,7 @@ private void launchEdtTaskLater(Runnable edtTask) {
 		@Override public void run() {
 			if(playing)
 				mediaPlayer.pause();
-				playing = false;
+			playing = false;
 		}
 	};
 
@@ -298,15 +293,23 @@ private void launchEdtTaskLater(Runnable edtTask) {
     }
 
     @Override public void setPlaybackSpeed(final float rate) {
+	if(rate < 0) {
+		// VLC cannot play in reverse, so we're going to rely
+		// on the clock to do fake jumping
+		mediaPlayer.setRate(0);
+		mediaPlayer.pause();
+		playing = false;
+	}
 	mediaPlayer.setRate(rate);
     }
 
     @Override public void play() {
 	Runnable edtTask = new Runnable() {
 		@Override public void run() {
-			if(!playing)
+			if(!playing && mediaPlayer.getRate() > 0) {
 				mediaPlayer.play();
 				playing = true;
+			}
 		}
 	};
 		
