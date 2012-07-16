@@ -35,7 +35,7 @@
       <string>$JAVAROOT/../splash.png</string>
       <key>ClassPath</key>
       <array>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.12/openshapa-1.12.jar</string>        
+        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.12/openshapa-1.12.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.6.5/jruby-complete-1.6.5.jar</string>
         <string>$JAVAROOT/repo/org/mongodb/mongodb-osx64/2.0.2/mongodb-osx64-2.0.2.jar</string>
@@ -53,12 +53,11 @@
         <string>$JAVAROOT/repo/quicktime/QTJava/7/QTJava-7.jar</string>
         <string>$JAVAROOT/repo/com/google/collections/google-collections/1.0/google-collections-1.0.jar</string>
         <string>$JAVAROOT/repo/gnu/trove/2.1.0/trove-2.1.0.jar</string>
-        <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-filechooser-only/7.0.1/quaqua-filechooser-only-7.0.1.jar</string>
-        <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-osx64/7.0.1/quaqua-osx64-7.0.1.jar</string>
+        <string>$JAVAROOT/repo/quaqua/quaqua-filechooser-only/8.0/quaqua-filechooser-only-8.0.jar</string>
         <string>$JAVAROOT/repo/ca/beq/jregistrykey/1.4.5/jregistrykey-1.4.5.jar</string>
         <string>$JAVAROOT/repo/uk/co/caprica/vlcj/2.2.0-SNAPSHOT/vlcj-2.2.0-SNAPSHOT.jar</string>
-        <string>$JAVAROOT/rcaller/RCaller/2.1.1-SNAPSHOT/RCaller-2.1.1-SNAPSHOT.jar</string>
-        <string>$JAVAROOT/net/java/dev/jna/3.4.1/jna-3.4.1.jar</string>
+        <string>$JAVAROOT/repo/rcaller/RCaller/2.1.1-SNAPSHOT/RCaller-2.1.1-SNAPSHOT.jar</string>
+        <string>$JAVAROOT/repo/net/java/dev/jna/3.4.1/jna-3.4.1.jar</string>
       </array>
     </dict>
   </dict>
