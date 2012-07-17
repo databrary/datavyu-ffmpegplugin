@@ -14,7 +14,6 @@
  */
 package org.openshapa.util;
 
-import static org.fest.reflect.core.Reflection.method;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -37,26 +36,17 @@ import java.util.SimpleTimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.filechooser.FileFilter;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
 
-import junit.framework.Test;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.NotImplementedException;
 
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
-import org.fest.swing.fixture.JFileChooserFixture;
-import org.fest.swing.util.Platform;
 
 import org.openshapa.controllers.RunScriptC;
 
-import org.openshapa.plugins.PluginManager;
-
-import org.openshapa.views.DataControllerV;
-import org.openshapa.views.OpenSHAPAFileChooser;
 
 
 /**
