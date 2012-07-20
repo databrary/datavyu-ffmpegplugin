@@ -4,8 +4,9 @@
     <menu name="OpenSHAPA">
       <item name="Introduction" href="index.html"/>
       <item name="News" href="http://www.openshapa.org/news" />
-      <item name="Development Snapshots" href="https://openshapa.org/snapshot.rb"/>      
-      <item name="Contributor Guide" href="https://github.com/OpenSHAPA/openshapa/wiki" />
+      <item name="Development Snapshots" href="https://openshapa.org/snapshot.rb"/>
+      <item name="User/Scripting Guide" href="https://github.com/OpenSHAPA/openshapa/wiki" />
+      <item name="Contributor Guide" href="https://github.com/OpenSHAPA/openshapa/wiki/How-to-contribute-code" />
       <item name="Support" href="https://openshapa.org/support" />
       <item name="Issue Database" href="https://www.pivotaltracker.com/projects/495691" />
       <item name="Source Code" href="https://github.com/OpenSHAPA" />
