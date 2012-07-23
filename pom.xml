@@ -297,9 +297,9 @@
         </dependency>
         
         <dependency>
-          <groupId>quaqua</groupId>
-          <artifactId>quaqua-filechooser-only</artifactId>
-          <version>8.0</version>
+          <groupId>ch.randelshofer.quaqua</groupId>
+          <artifactId>quaqua-osx64</artifactId>
+          <version>7.0.1</version>
         </dependency>
       </dependencies>
     </profile>
@@ -740,11 +740,11 @@
       <artifactId>trove</artifactId>
       <version>2.1.0</version>
     </dependency>
-    
+
     <dependency>
-        <groupId>quaqua</groupId>
-        <artifactId>quaqua-filechooser-only</artifactId>
-        <version>8.0</version>
+      <groupId>ch.randelshofer.quaqua</groupId>
+      <artifactId>quaqua-filechooser-only</artifactId>
+      <version>7.0.1</version>
     </dependency>
 
     <dependency>
