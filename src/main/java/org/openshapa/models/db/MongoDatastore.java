@@ -20,7 +20,6 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package org.openshapa.models.db;
 
 import com.mongodb.*;
@@ -59,6 +58,9 @@ public class MongoDatastore implements Datastore {
     // Name of the datastore - does not need to persist - is used for file names.
     private String name = "untitled";
 
+    // The notifier to ping when the application's title changes.
+    private static TitleNotifier titleNotifier = null;
+
     // Has tbhe datastore changed since it has last been marked as unchanged?
     private static boolean changed;
 
@@ -82,23 +84,23 @@ public class MongoDatastore implements Datastore {
         while (cellCursor.hasNext()) {
             cellCollection.remove(cellCursor.next());
         }
-        
+
         // Place indexes on the cell collection for fast querying
         BasicDBObject cell_index = new BasicDBObject();
         cell_index.put("variable_id", 1);
         cell_index.put("onset", 1);
-        
+
         cellCollection.ensureIndex(cell_index);
-        
+
         cellCollection.ensureIndex(new BasicDBObject("variable_id", 1));
         cellCollection.ensureIndex(new BasicDBObject("onset", 1));
         cellCollection.ensureIndex(new BasicDBObject("offset", 1));
-        
+
         cell_index = new BasicDBObject();
         cell_index.put("onset", 1);
         cell_index.put("offset", 1);
         cellCollection.ensureIndex(cell_index);
-        
+
 
         DBCollection matrixCollection = mongoDB.getCollection("matrix_values");
         DBCursor matrixCursor = matrixCollection.find();
@@ -128,6 +130,10 @@ public class MongoDatastore implements Datastore {
 
     public static void markDBAsChanged() {
         MongoDatastore.changed = true;
+
+	if (MongoDatastore.titleNotifier != null) {
+		MongoDatastore.titleNotifier.updateTitle();
+	}
     }
 
     /**
@@ -282,6 +288,7 @@ public class MongoDatastore implements Datastore {
         while (varCursor.hasNext()) {
             ((MongoVariable) varCursor.next()).setSelected(false);
         }
+	markDBAsChanged();
     }
 
     @Override
@@ -310,14 +317,14 @@ public class MongoDatastore implements Datastore {
         while (cellCursor.hasNext()) {
             ((MongoCell) cellCursor.next()).setSelected(false);
         }
-        MongoDatastore.changed = true;
+        markDBAsChanged();
     }
 
     @Override
     public void deselectAll() {
         this.clearCellSelection();
         this.clearVariableSelection();
-        MongoDatastore.changed = true;
+        markDBAsChanged();
     }
 
     @Override
@@ -373,7 +380,7 @@ public class MongoDatastore implements Datastore {
             dbl.variableAdded(v);
         }
 
-        MongoDatastore.changed = true;
+        markDBAsChanged();
         return v;
     }
 
@@ -393,14 +400,14 @@ public class MongoDatastore implements Datastore {
 
         query.put("_id", ((MongoVariable)var).getID());
         varCollection.remove(query);
-        MongoDatastore.changed = true;
+        markDBAsChanged();
 
     }
 
     @Override
     public void removeCell(final Cell cell) {
         getVariable(cell).removeCell(cell);
-        MongoDatastore.changed = true;
+        markDBAsChanged();
     }
 
     @Override
@@ -429,6 +436,7 @@ public class MongoDatastore implements Datastore {
 
     @Override
     public void setTitleNotifier(final TitleNotifier titleNotifier) {
+	MongoDatastore.titleNotifier = titleNotifier;
     }
 
     @Override

@@ -121,9 +121,6 @@ implements KeyEventDispatcher, TitleNotifier {
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;
 
-    /** Tracks whether or not databases are allowed to set unsaved status. */
-    private boolean canSetUnsaved = false;
-
     /** The current project. */
     private ProjectController projectController;
 
@@ -816,11 +813,6 @@ implements KeyEventDispatcher, TitleNotifier {
                 }
             }
         });
-    }
-
-    /** @return canSetUnsaved */
-    public boolean getCanSetUnsaved() {
-        return canSetUnsaved;
     }
     
     /** @return database */
