@@ -167,14 +167,8 @@ public class VariableTest {
         orderedCells.add(c2);
         orderedCells.add(c1);
 
-        assertEquals(model.getCells(), cells);
-        assertEquals(model.getCellsTemporally(), cells);
-        assertNotSame(model.getCells(), orderedCells);
-        assertNotSame(model.getCellsTemporally(), orderedCells);
-
         c1.setOnset(100);
 
-        assertEquals(model.getCells(), cells);
         assertEquals(model.getCellsTemporally(), orderedCells);
         assertEquals(model.getCellTemporally(0), c2);
     }
