@@ -60,6 +60,8 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
     public String toString() {
         String result = "";
         List<Value> values = getArguments();
+	
+	result += "(";
         for(int i = 0; i < values.size(); i++) {
             Value v = values.get(i);
             if (v.toString() == null) {
@@ -71,6 +73,7 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
                 result += ",";
             }
         }
+	result += ")";
 
         return result;
     }
