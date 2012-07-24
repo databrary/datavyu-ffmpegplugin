@@ -217,9 +217,8 @@ public final class NewProjectV extends OpenSHAPADialog {
 
             s.showSpreadsheet();
 
-            // Update the name of the window to include the name we just
-            // set in the database.
-            OpenSHAPA.getApplication().updateTitle();
+            // The DB we justed created doesn't really have any unsaved changes.
+            OpenSHAPA.getProjectController().getDB().markAsUnchanged();
 
             dispose();
         }

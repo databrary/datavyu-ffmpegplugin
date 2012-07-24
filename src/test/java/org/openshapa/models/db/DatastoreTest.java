@@ -38,6 +38,9 @@ public class DatastoreTest {
     /** The modelListener we are testing. */
     private DatastoreListener modelListener;
 
+    /** The title notifier we are testing. */
+    private TitleNotifier titleListener;
+
     @BeforeClass
     public void spinUp() {
         MongoDatastore.startMongo();
@@ -52,13 +55,16 @@ public class DatastoreTest {
     public void setUp() {
         model = DatastoreFactory.newDatastore();
         modelListener = mock(DatastoreListener.class);
+        titleListener = mock(TitleNotifier.class);
         model.addListener(modelListener);
+        model.setTitleNotifier(titleListener);
     }
 
     @AfterMethod
     public void tearDown() {
         model.removeListener(modelListener);
         modelListener = null;
+        titleListener = null;
         model = null;
     }
 
@@ -95,6 +101,7 @@ public class DatastoreTest {
         verify(modelListener, times(0)).variableHidden(var);
         verify(modelListener, times(0)).variableNameChange(var);
         verify(modelListener, times(0)).variableVisible(var);
+        verify(titleListener).updateTitle();
     }
 
     @Test (expectedExceptions = UserWarningException.class)

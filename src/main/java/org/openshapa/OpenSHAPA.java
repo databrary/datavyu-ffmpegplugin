@@ -99,10 +99,10 @@ implements KeyEventDispatcher, TitleNotifier {
 
     /** The scripting engine manager that we use with OpenSHAPA. */
     private ScriptEngineManager m2;
-    
+
     /** The JRuby scripting engine manager that we use with OpenSHAPA. */
     private JRubyScriptEngineManager m;
-    
+
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(OpenSHAPA.class);
 
@@ -709,7 +709,7 @@ implements KeyEventDispatcher, TitleNotifier {
         // javax.script.ScriptEngineManager, so that OpenSHAPA can work in
         // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
         m = new JRubyScriptEngineManager();
-        
+
         // Whoops - JRubyScriptEngineManager may have failed, if that does
         // not construct engines for jruby correctly, switch to
         // javax.script.ScriptEngineManager
@@ -753,8 +753,6 @@ implements KeyEventDispatcher, TitleNotifier {
             getMainFrame().setSize(x, y);
         }
 
-        updateTitle();
-
         addExitListener(new ExitListenerImpl());
 
         // Create video controller.
@@ -772,6 +770,9 @@ implements KeyEventDispatcher, TitleNotifier {
         dataController.setLocation(x, y);
         show(dataController);
         VIEW.checkForAutosavedFile();
+
+        // The DB we create by default doesn't really have any unsaved changes.
+        projectController.getDB().markAsUnchanged();
     }
 
     @Override protected void ready() {
@@ -814,7 +815,7 @@ implements KeyEventDispatcher, TitleNotifier {
             }
         });
     }
-    
+
     /** @return database */
     public DB getDatabase() {
         return MongoDatastore.getDB();
@@ -912,7 +913,7 @@ implements KeyEventDispatcher, TitleNotifier {
      * @param args The command line arguments passed to OpenSHAPA.
      */
     public static void main(final String[] args) {
-	
+
         // Spin up the mongo process
         MongoDatastore.startMongo();
 

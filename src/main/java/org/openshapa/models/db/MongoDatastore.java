@@ -101,7 +101,6 @@ public class MongoDatastore implements Datastore {
         cell_index.put("offset", 1);
         cellCollection.ensureIndex(cell_index);
 
-
         DBCollection matrixCollection = mongoDB.getCollection("matrix_values");
         DBCursor matrixCursor = matrixCollection.find();
         while (matrixCursor.hasNext()) {
@@ -129,11 +128,13 @@ public class MongoDatastore implements Datastore {
     }
 
     public static void markDBAsChanged() {
-        MongoDatastore.changed = true;
+	if (!MongoDatastore.changed) {
+	    MongoDatastore.changed = true;
 
-	if (MongoDatastore.titleNotifier != null) {
-		MongoDatastore.titleNotifier.updateTitle();
-	}
+	    if (MongoDatastore.titleNotifier != null) {
+	        MongoDatastore.titleNotifier.updateTitle();
+            }
+        }
     }
 
     /**
@@ -376,7 +377,7 @@ public class MongoDatastore implements Datastore {
 
         varCollection.save((MongoVariable)v);
 
-        for(DatastoreListener dbl : this.dbListeners ) {
+        for (DatastoreListener dbl : this.dbListeners) {
             dbl.variableAdded(v);
         }
 
@@ -421,7 +422,13 @@ public class MongoDatastore implements Datastore {
 
     @Override
     public void markAsUnchanged() {
-        MongoDatastore.changed = false;
+	if (MongoDatastore.changed) {
+	    MongoDatastore.changed = false;
+
+	    if (MongoDatastore.titleNotifier != null) {
+	        MongoDatastore.titleNotifier.updateTitle();
+            }
+        }
     }
 
     @Override

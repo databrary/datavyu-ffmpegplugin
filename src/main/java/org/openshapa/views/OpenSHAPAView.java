@@ -114,7 +114,7 @@ public final class OpenSHAPAView extends FrameView
 
     /** The spreadsheet panel for this view. */
     private SpreadsheetPanel panel;
-    
+
     private static boolean redraw = true;
 
     /**
@@ -442,12 +442,7 @@ public final class OpenSHAPAView extends FrameView
                                                projController.getDB());
 
                     projController.markProjectAsUnchanged();
-
                     projController.getDB().markAsUnchanged();
-
-
-                    // Update the application title
-                    updateTitle();
 
                     // Save content just as a database.
                 } else {
@@ -584,10 +579,7 @@ public final class OpenSHAPAView extends FrameView
 
             projController.setLastSaveOption(filter);
             projController.markProjectAsUnchanged();
-
             projController.getDB().markAsUnchanged();
-
-            updateTitle();
 
         } catch (UserWarningException e) {
             OpenSHAPA.getApplication().showWarningDialog(e);
@@ -671,20 +663,18 @@ public final class OpenSHAPAView extends FrameView
         ProjectController pController = OpenSHAPA.getProjectController();
         pController.setProjectName(jd.getSelectedFile().getName());
         pController.setLastSaveOption(filter);
-        pController.markProjectAsUnchanged();
-
-        pController.getDB().markAsUnchanged();
-
-        updateTitle();
 
         // Display any changes to the database.
         showSpreadsheet();
+        // Default is to highlight cells when created - clear selection on load.
+        panel.clearCellSelection();
+
+        // The project we just opened doesn't really contain any unsaved changes.
+        pController.markProjectAsUnchanged();
+        pController.getDB().markAsUnchanged();
 
         // Update the list of recently opened files.
         RecentFiles.rememberProject(jd.getSelectedFile());
-
-        // Default is to highlight cells when created - clear selection on load.
-        panel.clearCellSelection();
     }
 
     /**
@@ -954,14 +944,14 @@ public final class OpenSHAPAView extends FrameView
             type = SheetLayoutType.StrongTemporal;
         }
 
-        
+
         panel.setLayoutType(type);
     }
-    
+
     public void setRedraw(boolean b) {
         redraw = b;
     }
-    
+
     public boolean getRedraw() {
         return redraw;
     }
@@ -1460,7 +1450,7 @@ public final class OpenSHAPAView extends FrameView
      *            The event that fired this action.
      */
     private void strongTemporalMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { 
+        final java.awt.event.ActionEvent evt) {
         setRedraw(true);
         // GEN-FIRST:event_strongTemporalMenuItemActionPerformed
         weakTemporalOrderMenuItem.setSelected(false);
@@ -1474,7 +1464,7 @@ public final class OpenSHAPAView extends FrameView
      *            The event that fired this action.
      */
     private void weakTemporalMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { 
+        final java.awt.event.ActionEvent evt) {
         setRedraw(true);
         // GEN-FIRST:event_weakTemporalMenuItemActionPerformed
         strongTemporalOrderMenuItem.setSelected(false);
