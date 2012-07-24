@@ -1,9 +1,15 @@
 #-------------------------------------------------------------------
-# OpenSHAPA API v 0.993
+# OpenSHAPA API v 1.0
 
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 1.0 07/24/12 - Updated API to work with new MongoDB. Also updated function names
+#                such that they are more consistent. Old names should work, but are
+#                now deprecated and may be removed in a later version.
+# 0.995 02/28/12 - Fixed the print_debug statement and potentially fixed an issue
+#                   with create_mutually_exclusive
+# 0.994 01/24/12 - Added mutex method to identify and correct causes of inf loops.
 # 0.993 11/28/11 - Fixed typo in Mutex, added in mutex error checking,
 #                  and made all print statements available only when $debug=true
 # 0.992 9/13/11 - CreateMutuallyExclusive now adds proper ordinals on
@@ -59,25 +65,31 @@ require 'csv'
 require 'time'
 require 'date'
 #require 'ftools'
-import 'org.openshapa.models.db.Cell'
-import 'org.openshapa.models.db.Variable'
-import 'org.openshapa.models.db.Argument'
-import 'org.openshapa.models.db.DataStore'
+
+import 'org.openshapa.models.db.Datastore'
 import 'org.openshapa.models.db.MatrixValue'
 import 'org.openshapa.models.db.NominalValue'
 import 'org.openshapa.models.db.TextValue'
 import 'org.openshapa.models.db.Value'
+import 'org.openshapa.models.db.Variable'
+import 'org.openshapa.models.db.Cell'
+import 'org.openshapa.models.db.Argument'
+import 'org.openshapa.models.project.Project'
+import 'org.openshapa.controllers.SaveC'
+import 'com.mongodb.BasicDBObject'
+import 'org.openshapa.controllers.OpenC'
+import 'org.openshapa.controllers.project.ProjectController'
 
 $debug = false
 def print_debug(*s)
     if $debug == true
-        print_debug s
+        puts s
     end
 end
 
-class Cell
+class RCell
 
-   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals
+   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals, :db_cell
 
 
    #-------------------------------------------------------------------
@@ -124,6 +136,11 @@ class Cell
       @argvals << ""
       i = argvals.length - 1
       instance_eval "def #{new_name}; return argvals[#{i}]; end"
+   end
+
+   def remove_arg(name)
+       argvals.delete(arglist.index(name))
+       @arglist.delete(name)
    end
 
    def get_arg(name)
@@ -195,9 +212,9 @@ end
 # Function: This is the Ruby container for OpenSHAPA variables.
 #-------------------------------------------------------------------
 
-class Variable
+class RVariable
 
-    attr_accessor :name, :type, :cells, :arglist, :old_args, :dirty
+    attr_accessor :name, :type, :cells, :arglist, :old_args, :dirty, :db_var
 
    #-------------------------------------------------------------------
    # NOTE: This function is not for general use.
@@ -214,18 +231,30 @@ class Variable
       @arglist = Array.new
       arglist.each do |arg|
          # Regex to delete any character not a-z,0-9,or _
-         if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[1].chr)
+         if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[0].chr)
             arg = "_" + arg
          end
          @arglist << arg.gsub(/(\W)+/,"").downcase
       end
       if !newcells.nil?
+         ord = 0
          newcells.each do |cell|
-            c = Cell.new
-            c.onset = cell[0]
-            c.offset = cell[1]
-            c.set_args(cell[2],@arglist)
-            c.ordinal = cell[3]
+            ord += 1
+            p cell
+            c = RCell.new
+            c.onset = cell["onset"]
+            c.offset = cell["offset"]
+            c.db_cell = cell
+            vals = Array.new
+            if cell["type"] == 0
+                for val in cell.getValue().getArguments()
+                    vals << val["value"]
+                end
+            else
+                vals << cell.getValue()["value"]
+            end
+            c.set_args(vals,@arglist)
+            c.ordinal = ord
             @cells << c
          end
       end
@@ -245,7 +274,7 @@ class Variable
    #       setVariable("trial", trial)
    #-------------------------------------------------------------------
    def make_new_cell()
-      c = Cell.new
+      c = RCell.new
       c.onset = 0
       c.offset = 0
       c.ordinal = 0
@@ -272,8 +301,8 @@ class Variable
    #
    #-------------------------------------------------------------------
    def change_arg_name(old_name, new_name)
-      i = @old_args.index("<"+old_name+">")
-      @old_args[i] = "<"+new_name+">"
+      i = @old_args.index(old_name)
+      @old_args[i] = new_name
       if ["0","1","2","3","4","5","6","7","8","9"].include?(old_name[1].chr)
             old_name = "_" + old_name
       end
@@ -289,7 +318,7 @@ class Variable
    end
 
    def add_arg(name)
-      @old_args << "<"+name+">"
+      @old_args << name
       if ["0","1","2","3","4","5","6","7","8","9"].include?(name[1].chr)
             name = "_" + name
       end
@@ -301,6 +330,20 @@ class Variable
       end
 
       @dirty = true
+   end
+
+   def remove_arg(name)
+       @old_args.delete(name)
+
+       name = name.gsub(/(\W)+/,"").downcase
+       @arglist.delete(name)
+
+       for cell in @cells
+           cell.remove_arg(name)
+       end
+
+       @dirty = true
+
    end
 
 end
@@ -317,25 +360,45 @@ end
 #-------------------------------------------------------------------
 
 def getVariable(name)
-   index = -1
 
-   # Find the internal database index of the column we are looking for.
-   $db.getAllVariables().each do |v|
-      if name == variable.getName()
-        variable = v
-      end
-   end
+   var = $db.getVariable(name)
 
    # Convert each cell into an array and store in an array of arrays
-   cells = variable.getCellsTemporally()
+   cells = var.getCells()
+   arg_names = Array.new
 
-   v = Variable.new
+   # Now get the arguments for each of the cells
+
+   p 1
+   # For matrix vars only
+   type = var["type"]["type_ordinal"]
+   if type == 0
+       # Matrix var
+
+       arg_names = Array.new
+       for arg in var["type"]["child_arguments"]
+           arg_names << arg["name"]
+       end
+   else
+       # Nominal or text
+       arg_names = ["var"]
+   end
+
+   p 2
+   p arg_names
+   v = RVariable.new
+   p 3
    v.name = name
    v.old_args = arg_names
-   v.set_cells(cells)
+   v.type = type
+   p 4
+   v.set_cells(cells, arg_names)
+   p 5
    v.sort_cells
    v.dirty = false
+   v.db_var = var
 
+   p 3
    return v
 end
 
@@ -353,23 +416,223 @@ end
 #       setVariable("trial", trial)
 #-------------------------------------------------------------------
 
-def setVariable(name, var)
+def setVariable(*args)
 
-  if var.dirty
-    delete_column(name)
-  end
+   if args.length == 1
+       var = args[0]
+       name = var.name
+   elsif args.length == 2
+       var = args[1]
+       name = args[0]
+   end
+   # If substantial changes have been made to the structure of the column,
+    # just delete the whole thing first.
+   # If the column was dirty, redo the vocab too
+   if var.db_var == nil or var.db_var.get_name != name
+       # Create a new variable
+       v = $db.createVariable(name, Argument::Type::MATRIX)
+       var.db_var = v
 
-  col = $db.getVariable(name)
-  if col != nil
-    # Then we have the column from the DB. Replace the cells and go.
-    for cell in var.cells
-      java_cell = col.createCell()
-      # Now set all of the arguments of the java cell
-    end
-  else
-    # Then we are setting a new column. Make a new variable and write it.
-  end
+       if var.arglist.length > 0
+           var.db_var.removeArgument("arg01")
+       end
 
+       # Set variable's vocab
+       for arg in var.arglist
+           new_arg = v.addArgument(Argument::Type::NOMINAL)
+           new_arg.name = arg
+           main_arg = var.db_var.getVariableType()
+           child_args = main_arg.childArguments
+
+           child_args.get(child_args.length-1).name = arg
+
+           var.db_var.setVariableType(main_arg)
+           var.db_var.save()
+       end
+       var.db_var = v
+   end
+
+   if var.dirty
+       #delete_column(name)
+       # If the variable is dirty, then we have to do something to the vocab.
+       # Compare the variable's vocab and the Ruby cell version to see
+       # what is different.
+
+       if var.db_var["type"]["type_ordinal"] == 0
+           values = var.db_var["type"]["child_arguments"]
+           for arg in var.old_args
+               flag = false
+               for dbarg in values
+                   if arg == dbarg["name"]
+                       flag = true
+                       break
+                   end
+               end
+               # If we didn't find it in dbarg, we have to create it
+               if flag == false
+                   # Add the argument
+                   new_arg = var.db_var.addArgument(Argument::Type::NOMINAL)
+
+                   # Make sure argument doesn't have < or > in it.
+                   arg = arg.delete("<").delete(">")
+                   # Change the argument's name by getting the variable back,
+                   # and then setting it. This hoop jumping is annoying.
+                   new_arg.name = arg
+                   main_arg = var.db_var.getVariableType()
+                   child_args = main_arg.childArguments
+
+                   child_args.get(child_args.length-1).name = arg
+
+                   var.db_var.setVariableType(main_arg)
+                   var.db_var.save()
+               end
+           end
+
+           # Now see if we have deleted any arguments
+           for dbarg in values
+               flag = false
+               for arg in var.old_args
+                   if arg == dbarg["name"]
+                       flag = true
+                       break
+                   end
+               end
+
+               # If we didn't find dbarg in old_args, then we must
+               # have deleted it. Remove the argument from the DB
+               if flag == false
+                   var.db_var.removeArgument(dbarg["name"])
+                   var.db_var.save()
+               end
+           end
+       end
+
+
+   end
+
+
+   # Create new cells and fill them in for each cell in the variable
+   for cell in var.cells
+      # Copy the information from the ruby variable to the new cell
+
+      if cell.db_cell == nil
+          cell.db_cell = var.db_var.createCell()
+      end
+
+      value = cell.db_cell.getValue()
+
+      if cell.onset != cell.db_cell.getOnset
+          cell.db_cell.setOnset(cell.onset)
+      end
+
+      if cell.offset != cell.db_cell.getOffset
+          cell.db_cell.setOffset(cell.offset)
+      end
+
+      # Matrix cell
+      if cell.db_cell["type"] == 0
+          values = cell.db_cell.getValue().getArguments()
+          for arg in var.old_args
+              # Find the arg in the db's arglist that we are looking for
+              for dbarg in values
+                  if dbarg["name"] == arg and not ["", nil].include?(cell.get_arg(arg))
+                      dbarg.set(cell.get_arg(arg))
+                      dbarg.save()
+                      break
+                  end
+              end
+          end
+
+      # Non-matrix cell
+      else
+          value = cell.db_cell.getValue()
+          value.set(cell.get_arg("var"))
+          value.save()
+      end
+
+      # Save the changes back to the DB
+      cell.db_cell.save()
+
+   end
+
+
+   #arg_names = var.old_args
+   #cells = Array.new
+   #var.cells.each do |cell|
+      #c = Array.new
+      #c << cell.onset
+      #c << cell.offset
+      #c << Array.new
+      #var.arglist.each do |arg|
+         #t = eval "cell.#{arg}"
+         #c[2] << t.to_s()
+      #end
+      #cells << c
+   #end
+    #print_debug "creating column"
+   ## If the column already exists, delete it and build a new one.
+   ## If it doesn't, just add a new one.
+   #if not $db.col_name_in_use(name)
+      #col = DataColumn.new($db, name, MatrixVocabElement::MatrixType::MATRIX)
+      #$db.add_column(col)
+   #else
+      #oldcol = $db.get_column(name)
+      #numcells = oldcol.get_num_cells
+      #numcells.downto(1) do |i|
+         #$db.remove_cell($db.get_cell(oldcol.get_id, i).get_id)
+      #end
+      ##$db.remove_column(oldcol.get_id)
+
+      ##col = DataColumn.new($db, name, MatrixVocabElement::MatrixType::MATRIX)
+      ##$db.add_column(col)
+   #end
+   ## Check if matrix already defined
+   #col = $db.get_column(name)
+   #mve0 = $db.get_matrix_ve(col.its_mve_id)
+   #if mve0.get_num_formal_args() == 1
+      ## Setup structure of matrix column
+      #mve0 = MatrixVocabElement.new(mve0)
+
+      #mve0.delete_formal_arg(0)
+      #arg_names.each do |arg|
+         #farg = NominalFormalArg.new($db, arg)
+         #mve0.append_formal_arg(farg)
+      #end
+
+      #$db.replace_matrix_ve(mve0)
+   #end
+   #col = $db.get_column(name)
+   #mve0 = $db.get_matrix_ve(col.its_mve_id)
+   #matID0 = mve0.get_id()
+   #cells.each do |cell|
+       ##print_debug "writing cell"
+      #c = DataCell.new($db, col.get_id, matID0)
+      #mat = Matrix.new($db, matID0)
+
+      #if cell[0].to_i > 0
+         #c.onset = TimeStamp.new(1000, cell[0].to_i)
+      #end
+      #if cell[1].to_i > 0
+         #c.offset = TimeStamp.new(1000, cell[1].to_i)
+      #end
+
+      #narg = 0
+      #cell[2].each do |dv|
+         #argid = mve0.get_formal_arg(narg).get_id()
+         #if dv == "" or dv == nil
+            #a = arg_names[narg]
+            #fdv = NominalDataValue.new($db, argid)
+            #fdv.clearValue()
+         #else
+            #fdv = NominalDataValue.new($db, argid, dv)
+         #end
+
+         #mat.replaceArg(narg,fdv)
+         #narg += 1
+      #end
+      #c.set_val(mat)
+      #$db.append_cell(c)
+   #end
 end
 
 #-------------------------------------------------------------------
@@ -390,8 +653,10 @@ end
 # Usage:
 #       rel_trial = make_rel("rel.trial", "trial", 2, "onset", "trialnum", "unit")
 #-------------------------------------------------------------------
-
 def make_rel(relname, var_to_copy, multiple_to_keep, *args_to_keep)
+    makeReliability(relname, var_to_copy, multiple_to_keep, args_to_keep)
+end
+def makeReliability(relname, var_to_copy, multiple_to_keep, *args_to_keep)
    # Get the primary variable from the DB
    var_to_copy = getVariable(var_to_copy)
 
@@ -439,11 +704,16 @@ end
 #       blank_cell = trial.make_new_cell()
 #       setVariable(trial)
 #-------------------------------------------------------------------
-
 def createNewVariable(name, *args)
-   v = Variable.new
+    createVariable(name, args)
+end
+
+def createVariable(name, *args)
+   v = RVariable.new
 
    v.name = name
+
+   v.dirty = true
 
    if args[0].class == Array
       args = args[0]
@@ -454,7 +724,7 @@ def createNewVariable(name, *args)
    old_args = Array.new
    for arg in args
       arg_names << arg
-      old_args << "<" + arg.to_s + ">"
+      old_args << arg.to_s
    end
    c = Array.new
    v.old_args = old_args
@@ -624,7 +894,53 @@ def get_later_overlapping_cell(col)
     return overlapping_cells
 end
 
+def fix_one_off_cells(col1, col2)
+  for i in 0..col1.cells.length-2
+    cell1 = col1.cells[i]
+    for j in 0..col2.cells.length-2
+      cell2 = col2.cells[j]
+
+      if (cell1.onset - cell2.onset).abs == 1
+        print_debug "UPDATING CELL"
+        cell2.change_arg("onset", cell1.onset)
+        print_debug "CELL2 ONSET IS NOW " + cell1.onset.to_s
+        if j > 0 and col2.cells[j-1].offset == cell2.offset
+          col2.cells[j-1].change_arg("offset", col2.cells[i-1].offset + 1)
+        end
+      end
+
+      if (cell1.offset - cell2.offset).abs == 1
+        print_debug "UPDATING CELL"
+        cell2.change_arg("offset", cell1.offset)
+        print_debug "CELL2 OFFSET IS NOW " + cell1.offset.to_s
+        if col2.cells[j+1].onset == cell2.offset
+          col2.cells[j+1].change_arg("onset", col2.cells[i-1].onset + 1)
+        end
+      end
+
+      if cell2.onset - cell1.offset == 1
+        print_debug "UPDATING CELL"
+        cell1.change_arg("offset", cell2.onset)
+        print_debug "CELL1 OFFSET IS NOW " + cell2.onset.to_s
+        if col1.cells[i+1].onset == cell1.offset
+          col1.cells[i+1].change_arg("onset", col1.cells[i+1].onset + 1)
+        end
+      end
+      if cell1.onset - cell2.offset == 1
+        print_debug "UPDATING CELL"
+        cell2.change_arg("offset", cell1.onset)
+        print_debug "CELL2 OFFSET IS NOW " + cell1.onset.to_s
+        if col2.cells[j+1].onset == cell2.offset
+          col2.cells[j+1].change_arg("onset", col2.cells[i+1].onset + 1)
+        end
+      end
+    end
+  end
+end
 def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2_argprefix=nil)
+    createMutuallyExclusive(name, var1name, var2name, var1_argprefix, var2_argprefix)
+end
+def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_argprefix=nil)
     if var1name.class == "".class
         var1 = getVariable(var1name)
         else
@@ -638,6 +954,7 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
 
     scan_for_bad_cells(var1)
     scan_for_bad_cells(var2)
+    fix_one_off_cells(var1, var2)
 
     for i in 0..var1.cells.length-2
         cell1 = var1.cells[i]
@@ -737,7 +1054,7 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
         count += 1
 
 
-        if count > 400
+        if count > 1500
             puts "ERROR: Infinite loop?  Aborting."
             exit
         end
@@ -751,7 +1068,7 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
 
         for i in 0...var1.cells.length
             v1c = var1.cells[i]
-            if (v1c.onset <= time and v1c.offset > time)
+            if (v1c.onset <= time and v1c.offset >= time)
                 v1cell = v1c
                 break
             end
@@ -759,7 +1076,7 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
 
         for i in 0...var2.cells.length
             v2c = var2.cells[i]
-            if (v2c.onset <= time and v2c.offset > time)
+            if (v2c.onset <= time and v2c.offset >= time)
                 v2cell = v2c
                 break
             end
@@ -921,7 +1238,7 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
 
         ##time += 1
 
-        if count == 700
+        if count == 1500
             print_debug "ERROR MAX ITERATIONS REACHED, POSSIBLE INF LOOP"
         end
 
@@ -953,8 +1270,10 @@ end
 # Example:
 # $db,$pj = load_db("/Users/username/Desktop/test.opf")
 # -------------------------------------------------------------------
-
 def load_db(filename)
+    loadDB(filename)
+end
+def loadDB(filename)
    # Packages needed for opening and saving projects and databases.
 
 
@@ -989,13 +1308,13 @@ def load_db(filename)
    end
 
    # Get the database that was opened.
-   db = open_c.get_database
+   db = open_c.get_datastore
 
 
    # If the open went well - query the database, do calculations or whatever
    unless db.nil?
       # This just prints the number of columns in the database.
-      print_debug "SUCCESSFULLY Opened a project with '" + db.get_columns.length.to_s + "' columns!"
+      print_debug "SUCCESSFULLY Opened a project with '" + db.get_all_variables.length.to_s + "' columns!"
    else
       print_debug "Unable to open the project '" + filename + "'"
    end
@@ -1022,6 +1341,9 @@ end
 # save_db("/Users/username/Desktop/test.opf")
 # -------------------------------------------------------------------
 def save_db(filename)
+    saveDB(filename)
+end
+def saveDB(filename)
    #
    # Main body of example script:
    #
@@ -1040,12 +1362,18 @@ def save_db(filename)
       save_c.save_database(filename, $db)
    else
       #if $pj == nil or $pj.getDatabaseFileName == nil
-         $pj = Project.new()
-         $pj.setDatabaseFileName("db")
-         dbname = filename[filename.rindex("/")+1..filename.length]
-         $pj.setProjectName(dbname)
+      p 1
+      $pj = Project.new()
+      p 2
+      $pj.setDatabaseFileName("db")
+      p 3
+      dbname = filename[filename.rindex("/")+1..filename.length]
+      p 4
+      $pj.setProjectName(dbname)
+      p 5
       #end
       save_file = java.io.File.new(filename)
+      p 6
       save_c.save_project(save_file, $pj, $db)
    end
 
@@ -1053,7 +1381,12 @@ def save_db(filename)
 
 end
 
+# This method is deprecated, only kept for backwards compatibility
 def delete_column(colname)
+    deleteVariable(colname)
+end
+
+def deleteVariable(colname)
    col = $db.get_column(colname)
    numcells = col.get_num_cells
    numcells.downto(1) do |i|
@@ -1087,6 +1420,9 @@ end
 # $db,$pj = load_db("/Users/username/Desktop/test.opf")
 # -------------------------------------------------------------------
 def load_macshapa_db(filename, write_to_gui, *ignore_vars)
+    loadMacshapaDB(filename, write_to_gui, ignore_vars)
+end
+def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
 
 
    # Create a new DB for us to use so we don't touch the GUI... some of these
@@ -1285,6 +1621,9 @@ end
 #  and leave test.opf intact with no modifications.
 # -------------------------------------------------------------------
 def transfer_columns(db1, db2, remove, *varnames)
+    transferVariable(db1, db2, remove, *varnames)
+end
+def transferVariable(db1, db2, remove, *varnames)
    print_debug "Transfering the following columns from " + db1 + " to " + db2 + ":"
    print_debug varnames
 
@@ -1368,6 +1707,9 @@ end
 #  check_rel("trial", "rel.trial", "trialnum", 100)
 # -------------------------------------------------------------------
 def check_rel(main_col, rel_col, match_arg, time_tolerance, *dump_file)
+    checkReliability(main_col, rel_col, match_arg, time_tolerance, dump_file)
+end
+def checkReliability(main_col, rel_col, match_arg, time_tolerance, *dump_file)
    # Make the match_arg conform to the method format that is used
    if ["0","1","2","3","4","5","6","7","8","9"].include?(match_arg[0].chr)
       match_arg = match_arg[1..match_arg.length]
@@ -1446,6 +1788,8 @@ def check_rel(main_col, rel_col, match_arg, time_tolerance, *dump_file)
          dump_file.flush()
       end
    end
+
+   return errors, rel_col.cells.length.to_f
 end
 
 #-------------------------------------------------------------------
@@ -1463,8 +1807,10 @@ end
 # Example:
 #  check_valid_codes("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", [1,2,3])
 # -------------------------------------------------------------------
-
 def check_valid_codes(var, dump_file, *arg_code_pairs)
+    check_valid_codes(var, dump_file, arg_code_pairs)
+end
+def checkValidCodes(var, dump_file, *arg_code_pairs)
    if var.class == "".class
       var = getVariable(var)
    end
@@ -1512,14 +1858,17 @@ def check_valid_codes(var, dump_file, *arg_code_pairs)
    end
 end
 
-
 def getColumnList()
-   col_list = Array.new
-   $db.get_col_order_vector.each do |col_index|
-      col_list << $db.get_data_column(col_index).get_name
-   end
+    return getVariableList()
+end
+def getVariableList()
+    name_list = Array.new
+    vars = $db.getAllVariables()
+    for v in vars
+        name_list << v.name
+    end
 
-   return col_list
+    return name_list
 end
 
 def printAllNested(file)
@@ -1560,9 +1909,13 @@ def smoothColumn(colname, tol=33)
     setVariable(colname, col)
 end
 
-###################################################################################
-# USER EDITABLE SECTION.  PLEASE PLACE YOUR SCRIPT BETWEEN BEGIN AND END BELOW.
-# #################################################################################
+def print_args(cell, file, args)
+        for a in args
+            #puts "Printing: " + a
+            val = eval "cell.#{a}"
+            file.write(val.to_s + "\t")
+        end
+end
 
 def getCellFromTime(col, time)
   for cell in col.cells
@@ -1583,11 +1936,11 @@ def printCellArgs(cell)
   end
   return s
 end
+###################################################################################
+# USER EDITABLE SECTION.  PLEASE PLACE YOUR SCRIPT BETWEEN BEGIN AND END BELOW.
+# #################################################################################
+
 
 begin
-    #$debug = true
-
-
-
-
+    #$debug=true
 end
