@@ -218,7 +218,7 @@ public class MongoDatastore implements Datastore {
 
             // Sleep for just a little bit before closing. Let everything
             // finish.
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (Exception e) {
             LOGGER.error("Unable to cleanly take down mongo", e);
         } finally {
