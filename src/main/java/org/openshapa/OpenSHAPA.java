@@ -606,6 +606,7 @@ implements KeyEventDispatcher, TitleNotifier {
     @Override protected void end() {
         OpenSHAPA.getApplication().getMainFrame().setVisible(false);
         UserMetrix.shutdown();
+	shutdown();
         super.end();
     }
 
@@ -787,8 +788,8 @@ implements KeyEventDispatcher, TitleNotifier {
      * Clean up after ourselves.
      */
     @Override protected void shutdown() {
-        NativeLoader.cleanAllTmpFiles();
         MongoDatastore.stopMongo();
+        NativeLoader.cleanAllTmpFiles();
         super.shutdown();
     }
 
