@@ -18,6 +18,7 @@ import com.google.common.collect.Iterables;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.Enumeration;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import org.apache.commons.io.FileUtils;
 
 
 public class NativeLoader {
@@ -207,7 +209,13 @@ public class NativeLoader {
                 System.err.println("Unable to delete temp file: " + loadedLib);
             }
         }
-
+	
+	// Delete all of the other files that mongo has created
+	try {
+		FileUtils.deleteDirectory(nativeLibFolder);
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
         if ((nativeLibFolder != null) && !nativeLibFolder.delete()) {
             System.err.println("Unable to delete temp folder: + " + nativeLibFolder);
         }
