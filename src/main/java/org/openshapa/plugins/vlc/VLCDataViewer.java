@@ -283,9 +283,10 @@ private void launchEdtTaskLater(Runnable edtTask) {
     @Override public void stop() {
 	Runnable edtTask = new Runnable() {
 		@Override public void run() {
-			if(playing)
+			if(playing) {
 				mediaPlayer.pause();
-			playing = false;
+				playing = false;
+			}
 		}
 	};
 
@@ -297,8 +298,10 @@ private void launchEdtTaskLater(Runnable edtTask) {
 		// VLC cannot play in reverse, so we're going to rely
 		// on the clock to do fake jumping
 		mediaPlayer.setRate(0);
-		mediaPlayer.pause();
-		playing = false;
+		if(playing) {
+			mediaPlayer.pause();
+			playing = false;
+		}
 	}
 	mediaPlayer.setRate(rate);
     }
