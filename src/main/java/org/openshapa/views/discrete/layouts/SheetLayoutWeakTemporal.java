@@ -233,14 +233,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 }
             }
             
-            // Does the top of this cell overlap with the previously laid cell?
-            // If so, adjust the top a little bit so the two are overlapping
-            if(prevLaidCell != null && 
-		    workingCell.getOnsetTicks() < prevLaidCell.getOffsetTicks() &&
-		    workingCell.getOffsetTicks() != prevLaidCell.getOffsetTicks()) {
-//                prev_b = prev_b + gapSize;
-            }
-            
             // Lay out the last cell and ready this one for layout
             if(laidCells > 0) {
                 prevLaidCell.setBounds(0, prev_t, (prevLaidCol.getWidth() - marginSize), (prev_b - prev_t));
@@ -251,15 +243,10 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 if(position_index[prevColIndex] < cellCache.get(currColIndex).size()-1 && 
                     prevLaidCell.getOnsetTicks() - cellCache.get(currColIndex).get(position_index[prevColIndex]+1).getOffsetTicks() > 1) {
 		    
-//		    SpreadsheetCell prevColCell = cellCache.get(currColIndex).get(position_index[currColIndex]-1);
-//                    prev_b += gapSize;
                 }
                 
                 prevLaidCol.setWorkingHeight(prev_b);
                 workingCell.setBeingProcessed(false);
-                
-//                System.out.println(String.format("Col %s\tOnset: %d\tOffset: %d\tTop: %d\tBottom: %d", 
-//                    prevLaidCol.getColumnName(), prevLaidCell.getOnsetTicks(), prevLaidCell.getOffsetTicks(), prev_t, prev_b));
                 
                 maxHeight = Math.max(prevLaidCell.getY() + prevLaidCell.getHeight(), maxHeight);
             }
@@ -327,7 +314,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 	    if(prevRowCells[currColIndex] != null) {
 		    SpreadsheetCell prevCell = prevRowCells[currColIndex];
 		    if(prevCell.getY() + prevCell.getSize().height == t &&
-		       (prevCell.getOffsetTicks() != workingCell.getOnsetTicks() ||
+		       (prevCell.getOffsetTicks() != workingCell.getOnsetTicks() &&
 			prevCell.getOffsetTicks() + 1 != workingCell.getOnsetTicks())) {
 			t += 5;    
 		    }
