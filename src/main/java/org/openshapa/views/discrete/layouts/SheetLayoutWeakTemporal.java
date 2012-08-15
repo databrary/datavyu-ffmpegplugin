@@ -210,7 +210,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 // Do we want to position this cell at this time?
                 // If we don't, we should try to mark the current top position
                 // Find the cell in this row with the minimum offset.
-                if(rowCells[i] != null && currCellOffset <= lowest_offset) {
+                if(rowCells[i] != null && currCellOffset < lowest_offset) {
                     lowest_offset = currCellOffset;
                 }
                 
@@ -233,7 +233,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             // Does the top of this cell overlap with the previously laid cell?
             // If so, adjust the top a little bit so the two are overlapping
             if(prevLaidCell != null && workingCell.getOnsetTicks() < prevLaidCell.getOffsetTicks()) {
-                prev_b = prev_b + gapSize;
+//                prev_b = prev_b + gapSize;
             }
             
             // Lay out the last cell and ready this one for layout
@@ -241,10 +241,13 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 prevLaidCell.setBounds(0, prev_t, (prevLaidCol.getWidth() - marginSize), (prev_b - prev_t));
                 
                 // TODO: Fix this
+		// HAVE GAPSIZE UPDATES ADJUST A GAPPED BOTTOM AND HAVE MAX_BOTTOM READ FROM 
+		// ONE THAT DOESN'T INCLUDE GAPSIZES
                 if(position_index[prevColIndex] < cellCache.get(currColIndex).size()-1 && 
                     prevLaidCell.getOnsetTicks() - cellCache.get(currColIndex).get(position_index[prevColIndex]+1).getOffsetTicks() > 1) {
-                SpreadsheetCell prevColCell = cellCache.get(currColIndex).get(position_index[currColIndex]-1);
-                    prev_b += gapSize;
+		    
+//		    SpreadsheetCell prevColCell = cellCache.get(currColIndex).get(position_index[currColIndex]-1);
+//                    prev_b += gapSize;
                 }
                 
                 prevLaidCol.setWorkingHeight(prev_b);
@@ -293,6 +296,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             // We want to place it from the current bottom of the column it is in
             // to the max bottom of the other columns so it encloses the other cells.
             
+	    // Start at the current bottom of the column
             int t = workingCol.getWorkingHeight();
             
             // Check to see if there is a gap between these two cells.
@@ -312,11 +316,14 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 }
             }
             
-            
-            
             // Calculate b
-            int b = Collections.max(column_bottoms);
-            if(b < t + workingCell.getPreferredSize().height) {
+	    // Add a minimum size to the bottom, otherwise we won't make room for
+	    // new cells that are within the one we are placing
+            int b = Collections.max(column_bottoms) + 2 * gapSize;
+	    if(prevLaidCell != null && workingCell.getOffsetTicks() == prevLaidCell.getOffsetTicks()) {
+		b = prev_b;
+	    }
+	    else if(b < t + workingCell.getPreferredSize().height) {
                 b = t + workingCell.getPreferredSize().height;
             }
             
