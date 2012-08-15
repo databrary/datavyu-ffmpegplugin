@@ -155,6 +155,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         ArrayList<Integer> column_bottoms = new ArrayList<Integer>();
         ArrayList<Long> current_offsets = new ArrayList<Long>();
         SpreadsheetCell[] rowCells = new SpreadsheetCell[mainView.getColumns().size()];
+	SpreadsheetCell[] prevRowCells = new SpreadsheetCell[mainView.getColumns().size()];
         SpreadsheetCell prevLaidCell = null;
         SpreadsheetColumn prevLaidCol = null;
         int prevColIndex = -1;
@@ -175,6 +176,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // The size the of the gap to use between cells and as overlap on
         // overlapping cells in different columns
         int gapSize = 20;
+	int minCellHeight = 45;
+
         
         // This loop should place the cells in O(#cells * #cols)
         // so once #cells >> #cols this actually places in O(#cells) :)
@@ -232,7 +235,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             
             // Does the top of this cell overlap with the previously laid cell?
             // If so, adjust the top a little bit so the two are overlapping
-            if(prevLaidCell != null && workingCell.getOnsetTicks() < prevLaidCell.getOffsetTicks()) {
+            if(prevLaidCell != null && 
+		    workingCell.getOnsetTicks() < prevLaidCell.getOffsetTicks() &&
+		    workingCell.getOffsetTicks() != prevLaidCell.getOffsetTicks()) {
 //                prev_b = prev_b + gapSize;
             }
             
@@ -310,11 +315,23 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     prevColCellOffset = -1;
                 }
                 if(prevLaidCol == workingCol) {
-                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + gapSize;
+                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + 5;
                 } else if(prevColCellOffset == -1 || workingCell.getOnsetTicks() - prevColCellOffset > 1) {
                     t = prevLaidCell.getY() + prevLaidCell.getHeight();
                 }
             }
+	    
+	    // Check to see if the previous cell we laid in this column's bottom touches the top of this one.
+	    // If this is the case, and the prev cell offset is not the same as the working onset,
+	    // add a small gap.
+	    if(prevRowCells[currColIndex] != null) {
+		    SpreadsheetCell prevCell = prevRowCells[currColIndex];
+		    if(prevCell.getY() + prevCell.getSize().height == t &&
+		       (prevCell.getOffsetTicks() != workingCell.getOnsetTicks() ||
+			prevCell.getOffsetTicks() + 1 != workingCell.getOnsetTicks())) {
+			t += 5;    
+		    }
+	    }
             
             // Calculate b
 	    // Add a minimum size to the bottom, otherwise we won't make room for
@@ -323,12 +340,14 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 	    if(prevLaidCell != null && workingCell.getOffsetTicks() == prevLaidCell.getOffsetTicks()) {
 		b = prev_b;
 	    }
-	    else if(b < t + workingCell.getPreferredSize().height) {
+	    else if(b < t + minCellHeight) {
                 b = t + workingCell.getPreferredSize().height;
             }
             
              // Update the previous dimensions and get ready to lay them next time around.
             column_bottoms.clear();
+	    prevRowCells[currColIndex] = workingCell;
+	    
             position_index[currColIndex]++;
             prevColIndex = currColIndex;
             prevLaidCell = workingCell;
@@ -343,7 +362,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             // Lay out the final cell
             if(laidCells == totalCells) {
                 workingCell.setBounds(0, t, (workingCol.getWidth() - marginSize), (b - t));
-//                workingCol.setWorkingHeight(b);
+                workingCol.setWorkingHeight(b);
                 workingCell.setBeingProcessed(false);
             }
         }
