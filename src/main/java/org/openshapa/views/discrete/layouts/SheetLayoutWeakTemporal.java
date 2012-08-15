@@ -232,17 +232,23 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     currColIndex = i;
                 }
             }
+	    
+	    	
+            // Does the top of this cell overlap with the previously laid cell?
+            // If so, adjust the top a little bit so the two are overlapping
+            if(prevLaidCell != null && 
+		workingCell.getOnsetTicks() < prevLaidCell.getOffsetTicks() &&
+	        workingCell.getOffsetTicks() != prevLaidCell.getOffsetTicks()) {	  	
+//               prev_b = prev_b + gapSize;
+            }
             
             // Lay out the last cell and ready this one for layout
             if(laidCells > 0) {
                 prevLaidCell.setBounds(0, prev_t, (prevLaidCol.getWidth() - marginSize), (prev_b - prev_t));
                 
-                // TODO: Fix this
-		// HAVE GAPSIZE UPDATES ADJUST A GAPPED BOTTOM AND HAVE MAX_BOTTOM READ FROM 
-		// ONE THAT DOESN'T INCLUDE GAPSIZES
                 if(position_index[prevColIndex] < cellCache.get(currColIndex).size()-1 && 
                     prevLaidCell.getOnsetTicks() - cellCache.get(currColIndex).get(position_index[prevColIndex]+1).getOffsetTicks() > 1) {
-		    
+//			prev_b += gapSize;
                 }
                 
                 prevLaidCol.setWorkingHeight(prev_b);
@@ -302,10 +308,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     prevColCellOffset = -1;
                 }
                 if(prevLaidCol == workingCol) {
-                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + 5;
+                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + 10;
                 } else if(prevColCellOffset == -1 || workingCell.getOnsetTicks() - prevColCellOffset > 1) {
-                    t = prevLaidCell.getY() + prevLaidCell.getHeight();
+                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + 10;
                 }
+		
             }
 	    
 	    // Check to see if the previous cell we laid in this column's bottom touches the top of this one.
@@ -323,11 +330,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             // Calculate b
 	    // Add a minimum size to the bottom, otherwise we won't make room for
 	    // new cells that are within the one we are placing
-            int b = Collections.max(column_bottoms) + 2 * gapSize;
+            int b = Collections.max(column_bottoms);
 	    if(prevLaidCell != null && workingCell.getOffsetTicks() == prevLaidCell.getOffsetTicks()) {
 		b = prev_b;
 	    }
-	    else if(b < t + minCellHeight) {
+	    else if(b < t + workingCell.getPreferredSize().height) {
                 b = t + workingCell.getPreferredSize().height;
             }
             
