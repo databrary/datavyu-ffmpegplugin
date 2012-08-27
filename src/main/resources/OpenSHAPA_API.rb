@@ -1387,6 +1387,9 @@ def delete_column(colname)
 end
 
 def deleteVariable(colname)
+   if colname.class != "".class
+     colname = colname.name
+   end
    col = $db.get_column(colname)
    numcells = col.get_num_cells
    numcells.downto(1) do |i|
