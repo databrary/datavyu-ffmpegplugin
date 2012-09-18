@@ -115,7 +115,7 @@ public class VLCDataViewer implements DataViewer {
 	videoSurface.setBackground(Color.black);
 
 	// Set some options for libvlc
-	String[] libvlcArgs = {"--vout=macosx","--no-video-title-show", "--quiet"};
+	String[] libvlcArgs = {};
 
 	// Create a factory instance (once), you can keep a reference to this
 	mediaPlayerFactory = new MediaPlayerFactory(libvlcArgs);
@@ -360,7 +360,6 @@ private void launchEdtTaskLater(Runnable edtTask) {
         stop();
 	videoSurface.setVisible(false);
 	vlcDialog.setVisible(false);
-	mediaPlayer.release();
 	mediaPlayerFactory.release();
     }
 
