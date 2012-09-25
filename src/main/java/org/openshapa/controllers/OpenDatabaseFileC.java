@@ -164,7 +164,7 @@ public final class OpenDatabaseFileC {
 
             csvFile.close();
             isr.close();
-
+	    
             return db;
         } catch (IOException e) {
             LOGGER.error("Unable to read line from CSV file", e);
@@ -348,7 +348,9 @@ public final class OpenDatabaseFileC {
             // Split the line into tokens using a comma delimiter.
             String[] tokens = line.split(",");
 
+	    long time = System.currentTimeMillis();
             Cell newCell = var.createCell();
+	    System.out.println(System.currentTimeMillis() - time);
             // Set the onset and offset from tokens in the line.
             newCell.setOnset(tokens[DATA_ONSET]);
             newCell.setOffset(tokens[DATA_OFFSET]);
@@ -358,8 +360,9 @@ public final class OpenDatabaseFileC {
 
             int end = tokens.length - 1;
             tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
+	    time = System.currentTimeMillis();
             parseFormalArgs(tokens, DATA_INDEX, var.getVariableType(), (MatrixValue) newCell.getValue());
-
+	    System.out.println(System.currentTimeMillis() - time);
             // Get the next line in the file for reading.
             line = csvFile.readLine();
         }

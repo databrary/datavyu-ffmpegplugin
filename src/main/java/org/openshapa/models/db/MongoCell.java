@@ -112,6 +112,18 @@ public class MongoCell extends BasicDBObject implements Cell {
     public long getOffset() {
         return (Long) this.get("offset");
     }
+    
+    @Override 
+    public Cell getFreshCell() {
+        DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
+        BasicDBObject query = new BasicDBObject();
+
+        query.put("_id", this.get("_id"));  // e.g. find all where i > 50
+
+        DBCursor cur = cell_collection.find(query);
+
+        return (MongoCell)cur.next();
+    }
 
     public void setVariableID(int variable_id) {
         this.put("variable_id", variable_id);
@@ -120,7 +132,6 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOffset(final long newOffset) {
         this.put("offset", newOffset);
-        MongoDatastore.getCellCollection().ensureIndex(index);
         this.save();
 
         for(CellListener cl : getListeners(getID())) {
@@ -158,8 +169,6 @@ public class MongoCell extends BasicDBObject implements Cell {
         for(CellListener cl : getListeners(getID())) {
             cl.onsetChanged(convertTimestampToMS(newOnset));
         }
-
-        this.save();
     }
 
     @Override

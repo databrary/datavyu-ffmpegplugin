@@ -334,7 +334,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 	    if(prevLaidCell != null && workingCell.getOffsetTicks() == prevLaidCell.getOffsetTicks()) {
 		b = prev_b;
 	    }
-	    else if(b < t + workingCell.getPreferredSize().height) {
+	    if(b < t + workingCell.getPreferredSize().height) {
                 b = t + workingCell.getPreferredSize().height;
             }
             

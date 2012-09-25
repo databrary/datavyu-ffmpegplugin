@@ -192,6 +192,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     + e.getMessage() + "'");
                 consoleWriter.println("*************************");
                 consoleWriter.flush();
+		
+		System.out.println("Script Error");
 
                 LOGGER.error("Unable to execute script: ", e);
             } catch (FileNotFoundException e) {
@@ -363,7 +365,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     }
 
     /**
-     * Seperate thread for polling the incoming data from the scripting engine.
+     * Separate thread for polling the incoming data from the scripting engine.
      * The data from the scripting engine gets placed directly into the
      * consoleOutput
      */
@@ -385,6 +387,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     if (len > 0) {
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
+			System.out.println(s);
                         publish(s);
                     }
 

@@ -170,7 +170,7 @@ private void launchEdtTaskNow(Runnable edtTask) {
 	}
 }
 
-private void launchEdtTaskLater(Runnable edtTask) {
+    private void launchEdtTaskLater(Runnable edtTask) {
 	if (SwingUtilities.isEventDispatchThread()) {
 		edtTask.run();
 	} else {
@@ -180,7 +180,7 @@ private void launchEdtTaskLater(Runnable edtTask) {
 			e.printStackTrace();
 		}
 	}
-}
+    }
 
     @Override public JDialog getParentJDialog() {
         return vlcDialog;
