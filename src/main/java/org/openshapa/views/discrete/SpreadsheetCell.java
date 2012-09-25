@@ -462,11 +462,20 @@ implements MouseListener, FocusListener, CellListener {
     @Override
     public void offsetChanged(final long newOffset) {
         offset.setValue();
+	if(model.isSelected()) {
+	    // Update the find windows to the newly selected cell's values
+	    OpenSHAPA.getDataController().setFindTime(model.getOnset());
+            OpenSHAPA.getDataController().setFindOffsetField(model.getOffset());
+	}
     }
 
     @Override
     public void onsetChanged(final long newOnset) {
         onset.setValue();
+	if(model.isSelected()) {
+	    OpenSHAPA.getDataController().setFindTime(model.getOnset());
+	    OpenSHAPA.getDataController().setFindOffsetField(model.getOffset());
+	}
     }
 
     @Override
@@ -516,7 +525,7 @@ implements MouseListener, FocusListener, CellListener {
             if (model.isSelected()) {
                 cellSelL.addCellToSelection(this);
             }
-
+	    
         // User has clicked on editor or magic spot with modifier. Add
         // this cell to the current selection.
         } else if (groupSel && !contSel) {
@@ -544,6 +553,10 @@ implements MouseListener, FocusListener, CellListener {
                 cellSelL.setHighlightedCell(this);
             }
         }
+	
+	// Update the find windows to the newly selected cell's values
+	OpenSHAPA.getDataController().setFindTime(model.getOnset());
+        OpenSHAPA.getDataController().setFindOffsetField(model.getOffset());
     }
 
     @Override
