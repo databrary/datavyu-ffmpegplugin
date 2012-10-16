@@ -301,12 +301,14 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         // arrow. Forget about it - just chuck it back to Java to deal with.
         if ((e.getID() != KeyEvent.KEY_PRESSED)
                 && ((e.getKeyCode() != KeyEvent.VK_UP)
-                    || (e.getKeyCode() != KeyEvent.VK_DOWN))) {
+                    && (e.getKeyCode() != KeyEvent.VK_DOWN))) {
             return false;
         }
+	
+	System.out.println(e.getKeyCode());
 
-        Component[] components = getComponents();
-        int numCells = getComponentCount() - 1;
+        SpreadsheetCell[] components = this.getCellsTemporally().toArray(new SpreadsheetCell[0]);
+        int numCells = components.length;
 
         // For each of the cells in the column - see if one has focus.
         for (int i = 0; i < numCells; i++) {
@@ -389,13 +391,15 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 if ((e.getKeyCode() == KeyEvent.VK_UP) && (i > 0)) {
 
                     try {
+			    
+			System.out.println(i);
 
                         // Determine if we are at the top of a multi-lined cell,
                         // if we are not on the top line - pressing up should
                         // select the line above.
                         JTextArea a = (JTextArea) ec.getParentComponent();
 
-                        if (a.getLineOfOffset(a.getCaretPosition()) == 0) {
+                        if (a.getLineOfOffset(a.getCaretPosition()) == 0 && components[i - 1] instanceof SpreadsheetCell) {
                             sc = (SpreadsheetCell) components[i - 1];
                             et = sc.getDataView().getEdTracker();
                             ec = et.findEditor(absolutePos);
