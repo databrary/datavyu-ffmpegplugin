@@ -216,12 +216,29 @@ private void launchEdtTaskNow(Runnable edtTask) {
 
     @Override public void setDataFeed(final File dataFeed) {
 	vlcDialog.setVisible(true);
+	vlcDialog.setName("VLC Video - " + dataFeed.getName());
 	mediaPlayer.startMedia(dataFeed.getAbsolutePath());
 
 	// Grab FPS and length
+	
+	// Because of the way VLC works, we have to wait for the metadata to become
+	// available a short time after we start playing.
+	// TODO: reimplement this using the video output event
+	try {
+	    int i = 0;
+	    while(mediaPlayer.getVideoDimension() == null) {
+		    if(i > 100)
+			break;
+		    Thread.sleep(5); 
+		    i++; }
+	} catch (Exception e) {
+		
+	}
+	
 	fps = mediaPlayer.getFps();
 	length = mediaPlayer.getLength();
 	Dimension d = mediaPlayer.getVideoDimension();
+	vlcDialog.setSize(d);
 
 	System.out.println(String.format("FPS: %f", fps));
 	System.out.println(String.format("Length: %d", length));
@@ -230,7 +247,7 @@ private void launchEdtTaskNow(Runnable edtTask) {
 	// frames we just played to get the FPS and length
 	mediaPlayer.pause();
 	mediaPlayer.setTime(1);
-
+	
 	playing = false;
 
 	// Test to make sure we got the framerate.
@@ -245,7 +262,7 @@ private void launchEdtTaskNow(Runnable edtTask) {
 				+ "This video may not behave properly. "
 				+ "Please try converting to H.264.\n\nSetting "
 				+ "framerate to 29.97.");
-	}		
+	}
     }
 
     @Override public File getDataFeed() {
