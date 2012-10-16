@@ -105,7 +105,7 @@ public class VLCDataViewer implements DataViewer {
 	playing = false;
 	vlcDialog = new JDialog(parent, modal);
 	vlcDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-	vlcDialog.setName("VLC Video");
+	vlcDialog.setName("VLCDataViewer");
 	vlcDialog.setResizable(true);
 	
 	// Set an initial size
@@ -216,7 +216,7 @@ private void launchEdtTaskNow(Runnable edtTask) {
 
     @Override public void setDataFeed(final File dataFeed) {
 	vlcDialog.setVisible(true);
-	vlcDialog.setName("VLC Video - " + dataFeed.getName());
+	vlcDialog.setName(vlcDialog.getName() + "-" + dataFeed.getName());
 	mediaPlayer.startMedia(dataFeed.getAbsolutePath());
 
 	// Grab FPS and length
@@ -238,8 +238,7 @@ private void launchEdtTaskNow(Runnable edtTask) {
 	fps = mediaPlayer.getFps();
 	length = mediaPlayer.getLength();
 	Dimension d = mediaPlayer.getVideoDimension();
-	vlcDialog.setSize(d);
-
+	
 	System.out.println(String.format("FPS: %f", fps));
 	System.out.println(String.format("Length: %d", length));
 	
@@ -249,7 +248,9 @@ private void launchEdtTaskNow(Runnable edtTask) {
 	mediaPlayer.setTime(1);
 	
 	playing = false;
-
+	
+	vlcDialog.setSize(d);
+	
 	// Test to make sure we got the framerate.
 	// If we didn't, alert the user that this
 	// may not work right.
