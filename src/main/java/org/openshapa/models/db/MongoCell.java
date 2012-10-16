@@ -343,5 +343,9 @@ public class MongoCell extends BasicDBObject implements Cell {
             return false;
         }
     }
+    
+    public ObjectId getMongoID() {
+	return this.getID();
+    }
 }
 

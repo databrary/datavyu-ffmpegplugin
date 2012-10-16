@@ -116,7 +116,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 List<SpreadsheetCell> colCells = c.getCellsTemporally();
                 int colHeight = 0;
                 for (SpreadsheetCell cell : colCells) {
-                    colHeight += cell.getPreferredSize().height;
+		    if(cell != null)
+                        colHeight += cell.getPreferredSize().height;
                 }
 
                 // Determine the maximum column height in pixels.
@@ -129,9 +130,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     // If the offset is zero or smaller, we need to consider the
                     // onset of the cell instead for determining the maximum offset
                     // required to display the entire spreadsheet.
-                    if (lastCell.getOffsetTicks() <= 0) {
+                    if (lastCell != null && lastCell.getOffsetTicks() <= 0) {
                         ratioTicks = Math.max(ratioTicks, lastCell.getOnsetTicks());
-                    } else {
+                    } else if(lastCell != null){
                         ratioTicks = Math.max(ratioTicks, lastCell.getOffsetTicks());
                     }
                 }
@@ -162,7 +163,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         
         int prev_t = 0;
         int prev_b = 0;
-        
+        	
         // Cell cache so we only have to get from the DB once.
         // Greatly speeds up the algorithm.
         // Redrawing would be even faster if this was only done on DB update

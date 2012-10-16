@@ -92,6 +92,11 @@ public class SheetLayoutOrdinal extends SheetLayout {
                 SpreadsheetCell prevCell = null;
                 
                 for (SpreadsheetCell cell : col.getCellsTemporally()) {
+		    if(cell == null) {
+		        // We may have a race condition where a cell got deleted but
+			// we don't know about it yet
+			continue;
+		    }
                     Dimension d = cell.getPreferredSize();
                     if (cell.getCell().isSelected() && currentHeight != cell.getBounds().y) {
                         selectedHeight = currentHeight;

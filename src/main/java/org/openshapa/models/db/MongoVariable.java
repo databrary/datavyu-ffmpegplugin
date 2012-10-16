@@ -174,12 +174,25 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
     public void removeCell(final Cell cell) {
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
 
+	// Confirm we have the right cell
+	BasicDBObject query = new BasicDBObject();
+	
+	query.put("_id", ((MongoCell)cell).getID());
+	
+	DBCursor cur = cell_collection.find(query);
+	
+	if(!cur.hasNext()) {
+	    System.err.println("ERROR: Cell not found. Nothing deleted.");
+	} else {
+	    cell_collection.remove(cur.next());
+	}
+	
+	MongoDatastore.markDBAsChanged();
+	
         for(VariableListener vl : getListeners(getID()) ) {
             vl.cellRemoved(cell);
         }
 
-        cell_collection.remove((MongoCell)cell);
-        MongoDatastore.markDBAsChanged();
     }
 
     @Override
