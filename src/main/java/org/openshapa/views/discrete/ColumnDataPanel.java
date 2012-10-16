@@ -301,7 +301,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         // arrow. Forget about it - just chuck it back to Java to deal with.
         if ((e.getID() != KeyEvent.KEY_PRESSED)
                 && ((e.getKeyCode() != KeyEvent.VK_UP)
-                    && (e.getKeyCode() != KeyEvent.VK_DOWN))) {
+                    || (e.getKeyCode() != KeyEvent.VK_DOWN))) {
             return false;
         }
 	
