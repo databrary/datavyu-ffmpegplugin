@@ -170,6 +170,7 @@ public final class OpenSHAPAView extends FrameView
     private javax.swing.JMenuItem pullMenuItem;
     private javax.swing.JMenuItem pushMenuItem;
     private javax.swing.JMenuItem qtControllerItem;
+    private javax.swing.JMenuItem videoConverterMenuItem;
     private javax.swing.JMenuItem recentScriptsHeader;
     private javax.swing.JMenuItem redoSpreadSheetMenuItem;
     private javax.swing.JMenuItem resetZoomMenuItem;
@@ -486,6 +487,105 @@ public final class OpenSHAPAView extends FrameView
                     && OpenSHAPA.getApplication().overwriteExisting())
                 || !newFile.exists());
     }
+    
+    private void export(final OpenSHAPAFileChooser fc) {
+        ProjectController projController = OpenSHAPA.getProjectController();
+        projController.updateProject();
+
+        try {
+            SaveC saveC = new SaveC();
+
+            FileFilter filter = fc.getFileFilter();
+
+            if (filter instanceof CSVFilter) {
+                String dbFileName = fc.getSelectedFile().getName();
+
+                if (!dbFileName.endsWith(".csv")) {
+                    dbFileName = dbFileName.concat(".csv");
+                }
+
+                // Only save if the project file does not exists or if the user
+                // confirms a file overwrite in the case that the file exists.
+                if (!canSave(fc.getSelectedFile().getParent(), dbFileName)) {
+                    return;
+                }
+
+                File f = new File(fc.getSelectedFile().getParent(), dbFileName);
+                saveC.saveDatabase(f, projController.getDB());
+
+                projController.getDB().setName(dbFileName);
+                projController.setProjectName(dbFileName);
+                projController.setProjectDirectory(fc.getSelectedFile().getParent());
+                projController.setDatabaseFileName(dbFileName);
+
+                // Save as a ODB database
+            } else if (filter instanceof MODBFilter) {
+                String dbFileName = fc.getSelectedFile().getName();
+
+                if (!dbFileName.endsWith(".odb")) {
+                    dbFileName = dbFileName.concat(".odb");
+                }
+
+                // Only save if the project file does not exists or if the user
+                // confirms a file overwrite in the case that the file exists.
+                if (!canSave(fc.getSelectedFile().getParent(), dbFileName)) {
+                    return;
+                }
+
+                File f = new File(fc.getSelectedFile().getParent(), dbFileName);
+                saveC.saveDatabase(f, projController.getDB());
+
+                if (dbFileName.lastIndexOf('.') != -1) {
+                    dbFileName = dbFileName.substring(0,
+                            dbFileName.lastIndexOf('.'));
+                }
+
+                projController.getDB().setName(dbFileName);
+                projController.setProjectDirectory(fc.getSelectedFile()
+                    .getParent());
+                projController.setDatabaseFileName(dbFileName);
+
+                // Save as a project
+            } else if (filter instanceof OPFFilter) {
+                String archiveName = fc.getSelectedFile().getName();
+
+                if (!archiveName.endsWith(".opf")) {
+                    archiveName = archiveName.concat(".opf");
+                }
+
+                // Only save if the project file does not exists or if the user
+                // confirms a file overwrite in the case that the file exists.
+                if (!canSave(fc.getSelectedFile().getParent(), archiveName)) {
+                    return;
+                }
+
+                // Send it off to the controller
+                projController.setProjectName(archiveName);
+
+                // BugzID:1804 - Need to store the original absolute path of the
+                // project file so that we can build relative paths to search
+                // when
+                // loading, if the project file is moved around.
+                projController.setOriginalProjectDirectory(fc.getSelectedFile()
+                    .getParent());
+
+                projController.updateProject();
+                saveC.saveProject(new File(fc.getSelectedFile().getParent(),
+                                           archiveName),
+                                  projController.getProject(),
+                                  projController.getDB());
+                projController.setProjectDirectory(fc.getSelectedFile().getParent());
+
+            }
+
+            projController.setLastSaveOption(filter);
+            projController.markProjectAsUnchanged();
+            projController.getDB().markAsUnchanged();
+
+        } catch (UserWarningException e) {
+            OpenSHAPA.getApplication().showWarningDialog(e);
+        }
+    }
 
     private void save(final OpenSHAPAFileChooser fc) {
         ProjectController projController = OpenSHAPA.getProjectController();
@@ -790,6 +890,13 @@ public final class OpenSHAPAView extends FrameView
     @Action public void showQTVideoController() {
         OpenSHAPA.getApplication().showDataController();
     }
+    
+    /**
+     * Action for showing the video converter dialog.
+     */
+    @Action public void showVideoConverter() {
+        OpenSHAPA.getApplication().showVideoConverter();
+    }
 
     /**
      * Action for showing the about window.
@@ -1073,6 +1180,7 @@ public final class OpenSHAPAView extends FrameView
         pullMenuItem = new javax.swing.JMenuItem();
         controllerMenu = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
+	videoConverterMenuItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
         runScriptMenuItem = new javax.swing.JMenuItem();
         runRecentScriptMenu = new javax.swing.JMenu();
@@ -1343,6 +1451,10 @@ public final class OpenSHAPAView extends FrameView
         qtControllerItem.setAction(actionMap.get("showQTVideoController")); // NOI18N
         qtControllerItem.setName("qtControllerItem"); // NOI18N
         controllerMenu.add(qtControllerItem);
+	
+	videoConverterMenuItem.setAction(actionMap.get("showVideoConverter")); // NOI18N
+        videoConverterMenuItem.setName("videoConverterMenuItem"); // NOI18N
+        controllerMenu.add(videoConverterMenuItem);
 
         menuBar.add(controllerMenu);
 
