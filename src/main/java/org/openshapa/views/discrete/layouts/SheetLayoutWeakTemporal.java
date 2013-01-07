@@ -103,9 +103,10 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         int totalCells = 0;     // The total number of visible cells we are laying out on the spreadsheet.
         ratio = 1.0;            // The ratio / scale that we are using to position the cells temporally.
 
-        for (SpreadsheetColumn c : mainView.getColumns()) {
-            // We only work with visible columns.
-//            if (c.isVisible()) {
+	
+	List<SpreadsheetColumn> visible_columns = getVisibleColumns(mainView);
+	
+        for (SpreadsheetColumn c : visible_columns) {
                 // Take this opportunity to initalise the working data we need for each of the columns.
                 c.setWorkingHeight(0);
                 c.setWorkingOrd(0);
@@ -137,7 +138,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     }
                 }
                 totalCells = totalCells + colCells.size();
-//            }
         }
         // Determine the final temporal ratio/scale we are going to use for the spreadsheet.
         if (ratioTicks > 0) {
@@ -152,11 +152,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
         // This array is guaranteed initialized to 0 by the java lang spec
         // Stores the current cell position for each col
-        int[] position_index = new int[mainView.getColumns().size()];
+        int[] position_index = new int[visible_columns.size()];
         ArrayList<Integer> column_bottoms = new ArrayList<Integer>();
         ArrayList<Long> current_offsets = new ArrayList<Long>();
-        SpreadsheetCell[] rowCells = new SpreadsheetCell[mainView.getColumns().size()];
-	SpreadsheetCell[] prevRowCells = new SpreadsheetCell[mainView.getColumns().size()];
+        SpreadsheetCell[] rowCells = new SpreadsheetCell[visible_columns.size()];
+	SpreadsheetCell[] prevRowCells = new SpreadsheetCell[visible_columns.size()];
         SpreadsheetCell prevLaidCell = null;
         SpreadsheetColumn prevLaidCol = null;
         int prevColIndex = -1;
@@ -168,8 +168,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // Greatly speeds up the algorithm.
         // Redrawing would be even faster if this was only done on DB update
         HashMap<Integer, List<SpreadsheetCell>> cellCache = new HashMap<Integer, List<SpreadsheetCell>>();
-        for(int i = 0; i < mainView.getColumns().size(); i++) {
-            cellCache.put(i, mainView.getColumns().get(i).getCellsTemporally());
+        for(int i = 0; i < visible_columns.size(); i++) {
+	    cellCache.put(i, visible_columns.get(i).getCellsTemporally());
         }
         
 //        long starttime = System.currentTimeMillis();
@@ -193,8 +193,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
             // Get the current row cells
             long lowest_offset = Long.MAX_VALUE;
-            long lowest_onset = Long.MAX_VALUE;
-            for(int i = 0; i < mainView.getColumns().size(); i++) {
+            long max_onset = Long.MIN_VALUE;
+            for(int i = 0; i < visible_columns.size(); i++) {
+
                 long currCellOnset = 0;
                 long currCellOffset = 0;
                 
@@ -222,14 +223,15 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
            }
             
             // Get the minimum onset of the cells with this offset
-            for(int i = 0; i < mainView.getColumns().size(); i++) {
+            for(int i = 0; i < visible_columns.size(); i++) {
+
                 if(rowCells[i] != null && 
                         rowCells[i].getOffsetTicks() == lowest_offset && 
-                        rowCells[i].getOnsetTicks() < lowest_onset) {
+                        rowCells[i].getOnsetTicks() > max_onset) {
                     
-                    lowest_onset = rowCells[i].getOnsetTicks();
+                    max_onset = rowCells[i].getOnsetTicks();
                     workingCell = rowCells[i];
-                    workingCol = mainView.getColumns().get(i);
+                    workingCol = visible_columns.get(i);
                     currColIndex = i;
                 }
             }
@@ -261,16 +263,16 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             
             // Now that we're sure the previous column is updated, get the col bottoms
             column_bottoms.clear();
-            for(int i = 0; i < mainView.getColumns().size(); i++) {
-                column_bottoms.add(mainView.getColumns().get(i).getWorkingHeight());
+            for(int i = 0; i < visible_columns.size(); i++) {
+                column_bottoms.add(visible_columns.get(i).getWorkingHeight());
             }
             
             // Go through all of the columns and set their working height
             // if the onset of their next cell to be placed is greater than that
             // of the cell currently being placed
-            for(int i = 0; i < mainView.getColumns().size(); i++) {
+            for(int i = 0; i < visible_columns.size(); i++) {
                 
-                if(workingCol != mainView.getColumns().get(i) 
+                if(workingCol != visible_columns.get(i) 
                         && cellCache.get(i).size() > position_index[i] 
                         && !cellCache.get(i).get(position_index[i]).isBeingProcessed()) {
                     
@@ -278,12 +280,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     
                     if(nextCellOnset <= workingCell.getOffsetTicks() && 
                             workingCell.getOnsetTicks() <= nextCellOnset &&
-                            workingCol.getWorkingHeight() > mainView.getColumns().get(i).getWorkingHeight()) {
+                            workingCol.getWorkingHeight() > visible_columns.get(i).getWorkingHeight()) {
                         
 //                        System.out.println(String.format("Setting top of %s to %d because of %s", 
-//                            mainView.getColumns().get(i).getColumnName(), workingCol.getWorkingHeight(), workingCol.getColumnName()));
+//                            visible_columns.get(i).getColumnName(), workingCol.getWorkingHeight(), workingCol.getColumnName()));
                         
-                        mainView.getColumns().get(i).setWorkingHeight(workingCol.getWorkingHeight());
+                        visible_columns.get(i).setWorkingHeight(workingCol.getWorkingHeight());
                         
                         cellCache.get(i).get(position_index[i]).setBeingProcessed(true);
                     }
@@ -397,5 +399,17 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                                                       col.getWidth(),
                                                       (maxHeight - colHeight));
         }
+    }
+    
+    private List<SpreadsheetColumn> getVisibleColumns(SpreadsheetView mainView) {
+	List<SpreadsheetColumn> viscolumns = new ArrayList<SpreadsheetColumn>();
+	
+	for(SpreadsheetColumn c : mainView.getColumns()) {
+	    if(c.isVisible()) {
+		    viscolumns.add(c);
+	    }
+	}
+	
+	return viscolumns;
     }
 }
