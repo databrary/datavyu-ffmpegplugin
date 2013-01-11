@@ -225,12 +225,15 @@ public class MongoCell extends BasicDBObject implements Cell {
 
         // If a cell is deselected, it must also not be highlighted.
         if (!selected) {
-            this.put("highlighted", selected);
+            this.put("highlighted", false);
         }
         this.save();
 
         for(CellListener cl : getListeners(getID()) ) {
             cl.selectionChange(selected);
+	    if(!selected) {
+		cl.highlightingChange(false);
+	    }
         }
     }
 
