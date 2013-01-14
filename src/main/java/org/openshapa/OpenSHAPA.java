@@ -43,7 +43,6 @@ import org.openshapa.util.MacHandler;
 import org.openshapa.util.NativeLoader;
 import org.openshapa.util.WindowsKeyChar;
 import org.openshapa.views.*;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
 /**
  * The main class of the application.
@@ -129,6 +128,8 @@ implements KeyEventDispatcher, TitleNotifier {
 
     /** File path from the command line. */
     private String commandLineFile;
+    
+    private VideoConverterV videoConverter;
 
     /**
      * Dispatches the keystroke to the correct action.
@@ -485,6 +486,16 @@ implements KeyEventDispatcher, TitleNotifier {
     public void showDataController() {
         OpenSHAPA.getApplication().show(dataController);
     }
+    
+    /**
+     * Action for showing the video converter.
+     */
+    public void showVideoConverter() {
+	JFrame mainFrame = OpenSHAPA.getApplication().getMainFrame();
+	videoConverter = new VideoConverterV();
+        OpenSHAPA.getApplication().show(videoConverter);
+    }
+    
 
     /**
      * Action for showing the variable list.
@@ -926,6 +937,13 @@ implements KeyEventDispatcher, TitleNotifier {
         }
 
         launch(OpenSHAPA.class, args);
+	
+	Runtime.getRuntime().addShutdownHook(new Thread() {
+	public void run() {
+			System.err.println("ERROR: Force shutdown command caught. Initiating shutdown.");
+			OpenSHAPA.getApplication().shutdown();
+		}
+	});
     }
 
     @Override public void show(final JDialog dialog) {
