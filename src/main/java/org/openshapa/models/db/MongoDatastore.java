@@ -151,7 +151,8 @@ public class MongoDatastore implements Datastore {
 
             // Spin up a new mongo instance.
             File mongoD = new File(mongoDir);
-            int port = findFreePort(27019);
+//            int port = findFreePort(27019);
+	    int port = 27017;
 
             mongoProcess = new ProcessBuilder(f.getAbsolutePath(),
                                               "--dbpath", mongoD.getAbsolutePath(),
@@ -162,7 +163,7 @@ public class MongoDatastore implements Datastore {
 
             System.out.println("Starting mongo driver.");
             mongoDriver = new Mongo("localhost", port);
-
+	   
             System.out.println("Getting DB");
 
             // Start with a clean DB
