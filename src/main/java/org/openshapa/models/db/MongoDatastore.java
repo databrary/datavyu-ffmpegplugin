@@ -152,7 +152,7 @@ public class MongoDatastore implements Datastore {
             // Spin up a new mongo instance.
             File mongoD = new File(mongoDir);
 //            int port = findFreePort(27019);
-	    int port = 27017;
+	    int port = 27019;
 
             mongoProcess = new ProcessBuilder(f.getAbsolutePath(),
                                               "--dbpath", mongoD.getAbsolutePath(),
