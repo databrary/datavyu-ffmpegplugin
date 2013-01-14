@@ -212,7 +212,7 @@ public class MongoDatastore implements Datastore {
     public static void stopMongo() {
         try {
             DB db = mongoDriver.getDB("admin");
-            db.command(new BasicDBObject( "shutdown" , 1  ));
+            db.command(new BasicDBObject( "shutdownServer" , 1  ));
             running = false;
             mongoDriver.close();
 
