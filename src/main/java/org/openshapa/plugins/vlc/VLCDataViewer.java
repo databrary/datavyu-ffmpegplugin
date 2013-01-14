@@ -31,6 +31,7 @@ import org.openshapa.plugins.ViewerStateListener;
 import org.openshapa.util.DataViewerUtils;
 
 import org.openshapa.views.DataController;
+import org.openshapa.views.VideoConverterV;
 import org.openshapa.views.component.DefaultTrackPainter;
 import org.openshapa.views.component.TrackPainter;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
@@ -101,7 +102,7 @@ public class VLCDataViewer implements DataViewer {
     };
 
     public VLCDataViewer(final Frame parent, final boolean modal) {
-	
+	 
 	playing = false;
 	vlcDialog = new JDialog(parent, modal);
 	vlcDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
@@ -115,7 +116,15 @@ public class VLCDataViewer implements DataViewer {
 	videoSurface.setBackground(Color.black);
 
 	// Set some options for libvlc
-	String[] libvlcArgs = {};
+	String libvlcArgs = String.format(
+           "-I rc --rc-fake-tty --video-on-top --disable-screensaver --no-video-title-show " +
+           "--no-mouse-events --no-keyboard-events --no-fullscreen --no-video-deco " +
+           "--video-x %d --video-y %d --width %d --height %d",
+           200,      // X
+           200,      //Y
+           800,    //Width
+           600     //Height
+           );
 
 	// Create a factory instance (once), you can keep a reference to this
 	mediaPlayerFactory = new MediaPlayerFactory(libvlcArgs);
@@ -214,7 +223,7 @@ private void launchEdtTaskNow(Runnable edtTask) {
         vlcDialog.setVisible(isVisible);
     }
 
-    @Override public void setDataFeed(final File dataFeed) {
+    @Override public void setDataFeed(final File dataFeed) {	
 	vlcDialog.setVisible(true);
 	vlcDialog.setName(vlcDialog.getName() + "-" + dataFeed.getName());
 	mediaPlayer.startMedia(dataFeed.getAbsolutePath());
@@ -241,6 +250,9 @@ private void launchEdtTaskNow(Runnable edtTask) {
 	
 	System.out.println(String.format("FPS: %f", fps));
 	System.out.println(String.format("Length: %d", length));
+	
+	// Test to see if we should prompt user to convert the video to 
+	// the ideal format
 	
 	// Stop the player. This will rewind whatever
 	// frames we just played to get the FPS and length
@@ -281,12 +293,17 @@ private void launchEdtTaskNow(Runnable edtTask) {
     @Override public void seekTo(final long position) {
 	Runnable edtTask = new Runnable() {
 		@Override public void run() {
+			
+			long current = mediaPlayer.getTime();
+			
 
 			if(!playing) {
-				if(position > 0)
+				if (position > 0) {
 					mediaPlayer.setTime(position);
-				else
+				}
+				else {
 					mediaPlayer.setTime(1);
+				}
 			}
 		}
 	};
