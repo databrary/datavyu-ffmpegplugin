@@ -219,7 +219,7 @@ implements MouseListener, FocusListener, CellListener {
         // Set the appearance of the spreadsheet cell.
         cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
         // Cell is highlighted by default.
-        cellPanel.setBorder(HIGHLIGHT_BORDER);
+        cellPanel.setBorder(NORMAL_BORDER);
         cellPanel.setLayout(new BorderLayout());
 
         // Set the apperance of the top panel and add child elements (ord, onset
