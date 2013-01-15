@@ -496,7 +496,7 @@ implements KeyEventDispatcher, TitleNotifier {
         OpenSHAPA.getApplication().show(videoConverter);
     }
     
-
+    
     /**
      * Action for showing the variable list.
      */

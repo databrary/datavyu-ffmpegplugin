@@ -89,6 +89,9 @@ import org.openshapa.undoableedits.RemoveVariableEdit;
 import org.openshapa.undoableedits.RunScriptEdit;
 import org.openshapa.undoableedits.SpreadsheetUndoManager;
 import javax.swing.JOptionPane;
+import org.openshapa.controllers.ExportDatabaseFileC;
+import org.openshapa.util.FileFilters.CellCSVFilter;
+import org.openshapa.util.FileFilters.FrameCSVFilter;
 
 
 /**
@@ -177,6 +180,7 @@ public final class OpenSHAPAView extends FrameView
     private javax.swing.JMenu runRecentScriptMenu;
     private javax.swing.JMenuItem runScriptMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JMenuItem exportMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenu scriptMenu;
     private javax.swing.JMenuItem showSpreadsheetMenuItem;
@@ -478,6 +482,55 @@ public final class OpenSHAPAView extends FrameView
         if (result == JFileChooser.APPROVE_OPTION) {
             save(jd);
         }
+    }
+    
+    /**
+     * Action for exporting the current project as a particular file.
+     */
+    @Action public void exportFile() {
+        OpenSHAPAFileChooser jd = new OpenSHAPAFileChooser();
+	
+	// Not fully implemented
+//	jd.addChoosableFileFilter(FrameCSVFilter.INSTANCE);
+	
+	jd.addChoosableFileFilter(CellCSVFilter.INSTANCE);
+
+        int result = jd.showSaveDialog(getComponent());
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            exportToCSV(jd);
+        }
+    }
+    
+    private void exportToCSV(final OpenSHAPAFileChooser fc) {
+	ProjectController projController = OpenSHAPA.getProjectController();
+        projController.updateProject();
+	
+	try {
+		ExportDatabaseFileC exportC = new ExportDatabaseFileC();
+		
+		FileFilter filter = fc.getFileFilter();
+		String dbFileName = fc.getSelectedFile().getPath();
+		if (!dbFileName.endsWith(".csv")) {
+			dbFileName = dbFileName.concat(".csv");
+		}
+
+		// Only save if the project file does not exists or if the user
+		// confirms a file overwrite in the case that the file exists.
+		if (!canSave(fc.getSelectedFile().getParent(), dbFileName)) {
+			return;
+		}
+		File f = new File(fc.getSelectedFile().getParent(), dbFileName);
+		
+		if(filter instanceof FrameCSVFilter) {
+			exportC.exportByFrame(dbFileName, projController.getDB());
+		}
+		else if (filter instanceof CellCSVFilter) {
+			exportC.exportAsCells(dbFileName, projController.getDB());
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
     }
 
     private boolean canSave(final String directory, final String file) {
@@ -1144,6 +1197,7 @@ public final class OpenSHAPAView extends FrameView
         jSeparator7 = new javax.swing.JSeparator();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
+	exportMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         spreadsheetMenu = new javax.swing.JMenu();
@@ -1258,6 +1312,10 @@ public final class OpenSHAPAView extends FrameView
         saveAsMenuItem.setAction(actionMap.get("saveAs")); // NOI18N
         saveAsMenuItem.setName("saveAsMenuItem"); // NOI18N
         fileMenu.add(saveAsMenuItem);
+	
+	exportMenuItem.setAction(actionMap.get("exportFile")); // NOI18N
+        exportMenuItem.setName("exportMenuItem"); // NOI18N
+        fileMenu.add(exportMenuItem);
 
         fileMenuSeparator.setName("fileMenuSeparator"); // NOI18N
         if (OpenSHAPA.getPlatform() != Platform.MAC) {
