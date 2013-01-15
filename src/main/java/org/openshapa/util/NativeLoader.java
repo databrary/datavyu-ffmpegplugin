@@ -205,9 +205,8 @@ public class NativeLoader {
 
         for (File loadedLib : Iterables.reverse(loadedLibs)) {
 
-//	    System.out.println(loadedLib.getAbsolutePath());
             if (!loadedLib.delete()) {
-                System.out.println("Unable to delete temp file: " + loadedLib);
+                System.err.println("Unable to delete temp file: " + loadedLib);
             }
         }
 	
