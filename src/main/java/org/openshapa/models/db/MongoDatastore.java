@@ -31,7 +31,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.openshapa.OpenSHAPA;
 import org.openshapa.util.NativeLoader;
 
 /**
@@ -63,6 +69,12 @@ public class MongoDatastore implements Datastore {
 
     // Has tbhe datastore changed since it has last been marked as unchanged?
     private static boolean changed;
+    
+    // Location of the Mongo OSX files
+    private static final String mongoOSXLocation = "mongodb-osx64-2.0.2";
+    
+    // Location of the Mongo Win32 files
+    private static final String mongoWindowsLocation = "mongodb-win32-2.0.2.jar";
 
     //
     private List<DatastoreListener> dbListeners = new ArrayList<DatastoreListener>();
@@ -143,11 +155,37 @@ public class MongoDatastore implements Datastore {
     public static void startMongo() {
         // Unpack the mongo executable.
         try {
-            String mongoDir = NativeLoader.unpackNativeApp("mongodb-osx64-2.0.2");
+            String mongoDir;
+	    switch (OpenSHAPA.getPlatform()) {
+		    case MAC:
+			    mongoDir = NativeLoader.unpackNativeApp(mongoOSXLocation);
+			    break;
+		    case WINDOWS:
+			    mongoDir = NativeLoader.unpackNativeApp(mongoWindowsLocation);
+			    break;
+		    default:
+			    mongoDir = NativeLoader.unpackNativeApp(mongoOSXLocation);
+	    }
 
             // When files are unjared - they loose their executable status.
-            File f = new File(mongoDir + "/mongodb-osx-x86_64-2.0.2/bin/mongod");
-            f.setExecutable(true);
+	    // So find the mongod executable and set it to exe
+	    Collection<File> files = FileUtils.listFiles(
+			new File(mongoDir),
+			new RegexFileFilter(".*mongod.*"),
+			TrueFileFilter.INSTANCE);
+	    
+	    File f;
+	    if(files.iterator().hasNext()) {
+		f = files.iterator().next();
+		f.setExecutable(true);
+	    }
+	    else {
+		f = new File("");
+		System.out.println("ERROR: Could not find mongod");
+	    }
+	    
+//            File f = new File(mongoDir + "/mongodb-osx-x86_64-2.0.2/bin/mongod");
+//            f.setExecutable(true);
 
             // Spin up a new mongo instance.
             File mongoD = new File(mongoDir);

@@ -309,6 +309,14 @@
         <properties>
             <assembly-config>assembly-win.xml</assembly-config>
         </properties>
+        
+        <dependencies>
+            <dependency>
+              <groupId>org.mongodb</groupId>
+              <artifactId>mongodb-win32</artifactId>
+              <version>2.0.2</version>
+            </dependency>
+        </dependencies>
     </profile>
 
     <profile>
@@ -763,6 +771,12 @@
       <groupId>uk.co.caprica</groupId>
       <artifactId>vlcj</artifactId>
       <version>2.2.0-SNAPSHOT</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>uk.co.caprica</groupId>
+      <artifactId>vlcj-oop</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
