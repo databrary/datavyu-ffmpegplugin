@@ -295,7 +295,7 @@
           <artifactId>mongodb-osx64</artifactId>
           <version>2.0.2</version>
         </dependency>
-        
+
         <dependency>
           <groupId>ch.randelshofer.quaqua</groupId>
           <artifactId>quaqua-osx64</artifactId>
@@ -309,7 +309,7 @@
         <properties>
             <assembly-config>assembly-win.xml</assembly-config>
         </properties>
-        
+
         <dependencies>
             <dependency>
               <groupId>org.mongodb</groupId>
@@ -557,7 +557,7 @@
             </systemProperties>
           </configuration>
       </plugin>
-      
+
       <!-- BugzID:305 - Windows Application Bundle -->
       <plugin>
         <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
@@ -762,25 +762,25 @@
       <artifactId>jregistrykey</artifactId>
       <version>1.4.5</version>
     </dependency>
-    
+
     <dependency>
       <groupId>rcaller</groupId>
       <artifactId>RCaller</artifactId>
       <version>2.1.1-SNAPSHOT</version>
     </dependency>
-    
+
     <dependency>
       <groupId>uk.co.caprica</groupId>
       <artifactId>vlcj</artifactId>
       <version>2.2.0-SNAPSHOT</version>
     </dependency>
-    
+
     <dependency>
       <groupId>uk.co.caprica</groupId>
       <artifactId>vlcj-oop</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
-    
+
     <!-- temporary add of QTJava and deps -->
 
     <dependency>
