@@ -1,39 +1,39 @@
 # The usual imports for working with the database.
-import 'org.openshapa.models.db.legacy.Database'
-import 'org.openshapa.models.db.legacy.MacshapaDatabase'
-import 'org.openshapa.models.db.legacy.DataColumn'
-import 'org.openshapa.models.db.legacy.MatrixVocabElement'
-import 'org.openshapa.models.db.legacy.Matrix'
-import 'org.openshapa.models.db.legacy.FloatDataValue'
-import 'org.openshapa.models.db.legacy.IntDataValue'
-import 'org.openshapa.models.db.legacy.TextStringDataValue'
-import 'org.openshapa.models.db.legacy.QuoteStringDataValue'
-import 'org.openshapa.models.db.legacy.UndefinedDataValue'
-import 'org.openshapa.models.db.legacy.NominalDataValue'
-import 'org.openshapa.models.db.legacy.PredDataValue'
-import 'org.openshapa.models.db.legacy.Predicate'
-import 'org.openshapa.models.db.legacy.PredicateVocabElement'
-import 'org.openshapa.models.db.legacy.FloatFormalArg'
-import 'org.openshapa.models.db.legacy.IntFormalArg'
-import 'org.openshapa.models.db.legacy.NominalFormalArg'
-import 'org.openshapa.models.db.legacy.PredFormalArg'
-import 'org.openshapa.models.db.legacy.QuoteStringFormalArg'
-import 'org.openshapa.models.db.legacy.UnTypedFormalArg'
-import 'org.openshapa.models.db.legacy.DBElement'
-import 'org.openshapa.models.db.legacy.TimeStamp'
-import 'org.openshapa.models.db.legacy.DataCell'
-import 'org.openshapa.models.db.legacy.SystemErrorException'
+import 'org.datavyu.models.db.legacy.Database'
+import 'org.datavyu.models.db.legacy.MacshapaDatabase'
+import 'org.datavyu.models.db.legacy.DataColumn'
+import 'org.datavyu.models.db.legacy.MatrixVocabElement'
+import 'org.datavyu.models.db.legacy.Matrix'
+import 'org.datavyu.models.db.legacy.FloatDataValue'
+import 'org.datavyu.models.db.legacy.IntDataValue'
+import 'org.datavyu.models.db.legacy.TextStringDataValue'
+import 'org.datavyu.models.db.legacy.QuoteStringDataValue'
+import 'org.datavyu.models.db.legacy.UndefinedDataValue'
+import 'org.datavyu.models.db.legacy.NominalDataValue'
+import 'org.datavyu.models.db.legacy.PredDataValue'
+import 'org.datavyu.models.db.legacy.Predicate'
+import 'org.datavyu.models.db.legacy.PredicateVocabElement'
+import 'org.datavyu.models.db.legacy.FloatFormalArg'
+import 'org.datavyu.models.db.legacy.IntFormalArg'
+import 'org.datavyu.models.db.legacy.NominalFormalArg'
+import 'org.datavyu.models.db.legacy.PredFormalArg'
+import 'org.datavyu.models.db.legacy.QuoteStringFormalArg'
+import 'org.datavyu.models.db.legacy.UnTypedFormalArg'
+import 'org.datavyu.models.db.legacy.DBElement'
+import 'org.datavyu.models.db.legacy.TimeStamp'
+import 'org.datavyu.models.db.legacy.DataCell'
+import 'org.datavyu.models.db.legacy.SystemErrorException'
 
 # Packages needed for opening and saving projects and databases.
-import 'org.openshapa.controllers.SaveC'
-import 'org.openshapa.controllers.OpenC'
+import 'org.datavyu.controllers.SaveC'
+import 'org.datavyu.controllers.OpenC'
 
 #
 # ****************************************************************************
 # *** Check to make sure filename below is the absolute path to a project. ***
 # ****************************************************************************
 #
-project_file = "/your_path_to/openshapa/src/main/samples/scripts/dump.shapa"
+project_file = "/your_path_to/datavyu/src/main/samples/scripts/dump.shapa"
 
 #
 # Main body of example script:
@@ -48,7 +48,7 @@ open_c = OpenC.new
 # Opens a project and associated database (i.e. either compressed or
 # uncompressed .shapa files). If you want to just open a standalone database
 # (i.e .odb or .csv file) call open_c.open_database("filename") instead. These
-# methods do *NOT* open the project within the OpenSHAPA UI.
+# methods do *NOT* open the project within the Datavyu UI.
 #
 open_c.open_project(project_file)
 

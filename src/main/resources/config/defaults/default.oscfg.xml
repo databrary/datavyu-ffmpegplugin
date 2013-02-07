@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE OpenSHAPAConfig SYSTEM "http://www.openshapa.org/rsc/openshapa_config.dtd">
+<!DOCTYPE DatavyuConfig SYSTEM "http://www.datavyu.org/rsc/datavyu_config.dtd">
 
-<OpenSHAPAConfig>
+<DatavyuConfig>
   <language>english</language>
 
   <modules>
@@ -10,7 +10,7 @@
       <description>Default ODBC Openshapa Database Manager</description>
       <menu>File</menu>
       <submenu>true</submenu>
-      <class>openshapa.disc.ODBCManager</class>
+      <class>datavyu.disc.ODBCManager</class>
       <path>.</path>
       <isdefault>true</isdefault>
     </discreteManager>
@@ -20,7 +20,7 @@
       <description>Default Openshapa Quicktime Video Controller</description>
       <menu>Viewers</menu>
       <submenu>false</submenu>
-      <class>openshapa.cont.QTVideoController</class>
+      <class>datavyu.cont.QTVideoController</class>
       <path>.</path>
     </continuousDisplay>
 
@@ -29,7 +29,7 @@
       <description>Default Openshapa Spreadsheet</description>
       <menu>Viewers</menu>
       <submenu>false</submenu>
-      <class>openshapa.disc.spreadsheet.Spreadsheet</class>
+      <class>datavyu.disc.spreadsheet.Spreadsheet</class>
       <path>.</path>
       <isdefault>true</isdefault>
     </discreteDisplay>
@@ -107,4 +107,4 @@
       </dataFont>
    </spreadsheet>
   </gui>
-</OpenSHAPAConfig>
+</DatavyuConfig>

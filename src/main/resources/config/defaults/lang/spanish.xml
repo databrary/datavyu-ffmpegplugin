@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<OpenSHAPALang>
+<DatavyuLang>
   <language>Spanish</language>
   <keyboard>latin</keyboard>
 
@@ -21,9 +21,9 @@
       Sobre
     </about>
 
-    <openshapa_odbc_database>
+    <datavyu_odbc_database>
       Base de datos de OpenShapa ODB
-    </openshapa_odbc_database>
+    </datavyu_odbc_database>
 
     <viewers>
       Visiónes
@@ -171,4 +171,4 @@
       </dialogs>
   </odbc>
 
-</OpenSHAPALang>
+</DatavyuLang>

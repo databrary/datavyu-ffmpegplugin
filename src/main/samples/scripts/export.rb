@@ -2,20 +2,20 @@ require 'java'
 require 'csv'
 require 'time'
 
-import 'org.openshapa.models.db.legacy.Database'
-import 'org.openshapa.models.db.legacy.DataColumn'
-import 'org.openshapa.models.db.legacy.MatrixVocabElement'
-import 'org.openshapa.models.db.legacy.FloatDataValue'
-import 'org.openshapa.models.db.legacy.DBElement'
-import 'org.openshapa.models.db.legacy.TimeStamp'
-import 'org.openshapa.models.db.legacy.DataCell'
-import 'org.openshapa.models.db.legacy.SystemErrorException'
+import 'org.datavyu.models.db.legacy.Database'
+import 'org.datavyu.models.db.legacy.DataColumn'
+import 'org.datavyu.models.db.legacy.MatrixVocabElement'
+import 'org.datavyu.models.db.legacy.FloatDataValue'
+import 'org.datavyu.models.db.legacy.DBElement'
+import 'org.datavyu.models.db.legacy.TimeStamp'
+import 'org.datavyu.models.db.legacy.DataCell'
+import 'org.datavyu.models.db.legacy.SystemErrorException'
 
 begin
   puts "Begining export..."
 
   # Open the file that we are going to write too.
-  File.open("openshapa_out.txt", 'w') do |f|
+  File.open("datavyu_out.txt", 'w') do |f|
     # Output the name of the database.
     f.write($db.get_name + "\n")
 
@@ -65,5 +65,5 @@ begin
 
   puts "Finished Export."
 rescue NativeException => e
-    puts "OpenSHAPA Exception: '" + e + "'"
+    puts "Datavyu Exception: '" + e + "'"
 end

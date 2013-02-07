@@ -85,10 +85,10 @@ Content-type: text/html
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 	<head>
-		<title>OpenSHAPA - Discovering more, faster</title>
-  		<link href="openshapa.css" media="screen" rel="stylesheet" type="text/css" />
+		<title>Datavyu - Discovering more, faster</title>
+  		<link href="datavyu.css" media="screen" rel="stylesheet" type="text/css" />
   		<!--[if lte IE 6]>
-  		  	<link href="openshapa-ie6.css" media="screen" rel="stylesheet" type="text/css" />
+  		  	<link href="datavyu-ie6.css" media="screen" rel="stylesheet" type="text/css" />
   		  	<script defer type="text/javascript" src="js/pngfix.js"></script>
   		  	<script type="text/javascript" src="js/sizzle.js"></script>
   		<![endif]-->
@@ -117,7 +117,7 @@ Content-type: text/html
 		<div id="page-container">
 			<div id="page">
 				<div id="header">
-					<h1 class="sitename"><span>OpenSHAPA</span></h1>
+					<h1 class="sitename"><span>Datavyu</span></h1>
 					<div class="tagline">
 						Discovering more, faster<em> Exploratory Sequential Data Analysis</em>
 					</div>
@@ -129,14 +129,14 @@ Content-type: text/html
 						<div id="navigation">
 							<ul id="mainNav">
                                                                 <li><a href="index.html">Introduction</a></li>
-								<li><a href="http://www.openshapa.org/news">News</a></li>
-								<li class="current"><a href="http://www.openshapa.org/snapshot.rb">Development Snapshots</a></li>
-								<li><a href="https://github.com/OpenSHAPA/openshapa/wiki" target="_blank">Contributer Guide</a></li>
-								<li><a href="https://openshapa.org/support" target="_blank">Support</a></li>
+								<li><a href="http://www.datavyu.org/news">News</a></li>
+								<li class="current"><a href="http://www.datavyu.org/snapshot.rb">Development Snapshots</a></li>
+								<li><a href="https://github.com/Datavyu/datavyu/wiki" target="_blank">Contributer Guide</a></li>
+								<li><a href="https://datavyu.org/support" target="_blank">Support</a></li>
 								<li><a href="https://www.pivotaltracker.com/projects/495691" target="_blank">Issue Database</a></li>
-								<li><a href="https://github.com/OpenSHAPA" target="_blank">Source Code</a></li>
+								<li><a href="https://github.com/Datavyu" target="_blank">Source Code</a></li>
                                                                 <li><a href="workshop.html">Workshop 2011</a></li>
-                                                                <li><a href="https://openshapa.org/share"><b>Databrary</b></a></li>
+                                                                <li><a href="https://datavyu.org/share"><b>Databrary</b></a></li>
 							</ul>
 						</div>
 						<div id="sidebar-content">
@@ -154,15 +154,15 @@ Content-type: text/html
 
 <h2>Why is there a password?</h2>
 At present we're deprecating a third-party dependency that is incompatible with
-the Open Source license we are using with OpenSHAPA (GPLv3). The development snapshots
+the Open Source license we are using with Datavyu (GPLv3). The development snapshots
 listed below are free of that dependency, and are freely accessible to everyone
 without password! However, they are rough around the edges and we would love your
 help testing and repairing them. Very soon the development snapshots will match
-the functionality and stability of pre Open Source versions of OpenSHAPA.
+the functionality and stability of pre Open Source versions of Datavyu.
 <br/><br/>
 
 <h2>Latest snapshot build for release #{snapshot_release[:version]}</h2>
-This page contains the latest snapshot builds for OpenSHAPA, they contain the
+This page contains the latest snapshot builds for Datavyu, they contain the
 very latest development work, and are a little unstable. However we need your
 help to try and test the latest features.
 <br/><br/>
@@ -224,7 +224,7 @@ puts <<EOS
 				</div>
 				<!-- /content-container -->
 				<div id="footer">
-					Copyright &copy; 2009 OpenSHAPA Foundation
+					Copyright &copy; 2009 Datavyu Foundation
 				</div>
 				<!-- /footer -->
 			</div>

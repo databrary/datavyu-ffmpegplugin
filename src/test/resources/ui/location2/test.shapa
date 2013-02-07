@@ -1,5 +1,5 @@
 !project
-dbDir: C:\Development\openshapa\src\test\resources\ui\location2\
+dbDir: C:\Development\datavyu\src\test\resources\ui\location2\
 dbFile: test.csv
 description: null
 name: test

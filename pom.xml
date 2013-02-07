@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.openshapa</groupId>
-  <artifactId>openshapa</artifactId>
+  <groupId>org.datavyu</groupId>
+  <artifactId>datavyu</artifactId>
   <packaging>jar</packaging>
-  <version>1.12</version>
-  <name>openshapa</name>
-  <url>http://openshapa.org</url>
+  <version>0.9</version>
+  <name>datavyu</name>
+  <url>http://datavyu.org</url>
 
 
   <!-- Our organisation. -->
   <organization>
-    <name>OpenSHAPA Foundation</name>
-    <url>http://openshapa.org</url>
+    <name>Datavyu Foundation</name>
+    <url>http://datavyu.org</url>
   </organization>
 
-  <!-- Credits for OpenSHAPA: -->
+  <!-- Credits for Datavyu: -->
   <developers>
     <developer>
       <id>clinton</id>
@@ -189,7 +189,7 @@
     </contributor>
   </contributors>
 
-  <reporting>
+<!--  <reporting>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -199,31 +199,31 @@
         </configuration>
       </plugin>
     </plugins>
-  </reporting>
+  </reporting>-->
 
   <!-- Our continous integration server. -->
   <ciManagement>
     <system>hudson</system>
-    <url>http://openshapa.org/hudson/</url>
+    <url>http://datavyu.org/hudson/</url>
   </ciManagement>
 
   <!-- Our bugtracking. -->
   <issueManagement>
     <system>Fogbugz</system>
-    <url>https://openshapa.org/fogbugz</url>
+    <url>https://datavyu.org/fogbugz</url>
   </issueManagement>
 
   <!-- Our source control. -->
   <scm>
     <tag>master</tag>
-    <url>http://openshapa.org/viewgit/?a=summary&amp;p=openshapa</url>
+    <url>http://datavyu.org/viewgit/?a=summary&amp;p=datavyu</url>
   </scm>
 
   <!-- The location for generating the website. -->
   <distributionManagement>
     <site>
       <id>website</id>
-      <url>scp://hudson@openshapa.org/var/www/openshapa/</url>
+      <url>scp://hudson@datavyu.org/var/www/datavyu/</url>
     </site>
   </distributionManagement>
 
@@ -387,7 +387,7 @@
         <version>2.6.0</version>
         <configuration>
           <licenseLocation>/var/clover/clover.license</licenseLocation>
-          <historyDir>/var/clover/openshapa</historyDir>
+          <historyDir>/var/clover/datavyu</historyDir>
           <generateHistorical>true</generateHistorical>
         </configuration>
       </plugin>
@@ -399,8 +399,8 @@
         <!--  BugzID:306 - This version has been custom built for support of the new "resources" tag and so that it functions correctly via hudson. Don't update this to the mainstream version until after the tag has been added to the SVN repository... see http://jira.codehaus.org/browse/MOJO-1527 -->
         <version>1.0-alpha-2c</version>
         <configuration>
-          <bundleName>OpenSHAPA</bundleName>
-          <mainClass>org.openshapa.Launcher</mainClass>
+          <bundleName>Datavyu</bundleName>
+          <mainClass>org.datavyu.Launcher</mainClass>
           <jvmVersion>1.6+</jvmVersion>
           <resources>
             <fileSet>
@@ -410,7 +410,8 @@
               </includes>
             </fileSet>
           </resources>
-          <iconFile>${basedir}/src/main/resources/icons/OpenSHAPA.icns</iconFile>
+          <iconFile>${basedir}/src/main/resources/icons/Datavyu.icns</iconFile>
+          <javaApplicationStub>${basedir}/src/main/mac-resources/JavaApplicationStub</javaApplicationStub>
           <dictionaryFile>${basedir}/Info.plist</dictionaryFile>
           <!-- see teh antrun goal - need to create snapshot directory before this will work. -->
           <diskImageFile>${project.build.directory}/site/snapshots/${project.build.finalName}-OSX-${buildNumber}.dmg</diskImageFile>
@@ -442,7 +443,7 @@
           <configuration>
             <archive>
                 <manifest>
-                    <mainClass>org.openshapa.OpenSHAPA</mainClass>
+                    <mainClass>org.datavyu.Datavyu</mainClass>
                     <addClasspath>true</addClasspath>
                 </manifest>
             </archive>
@@ -502,15 +503,15 @@
                 <!-- BugzID:1827 - Added template file that gets copied when
                      we do a build so we don't get accidental properties file
                      commits. -->
-                <copy file="src/main/resources/org/openshapa/resources/Build_Template.properties"
-                      tofile="src/main/resources/org/openshapa/resources/Build.properties" />
+                <copy file="src/main/resources/org/datavyu/resources/Build_Template.properties"
+                      tofile="src/main/resources/org/datavyu/resources/Build.properties" />
 
                 <taskdef
                  name="replaceregexp"
                  classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
 
                 <replaceregexp
-                 file="src/main/resources/org/openshapa/resources/Build.properties"
+                 file="src/main/resources/org/datavyu/resources/Build.properties"
                  match="Application.build =(.*)"
                  replace="Application.build = b:${buildNumber}"/>
 
@@ -534,7 +535,7 @@
                  name="replaceregexp"
                  classname="org.apache.tools.ant.taskdefs.optional.ReplaceRegExp" />
                 <replaceregexp
-                 file="src/main/resources/org/openshapa/resources/OpenSHAPA.properties"
+                 file="src/main/resources/org/datavyu/resources/Datavyu.properties"
                  match="Application.build =(.*)"
                  replace="Application.build = b:none"/>
               </tasks>
@@ -575,7 +576,7 @@
             <headerType>gui</headerType>
             <outfile>${basedir}/target/${project.build.finalName}.exe</outfile>
             <jar>${basedir}/target/${project.build.finalName}.jar</jar>
-            <icon>${basedir}/src/main/resources/icons/OpenSHAPA.ico</icon>
+            <icon>${basedir}/src/main/resources/icons/Datavyu.ico</icon>
             <splash>
               <file>${basedir}/src/main/resources/icons/splash.bmp</file>
               <waitForWindow>true</waitForWindow>
@@ -586,13 +587,13 @@
               <minVersion>1.6.0</minVersion>
             </jre>
             <classPath>
-              <mainClass>org.openshapa.OpenSHAPA</mainClass>
+              <mainClass>org.datavyu.Datavyu</mainClass>
                 <preCp>jna-3.4.1.jar</preCp>
                 <preCp>jruby-engine-1.1.6.jar</preCp>
                 <preCp>mongodb-java-driver-2.7.2.jar</preCp>
                 <preCp>jruby-complete-1.6.5.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
-                <preCp>openshapa-lib-0.0.81.jar</preCp>
+                <preCp>datavyu-lib-0.0.81.jar</preCp>
                 <preCp>snakeyaml-1.7.jar</preCp>
                 <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
                 <preCp>miglayout-3.7.3.1-swing.jar</preCp>
@@ -603,7 +604,8 @@
                 <preCp>QTJava-7.jar</preCp>
                 <preCp>trove-2.1.0.jar</preCp>
                 <preCp>jregistrykey-1.4.5.jar</preCp>
-<!--                <preCp>vlcj-2.2.0-SNAPSHOT.jar</preCp>-->
+                <preCp>vlcj-2.2.0-SNAPSHOT.jar</preCp>
+                <preCp>mongodb-win32-2.0.2.jar</preCp>
             </classPath>
         </configuration>
       </plugin>
@@ -661,8 +663,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.openshapa</groupId>
-      <artifactId>openshapa-lib</artifactId>
+      <groupId>org.datavyu</groupId>
+      <artifactId>datavyu-lib</artifactId>
       <version>0.0.81</version>
     </dependency>
 
@@ -777,6 +779,20 @@
       <groupId>uk.co.caprica</groupId>
       <artifactId>vlcj-oop</artifactId>
       <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    
+    <!-- temporary add of QTJava and deps -->
+
+    <dependency>
+      <groupId>org.rococoa</groupId>
+      <artifactId>rococoa-core</artifactId>
+      <version>0.5.1x3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.rococoa</groupId>
+      <artifactId>rococoa-cocoa</artifactId>
+      <version>0.5.1x3</version>
     </dependency>
   </dependencies>
 </project>

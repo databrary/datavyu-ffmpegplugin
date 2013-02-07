@@ -2,14 +2,14 @@ require 'java'
 require 'csv'
 require 'time'
 
-import 'org.openshapa.models.db.legacy.Database'
-import 'org.openshapa.models.db.legacy.DataColumn'
-import 'org.openshapa.models.db.legacy.MatrixVocabElement'
-import 'org.openshapa.models.db.legacy.FloatDataValue'
-import 'org.openshapa.models.db.legacy.DBElement'
-import 'org.openshapa.models.db.legacy.TimeStamp'
-import 'org.openshapa.models.db.legacy.DataCell'
-import 'org.openshapa.models.db.legacy.SystemErrorException'
+import 'org.datavyu.models.db.legacy.Database'
+import 'org.datavyu.models.db.legacy.DataColumn'
+import 'org.datavyu.models.db.legacy.MatrixVocabElement'
+import 'org.datavyu.models.db.legacy.FloatDataValue'
+import 'org.datavyu.models.db.legacy.DBElement'
+import 'org.datavyu.models.db.legacy.TimeStamp'
+import 'org.datavyu.models.db.legacy.DataCell'
+import 'org.datavyu.models.db.legacy.SystemErrorException'
 
 begin
   # Create a data column, for our new
@@ -44,13 +44,13 @@ begin
 
   origin = nil
   # Sort the data we pulled from the CSV file by time, and for each data point
-  # collected, create a cell in the OpenSHAPA database.
+  # collected, create a cell in the Datavyu database.
   data.sort.each do |key, value|
     if origin == nil
       origin = key
     end
 
-    # Create the OpenSHAPA time stamp identifiying the data point.
+    # Create the Datavyu time stamp identifiying the data point.
     cell = DataCell.new($db, col.get_id, mve.get_id)
     cell.onset = TimeStamp.new(1000, (key - origin))
 
@@ -61,5 +61,5 @@ begin
   puts "Finished Import"
 
 rescue NativeException => e
-    puts "OpenSHAPA Exception: '" + e + "'"
+    puts "Datavyu Exception: '" + e + "'"
 end

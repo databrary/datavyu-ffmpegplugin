@@ -1,35 +1,35 @@
-# OpenSHAPA
+# Datavyu
 
-[OpenSHAPA](http://openshapa.org/) is an open-source research tool that integrates and displays all kinds of data, letting you discover the big picture while remaining connected with raw data. OpenSHAPA will let you build and organize interpretations, and will assist with analysis.
+[Datavyu](http://datavyu.org/) is an open-source research tool that integrates and displays all kinds of data, letting you discover the big picture while remaining connected with raw data. Datavyu will let you build and organize interpretations, and will assist with analysis.
 
 ## Development Requirements
 
-To get started with OpenSHAPA development, you will need to download and install a few development tools. OpenSHAPA is primarily written in Java, along with a little Ruby (via JRuby) for additional scripting tasks. So the list of toys you will need to download:
+To get started with Datavyu development, you will need to download and install a few development tools. Datavyu is primarily written in Java, along with a little Ruby (via JRuby) for additional scripting tasks. So the list of toys you will need to download:
 
 * [Netbeans](http://www.netbeans.org/)
 * [Maven](http://maven.apache.org/)
 * [Git](http://git-scm.com/)
 
-## OpenSHAPA OSX Builds
+## Datavyu OSX Builds
 
-To build and package OpenSHAPA to run on OSX, use the following commands:
+To build and package Datavyu to run on OSX, use the following commands:
 
-	git clone https://github.com/OpenSHAPA/openshapa.git
-	cd openshapa
+	git clone https://github.com/Datavyu/datavyu.git
+	cd datavyu
 	export MAVEN_OPTS="-Xmx256M"
 	mvn -Prelease clean -Dmaven.test.skip=true package osxappbundle:bundle
 	
-## OpenSHAPA Windows Builds
+## Datavyu Windows Builds
 
-To build and package OpenSHAPA to run on windows, use the following commands:
+To build and package Datavyu to run on windows, use the following commands:
 
-	git clone https://github.com/OpenSHAPA/openshapa.git
-	cd openshapa
+	git clone https://github.com/Datavyu/datavyu.git
+	cd datavyu
 	mvn -Prelease,win-package -Dmaven.test.skip=true clean package jar:jar launch4j:launch4j assembly:assembly
   
 ## More Information
 
-See the [wiki](https://github.com/OpenSHAPA/openshapa/wiki) for more information on how to code and contribute improvements to OpenSHAPA.
+See the [wiki](https://github.com/Datavyu/datavyu/wiki) for more information on how to code and contribute improvements to Datavyu.
 
-A list of features and fixes that need implementing for OpenSHAPA can be found [here](https://www.pivotaltracker.com/projects/495691#).
+A list of features and fixes that need implementing for Datavyu can be found [here](https://www.pivotaltracker.com/projects/495691#).
 	

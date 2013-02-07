@@ -3,7 +3,7 @@
 <plist version="0.9">
   <dict>
     <key>CFBundleName</key>
-    <string>OpenSHAPA</string>
+    <string>Datavyu</string>
     <key>CFBundleVersion</key>
     <string>1.00</string>
     <key>CFBundleAllowMixedLocalizations</key>
@@ -19,7 +19,7 @@
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleIconFile</key>
-    <string>OpenSHAPA.icns</string>
+    <string>Datavyu.icns</string>
     <key>LSArchitecturePriority</key>
     <array>
       <string>i386</string>
@@ -28,21 +28,21 @@
     <key>Java</key>
     <dict>
       <key>MainClass</key>
-      <string>org.openshapa.OpenSHAPA</string>
+      <string>org.datavyu.Datavyu</string>
       <key>JVMVersion</key>
       <string>1.6+</string>
       <key>SplashFile</key>
       <string>$JAVAROOT/../splash.png</string>
       <key>ClassPath</key>
       <array>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa/1.12/openshapa-1.12.jar</string>
+        <string>$JAVAROOT/repo/org/datavyu/datavyu/0.9/datavyu-0.9.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.6.7.2/jruby-complete-1.6.7.2.jar</string>
         <string>$JAVAROOT/repo/org/mongodb/mongodb-osx64/2.0.2/mongodb-osx64-2.0.2.jar</string>
         <string>$JAVAROOT/repo/org/mongodb/mongo-java-driver/2.7.2/mongo-java-driver-2.7.2.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
-        <string>$JAVAROOT/repo/org/openshapa/openshapa-lib/0.0.81/openshapa-lib-0.0.81.jar</string>
+        <string>$JAVAROOT/repo/org/datavyu/datavyu-lib/0.0.81/datavyu-lib-0.0.81.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.7/snakeyaml-1.7.jar</string>
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.6/UserMetrix-jclient-0.0.6.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.3.1/miglayout-3.7.3.1-swing.jar</string>
@@ -58,6 +58,13 @@
         <string>$JAVAROOT/repo/uk/co/caprica/vlcj/2.2.0-SNAPSHOT/vlcj-2.2.0-SNAPSHOT.jar</string>
         <string>$JAVAROOT/repo/rcaller/RCaller/2.1.1-SNAPSHOT/RCaller-2.1.1-SNAPSHOT.jar</string>
         <string>$JAVAROOT/repo/net/java/dev/jna/3.4.1/jna-3.4.1.jar</string>
+
+        <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x3/rococoa-cocoa-0.5.1x3.jar</string>
+        <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x3/rococoa-core-0.5.1x3.jar</string>
+        <string>$JAVAROOT/repo/cglib/cglib/2.2/cglib-2.2.jar</string>
+        <string>$JAVAROOT/repo/org/slf4j/slf4j-api/1.5.8/slf4j-api-1.5.8.jar</string>
+        <string>$JAVAROOT/repo/org/slf4j/slf4j-jdk14/1.5.8/slf4j-jdk14-1.5.8.jar</string>
+        <string>$JAVAROOT/repo/asm/asm/3.1/asm-3.1.jar</string>
       </array>
     </dict>
   </dict>

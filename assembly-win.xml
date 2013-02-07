@@ -29,7 +29,7 @@
       <dependencySet>
           <includes/>
           <excludes>
-              <exclude>org.openshapa:openshapa</exclude>
+              <exclude>org.datavyu:datavyu</exclude>
           </excludes>
       </dependencySet>
     </dependencySets>

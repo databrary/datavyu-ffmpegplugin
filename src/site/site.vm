@@ -128,7 +128,7 @@
       ${currentYear}
     #end
 
-    OpenSHAPA Foundation
+    Datavyu Foundation
   #end
 #end
 
@@ -274,10 +274,10 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<title>OpenSHAPA - Making Research Easier</title>
-  		<link href="openshapa.css" media="screen" rel="stylesheet" type="text/css" />
+		<title>Datavyu - Making Research Easier</title>
+  		<link href="datavyu.css" media="screen" rel="stylesheet" type="text/css" />
   		<!--[if lte IE 6]>
-  		  	<link href="openshapa-ie6.css" media="screen" rel="stylesheet" type="text/css" />
+  		  	<link href="datavyu-ie6.css" media="screen" rel="stylesheet" type="text/css" />
   		  	<script defer type="text/javascript" src="js/pngfix.js"></script>
   		  	<script type="text/javascript" src="js/sizzle.js"></script>
   		<![endif]-->
@@ -304,7 +304,7 @@
 		<div id="page-container">
 			<div id="page">
 				<div id="header">
-					<h1 class="sitename"><span>OpenSHAPA</span></h1>
+					<h1 class="sitename"><span>Datavyu</span></h1>
 					<div class="tagline">
 						Discovering more, faster<em>Exploratory Sequential Data Analysis</em>
 					</div>

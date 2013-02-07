@@ -1,4 +1,4 @@
-require 'OpenSHAPA_API.rb'
+require 'Datavyu_API.rb'
 
 ##########################################
 # USER PARAMETERS
@@ -6,8 +6,8 @@ require 'OpenSHAPA_API.rb'
 # The video frame_rate. default: 30
 frame_rate = 30
 
-# Export file location. default: ~/Desktop/OpenSHAPA_Frame_Export.csv
-export_file_location = "~/Desktop/OpenSHAPA_Frame_Export.csv"
+# Export file location. default: ~/Desktop/Datavyu_Frame_Export.csv
+export_file_location = "~/Desktop/Datavyu_Frame_Export.csv"
 
 ##########################################################################
 # YOU SHOULD NOT NEED TO EDIT BELOW THIS POINT

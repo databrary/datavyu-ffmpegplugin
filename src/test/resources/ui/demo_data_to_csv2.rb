@@ -2,29 +2,29 @@ require 'java'
 require 'csv'
 require 'time'
 
-import 'org.openshapa.models.db.legacy.Database'
-import 'org.openshapa.models.db.legacy.DataColumn'
-import 'org.openshapa.models.db.legacy.MatrixVocabElement'
-import 'org.openshapa.models.db.legacy.Matrix'
-import 'org.openshapa.models.db.legacy.FloatDataValue'
-import 'org.openshapa.models.db.legacy.IntDataValue'
-import 'org.openshapa.models.db.legacy.TextStringDataValue'
-import 'org.openshapa.models.db.legacy.QuoteStringDataValue'
-import 'org.openshapa.models.db.legacy.UndefinedDataValue'
-import 'org.openshapa.models.db.legacy.NominalDataValue'
-import 'org.openshapa.models.db.legacy.PredDataValue'
-import 'org.openshapa.models.db.legacy.Predicate'
-import 'org.openshapa.models.db.legacy.PredicateVocabElement'
-import 'org.openshapa.models.db.legacy.FloatFormalArg'
-import 'org.openshapa.models.db.legacy.IntFormalArg'
-import 'org.openshapa.models.db.legacy.NominalFormalArg'
-import 'org.openshapa.models.db.legacy.PredFormalArg'
-import 'org.openshapa.models.db.legacy.QuoteStringFormalArg'
-import 'org.openshapa.models.db.legacy.UnTypedFormalArg'
-import 'org.openshapa.models.db.legacy.DBElement'
-import 'org.openshapa.models.db.legacy.TimeStamp'
-import 'org.openshapa.models.db.legacy.DataCell'
-import 'org.openshapa.models.db.legacy.SystemErrorException'
+import 'org.datavyu.models.db.legacy.Database'
+import 'org.datavyu.models.db.legacy.DataColumn'
+import 'org.datavyu.models.db.legacy.MatrixVocabElement'
+import 'org.datavyu.models.db.legacy.Matrix'
+import 'org.datavyu.models.db.legacy.FloatDataValue'
+import 'org.datavyu.models.db.legacy.IntDataValue'
+import 'org.datavyu.models.db.legacy.TextStringDataValue'
+import 'org.datavyu.models.db.legacy.QuoteStringDataValue'
+import 'org.datavyu.models.db.legacy.UndefinedDataValue'
+import 'org.datavyu.models.db.legacy.NominalDataValue'
+import 'org.datavyu.models.db.legacy.PredDataValue'
+import 'org.datavyu.models.db.legacy.Predicate'
+import 'org.datavyu.models.db.legacy.PredicateVocabElement'
+import 'org.datavyu.models.db.legacy.FloatFormalArg'
+import 'org.datavyu.models.db.legacy.IntFormalArg'
+import 'org.datavyu.models.db.legacy.NominalFormalArg'
+import 'org.datavyu.models.db.legacy.PredFormalArg'
+import 'org.datavyu.models.db.legacy.QuoteStringFormalArg'
+import 'org.datavyu.models.db.legacy.UnTypedFormalArg'
+import 'org.datavyu.models.db.legacy.DBElement'
+import 'org.datavyu.models.db.legacy.TimeStamp'
+import 'org.datavyu.models.db.legacy.DataCell'
+import 'org.datavyu.models.db.legacy.SystemErrorException'
 
 begin
 
@@ -182,7 +182,7 @@ begin
   puts "Finished"
 
 rescue NativeException => e
-    puts "OpenSHAPA Exception: '" + e + "'"
+    puts "Datavyu Exception: '" + e + "'"
 end
 
 
