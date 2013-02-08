@@ -140,7 +140,7 @@ public class NativeLoader {
 
         for (String s : searchPath.split(File.pathSeparator)) {
             // Success! We found a matching jar.
-            if (s.endsWith(appJar + ".jar")) {
+            if (s.endsWith(appJar + ".jar") || s.endsWith(appJar)) {
                 jar = new JarFile(s);
             }
         }
