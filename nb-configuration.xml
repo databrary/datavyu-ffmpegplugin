@@ -21,5 +21,6 @@ Any value defined here will override the pom.xml file value but is only applicab
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaces-per-tab>8</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.spaces-per-tab>
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.indent-shift-width>8</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.indent-shift-width>
         <org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.expand-tabs>false</org-netbeans-modules-editor-indent.text.x-java.CodeStyle.project.expand-tabs>
+        <netbeans.hint.jdkPlatform>JDK_1.7</netbeans.hint.jdkPlatform>
     </properties>
 </project-shared-configuration>

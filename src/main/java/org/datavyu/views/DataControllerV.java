@@ -1867,7 +1867,6 @@ public final class DataControllerV extends DatavyuDialog
 	System.out.println("Stop button");
 	System.out.println(System.currentTimeMillis());
         clock.stop();
-        clock.setRate(0);
         playbackModel.setShuttleRate(0);
         playbackModel.setPauseRate(0);
         shuttleDirection = ShuttleDirection.UNDEFINED;
@@ -2182,7 +2181,6 @@ public final class DataControllerV extends DatavyuDialog
      */
     private void jump(final long step) {
         clock.stop();
-        clock.setRate(0);
         playbackModel.setShuttleRate(0);
         playbackModel.setPauseRate(0);
         shuttleDirection = ShuttleDirection.UNDEFINED;
