@@ -342,6 +342,7 @@ private void launchEdtTaskNow(Runnable edtTask) {
 		}
 	}
 	mediaPlayer.setRate(rate);
+	mediaPlayer.setTime(mediaPlayer.getTime());
     }
 
     @Override public void play() {
