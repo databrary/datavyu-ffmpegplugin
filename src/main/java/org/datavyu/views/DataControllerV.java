@@ -131,22 +131,14 @@ public final class DataControllerV extends DatavyuDialog
     private static final long SYNC_PULSE = 500;
 
     // Initialize SHUTTLE_RATES
-    // values: [ (2^-5), ..., (2^0), ..., (2^5) ]
-
-    /** The max power used for playback rates; i.e. 2^POWER = max. */
-    private static final int POWER = 5;
-
     static {
-        SHUTTLE_RATES = new float[(2 * POWER) + 1];
-
-        float value = 1;
-        SHUTTLE_RATES[POWER] = value;
-
-        for (int i = 1; i <= POWER; ++i) {
-            value *= 2;
-            SHUTTLE_RATES[POWER + i] = value;
-            SHUTTLE_RATES[POWER - i] = 1F / value;
-        }
+        SHUTTLE_RATES = new float[]{
+            -32F,  -16F,  -8F,   -4F,    -2F,   -1F,
+            -1/2F, -1/4F, -1/8F, -1/16F, -1/32F,
+             0F,
+             1/32F, 1/16F, 1/8F,  1/4F,   1/2F,
+             1F,    2F,    4F,    8F,     16F,   32F
+        };
     }
 
     /** The jump multiplier for shift-jogging. */
@@ -179,39 +171,6 @@ public final class DataControllerV extends DatavyuDialog
         CLOCK_FORMAT_HTML.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
-    /**
-     * Enumeration of shuttle directions.
-     */
-    enum ShuttleDirection {
-
-        /** The backwards playrate. */
-        BACKWARDS(-1),
-
-        /** Playrate for undefined shuttle speeds. */
-        UNDEFINED(0),
-
-        /** The playrate for forwards (normal) playrate. */
-        FORWARDS(1);
-
-        /** Stores the shuttle direction. */
-        private int parameter;
-
-        /**
-         * Sets the shuttle direction.
-         *
-         * @param p
-         *            The new shuttle direction.
-         */
-        ShuttleDirection(final int p) {
-            parameter = p;
-        }
-
-        /** @return The shuttle direction. */
-        public int getParameter() {
-            return parameter;
-        }
-    }
-
     // -------------------------------------------------------------------------
     // [static]
     //
@@ -229,9 +188,6 @@ public final class DataControllerV extends DatavyuDialog
     //
     /** The list of viewers associated with this controller. */
     private Set<DataViewer> viewers;
-
-    /** Shuttle status flag. */
-    private ShuttleDirection shuttleDirection = ShuttleDirection.UNDEFINED;
 
     /** Clock timer. */
     private ClockTimer clock = new ClockTimer();
@@ -1849,7 +1805,7 @@ public final class DataControllerV extends DatavyuDialog
         if (clock.isStopped()) {
             shuttleAt(playbackModel.getPauseRate());
 
-            // Pause views - store current playback rate.
+        // Pause views - store current playback rate.
         } else {
             playbackModel.setPauseRate(clock.getRate());
             clock.stop();
@@ -1867,40 +1823,17 @@ public final class DataControllerV extends DatavyuDialog
 	System.out.println("Stop button");
 	System.out.println(System.currentTimeMillis());
         clock.stop();
-        playbackModel.setShuttleRate(0);
         playbackModel.setPauseRate(0);
-        shuttleDirection = ShuttleDirection.UNDEFINED;
     }
 
     /**
      * Action to invoke when the user clicks on the shuttle forward button.
      *
-     * @todo proper behaviour for reversing shuttle direction?
+     * @todo proper behavior for reversing shuttle direction?
      */
     @Action public void shuttleForwardAction() {
         LOGGER.event("Shuttle forward");
-
-        if ((clock.getTime() <= 0)
-                && ((playbackModel.getShuttleRate() != 0)
-                    || (shuttleDirection != ShuttleDirection.UNDEFINED))) {
-            playbackModel.setShuttleRate(0);
-            playbackModel.setPauseRate(0);
-            shuttleDirection = ShuttleDirection.UNDEFINED;
-            shuttle(ShuttleDirection.FORWARDS);
-        } else {
-
-            // BugzID:794 - Previously ignored pauseRate if paused
-            if (clock.isStopped()) {
-                playbackModel.setShuttleRate(findShuttleIndex(
-                        playbackModel.getPauseRate()));
-                shuttle(ShuttleDirection.FORWARDS);
-                // shuttle(ShuttleDirection.BACKWARDS);
-                // This makes current tests fail, but may be the desired
-                // functionality.
-            } else {
-                shuttle(ShuttleDirection.FORWARDS);
-            }
-        }
+        shuttle(1);
     }
 
     /**
@@ -1908,27 +1841,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action public void shuttleBackAction() {
         LOGGER.event("Shuttle back");
-
-        if ((clock.getTime() <= 0)
-                && ((playbackModel.getShuttleRate() != 0)
-                    || (shuttleDirection != ShuttleDirection.UNDEFINED))) {
-            playbackModel.setShuttleRate(0);
-            playbackModel.setPauseRate(0);
-            shuttleDirection = ShuttleDirection.UNDEFINED;
-        } else {
-
-            // BugzID:794 - Previously ignored pauseRate if paused
-            if (clock.isStopped()) {
-                playbackModel.setShuttleRate(findShuttleIndex(
-                        playbackModel.getPauseRate()));
-                shuttle(ShuttleDirection.BACKWARDS);
-                // shuttle(ShuttleDirection.FORWARDS);
-                // This makes current tests fail, but may be the desired
-                // functionality.
-            } else {
-                shuttle(ShuttleDirection.BACKWARDS);
-            }
-        }
+        shuttle(-1);
     }
 
     /**
@@ -1937,23 +1850,17 @@ public final class DataControllerV extends DatavyuDialog
      *
      * @param pRate
      *            The rate to search for.
-     * @return The index of the rate, or -1 if not found.
+     * @return The index of the rate, or -100 if not found.
      */
     private int findShuttleIndex(final float pRate) {
-
-        if (pRate == 0) {
-            return 0;
-        }
-
         for (int i = 0; i < SHUTTLE_RATES.length; i++) {
 
-            if ((SHUTTLE_RATES[i] == pRate)
-                    || (SHUTTLE_RATES[i] == (pRate * (-1)))) {
+            if (SHUTTLE_RATES[i] == pRate) {
                 return i;
             }
         }
 
-        return -1;
+        return -100;
     }
 
     /**
@@ -2125,8 +2032,6 @@ public final class DataControllerV extends DatavyuDialog
      *            Rate of play.
      */
     private void playAt(final float rate) {
-        shuttleDirection = ShuttleDirection.UNDEFINED;
-        playbackModel.setShuttleRate(0);
         playbackModel.setPauseRate(0);
         shuttleAt(rate);
     }
@@ -2135,35 +2040,19 @@ public final class DataControllerV extends DatavyuDialog
      * @param direction
      *            The required direction of the shuttle.
      */
-    private void shuttle(final ShuttleDirection direction) {
-        int shuttleRate = playbackModel.getShuttleRate();
-        float rate = SHUTTLE_RATES[shuttleRate];
+    private void shuttle(final int shuttlejump) {
+        float currentRate = clock.getRate();
 
-        if (ShuttleDirection.UNDEFINED == shuttleDirection) {
-            shuttleDirection = direction;
-            rate = SHUTTLE_RATES[0];
-
-        } else if (direction == shuttleDirection) {
-
-            if (shuttleRate < (SHUTTLE_RATES.length - 1)) {
-                rate = SHUTTLE_RATES[++shuttleRate];
-                playbackModel.setShuttleRate(shuttleRate);
-            }
-
-        } else {
-
-            if (shuttleRate > 0) {
-                rate = SHUTTLE_RATES[--shuttleRate];
-                playbackModel.setShuttleRate(shuttleRate);
-
-                // BugzID: 676 - Shuttle speed transitions between zero.
-            } else {
-                rate = 0;
-                shuttleDirection = ShuttleDirection.UNDEFINED;
-            }
+        if (currentRate == 0) {
+            currentRate = playbackModel.getPauseRate();
         }
 
-        shuttleAt(shuttleDirection.getParameter() * rate);
+        try {
+            shuttleAt(SHUTTLE_RATES[findShuttleIndex(currentRate) + shuttlejump]);
+        }
+        catch (java.lang.ArrayIndexOutOfBoundsException e) {
+            System.out.println("Error finding shuttle index given current rate: " + currentRate);
+        }
     }
 
     /**
@@ -2181,9 +2070,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     private void jump(final long step) {
         clock.stop();
-        playbackModel.setShuttleRate(0);
         playbackModel.setPauseRate(0);
-        shuttleDirection = ShuttleDirection.UNDEFINED;
 
         clock.stepTime(step);
     }

@@ -53,14 +53,6 @@ public final class PlaybackModel {
         this.currentFPS = currentFPS;
     }
 
-    public int getShuttleRate() {
-        return shuttleRate;
-    }
-
-    public void setShuttleRate(final int shuttleRate) {
-        this.shuttleRate = shuttleRate;
-    }
-
     public float getPauseRate() {
         return pauseRate;
     }
