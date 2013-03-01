@@ -105,6 +105,7 @@ public final class OpenDatabaseFileC {
             return result;
         } catch (Exception fe) {
             LOGGER.error("Unable to open as CSV", fe);
+            fe.printStackTrace();
         }
 
         // Error encountered - return null.
@@ -175,8 +176,10 @@ public final class OpenDatabaseFileC {
             return db;
         } catch (IOException e) {
             LOGGER.error("Unable to read line from CSV file", e);
+            e.printStackTrace();
         } catch (UserWarningException e) {
             LOGGER.error("Unable to create new variable.", e);
+            e.printStackTrace();
         }
 
         // Error encountered - return null.
@@ -490,11 +493,11 @@ public final class OpenDatabaseFileC {
 
         } else if (formalArgument[1].equalsIgnoreCase("integer")) {
             // Add integer formal argument.
-            fa = null;
+            fa = new Argument(formalArgument[0], Argument.Type.NOMINAL);
 
         } else if (formalArgument[1].equalsIgnoreCase("float")) {
             // Add float formal argument.
-            fa = null;
+            fa = new Argument(formalArgument[0], Argument.Type.NOMINAL);
 
         } else {
             // Add nominal formal argument.
