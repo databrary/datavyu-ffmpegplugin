@@ -68,6 +68,7 @@ import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.DatastoreListener;
@@ -123,7 +124,7 @@ implements DatastoreListener,
     private SheetLayoutType currentLayoutType;
 
     /** List containing listeners interested in file drop events. */
-    private final transient List<FileDropEventListener> fileDropListeners;
+    private final transient CopyOnWriteArrayList<FileDropEventListener> fileDropListeners;
 
     /**
      * Constructor.
@@ -187,7 +188,7 @@ implements DatastoreListener,
 
         // Enable drag and drop support.
         setDropTarget(new DropTarget(this, new SSDropTarget()));
-        fileDropListeners = new LinkedList<FileDropEventListener>();
+        fileDropListeners = new CopyOnWriteArrayList<FileDropEventListener>();
 
         lastSelectedCell = null;
     }
