@@ -35,7 +35,7 @@
       <string>$JAVAROOT/../splash.png</string>
       <key>ClassPath</key>
       <array>
-        <string>$JAVAROOT/repo/org/datavyu/datavyu/0.9/datavyu-0.9.jar</string>
+        <string>$JAVAROOT/repo/org/datavyu/datavyu/1.0/datavyu-1.0.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.6.7.2/jruby-complete-1.6.7.2.jar</string>
         <string>$JAVAROOT/repo/org/mongodb/mongodb-osx64/2.0.2/mongodb-osx64-2.0.2.jar</string>
