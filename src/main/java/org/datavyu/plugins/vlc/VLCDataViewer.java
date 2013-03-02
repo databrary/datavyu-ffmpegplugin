@@ -241,7 +241,7 @@ private void launchEdtTaskNow(Runnable edtTask) {
 		    Thread.sleep(5); 
 		    i++; }
 	} catch (Exception e) {
-		
+	  e.printStackTrace();
 	}
 	
 	fps = mediaPlayer.getFps();
@@ -305,7 +305,7 @@ private void launchEdtTaskNow(Runnable edtTask) {
 					mediaPlayer.setTime(position);
 				}
 				else {
-					mediaPlayer.setTime(1);
+					mediaPlayer.setTime(0);
 				}
 			}
 		}
@@ -332,22 +332,17 @@ private void launchEdtTaskNow(Runnable edtTask) {
     }
 
     @Override public void setPlaybackSpeed(final float rate) {
-	Runnable edtTask = new Runnable() {
-		@Override public void run() {
-                    if(rate < 0) {
-                            // VLC cannot play in reverse, so we're going to rely
-                            // on the clock to do fake jumping
-                            mediaPlayer.setRate(0);
-                            if(playing) {
-                                    mediaPlayer.pause();
-                                    playing = false;
-                            }
-                    }
-                    mediaPlayer.setRate(rate);
-                    mediaPlayer.setTime(mediaPlayer.getTime());
+        if(rate < 0) {
+                // VLC cannot play in reverse, so we're going to rely
+                // on the clock to do fake jumping
+                mediaPlayer.setRate(0);
+                if(playing) {
+                        mediaPlayer.pause();
+                        playing = false;
                 }
-        };
-        launchEdtTaskLater(edtTask);
+        }
+        mediaPlayer.setRate(rate);
+        mediaPlayer.setTime(mediaPlayer.getTime());
     }
 
     @Override public void play() {
