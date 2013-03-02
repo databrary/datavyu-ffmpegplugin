@@ -400,11 +400,11 @@ public final class PluginManager {
                 @Override public int compare(final Plugin o1, final Plugin o2) {
 
                     // Want the QuickTime video plugin to always be first.
-                    if ("QuickTime Video".equals(o1.getPluginName())) {
+                    if ("VLC Video".equals(o1.getPluginName())) {
                         return -1;
                     }
 
-                    if ("QuickTime Video".equals(o2.getPluginName())) {
+                    if ("VLC Video".equals(o2.getPluginName())) {
                         return 1;
                     }
 
