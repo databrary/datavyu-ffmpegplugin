@@ -332,17 +332,22 @@ private void launchEdtTaskNow(Runnable edtTask) {
     }
 
     @Override public void setPlaybackSpeed(final float rate) {
-        if(rate < 0) {
-                // VLC cannot play in reverse, so we're going to rely
-                // on the clock to do fake jumping
-                mediaPlayer.setRate(0);
-                if(playing) {
-                        mediaPlayer.pause();
-                        playing = false;
+	Runnable edtTask = new Runnable() {
+		@Override public void run() {
+                        if(rate < 0) {
+                                // VLC cannot play in reverse, so we're going to rely
+                                // on the clock to do fake jumping
+                                mediaPlayer.setRate(0);
+                                if(playing) {
+                                        mediaPlayer.pause();
+                                        playing = false;
+                                }
+                        }
+                        mediaPlayer.setRate(rate);
+                        mediaPlayer.setTime(mediaPlayer.getTime());
                 }
-        }
-        mediaPlayer.setRate(rate);
-        mediaPlayer.setTime(mediaPlayer.getTime());
+        };
+	launchEdtTaskLater(edtTask);
     }
 
     @Override public void play() {
