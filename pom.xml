@@ -236,8 +236,8 @@
     </repository>
 
     <repository>
-      <id>openshapa</id>
-      <url>http://openshapa.org/maven2</url>
+      <id>datavyu</id>
+      <url>http://datavyu.org/maven2</url>
       <layout>default</layout>
     </repository>
 
