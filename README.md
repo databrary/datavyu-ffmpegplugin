@@ -14,7 +14,7 @@ To get started with Datavyu development, you will need to download and install a
 
 To build and package Datavyu to run on OSX, use the following commands:
 
-	git clone https://github.com/Datavyu/datavyu.git
+	git clone https://github.com/databrary/datavyu.git
 	cd datavyu
 	export MAVEN_OPTS="-Xmx256M"
 	mvn -Prelease clean -Dmaven.test.skip=true package osxappbundle:bundle
@@ -23,13 +23,13 @@ To build and package Datavyu to run on OSX, use the following commands:
 
 To build and package Datavyu to run on windows, use the following commands:
 
-	git clone https://github.com/Datavyu/datavyu.git
+	git clone https://github.com/databrary/datavyu.git
 	cd datavyu
 	mvn -Prelease,win-package -Dmaven.test.skip=true clean package jar:jar launch4j:launch4j assembly:assembly
   
 ## More Information
 
-See the [wiki](https://github.com/Datavyu/datavyu/wiki) for more information on how to code and contribute improvements to Datavyu.
+See the [wiki](https://github.com/databrary/datavyu/wiki) for more information on how to code and contribute improvements to Datavyu.
 
 A list of features and fixes that need implementing for Datavyu can be found [here](https://www.pivotaltracker.com/projects/495691#).
 	
