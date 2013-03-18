@@ -138,6 +138,7 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
     @Override
     public void save() {
         MongoDatastore.getDB().getCollection("matrix_values").save(this);
+        MongoDatastore.markDBAsChanged();
     }
 
     @Override

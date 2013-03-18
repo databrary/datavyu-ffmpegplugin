@@ -85,6 +85,8 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
         this.put("type", serializeArgument(type));
         this.put("hidden", false);
         this.put("selected", true);
+        
+        MongoDatastore.markDBAsChanged();
 
         this.save();
     }

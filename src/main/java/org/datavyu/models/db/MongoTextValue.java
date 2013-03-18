@@ -62,6 +62,7 @@ public final class MongoTextValue extends MongoValue implements TextValue {
     @Override
     public void save() {
         MongoDatastore.getDB().getCollection("text_values").save(this);
+        MongoDatastore.markDBAsChanged();
     }
     
 

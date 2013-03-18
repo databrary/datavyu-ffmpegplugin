@@ -80,6 +80,7 @@ public class MongoCell extends BasicDBObject implements Cell {
 
     public void save() {
         MongoDatastore.getCellCollection().save(this);
+        MongoDatastore.markDBAsChanged();
     }
     
     public ObjectId getVariableID() {

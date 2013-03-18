@@ -62,5 +62,6 @@ public final class MongoNominalValue extends MongoValue implements NominalValue 
     @Override
     public void save() {
         MongoDatastore.getDB().getCollection("nominal_values").save(this);
+        MongoDatastore.markDBAsChanged();
     }
 }
