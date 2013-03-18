@@ -207,7 +207,7 @@ public class MongoDatastore implements Datastore {
             InputStreamReader isr = new InputStreamReader(in);
 
             System.out.println("Starting mongo driver.");
-            mongoDriver = new Mongo("localhost", port);
+            mongoDriver = new Mongo("127.0.0.1", port);
 	   
             System.out.println("Getting DB");
 
