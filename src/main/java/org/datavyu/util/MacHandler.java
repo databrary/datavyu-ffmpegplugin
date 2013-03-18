@@ -111,8 +111,8 @@ public class MacHandler {
                     if (shouldQuit) {
                         Datavyu.getApplication().getMainFrame().setVisible(
                             false);
-                        NativeLoader.cleanAllTmpFiles();
                         MongoDatastore.stopMongo();
+                        NativeLoader.cleanAllTmpFiles();
                         UserMetrix.shutdown();
                     }
 

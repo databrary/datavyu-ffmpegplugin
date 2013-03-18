@@ -200,11 +200,13 @@ public class MongoDatastore implements Datastore {
 	    int port = 27019;
 
             mongoProcess = new ProcessBuilder(f.getAbsolutePath(),
+//                                              "-v",
                                               "--dbpath", mongoD.getAbsolutePath(),
+//                                              "--logpath", mongoD.getAbsolutePath() + "/mongolog.txt",
                                               "--port", String.valueOf(port),
                                               "--directoryperdb").start();
-            InputStream in = mongoProcess.getInputStream();
-            InputStreamReader isr = new InputStreamReader(in);
+//            InputStream in = mongoProcess.getInputStream();
+//            InputStreamReader isr = new InputStreamReader(in);
 
             System.out.println("Starting mongo driver.");
             mongoDriver = new Mongo("127.0.0.1", port);
