@@ -39,7 +39,7 @@
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.6.7.2/jruby-complete-1.6.7.2.jar</string>
         <string>$JAVAROOT/repo/org/mongodb/mongodb-osx64/2.0.2/mongodb-osx64-2.0.2.jar</string>
-        <string>$JAVAROOT/repo/org/mongodb/mongo-java-driver/2.7.2/mongo-java-driver-2.7.2.jar</string>
+        <string>$JAVAROOT/repo/org/mongodb/mongo-java-driver/2.10.1/mongo-java-driver-2.10.1.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/datavyu/datavyu-lib/0.0.81/datavyu-lib-0.0.81.jar</string>
@@ -56,6 +56,7 @@
         <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-filechooser-only/7.0.1/quaqua-filechooser-only-7.0.1.jar</string>
         <string>$JAVAROOT/repo/ca/beq/jregistrykey/1.4.5/jregistrykey-1.4.5.jar</string>
         <string>$JAVAROOT/repo/uk/co/caprica/vlcj/2.2.0-SNAPSHOT/vlcj-2.2.0-SNAPSHOT.jar</string>
+        <!--<string>$JAVAROOT/repo/org/vlc/libvlc-osx/2.0.1/libvlc-osx-2.0.1.jar</string>-->
         <string>$JAVAROOT/repo/rcaller/RCaller/2.1.1-SNAPSHOT/RCaller-2.1.1-SNAPSHOT.jar</string>
         <string>$JAVAROOT/repo/net/java/dev/jna/3.4.1/jna-3.4.1.jar</string>
 
