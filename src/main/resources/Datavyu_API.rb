@@ -1,9 +1,11 @@
 #-------------------------------------------------------------------
-# Datavyu API v 1.0
+# Datavyu API v 1.01
 
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 1.01 03/13/12 - Fixed the set variable function so it now correctly writes back to 
+#                 mongodb
 # 1.0 07/24/12 - Updated API to work with new MongoDB. Also updated function names
 #                such that they are more consistent. Old names should work, but are
 #                now deprecated and may be removed in a later version.
@@ -89,7 +91,7 @@ end
 
 class RCell
 
-   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals, :db_cell
+   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals, :db_cell, :parent
 
 
    #-------------------------------------------------------------------
@@ -279,8 +281,13 @@ class RVariable
       c.offset = 0
       c.ordinal = 0
       c.set_args("", @arglist)
+      c.parent = @name
       @cells << c
       return c
+   end
+   
+   def create_cell()
+     make_new_cell()
    end
 
    def sort_cells()
@@ -369,7 +376,6 @@ def getVariable(name)
 
    # Now get the arguments for each of the cells
 
-   p 1
    # For matrix vars only
    type = var["type"]["type_ordinal"]
    if type == 0
@@ -384,21 +390,15 @@ def getVariable(name)
        arg_names = ["var"]
    end
 
-   p 2
-   p arg_names
    v = RVariable.new
-   p 3
    v.name = name
    v.old_args = arg_names
    v.type = type
-   p 4
    v.set_cells(cells, arg_names)
-   p 5
    v.sort_cells
    v.dirty = false
    v.db_var = var
 
-   p 3
    return v
 end
 
@@ -515,8 +515,9 @@ def setVariable(*args)
    for cell in var.cells
       # Copy the information from the ruby variable to the new cell
 
-      if cell.db_cell == nil
+      if cell.db_cell == nil or cell.parent != var.name
           cell.db_cell = var.db_var.createCell()
+          cell.db_cell.save()
       end
 
       value = cell.db_cell.getValue()
@@ -534,8 +535,9 @@ def setVariable(*args)
           values = cell.db_cell.getValue().getArguments()
           for arg in var.old_args
               # Find the arg in the db's arglist that we are looking for
-              for dbarg in values
-                  if dbarg["name"] == arg and not ["", nil].include?(cell.get_arg(arg))
+              for i in 0...values.size
+                  dbarg = values[i]
+                  if dbarg.toString() == "<"+arg+">" and not ["", nil].include?(cell.get_arg(arg))
                       dbarg.set(cell.get_arg(arg))
                       dbarg.save()
                       break
