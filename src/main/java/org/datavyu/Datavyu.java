@@ -645,7 +645,7 @@ implements KeyEventDispatcher, TitleNotifier {
         if (getPlatform() == Platform.MAC) {
             a[0] = defaultOpt; // This has int value 0 if selected
             a[1] = altOpt; // This has int value 1 if selected.
-        } else {
+         } else {
             a[1] = defaultOpt; // This has int value 1 if selected
             a[0] = altOpt; // This has int value 0 if selected.
         }
@@ -946,8 +946,8 @@ implements KeyEventDispatcher, TitleNotifier {
 	
 	Runtime.getRuntime().addShutdownHook(new Thread() {
 	public void run() {
-			System.err.println("ERROR: Force shutdown command caught. Initiating shutdown.");
-			Datavyu.getApplication().shutdown();
+//			System.err.println("ERROR: Force shutdown command caught. Initiating shutdown.");
+//			Datavyu.getApplication().shutdown();
 		}
 	});
     }
