@@ -269,7 +269,8 @@ public class MongoDatastore implements Datastore {
             Thread.sleep(2000);
             mongoProcess.destroy();
         } catch (Exception e) {
-            LOGGER.error("Unable to cleanly take down mongo. Maybe it was already taken down?", e);
+//            LOGGER.error("Unable to cleanly take down mongo. Maybe it was already taken down?", e);
+            e.printStackTrace();
         } finally {
             mongoProcess.destroy();
         }
