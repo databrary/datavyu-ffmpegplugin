@@ -4,7 +4,7 @@
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
-# 1.01 03/13/12 - Fixed the set variable function so it now correctly writes back to 
+# 1.01 03/13/12 - Fixed the set variable function so it now correctly writes back to
 #                 mongodb
 # 1.0 07/24/12 - Updated API to work with new MongoDB. Also updated function names
 #                such that they are more consistent. Old names should work, but are
@@ -85,7 +85,7 @@ import 'org.datavyu.controllers.project.ProjectController'
 $debug = false
 def print_debug(*s)
     if $debug == true
-        puts s
+        p s
     end
 end
 
@@ -242,7 +242,6 @@ class RVariable
          ord = 0
          newcells.each do |cell|
             ord += 1
-            p cell
             c = RCell.new
             c.onset = cell["onset"]
             c.offset = cell["offset"]
@@ -285,7 +284,7 @@ class RVariable
       @cells << c
       return c
    end
-   
+
    def create_cell()
      make_new_cell()
    end
@@ -1056,7 +1055,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
         count += 1
 
 
-        if count > 1500
+        if count > 4000
             puts "ERROR: Infinite loop?  Aborting."
             exit
         end
@@ -1364,18 +1363,12 @@ def saveDB(filename)
       save_c.save_database(filename, $db)
    else
       #if $pj == nil or $pj.getDatabaseFileName == nil
-      p 1
       $pj = Project.new()
-      p 2
       $pj.setDatabaseFileName("db")
-      p 3
       dbname = filename[filename.rindex("/")+1..filename.length]
-      p 4
       $pj.setProjectName(dbname)
-      p 5
       #end
       save_file = java.io.File.new(filename)
-      p 6
       save_c.save_project(save_file, $pj, $db)
    end
 
