@@ -263,10 +263,11 @@ public class MongoDatastore implements Datastore {
             db.command(new BasicDBObject( "shutdownServer" , 1  ));
             running = false;
             mongoDriver.close();
-
+            
             // Sleep for just a little bit before closing. Let everything
             // finish.
             Thread.sleep(2000);
+            mongoProcess.destroy();
         } catch (Exception e) {
             LOGGER.error("Unable to cleanly take down mongo. Maybe it was already taken down?", e);
         } finally {
