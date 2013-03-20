@@ -755,7 +755,7 @@ public final class DatavyuView extends FrameView
             int result = jd.showOpenDialog(getComponent());
 
             if (result == JFileChooser.APPROVE_OPTION) {
-                open(jd);
+                open(jd.getSelectedFile());
             }
         }
     }
