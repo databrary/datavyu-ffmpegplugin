@@ -751,6 +751,7 @@ public final class DatavyuView extends FrameView
             jd.addChoosableFileFilter(SHAPAFilter.INSTANCE);
             jd.addChoosableFileFilter(OPFFilter.INSTANCE);
 
+            jd.setFileFilter(OPFFilter.INSTANCE);
             int result = jd.showOpenDialog(getComponent());
 
             if (result == JFileChooser.APPROVE_OPTION) {
