@@ -36,14 +36,15 @@ import quicktime.qd.QDDimension;
 import quicktime.std.StdQTConstants;
 import quicktime.std.StdQTException;
 
-import quicktime.std.clocks.TimeRecord;
 
 import quicktime.std.movies.Movie;
-import quicktime.std.movies.TimeInfo;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
 import com.usermetrix.jclient.UserMetrix;
+import javax.swing.JOptionPane;
+import quicktime.std.clocks.TimeRecord;
+import quicktime.std.movies.TimeInfo;
 
 
 /**
@@ -171,12 +172,18 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 	            }
                     
                     if(fps == 1) {
-                        fps = 30;
+                        throw new QTException(0);
                     }
         	}
         } catch (QTException e) {
             LOGGER.error("Unable to calculate FPS, assuming 30", e);
-            fps = 30;
+            String response = JOptionPane.showInputDialog(null,
+                "Datavyu was unable to detect the framerate of this video.\n"
+                    + "Please enter the framerate below (ex. 25, 29.97, 30)",
+                "Could not detect framerate",
+
+                JOptionPane.QUESTION_MESSAGE);
+            fps = Float.valueOf(response);
         }
 
         return fps;
