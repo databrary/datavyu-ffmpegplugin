@@ -367,10 +367,13 @@ public final class PluginManager {
             }
         } catch (ClassNotFoundException e) {
             LOGGER.error("Unable to find plugin.", e);
+            e.printStackTrace();
         } catch (ClassFormatError e) {
             LOGGER.error("Plugin with bad class format.", e);
+            e.printStackTrace();
         } catch (Throwable e) {
             LOGGER.error("Unable to instantiate plugin", e);
+            e.printStackTrace();
         }
     }
 
@@ -400,11 +403,11 @@ public final class PluginManager {
                 @Override public int compare(final Plugin o1, final Plugin o2) {
 
                     // Want the QuickTime video plugin to always be first.
-                    if ("VLC Video".equals(o1.getPluginName())) {
+                    if ("QuickTime Video".equals(o1.getPluginName())) {
                         return -1;
                     }
 
-                    if ("VLC Video".equals(o2.getPluginName())) {
+                    if ("QuickTime Video".equals(o2.getPluginName())) {
                         return 1;
                     }
 
