@@ -19,7 +19,7 @@
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleIconFile</key>
-    <string>Datavyu.icns</string>
+    <string>datavyu.icns</string>
     <key>LSArchitecturePriority</key>
     <array>
       <string>i386</string>

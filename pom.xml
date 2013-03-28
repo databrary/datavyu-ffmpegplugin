@@ -441,7 +441,7 @@
               </includes>
             </fileSet>
           </resources>
-          <iconFile>${basedir}/src/main/resources/icons/Datavyu.icns</iconFile>
+          <iconFile>${basedir}/src/main/resources/icons/datavyu.icns</iconFile>
           <javaApplicationStub>${basedir}/src/main/mac-resources/JavaApplicationStub</javaApplicationStub>
           <dictionaryFile>${basedir}/Info.plist</dictionaryFile>
           <!-- see teh antrun goal - need to create snapshot directory before this will work. -->
