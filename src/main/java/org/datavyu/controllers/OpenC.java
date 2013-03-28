@@ -133,6 +133,7 @@ public final class OpenC {
             zf.close();
         } catch (Exception e) {
             LOGGER.error("Unable to open project archive", e);
+            e.printStackTrace();
         }
     }
 
