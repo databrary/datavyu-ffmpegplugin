@@ -357,8 +357,6 @@ public final class ProjectController {
             final DataViewer viewer = plugin.getNewDataViewer(Datavyu
                     .getApplication().getMainFrame(), false);
             viewer.setIdentifier(IDController.generateIdentifier());
-            viewer.setDataFeed(file);
-            viewer.setDatastore(db);
 
             if (setting.getSettingsId() != null) {
 
@@ -369,6 +367,9 @@ public final class ProjectController {
                 // old project file
                 viewer.setOffset(setting.getOffset());
             }
+            
+            viewer.setDataFeed(file);
+            viewer.setDatastore(db);
 
             dataController.addViewer(viewer, viewer.getOffset());
 

@@ -37,6 +37,9 @@ public final class TrackSettings {
 
     /** The track's bookmark positions */
     private List<Long> bookmarkPositions;
+    
+    /* The track's datarate */
+    private float fps;
 
     public TrackSettings() {
         bookmarkPositions = new ArrayList<Long>();
@@ -51,6 +54,7 @@ public final class TrackSettings {
         filePath = other.filePath;
         isLocked = other.isLocked;
         bookmarkPositions = other.bookmarkPositions;
+        fps = other.fps;
     }
 
     /**
@@ -105,6 +109,14 @@ public final class TrackSettings {
      */
     @Deprecated public void setFilePath(final String filePath) {
         this.filePath = filePath;
+    }
+    
+    public float getFps() {
+        return fps;
+    }
+    
+    public void setFps(float fps) {
+        this.fps = fps;
     }
 
     public TrackSettings copy() {

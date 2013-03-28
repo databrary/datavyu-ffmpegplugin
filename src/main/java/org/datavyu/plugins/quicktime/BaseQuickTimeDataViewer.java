@@ -72,7 +72,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     private float playRate;
 
     /** Frames per second. */
-    private float fps;
+    private float fps = -1;
 
     /** parent controller. */
     private DataController parent;
@@ -379,7 +379,12 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
             (int) nativeVideoSize.getHeight());
         pack();
 
-        fps = getQTFPS();
+        if(fps == -1) {
+            fps = getQTFPS();
+        } // otherwise we loaded it from the settings
+        
+        System.out.println("FPS:");
+        System.out.println(fps);
     }
 
     protected abstract void setQTDataFeed(final File videoFile);
@@ -525,6 +530,13 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
             if ((property != null) && !property.equals("")) {
                 setVideoHeight(Integer.parseInt(property));
             }
+            
+            property = settings.getProperty("fps");
+            System.out.println(property);
+            if ((property != null) && !property.equals("")) {
+                System.out.println("LOADING FPS");
+                fps = Float.parseFloat(property);
+            }
 
 
         } catch (IOException e) {
@@ -538,6 +550,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         settings.setProperty("volume", Float.toString(volume));
         settings.setProperty("visible", Boolean.toString(isVisible));
         settings.setProperty("height", Integer.toString(getVideoHeight()));
+        settings.setProperty("fps", Float.toString(fps));
 
         try {
             settings.store(os, null);
