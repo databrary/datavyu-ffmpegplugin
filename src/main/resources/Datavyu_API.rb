@@ -207,6 +207,52 @@ class RCell
          print v + p[0]
       end
    end
+   
+   #-------------------------------------------------------------------
+   # Method name: is_within
+   # Function: Is encased by outer_cell temporally
+   # Arguments:
+   # => outer_cell: check to see if this cell is in outer_cell
+   # Returns:
+   # => boolean
+   # Usage:
+   #       trial = getVariable("trial")
+   #       id = getVariable("id")
+   #       if trial.cells[0].is_within(id.cells[0])
+   #           do something
+   #       end
+   #-------------------------------------------------------------------
+   
+   def is_within(outer_cell)
+     if outer_cell.onset <= @onset and outer_cell.offset >= @offset
+       return true
+     else
+       return false
+     end
+   end
+   
+   #-------------------------------------------------------------------
+   # Method name: contains
+   # Function: Check to see if this cell encases inner_cell temporally
+   # Arguments:
+   # => inner_cell: the cell to check if it is inside of this cell
+   # Returns:
+   # => boolean
+   # Usage:
+   #       trial = getVariable("trial")
+   #       id = getVariable("id")
+   #       if id.cells[0].contains(trial.cells[0])
+   #           do something
+   #       end
+   #-------------------------------------------------------------------
+   
+   def contains(inner_cell)
+     if inner_cell.onset >= @onset and inner_cell.offset <= @offset
+       return true
+     else
+       return false
+     end
+   end
 end
 
 #-------------------------------------------------------------------
@@ -1705,7 +1751,7 @@ end
 #  check_rel("trial", "rel.trial", "trialnum", 100)
 # -------------------------------------------------------------------
 def check_rel(main_col, rel_col, match_arg, time_tolerance, *dump_file)
-    checkReliability(main_col, rel_col, match_arg, time_tolerance, dump_file)
+    checkReliability(main_col, rel_col, match_arg, time_tolerance, dump_file[0])
 end
 def checkReliability(main_col, rel_col, match_arg, time_tolerance, *dump_file)
    # Make the match_arg conform to the method format that is used
