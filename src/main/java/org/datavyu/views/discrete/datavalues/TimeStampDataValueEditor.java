@@ -82,6 +82,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      */
     public void resetValue() {
         // reget the parentCell in case other data items have changed
+        parentCell = parentCell.getFreshCell();
         switch (dataSourceType) {
             case Onset:
                 setText(parentCell.getOnsetString());
