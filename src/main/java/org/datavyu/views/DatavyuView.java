@@ -463,6 +463,7 @@ public final class DatavyuView extends FrameView
             }
 
         } catch (UserWarningException e) {
+            e.printStackTrace();
             Datavyu.getApplication().showWarningDialog(e);
         }
     }
@@ -476,6 +477,9 @@ public final class DatavyuView extends FrameView
         jd.addChoosableFileFilter(MODBFilter.INSTANCE);
         jd.addChoosableFileFilter(CSVFilter.INSTANCE);
         jd.addChoosableFileFilter(OPFFilter.INSTANCE);
+        
+        jd.setAcceptAllFileFilterUsed(false);
+        jd.setFileFilter(OPFFilter.INSTANCE);
 
         int result = jd.showSaveDialog(getComponent());
 

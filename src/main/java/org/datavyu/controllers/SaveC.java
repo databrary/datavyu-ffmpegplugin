@@ -158,10 +158,12 @@ public final class SaveC {
         } catch (FileNotFoundException e) {
             ResourceMap rMap = Application.getInstance(Datavyu.class)
                                           .getContext().getResourceMap(Datavyu.class);
+            e.printStackTrace();
             throw new UserWarningException(rMap.getString("UnableToSave.message", projectFile), e);
         } catch (IOException e) {
             ResourceMap rMap = Application.getInstance(Datavyu.class)
                                           .getContext().getResourceMap(Datavyu.class);
+            e.printStackTrace();
             throw new UserWarningException(rMap.getString("UnableToSave.message", projectFile), e);
         }
     }
