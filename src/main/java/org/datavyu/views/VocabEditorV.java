@@ -625,9 +625,9 @@ public final class VocabEditorV extends DatavyuDialog {
         addMatrixButton.setToolTipText(bundle.getString("addMatrixButton.tip")); // NOI18N
         addMatrixButton.setName("addMatrixButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         getContentPane().add(addMatrixButton, gridBagConstraints);
 
         moveArgLeftButton.setAction(actionMap.get("moveArgumentLeft")); // NOI18N
@@ -669,6 +669,7 @@ public final class VocabEditorV extends DatavyuDialog {
         addArgButton.setText(bundle.getString("addArgButton.text")); // NOI18N
         addArgButton.setToolTipText(bundle.getString("addArgButton.tip")); // NOI18N
         addArgButton.setName("addArgButton"); // NOI18N
+        addArgButton.setPreferredSize(new Dimension(100,500));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
