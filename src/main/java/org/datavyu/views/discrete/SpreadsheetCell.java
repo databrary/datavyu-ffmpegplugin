@@ -89,7 +89,7 @@ implements MouseListener, FocusListener, CellListener {
     /** Border to use for normal cell. No extra information to show. */
     private static final Border NORMAL_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
+                new MatteBorder(1, 0, 1, 0, Configuration.BORDER_COLOUR),
                 new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSBackgroundColour())),
             new MatteBorder(3, 3, 0, 3,
                 Configuration.getInstance().getSSBackgroundColour()));
