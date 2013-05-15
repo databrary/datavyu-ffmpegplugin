@@ -646,7 +646,7 @@ public final class DataControllerV extends DatavyuDialog
     private void updateCurrentTimeLabel() {
         timestampLabel.setText(tracksPanelEnabled
                 ? CLOCK_FORMAT_HTML.format(getCurrentTime())
-                : CLOCK_FORMAT.format(getCurrentTime()));
+                : CLOCK_FORMAT_HTML.format(getCurrentTime()));
     }
 
     /**
