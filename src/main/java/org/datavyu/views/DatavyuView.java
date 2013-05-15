@@ -105,7 +105,7 @@ public final class DatavyuView extends FrameView
     static final String FAV_DIR = "favourites";
 
     // Variable for the amount to raise the font size by when zooming.
-    public static final int ZOOM_INTERVAL = 4;
+    public static final int ZOOM_INTERVAL = 2;
     public static final int ZOOM_DEFAULT_SIZE = 14;
 
     // Variables to set the maximum zoom and minimum zoom.
