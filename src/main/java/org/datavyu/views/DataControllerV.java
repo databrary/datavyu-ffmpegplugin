@@ -654,7 +654,7 @@ public final class DataControllerV extends DatavyuDialog
      *
      * @return Time in milliseconds.
      */
-    private long getCurrentTime() {
+    public long getCurrentTime() {
         return clock.getTime();
     }
 

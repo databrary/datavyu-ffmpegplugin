@@ -70,10 +70,7 @@ public final class CreateNewCellC {
         List<Cell> cells = v.getCellsTemporally();
 
         long newOnset = 0;
-        if (!cells.isEmpty()) {
-            Cell lastCell = cells.get(cells.size() - 1);
-            newOnset = Math.max(lastCell.getOnset(), lastCell.getOffset());
-        }
+        newOnset = Datavyu.getDataController().getCurrentTime();
 
         Cell newCell = v.createCell();
         newCell.setOnset(newOnset);
