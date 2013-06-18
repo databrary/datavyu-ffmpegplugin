@@ -481,11 +481,21 @@ implements MouseListener, FocusListener, CellListener {
     @Override
     public void highlightingChange(final boolean isHighlighted) {
         updateSelectionDisplay();
+        if(model.isSelected()) {
+	    // Update the find windows to the newly selected cell's values
+	    Datavyu.getDataController().setFindTime(model.getOnset());
+            Datavyu.getDataController().setFindOffsetField(model.getOffset());
+	}
     }
 
     @Override
     public void selectionChange(final boolean isSelected) {
         updateSelectionDisplay();
+        if(model.isSelected()) {
+	    // Update the find windows to the newly selected cell's values
+	    Datavyu.getDataController().setFindTime(model.getOnset());
+            Datavyu.getDataController().setFindOffsetField(model.getOffset());
+	}
     }
 
     @Override
