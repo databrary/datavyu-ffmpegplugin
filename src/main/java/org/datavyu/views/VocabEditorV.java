@@ -669,7 +669,7 @@ public final class VocabEditorV extends DatavyuDialog {
         addArgButton.setText(bundle.getString("addArgButton.text")); // NOI18N
         addArgButton.setToolTipText(bundle.getString("addArgButton.tip")); // NOI18N
         addArgButton.setName("addArgButton"); // NOI18N
-        addArgButton.setPreferredSize(new Dimension(100,500));
+        addArgButton.setPreferredSize(addMatrixButton.getPreferredSize());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
