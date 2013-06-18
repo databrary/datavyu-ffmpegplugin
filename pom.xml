@@ -215,8 +215,9 @@
 
   <!-- Our source control. -->
   <scm>
+    <connection>scm:git:git://github.com/databrary/datavyu</connection>
     <tag>master</tag>
-    <url>http://datavyu.org/viewgit/?a=summary&amp;p=datavyu</url>
+    <url>http://github.com/databrary/datavyu</url>
   </scm>
 
   <!-- The location for generating the website. -->
@@ -384,6 +385,7 @@
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>
+	<version>1.10.b1</version>
         <configuration>
           <includes>
             <include>src/main/java/**</include>
@@ -396,6 +398,7 @@
         </configuration>
       </plugin>
 
+      <!--
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
@@ -403,10 +406,12 @@
           <template>site.vm</template>
         </configuration>
       </plugin>
+      -->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
+	<version>2.5</version>
         <configuration>
           <encoding>UTF-8</encoding>
         </configuration>
@@ -471,6 +476,7 @@
       <!-- Creates the JAR -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
+	<version>2.3.2</version>
           <configuration>
             <archive>
                 <manifest>
@@ -484,7 +490,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.0-beta-2</version>
+        <version>1.2</version>
         <executions>
           <execution>
             <phase>validate</phase>
@@ -494,10 +500,12 @@
           </execution>
         </executions>
         <configuration>
-          <format>{0,date,yyyyMMdd}</format>
+	  <format>{0,date,yyyyMMdd}-{1}</format>
           <items>
             <item>timestamp</item>
+            <item>scmVersion</item>
           </items>
+	  <shortRevisionLength>12</shortRevisionLength>
         </configuration>
       </plugin>
 
