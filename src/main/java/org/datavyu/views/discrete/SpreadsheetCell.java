@@ -524,6 +524,8 @@ implements MouseListener, FocusListener, CellListener {
         Class source = me.getSource().getClass();
         boolean isEditorSrc = (source.equals(TimeStampTextField.class)
                                || (source.equals(MatrixRootView.class)));
+        
+        model = model.getFreshCell();
 
         // User has clicked in magic spot, without modifier. Clear
         // currently selected cells and select this cell.

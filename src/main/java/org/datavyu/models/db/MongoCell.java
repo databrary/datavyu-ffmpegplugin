@@ -123,7 +123,7 @@ public class MongoCell extends BasicDBObject implements Cell {
         DBCollection cell_collection = MongoDatastore.getDB().getCollection("cells");
         BasicDBObject query = new BasicDBObject();
 
-        query.put("_id", this.get("_id"));  // e.g. find all where i > 50
+        query.put("_id", this.get("_id"));
 
         DBCursor cur = cell_collection.find(query);
 
@@ -168,7 +168,6 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOnset(final String newOnset) {
         this.put("onset", convertTimestampToMS(newOnset));
-        MongoDatastore.getCellCollection().ensureIndex(index);
         this.save();
 
         for(CellListener cl : getListeners(getID())) {
@@ -179,7 +178,6 @@ public class MongoCell extends BasicDBObject implements Cell {
     @Override
     public void setOnset(final long newOnset) {
         this.put("onset", newOnset);
-        MongoDatastore.getCellCollection().ensureIndex(index);
         this.save();
 
         for(CellListener cl : getListeners(getID()) ) {

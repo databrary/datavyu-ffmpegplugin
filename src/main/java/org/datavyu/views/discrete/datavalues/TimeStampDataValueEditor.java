@@ -95,6 +95,8 @@ public final class TimeStampDataValueEditor extends EditorComponent {
 
     private void setTimeStamp(final String value) {
         UndoableEdit edit = null;
+        
+        parentCell = parentCell.getFreshCell();
 
         switch (dataSourceType) {
             case Onset:
