@@ -176,7 +176,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         
         // The size the of the gap to use between cells and as overlap on
         // overlapping cells in different columns
-        int gapSize = 20;
+        int gapSize = 10;
 	int minCellHeight = 45;
 
         
@@ -242,7 +242,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             if(prevLaidCell != null && 
 		workingCell.getOnsetTicks() < prevLaidCell.getOffsetTicks() &&
 	        workingCell.getOffsetTicks() != prevLaidCell.getOffsetTicks()) {	  	
-//               prev_b = prev_b + gapSize;
+               prev_b = prev_b + gapSize;
             }
             
             // Lay out the last cell and ready this one for layout
@@ -300,6 +300,15 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 	    // Start at the current bottom of the column
             int t = workingCol.getWorkingHeight();
             
+            // Add a front buffer to the cell or align to previous cell
+            if(prevLaidCell != null && workingCell.getOnsetTicks() > prevLaidCell.getOnsetTicks()) {
+                if(t < prevLaidCell.getY() + gapSize) {
+                    t = prevLaidCell.getY() + gapSize;
+                }
+            } else if(prevLaidCell != null && workingCell.getOnsetTicks() == prevLaidCell.getOffsetTicks()) {
+                t = prevLaidCell.getY() + prevLaidCell.getHeight();
+            }
+            
             // Check to see if there is a gap between these two cells.
             // If so, then use the top of the prevCell + gapsize to lay this one out.
             if(prevLaidCell != null && workingCell.getOnsetTicks() - prevLaidCell.getOffsetTicks() > 1) {
@@ -336,7 +345,10 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             int b = Collections.max(column_bottoms);
 	    if(prevLaidCell != null && workingCell.getOffsetTicks() == prevLaidCell.getOffsetTicks()) {
 		b = prev_b;
-	    }
+	    } else if (prevLaidCell != null && workingCell.getOffsetTicks() > prevLaidCell.getOffsetTicks()) {
+                b += gapSize;
+            }
+            
 	    if(b < t + workingCell.getPreferredSize().height) {
                 b = t + workingCell.getPreferredSize().height;
             }
