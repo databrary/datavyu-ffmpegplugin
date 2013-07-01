@@ -358,6 +358,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 	    prevRowCells[currColIndex] = workingCell;
 	    
             position_index[currColIndex]++;
+            workingCell.setOrdinal(position_index[currColIndex]);
             prevColIndex = currColIndex;
             prevLaidCell = workingCell;
             prevLaidCol = workingCol;
