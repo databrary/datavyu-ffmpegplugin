@@ -1997,9 +1997,4 @@ end
 begin
     #$debug=true
 
-    $debug = true
-
-    p "Creating mutex"
-    setVariable(create_mutually_exclusive("relhand", "RelRightHind", "RelLeftHind"))
-    p "Mutex created"
 end
