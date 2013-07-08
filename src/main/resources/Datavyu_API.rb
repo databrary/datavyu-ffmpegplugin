@@ -1,9 +1,10 @@
 #-------------------------------------------------------------------
-# Datavyu API v 1.01
+# Datavyu API v 1.02
 
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 1.02 07/07/13 - Fixed functions involving createVariable.
 # 1.01 03/13/12 - Fixed the set variable function so it now correctly writes back to
 #                 mongodb
 # 1.0 07/24/12 - Updated API to work with new MongoDB. Also updated function names
