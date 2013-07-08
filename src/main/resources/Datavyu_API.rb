@@ -275,10 +275,12 @@ class RVariable
    #-------------------------------------------------------------------
 
    def set_cells(newcells, arglist)
+     print_debug "Setting cells"
       @cells = Array.new
       @arglist = Array.new
       arglist.each do |arg|
          # Regex to delete any character not a-z,0-9,or _
+         print_debug arg
          if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[0].chr)
             arg = "_" + arg
          end
@@ -756,20 +758,25 @@ def createNewVariable(name, *args)
 end
 
 def createVariable(name, *args)
+  print_debug "Creating new variable"
    v = RVariable.new
 
    v.name = name
 
    v.dirty = true
 
+   print_debug args[0].class
+   print_debug args
    if args[0].class == Array
       args = args[0]
    end
+   print_debug args
 
    # Set the argument names in arg_names and set the database internal style with <argname> in old_args
    arg_names = Array.new
    old_args = Array.new
    for arg in args
+     print_debug arg
       arg_names << arg
       old_args << arg.to_s
    end
@@ -778,6 +785,7 @@ def createVariable(name, *args)
    v.set_cells(nil, arg_names)
 
    # Return reference to this variable for the user
+   print_debug "Finished creating variable"
    return v
 end
 
@@ -810,7 +818,7 @@ end
 # => Nothing.  Variables are written to the database.
 # #-------------------------------------------------------------------
 def makeDurationBlockRel(relname, var_to_copy, binding, block_dur, skip_blocks)
-   block_var = createNewVariable(relname + "_blocks", "block_num")
+   block_var = createVariable(relname + "_blocks", "block_num")
    rel_var = make_rel(relname, var_to_copy, 0)
 
    var_to_copy = getVariable(var_to_copy)
@@ -869,7 +877,7 @@ def add_args_to_var(var, *args)
       var = getVariable(var)
    end
 
-   var_new = createNewVariable(var.name, var.arglist + args)
+   var_new = createVariable(var.name, var.arglist + args)
 
    for cell in var.cells
       new_cell = var_new.make_new_cell()
@@ -1080,7 +1088,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
     args += v2arglist
 
     puts "Creating mutex var", var1.arglist
-    mutex = createNewVariable(name, args)
+    mutex = createVariable(name, args)
     puts "Mutex var created"
 
     # And finally begin creating new cells
@@ -1987,4 +1995,10 @@ end
 
 begin
     #$debug=true
+
+    $debug = true
+
+    p "Creating mutex"
+    setVariable(create_mutually_exclusive("relhand", "RelRightHind", "RelLeftHind"))
+    p "Mutex created"
 end
