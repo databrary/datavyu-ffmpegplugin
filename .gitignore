@@ -13,7 +13,7 @@ nb-configuration.xml
 src/main/java/au
 src/test/java/au
 src/main/resources/au
-src/main/resources/org/openshapa/resources/Build.properties
+src/main/resources/org/datavyu/resources/Build.properties
 test-output/
 .classpath
 .project
