@@ -51,9 +51,11 @@ public class DataValueEditorFactory {
 
         List<EditorComponent> eds = new ArrayList<EditorComponent>();
 
-        if (c.getValue() != null) {
-            if (c.getValue() instanceof MatrixValue) {
-                MatrixValue mv = (MatrixValue) c.getValue();
+        Value val = c.getValue();
+
+        if (val != null) {
+            if (val instanceof MatrixValue) {
+                MatrixValue mv = (MatrixValue) val;
                 eds.add(new FixedText(ta, "("));
 
                 for (int i = 0; i < mv.getArguments().size(); i++) {
@@ -67,11 +69,11 @@ public class DataValueEditorFactory {
 
                 eds.add(new FixedText(ta, ")"));
 
-            } else if (c.getValue() instanceof TextValue) {
-                eds.add(buildTextString(ta, (TextValue) c.getValue()));
+            } else if (val instanceof TextValue) {
+                eds.add(buildTextString(ta, (TextValue) val));
 
             } else {
-                eds.add(buildNominal(ta, (NominalValue) c.getValue()));
+                eds.add(buildNominal(ta, (NominalValue) val));
             }
         }
 
