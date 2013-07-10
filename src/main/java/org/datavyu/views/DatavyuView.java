@@ -140,6 +140,7 @@ public final class DatavyuView extends FrameView
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem ShowAllVariablesMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JMenuItem updateMenuItem;
     private javax.swing.JMenuItem changeVarNameMenuItem;
     private javax.swing.JMenu controllerMenu;
     private javax.swing.JMenuItem deleteCellMenuItem;
@@ -964,6 +965,13 @@ public final class DatavyuView extends FrameView
     }
 
     /**
+     * Action for showing the update window.
+     */
+    @Action public void showUpdateWindow() {
+        Datavyu.getApplication().showUpdateWindow();
+    }
+
+    /**
      * Clears the contents of the spreadsheet.
      */
     public void clearSpreadsheet() {
@@ -1249,6 +1257,7 @@ public final class DatavyuView extends FrameView
         windowMenu = new javax.swing.JMenu();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
+        updateMenuItem = new javax.swing.JMenuItem();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -1574,6 +1583,13 @@ public final class DatavyuView extends FrameView
         if (Datavyu.getPlatform() != Platform.MAC) {
             helpMenu.add(aboutMenuItem);
         }
+
+        updateMenuItem.setAction(actionMap.get("showUpdateWindow")); // NOI18N
+        updateMenuItem.setName("updateMenuItem"); // NOI18N
+        //TODO - don't add this on Macs.  Instead it will be in the "Application Menu"
+        //if (Datavyu.getPlatform() != Platform.MAC) {
+            helpMenu.add(updateMenuItem);
+        //}
 
         menuBar.add(helpMenu);
         resourceMap.injectComponents(menuBar);

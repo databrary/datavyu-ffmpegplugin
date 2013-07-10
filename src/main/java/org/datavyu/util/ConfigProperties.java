@@ -70,6 +70,12 @@ public final class ConfigProperties implements Serializable {
     /** Outline colour of a carriage in the selected state */
     private Color mixerInterfaceSelectedOutlineColour;
 
+    /** Version number to ignore for update reminders */
+    private String ignoreVersion;
+
+    /** true if prereleases are preferred */
+    private boolean prereleasePreference;
+
     /**
      * Default constructor.
      */
@@ -304,5 +310,35 @@ public final class ConfigProperties implements Serializable {
      */
     public void setMixerInterfaceSelectedOutlineColour(final Color newColour) {
         mixerInterfaceSelectedOutlineColour = newColour;
+    }
+
+    /**
+     * @return the ignoreVersion
+     */
+    public String getIgnoreVersion() {
+        return ignoreVersion;
+    }
+
+    /**
+     * @param version
+     *            the version to set
+     */
+    public void setIgnoreVersion(final String version) {
+        ignoreVersion = version;
+    }
+
+    /**
+     * @return the prerelease preference
+     */
+    public boolean getPrereleasePreference() {
+        return prereleasePreference;
+    }
+
+    /**
+     * @param preference
+     *            true if prereleases are preferred
+     */
+    public void setPrereleasePreference(boolean preference) {
+        prereleasePreference = preference;
     }
 }

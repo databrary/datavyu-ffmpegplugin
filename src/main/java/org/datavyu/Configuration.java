@@ -130,6 +130,8 @@ public final class Configuration {
                 DEFAULT_SELECTED_CARRIAGE_COLOR);
             properties.setMixerInterfaceSelectedOutlineColour(
                 DEFAULT_SELECTED_OUTLINE_COLOR);
+            properties.setIgnoreVersion("");
+            properties.setPrereleasePreference(false);
 
             save();
         }
@@ -407,6 +409,38 @@ public final class Configuration {
      */
     public void setMixerInterfaceSelectedOutlineColour(final Color newColour) {
         properties.setMixerInterfaceSelectedOutlineColour(newColour);
+        save();
+    }
+
+    /**
+     * @return the ignoreVersion
+     */
+    public String getIgnoreVersion() {
+        return properties.getIgnoreVersion();
+    }
+
+    /**
+     * @param version
+     *            the ignoreVersion to set
+     */
+    public void setIgnoreVersion(final String version) {
+        properties.setIgnoreVersion(version);
+        save();
+    }
+
+    /**
+     * @return the prerelease preference
+     */
+    public boolean getPrereleasePreference() {
+        return properties.getPrereleasePreference();
+    }
+
+    /**
+     * @param preference
+     *            true if prereleases are preferred
+     */
+    public void setPrereleasePreference(boolean preference) {
+        properties.setPrereleasePreference(preference);
         save();
     }
 

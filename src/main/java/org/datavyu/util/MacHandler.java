@@ -103,6 +103,12 @@ public class MacHandler {
                     Method setHandled = ae.getMethod("setHandled",
                             boolean.class);
                     setHandled.invoke(args[0], true);
+                } else if (method.getName().equals("handleUpdate")) {
+                    Datavyu.getApplication().showUpdateWindow();
+
+                    Method setHandled = ae.getMethod("setHandled",
+                            boolean.class);
+                    setHandled.invoke(args[0], true);
                 } else if (method.getName().equals("handleQuit")) {
                     // Accept the quit request.
 
