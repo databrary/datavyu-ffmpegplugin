@@ -271,12 +271,16 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     onsetToLoc.put(prevLaidCell.getOnsetTicks(), new LinkedList<SpreadsheetCell>());
                 }
                 
+                if(!offsetToLoc.containsKey(prevLaidCell.getOffsetTicks())) {
+                    offsetToLoc.put(prevLaidCell.getOffsetTicks(), new LinkedList<SpreadsheetCell>());
+                }
+                
                 onsetToLoc.put(prevLaidCell.getOnsetTicks(), 
                         onsetToLoc.get(prevLaidCell.getOnsetTicks())).add(prevLaidCell);
-//                offsetToLoc.put(prevLaidCell.getOffsetTicks(), 
-//                        offsetToLoc.get(prevLaidCell.getOffsetTicks())).add(prevLaidCell);
+                offsetToLoc.put(prevLaidCell.getOffsetTicks(), 
+                        offsetToLoc.get(prevLaidCell.getOffsetTicks())).add(prevLaidCell);
                 
-                updatePositions(prevLaidCell.getOnsetTicks());
+                updatePositions(prevLaidCell.getOnsetTicks(), prevLaidCell.getOffsetTicks(), prevLaidCol);
                 
                 maxHeight = Math.max(prevLaidCell.getY() + prevLaidCell.getHeight(), maxHeight);
             }
@@ -326,9 +330,10 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 if(t < prevLaidCell.getY() + gapSize) {
                     t = prevLaidCell.getY() + gapSize;
                 }
-            } else if(prevLaidCell != null && workingCell.getOnsetTicks() == prevLaidCell.getOffsetTicks()) {
-                t = prevLaidCell.getY() + prevLaidCell.getHeight();
             }
+//            else if(prevLaidCell != null && workingCell.getOnsetTicks() == prevLaidCell.getOffsetTicks()) {
+//                t = prevLaidCell.getY() + prevLaidCell.getHeight();
+//            }
             
             // Check to see if there is a gap between these two cells.
             // If so, then use the top of the prevCell + gapsize to lay this one out.
@@ -387,6 +392,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             prev_b = b;
             maxHeight = Math.max(workingCell.getY() + workingCell.getHeight(), maxHeight);
             laidCells++;
+            System.out.println(String.format("T: %d, B: %d", prev_t, prev_b));
 //            System.out.println(String.format("Laid Cells: %d\tTotal Cells: %d",laidCells, totalCells));
             
             
@@ -406,7 +412,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         
     }
     
-    private void updatePositions(long onset) {
+    private void updatePositions(long onset, long offset, SpreadsheetColumn col) {
+        
         int largestPos = -1;
         if(onsetToLoc.containsKey(onset)) {
             List<SpreadsheetCell> cells = onsetToLoc.get(onset);
@@ -418,6 +425,22 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             
             for(SpreadsheetCell cell : cells) {
                 cell.setBounds(0, largestPos, (cell.getWidth() - marginSize), cell.getHeight());
+                System.out.println(cell.getY());
+            }
+        }
+        
+        largestPos = -1;
+        if(offsetToLoc.containsKey(offset)) {
+            List<SpreadsheetCell> cells = offsetToLoc.get(offset);
+            for(SpreadsheetCell cell : cells) {
+                if(cell.getY() > largestPos) {
+                    largestPos = cell.getY() + cell.getHeight();
+                }
+            }
+            
+            for(SpreadsheetCell cell : cells) {
+                cell.setBounds(0, cell.getY(), (cell.getWidth() - marginSize), largestPos - cell.getY());
+                System.out.println(cell.getHeight());
             }
         }
     }
