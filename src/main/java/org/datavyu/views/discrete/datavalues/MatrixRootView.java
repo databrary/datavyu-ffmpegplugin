@@ -108,6 +108,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         for (EditorComponent item : allEditors) {
             ans += item.getText();
         }
+        ans = ans.replaceAll("\\\\[\\\\]*\\\\", "\\\\");
         setText(ans);
     }
 

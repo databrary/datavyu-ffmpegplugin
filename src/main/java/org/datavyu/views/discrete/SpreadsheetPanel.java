@@ -74,6 +74,7 @@ import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.DatastoreListener;
 import org.datavyu.models.db.Variable;
 import org.datavyu.util.Constants;
+import org.datavyu.views.DVProgressBar;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory;
 
 
@@ -132,7 +133,7 @@ implements DatastoreListener,
      * @param db The model (i.e. database) that we are creating the view
      * (i.e. Spreadsheet panel) for.
      */
-    public SpreadsheetPanel(final Datastore db) {
+    public SpreadsheetPanel(final Datastore db, DVProgressBar progressBar) {
         setName(this.getClass().getSimpleName());
         setLayout(new BorderLayout());
 
@@ -184,7 +185,7 @@ implements DatastoreListener,
 
         // set the database and layout the columns
         setDatabase(db);
-        buildColumns();
+        buildColumns(progressBar);
 
         // Enable drag and drop support.
         setDropTarget(new DropTarget(this, new SSDropTarget()));
@@ -214,8 +215,19 @@ implements DatastoreListener,
     /**
      * Populate from the database.
      */
-    private void buildColumns() {
-        for(Variable v : getDatastore().getAllVariables()) {
+    private void buildColumns(DVProgressBar progressBar) {
+        List<Variable> vlist = getDatastore().getAllVariables();
+        int pb_increment = 0;
+        int i=0;
+
+        if (progressBar != null) {
+            pb_increment = (100 - progressBar.getProgress()) / vlist.size();
+        }
+
+        for(Variable v : vlist) {
+            if (progressBar != null) {
+                progressBar.setProgress(progressBar.getProgress() + pb_increment, "Adding column " + ++i + " of " + vlist.size());
+            }
             addColumn(getDatastore(), v);
         }
     }

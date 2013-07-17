@@ -89,6 +89,7 @@ import org.datavyu.undoableedits.RemoveVariableEdit;
 import org.datavyu.undoableedits.RunScriptEdit;
 import org.datavyu.undoableedits.SpreadsheetUndoManager;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import org.datavyu.controllers.ExportDatabaseFileC;
 import org.datavyu.util.FileFilters.CellCSVFilter;
 import org.datavyu.util.FileFilters.FrameCSVFilter;
@@ -120,6 +121,9 @@ public final class DatavyuView extends FrameView
 
     private static boolean redraw = true;
 
+    private DVProgressBar progressBar;
+    private OpenTask task;
+
     /**
      * undo system elements
      */
@@ -140,6 +144,7 @@ public final class DatavyuView extends FrameView
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem ShowAllVariablesMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JMenuItem updateMenuItem;
     private javax.swing.JMenuItem changeVarNameMenuItem;
     private javax.swing.JMenu controllerMenu;
     private javax.swing.JMenuItem deleteCellMenuItem;
@@ -297,7 +302,7 @@ public final class DatavyuView extends FrameView
             panel.removeFileDropEventListener(this);
         }
 
-        panel = new SpreadsheetPanel(Datavyu.getProjectController().getDB());
+        panel = new SpreadsheetPanel(Datavyu.getProjectController().getDB(), null);
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         setComponent(panel);
@@ -792,6 +797,66 @@ public final class DatavyuView extends FrameView
         }
     }
 
+    class OpenTask extends SwingWorker<Void, Void> {
+        private DVProgressBar progressBar;
+        private DatavyuFileChooser jd;
+
+        public OpenTask(DVProgressBar progressBar, final DatavyuFileChooser jd) {
+            this.jd = jd;
+            this.progressBar = progressBar;
+        }
+
+        @Override
+        public Void doInBackground() {
+
+            progressBar.setProgress(0, "Preparing spreadsheet");
+            FileFilter filter = jd.getFileFilter();
+            clearSpreadsheet();
+
+            progressBar.setProgress(10, "Opening project");
+            if ((filter == SHAPAFilter.INSTANCE)  || (filter == OPFFilter.INSTANCE)) {
+                // Opening a project or project archive file
+                openProject(jd.getSelectedFile());
+            } else {
+                // Opening a database file
+                openDatabase(jd.getSelectedFile());
+            }
+            progressBar.setProgress(40, "Project opened");
+
+            // BugzID:449 - Set filename in spreadsheet window and database if the database name is undefined.
+            ProjectController pController = Datavyu.getProjectController();
+            pController.setProjectName(jd.getSelectedFile().getName());
+            pController.setLastSaveOption(filter);
+
+            // Display any changes to the database.
+            if (progressBar.setProgress(50, "Loading project into spreadsheet")) {
+                progressBar.close();
+                return null;
+            }
+
+            /* updates the progressBar up to nearly 100% */
+            showSpreadsheet(progressBar);
+
+            // Default is to highlight cells when created - clear selection on load.
+            panel.clearCellSelection();
+
+            // The project we just opened doesn't really contain any unsaved changes.
+            pController.markProjectAsUnchanged();
+            pController.getDB().markAsUnchanged();
+
+            // Update the list of recently opened files.
+            RecentFiles.rememberProject(jd.getSelectedFile());
+
+            if (progressBar.setProgress(100, "Completed!")) {
+                progressBar.close();
+                return null;
+            }
+
+            progressBar.close();
+            return null;
+        }
+    }
+
     /**
      * Helper method for opening a file from disk.
      *
@@ -800,39 +865,12 @@ public final class DatavyuView extends FrameView
     private void open(final DatavyuFileChooser jd) {
         Datavyu.getApplication().resetApp();
 
-        FileFilter filter = jd.getFileFilter();
+        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        progressBar = new DVProgressBar(mainFrame, false);
+        Datavyu.getApplication().show(progressBar);
 
-        // Clear the current spreadsheet before loading the new content - we
-        // need to clean up resources.
-        clearSpreadsheet();
-
-        // Opening a project or project archive file
-        if ((filter == SHAPAFilter.INSTANCE)
-                || (filter == OPFFilter.INSTANCE)) {
-            openProject(jd.getSelectedFile());
-
-            // Opening a database file
-        } else {
-            openDatabase(jd.getSelectedFile());
-        }
-
-        // BugzID:449 - Set filename in spreadsheet window and database
-        // if the database name is undefined.
-        ProjectController pController = Datavyu.getProjectController();
-        pController.setProjectName(jd.getSelectedFile().getName());
-        pController.setLastSaveOption(filter);
-
-        // Display any changes to the database.
-        showSpreadsheet();
-        // Default is to highlight cells when created - clear selection on load.
-        panel.clearCellSelection();
-
-        // The project we just opened doesn't really contain any unsaved changes.
-        pController.markProjectAsUnchanged();
-        pController.getDB().markAsUnchanged();
-
-        // Update the list of recently opened files.
-        RecentFiles.rememberProject(jd.getSelectedFile());
+        task = new OpenTask(progressBar, jd);
+        task.execute();
     }
 
     /**
@@ -964,6 +1002,13 @@ public final class DatavyuView extends FrameView
     }
 
     /**
+     * Action for showing the update window.
+     */
+    @Action public void showUpdateWindow() {
+        Datavyu.getApplication().showUpdateWindow();
+    }
+
+    /**
      * Clears the contents of the spreadsheet.
      */
     public void clearSpreadsheet() {
@@ -978,6 +1023,9 @@ public final class DatavyuView extends FrameView
      * Action for showing the spreadsheet.
      */
     @Action public void showSpreadsheet() {
+        showSpreadsheet(null);
+    }
+    @Action public void showSpreadsheet(DVProgressBar progressBar) {
         weakTemporalOrderMenuItem.setSelected(false);
         strongTemporalOrderMenuItem.setSelected(false);
 
@@ -987,7 +1035,7 @@ public final class DatavyuView extends FrameView
             this.clearSpreadsheet();
         }
 
-        panel = new SpreadsheetPanel(Datavyu.getProjectController().getDB());
+        panel = new SpreadsheetPanel(Datavyu.getProjectController().getDB(), progressBar);
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         setComponent(panel);
@@ -1249,6 +1297,7 @@ public final class DatavyuView extends FrameView
         windowMenu = new javax.swing.JMenu();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
+        updateMenuItem = new javax.swing.JMenuItem();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -1574,6 +1623,13 @@ public final class DatavyuView extends FrameView
         if (Datavyu.getPlatform() != Platform.MAC) {
             helpMenu.add(aboutMenuItem);
         }
+
+        updateMenuItem.setAction(actionMap.get("showUpdateWindow")); // NOI18N
+        updateMenuItem.setName("updateMenuItem"); // NOI18N
+        //TODO - don't add this on Macs.  Instead it will be in the "Application Menu"
+        //if (Datavyu.getPlatform() != Platform.MAC) {
+            helpMenu.add(updateMenuItem);
+        //}
 
         menuBar.add(helpMenu);
         resourceMap.injectComponents(menuBar);

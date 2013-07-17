@@ -20,6 +20,7 @@ import org.datavyu.views.VideoConverterV;
 import org.datavyu.views.DataControllerV;
 import org.datavyu.views.UndoHistoryWindow;
 import org.datavyu.views.AboutV;
+import org.datavyu.views.UpdateV;
 import org.datavyu.views.UserMetrixV;
 import ch.randelshofer.quaqua.QuaquaManager;
 import com.mongodb.DB;
@@ -122,6 +123,9 @@ implements KeyEventDispatcher, TitleNotifier {
 
     /** The view to use when displaying information about Datavyu. */
     private AboutV aboutWindow;
+
+    /** The view to use when displaying information about Datavyu updates. */
+    private UpdateV updateWindow;
 
     /** Tracks if a NumPad key has been pressed. */
     private boolean numKeyDown = false;
@@ -536,6 +540,15 @@ implements KeyEventDispatcher, TitleNotifier {
     }
 
     /**
+     * Action for showing the about window.
+     */
+    public void showUpdateWindow() {
+        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        updateWindow = new UpdateV(mainFrame, true);
+        Datavyu.getApplication().show(updateWindow);
+    }
+
+    /**
      * Show a warning dialog to the user.
      *
      * @param s The message to present to the user.
@@ -743,6 +756,13 @@ implements KeyEventDispatcher, TitleNotifier {
 
         // Make a new project
         projectController = new ProjectController();
+
+        // Check for updates on startup
+        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        updateWindow = new UpdateV(mainFrame, true);
+        if (updateWindow.Available() && !updateWindow.IgnoreVersion()) {
+            Datavyu.getApplication().show(updateWindow);
+        }
     }
 
     /**
