@@ -194,7 +194,7 @@ public final class NewProjectV extends DatavyuDialog {
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_okButtonActionPerformed
         LOGGER.event("create new project");
         ResourceMap r = Application.getInstance(Datavyu.class).getContext().getResourceMap(NewProjectV.class);
-        DatavyuView s = (DatavyuView) Datavyu.getApplication().getMainView();
+        DatavyuView s = (DatavyuView) Datavyu.getView();
 
         // clear the contents of the existing spreadsheet.
         Datavyu.getProjectController().setLastCreatedCell(null);

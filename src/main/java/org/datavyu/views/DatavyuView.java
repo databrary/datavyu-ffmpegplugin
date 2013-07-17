@@ -306,6 +306,8 @@ public final class DatavyuView extends FrameView
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         setComponent(panel);
+        
+        System.out.println(getComponent());
 
         // initialize the undo/redo system
         spreadsheetUndoManager = new SpreadsheetUndoManager();
@@ -318,7 +320,7 @@ public final class DatavyuView extends FrameView
         pushMenuItem.setVisible(false);
         pullMenuItem.setVisible(false);
         jSeparator10.setVisible(false);
-
+        
     }
 
 
@@ -1035,6 +1037,7 @@ public final class DatavyuView extends FrameView
             this.clearSpreadsheet();
         }
 
+        
         panel = new SpreadsheetPanel(Datavyu.getProjectController().getDB(), progressBar);
         panel.registerListeners();
         panel.addFileDropEventListener(this);

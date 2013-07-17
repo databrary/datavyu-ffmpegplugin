@@ -204,7 +204,7 @@ public final class NewVariableV extends DatavyuDialog {
             UndoableEdit edit = new AddVariableEdit(getVariableName(), getVariableType());
 
             // Display any changes.
-            Datavyu.getApplication().getMainView().getComponent().revalidate();           
+            Datavyu.getView().getComponent().revalidate();           
             Datavyu.getView().getUndoSupport().postEdit(edit);
 
             dispose();

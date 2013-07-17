@@ -417,7 +417,7 @@ implements VariableListener,
         try {
             variable.setName(newName);
             UndoableEdit edit = new ChangeNameVariableEdit(variable.getName(), newName);
-            Datavyu.getApplication().getMainView().getComponent().revalidate();
+            Datavyu.getView().getComponent().revalidate();
             Datavyu.getView().getUndoSupport().postEdit(edit);
         } catch (UserWarningException uwe) {
             Datavyu.getApplication().showWarningDialog(uwe);
@@ -534,12 +534,12 @@ implements VariableListener,
             if (me.getX() > columnWidth) {
                 int positions = Math.round((me.getX() * 1F) / (columnWidth * 1F));
 
-                SpreadsheetPanel sp = (SpreadsheetPanel) Datavyu.getApplication().getMainView().getComponent();
+                SpreadsheetPanel sp = (SpreadsheetPanel) Datavyu.getView().getComponent();
                 sp.moveColumnRight(this.getVariable(), positions);
 
             } else if (me.getX() < 0) {
                 int positions = Math.round((me.getX() * -1F) / (columnWidth * 1F));
-                SpreadsheetPanel sp = (SpreadsheetPanel) Datavyu.getApplication().getMainView().getComponent();
+                SpreadsheetPanel sp = (SpreadsheetPanel) Datavyu.getView().getComponent();
 
                 sp.moveColumnLeft(this.getVariable(), positions);
             }

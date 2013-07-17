@@ -436,7 +436,7 @@ public final class VocabEditorV extends DatavyuDialog {
 //                }
             }
             updateDialogState();
-            ((DatavyuView) Datavyu.getApplication().getMainView())
+            ((DatavyuView) Datavyu.getView())
                     .showSpreadsheet();
 
 

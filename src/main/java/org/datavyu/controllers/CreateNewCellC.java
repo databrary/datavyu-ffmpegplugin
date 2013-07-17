@@ -52,7 +52,7 @@ public final class CreateNewCellC {
      */
     public CreateNewCellC() {
         // The spreadsheet is the view for this controller.
-        view = (SpreadsheetPanel) Datavyu.getApplication().getMainView().getComponent();
+        view = (SpreadsheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDB();
     }
 
@@ -93,7 +93,7 @@ public final class CreateNewCellC {
         UndoableEdit edit = new AddCellEdit(v.getName());
 
         // Display any changes.
-        Datavyu.getApplication().getMainView().getComponent().revalidate();
+        Datavyu.getView().getComponent().revalidate();
         // notify the listeners
         Datavyu.getView().getUndoSupport().postEdit(edit);
     }
@@ -109,7 +109,7 @@ public final class CreateNewCellC {
 
             // record the effect
             UndoableEdit edit = new AddCellEdit(v.getName());
-            Datavyu.getApplication().getMainView().getComponent().revalidate();
+            Datavyu.getView().getComponent().revalidate();
             Datavyu.getView().getUndoSupport().postEdit(edit);
         }
 
@@ -130,7 +130,7 @@ public final class CreateNewCellC {
      */
     public CreateNewCellC(final List<Cell> sourceCells,
                           final ArrayDirection direction) {
-        view = (SpreadsheetPanel) Datavyu.getApplication().getMainView().getComponent();
+        view = (SpreadsheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDB();
 
         Cell newCell = null;
@@ -182,7 +182,7 @@ public final class CreateNewCellC {
      */
     public CreateNewCellC(final long milliseconds) {
         // The spreadsheet is the view for this controller.
-        view = (SpreadsheetPanel) Datavyu.getApplication().getMainView().getComponent();
+        view = (SpreadsheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDB();
 
         // BugzID:758 - Before creating a new cell and setting onset. We need
