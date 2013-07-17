@@ -1,16 +1,16 @@
 /**
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.datavyu.controllers;
 
@@ -18,6 +18,8 @@ import org.datavyu.models.db.DatastoreFactory;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.io.*;
+import java.util.List;
+import javax.swing.JOptionPane;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Cell;
@@ -27,22 +29,35 @@ import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Value;
 import org.datavyu.models.db.Variable;
 
-
 /**
  * Controller for opening a database from disk.
  */
 public final class OpenDatabaseFileC {
 
-    /** The index of the ONSET timestamp in the CSV line. */
+    /**
+     * The index of the ONSET timestamp in the CSV line.
+     */
     private static final int DATA_ONSET = 0;
-
-    /** The index of the OFFSET timestamp in the CSV line. */
+    /**
+     * The index of the OFFSET timestamp in the CSV line.
+     */
     private static final int DATA_OFFSET = 1;
-
-    /** The start of the data arguments. */
+    /**
+     * The start of the data arguments.
+     */
     private static final int DATA_INDEX = 2;
-
-    /** The logger for this class. */
+    /**
+     * Value to put into values we cannot read in the event of an error
+     */
+    private static final String error_value = "XXXXX";
+    /**
+     * Bool so we know whether or not we've had an error while reading in a file
+     */
+    private static boolean parse_error = false;
+    
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(OpenDatabaseFileC.class);
 
     /**
@@ -172,7 +187,7 @@ public final class OpenDatabaseFileC {
 
             csvFile.close();
             isr.close();
-	    
+
             return db;
         } catch (IOException e) {
             LOGGER.error("Unable to read line from CSV file", e);
@@ -205,21 +220,21 @@ public final class OpenDatabaseFileC {
 
                     if ((line.charAt(i) == '\\')
                             && (line.charAt(i + 1) == '\\')) {
-                        char[] buff = { '\\' };
+                        char[] buff = {'\\'};
                         result = result.concat(new String(buff));
 
                         // Move over the escape character.
                         i++;
                     } else if ((line.charAt(i) == '\\')
                             && (line.charAt(i + 1) == ',')) {
-                        char[] buff = { ',' };
+                        char[] buff = {','};
                         result = result.concat(new String(buff));
 
                         // Move over the escape character.
                         i++;
                     } else if ((line.charAt(i) == '\\')
                             && (line.charAt(i + 1) == '-')) {
-                        char[] buff = { '-' };
+                        char[] buff = {'-'};
                         result = result.concat(new String(buff));
 
                         // Move over the escape character.
@@ -244,70 +259,69 @@ public final class OpenDatabaseFileC {
      * @param dc The variable that we will be adding cells too.
      *
      * @return The next line in the file that is not part of the block of text
-     *         in the CSV file.
+     * in the CSV file.
      *
      * @throws IOException If unable to read the file correctly.
      */
     /* TODO: PREDICATE VARIABLES CURRENTLY UNSUPPORTED
-    private String parsePredicateVariable(final BufferedReader csvFile,
-                                          final DataColumn dc)
-    throws IOException, SystemErrorException {
+     private String parsePredicateVariable(final BufferedReader csvFile,
+     final DataColumn dc)
+     throws IOException, SystemErrorException {
 
-        // Keep parsing lines and putting them in the newly formed nominal
-        // variable until we get to a line indicating the end of file or a new
-        // variable section.
-        String line = csvFile.readLine();
+     // Keep parsing lines and putting them in the newly formed nominal
+     // variable until we get to a line indicating the end of file or a new
+     // variable section.
+     String line = csvFile.readLine();
 
-        while ((line != null) && Character.isDigit(line.charAt(0))) {
+     while ((line != null) && Character.isDigit(line.charAt(0))) {
 
-            // Split the line into tokens using '\,' '(' & ')' as delimiters.
-            String[] tokens = line.split("[,\\()]");
+     // Split the line into tokens using '\,' '(' & ')' as delimiters.
+     String[] tokens = line.split("[,\\()]");
 
-            // Create the data cell from line in the CSV file.
-            DataCell cell = new DataCell(dc.getDB(), dc.getID(),
-                    dc.getItsMveID());
+     // Create the data cell from line in the CSV file.
+     DataCell cell = new DataCell(dc.getDB(), dc.getID(),
+     dc.getItsMveID());
 
-            // Set the onset and offset from tokens in the line.
-            cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
-            cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
+     // Set the onset and offset from tokens in the line.
+     cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
+     cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
 
-            // Empty predicate - just add the empty data cell.
-            if (tokens.length == DATA_INDEX) {
+     // Empty predicate - just add the empty data cell.
+     if (tokens.length == DATA_INDEX) {
 
-                // Add the populated cell to the database.
-                dc.getDB().appendCell(cell);
+     // Add the populated cell to the database.
+     dc.getDB().appendCell(cell);
 
-            } else {
+     } else {
 
-                // Non empty predicate - need to check if we need to add an
-                // entry to the vocab, and create it if it doesn't exist.
-                // Otherwise we just plow ahead and add the predicate to the
-                // database.
-                PredicateVocabElement pve = dc.getDB().getPredVE(
-                        tokens[DATA_INDEX]);
+     // Non empty predicate - need to check if we need to add an
+     // entry to the vocab, and create it if it doesn't exist.
+     // Otherwise we just plow ahead and add the predicate to the
+     // database.
+     PredicateVocabElement pve = dc.getDB().getPredVE(
+     tokens[DATA_INDEX]);
 
-                Predicate p = new Predicate(dc.getDB(), pve.getID(),
-                        parseFormalArgs(tokens, DATA_INDEX + 1, dc, pve));
-                PredDataValue pdv = new PredDataValue(dc.getDB());
-                pdv.setItsValue(p);
+     Predicate p = new Predicate(dc.getDB(), pve.getID(),
+     parseFormalArgs(tokens, DATA_INDEX + 1, dc, pve));
+     PredDataValue pdv = new PredDataValue(dc.getDB());
+     pdv.setItsValue(p);
 
-                // Insert the datavalue in the cell.
-                long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
-                Matrix m = Matrix.Construct(dc.getDB(), mveId, pdv);
-                cell.setVal(m);
+     // Insert the datavalue in the cell.
+     long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
+     Matrix m = Matrix.Construct(dc.getDB(), mveId, pdv);
+     cell.setVal(m);
 
-                // Add the populated cell to the database.
-                dc.getDB().appendCell(cell);
-            }
+     // Add the populated cell to the database.
+     dc.getDB().appendCell(cell);
+     }
 
-            // Get the next line in the file for reading.
-            line = csvFile.readLine();
-        }
+     // Get the next line in the file for reading.
+     line = csvFile.readLine();
+     }
 
-        return line;
-    }
-    */
-
+     return line;
+     }
+     */
     /**
      * Method to create data values for the formal arguments of a vocab element.
      *
@@ -316,9 +330,22 @@ public final class OpenDatabaseFileC {
      * @param destValue The destination value that we are populating.
      */
     private void parseFormalArgs(final String[] tokens,
-                                 final int startI,
-                                 final Argument destPattern,
-                                 final MatrixValue destValue) {
+            final int startI,
+            final Argument destPattern,
+            final MatrixValue destValue) {
+
+
+        // Check to see if the list of tokens we have here is correct.
+        // If it is not, then mark an error state and do our best to parse.
+        // Fill in missing info with a missing value.
+
+        List<Value> args = destValue.getArguments();
+        if (args.size() != tokens.length - startI) {
+            // We have a problem. Arguments are of different length.
+            // Get as much from the string as we can.
+
+            parse_error = true;
+        }
 
         for (int i = 0; i < destValue.getArguments().size(); i++) {
             Argument fa = destPattern.childArguments.get(i);
@@ -349,8 +376,8 @@ public final class OpenDatabaseFileC {
      * @throws IOException If unable to read the file correctly.
      */
     private String parseMatrixVariable(final BufferedReader csvFile,
-                                       final Variable var,
-                                       final Argument arg) throws IOException {
+            final Variable var,
+            final Argument arg) throws IOException {
         String line = csvFile.readLine();
 
         while ((line != null) && Character.isDigit(line.charAt(0))) {
@@ -391,41 +418,86 @@ public final class OpenDatabaseFileC {
      * @throws IOException If unable to read the file correctly.
      */
     private String parseEntries(final BufferedReader csvFile,
-                                final Variable var,
-                                final EntryPopulator populator)
-    throws IOException {
+            final Variable var,
+            final EntryPopulator populator)
+            throws IOException {
 
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
         // variable section.
         String line = csvFile.readLine();
 
+        boolean error_line = false;
+        int error_count = 0;
+
         while ((line != null) && Character.isDigit(line.charAt(0))) {
 
-            // Split the line into tokens using a comma delimiter.
-            String[] tokens = line.split(",");
+            try {
+                // Split the line into tokens using a comma delimiter.
+                String[] tokens = line.split(",");
 
-            // BugzID: 1075 - If the line ends with an escaped new line - add
-            // the next line to the current text field.
-            while ((line != null) && line.endsWith("\\")
-                    && !line.endsWith("\\\\")) {
+                // BugzID: 1075 - If the line ends with an escaped new line - add
+                // the next line to the current text field.
+                while ((line != null) && line.endsWith("\\")
+                        && !line.endsWith("\\\\")) {
+                    line = csvFile.readLine();
+
+                    String content = tokens[tokens.length - 1];
+                    content = content.substring(0, content.length() - 1);
+                    tokens[tokens.length - 1] = content + '\n' + line;
+                }
+
+                Cell newCell = var.createCell();
+
+                // Set the onset and offset from tokens in the line.
+                newCell.setOnset(tokens[DATA_ONSET]);
+                newCell.setOffset(tokens[DATA_OFFSET]);
+                populator.populate(tokens, newCell.getValue());
+
+                // Get the next line in the file for reading.
                 line = csvFile.readLine();
 
-                String content = tokens[tokens.length - 1];
-                content = content.substring(0, content.length() - 1);
-                tokens[tokens.length - 1] = content + '\n' + line;
+                // Test to see if the new line is an error line
+                if ((line != null) && !Character.isDigit(line.charAt(0))) {
+                    if (testForCorruptLine(line)) {
+                        error_line = true;
+                        error_count += 1;
+                        line = fixCorruptLine(line);
+                        System.out.println("ERROR: " + line);
+                    }
+                }
+            } catch (Exception e) {
+                // TODO: Add in fix here for matrix cells that
+                // are corrupted in the data values
+                e.printStackTrace();
+                error_line = true;
+                error_count += 1;
+                System.out.println("ERROR: " + line);
             }
-
-            Cell newCell = var.createCell();
-
-            // Set the onset and offset from tokens in the line.
-            newCell.setOnset(tokens[DATA_ONSET]);
-            newCell.setOffset(tokens[DATA_OFFSET]);
-            populator.populate(tokens, newCell.getValue());
-
-            // Get the next line in the file for reading.
-            line = csvFile.readLine();
         }
+
+        if(error_line) {
+            JOptionPane.showMessageDialog(null, 
+                "Error reading file. " + String.valueOf(error_count) + 
+                    " cells could not be read.\nRecovered files have time 99:00:00:000.\nPlease send this file to Datavyu Support for further analysis!",
+                "Error reading file: Corrupted cells",
+                JOptionPane.ERROR_MESSAGE);
+        }
+
+        return line;
+    }
+
+    private boolean testForCorruptLine(String line) {
+        String[] tokens = line.split("\\(");
+        if (tokens.length == 2) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private String fixCorruptLine(String line) {
+        line = "99:00:00:000,99:00:00:000," + line;
 
         return line;
     }
@@ -442,8 +514,8 @@ public final class OpenDatabaseFileC {
      * @throws IOException If unable to read from the csvFile.
      */
     private String parseDefinitions(final BufferedReader csvFile,
-                                    final Datastore db)
-    throws IOException {
+            final Datastore db)
+            throws IOException {
 
         // Keep parsing lines and putting them in the newly formed nominal
         // variable until we get to a line indicating the end of file or a new
@@ -455,17 +527,17 @@ public final class OpenDatabaseFileC {
             /*
              * TODO Parsing predicates.
              *
-            // Parse arguments - for predicate vocab element.
-            String[] token = line.split(":|(?<!\\\\)-");
-            PredicateVocabElement pve = new PredicateVocabElement(db,
-                    this.stripEscChars(token[1]));
+             // Parse arguments - for predicate vocab element.
+             String[] token = line.split(":|(?<!\\\\)-");
+             PredicateVocabElement pve = new PredicateVocabElement(db,
+             this.stripEscChars(token[1]));
 
-            for (String arg : token[2].split(",")) {
-                pve.appendFormalArg(parseFormalArgument(arg, db));
-            }
+             for (String arg : token[2].split(",")) {
+             pve.appendFormalArg(parseFormalArgument(arg, db));
+             }
 
-            db.addPredVE(pve);
-            */
+             db.addPredVE(pve);
+             */
 
             // Get the next line in the file for reading.
             line = csvFile.readLine();
@@ -477,7 +549,8 @@ public final class OpenDatabaseFileC {
     /**
      * Method to build a formal argument.
      *
-     * @param content The string holding the formal argument content to be parsed.
+     * @param content The string holding the formal argument content to be
+     * parsed.
      * @param db The parent database for the formal argument.
      *
      * @return The formal argument.
@@ -521,9 +594,9 @@ public final class OpenDatabaseFileC {
      * @throws UserWarningException When we are unable to create a new variable.
      */
     private String parseVariable(final BufferedReader csvFile,
-                                 final String line,
-                                 final Datastore db)
-    throws IOException, UserWarningException {
+            final String line,
+            final Datastore db)
+            throws IOException, UserWarningException {
         return parseVariable(csvFile, line, db, "#2");
     }
 
@@ -542,10 +615,10 @@ public final class OpenDatabaseFileC {
      * @throws UserWarningException When we are unable to create variables.
      */
     private String parseVariable(final BufferedReader csvFile,
-                                 final String line,
-                                 final Datastore ds,
-                                 final String version)
-    throws IOException, UserWarningException {
+            final String line,
+            final Datastore ds,
+            final String version)
+            throws IOException, UserWarningException {
         // Determine the variable name and type.
         String[] tokens = line.split("\\(");
         String varName = this.stripEscChars(tokens[0].trim());
@@ -553,6 +626,8 @@ public final class OpenDatabaseFileC {
         String varComment = "";
         boolean varVisible = true;
 
+        System.out.println(line);
+        System.out.println(tokens.length);
         if (version.equals("#4")) {
             String[] varArgs = tokens[1].split(",");
             varType = varArgs[0];
@@ -561,7 +636,7 @@ public final class OpenDatabaseFileC {
         } else if (version.equals("#3")) {
             varType = tokens[1].substring(0, tokens[1].indexOf(","));
             varVisible = Boolean.parseBoolean(tokens[1].substring(
-                        tokens[1].indexOf(",") + 1, tokens[1].indexOf(")")));
+                    tokens[1].indexOf(",") + 1, tokens[1].indexOf(")")));
         } else {
             varType = tokens[1].substring(0, tokens[1].indexOf(")"));
         }
@@ -589,28 +664,28 @@ public final class OpenDatabaseFileC {
         // Read text variable.
         if (variableType == Argument.Type.TEXT) {
             return parseEntries(csvFile,
-                                newVar,
-                                new PopulateText());
+                    newVar,
+                    new PopulateText());
 
         } else if (variableType == Argument.Type.NOMINAL) {
             // Read nominal variable.
             return parseEntries(csvFile,
-                                newVar,
-                                new PopulateNominal());
+                    newVar,
+                    new PopulateNominal());
 
         }/* else if (getVarType(varType)
-                == MatrixVocabElement.MatrixType.INTEGER) {
-            // Read integer variable.
-            return parseEntries(csvFile,
-                                newVar.getLegacyVariable(),
-                                new PopulateInteger(legacyDb));
+         == MatrixVocabElement.MatrixType.INTEGER) {
+         // Read integer variable.
+         return parseEntries(csvFile,
+         newVar.getLegacyVariable(),
+         new PopulateInteger(legacyDb));
 
-        } else if (getVarType(varType) == MatrixVocabElement.MatrixType.FLOAT) {
-            return parseEntries(csvFile,
-                                newVar.getLegacyVariable(),
-                                new PopulateFloat(legacyDb));
+         } else if (getVarType(varType) == MatrixVocabElement.MatrixType.FLOAT) {
+         return parseEntries(csvFile,
+         newVar.getLegacyVariable(),
+         new PopulateFloat(legacyDb));
 
-        }*/ else if (variableType == Argument.Type.MATRIX) {
+         }*/ else if (variableType == Argument.Type.MATRIX) {
 
             // Read matrix variable - Build vocab for matrix.
             String[] vocabString = tokens[1].split("(?<!\\\\)-");
@@ -631,9 +706,9 @@ public final class OpenDatabaseFileC {
 
             // Read predicate variable.
         } /*else if (getVarType(varType)
-                == MatrixVocabElement.MatrixType.PREDICATE) {
-            return parsePredicateVariable(csvFile, newVar.getLegacyVariable());
-        }*/
+         == MatrixVocabElement.MatrixType.PREDICATE) {
+         return parsePredicateVariable(csvFile, newVar.getLegacyVariable());
+         }*/
 
         throw new IllegalStateException("Unknown variable type.");
     }
@@ -700,16 +775,15 @@ public final class OpenDatabaseFileC {
         @Override
         void populate(final String[] tokens, final Value destValue) {
             /*
-            IntDataValue idv = new IntDataValue(getDatabase());
+             IntDataValue idv = new IntDataValue(getDatabase());
 
-            // BugzID:722 - Only populate the value if we have one from the file
-            if (tokens.length > DATA_INDEX) {
-                idv.setItsValue(tokens[DATA_INDEX]);
-            }
+             // BugzID:722 - Only populate the value if we have one from the file
+             if (tokens.length > DATA_INDEX) {
+             idv.setItsValue(tokens[DATA_INDEX]);
+             }
 
-            return idv;
-            */
-
+             return idv;
+             */
             // TODO: Support integer values.
         }
     }
@@ -728,16 +802,15 @@ public final class OpenDatabaseFileC {
         @Override
         void populate(final String[] tokens, final Value destValue) {
             /*
-            FloatDataValue fdv = new FloatDataValue(getDatabase());
+             FloatDataValue fdv = new FloatDataValue(getDatabase());
 
-            // BugzID:722 - Only populate the value if we have one from the file
-            if (tokens.length > DATA_INDEX) {
-                fdv.setItsValue(tokens[DATA_INDEX]);
-            }
+             // BugzID:722 - Only populate the value if we have one from the file
+             if (tokens.length > DATA_INDEX) {
+             fdv.setItsValue(tokens[DATA_INDEX]);
+             }
 
-            return fdv;
-            */
-
+             return fdv;
+             */
             // TODO - Implement.
         }
     }
