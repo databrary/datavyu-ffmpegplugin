@@ -19,6 +19,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JScrollPane;
 import org.datavyu.Datavyu;
@@ -42,6 +43,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
     // The temporal ratio/scale we are using to display cells.
     double ratio;
+    
+    // Hash of placements by onset
+    HashMap<Long, List<SpreadsheetCell>> onsetToLoc;
+    
+    // Hash of placements by offset
+    HashMap<Long, List<SpreadsheetCell>> offsetToLoc;
 
     /**
      * Information on each element in the row we are currently processing.
@@ -77,6 +84,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         super.layoutContainer(parent);
         
         long overallTime = System.currentTimeMillis();
+        
+        onsetToLoc = new HashMap();
+        offsetToLoc = new HashMap();
 
         // This layout must be applied to a Spreadsheet panel.
         JScrollPane pane = (JScrollPane) parent;
@@ -257,6 +267,17 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 prevLaidCol.setWorkingHeight(prev_b);
                 workingCell.setBeingProcessed(false);
                 
+                if(!onsetToLoc.containsKey(prevLaidCell.getOnsetTicks())) {
+                    onsetToLoc.put(prevLaidCell.getOnsetTicks(), new LinkedList<SpreadsheetCell>());
+                }
+                
+                onsetToLoc.put(prevLaidCell.getOnsetTicks(), 
+                        onsetToLoc.get(prevLaidCell.getOnsetTicks())).add(prevLaidCell);
+//                offsetToLoc.put(prevLaidCell.getOffsetTicks(), 
+//                        offsetToLoc.get(prevLaidCell.getOffsetTicks())).add(prevLaidCell);
+                
+                updatePositions(prevLaidCell.getOnsetTicks());
+                
                 maxHeight = Math.max(prevLaidCell.getY() + prevLaidCell.getHeight(), maxHeight);
             }
             
@@ -299,7 +320,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             
 	    // Start at the current bottom of the column
             int t = workingCol.getWorkingHeight();
-            
+                       
             // Add a front buffer to the cell or align to previous cell
             if(prevLaidCell != null && workingCell.getOnsetTicks() > prevLaidCell.getOnsetTicks()) {
                 if(t < prevLaidCell.getY() + gapSize) {
@@ -385,6 +406,21 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         
     }
     
+    private void updatePositions(long onset) {
+        int largestPos = -1;
+        if(onsetToLoc.containsKey(onset)) {
+            List<SpreadsheetCell> cells = onsetToLoc.get(onset);
+            for(SpreadsheetCell cell : cells) {
+                if(cell.getY() > largestPos) {
+                    largestPos = cell.getY();
+                }
+            }
+            
+            for(SpreadsheetCell cell : cells) {
+                cell.setBounds(0, largestPos, (cell.getWidth() - marginSize), cell.getHeight());
+            }
+        }
+    }
 
     /**
      * Pads all the columns so that they all fill out to the maximum height of
