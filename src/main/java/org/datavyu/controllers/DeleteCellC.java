@@ -42,8 +42,7 @@ public final class DeleteCellC {
         LOGGER.event("delete cells");
 
         // The spreadsheet is the view for this controller.
-        SpreadsheetPanel view = (SpreadsheetPanel) Datavyu.getApplication()
-                                                   .getMainView().getComponent();
+        SpreadsheetPanel view = (SpreadsheetPanel) Datavyu.getView().getComponent();
         view.deselectAll();
 
         for (Cell c : cellsToDelete) {

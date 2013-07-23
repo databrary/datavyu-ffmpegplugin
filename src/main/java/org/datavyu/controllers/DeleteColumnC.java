@@ -41,8 +41,7 @@ public final class DeleteColumnC {
         LOGGER.event("delete columns");
 
         // The spreadsheet is the view for this controller.
-        SpreadsheetPanel view = (SpreadsheetPanel) Datavyu.getApplication()
-                                                   .getMainView().getComponent();
+        SpreadsheetPanel view = (SpreadsheetPanel) Datavyu.getView().getComponent();
         Datastore datastore = Datavyu.getProjectController().getDB();
 
         // Deselect everything.
