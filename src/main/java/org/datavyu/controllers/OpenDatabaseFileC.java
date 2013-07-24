@@ -382,6 +382,18 @@ public final class OpenDatabaseFileC {
 
         while ((line != null) && Character.isDigit(line.charAt(0))) {
 
+            // Remove backslashes if there are more than would be used for 
+            // newline escapes
+            
+            if(line.contains("\\")) {
+                if(line.endsWith("\\\\n") || line.endsWith("\\\\r\\n")) {
+                    line = line.replace("\\", "") + "\\\\n";
+                }
+                else {
+                    line = line.replace("\\", "");
+                }
+            }
+            
             // Split the line into tokens using a comma delimiter.
             String[] tokens = line.split(",");
 
@@ -431,6 +443,18 @@ public final class OpenDatabaseFileC {
         int error_count = 0;
 
         while ((line != null) && Character.isDigit(line.charAt(0))) {
+            
+            // Remove backslashes if there are more than would be used for 
+            // newline escapes
+            
+            if(line.contains("\\")) {
+                if(line.endsWith("\\") || line.endsWith("\\\\")) {
+                    line = line.replace("\\", "") + "\\";
+                }
+                else {
+                    line = line.replace("\\", "");
+                }
+            }
 
             try {
                 // Split the line into tokens using a comma delimiter.

@@ -167,7 +167,7 @@ public final class SaveDatabaseFileC {
                 ps.printf("%s,%s,%s",
                           cell.getOnsetString(),
                           cell.getOffsetString(),
-                          cell.getValueAsString());
+                          cell.getValueAsString().replace("\n", "\\\n"));
                 ps.println();
             }
         }
