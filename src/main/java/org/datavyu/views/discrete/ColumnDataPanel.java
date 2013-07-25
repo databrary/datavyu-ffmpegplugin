@@ -221,6 +221,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     public void setHeight(final int height) {
         columnHeight = height;
+        setMaximumSize(new Dimension(columnWidth, columnHeight*2));
     }
 
     /**
