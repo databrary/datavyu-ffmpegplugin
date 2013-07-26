@@ -392,14 +392,14 @@ public final class DatavyuView extends FrameView
         }
 
         String projectName = projectController.getProjectName();
-
-        if (projectName != null) {
-            mainFrame.setTitle(rMap.getString("Application.title") + " - "
-                + projectName + extension + postFix);
-        } else {
-            mainFrame.setTitle(rMap.getString("Application.title") + " - "
-                + "Project1" + extension + postFix);
+        if (projectName == null) {
+            projectName = "Project1";
         }
+
+        String title = rMap.getString("Application.title") + " - " + projectName + extension + postFix;
+
+        mainFrame.setTitle(title);
+        this.getFrame().setTitle(title);
     }
 
     /**
