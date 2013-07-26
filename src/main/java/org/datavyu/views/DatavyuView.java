@@ -816,13 +816,21 @@ public final class DatavyuView extends FrameView
             clearSpreadsheet();
 
             progressBar.setProgress(10, "Opening project");
+            boolean open_success = false;
             if ((filter == SHAPAFilter.INSTANCE)  || (filter == OPFFilter.INSTANCE)) {
                 // Opening a project or project archive file
-                openProject(jd.getSelectedFile());
+                open_success = openProject(jd.getSelectedFile());
             } else {
                 // Opening a database file
-                openDatabase(jd.getSelectedFile());
+                open_success = openDatabase(jd.getSelectedFile());
             }
+
+            if (!open_success)
+            {
+                progressBar.setError("Error opening project!");
+                return null;
+            }
+
             progressBar.setProgress(40, "Project opened");
 
             // BugzID:449 - Set filename in spreadsheet window and database if the database name is undefined.
@@ -905,27 +913,30 @@ public final class DatavyuView extends FrameView
 
 
 
-    private void openDatabase(final File databaseFile) {
+    private boolean openDatabase(final File databaseFile) {
 
         // Set the database to the freshly loaded database.
         OpenC openC = new OpenC();
         openC.openDatabase(databaseFile);
 
         // Make a project for the new database.
-        Datavyu.newProjectController();
+        if (openC.getDatastore() != null) {
+            Datavyu.newProjectController();
 
-        ProjectController projController = Datavyu.getProjectController();
+            ProjectController projController = Datavyu.getProjectController();
 
-        projController.setDatastore(openC.getDatastore());
-        projController.setProjectDirectory(databaseFile.getParent());
-        projController.setDatabaseFileName(databaseFile.getName());
+            projController.setDatastore(openC.getDatastore());
+            projController.setProjectDirectory(databaseFile.getParent());
+            projController.setDatabaseFileName(databaseFile.getName());
 
-        // Reset the undo manager
-        resetUndoManager();
-
+            // Reset the undo manager
+            resetUndoManager();
+            return true;
+        }
+        return false;
     }
 
-    private void openProject(final File projectFile) {
+    private boolean openProject(final File projectFile) {
         OpenC openC = new OpenC();
         openC.openProject(projectFile);
 
@@ -937,7 +948,10 @@ public final class DatavyuView extends FrameView
 
             // Reset the undo manager
             resetUndoManager();
+
+            return true;
         }
+        return false;
     }
 
     /**

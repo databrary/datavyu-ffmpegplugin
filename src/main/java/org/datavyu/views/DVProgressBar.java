@@ -4,8 +4,9 @@
  */
 package org.datavyu.views;
 
-import javax.swing.SwingUtilities;
+import java.awt.Font;
 import java.util.Date;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -13,6 +14,7 @@ import java.util.Date;
  */
 public class DVProgressBar extends javax.swing.JDialog {
 
+    private boolean m_error;
     private boolean m_cancel;
     private int     m_progress;
     private long    m_start_time_msec;
@@ -23,6 +25,7 @@ public class DVProgressBar extends javax.swing.JDialog {
     public DVProgressBar(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        m_error    = false;
         m_cancel   = false;
         m_progress = 0;
         jProgressBar.setIndeterminate(true);
@@ -44,6 +47,18 @@ public class DVProgressBar extends javax.swing.JDialog {
             }
         });
         return m_cancel;
+    }
+
+    public void setError(final String update)
+    {
+        setProgress(m_progress, update);
+        m_error = true;
+        jLabel_message.setText(update);
+        jLabel_message.setFont(new Font(jLabel_message.getFont().getName(), Font.BOLD, jLabel_message.getFont().getSize()));
+        jButton_cancel.setText("Close");
+        this.setVisible(false);  // Toggling the visibility is necessary to change the modal status.
+        this.setModal(true);
+        this.setVisible(true);
     }
 
     public void setIndeterminate(final boolean indeterminate) {
@@ -75,18 +90,18 @@ public class DVProgressBar extends javax.swing.JDialog {
     private void initComponents() {
 
         jProgressBar = new javax.swing.JProgressBar();
-        jLabel1 = new javax.swing.JLabel();
+        jLabel_message = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea = new javax.swing.JTextArea();
         jButton_cancel = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setResizable(false);
 
         jProgressBar.setIndeterminate(true);
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        jLabel1.setText("Running...");
+        jLabel_message.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel_message.setText("Running...");
 
         jTextArea.setEditable(false);
         jTextArea.setColumns(20);
@@ -110,7 +125,7 @@ public class DVProgressBar extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addComponent(jLabel_message)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton_cancel))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
@@ -121,7 +136,7 @@ public class DVProgressBar extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
+                    .addComponent(jLabel_message)
                     .addComponent(jButton_cancel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -136,6 +151,9 @@ public class DVProgressBar extends javax.swing.JDialog {
     private void jButton_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_cancelActionPerformed
         m_cancel = true;
         jTextArea.append(String.format("Aborting..."));
+        if (m_error) {
+            close();
+        }
     }//GEN-LAST:event_jButton_cancelActionPerformed
 
     /**
@@ -181,7 +199,7 @@ public class DVProgressBar extends javax.swing.JDialog {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_cancel;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel_message;
     private javax.swing.JProgressBar jProgressBar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea;
