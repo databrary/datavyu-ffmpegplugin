@@ -14,17 +14,12 @@
  */
 package org.datavyu.views;
 
-import java.awt.Color;
 import javax.swing.GroupLayout;
-
-import javax.swing.JLabel;
-
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
-
+import javax.swing.JTextPane;
 import org.datavyu.Build;
 import org.datavyu.Datavyu;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
 
 public class AboutV extends DatavyuDialog {
@@ -36,9 +31,11 @@ public class AboutV extends DatavyuDialog {
         setName(this.getClass().getSimpleName());
 
         BackgroundPanel p = new BackgroundPanel("/icons/splash.png");
-
-        JLabel version = new JLabel();
-        version.setForeground(new Color(119, 187, 33));
+        JTextPane version = new JTextPane();
+        version.setContentType("text/html");
+        version.setEditable(false);
+        version.setBorder(null);
+        version.setOpaque(false);
 
         ResourceMap bMap = Application.getInstance(Datavyu.class).getContext()
             .getResourceMap(Build.class);
@@ -46,8 +43,8 @@ public class AboutV extends DatavyuDialog {
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
             .getResourceMap(Datavyu.class);
 
-        version.setText("<html>" + rMap.getString("Application.version")
-            + "<br>" + bMap.getString("Application.build") + "</html>");
+        version.setText("<html><div style=\"color:#77BB21\">" + rMap.getString("Application.version")
+            + "<br>" + bMap.getString("Application.build") + "</span></html>");
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
