@@ -145,6 +145,8 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem ShowAllVariablesMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem updateMenuItem;
+    private javax.swing.JMenuItem supportMenuItem;
+    private javax.swing.JMenuItem guideMenuItem;
     private javax.swing.JMenuItem changeVarNameMenuItem;
     private javax.swing.JMenu controllerMenu;
     private javax.swing.JMenuItem deleteCellMenuItem;
@@ -1018,6 +1020,20 @@ public final class DatavyuView extends FrameView
     }
 
     /**
+     * Action for opening the support site
+     */
+    @Action public void openSupportSite() {
+        Datavyu.getApplication().openSupportSite();
+    }
+
+    /**
+     * Action for opening the guide
+     */
+    @Action public void openGuideSite() {
+        Datavyu.getApplication().openGuideSite();
+    }
+
+    /**
      * Action for showing the update window.
      */
     @Action public void showUpdateWindow() {
@@ -1315,6 +1331,8 @@ public final class DatavyuView extends FrameView
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
         updateMenuItem = new javax.swing.JMenuItem();
+        supportMenuItem = new javax.swing.JMenuItem();
+        guideMenuItem = new javax.swing.JMenuItem();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -1640,6 +1658,20 @@ public final class DatavyuView extends FrameView
         if (Datavyu.getPlatform() != Platform.MAC) {
             helpMenu.add(aboutMenuItem);
         }
+
+        supportMenuItem.setAction(actionMap.get("openSupportSite"));
+        supportMenuItem.setName("supportMenuItem");
+        //TODO - don't add this on Macs.  Instead it will be in the "Application Menu"
+        //if (Datavyu.getPlatform() != Platform.MAC) {
+            helpMenu.add(supportMenuItem);
+        //}
+
+        guideMenuItem.setAction(actionMap.get("openGuideSite"));
+        guideMenuItem.setName("guideMenuItem");
+        //TODO - don't add this on Macs.  Instead it will be in the "Application Menu"
+        //if (Datavyu.getPlatform() != Platform.MAC) {
+            helpMenu.add(guideMenuItem);
+        //}
 
         updateMenuItem.setAction(actionMap.get("showUpdateWindow")); // NOI18N
         updateMenuItem.setName("updateMenuItem"); // NOI18N

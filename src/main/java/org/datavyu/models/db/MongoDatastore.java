@@ -203,6 +203,7 @@ public class MongoDatastore implements Datastore {
 //                                              "-v",
                                               "--dbpath", mongoD.getAbsolutePath(),
 //                                              "--logpath", mongoD.getAbsolutePath() + "/mongolog.txt",
+                                              "--bind_ip", "127.0.0.1",
                                               "--port", String.valueOf(port),
                                               "--directoryperdb").start();
 //            InputStream in = mongoProcess.getInputStream();

@@ -103,6 +103,18 @@ public class MacHandler {
                     Method setHandled = ae.getMethod("setHandled",
                             boolean.class);
                     setHandled.invoke(args[0], true);
+                } else if (method.getName().equals("handleSupportOpen")) {
+                    Datavyu.getApplication().openSupportSite();
+
+                    Method setHandled = ae.getMethod("setHandled",
+                            boolean.class);
+                    setHandled.invoke(args[0], true);
+                } else if (method.getName().equals("handleGuideOpen")) {
+                    Datavyu.getApplication().openGuideSite();
+
+                    Method setHandled = ae.getMethod("setHandled",
+                            boolean.class);
+                    setHandled.invoke(args[0], true);
                 } else if (method.getName().equals("handleUpdate")) {
                     Datavyu.getApplication().showUpdateWindow();
 

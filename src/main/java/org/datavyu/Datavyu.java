@@ -540,6 +540,36 @@ implements KeyEventDispatcher, TitleNotifier {
     }
 
     /**
+     * Action for opening the support site
+     */
+    public void openSupportSite()
+    {
+        String url = "http://www.datavyu.org/support";
+
+        try {
+          java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+        }
+        catch (java.io.IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * Action for opening the guide site
+     */
+    public void openGuideSite()
+    {
+        String url = "https://github.com/databrary/datavyu/wiki";
+
+        try {
+          java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+        }
+        catch (java.io.IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
      * Action for showing the about window.
      */
     public void showUpdateWindow() {
