@@ -132,8 +132,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     private void init() throws IOException {
         Datavyu.getApplication().show(ConsoleV.getInstance());
         console = ConsoleV.getInstance().getConsole();
+        
         consoleOutputStream = new PipedInputStream();
-
         sIn = new PipedOutputStream(consoleOutputStream);
         consoleWriter = new PrintWriter(sIn);
     }
@@ -155,7 +155,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 	
 	// Close the output stream to kill our reader thread
 	try {
-	    consoleOutputStream.close();
+            consoleWriter.flush();
+//	    consoleOutputStream.close();
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}
@@ -166,8 +167,14 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     private void runRubyScript(File scriptFile) {
 	    ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
 	    rubyEngine.getContext().setWriter(consoleWriter);
+            rubyEngine.getContext().setErrorWriter(consoleWriter);
             try {
-			
+                consoleWriter.println("\n*************************");
+		consoleWriter.println("\nRunning Script: " + scriptFile.getName());
+                consoleWriter.println("*************************");
+
+                consoleWriter.flush();
+                
                 // Place reference to various Datavyu functionality.
                 rubyEngine.put("db", Datavyu.getProjectController().getDB());
                 rubyEngine.put("pj", Datavyu.getProjectController().getProject());
@@ -176,6 +183,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
                 FileReader reader = new FileReader(scriptFile);
                 rubyEngine.eval(reader);
+                consoleWriter.flush();
+
                 reader = null;
 		
                 // Remove references.
@@ -185,11 +194,14 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 rubyEngine.put("viewers", null);
 		
 		consoleWriter.println("\nScript completed successfully.");
+                consoleWriter.flush();
 
             } catch (ScriptException e) {
-                consoleWriter.println("***** SCRIPT ERRROR *****");
+                consoleWriter.flush();
+                consoleWriter.println("***** SCRIPT ERROR *****");
                 consoleWriter.println("@Line " + e.getLineNumber() + ":\n   '"
                     + e.getMessage() + "'");
+                
                 consoleWriter.println("*************************");
                 consoleWriter.flush();
 		
@@ -349,8 +361,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     @Override protected void done() {
 
         // Display any changes.
-        DatavyuView view = (DatavyuView) Datavyu.getApplication()
-            .getMainView();
+        DatavyuView view = (DatavyuView) Datavyu.getView();
         view.showSpreadsheet();
     }
 
@@ -396,6 +407,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 }
             } catch (IOException e) {
                 LOGGER.error("Unable to run console thread.", e);
+                e.printStackTrace();
             }
         }
     }
