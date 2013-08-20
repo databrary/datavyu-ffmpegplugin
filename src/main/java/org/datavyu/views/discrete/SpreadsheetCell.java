@@ -293,6 +293,7 @@ implements MouseListener, FocusListener, CellListener {
      * @return The cell that this view element represents.
      */
     public Cell getCell() {
+        model = model.getFreshCell();
         return model;
     }
 
@@ -360,6 +361,8 @@ implements MouseListener, FocusListener, CellListener {
      */
     @Deprecated
     public void selectCellInDB(final boolean sel) {
+        model = model.getFreshCell();
+        
         // Set the selection within the database.
         model.setSelected(sel);
 
@@ -584,6 +587,8 @@ implements MouseListener, FocusListener, CellListener {
     // *************************************************************************
     @Override
     public void focusGained(final FocusEvent e) {
+        model = model.getFreshCell();
+        
         if (model.isHighlighted() && (cellPanel.getBorder().equals(NORMAL_BORDER)
                             || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
             model.setSelected(true);
