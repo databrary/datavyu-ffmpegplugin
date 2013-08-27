@@ -1,9 +1,10 @@
 #-------------------------------------------------------------------
-# Datavyu API v 1.02
+# Datavyu API v 1.03
 
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 1.03 08/27/13 - Fixed makeReliability and change_arg functions so they behave properly
 # 1.02 07/07/13 - Fixed functions involving createVariable.
 # 1.01 03/13/12 - Fixed the set variable function so it now correctly writes back to
 #                 mongodb
@@ -295,6 +296,7 @@ class RVariable
             c.onset = cell["onset"]
             c.offset = cell["offset"]
             c.db_cell = cell
+            c.parent = @name
             vals = Array.new
             if cell["type"] == 0
                 for val in cell.getValue().getArguments()
@@ -398,7 +400,6 @@ class RVariable
        end
 
        @dirty = true
-
    end
 
 end
@@ -473,6 +474,7 @@ def setVariable(*args)
        var = args[1]
        name = args[0]
    end
+   
    # If substantial changes have been made to the structure of the column,
     # just delete the whole thing first.
    # If the column was dirty, redo the vocab too
@@ -501,7 +503,7 @@ def setVariable(*args)
    end
 
    if var.dirty
-       #delete_column(name)
+       # deleteVariable(name)
        # If the variable is dirty, then we have to do something to the vocab.
        # Compare the variable's vocab and the Ruby cell version to see
        # what is different.
@@ -549,6 +551,7 @@ def setVariable(*args)
                # If we didn't find dbarg in old_args, then we must
                # have deleted it. Remove the argument from the DB
                if flag == false
+                   puts "DELETING ARG:" + dbarg["name"]
                    var.db_var.removeArgument(dbarg["name"])
                    var.db_var.save()
                end
@@ -563,7 +566,7 @@ def setVariable(*args)
    for cell in var.cells
       # Copy the information from the ruby variable to the new cell
 
-      if cell.db_cell == nil or cell.parent != var.name
+      if cell.db_cell == nil or cell.parent != name
           cell.db_cell = var.db_var.createCell()
           cell.db_cell.save()
       end
@@ -585,7 +588,8 @@ def setVariable(*args)
               # Find the arg in the db's arglist that we are looking for
               for i in 0...values.size
                   dbarg = values[i]
-                  if dbarg.toString() == "<"+arg+">" and not ["", nil].include?(cell.get_arg(arg))
+                  dbarg_name = dbarg.getName()
+                  if dbarg_name == arg and not ["", nil].include?(cell.get_arg(arg))
                       dbarg.set(cell.get_arg(arg))
                       dbarg.save()
                       break
@@ -708,7 +712,16 @@ def make_rel(relname, var_to_copy, multiple_to_keep, *args_to_keep)
 end
 def makeReliability(relname, var_to_copy, multiple_to_keep, *args_to_keep)
    # Get the primary variable from the DB
-   var_to_copy = getVariable(var_to_copy)
+
+   if var_to_copy.class == String
+    var_to_copy = getVariable(var_to_copy)
+   else
+    var_to_copy = getVariable(var_to_copy.name)
+   end
+
+   if args_to_keep[0].class == Array
+      args_to_keep = args_to_keep[0]
+   end
 
    # Clip down cells to fit multiple to keep
    for i in 0..var_to_copy.cells.length-1
@@ -1440,12 +1453,12 @@ def deleteVariable(colname)
    if colname.class != "".class
      colname = colname.name
    end
-   col = $db.get_column(colname)
-   numcells = col.get_num_cells
-   numcells.downto(1) do |i|
-      $db.remove_cell($db.get_cell(col.get_id, i).get_id)
+   col = $db.getVariable(colname)
+   cells = col.getCells()
+   for cell in cells
+      $db.removeCell(cell)
    end
-   $db.remove_column(col.get_id)
+   $db.removeVariable(col)
 end
 
 
@@ -1996,5 +2009,50 @@ end
 
 begin
     #$debug=true
+    # Create test variables
+    
+    vars = getVariableList()
+    for var in vars
+      deleteVariable(var)
+    end
+    test = createNewVariable("test", "arg1", "arg2")
 
+    for i in 0..5
+      cell = test.create_cell()
+      cell.change_arg("onset", i * 1000)
+    end
+
+    setVariable(test)
+
+    # Test changing arguments
+    test = getVariable("test")
+
+    arg = 0
+    for cell in test.cells
+      arg = arg + 1
+      cell.change_arg("arg1", arg.to_s)
+    end
+
+    setVariable("test2", test)
+    
+    test = getVariable("test2")
+    
+    arg = 5
+    for cell in test.cells
+      arg = arg + 1
+      cell.change_arg("arg1", arg.to_s)
+    end
+    
+    setVariable("test2", test)
+
+    makeReliability("reltest", "test", 2, ["onset"])
+
+    # test.change_arg_name("arg1", "lolwat")
+
+    # test.add_arg("test1")
+    # setVariable(test)
+
+    test = getVariable("test2")
+    test.remove_arg("arg1")
+    setVariable(test)
 end
