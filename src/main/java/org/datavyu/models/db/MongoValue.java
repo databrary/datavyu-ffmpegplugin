@@ -85,6 +85,10 @@ public abstract class MongoValue extends BasicDBObject implements Value, Seriali
         return getParentVariable().getVariableType().childArguments.get(index).name;
     }
     
+    public String getName() {
+        return (String)getArgName((Integer)this.get("index"));
+    }
+    
     public abstract void save();
     
     @Override
