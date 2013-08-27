@@ -25,26 +25,19 @@ package org.datavyu.models.db;
 import com.mongodb.*;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.datavyu.Datavyu;
-import org.datavyu.models.db.Argument;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.DatastoreListener;
-import org.datavyu.models.db.TitleNotifier;
-import org.datavyu.models.db.UserWarningException;
-import org.datavyu.models.db.Variable;
 import org.datavyu.util.NativeLoader;
 
 /**
@@ -55,7 +48,7 @@ public class MongoDatastore implements Datastore {
     // The logger for the mongo datastore -- Can't use in startMongo because
     // UserMetrix has not been initalised yet
     private static Logger LOGGER = UserMetrix.getLogger(MongoDatastore.class);
-
+    
     // The process for the mongo executable kicking around in the background.
     private static Process mongoProcess;
 
@@ -198,11 +191,19 @@ public class MongoDatastore implements Datastore {
             File mongoD = new File(mongoDir);
 //            int port = findFreePort(27019);
 	    int port = 27019;
+            
+            
+            // Try to shut down the server if it is already running
+            try {
+                mongoDriver = new Mongo("127.0.0.1", port);
+                DB db = mongoDriver.getDB("admin");
+                db.command(new BasicDBObject( "shutdownServer" , 1  ));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             mongoProcess = new ProcessBuilder(f.getAbsolutePath(),
-//                                              "-v",
                                               "--dbpath", mongoD.getAbsolutePath(),
-//                                              "--logpath", mongoD.getAbsolutePath() + "/mongolog.txt",
                                               "--bind_ip", "127.0.0.1",
                                               "--port", String.valueOf(port),
                                               "--directoryperdb").start();
