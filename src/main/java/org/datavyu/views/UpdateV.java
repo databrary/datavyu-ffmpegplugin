@@ -78,6 +78,10 @@ public class UpdateV extends javax.swing.JDialog {
     public boolean IgnoreVersion() {
         Configuration config = Configuration.getInstance();
         String ignoreVersion = config.getIgnoreVersion();
+        
+        if(ignoreVersion == null || m_server == null) {
+            return false;
+        }
 
         return (ignoreVersion.equals(m_server.version));
     }
