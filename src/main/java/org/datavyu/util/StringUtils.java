@@ -47,6 +47,6 @@ public final class StringUtils {
         }
 
         // Remove all control characters
-        return result.replaceAll("[\u0000-\u001f]", "");
+        return result.replaceAll("[\u0000-\u0001]", "");
     }
 }
