@@ -167,7 +167,7 @@ public final class SaveDatabaseFileC {
                 ps.printf("%s,%s,%s",
                           cell.getOnsetString(),
                           cell.getOffsetString(),
-                          StringUtils.escapeCSV(cell.getValueAsString()));
+                          StringUtils.escapeCSVArgument(cell.getValueAsString()));
                 ps.println();
             }
         }

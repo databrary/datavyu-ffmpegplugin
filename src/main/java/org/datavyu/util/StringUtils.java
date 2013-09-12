@@ -49,4 +49,29 @@ public final class StringUtils {
         // Remove all control characters
         return result.replaceAll("[\u0000-\u0001]", "");
     }
+    
+    public static String escapeCSVArgument(final String input) {
+        String result = "";
+
+        for (int n = 0; n < input.length(); n++) {
+            if (input.charAt(n) == '\\') {
+                char[] buff = {'\\', '\\'};
+                result = result.concat(new String(buff));
+            } else if (input.charAt(n) == '\n') {
+                char[] buff = {'\\', '\n'};
+                result = result.concat(new String(buff));
+            } else if (input.charAt(n) == '\r') {
+                char[] buff = {'\\', '\n'};
+                result = result.concat(new String(buff));
+            } else if (input.charAt(n) == '-') {
+                char[] buff = {'\\', '-'};
+                result = result.concat(new String(buff));
+            } else {
+                result += input.charAt(n);
+            }
+        }
+
+        // Remove all control characters
+        return result.replaceAll("[\u0000-\u0001]", "");
+    }
 }
