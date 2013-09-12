@@ -34,7 +34,9 @@
       <key>SplashFile</key>
       <string>$JAVAROOT/../splash.png</string>
       <key>VMOptions</key>
-      <string>-Xms1024m -Xmx2048m -XX:MaxDirectMemorySize=512M</string>
+      <!--<string>-Xms1024m -Xmx2048m -XX:MaxDirectMemorySize=512M</string>-->
+      <string>-Xms1024m -Xmx1280m -XX:MaxDirectMemorySize=512M</string>
+
       <key>ClassPath</key>
       <array>
         <string>$JAVAROOT/repo/org/datavyu/datavyu/1.0/datavyu-1.0.jar</string>
