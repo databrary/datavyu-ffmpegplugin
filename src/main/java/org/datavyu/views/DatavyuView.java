@@ -228,7 +228,7 @@ public final class DatavyuView extends FrameView
 
                     // Pass the keyevent onto the keyswitchboard so that it can
                     // route it to the correct action.
-                    spreadsheetMenuSelected(null);
+//                    spreadsheetMenuSelected(null);
 
                     return Datavyu.getApplication().dispatchKeyEvent(evt);
                 }
@@ -1423,7 +1423,7 @@ public final class DatavyuView extends FrameView
         spreadsheetMenu.setName("spreadsheetMenu"); // NOI18N
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
-                spreadsheetMenuSelected(evt);
+//                spreadsheetMenuSelected(evt);
             }
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
