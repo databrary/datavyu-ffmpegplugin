@@ -197,7 +197,8 @@ public class MongoDatastore implements Datastore {
             try {
                 mongoDriver = new Mongo("127.0.0.1", port);
                 DB db = mongoDriver.getDB("admin");
-                db.command(new BasicDBObject( "shutdownServer" , 1  ));
+                CommandResult res = db.command(new BasicDBObject( "shutdown" , 1  ));
+                System.out.println(res.getErrorMessage());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -262,7 +263,8 @@ public class MongoDatastore implements Datastore {
     public static void stopMongo() {
         try {
             DB db = mongoDriver.getDB("admin");
-            db.command(new BasicDBObject( "shutdownServer" , 1  ));
+            CommandResult res = db.command(new BasicDBObject( "shutdown" , 1  ));
+            System.out.println(res.toString());
             running = false;
             mongoDriver.close();
             
