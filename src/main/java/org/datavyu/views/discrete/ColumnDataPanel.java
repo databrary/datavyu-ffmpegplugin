@@ -306,8 +306,6 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
             return false;
         }
 	
-	System.out.println(e.getKeyCode());
-
         SpreadsheetCell[] components = this.getCellsTemporally().toArray(new SpreadsheetCell[0]);
         int numCells = components.length;
 
@@ -423,6 +421,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                             ec.setCaretPosition(newPos);
                             sc.requestFocus();
                             sc.getCell().setHighlighted(true);
+                            cellSelectionL.clearCellSelection();
                             cellSelectionL.setHighlightedCell(sc);
 
                             e.consume();
@@ -430,6 +429,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                             return true;
                         }
                     } catch (BadLocationException be) {
+                        be.printStackTrace();
                         LOGGER.error("BadLocation on arrow up", be);
                     }
                 }
