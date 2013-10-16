@@ -843,7 +843,7 @@ public final class VocabEditorV extends DatavyuDialog {
                     statusBar.setText("Add a new predicate definition. Hotkey: ctrl + P");
                 }
                 else if(component.equals("addMatrixButton")){
-                    statusBar.setText("Add a new matrix variable. Hotkey: ctrl + M");
+                    statusBar.setText("Add a new matrix column. Hotkey: ctrl + M");
                 }
                 else if(component.equals("undoButton")){
                     statusBar.setText("Undo a series of changes. Hotkey: ctrl + Z");
@@ -852,22 +852,22 @@ public final class VocabEditorV extends DatavyuDialog {
                     statusBar.setText("Redo any undone changes. Hotkey: ctrl + Y");
                 }
                 else if(component.equals("addArgButton")){
-                    statusBar.setText("Add a new argument to a variable. Hotkey: ctrl + A");
+                    statusBar.setText("Add a new argument to a column. Hotkey: ctrl + A");
                 }
                 else if(component.equals("deleteButton")){
-                    statusBar.setText("Delete an argument or variable. Hotkey: ctrl + delete");
+                    statusBar.setText("Delete an argument or column. Hotkey: ctrl + delete");
                 }
                 else if(component.equals("moveArgLeftButton")){
-                    statusBar.setText("Move an argument left within a variable. Hotkey: ctrl + <-");
+                    statusBar.setText("Move an argument left within a column. Hotkey: ctrl + <-");
                 }
                 else if(component.equals("applyButton")){
                     statusBar.setText("Apply changes to the vocab elements. Hotkey: ctrl + S");
                 }
                 else if(component.equals("varyArgCheckBox")){
-                    statusBar.setText("Let the variable have a varying number of arguments.");
+                    statusBar.setText("Let the column have a varying number of arguments.");
                 }
                 else if(component.equals("moveArgRightButton")){
-                    statusBar.setText("Move an argument right within a variable. Hotkey: ctrl + ->");
+                    statusBar.setText("Move an argument right within a column. Hotkey: ctrl + ->");
                 }
                 else if(component.equals("okButton")){
                     statusBar.setText("Save changes and close the window.");

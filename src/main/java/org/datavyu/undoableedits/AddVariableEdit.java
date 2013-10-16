@@ -42,7 +42,7 @@ public class AddVariableEdit extends VocabEditorEdit {
 
     @Override
     public String getPresentationName() {
-        return "New Variable \"" + varName + "\"";
+        return "New Column \"" + varName + "\"";
     }
 
     @Override
@@ -53,7 +53,7 @@ public class AddVariableEdit extends VocabEditorEdit {
             model.createVariable(varName, varType);
 
         } catch (UserWarningException e) {
-             LOGGER.error("Unable to redo New Variable.", e);
+             LOGGER.error("Unable to redo New Column.", e);
         }
     }
 
