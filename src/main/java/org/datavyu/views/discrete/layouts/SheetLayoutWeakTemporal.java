@@ -76,7 +76,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     @Override
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
-
+        
         long overallTime = System.currentTimeMillis();
 
         onsetToLoc = new HashMap();
@@ -242,7 +242,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
 
             // Does the top of this cell overlap with the previously laid cell?
-            // If so, adjust the top a little bit so the two are overlapping
+            // If so, adjust the top a little bit so the two are not overlapping
             if (prevLaidCell != null
                     && workingCell.getOnsetTicks() < prevLaidCell.getOffsetTicks()
                     && workingCell.getOffsetTicks() != prevLaidCell.getOffsetTicks()) {
@@ -318,16 +318,17 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
             // Start at the current bottom of the column
             int t = workingCol.getWorkingHeight();
-
+            
             // Add a front buffer to the cell or align to previous cell
             if (prevLaidCell != null && workingCell.getOnsetTicks() > prevLaidCell.getOnsetTicks()) {
                 if (t < prevLaidCell.getY() + gapSize) {
                     t = prevLaidCell.getY() + gapSize;
                 }
             }
-//            else if(prevLaidCell != null && workingCell.getOnsetTicks() == prevLaidCell.getOffsetTicks()) {
-//                t = prevLaidCell.getY() + prevLaidCell.getHeight();
-//            }
+            
+            if(prevLaidCell != null && workingCell.getOnsetTicks() >= prevLaidCell.getOffsetTicks()) {
+                t = prevLaidCell.getY() + prevLaidCell.getHeight();
+            }
 
             // Check to see if there is a gap between these two cells.
             // If so, then use the top of the prevCell + gapsize to lay this one out.
@@ -339,9 +340,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     prevColCellOffset = -1;
                 }
                 if (prevLaidCol == workingCol) {
-                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + 10;
+                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + gapSize;
                 } else if (prevColCellOffset == -1 || workingCell.getOnsetTicks() - prevColCellOffset > 1) {
-                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + 10;
+                    t = prevLaidCell.getY() + prevLaidCell.getHeight() + gapSize;
                 }
 
             }
@@ -417,7 +418,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             }
 
             for (SpreadsheetCell cell : cells) {
-
                 int bottom = cell.getY() + cell.getHeight();
                 cell.setBounds(0, largestPos, (cell.getWidth() - marginSize), bottom - largestPos);
 
