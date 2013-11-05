@@ -629,7 +629,7 @@
               <mainClass>org.datavyu.Datavyu</mainClass>
                 <preCp>jna-3.4.1.jar</preCp>
                 <preCp>jruby-engine-1.1.6.jar</preCp>
-                <preCp>mongodb-java-driver-2.10.1.jar</preCp>
+                <preCp>mongodb-java-driver-2.11.3.jar</preCp>
                 <preCp>jruby-complete-1.6.5.jar</preCp>
                 <preCp>appframework-1.0.3.jar</preCp>
                 <preCp>datavyu-lib-0.0.81.jar</preCp>
@@ -687,7 +687,7 @@
     <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongo-java-driver</artifactId>
-        <version>2.10.1</version>
+        <version>2.11.3</version>
     </dependency>
 
     <dependency>

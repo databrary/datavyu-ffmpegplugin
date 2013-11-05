@@ -203,11 +203,15 @@ public class MongoDatastore implements Datastore {
                 e.printStackTrace();
             }
 
+            System.out.println(f.getAbsolutePath());
+            System.out.println(Datavyu.getApplication().getContext().getLocalStorage().getDirectory().getAbsolutePath());
+            Datavyu.getApplication().getContext().getLocalStorage().getDirectory().mkdirs();
             mongoProcess = new ProcessBuilder(f.getAbsolutePath(),
                                               "--dbpath", mongoD.getAbsolutePath(),
                                               "--bind_ip", "127.0.0.1",
                                               "--port", String.valueOf(port),
-                                              "--directoryperdb").start();
+                                              "--directoryperdb",
+                                              "--logpath", Datavyu.getApplication().getContext().getLocalStorage().getDirectory().getAbsolutePath() + "\\mongodb.log").start();
 //            InputStream in = mongoProcess.getInputStream();
 //            InputStreamReader isr = new InputStreamReader(in);
 
@@ -234,7 +238,15 @@ public class MongoDatastore implements Datastore {
             DBCollection textCollection = mongoDB.getCollection("text_values");
             textCollection.setObjectClass(MongoTextValue.class);
 
-
+            boolean started = false;
+            while(!started) {
+                try {
+                    mongoDriver.getDB("admin").getStats();
+                    started = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
             System.out.println("Got DB");
             running = true;
