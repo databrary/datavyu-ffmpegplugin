@@ -74,6 +74,9 @@ import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.List;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
@@ -401,8 +404,20 @@ public final class DatavyuView extends FrameView
         String title = rMap.getString("Application.title") + " - " + projectName + extension + postFix;
 
         mainFrame.setTitle(title);
+//        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.getFrame().setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        WindowListener exitListener = new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Datavyu.getApplication().exit();
+            }
+        };
+        this.getFrame().addWindowListener(exitListener);
         this.getFrame().setTitle(title);
     }
+    
+
 
     /**
      * Action for creating a new project.
@@ -1207,6 +1222,7 @@ public final class DatavyuView extends FrameView
      */
     @Action public void safeQuit() {
         Datavyu.getApplication().exit();
+        System.exit(0);
     }
 
     /**
