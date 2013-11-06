@@ -10,7 +10,7 @@ You can find binaries of Datavyu available for Windows and OSX on [the Datavyu.o
 To get started with Datavyu development, you will need to download and install a few development tools. Datavyu is primarily written in Java, along with a little Ruby (via JRuby) for additional scripting tasks. So the list of toys you will need to download:
 
 * [Netbeans](http://www.netbeans.org/)
-* [Maven](http://maven.apache.org/)
+* [Maven2](http://maven.apache.org/)
 * [Git](http://git-scm.com/)
 
 ## Datavyu OSX Builds
@@ -24,7 +24,7 @@ To build and package Datavyu to run on OSX, use the following commands:
 
 ## Datavyu Windows Builds
 
-To build and package Datavyu to run on windows, use the following commands:
+To build and package Datavyu to run on windows, use the following commands in a cygwin window:
 
 	git clone https://github.com/databrary/datavyu.git
 	cd datavyu
@@ -34,5 +34,5 @@ To build and package Datavyu to run on windows, use the following commands:
 
 See the [wiki](https://github.com/databrary/datavyu/wiki) for more information on how to code and contribute improvements to Datavyu.
 
-A list of features and fixes that need implementing for Datavyu can be found [here](https://www.pivotaltracker.com/projects/495691#).
+A list of features and fixes that need implementing for Datavyu can be found [here](http://datavyu.org/bugs).
 
