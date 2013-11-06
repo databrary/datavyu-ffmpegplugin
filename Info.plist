@@ -43,7 +43,7 @@
         <string>$JAVAROOT/repo/org/jruby/jruby-engine/1.1.6/jruby-engine-1.1.6.jar</string>
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.6.7.2/jruby-complete-1.6.7.2.jar</string>
         <string>$JAVAROOT/repo/org/mongodb/mongodb-osx64/2.0.2/mongodb-osx64-2.0.2.jar</string>
-        <string>$JAVAROOT/repo/org/mongodb/mongo-java-driver/2.10.1/mongo-java-driver-2.10.1.jar</string>
+        <string>$JAVAROOT/repo/org/mongodb/mongo-java-driver/2.10.1/mongo-java-driver-2.11.3.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/datavyu/datavyu-lib/0.0.81/datavyu-lib-0.0.81.jar</string>
