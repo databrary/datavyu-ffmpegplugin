@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------
-# Datavyu API v 1.03
+# Datavyu API v 1.04
 
 # Please read the function headers for information on how to use them.
 
@@ -480,6 +480,10 @@ def setVariable(*args)
     # just delete the whole thing first.
    # If the column was dirty, redo the vocab too
    if var.db_var == nil or var.db_var.get_name != name
+
+       if getColumnList().include?(name)
+          deleteVariable(name)
+       end
        # Create a new variable
        v = $db.createVariable(name, Argument::Type::MATRIX)
        var.db_var = v
