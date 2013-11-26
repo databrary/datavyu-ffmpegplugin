@@ -383,7 +383,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     class ReaderThread extends Thread {
 
         /** The size of the buffer to use while ingesting data. */
-        private static final int BUFFER_SIZE = 1024;
+        private static final int BUFFER_SIZE = 32 * 1024;
 
         /**
          * The method to invoke when the thread is started.
