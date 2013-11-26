@@ -4,6 +4,7 @@
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 1.04 11/25/13 - Fixed mutex function which was failing in some cases
 # 1.03 08/27/13 - Fixed makeReliability and change_arg functions so they behave properly
 # 1.02 07/07/13 - Fixed functions involving createVariable.
 # 1.01 03/13/12 - Fixed the set variable function so it now correctly writes back to
@@ -1023,16 +1024,16 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
 
     scan_for_bad_cells(var1)
     scan_for_bad_cells(var2)
-    fix_one_off_cells(var1, var2)
+    # fix_one_off_cells(var1, var2)
 
-    for i in 0..var1.cells.length-2
-        cell1 = var1.cells[i]
-        cell2 = var1.cells[i+1]
-        if cell1.offset == cell2.onset
-            puts "WARNING: Found cells with the same onset/offset.  Adjusting onset by 1."
-            cell2.change_arg("onset", cell2.onset+1)
-        end
-    end
+    # for i in 0..var1.cells.length-2
+    #     cell1 = var1.cells[i]
+    #     cell2 = var1.cells[i+1]
+    #     if cell1.offset == cell2.onset
+    #         puts "WARNING: Found cells with the same onset/offset.  Adjusting onset by 1."
+    #         cell2.change_arg("onset", cell2.onset+1)
+    #     end
+    # end
     for cell in var1.cells
         if cell.offset == 0
             puts "ERROR: CELL IN " + var1.name + " ORD: " + cell.ordinal.to_s + "HAS BLANK OFFSET, EXITING"
@@ -1052,7 +1053,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
         cell2 = var2.cells[i+1]
         if cell1.offset == cell2.onset
             puts "WARNING: Found cells with the same onset/offset.  Adjusting onset by 1."
-            cell2.change_arg("onset", cell2.onset+1)
+            # cell2.change_arg("onset", cell2.onset+1)
         end
     end
 
@@ -1093,7 +1094,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
     v1arglist = var1.arglist.map { |arg| var1_argprefix + arg }
     v2arglist = var2.arglist.map { |arg| var2_argprefix + arg }
 
-    puts "NEW ARGUMENT NAMES:", v1arglist, v2arglist
+    # puts "NEW ARGUMENT NAMES:", v1arglist, v2arglist
     args = Array.new
     args << (var1_argprefix + "ordinal")
     args += v1arglist
@@ -1101,9 +1102,9 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
     args << (var2_argprefix + "ordinal")
     args += v2arglist
 
-    puts "Creating mutex var", var1.arglist
+    # puts "Creating mutex var", var1.arglist
     mutex = createVariable(name, args)
-    puts "Mutex var created"
+    # puts "Mutex var created"
 
     # And finally begin creating new cells
     v1cell = nil
@@ -1112,13 +1113,13 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
     next_v2cell_ind = nil
 
     time = start_time
-    puts "Start time", start_time
-    puts "End time", end_time
+    # puts "Start time", start_time
+    # puts "End time", end_time
 
     flag = false
 
     count = 0
-    while time < end_time
+    while time <= end_time
         print_debug "BEGINNING LOOP AT TIME : " + time.to_s
         count += 1
 
@@ -1133,7 +1134,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
         next_v1cell_ind = nil
         next_v2cell_ind = nil
 
-        puts "ON ITERATION ", count
+        # puts "ON ITERATION ", count
 
         for i in 0...var1.cells.length
             v1c = var1.cells[i]
@@ -1158,7 +1159,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
         if v1cell != nil and v2cell != nil
             new_offset = [v1cell.offset, v2cell.offset].min
             # Now create a cell with args from both cells
-            puts "NEW OFFSET for dual cell:", new_offset
+            # puts "NEW OFFSET for dual cell:", new_offset
 
             cell = mutex.make_new_cell()
             cell.change_arg("onset", new_onset)
@@ -1177,12 +1178,13 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
                 end
             end
 
-            elsif v1cell != nil and v2cell == nil
+        elsif v1cell != nil and v2cell == nil
             # Check to see if there is a cell within this one
             new_offset = v1cell.offset
+            puts "----",time, v1cell.offset,"----"
             for v2c in var2.cells
                 if (time..v1cell.offset) === v2c.onset
-                    new_offset = v2c.onset - 1
+                    new_offset = v2c.onset
                     break
                 end
             end
@@ -1199,11 +1201,11 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
                 end
             end
 
-            elsif v1cell == nil and v2cell != nil
+        elsif v1cell == nil and v2cell != nil
             new_offset = v2cell.offset
             for v1c in var1.cells
                 if (time..v2cell.offset) === v1c.onset
-                    new_offset = v1c.onset - 1
+                    new_offset = v1c.onset
                     break
                 end
             end
@@ -1226,7 +1228,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
             time += 1
             flag = true
             next
-            elsif flag
+        elsif flag
             time = new_offset
             print_debug "AT TIME " + time.to_s
             #time += 1
@@ -1240,7 +1242,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
                 if v1c.onset > time
                     v1jump = v1c.onset
                     break
-                    elsif v1c.offset > time
+                elsif v1c.offset > time
                     v1jump = v1c.offset
                     print_debug "FOUND V1 NEXT TIME " + v1jump.to_s + " " + time.to_s
                     break
@@ -1251,7 +1253,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
                 if v2c.onset > time
                     v2jump = v2c.onset
                     break
-                    elsif v2c.offset > time
+                elsif v2c.offset > time
                     v2jump = v2c.offset
                     print_debug "FOUND V2 NEXT TIME " + v2jump.to_s + " " + time.to_s
                     break
@@ -1261,14 +1263,14 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
             if v1jump != nil and v2jump != nil
                 time = [v1jump, v2jump].min
                 print_debug "TAKING MIN OF TIME: " + time.to_s
-                elsif v1jump != nil and v2jump == nil
+            elsif v1jump != nil and v2jump == nil
                 time = v1jump
                 print_debug "ASSIGNED NEW TIME FROM V1 CELL " + time.to_s
-                elsif v1jump == nil and v2jump != nil
+            elsif v1jump == nil and v2jump != nil
                 time = v2jump
                 print_debug "ASSIGNED NEW TIME FROM V2 CELL " + time.to_s
-                else
-                time += 1
+            else
+                # time += 1
             end
             print_debug "V1J:" + v1jump.to_s + " V2J:" + v2jump.to_s
             flag = false
@@ -1308,7 +1310,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
         ##time += 1
 
         if count == 1500
-            print_debug "ERROR MAX ITERATIONS REACHED, POSSIBLE INF LOOP"
+            puts "ERROR MAX ITERATIONS REACHED, POSSIBLE INF LOOP"
         end
 
     end
