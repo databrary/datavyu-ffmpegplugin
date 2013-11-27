@@ -14,6 +14,8 @@
  */
 package org.datavyu.util;
 
+import com.apple.eawt.AppEvent;
+import com.apple.eawt.OpenFilesHandler;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
@@ -22,6 +24,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import org.datavyu.Datavyu;
+import org.datavyu.controllers.OpenC;
 import org.datavyu.models.db.MongoDatastore;
 
 
@@ -59,6 +62,21 @@ public class MacHandler {
             // Add the listener to the application.
             Method m = appc.getMethod("addApplicationListener", applc);
             m.invoke(app, listener);
+            
+            com.apple.eawt.Application.getApplication().setOpenFileHandler( new OpenFilesHandler() {
+
+                @Override
+                public void openFiles( AppEvent.OpenFilesEvent arg0 ) {
+    //                Debug.debug( "Opening a bunch of files on osx." );
+                    System.out.println("OPENING FILE");
+                    System.out.println(arg0.getFiles());
+                    System.out.println(arg0.getFiles().get(0).getAbsolutePath());
+                    Datavyu.getApplication().getView().openExternalFile(arg0.getFiles().get(0));
+    //                    Debug.debug( "Opening: " + file.getAbsolutePath() );
+                        // Custom open action
+    //                    FileActions.openFile( file );
+                }
+            } );
         } catch (ClassNotFoundException e) {
             LOGGER.error("Unable to find apple classes", e);
         } catch (InstantiationException e) {

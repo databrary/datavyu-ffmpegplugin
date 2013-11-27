@@ -899,6 +899,16 @@ public final class DatavyuView extends FrameView
         task = new OpenTask(progressBar, jd);
         task.execute();
     }
+    
+    public void openExternalFile(final File f) {
+        Datavyu.getApplication().resetApp();
+        
+        DatavyuFileChooser jd = new DatavyuFileChooser();
+        jd.setSelectedFile(f);
+        jd.setFileFilter(OPFFilter.INSTANCE);
+        
+        open(jd);
+    }
 
     /**
      * Method for opening a recovered file from disk.

@@ -8,6 +8,28 @@
     <string>1.00</string>
     <key>CFBundleAllowMixedLocalizations</key>
     <string>true</string>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+    <dict>
+        <key>CFBundleTypeRole</key>          
+        <string>Editor</string>
+        <key>CFBundleTypeName</key>
+        <string>Datavyu Database File</string>
+        <key>LSHandlerRank</key>
+        <string>Owner</string>
+        <key>CFBundleTypeIconFile</key>
+        <string>datavyu.icns</string>
+        <key>CFBundleTypeExtensions</key>
+        <array>
+            <string>opf</string>
+        </array>
+        <key>CFBundleTypeMIMETypes</key>
+        <array>
+            <string>application/opf</string>
+        </array>
+        <key>LSIsAppleDefaultForType</key>   <true/>
+    </dict>
+    </array>
     <key>CFBundleExecutable</key>
     <string>JavaApplicationStub</string>
     <key>CFBundleDevelopmentRegion</key>
