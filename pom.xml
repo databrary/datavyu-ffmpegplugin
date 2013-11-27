@@ -596,12 +596,42 @@
             </systemProperties>
           </configuration>
       </plugin>
+      
+<!--      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.7.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+                <shadedArtifactAttached>true</shadedArtifactAttached>
+                <shadedClassifierName>shaded</shadedClassifierName>
+                <transformers>
+                        <transformer
+                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <mainClass>org.datavyu.Datavyu</mainClass>
+                </transformer>
+                </transformers>
+                <artifactSet>
+                <excludes>
+                  <exclude>org.mongodb:mongodb-win32:*</exclude>
+                </excludes>
+                </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>-->
 
       <!-- BugzID:305 - Windows Application Bundle -->
       <plugin>
-        <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-          <artifactId>launch4j-plugin</artifactId>
-          <version>1.0.0.3</version>
+        <groupId>com.akathist.maven.plugins.launch4j</groupId>
+          <artifactId>launch4j-maven-plugin</artifactId>
+          <version>1.5.2</version>
           <executions>
             <execution>
               <id>launch4j</id>
@@ -614,7 +644,7 @@
           <configuration>
             <headerType>gui</headerType>
             <outfile>${basedir}/target/${project.build.finalName}.exe</outfile>
-            <jar>${basedir}/target/${project.build.finalName}.jar</jar>
+            <jar>${basedir}/target/${project.build.finalName}-shaded.jar</jar>
             <icon>${basedir}/src/main/resources/icons/Datavyu.ico</icon>
             <splash>
               <file>${basedir}/src/main/resources/icons/splash.bmp</file>
@@ -625,6 +655,15 @@
             <jre>
               <minVersion>1.6.0</minVersion>
             </jre>
+            <singleInstance>
+                <mutexName>Datavyu</mutexName>
+                <!--<windowTitle>Datavyu</windowTitle>-->
+            </singleInstance>
+<!--            <classPath>
+                    <mainClass>org.datavyu.Datavyu</mainClass>
+                    <preCp>anything</preCp>
+                    <preCp>mongodb-win32-2.0.2.jar</preCp>
+            </classPath>-->
             <classPath>
               <mainClass>org.datavyu.Datavyu</mainClass>
                 <preCp>jna-3.4.1.jar</preCp>
@@ -645,7 +684,6 @@
                 <preCp>jregistrykey-1.4.5.jar</preCp>
                 <preCp>vlcj-2.2.0-SNAPSHOT.jar</preCp>
                 <preCp>libvlc-win32-2.0.1.jar</preCp>
-                <preCp>mongodb-win32-2.0.2.jar</preCp>
             </classPath>
         </configuration>
       </plugin>
