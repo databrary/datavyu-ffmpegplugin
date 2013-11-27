@@ -14,6 +14,7 @@
  */
 package org.datavyu;
 
+import ca.beq.util.win32.registry.Win32Exception;
 import org.datavyu.views.VariableListV;
 import org.datavyu.views.DatavyuView;
 import org.datavyu.views.VideoConverterV;
@@ -49,6 +50,7 @@ import org.datavyu.plugins.PluginManager;
 import org.datavyu.undoableedits.SpreadsheetUndoManager;
 import org.datavyu.util.MacHandler;
 import org.datavyu.util.NativeLoader;
+import org.datavyu.util.WindowsFileAssociations;
 import org.datavyu.util.WindowsKeyChar;
 
 /**
@@ -724,14 +726,14 @@ implements KeyEventDispatcher, TitleNotifier {
         }
 
         // BugzID:1288
-//        if (getPlatform() == Platform.WINDOWS) {
-//
-//            try {
-//                WindowsFileAssociations.setup();
-//            } catch (Win32Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
+        if (getPlatform() == Platform.WINDOWS) {
+
+            try {
+                WindowsFileAssociations.setup();
+            } catch (Win32Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         // This is for handling files opened from the command line.
         if (args.length > 0) {
@@ -846,7 +848,7 @@ implements KeyEventDispatcher, TitleNotifier {
     @Override protected void ready() {
 
         if (commandLineFile != null) {
-            getView().open(new File(commandLineFile));
+            getView().openExternalFile(new File(commandLineFile));
             commandLineFile = null;
         }
     }
