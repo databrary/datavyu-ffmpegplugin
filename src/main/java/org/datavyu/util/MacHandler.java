@@ -14,17 +14,15 @@
  */
 package org.datavyu.util;
 
-import com.apple.eawt.AppEvent;
-import com.apple.eawt.OpenFilesHandler;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import java.io.File;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import org.datavyu.Datavyu;
-import org.datavyu.controllers.OpenC;
 import org.datavyu.models.db.MongoDatastore;
 
 
@@ -146,9 +144,13 @@ public class MacHandler {
 
                     String fileName = (String) getFilename.invoke(args[0],
                             null);
-
-                    Datavyu.getApplication().getView().openExternalFile(new File(
-                            fileName));
+                    
+                    if(Datavyu.getApplication().ready) {
+                        Datavyu.getApplication().getView().openExternalFile(new File(
+                                fileName));
+                    } else {
+                        Datavyu.getApplication().setCommandLineFile(fileName);
+                    }
 
                     Method setHandled = ae.getMethod("setHandled",
                             boolean.class);

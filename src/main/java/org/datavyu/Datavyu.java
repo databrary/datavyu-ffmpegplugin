@@ -142,6 +142,12 @@ implements KeyEventDispatcher, TitleNotifier {
     private String commandLineFile;
     
     private VideoConverterV videoConverter;
+    
+    public boolean ready = false;
+    
+    public void setCommandLineFile(String s) {
+        commandLineFile = s;
+    }
 
     /**
      * Dispatches the keystroke to the correct action.
@@ -843,10 +849,13 @@ implements KeyEventDispatcher, TitleNotifier {
 
         // The DB we create by default doesn't really have any unsaved changes.
         projectController.getDB().markAsUnchanged();
+        
+        ready();
     }
 
     @Override protected void ready() {
 
+        ready = true;
         if (commandLineFile != null) {
             getView().openExternalFile(new File(commandLineFile));
             commandLineFile = null;
