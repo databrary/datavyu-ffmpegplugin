@@ -733,7 +733,6 @@ implements KeyEventDispatcher, TitleNotifier {
 
         // BugzID:1288
         if (getPlatform() == Platform.WINDOWS) {
-
             try {
                 WindowsFileAssociations.setup();
             } catch (Win32Exception e) {
@@ -745,7 +744,7 @@ implements KeyEventDispatcher, TitleNotifier {
         if (args.length > 0) {
             commandLineFile = args[0];
         }
-
+        
         windows = new Stack<Window>();
 
         // Initalise the logger (UserMetrix).

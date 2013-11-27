@@ -14,7 +14,9 @@
  */
 package org.datavyu.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 
 //import ca.beq.util.win32.registry.*;
 
@@ -27,14 +29,52 @@ import java.io.File;
 public class WindowsFileAssociations {
 
     public static void setup()  {
-        String assoc = "assoc .opf opffile";
-        String ftype = "ftype opffile" + cwd() + " %1";
+        String assoc = "cmd /c assoc .opf=opffile";
+        String ftype = "cmd /c ftype opffile=\"" + cwd() + "\" \"%1\"";
         
         try { 
             Process process = Runtime.getRuntime().exec(assoc);
-            process = Runtime.getRuntime().exec(ftype);
-        } catch (Exception e) {
             
+            System.out.println(assoc);
+            System.out.println(ftype);
+            
+            // Get input streams
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read command standard output
+            String s;
+            System.out.println("Standard output: ");
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+            }
+
+            // Read command errors
+            System.out.println("Standard error: ");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+            
+            process = Runtime.getRuntime().exec(ftype);
+            
+            // Get input streams
+            stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read command standard output
+            System.out.println("Standard output: ");
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+            }
+
+            // Read command errors
+            System.out.println("Standard error: ");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

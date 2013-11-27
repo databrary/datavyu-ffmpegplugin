@@ -23,10 +23,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import javax.swing.JOptionPane;
 import org.apache.commons.io.FileUtils;
+import org.datavyu.Datavyu;
 
 
 public class NativeLoader {
@@ -134,9 +137,18 @@ public class NativeLoader {
         // BugID: 26178921 -- We need to inspect the surefire test class path as
         // well as the regular class path property so that we can scan dependencies
         // during tests.
+        String path = new File(Datavyu.class.getProtectionDomain()
+                .getCodeSource().getLocation().getPath()).getParentFile().getAbsolutePath();
         String searchPath = System.getProperty("surefire.test.class.path")
                             + File.pathSeparator
-                            + System.getProperty("java.class.path");
+                            + System.getProperty("java.class.path")
+                ;
+        
+        String[] splitPath = searchPath.split(File.pathSeparator);
+        searchPath = "";
+        for(int i = 0; i < splitPath.length; i++) {
+            searchPath += path + File.separator + splitPath[i] + File.pathSeparator;
+        }
 
         for (String s : searchPath.split(File.pathSeparator)) {
             // Success! We found a matching jar.
