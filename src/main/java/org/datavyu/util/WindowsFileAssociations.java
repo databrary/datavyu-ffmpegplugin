@@ -16,7 +16,7 @@ package org.datavyu.util;
 
 import java.io.File;
 
-import ca.beq.util.win32.registry.*;
+//import ca.beq.util.win32.registry.*;
 
 
 /**
@@ -26,33 +26,16 @@ import ca.beq.util.win32.registry.*;
  */
 public class WindowsFileAssociations {
 
-    public static void setup() throws Win32Exception {
-        RegistryKey hkcr = new RegistryKey(RootKey.HKEY_CLASSES_ROOT);
-
-        RegistryKey extension = hkcr.createSubkey(".opf");
-        extension.setValue(new RegistryValue("", ValueType.REG_SZ,
-                "Datavyu Project File"));
-
-        if (!hkcr.hasSubkey("Datavyu")) {
-            RegistryKey program = hkcr.createSubkey("Datavyu");
-            program.setValue(new RegistryValue("", ValueType.REG_SZ,
-                    "Datavyu"));
+    public static void setup()  {
+        String assoc = "assoc .opf opffile";
+        String ftype = "ftype opffile" + cwd() + " %1";
+        
+        try { 
+            Process process = Runtime.getRuntime().exec(assoc);
+            process = Runtime.getRuntime().exec(ftype);
+        } catch (Exception e) {
+            
         }
-
-        File programFile = cwd(); // This will return the .exe in production
-        String command = programFile.getAbsolutePath() + " \"%1\"";
-
-        RegistryKey programCmd = null;
-
-        if (hkcr.hasSubkey("Datavyu\\shell\\open\\command")) {
-            programCmd = new RegistryKey("Datavyu\\shell\\open\\command");
-        } else {
-            programCmd = hkcr.createSubkey("Datavyu\\shell\\open\\command");
-        }
-
-        // Update the key value so that the new version of Datavyu is used.
-        programCmd.deleteValue("");
-        programCmd.setValue(new RegistryValue("", ValueType.REG_SZ, command));
     }
 
     private static File cwd() {

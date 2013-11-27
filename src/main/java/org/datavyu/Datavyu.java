@@ -734,11 +734,11 @@ implements KeyEventDispatcher, TitleNotifier {
         // BugzID:1288
         if (getPlatform() == Platform.WINDOWS) {
 
-//            try {
-//                WindowsFileAssociations.setup();
-//            } catch (Win32Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                WindowsFileAssociations.setup();
+            } catch (Win32Exception e) {
+                e.printStackTrace();
+            }
         }
 
         // This is for handling files opened from the command line.
