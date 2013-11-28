@@ -137,17 +137,22 @@ public class NativeLoader {
         // BugID: 26178921 -- We need to inspect the surefire test class path as
         // well as the regular class path property so that we can scan dependencies
         // during tests.
-        String path = new File(Datavyu.class.getProtectionDomain()
-                .getCodeSource().getLocation().getPath()).getParentFile().getAbsolutePath();
+
         String searchPath = System.getProperty("surefire.test.class.path")
                             + File.pathSeparator
                             + System.getProperty("java.class.path")
                 ;
         
-        String[] splitPath = searchPath.split(File.pathSeparator);
-        searchPath = "";
-        for(int i = 0; i < splitPath.length; i++) {
-            searchPath += path + File.separator + splitPath[i] + File.pathSeparator;
+        // This is done for the Windows build so it can find the dependencies
+        // if the cwd is different from the program dir
+        if (Datavyu.getPlatform() == Datavyu.Platform.WINDOWS) {
+            String path = new File(Datavyu.class.getProtectionDomain()
+                    .getCodeSource().getLocation().getPath()).getParentFile().getAbsolutePath();
+            String[] splitPath = searchPath.split(File.pathSeparator);
+            searchPath = "";
+            for(int i = 0; i < splitPath.length; i++) {
+                searchPath += path + File.separator + splitPath[i] + File.pathSeparator;
+            }
         }
 
         for (String s : searchPath.split(File.pathSeparator)) {
