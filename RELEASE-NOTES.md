@@ -21,6 +21,7 @@
   * In some cases, the asterisk in the title bar indicating that changes have been made to the file may not appear/disappear correctly
   * Hidden variables may be listed as shown in the variable list
   * Temporal ordering displays cells incorrectly in rare cases
+  * Windows will not correctly handle opening a file by double clicking it once Datavyu is already open.
 
 _To download the Datavyu 1.0.4rev3 pre-release, please visit 
 [http://datavyu.org/download_pre/][1]_
