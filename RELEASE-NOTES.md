@@ -24,8 +24,8 @@
   * Windows will not correctly handle opening a file by double clicking it once Datavyu is already open.
 
 _To download the Datavyu 1.0.4rev3 pre-release, please visit 
-[http://datavyu.org/download_pre/][1]_
-
+[http://datavyu.org/download_pre/][2]_
+[2]: http://datavyu.org/download_pre/
 ## Datavyu 1.0.3 Release Notes
 ### 9/19/2013
 
@@ -55,4 +55,4 @@ _To download the Datavyu 1.0.4rev3 pre-release, please visit
 
 _To download the Datavyu 1.0.3 full release, please visit 
 [http://datavyu.org/download/][1]_
- [1]: http://datavyu.org/download_pre/
+ [1]: http://datavyu.org/download/
