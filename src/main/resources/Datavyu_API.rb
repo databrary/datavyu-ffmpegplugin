@@ -1,9 +1,12 @@
 #-------------------------------------------------------------------
-# Datavyu API v 1.04
+# Datavyu API v 1.041
 
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 1.041 12/11/13 - Updated function names to be consistent with new terminology 
+#                  ('variable' functions renamed to 'column', 'arg' to code').
+#                  Old names will still work.
 # 1.04 11/25/13 - Fixed mutex function which was failing in some cases
 # 1.03 08/27/13 - Fixed makeReliability and change_arg functions so they behave properly
 # 1.02 07/07/13 - Fixed functions involving createVariable.
@@ -132,22 +135,33 @@ class RCell
       end
    end
 
-
+   def change_code_name(i, new_name)
+     change_arg_name(i, new_name)
+   end
    def change_arg_name(i, new_name)
       instance_eval "def #{new_name}; return argvals[#{i}]; end"
    end
 
+   def add_code(new_name)
+     add_arg(new_name)
+   end
    def add_arg(new_name)
       @argvals << ""
       i = argvals.length - 1
       instance_eval "def #{new_name}; return argvals[#{i}]; end"
    end
 
+   def remove_code(name)
+     remove_arg(name)
+   end
    def remove_arg(name)
        argvals.delete(arglist.index(name))
        @arglist.delete(name)
    end
 
+   def get_code(name)
+     get_arg(name)
+   end
    def get_arg(name)
      return argvals[arglist.index(name)]
    end
@@ -166,7 +180,9 @@ class RCell
    #       trial.cells[0].change_arg("onset", 1000)
    #       setVariable("trial",trial)
    #-------------------------------------------------------------------
-
+   def change_code(arg, val)
+     change_arg(arg, val)
+   end
    def change_arg(arg, val)
       if arg == "onset"
          @onset = val
@@ -358,6 +374,9 @@ class RVariable
    #       trial = getVariable("trial")
    #
    #-------------------------------------------------------------------
+   def change_code_name(old_name, new_name)
+      change_arg_name(old_name, new_name)
+   end
    def change_arg_name(old_name, new_name)
       i = @old_args.index(old_name)
       @old_args[i] = new_name
@@ -375,6 +394,9 @@ class RVariable
       @dirty = true
    end
 
+   def add_code(name)
+     add_arg(name)
+   end
    def add_arg(name)
       @old_args << name
       if ["0","1","2","3","4","5","6","7","8","9"].include?(name[1].chr)
@@ -390,6 +412,9 @@ class RVariable
       @dirty = true
    end
 
+   def remove_code(name)
+     remove_arg(name)
+   end
    def remove_arg(name)
        @old_args.delete(name)
 
@@ -416,6 +441,9 @@ end
 #       trial = getVariable("trial")
 #-------------------------------------------------------------------
 
+ def getColumn(name)
+   getVariable(name)
+ end
 def getVariable(name)
 
    var = $db.getVariable(name)
@@ -465,7 +493,9 @@ end
 #       ** Do some modification to trial
 #       setVariable("trial", trial)
 #-------------------------------------------------------------------
-
+def setColumn(*args)
+  setVariable(*args)
+end
 def setVariable(*args)
 
    if args.length == 1
@@ -772,6 +802,13 @@ end
 #       blank_cell = trial.make_new_cell()
 #       setVariable(trial)
 #-------------------------------------------------------------------
+def createNewColumn(name, *args)
+  createVariable(name, *args)
+end
+def createColumn(name, *args)
+  createVariable(name, *args)
+end
+
 def createNewVariable(name, *args)
     createVariable(name, args)
 end
@@ -891,6 +928,10 @@ end
 # test = add_args_to_var("test", "arg1", "arg2", "arg3")
 # setVariable("test",test)
 # -------------------------------------------------------------------
+def add_codes_to_var(var, *args)
+  add_args_to_var(var, *args)
+end
+
 def add_args_to_var(var, *args)
    if var.class == "".class
       var = getVariable(var)
@@ -1880,7 +1921,7 @@ end
 #  check_valid_codes("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", [1,2,3])
 # -------------------------------------------------------------------
 def check_valid_codes(var, dump_file, *arg_code_pairs)
-    check_valid_codes(var, dump_file, arg_code_pairs)
+    check_valid_codes(var, dump_file, *arg_code_pairs)
 end
 def checkValidCodes(var, dump_file, *arg_code_pairs)
    if var.class == "".class
@@ -1981,6 +2022,9 @@ def smoothColumn(colname, tol=33)
     setVariable(colname, col)
 end
 
+def print_codes(cell, file, args)
+  print_args(cell, file, args)
+end
 def print_args(cell, file, args)
         for a in args
             #puts "Printing: " + a
@@ -1998,6 +2042,9 @@ def getCellFromTime(col, time)
   return nil
 end
 
+def printCellCodes(cell)
+  printCellArgs(cell)
+end
 def printCellArgs(cell)
   s = Array.new
   s << cell.ordinal.to_s
