@@ -1,9 +1,10 @@
 #-------------------------------------------------------------------
-# Datavyu API v 1.041
+# Datavyu API v 1.05
 
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 1.05 1/3/14 - Fixed the loadMacshapaDB function so it now works properly with CLOSED files
 # 1.041 12/11/13 - Updated function names to be consistent with new terminology 
 #                  ('variable' functions renamed to 'column', 'arg' to code').
 #                  Old names will still work.
@@ -292,6 +293,9 @@ class RVariable
    # => newcells (required): Array of cells coming from the database via getVariable
    # => arglist (required): Array of the names of the arguments from the database
    #-------------------------------------------------------------------
+   def convert_argname(arg)
+    return arg.gsub(/(\W)+/,"").downcase
+   end
 
    def set_cells(newcells, arglist)
      print_debug "Setting cells"
@@ -624,8 +628,8 @@ def setVariable(*args)
               for i in 0...values.size
                   dbarg = values[i]
                   dbarg_name = dbarg.getName()
-                  if dbarg_name == arg and not ["", nil].include?(cell.get_arg(arg))
-                      dbarg.set(cell.get_arg(arg))
+                  if dbarg_name == arg and not ["", nil].include?(cell.get_arg(var.convert_argname(arg)))
+                      dbarg.set(cell.get_arg(var.convert_argname(arg)))
                       dbarg.save()
                       break
                   end
@@ -1543,14 +1547,16 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
    # Since I don't know how to make a whole new project, lets just load a blank file.
    if not write_to_gui
       #$db,$pj = load_db("/Users/j4lingeman/Desktop/blank.opf")
-      $db = MacshapaDatabase.new(1000)
-      $pj = Project.new()
+      # $db = Datastore.new
+      # $pj = Project.new()
    end
 
 
 
+   puts "Opening file"
    f = File.open(filename, 'r')
 
+   puts "Opened file"
    # Read and split file by lines.  '\r' is used because that is the default
    # format for OS9 files.
    lines = ""
@@ -1581,30 +1587,26 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
       predIndex += 1
    end
 
+   puts "Got predicate index"
+
    # Create the columns for the variables
    variables.each do |key, value|
       # Create column
-      if !$db.col_name_in_use(key)
-         col = DataColumn.new($db, key, MatrixVocabElement::MatrixType::MATRIX)
-         $db.add_column(col)
+      if getColumnList().include?(key)
+        deleteVariable(key)
       end
 
-      mve0 = $db.get_vocab_element(key)
-      if mve0.get_num_formal_args() == 1
-         # Setup structure of matrix column
-         mve0 = MatrixVocabElement.new(mve0)
-         mve0.delete_formal_arg(0)
-         value.each { |v|
-            # Strip out the ordinal, onset, and offset.  These will be handled on a
-            # cell by cell basis.
-            if v != "<ord>" and v != "<onset>" and v != "<offset>"
-               #print_debug v
-               farg = NominalFormalArg.new($db, v)
-               mve0.append_formal_arg(farg)
-            end
-         }
-         $db.replace_matrix_ve(mve0)
-      end
+
+      args = Array.new
+       value.each { |v|
+          # Strip out the ordinal, onset, and offset.  These will be handled on a
+          # cell by cell basis.
+          if v != "<ord>" and v != "<onset>" and v != "<offset>"
+             args << v.sub("<", "").sub(">","")
+          end
+       }
+
+       setVariable(createVariable(key, args))
    end
 
    # Search for where in the file the var's cells are, create them, then move
@@ -1612,14 +1614,14 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
    varSection = lines[varIndex..spreadIndex]
 
    varIdent.each do |id|
-      col = $db.get_column(id[0..id.index("(")-1])
-      mve = $db.get_matrix_ve(col.its_mve_id)
-      matid = mve.get_id()
 
       # Search the variable section for the above id
       varSection.each do |l|
          line = l.split(/[\t\s]/)
          if line[2] == id
+
+            print_debug id
+            col = getVariable(id.slice(0,id.index("(")))
             #print_debug varname
             start = varSection.index(l) + 1
 
@@ -1631,26 +1633,25 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
 
             #Found it!  Now build the cells
             while varSection[start] != "0"
-               varSection[start]
+
                if stringCol == false
                   cellData = varSection[start].split(/[\t]/)
                   cellData[cellData.length - 1] = cellData[cellData.length-1][cellData[cellData.length-1].index("(")..cellData[cellData.length-1].length]
-
                else
                   cellData = varSection[start].split(/[\t]/)
                end
 
                # Init cell to null
-               cell = DataCell.new($db, col.get_id, mve.get_id)
-               mat = Matrix.new($db, matid)
+
+               cell = col.create_cell
 
                # Convert onset/offset from 60 ticks/sec to milliseconds
                onset = cellData[0].to_i / 60.0 * 1000
                offset = cellData[1].to_i / 60.0 * 1000
 
                # Set onset/offset of cell
-               cell.onset = TimeStamp.new(1000, onset.round)
-               cell.offset = TimeStamp.new(1000, offset.round)
+               cell.change_arg("onset", onset.round)
+               cell.change_arg("offset", offset.round)
 
                # Split up cell data
                data = cellData[cellData.length - 1]
@@ -1675,28 +1676,20 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
                end
                # Cycle thru cell data arguments and fill them into the cell matrix
                narg = 0
-               data.each do |d|
-                  fargid = mve.get_formal_arg(narg).get_id()
+               data.each_with_index do |d,i|
+                  print_debug cell.arglist[1]
+                  argname = cell.arglist[i]
                   if d == nil
-                     fdv = NominalDataValue.new($db, fargid)
-                     fdv.clearValue()
+                     cell.change_arg(argname, "")
                   elsif d == "" or d.index("<") != nil
-                     d = d.strip()
-                     fdv = NominalDataValue.new($db, fargid)
-                     fdv.clearValue()
+                     cell.change_arg(argname,"")
                   else
-                     d = d.strip()
-                     fdv = NominalDataValue.new($db, fargid, d)
+                     cell.change_arg(argname,d)
                   end
-                  mat.replaceArg(narg,fdv)
-                  narg += 1
                end
-
-               # Put cell into database
-               cell.set_val(mat)
-               $db.append_cell(cell)
                start += 1
             end
+            setVariable(col)
          end
       end
    end
