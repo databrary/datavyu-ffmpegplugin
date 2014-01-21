@@ -1914,7 +1914,7 @@ end
 #  check_valid_codes("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", [1,2,3])
 # -------------------------------------------------------------------
 def check_valid_codes(var, dump_file, *arg_code_pairs)
-    check_valid_codes(var, dump_file, *arg_code_pairs)
+    checkValidCodes(var, dump_file, *arg_code_pairs)
 end
 def checkValidCodes(var, dump_file, *arg_code_pairs)
    if var.class == "".class
