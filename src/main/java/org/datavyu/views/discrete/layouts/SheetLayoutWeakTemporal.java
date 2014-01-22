@@ -307,8 +307,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         List<SpreadsheetColumn> visibleColumns = getVisibleColumns(mainView);
         for(int key : cellCache.keySet()) {
             SpreadsheetColumn col = visibleColumns.get(key);
-            System.out.println(key);
-            System.out.println(cellCache.get(key).size());
+//            System.out.println(key);
+//            System.out.println(cellCache.get(key).size());
             if(cellCache.get(key).size() > 0) {
                 SpreadsheetCell cell = cellCache.get(key).get(cellCache.get(key).size()-1);
                 col.setWorkingHeight(cell.getY() + cell.getHeight());
@@ -342,7 +342,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         for (SpreadsheetColumn col : mainView.getColumns()) {
             Integer colHeight = col.getWorkingHeight();
             
-            System.out.println(colHeight);
+//            System.out.println(colHeight);
 
             // Put the new cell button at the end of the column.
             Dimension d = col.getDataPanel().getNewCellButton().getPreferredSize();
