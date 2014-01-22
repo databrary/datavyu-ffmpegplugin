@@ -183,7 +183,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
         // The size the of the gap to use between cells and as overlap on
         // overlapping cells in different columns
-        int gapSize = 5;
+        int gapSize = 10;
         int minCellHeight = 45;
 
 
@@ -239,13 +239,13 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 }
             }
             
-            if(cellsWithOffset != null) {
-                for(SpreadsheetCell cell : cellsWithOffset) {
-                    if(minHeight < cell.getPreferredSize().height) {
-                        minHeight = cell.getPreferredSize().height;
-                    }
-                }
-            }
+//            if(cellsWithOffset != null) {
+//                for(SpreadsheetCell cell : cellsWithOffset) {
+//                    if(minHeight < cell.getPreferredSize().height) {
+//                        minHeight = cell.getPreferredSize().height;
+//                    }
+//                }
+//            }
             
             timeByLoc.put(time, maxPosition);
             maxPosition += minHeight;
@@ -268,6 +268,14 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     for(int j = 0; j < timeArray.length; j++) {
                         if(timeArray[j] > nextOnset) {
                             timeByLoc.put(timeArray[j], timeByLoc.get(timeArray[j]) + gapSize);
+                        }
+                    }
+                }
+                
+                if(onset == nextOnset) {
+                    for(int j = 0; j < timeArray.length; j++) {
+                        if(timeArray[j] > nextOnset) {
+                            timeByLoc.put(timeArray[j], timeByLoc.get(timeArray[j]) + cell.getPreferredSize().height);
                         }
                     }
                 }
@@ -329,11 +337,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 }
                 
                 if(curCell.getOnsetTicks() == nextCell.getOnsetTicks()) {
+                    curCell.setBounds(0, curCell.getY(), curCell.getWidth(), curCell.getPreferredSize().height);
                     nextCell.setBounds(0, curCell.getY() + curCell.getHeight(), nextCell.getWidth(), nextCell.getPreferredSize().height);
                     if(col.getWorkingHeight() < nextCell.getY() + nextCell.getHeight()) {
                         col.setWorkingHeight(nextCell.getY() + nextCell.getHeight());
                     }
-//                    curCell.setBounds(0, curCell.getY(), curCell.getWidth(), nextCell.getY() - curCell.getY());
                 }
             }
         }
