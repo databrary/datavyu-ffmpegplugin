@@ -174,10 +174,13 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // Cell cache so we only have to get from the DB once.
         // Greatly speeds up the algorithm.
         // Redrawing would be even faster if this was only done on DB update
+        int width = 0;
         HashMap<Integer, List<SpreadsheetCell>> cellCache = new HashMap<Integer, List<SpreadsheetCell>>();
         for (int i = 0; i < visible_columns.size(); i++) {
             cellCache.put(i, visible_columns.get(i).getCellsTemporally());
+            width = visible_columns.get(i).getWidth();
         }
+        width--;
 
 //        long starttime = System.currentTimeMillis();
 
@@ -189,8 +192,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
         int numCells = 0;
         Set<Long> times = new TreeSet<Long>(); 
-        TreeMap<Long, List<SpreadsheetCell>> cellsByOnset = new TreeMap<Long, List<SpreadsheetCell>>();
-        TreeMap<Long, List<SpreadsheetCell>> cellsByOffset = new TreeMap<Long, List<SpreadsheetCell>>();
+        HashMap<Long, List<SpreadsheetCell>> cellsByOnset = new HashMap<Long, List<SpreadsheetCell>>();
+        HashMap<Long, List<SpreadsheetCell>> cellsByOffset = new HashMap<Long, List<SpreadsheetCell>>();
 
         for(int key : cellCache.keySet()) {
             for(SpreadsheetCell cell : cellCache.get(key)) {
@@ -294,7 +297,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             if(cellsWithOnset != null) {
                 for(SpreadsheetCell cell : cellsWithOnset) {
 //                    if(!cell.isBeingProcessed()) {
-                        cell.setBounds(0, timeByLoc.get(time), (cell.getWidth()), cell.getPreferredSize().height);
+                        cell.setBounds(0, timeByLoc.get(time), width, cell.getPreferredSize().height);
 //                    }
                 }
             }
@@ -302,7 +305,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             if(cellsWithOffset != null) {
                 for(SpreadsheetCell cell : cellsWithOffset) {
 //                    if(!cell.isBeingProcessed()) {
-                        cell.setBounds(0, cell.getY(), (cell.getWidth()), (timeByLoc.get(time) - cell.getY()));
+                        cell.setBounds(0, cell.getY(), width, (timeByLoc.get(time) - cell.getY()));
 //                    }
                 }
             }
@@ -321,7 +324,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 //            System.out.println(cellCache.get(key).size());
             if(cellCache.get(key).size() > 0) {
                 SpreadsheetCell cell = cellCache.get(key).get(cellCache.get(key).size()-1);
-                col.setWorkingHeight(cell.getY() + cell.getHeight());
+                col.setWorkingHeight(cell.getY() + cell.getPreferredSize().height);
             }
         }
         
@@ -332,13 +335,21 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 SpreadsheetCell curCell = cellCache.get(key).get(i);
                 SpreadsheetCell nextCell = cellCache.get(key).get(i+1);
                 SpreadsheetColumn col = visibleColumns.get(key);
+                
+                System.out.println(i);
+                System.out.println("Y: " + curCell.getY());
+                System.out.println("Height: " + curCell.getHeight());
+                System.out.println("Next Y: " + nextCell.getY());
+                System.out.println("Next Height: " + nextCell.getHeight());
+                System.out.println("Width: " + curCell.getWidth());
+              
                 if(curCell.getOffsetTicks() > nextCell.getOnsetTicks()) {
-                    curCell.setBounds(0, curCell.getY(), curCell.getWidth(), nextCell.getY() - curCell.getY());
+                    curCell.setBounds(0, curCell.getY(), width, nextCell.getY() - curCell.getY());
                 }
                 
                 if(curCell.getOnsetTicks() == nextCell.getOnsetTicks()) {
-                    curCell.setBounds(0, curCell.getY(), curCell.getWidth(), curCell.getPreferredSize().height);
-                    nextCell.setBounds(0, curCell.getY() + curCell.getHeight(), nextCell.getWidth(), nextCell.getPreferredSize().height);
+                    curCell.setBounds(0, curCell.getY(), width, curCell.getPreferredSize().height);
+                    nextCell.setBounds(0, curCell.getY() + curCell.getHeight(), width, nextCell.getPreferredSize().height);
                     if(col.getWorkingHeight() < nextCell.getY() + nextCell.getHeight()) {
                         col.setWorkingHeight(nextCell.getY() + nextCell.getHeight());
                     }
