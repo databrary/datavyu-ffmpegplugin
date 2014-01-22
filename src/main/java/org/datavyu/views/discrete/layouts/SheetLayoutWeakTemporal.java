@@ -233,7 +233,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             List<SpreadsheetCell> cellsWithOffset = cellsByOffset.get(time);
             
             // Get the minimum height we can go down from these cells
-            int minHeight = gapSize;
+            int minHeight = 0;
             if(cellsWithOnset != null) {
                 for(SpreadsheetCell cell : cellsWithOnset) {
                     if(minHeight < cell.getPreferredSize().height) {
