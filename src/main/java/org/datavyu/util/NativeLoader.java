@@ -151,7 +151,10 @@ public class NativeLoader {
             String[] splitPath = searchPath.split(File.pathSeparator);
             searchPath = "";
             for(int i = 0; i < splitPath.length; i++) {
-                searchPath += path + File.separator + splitPath[i] + File.pathSeparator;
+                if(!splitPath[i].startsWith("C:\\")) {
+                    searchPath += path;
+                }
+                searchPath += File.separator + splitPath[i] + File.pathSeparator;
             }
         }
 
