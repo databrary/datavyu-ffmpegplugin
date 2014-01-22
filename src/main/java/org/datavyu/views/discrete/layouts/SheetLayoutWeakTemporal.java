@@ -335,13 +335,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 SpreadsheetCell curCell = cellCache.get(key).get(i);
                 SpreadsheetCell nextCell = cellCache.get(key).get(i+1);
                 SpreadsheetColumn col = visibleColumns.get(key);
-                
-                System.out.println(i);
-                System.out.println("Y: " + curCell.getY());
-                System.out.println("Height: " + curCell.getHeight());
-                System.out.println("Next Y: " + nextCell.getY());
-                System.out.println("Next Height: " + nextCell.getHeight());
-                System.out.println("Width: " + curCell.getWidth());
               
                 if(curCell.getOffsetTicks() > nextCell.getOnsetTicks()) {
                     curCell.setBounds(0, curCell.getY(), width, nextCell.getY() - curCell.getY());
