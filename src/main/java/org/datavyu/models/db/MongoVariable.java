@@ -264,6 +264,7 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
 
         query.put("variable_id", this.get("_id"));  // e.g. find all where i > 50
         sort.put("onset", 1);
+        sort.put("offset", 1);
 
         DBCursor cur = cell_collection.find(query).sort(sort);
 

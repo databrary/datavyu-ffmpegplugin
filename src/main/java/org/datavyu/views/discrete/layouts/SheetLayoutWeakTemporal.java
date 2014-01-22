@@ -261,7 +261,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 long nextOnset = nextCell.getOnsetTicks();
                 long nextOffset = nextCell.getOffsetTicks();
                                 
-                // If the onsets are equal within the same column
+                // Non-continuous cells
                 if(nextOnset - offset > 1) {
                     timeByLoc.put(nextOnset, timeByLoc.get(nextOnset) + gapSize);
                     
@@ -271,6 +271,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                         }
                     }
                 }
+                
+                // Cells with same onsets
             }
         }
                 
@@ -321,8 +323,17 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             for(int i = 0; i < cellCache.get(key).size() - 1; i++) {
                 SpreadsheetCell curCell = cellCache.get(key).get(i);
                 SpreadsheetCell nextCell = cellCache.get(key).get(i+1);
+                SpreadsheetColumn col = visibleColumns.get(key);
                 if(curCell.getOffsetTicks() > nextCell.getOnsetTicks()) {
                     curCell.setBounds(0, curCell.getY(), curCell.getWidth(), nextCell.getY() - curCell.getY());
+                }
+                
+                if(curCell.getOnsetTicks() == nextCell.getOnsetTicks()) {
+                    nextCell.setBounds(0, curCell.getY() + curCell.getHeight(), nextCell.getWidth(), nextCell.getPreferredSize().height);
+                    if(col.getWorkingHeight() < nextCell.getY() + nextCell.getHeight()) {
+                        col.setWorkingHeight(nextCell.getY() + nextCell.getHeight());
+                    }
+//                    curCell.setBounds(0, curCell.getY(), curCell.getWidth(), nextCell.getY() - curCell.getY());
                 }
             }
         }
