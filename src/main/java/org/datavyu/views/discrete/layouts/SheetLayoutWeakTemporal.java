@@ -324,7 +324,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 //            System.out.println(cellCache.get(key).size());
             if(cellCache.get(key).size() > 0) {
                 SpreadsheetCell cell = cellCache.get(key).get(cellCache.get(key).size()-1);
-                col.setWorkingHeight(cell.getY() + cell.getPreferredSize().height);
+                col.setWorkingHeight(cell.getY() + cell.getHeight());
             }
         }
         
