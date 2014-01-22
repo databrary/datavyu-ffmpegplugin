@@ -73,6 +73,7 @@ require 'java'
 require 'csv'
 require 'time'
 require 'date'
+require 'set'
 #require 'ftools'
 
 import 'org.datavyu.models.db.Datastore'
@@ -1097,14 +1098,14 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
         end
     end
 
-    for i in 0..var2.cells.length-2
-        cell1 = var2.cells[i]
-        cell2 = var2.cells[i+1]
-        if cell1.offset == cell2.onset
-            puts "WARNING: Found cells with the same onset/offset.  Adjusting onset by 1."
-            # cell2.change_arg("onset", cell2.onset+1)
-        end
-    end
+    # for i in 0..var2.cells.length-2
+    #     cell1 = var2.cells[i]
+    #     cell2 = var2.cells[i+1]
+    #     if cell1.offset == cell2.onset
+    #         puts "WARNING: Found cells with the same onset/offset.  Adjusting onset by 1."
+    #         # cell2.change_arg("onset", cell2.onset+1)
+    #     end
+    # end
 
     # Handle special cases where one or both of columns have no cells
 
@@ -1168,201 +1169,91 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
     flag = false
 
     count = 0
-    while time <= end_time
-        print_debug "BEGINNING LOOP AT TIME : " + time.to_s
-        count += 1
+    
+    #######################
+    # BEGIN NEW MUTEX
+    # Idea here: gather all of the time changes.
+    # For each time change get the corresponding cells involved in that change.
+    # Create the necessary cell at each time change.
+    #######################
+
+    time_changes = Set.new
+    v1_cells_at_time = Hash.new
+    v2_cells_at_time = Hash.new
 
 
-        if count > 4000
-            puts "ERROR: Infinite loop?  Aborting."
-            exit
-        end
-        # Get var1 cell at this time
+    # Preprocess relevant cells and times
+    for cell in var1.cells + var2.cells
+      time_changes.add(cell.onset)
+      time_changes.add(cell.offset)
+    end
+
+    time_changes = time_changes.to_a.sort
+    p time_changes
+
+
+    mutex_cell = nil
+    mutex_cell_parent = nil
+
+    # TODO: make these handle empty cols
+    v1cell = var1.cells[0]
+    prev_v1cell = nil
+    prev_v2cell = nil
+    v2cell = var2.cells[0]
+    v1idx = 0
+    v2idx = 0
+
+    #
+    for i in 0..time_changes.length-2
+      t0 = time_changes[i]
+      t1 = time_changes[i+1]
+
+      # Find the cells that are active during these times
+      for j in v1idx..var1.cells.length-1
+        c = var1.cells[j]
         v1cell = nil
+        p "---", "T1", t0, t1, c.onset, c.offset, "---"
+        if c.onset <= t0 and c.offset >= t1 or c.onset == t0 and c.offset >= t1
+          v1cell = c
+          v1idx = j
+          p t0, t1, "Found V1"
+          break
+        # elsif c.onset > t1
+        #   break
+        else
+          v1cell = nil
+        end
+      end
+
+      for j in v2idx..var2.cells.length-1
+        c = var2.cells[j]
         v2cell = nil
-        next_v1cell_ind = nil
-        next_v2cell_ind = nil
-
-        # puts "ON ITERATION ", count
-
-        for i in 0...var1.cells.length
-            v1c = var1.cells[i]
-            if (v1c.onset <= time and v1c.offset >= time)
-                v1cell = v1c
-                break
-            end
+        p "---", "T2", t0, t1, c.onset, c.offset, "---"
+        if c.onset <= t0 and c.offset >= t1 or c.onset == t0 and c.offset >= t1
+          v2cell = c
+          v2idx = j
+          p t0, t1, "Found V2"
+          break
+        # elsif c.onset > t1
+        #   break
+        else
+          v2cell = nil
         end
+      end
 
-        for i in 0...var2.cells.length
-            v2c = var2.cells[i]
-            if (v2c.onset <= time and v2c.offset >= time)
-                v2cell = v2c
-                break
-            end
-        end
+      if v1cell != nil or v2cell != nil 
+        mutex_cell = mutex.create_cell
 
-        new_onset = time
-        print_debug "NEW ONSET TIME:"
-        print_debug new_onset
-
-        if v1cell != nil and v2cell != nil
-            new_offset = [v1cell.offset, v2cell.offset].min
-            # Now create a cell with args from both cells
-            # puts "NEW OFFSET for dual cell:", new_offset
-
-            cell = mutex.make_new_cell()
-            cell.change_arg("onset", new_onset)
-            cell.change_arg("offset", new_offset)
-            for arg in mutex.arglist
-                a = arg.gsub(var1_argprefix, "")
-                if arg.index(var1_argprefix) == 0
-                    v = eval "v1cell.#{a}"
-                    cell.change_arg(arg, v)
-                end
-
-                a = arg.gsub(var2_argprefix, "")
-                if arg.index(var2_argprefix) == 0
-                    v = eval "v2cell.#{a}"
-                    cell.change_arg(arg, v)
-                end
-            end
-
-        elsif v1cell != nil and v2cell == nil
-            # Check to see if there is a cell within this one
-            new_offset = v1cell.offset
-            puts "----",time, v1cell.offset,"----"
-            for v2c in var2.cells
-                if (time..v1cell.offset) === v2c.onset
-                    new_offset = v2c.onset
-                    break
-                end
-            end
-            # Now create a cell with args from only v1
-
-            cell = mutex.make_new_cell()
-            cell.change_arg("onset", new_onset)
-            cell.change_arg("offset", new_offset)
-            for arg in mutex.arglist
-                a = arg.gsub(var1_argprefix, "")
-                if arg.index(var1_argprefix) == 0
-                    v = eval "v1cell.#{a}"
-                    cell.change_arg(arg, v)
-                end
-            end
-
-        elsif v1cell == nil and v2cell != nil
-            new_offset = v2cell.offset
-            for v1c in var1.cells
-                if (time..v2cell.offset) === v1c.onset
-                    new_offset = v1c.onset
-                    break
-                end
-            end
-            # Now create a cell with args from only v2
-
-            cell = mutex.make_new_cell()
-            cell.change_arg("onset", new_onset)
-            cell.change_arg("offset", new_offset)
-            for arg in mutex.arglist
-                a = arg.gsub(var2_argprefix, "")
-                if arg.index(var2_argprefix) == 0
-                    v = eval "v2cell.#{a}"
-                    cell.change_arg(arg, v)
-                end
-            end
-        end
-
-        if not flag
-            time = new_offset
-            time += 1
-            flag = true
-            next
-        elsif flag
-            time = new_offset
-            print_debug "AT TIME " + time.to_s
-            #time += 1
-            #next
-            v1jump = nil
-            v2jump = nil
-            print_debug var1
-            print_debug var2
-            for v1c in var1.cells
-                # get next v1c after time
-                if v1c.onset > time
-                    v1jump = v1c.onset
-                    break
-                elsif v1c.offset > time
-                    v1jump = v1c.offset
-                    print_debug "FOUND V1 NEXT TIME " + v1jump.to_s + " " + time.to_s
-                    break
-                end
-            end
-            print_debug "Cycling var2"
-            for v2c in var2.cells
-                if v2c.onset > time
-                    v2jump = v2c.onset
-                    break
-                elsif v2c.offset > time
-                    v2jump = v2c.offset
-                    print_debug "FOUND V2 NEXT TIME " + v2jump.to_s + " " + time.to_s
-                    break
-                end
-            end
-            print_debug "Finding next jump " + v1jump.to_s + " " + v2jump.to_s
-            if v1jump != nil and v2jump != nil
-                time = [v1jump, v2jump].min
-                print_debug "TAKING MIN OF TIME: " + time.to_s
-            elsif v1jump != nil and v2jump == nil
-                time = v1jump
-                print_debug "ASSIGNED NEW TIME FROM V1 CELL " + time.to_s
-            elsif v1jump == nil and v2jump != nil
-                time = v2jump
-                print_debug "ASSIGNED NEW TIME FROM V2 CELL " + time.to_s
-            else
-                # time += 1
-            end
-            print_debug "V1J:" + v1jump.to_s + " V2J:" + v2jump.to_s
-            flag = false
-        end
-
-
-        #time = new_offset
-        #puts "ONSET:",new_onset, "OFFSET:",new_offset
-        ## FIND THE NEXT CELL TO JUMP TO IF WE'RE JUST BETWEEN CELLS
-        ## FIND THE ONSET OF THE NEXT CELL
-        #v1jump = nil
-        #v2jump = nil
-        #for v1c in var1.cells
-        #if v1c.offset > time
-        #v1jump = v1c.offset
-        #break
-        #end
-        #end
-        #for v2c in var2.cells
-        #if v2c.offset > time
-        #v2jump = v2c.offset
-        #break
-        #end
-        #end
-
-        #if v1jump == nil and v2jump != nil
-        #time = v2jump
-        #elsif v1jump != nil and v2jump == nil
-        #time = v1jump
-        #elsif v1jump != nil and v2jump != nil
-        #time = [v1jump, v2jump].min + 1
-        #else
-        #time += 1
-        #next
-        #end
-
-        ##time += 1
-
-        if count == 1500
-            puts "ERROR MAX ITERATIONS REACHED, POSSIBLE INF LOOP"
-        end
+        mutex_cell.change_arg("onset", t0)
+        mutex_cell.change_arg("offset", t1)
+        fillMutexCell(v1cell, v2cell, mutex_cell, mutex, var1_argprefix, var2_argprefix)
+      end
 
     end
+
+
+    # Now that we have all of the necessary temporal information
+    # go through each time in the list and create a cell
 
     for i in 0..mutex.cells.length-1
         c = mutex.cells[i]
@@ -1371,6 +1262,42 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
     puts "Created a column with ", mutex.cells.length, " cells."
 
     return mutex
+end
+
+def fillMutexCell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix)
+  if v1cell != nil and v2cell != nil
+      for arg in mutex.arglist
+          a = arg.gsub(var1_argprefix, "")
+          if arg.index(var1_argprefix) == 0
+              v = eval "v1cell.#{a}"
+              cell.change_arg(arg, v)
+          end
+
+          a = arg.gsub(var2_argprefix, "")
+          if arg.index(var2_argprefix) == 0
+              v = eval "v2cell.#{a}"
+              cell.change_arg(arg, v)
+          end
+      end
+
+  elsif v1cell != nil and v2cell == nil
+      for arg in mutex.arglist
+          a = arg.gsub(var1_argprefix, "")
+          if arg.index(var1_argprefix) == 0
+              v = eval "v1cell.#{a}"
+              cell.change_arg(arg, v)
+          end
+      end
+
+  elsif v1cell == nil and v2cell != nil
+      for arg in mutex.arglist
+          a = arg.gsub(var2_argprefix, "")
+          if arg.index(var2_argprefix) == 0
+              v = eval "v2cell.#{a}"
+              cell.change_arg(arg, v)
+          end
+      end
+  end
 end
 
 
