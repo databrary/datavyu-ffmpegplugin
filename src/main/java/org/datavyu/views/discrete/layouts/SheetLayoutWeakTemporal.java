@@ -218,7 +218,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 
                 times.add(onset);
                 times.add(offset);
-
+                
+                cell.setOverlapBorder(false);
             }
         }
         
@@ -338,6 +339,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
               
                 if(curCell.getOffsetTicks() > nextCell.getOnsetTicks()) {
                     curCell.setBounds(0, curCell.getY(), width, nextCell.getY() - curCell.getY());
+                    curCell.setOverlapBorder(true);
                 }
                 
                 if(curCell.getOnsetTicks() == nextCell.getOnsetTicks()) {
