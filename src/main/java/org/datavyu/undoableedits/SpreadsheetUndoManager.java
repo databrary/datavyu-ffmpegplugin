@@ -72,7 +72,7 @@ public class SpreadsheetUndoManager  extends UndoManager implements ListModel {
                 }
             }
         }
-        if (addEdit) {
+        if (addEdit && ue != null) {
             result = super.addEdit(ue);
         } else {
             result = false;
