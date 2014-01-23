@@ -88,12 +88,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         JScrollPane pane = (JScrollPane) parent;
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
                 .getView();
-
+        
         // See if we need to redraw this spreadsheet
 //        if(!Datavyu.getProjectController().getDB().isChanged() && !Datavyu.getView().getRedraw()) {
 //            return;
 //        }
-        Datavyu.getProjectController().getDB().markAsUnchanged();
+//        Datavyu.getProjectController().getDB().markAsUnchanged();
 //        Datavyu.getView().setRedraw(false);
 
         laidCells = 0;
@@ -284,7 +284,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     }
                 }
                 
-                // Cells with same onsets
             }
         }
                 
@@ -293,7 +292,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             List<SpreadsheetCell> cellsWithOnset = cellsByOnset.get(time);
             List<SpreadsheetCell> cellsWithOffset = cellsByOffset.get(time);
             
-//            System.out.println(String.valueOf(time) + " at position " + String.valueOf(timeByLoc.get(time)));
             
             if(cellsWithOnset != null) {
                 for(SpreadsheetCell cell : cellsWithOnset) {

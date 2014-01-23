@@ -152,6 +152,10 @@ implements MouseListener, FocusListener, CellListener {
     public void setBeingProcessed(boolean beingProcessed) {
         this.beingProcessed = beingProcessed;
     }
+    
+    public void forceCellRefresh() {
+        model = model.getFreshCell();
+    }
 
     /** The logger for this class. */
     private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetCell.class);
@@ -597,6 +601,7 @@ implements MouseListener, FocusListener, CellListener {
 
     @Override
     public void focusLost(final FocusEvent e) {
+        model = model.getFreshCell();
     }
 
     @Override

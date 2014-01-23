@@ -252,7 +252,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         ArrayList<SpreadsheetCell> result = new ArrayList<SpreadsheetCell>();
 
         for (Cell c : model.getCellsTemporally()) {
-            result.add(viewMap.get(c));
+            SpreadsheetCell sc = viewMap.get(c);
+            sc.forceCellRefresh();
+            result.add(sc);
         }
 
         return result;
