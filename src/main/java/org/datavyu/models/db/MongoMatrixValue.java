@@ -144,7 +144,7 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
     @Override
     public Value createArgument(Argument.Type argType) {
         Value val = null;
-        String name = String.format("arg%02d", getArguments().size() + 1);
+        String name = String.format("code%02d", getArguments().size() + 1);
         if(argType == Argument.Type.NOMINAL) {
             val = new MongoNominalValue((ObjectId)this.get("_id"), name, getArguments().size());
         } else if(argType == Argument.Type.TEXT) {

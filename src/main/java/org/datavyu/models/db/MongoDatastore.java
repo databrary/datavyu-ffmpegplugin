@@ -439,7 +439,7 @@ public class MongoDatastore implements Datastore {
             throw new UserWarningException("Unable to add variable, one with the same name already exists.");
         }
 
-        Variable v = new MongoVariable(name, new Argument("arg01", type));
+        Variable v = new MongoVariable(name, new Argument("code01", type));
 
         varCollection.save((MongoVariable)v);
 
