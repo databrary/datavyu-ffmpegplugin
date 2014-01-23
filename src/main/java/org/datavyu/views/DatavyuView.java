@@ -347,8 +347,8 @@ public final class DatavyuView extends FrameView
 
                    // Show the Dialog
                    if (JOptionPane.showConfirmDialog(null,
-                           "Openshapa has detected an unsaved file. Would you like recover this file ?",
-                           "OpenShapa",
+                           "Datavyu has detected an unsaved file. Would you like recover this file ?",
+                           "Datavyu",
                            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                         openRecoveredFile(f);
                         this.saveAs();
