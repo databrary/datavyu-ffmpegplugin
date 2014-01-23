@@ -68,7 +68,7 @@ public final class MongoMatrixValue extends MongoValue implements MatrixValue {
         for(int i = 0; i < values.size(); i++) {
             Value v = values.get(i);
             if (v.toString() == null) {
-                result += "<arg"+String.valueOf(i)+">";
+                result += "<code"+String.valueOf(i)+">";
             } else {
                 result += v.toString();
             }
