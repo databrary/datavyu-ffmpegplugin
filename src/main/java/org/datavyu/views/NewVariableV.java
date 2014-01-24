@@ -50,11 +50,6 @@ public final class NewVariableV extends DatavyuDialog {
 
         model = Datavyu.getProjectController().getDB();
 
-        // init button group
-        buttonGroup1.add(textTypeButton);
-        buttonGroup1.add(nominalTypeButton);
-        buttonGroup1.add(matrixTypeButton);
-
         getRootPane().setDefaultButton(okButton);
     }
 
@@ -68,16 +63,10 @@ public final class NewVariableV extends DatavyuDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         nameField = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
-        textTypeButton = new javax.swing.JRadioButton();
-        nominalTypeButton = new javax.swing.JRadioButton();
-        matrixTypeButton = new javax.swing.JRadioButton();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/datavyu/views/resources/NewVariableV"); // NOI18N
@@ -85,49 +74,7 @@ public final class NewVariableV extends DatavyuDialog {
         setName("Form"); // NOI18N
         setResizable(false);
 
-        jLabel1.setText(bundle.getString("jLabel2.text")); // NOI18N
-        jLabel1.setName("jLabel1"); // NOI18N
-
-        jLabel2.setText(bundle.getString("nameField.text")); // NOI18N
-        jLabel2.setName("jLabel2"); // NOI18N
-
         nameField.setName("nameField"); // NOI18N
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Type:"));
-        jPanel1.setName("jPanel1"); // NOI18N
-
-        textTypeButton.setSelected(true);
-        textTypeButton.setLabel(bundle.getString("textTypeButton.text")); // NOI18N
-        textTypeButton.setName("textTypeButton"); // NOI18N
-
-        nominalTypeButton.setLabel(bundle.getString("nominalTypeButton.text")); // NOI18N
-        nominalTypeButton.setName("nominalTypeButton"); // NOI18N
-
-        matrixTypeButton.setLabel(bundle.getString("matrixTypeButton.text")); // NOI18N
-        matrixTypeButton.setName("matrixTypeButton"); // NOI18N
-
-        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .add(39, 39, 39)
-                .add(textTypeButton)
-                .add(40, 40, 40)
-                .add(nominalTypeButton)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 39, Short.MAX_VALUE)
-                .add(matrixTypeButton)
-                .add(24, 24, 24))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jPanel1Layout.createSequentialGroup()
-                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(textTypeButton)
-                    .add(nominalTypeButton)
-                    .add(matrixTypeButton))
-                .addContainerGap(39, Short.MAX_VALUE))
-        );
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(NewVariableV.class);
         okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
@@ -147,43 +94,38 @@ public final class NewVariableV extends DatavyuDialog {
             }
         });
 
+        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setName("jLabel1"); // NOI18N
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(jLabel2)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(layout.createSequentialGroup()
                         .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(18, 18, 18)
                         .add(cancelButton))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, layout.createSequentialGroup()
+                    .add(layout.createSequentialGroup()
                         .add(jLabel1)
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(nameField))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 290, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel2)
-                    .add(layout.createSequentialGroup()
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(jLabel1))
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                            .add(cancelButton)
-                            .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(jLabel1))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(cancelButton)
+                    .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -238,25 +180,13 @@ public final class NewVariableV extends DatavyuDialog {
      * @return The type of variable the user has selected to use.
      */
     public Argument.Type getVariableType() {
-        if (nominalTypeButton.isSelected()) {
-            return Argument.Type.NOMINAL;
-        } else if (matrixTypeButton.isSelected()) {
-            return Argument.Type.MATRIX;
-        } else {
-            return Argument.Type.TEXT;
-        }
+         return Argument.Type.MATRIX; //this is now the only allowed 
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton cancelButton;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JRadioButton matrixTypeButton;
     private javax.swing.JTextField nameField;
-    private javax.swing.JRadioButton nominalTypeButton;
     private javax.swing.JButton okButton;
-    private javax.swing.JRadioButton textTypeButton;
     // End of variables declaration//GEN-END:variables
 }
