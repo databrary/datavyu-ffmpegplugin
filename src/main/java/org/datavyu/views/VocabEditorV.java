@@ -680,6 +680,7 @@ public final class VocabEditorV extends DatavyuDialog {
         argTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Nominal" }));
         argTypeComboBox.setToolTipText(bundle.getString("argTypeComboBox.tip")); // NOI18N
         argTypeComboBox.setEnabled(false);
+        argTypeComboBox.setVisible(false);
         argTypeComboBox.setName("argTypeComboBox"); // NOI18N
         argTypeComboBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
