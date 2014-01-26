@@ -16,39 +16,22 @@ package org.datavyu.views.discrete;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import org.datavyu.Configuration;
+import org.datavyu.Datavyu;
+import org.datavyu.models.db.*;
+import org.datavyu.undoableedits.ChangeNameVariableEdit;
+import org.datavyu.util.Constants;
+import org.jdesktop.application.Action;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.HeadlessException;
-
-
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import javax.swing.*;
+import javax.swing.undo.UndoableEdit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
-
-
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.undo.UndoableEdit;
-
-import org.jdesktop.application.Action;
-
-import org.datavyu.Configuration;
-import org.datavyu.Datavyu;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.Variable;
-
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.UserWarningException;
-import org.datavyu.models.db.VariableListener;
-import org.datavyu.undoableedits.ChangeNameVariableEdit;
-import org.datavyu.util.Constants;
 
 /**
  * This class maintains the visual representation of the column in the
@@ -415,6 +398,13 @@ implements VariableListener,
 
     public void setColumnName(final String newName) throws UserWarningException {
         try {
+            // Make sure this column name isn't already in the column
+            for (Variable v : datastore.getAllVariables()) {
+                if (v.getName().equals(newName)) {
+                    Datavyu.getApplication().showWarningDialog("Error: Column name already exists.");
+                    return;
+                }
+            }
             variable.setName(newName);
             UndoableEdit edit = new ChangeNameVariableEdit(variable.getName(), newName);
             Datavyu.getView().getComponent().revalidate();
