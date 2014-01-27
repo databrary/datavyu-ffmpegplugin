@@ -65,7 +65,6 @@ public final class VocabEditorV extends DatavyuDialog {
     /** Swing components. */
     private JButton addArgButton;
     private JButton addMatrixButton;
-    private JComboBox argTypeComboBox;
     private JButton closeButton;
     private JScrollPane currentVocabList;
     private JButton deleteButton;
@@ -323,7 +322,7 @@ public final class VocabEditorV extends DatavyuDialog {
         Argument fa = var.addArgument(Argument.Type.NOMINAL);
         selectedVocabElement.setModel(var.getVariableType());
 
-        String type = (String) argTypeComboBox.getSelectedItem();
+        String type = "Nominal"; //Hardcoded. Was previously (String) argTypeComboBox.getSelectedItem() but this form element is now removed
         LOGGER.event("vocEd - add argument:" + type);
 
         selectedVocabElement.setHasChanged(true);
@@ -558,13 +557,6 @@ public final class VocabEditorV extends DatavyuDialog {
         }
 */
         if (selectedArgument != null) {
-            Argument fa = selectedArgument.getModel();
-
-            if (fa.type.equals(Argument.Type.NOMINAL)) {
-                argTypeComboBox.setSelectedItem("Nominal");
-            } else {
-                argTypeComboBox.setSelectedItem("Untyped");
-            }
 
             // W00t - argument is selected - populate the index so that the user
             // can shift the argument around.
@@ -598,7 +590,6 @@ public final class VocabEditorV extends DatavyuDialog {
         moveArgLeftButton = new javax.swing.JButton();
         moveArgRightButton = new javax.swing.JButton();
         addArgButton = new javax.swing.JButton();
-        argTypeComboBox = new javax.swing.JComboBox();
         deleteButton = new javax.swing.JButton();
         currentVocabList = new javax.swing.JScrollPane();
         closeButton = new javax.swing.JButton();
@@ -676,22 +667,6 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         getContentPane().add(addArgButton, gridBagConstraints);
-
-        argTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Nominal" }));
-        argTypeComboBox.setToolTipText(bundle.getString("argTypeComboBox.tip")); // NOI18N
-        argTypeComboBox.setEnabled(false);
-        argTypeComboBox.setVisible(false);
-        argTypeComboBox.setName("argTypeComboBox"); // NOI18N
-        argTypeComboBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                argTypeComboBoxItemStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        getContentPane().add(argTypeComboBox, gridBagConstraints);
 
         deleteButton.setAction(actionMap.get("delete")); // NOI18N
         deleteButton.setText(bundle.getString("deleteButton.text")); // NOI18N
@@ -774,61 +749,6 @@ public final class VocabEditorV extends DatavyuDialog {
     }
 
     /**
-     * The action to invoke when the user changes the formal argument dropdown.
-     *
-     * @param evt The event that triggered this action.
-     */
-    private void argTypeComboBoxItemStateChanged(final java.awt.event.ItemEvent evt) {
-        /*
-        if (selectedVocabElement != null && selectedArgument != null
-                && evt.getStateChange() == ItemEvent.SELECTED) {
-
-            // Need to change the type of the selected argument.
-            FormalArgument oldArg = selectedArgument.getModel();
-            FormalArgument newArg = null;
-
-            try {
-                if (evt.getItem().equals("Untyped")) {
-                    newArg = new UnTypedFormalArg(getLegacyDB(), oldArg.getFargName());
-                } else if (evt.getItem().equals("Text")) {
-                    newArg = new QuoteStringFormalArg(getLegacyDB(), oldArg.getFargName());
-                } else if (evt.getItem().equals("Nominal")) {
-                    newArg = new NominalFormalArg(getLegacyDB(), oldArg.getFargName());
-                } else if (evt.getItem().equals("Integer")) {
-                    newArg = new IntFormalArg(getLegacyDB(), oldArg.getFargName());
-                } else {
-                    newArg = new FloatFormalArg(getLegacyDB(), oldArg.getFargName());
-                }
-
-                if (oldArg.getFargType().equals(newArg.getFargType())) {
-                    return;
-                }
-
-                selectedVocabElement.getModel().replaceFormalArg(newArg,
-                        selectedArgument.getArgPos());
-                selectedVocabElement.setHasChanged(true);
-
-                // Store the selectedVocabElement in a temp variable -
-                // rebuilding contents may alter the currently selected vocab
-                // element.
-                VocabElementV temp = selectedVocabElement;
-                temp.rebuildContents();
-
-                // Select the contents of the newly created formal argument.
-                temp.requestFocus();
-                FormalArgEditor faV = temp.getArgumentView(newArg);
-                temp.requestArgFocus(faV);
-
-                updateDialogState();
-
-            } catch (SystemErrorException se) {
-                LOGGER.error("Unable to alter selected argument.", se);
-            }
-        }
-        */
-    }
-
-    /**
      * Initialization of mouse listeners on swing elements
      */
     private void componentListnersInit() {
@@ -873,9 +793,6 @@ public final class VocabEditorV extends DatavyuDialog {
                 else if(component.equals("okButton")){
                     statusBar.setText("Save changes and close the window.");
                 }
-                else if(component.equals("argTypeComboBox")){
-                    statusBar.setText("Select the argument type.");
-                }
             }
             @Override
             public void mouseExited(MouseEvent me){
@@ -883,7 +800,6 @@ public final class VocabEditorV extends DatavyuDialog {
             }
         };
 
-        argTypeComboBox.addMouseListener(ma);
         currentVocabList.addMouseListener(ma);
         addMatrixButton.addMouseListener(ma);
         deleteButton.addMouseListener(ma);
