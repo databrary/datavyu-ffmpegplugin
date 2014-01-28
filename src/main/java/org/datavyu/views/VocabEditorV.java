@@ -525,16 +525,10 @@ public final class VocabEditorV extends DatavyuDialog {
 /*
         if (selectedVocabElement != null) {
             addArgButton.setEnabled(true);
-            argTypeComboBox.setEnabled(true);
-            varyArgCheckBox.setEnabled(true);
             deleteButton.setEnabled(true);
-            varyArgCheckBox.setSelected(selectedVocabElement.getModel()
-                    .getVarLen());
         } else {
             addArgButton.setEnabled(false);
-            argTypeComboBox.setEnabled(false);
             deleteButton.setEnabled(false);
-            varyArgCheckBox.setEnabled(false);
         }
 */
         if (selectedArgument != null) {
@@ -762,9 +756,6 @@ public final class VocabEditorV extends DatavyuDialog {
                 else if(component.equals("applyButton")){
                     statusBar.setText("Apply changes to the vocab elements. Hotkey: ctrl + S");
                 }
-                else if(component.equals("varyArgCheckBox")){
-                    statusBar.setText("Let the column have a varying number of arguments.");
-                }
                 else if(component.equals("moveArgRightButton")){
                     statusBar.setText("Move a code right within a column. Hotkey: ctrl + ->");
                 }
@@ -785,7 +776,6 @@ public final class VocabEditorV extends DatavyuDialog {
         addArgButton.addMouseListener(ma);
         moveArgLeftButton.addMouseListener(ma);
         moveArgRightButton.addMouseListener(ma);
-        //varyArgCheckBox.addMouseListener(ma);
 
     }
 
