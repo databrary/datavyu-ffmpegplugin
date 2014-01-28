@@ -259,7 +259,7 @@ public final class VocabEditorV extends DatavyuDialog {
      */
     @Action
     public void moveArgumentLeft() {
-        LOGGER.error("vocEd - move argument left");
+        LOGGER.error("vocEd - move code left");
         Argument va = selectedVocabElement.getModel().childArguments.get(selectedArgumentI);
         Variable var = selectedVocabElement.getVariable();
         var.moveArgument(va.name, var.getArgumentIndex(va.name) - 1);
@@ -279,7 +279,7 @@ public final class VocabEditorV extends DatavyuDialog {
      */
     @Action
     public void moveArgumentRight() {
-        LOGGER.error("vocEd - move argument right");
+        LOGGER.error("vocEd - move code right");
         Argument va = selectedVocabElement.getModel().childArguments.get(selectedArgumentI);
         Variable var = selectedVocabElement.getVariable();
         var.moveArgument(va.name, var.getArgumentIndex(va.name) + 1);
@@ -434,7 +434,7 @@ public final class VocabEditorV extends DatavyuDialog {
                     JOptionPane.showMessageDialog(this, "Vocab Element name in use.","Error adding vocab", 2);
                     break;
                 case 2:
-                    JOptionPane.showMessageDialog(this, "Argument name in use.","Duplicate argument name", 2);
+                    JOptionPane.showMessageDialog(this, "Code name in use.","Duplicate code name", 2);
                     break;
             }
 
@@ -751,13 +751,13 @@ public final class VocabEditorV extends DatavyuDialog {
                     statusBar.setText("Redo any undone changes. Hotkey: ctrl + Y");
                 }
                 else if(component.equals("addArgButton")){
-                    statusBar.setText("Add a new argument to a column. Hotkey: ctrl + A");
+                    statusBar.setText("Add a new code to a column. Hotkey: ctrl + A");
                 }
                 else if(component.equals("deleteButton")){
-                    statusBar.setText("Delete an argument or column. Hotkey: ctrl + delete");
+                    statusBar.setText("Delete a code or column. Hotkey: ctrl + delete");
                 }
                 else if(component.equals("moveArgLeftButton")){
-                    statusBar.setText("Move an argument left within a column. Hotkey: ctrl + <-");
+                    statusBar.setText("Move a code left within a column. Hotkey: ctrl + <-");
                 }
                 else if(component.equals("applyButton")){
                     statusBar.setText("Apply changes to the vocab elements. Hotkey: ctrl + S");
@@ -766,7 +766,7 @@ public final class VocabEditorV extends DatavyuDialog {
                     statusBar.setText("Let the column have a varying number of arguments.");
                 }
                 else if(component.equals("moveArgRightButton")){
-                    statusBar.setText("Move an argument right within a column. Hotkey: ctrl + ->");
+                    statusBar.setText("Move a code right within a column. Hotkey: ctrl + ->");
                 }
                 else if(component.equals("okButton")){
                     statusBar.setText("Save changes and close the window.");
