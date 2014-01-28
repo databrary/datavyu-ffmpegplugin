@@ -156,7 +156,12 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
             }
         };
 
-
+    //TODO: These may be better suited for a resoure bundle and properties file
+    /**Tooltip text for volume icon */
+    public static final String VOLUME_TOOLTIP = "Change volume";
+    /**Tooltip text for resize icon */
+    public static final String RESIZE_TOOLTIP = "Resize video";
+    
     // ------------------------------------------------------------------------
     // [initialization]
     //
@@ -176,6 +181,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         volumeButton.setIcon(getVolumeButtonIcon());
         volumeButton.setBorderPainted(false);
         volumeButton.setContentAreaFilled(false);
+        volumeButton.setToolTipText(BaseQuickTimeDataViewer.VOLUME_TOOLTIP);
         volumeButton.addActionListener(new ActionListener() {
                 @Override public void actionPerformed(final ActionEvent e) {
                     handleActionButtonEvent1(e);
@@ -214,6 +220,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         resizeButton.setIcon(resizeIcon);
         resizeButton.setBorderPainted(false);
         resizeButton.setContentAreaFilled(false);
+        resizeButton.setToolTipText(BaseQuickTimeDataViewer.RESIZE_TOOLTIP);
         resizeButton.addActionListener(new ActionListener() {
                 @Override public void actionPerformed(final ActionEvent e) {
                     handleActionButtonEvent2(e);

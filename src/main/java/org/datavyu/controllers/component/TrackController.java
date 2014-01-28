@@ -132,7 +132,14 @@ public final class TrackController implements ViewerStateListener,
 
     private boolean isViewerVisible = true;
 
-
+    //TODO: These may be better suited for a resource bundle and properties file, OR TrackConstants.java
+    /**Tooltip text for visible icon */
+    public static final String VISIBLE_TOOLTIP = "Toggle video visibility";
+    /**Tooltip text for lock/unlock icon */
+    public static final String LOCKUNLOCK_TOOLTIP = "Toggle lock/unlock";
+    /**Tooltip text for rubbish icon */
+    public static final String RUBBISH_TOOLTIP = "Close video";
+    
     /**
      * Creates a new TrackController.
      *
@@ -217,6 +224,7 @@ public final class TrackController implements ViewerStateListener,
             lockUnlockButton.setName("lockUnlockButton");
             lockUnlockButton.setContentAreaFilled(false);
             lockUnlockButton.setBorderPainted(false);
+            lockUnlockButton.setToolTipText(TrackController.LOCKUNLOCK_TOOLTIP);
             lockUnlockButton.addActionListener(new ActionListener() {
                     @Override public void actionPerformed(final ActionEvent e) {
                         handleLockUnlockButtonEvent(e);
@@ -241,6 +249,7 @@ public final class TrackController implements ViewerStateListener,
             visibleButton.setName("visibleButton");
             visibleButton.setContentAreaFilled(false);
             visibleButton.setBorderPainted(false);
+            visibleButton.setToolTipText(TrackController.VISIBLE_TOOLTIP);
             visibleButton.addActionListener(new ActionListener() {
                     @Override public void actionPerformed(final ActionEvent e) {
                         handleVisibleButtonEvent(e);
@@ -265,6 +274,7 @@ public final class TrackController implements ViewerStateListener,
             rubbishButton.setName("rubbishButton");
             rubbishButton.setContentAreaFilled(false);
             rubbishButton.setBorderPainted(false);
+            rubbishButton.setToolTipText(TrackController.RUBBISH_TOOLTIP);
             rubbishButton.addActionListener(new ActionListener() {
                     @Override public void actionPerformed(final ActionEvent e) {
                         handleDeleteButtonEvent(e);
