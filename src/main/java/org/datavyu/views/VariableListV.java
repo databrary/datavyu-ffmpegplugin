@@ -91,7 +91,7 @@ implements TableModelListener, DatastoreListener {
         // Set the names of the columns.
         tableModel.addColumn(rMap.getString("Table.visibleColumn"));
         tableModel.addColumn(rMap.getString("Table.nameColumn"));
-        tableModel.addColumn(rMap.getString("Table.typeColumn"));
+        tableModel.addColumn(rMap.getString("Table.typeColumn")); //lose this?
 
         //Use JTextfield to edit variable name cells
         variableList.getColumnModel().getColumn(NCOLUMN)
