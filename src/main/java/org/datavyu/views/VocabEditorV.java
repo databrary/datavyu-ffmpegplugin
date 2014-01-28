@@ -162,25 +162,6 @@ public final class VocabEditorV extends DatavyuDialog {
         updateDialogState();
     }
 
-    /**
-     * The action to invoke when the user clicks on the add predicate button.
-     */
-    /*
-     * TODO: ADD PREDICATE SUPPORT
-    @Action
-    public void addPredicate() {
-        try {
-            LOGGER.event("vocEd - add predicate");
-            PredicateVocabElement pve =
-                    new PredicateVocabElement(getLegacyDB(),
-                                              "predicate" + getPredNameNum());
-            addVocabElement(pve);
-
-        } catch (SystemErrorException e) {
-            LOGGER.error("Unable to create predicate vocab element", e);
-        }
-        updateDialogState();
-    }*/
 
     /**
      * The action to invoke when the user clicks on the add matrix button.
@@ -760,9 +741,6 @@ public final class VocabEditorV extends DatavyuDialog {
                 if(component.equals("closeButton")){
                     statusBar.setText("Close the editor");
                 }
-                else if(component.equals("addPredicateButton")){
-                    statusBar.setText("Add a new predicate definition. Hotkey: ctrl + P");
-                }
                 else if(component.equals("addMatrixButton")){
                     statusBar.setText("Add a new column. Hotkey: ctrl + M");
                 }
@@ -821,35 +799,6 @@ public final class VocabEditorV extends DatavyuDialog {
                 max += 1;
             }
         }
-
-        return max + 1;
-    }
-
-    /**
-     * Determine the number of the next predicate added to the vocab list
-     */
-    private int getPredNameNum(){
-        int max = 0;
-        /*
-         * TODO: Predicate unsupported.
-         *
-        for (VocabElementV vev : veViews) {
-            if (vev.getModel().type.equals(Argument.Type.PREDICATE)) {
-                String name = vev.getModel().name;
-                for (int i = name.length();i>0;i--) {
-                    if (Character.isDigit(name.charAt(i-1))) {
-                        String numericPart = name.substring(i-1);
-                        int check = Integer.parseInt(numericPart);
-                        if (check > max) {
-                            max = check;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-        */
 
         return max + 1;
     }
