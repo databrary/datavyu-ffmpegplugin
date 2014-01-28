@@ -764,7 +764,7 @@ public final class VocabEditorV extends DatavyuDialog {
                     statusBar.setText("Add a new predicate definition. Hotkey: ctrl + P");
                 }
                 else if(component.equals("addMatrixButton")){
-                    statusBar.setText("Add a new matrix column. Hotkey: ctrl + M");
+                    statusBar.setText("Add a new column. Hotkey: ctrl + M");
                 }
                 else if(component.equals("undoButton")){
                     statusBar.setText("Undo a series of changes. Hotkey: ctrl + Z");
