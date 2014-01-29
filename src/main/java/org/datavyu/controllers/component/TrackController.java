@@ -224,7 +224,7 @@ public final class TrackController implements ViewerStateListener,
             lockUnlockButton.setName("lockUnlockButton");
             lockUnlockButton.setContentAreaFilled(false);
             lockUnlockButton.setBorderPainted(false);
-            lockUnlockButton.setToolTipText(TrackController.LOCKUNLOCK_TOOLTIP);
+            lockUnlockButton.setToolTipText(LOCKUNLOCK_TOOLTIP);
             lockUnlockButton.addActionListener(new ActionListener() {
                     @Override public void actionPerformed(final ActionEvent e) {
                         handleLockUnlockButtonEvent(e);
@@ -249,7 +249,7 @@ public final class TrackController implements ViewerStateListener,
             visibleButton.setName("visibleButton");
             visibleButton.setContentAreaFilled(false);
             visibleButton.setBorderPainted(false);
-            visibleButton.setToolTipText(TrackController.VISIBLE_TOOLTIP);
+            visibleButton.setToolTipText(VISIBLE_TOOLTIP);
             visibleButton.addActionListener(new ActionListener() {
                     @Override public void actionPerformed(final ActionEvent e) {
                         handleVisibleButtonEvent(e);
@@ -274,7 +274,7 @@ public final class TrackController implements ViewerStateListener,
             rubbishButton.setName("rubbishButton");
             rubbishButton.setContentAreaFilled(false);
             rubbishButton.setBorderPainted(false);
-            rubbishButton.setToolTipText(TrackController.RUBBISH_TOOLTIP);
+            rubbishButton.setToolTipText(RUBBISH_TOOLTIP);
             rubbishButton.addActionListener(new ActionListener() {
                     @Override public void actionPerformed(final ActionEvent e) {
                         handleDeleteButtonEvent(e);

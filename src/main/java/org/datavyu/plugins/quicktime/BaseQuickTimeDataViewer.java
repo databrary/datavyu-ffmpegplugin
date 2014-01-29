@@ -181,7 +181,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         volumeButton.setIcon(getVolumeButtonIcon());
         volumeButton.setBorderPainted(false);
         volumeButton.setContentAreaFilled(false);
-        volumeButton.setToolTipText(BaseQuickTimeDataViewer.VOLUME_TOOLTIP);
+        volumeButton.setToolTipText(VOLUME_TOOLTIP);
         volumeButton.addActionListener(new ActionListener() {
                 @Override public void actionPerformed(final ActionEvent e) {
                     handleActionButtonEvent1(e);
@@ -220,7 +220,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         resizeButton.setIcon(resizeIcon);
         resizeButton.setBorderPainted(false);
         resizeButton.setContentAreaFilled(false);
-        resizeButton.setToolTipText(BaseQuickTimeDataViewer.RESIZE_TOOLTIP);
+        resizeButton.setToolTipText(RESIZE_TOOLTIP);
         resizeButton.addActionListener(new ActionListener() {
                 @Override public void actionPerformed(final ActionEvent e) {
                     handleActionButtonEvent2(e);
