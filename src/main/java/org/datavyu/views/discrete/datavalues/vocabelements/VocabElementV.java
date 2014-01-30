@@ -54,9 +54,6 @@ public class VocabElementV extends JPanel {
     /** The label to use for if this vocab element has changed. */
     private JLabel deltaIcon;
 
-    /** The label to use for if this vocab element is marked for removal. */
-    private JLabel deleteIcon;
-
     /** The rootView of the VocabElement. */
     private VocabElementRootView veRootView;
 
@@ -107,18 +104,12 @@ public class VocabElementV extends JPanel {
         deltaIcon.setPreferredSize(ICON_SIZE);
         deltaIcon.setToolTipText(rMap.getString("delta.tooltip"));
 
-        deleteIcon = new JLabel();
-        deleteIcon.setMaximumSize(ICON_SIZE);
-        deleteIcon.setMinimumSize(ICON_SIZE);
-        deleteIcon.setPreferredSize(ICON_SIZE);
-
         veRootView = new VocabElementRootView(var, this);
 
         JPanel leftPanel = new JPanel();
         FlowLayout flayout = new FlowLayout(FlowLayout.LEFT, 5, 0);
         leftPanel.setLayout(flayout);
         leftPanel.add(deltaIcon);
-        leftPanel.add(deleteIcon);
         veRootView.setOpaque(false);
         veRootView.setBackground(Color.WHITE);
         leftPanel.setOpaque(false);
@@ -307,13 +298,6 @@ public class VocabElementV extends JPanel {
      */
     public final JLabel getChangedIcon() {
         return deltaIcon;
-    }
-
-    /**
-     * @return JLabel delete icon.
-     */
-    public final JLabel getDeleteIcon() {
-        return deleteIcon;
     }
 
     public final void setBG(Color col){
