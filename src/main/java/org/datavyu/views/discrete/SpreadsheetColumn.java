@@ -117,7 +117,10 @@ implements VariableListener,
         setMinimumSize(this.getHeaderSize());
         setPreferredSize(this.getHeaderSize());
         setMaximumSize(this.getHeaderSize());
-        setText(var.getName() + "  (" + var.getVariableType().type + ")");
+        
+        String typeString = "";
+        if (var.getVariableType().type != Argument.Type.MATRIX) typeString = "  (" + var.getVariableType().type + ")";
+        setText(var.getName() + typeString); //typeString for matrices is empty. Only displayed for non-matrix types (Text, Nominal)
 
         datapanel = new ColumnDataPanel(db, width, var, cellSelL);
         this.setVisible(!var.isHidden());
