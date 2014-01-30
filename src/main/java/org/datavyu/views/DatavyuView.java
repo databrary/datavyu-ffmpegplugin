@@ -195,7 +195,6 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenu scriptMenu;
     private javax.swing.JMenuItem showSpreadsheetMenuItem;
     private javax.swing.JMenu spreadsheetMenu;
-    //private javax.swing.JCheckBoxMenuItem strongTemporalOrderMenuItem; //COMMENTED OUT UNTIL IMPLEMENTED: 1-23-2014 jc
     private javax.swing.JMenuItem undoSpreadSheetMenuItem;
     private javax.swing.JMenuItem vocabEditorMenuItem;
     private javax.swing.JCheckBoxMenuItem weakTemporalOrderMenuItem;
@@ -249,9 +248,6 @@ public final class DatavyuView extends FrameView
         int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
         weakTemporalOrderMenuItem.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_T, keyMask));
-
-        //strongTemporalOrderMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-        //        KeyEvent.VK_T, InputEvent.SHIFT_MASK | keyMask)); //COMMENTED OUT UNTIL IMPLEMENTED: 1-23-2014 jc
 
         // Set zoom in to keyMask + '+'
         zoomInMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS,
@@ -1084,7 +1080,6 @@ public final class DatavyuView extends FrameView
     }
     @Action public void showSpreadsheet(DVProgressBar progressBar) {
         weakTemporalOrderMenuItem.setSelected(false);
-        //strongTemporalOrderMenuItem.setSelected(false); //COMMENTED OUT UNTIL IMPLEMENTED: 1-23-2014 jc
 
         // need to add changes to maintain spreadsheet view after change
         // Create a fresh spreadsheet component and redraw the component.
@@ -1211,10 +1206,7 @@ public final class DatavyuView extends FrameView
 
         if (weakTemporalOrderMenuItem.isSelected()) {
             type = SheetLayoutType.WeakTemporal;
-        } /*else if (strongTemporalOrderMenuItem.isSelected()) {
-            type = SheetLayoutType.StrongTemporal;
-        }*/ //COMMENTED OUT UNTIL IMPLEMENTED: 1-23-2014 jc
-
+        } 
 
         panel.setLayoutType(type);
     }
@@ -1335,7 +1327,6 @@ public final class DatavyuView extends FrameView
         redoSpreadSheetMenuItem = new javax.swing.JMenuItem();
         jSeparator9 = new javax.swing.JPopupMenu.Separator();
         weakTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem();
-        //strongTemporalOrderMenuItem = new javax.swing.JCheckBoxMenuItem(); //COMMENTED OUT UNTIL IMPLEMENTED: 1-23-2014 jc
         zoomMenu = new javax.swing.JMenu();
         zoomInMenuItem = new javax.swing.JMenuItem();
         zoomOutMenuItem = new javax.swing.JMenuItem();
@@ -1567,14 +1558,6 @@ public final class DatavyuView extends FrameView
         });
         spreadsheetMenu.add(weakTemporalOrderMenuItem);
 
-        /*strongTemporalOrderMenuItem.setName("strongTemporalOrderMenuItem"); // NOI18N
-        strongTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                strongTemporalMenuItemActionPerformed(evt);
-            }
-        });
-        spreadsheetMenu.add(strongTemporalOrderMenuItem);*/ //COMMENTED OUT UNTIL IMPLEMENTED: 1-23-2014 jc
-
         zoomMenu.setName("zoomMenu"); // NOI18N
 
         zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
@@ -1750,20 +1733,6 @@ public final class DatavyuView extends FrameView
     } // GEN-LAST:event_tileWindowsMenuItemActionPerformed
 
     /**
-     * The action to invoke when the user selects 'strong temporal ordering'.
-     *
-     * @param evt
-     *            The event that fired this action.
-     */
-    private void strongTemporalMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) {
-        setRedraw(true);
-        // GEN-FIRST:event_strongTemporalMenuItemActionPerformed
-        weakTemporalOrderMenuItem.setSelected(false);
-        setSheetLayout();
-    } // GEN-LAST:event_strongTemporalMenuItemActionPerformed
-
-    /**
      * The action to invoke when the user selects 'weak temporal ordering'.
      *
      * @param evt
@@ -1773,7 +1742,6 @@ public final class DatavyuView extends FrameView
         final java.awt.event.ActionEvent evt) {
         setRedraw(true);
         // GEN-FIRST:event_weakTemporalMenuItemActionPerformed
-        //strongTemporalOrderMenuItem.setSelected(false); //COMMENTED OUT UNTIL IMPLEMENTED: 1-23-2014 jc
         setSheetLayout();
     } // GEN-LAST:event_weakTemporalMenuItemActionPerformed
 
