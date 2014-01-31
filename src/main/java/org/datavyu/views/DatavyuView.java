@@ -786,7 +786,7 @@ public final class DatavyuView extends FrameView
 
     /** Simulate loading a Datavyu project from file chooser. */
     public void open(final File file) {
-
+        
         DatavyuFileChooser fc = new DatavyuFileChooser();
         fc.setVisible(false);
         fc.setSelectedFile(file);
@@ -2041,7 +2041,7 @@ public final class DatavyuView extends FrameView
         menuItem.setName(file.toString());
         menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    open(file);
+                    if(Datavyu.getApplication().safeQuit()) open(file);
                 }
             });
 
