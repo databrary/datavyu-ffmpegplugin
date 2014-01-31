@@ -29,7 +29,7 @@ import org.yaml.snakeyaml.representer.Representer;
 
 
 /**
- * Used to create a custom YAML representation of an datavyu project.
+ * Used to create a custom YAML representation of a Datavyu project.
  */
 public class DatavyuProjectRepresenter extends Representer {
 

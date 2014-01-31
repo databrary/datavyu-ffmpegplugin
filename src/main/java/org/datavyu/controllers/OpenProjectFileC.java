@@ -51,7 +51,7 @@ public final class OpenProjectFileC {
 
             // Make sure the de-serialised object is a project file
             if (!(o instanceof Project)) {
-                LOGGER.error("Not an Datavyu project file");
+                LOGGER.error("Not a Datavyu project file");
                 return null;
             }
 
@@ -77,7 +77,7 @@ public final class OpenProjectFileC {
 
         // Make sure the de-serialised object is a project file
         if (!(o instanceof Project)) {
-            LOGGER.error("Not an Datavyu project file");
+            LOGGER.error("Not a Datavyu project file");
             return null;
         }
 

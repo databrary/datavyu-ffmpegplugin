@@ -28,7 +28,7 @@ import org.yaml.snakeyaml.nodes.Node;
 
 
 /**
- * Used to construct an datavyu project from its YAML representation.
+ * Used to construct a datavyu project from its YAML representation.
  */
 public class DatavyuProjectConstructor extends Constructor {
 

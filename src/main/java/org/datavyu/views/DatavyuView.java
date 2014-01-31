@@ -764,7 +764,7 @@ public final class DatavyuView extends FrameView
     }
 
     /**
-     * Action for loading an Datavyu project from disk.
+     * Action for loading a Datavyu project from disk.
      */
     @Action public void open() {
 
@@ -784,7 +784,7 @@ public final class DatavyuView extends FrameView
         }
     }
 
-    /** Simulate loading an Datavyu project from file chooser. */
+    /** Simulate loading a Datavyu project from file chooser. */
     public void open(final File file) {
 
         DatavyuFileChooser fc = new DatavyuFileChooser();
