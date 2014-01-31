@@ -787,10 +787,6 @@ public final class DatavyuView extends FrameView
     /** Simulate loading an Datavyu project from file chooser. */
     public void open(final File file) {
 
-        if (!Datavyu.getApplication().safeQuit()) {
-            return;
-        }
-
         DatavyuFileChooser fc = new DatavyuFileChooser();
         fc.setVisible(false);
         fc.setSelectedFile(file);
@@ -897,13 +893,15 @@ public final class DatavyuView extends FrameView
     }
     
     public void openExternalFile(final File f) {
-        Datavyu.getApplication().resetApp();
-        
-        DatavyuFileChooser jd = new DatavyuFileChooser();
-        jd.setSelectedFile(f);
-        jd.setFileFilter(OPFFilter.INSTANCE);
-        
-        open(jd);
+        if (Datavyu.getApplication().safeQuit()){
+            Datavyu.getApplication().resetApp();
+
+            DatavyuFileChooser jd = new DatavyuFileChooser();
+            jd.setSelectedFile(f);
+            jd.setFileFilter(OPFFilter.INSTANCE);
+
+            open(jd);
+        }
     }
 
     /**
