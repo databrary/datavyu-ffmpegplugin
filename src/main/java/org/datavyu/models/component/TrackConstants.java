@@ -29,22 +29,22 @@ public interface TrackConstants {
 
     /** Icon for hiding a track video. */
     static final ImageIcon VIEWER_HIDE_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/eye.png"));
+            .getResource("/icons/glyph/eye.png"));
 
     /** Icon for showing the video. */
     static final ImageIcon VIEWER_SHOW_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/eye-shut.png"));
+            .getResource("/icons/glyph/eye-shut.png"));
 
     /** Unlock icon. */
     static final ImageIcon UNLOCK_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/track-unlock.png"));
+            .getResource("/icons/glyph/track-unlock.png"));
 
     /** Lock icon. */
     static final ImageIcon LOCK_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/track-lock.png"));
+            .getResource("/icons/glyph/track-lock.png"));
 
     /** Delete icon. */
     static final ImageIcon DELETE_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/emblem-unreadable.png"));
+            .getResource("/icons/glyph/emblem-unreadable.png"));
 
 }
