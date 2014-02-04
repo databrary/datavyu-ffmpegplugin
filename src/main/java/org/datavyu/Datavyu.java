@@ -567,7 +567,7 @@ implements KeyEventDispatcher, TitleNotifier {
      */
     public void openGuideSite()
     {
-        String url = "https://github.com/databrary/datavyu/wiki";
+        String url = "http://www.datavyu.org/user-guide/index.html";
 
         try {
           java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
