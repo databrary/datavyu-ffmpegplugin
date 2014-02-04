@@ -324,12 +324,12 @@ public final class MongoVariable extends BasicDBObject implements Variable  {
     public void setName(final String newName) throws UserWarningException {
         // Pre-conditions, the newName must have at least one character.
         if (newName.length() < 1) {
-            throw new UserWarningException("Unable to add variable, a name must be supplied.");
+            throw new UserWarningException("Unable to add column, a name must be supplied.");
         }
 
         // Pre-conditions, check to make sure newName doesn't contain invalid chars.
         if (newName.contains("(") || newName.contains(")") || newName.contains("<") || newName.contains(">") || newName.contains(",") || newName.contains("\"")) {
-            throw new UserWarningException("Unable to add variable, name must not contain any: ') ( > < , \"'");
+            throw new UserWarningException("Unable to add column, name must not contain any: ') ( > < , \"'");
         }
 
         this.put("name", newName.trim());
