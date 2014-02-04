@@ -254,7 +254,7 @@ implements VariableListener,
         String newName = "";
 
         while (newName != null) {
-            newName = (String) JOptionPane.showInputDialog(null, null, "New variable name",
+            newName = (String) JOptionPane.showInputDialog(null, null, "New column name",
                                                            JOptionPane.PLAIN_MESSAGE, null, null, getColumnName());
 
             if (newName != null) {
