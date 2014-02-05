@@ -644,10 +644,10 @@ implements KeyEventDispatcher, TitleNotifier {
             String[] options = new String[3];
             //Mac and Windows typically order these buttons differently
             if (getPlatform() == Platform.MAC) {
-                options[0] = no;
+                options[0] = yes;
                 options[1] = cancel;
-                options[2] = yes;
-                noIndex = 0; yesIndex = 1;
+                options[2] = no;
+                noIndex = 2; yesIndex = 0;
                 
             } else {
                 options[0] = yes;
