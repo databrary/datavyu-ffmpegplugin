@@ -637,27 +637,35 @@ implements KeyEventDispatcher, TitleNotifier {
         if (projectController.isChanged()) {
 
             String cancel = "Cancel";
-            String ok = "OK";
-
-            String[] options = new String[2];
-
+            String no = "Don't save";
+            String yes = "Save";
+            int noIndex; int yesIndex;
+            
+            String[] options = new String[3];
+            //Mac and Windows typically order these buttons differently
             if (getPlatform() == Platform.MAC) {
-                options[0] = cancel;
-                options[1] = ok;
-            } else {
-                options[0] = ok;
+                options[0] = no;
                 options[1] = cancel;
+                options[2] = yes;
+                noIndex = 0; yesIndex = 1;
+                
+            } else {
+                options[0] = yes;
+                options[1] = no;
+                options[2] = cancel;
+                yesIndex = 0; noIndex = 1;
             }
 
             int selection = JOptionPane.showOptionDialog(mainFrame,
                     rMap.getString("UnsavedDialog.message"),
                     rMap.getString("UnsavedDialog.title"),
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, options, cancel);
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, yes);
 
-            // Button behaviour is platform dependent.
-            return (getPlatform() == Platform.MAC) ? (selection == 1)
-                                                   : (selection == 0);
+            if (selection == yesIndex) getView().save();
+            return (selection == yesIndex && !projectController.isChanged() //'yes' selected and save successful
+                    || selection == noIndex); //'no' selected
+
         } else {
 
             // Project hasn't been changed.
