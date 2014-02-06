@@ -4,6 +4,7 @@
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 1.06 2/4/14 - Updated to work with new DB, added function for deleting cells
 # 1.05 1/3/14 - Fixed the loadMacshapaDB function so it now works properly with CLOSED files
 # 1.041 12/11/13 - Updated function names to be consistent with new terminology 
 #                  ('variable' functions renamed to 'column', 'arg' to code').
@@ -314,17 +315,17 @@ class RVariable
          newcells.each do |cell|
             ord += 1
             c = RCell.new
-            c.onset = cell["onset"]
-            c.offset = cell["offset"]
+            c.onset = cell.getOnset
+            c.offset = cell.getOffset
             c.db_cell = cell
             c.parent = @name
             vals = Array.new
-            if cell["type"] == 0
-                for val in cell.getValue().getArguments()
-                    vals << val["value"]
+            if cell.getVariable.getVariableType.type == Argument::Type::MATRIX
+                for val in cell.getValue().getArguments
+                    vals << val.toString
                 end
             else
-                vals << cell.getValue()["value"]
+                vals << cell.getValue().toString
             end
             c.set_args(vals,@arglist)
             c.ordinal = ord
@@ -459,13 +460,12 @@ def getVariable(name)
    # Now get the arguments for each of the cells
 
    # For matrix vars only
-   type = var["type"]["type_ordinal"]
-   if type == 0
+   type = var.getVariableType.type
+   if type == Argument::Type::MATRIX
        # Matrix var
-
        arg_names = Array.new
-       for arg in var["type"]["child_arguments"]
-           arg_names << arg["name"]
+       for arg in var.getVariableType.childArguments
+           arg_names << arg.name
        end
    else
        # Nominal or text
@@ -523,7 +523,7 @@ def setVariable(*args)
        var.db_var = v
 
        if var.arglist.length > 0
-           var.db_var.removeArgument("arg01")
+           var.db_var.removeArgument("code01")
        end
 
        # Set variable's vocab
@@ -536,23 +536,26 @@ def setVariable(*args)
            child_args.get(child_args.length-1).name = arg
 
            var.db_var.setVariableType(main_arg)
-           var.db_var.save()
        end
        var.db_var = v
    end
 
+   p var
    if var.dirty
        # deleteVariable(name)
        # If the variable is dirty, then we have to do something to the vocab.
        # Compare the variable's vocab and the Ruby cell version to see
        # what is different.
 
-       if var.db_var["type"]["type_ordinal"] == 0
-           values = var.db_var["type"]["child_arguments"]
+       p var.db_var
+       if var.db_var.getVariableType.type == Argument::Type::MATRIX
+           values = var.db_var.getVariableType.childArguments
+           p values
            for arg in var.old_args
+            p var.old_args
                flag = false
                for dbarg in values
-                   if arg == dbarg["name"]
+                   if arg == dbarg.getName
                        flag = true
                        break
                    end
@@ -573,7 +576,6 @@ def setVariable(*args)
                    child_args.get(child_args.length-1).name = arg
 
                    var.db_var.setVariableType(main_arg)
-                   var.db_var.save()
                end
            end
 
@@ -581,7 +583,7 @@ def setVariable(*args)
            for dbarg in values
                flag = false
                for arg in var.old_args
-                   if arg == dbarg["name"]
+                   if arg == dbarg.getName
                        flag = true
                        break
                    end
@@ -590,9 +592,8 @@ def setVariable(*args)
                # If we didn't find dbarg in old_args, then we must
                # have deleted it. Remove the argument from the DB
                if flag == false
-                   puts "DELETING ARG:" + dbarg["name"]
-                   var.db_var.removeArgument(dbarg["name"])
-                   var.db_var.save()
+                   puts "DELETING ARG:" + dbarg.getName
+                   var.db_var.removeArgument(dbarg.getName)
                end
            end
        end
@@ -600,14 +601,12 @@ def setVariable(*args)
 
    end
 
-
    # Create new cells and fill them in for each cell in the variable
    for cell in var.cells
       # Copy the information from the ruby variable to the new cell
 
       if cell.db_cell == nil or cell.parent != name
           cell.db_cell = var.db_var.createCell()
-          cell.db_cell.save()
       end
 
       value = cell.db_cell.getValue()
@@ -621,16 +620,15 @@ def setVariable(*args)
       end
 
       # Matrix cell
-      if cell.db_cell["type"] == 0
+      if cell.db_cell.getVariable.getVariableType.type == Argument::Type::MATRIX
           values = cell.db_cell.getValue().getArguments()
           for arg in var.old_args
               # Find the arg in the db's arglist that we are looking for
               for i in 0...values.size
                   dbarg = values[i]
-                  dbarg_name = dbarg.getName()
+                  dbarg_name = dbarg.getArgument.name
                   if dbarg_name == arg and not ["", nil].include?(cell.get_arg(var.convert_argname(arg)))
                       dbarg.set(cell.get_arg(var.convert_argname(arg)))
-                      dbarg.save()
                       break
                   end
               end
@@ -640,11 +638,9 @@ def setVariable(*args)
       else
           value = cell.db_cell.getValue()
           value.set(cell.get_arg("var"))
-          value.save()
       end
 
       # Save the changes back to the DB
-      cell.db_cell.save()
 
    end
 
@@ -1431,10 +1427,6 @@ def deleteVariable(colname)
      colname = colname.name
    end
    col = $db.getVariable(colname)
-   cells = col.getCells()
-   for cell in cells
-      $db.removeCell(cell)
-   end
    $db.removeVariable(col)
 end
 
@@ -1945,11 +1937,11 @@ def print_codes(cell, file, args)
   print_args(cell, file, args)
 end
 def print_args(cell, file, args)
-        for a in args
-            #puts "Printing: " + a
-            val = eval "cell.#{a}"
-            file.write(val.to_s + "\t")
-        end
+  for a in args
+      #puts "Printing: " + a
+      val = eval "cell.#{a}"
+      file.write(val.to_s + "\t")
+  end
 end
 
 def getCellFromTime(col, time)
@@ -1973,6 +1965,10 @@ def printCellArgs(cell)
     s << cell.get_arg(arg)
   end
   return s
+end
+
+def deleteCell(cell)
+  cell.db_cell.getVariable.removeCell(cell.db_cell)
 end
 ###################################################################################
 # USER EDITABLE SECTION.  PLEASE PLACE YOUR SCRIPT BETWEEN BEGIN AND END BELOW.
