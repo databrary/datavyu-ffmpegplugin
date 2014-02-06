@@ -135,29 +135,12 @@ public class VocabElementV extends JPanel {
         deltaIcon.setPreferredSize(ICON_SIZE);
         deltaIcon.setToolTipText(rMap.getString("delta.tooltip"));
 
-        typeIcon = new JLabel();
-        typeIcon.setMaximumSize(ICON_SIZE);
-        typeIcon.setMinimumSize(ICON_SIZE);
-        typeIcon.setPreferredSize(ICON_SIZE);
-        typeIcon.setToolTipText(rMap.getString("type.tooltip"));
-
-        URL typeIconURL = getClass().getResource("/icons/m_16.png");
-        ImageIcon typeImageIcon = new ImageIcon(typeIconURL);
-        this.setTypeIcon(typeImageIcon);
-
-        deleteIcon = new JLabel();
-        deleteIcon.setMaximumSize(ICON_SIZE);
-        deleteIcon.setMinimumSize(ICON_SIZE);
-        deleteIcon.setPreferredSize(ICON_SIZE);
-
         veRootView = new VocabElementRootView(var, this);
 
         JPanel leftPanel = new JPanel();
         FlowLayout flayout = new FlowLayout(FlowLayout.LEFT, 5, 0);
         leftPanel.setLayout(flayout);
         leftPanel.add(deltaIcon);
-        leftPanel.add(deleteIcon);
-        leftPanel.add(typeIcon);
         veRootView.setOpaque(false);
         veRootView.setBackground(Color.WHITE);
         leftPanel.setOpaque(false);
@@ -203,15 +186,6 @@ public class VocabElementV extends JPanel {
     public final void setModel(final Argument vocabArgument) {
         varModel.setVariableType(vocabArgument);
         this.rebuildContents();
-    }
-
-    /**
-     * Replaces the type icon with the supplied parameter.
-     *
-     * @param newIcon The new icon to use for the type of vocab element.
-     */
-    protected final void setTypeIcon(final ImageIcon newIcon) {
-        this.typeIcon.setIcon(newIcon);
     }
 
     /**
@@ -355,20 +329,6 @@ public class VocabElementV extends JPanel {
      */
     public final JLabel getChangedIcon() {
         return deltaIcon;
-    }
-
-    /**
-     * @return JLabel delete icon.
-     */
-    public final JLabel getDeleteIcon() {
-        return deleteIcon;
-    }
-
-    /**
-     * @return JLabel delete icon.
-     */
-    public final JLabel getTypeIcon() {
-        return typeIcon;
     }
 
     public final void setBG(Color col) {

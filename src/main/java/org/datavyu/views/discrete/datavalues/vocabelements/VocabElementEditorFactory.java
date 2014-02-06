@@ -87,13 +87,8 @@ public class VocabElementEditorFactory {
 
         eds.add(new FixedText(ta, "<"));
         eds.add(new FormalArgEditor(ta, var, i, pv));
-        FormalArgTypeEditor curType = new FormalArgTypeEditor(ta, ve, i, pv);
-        if (!curType.getText().equals("N")) //Nominal is our default. Only exceptional cases (from older versions) need be displayed. This may be possible to eliminate all together
-        {
-            eds.add(new FixedText(ta, ":"));
-            eds.add(curType);
-        }
         eds.add(new FixedText(ta, ">"));
+        
         return eds;
     }
 }

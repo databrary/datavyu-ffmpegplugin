@@ -144,19 +144,19 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
      * Icon for displaying volume slider.
      */
     private final ImageIcon volumeIcon = new ImageIcon(getClass().getResource(
-            "/icons/audio-volume.png"));
+                "/icons/glyph/audio-volume.png"));
 
     /**
      * Volume slider icon for when the video is hidden (volume is muted).
      */
     private final ImageIcon mutedIcon = new ImageIcon(getClass().getResource(
-            "/icons/volume-muted.png"));
+                "/icons/glyph/volume-muted.png"));
 
     /**
      * Icon for resizing the video.
      */
     private final ImageIcon resizeIcon = new ImageIcon(getClass().getResource(
-            "/icons/resize.png"));
+                "/icons/glyph/resize.png"));
 
     /**
      * The list of listeners interested in changes made to the project.
@@ -189,7 +189,12 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         }
     };
 
-
+    //TODO: These may be better suited for a resoure bundle and properties file
+    /**Tooltip text for volume icon */
+    public static final String VOLUME_TOOLTIP = "Change volume";
+    /**Tooltip text for resize icon */
+    public static final String RESIZE_TOOLTIP = "Resize video";
+    
     // ------------------------------------------------------------------------
     // [initialization]
     //
@@ -209,6 +214,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         volumeButton.setIcon(getVolumeButtonIcon());
         volumeButton.setBorderPainted(false);
         volumeButton.setContentAreaFilled(false);
+        volumeButton.setToolTipText(VOLUME_TOOLTIP);
         volumeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -250,6 +256,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         resizeButton.setIcon(resizeIcon);
         resizeButton.setBorderPainted(false);
         resizeButton.setContentAreaFilled(false);
+        resizeButton.setToolTipText(RESIZE_TOOLTIP);
         resizeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {

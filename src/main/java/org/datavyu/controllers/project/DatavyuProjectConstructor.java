@@ -27,7 +27,7 @@ import java.util.Map;
 
 
 /**
- * Used to construct an datavyu project from its YAML representation.
+ * Used to construct a datavyu project from its YAML representation.
  */
 public class DatavyuProjectConstructor extends Constructor {
 

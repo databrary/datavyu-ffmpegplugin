@@ -604,10 +604,26 @@ public final class VocabEditorV extends DatavyuDialog {
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getActionMap(VocabEditorV.class, this);
+
+        addArgButton.setAction(actionMap.get("addArgument")); // NOI18N
+        addArgButton.setText(bundle.getString("addArgButton.text")); // NOI18N
+        addArgButton.setToolTipText(bundle.getString("addArgButton.tip")); // NOI18N
+        addArgButton.setName("addArgButton"); // NOI18N        
+        addArgButton.setHorizontalAlignment(SwingConstants.LEFT);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        getContentPane().add(addArgButton, gridBagConstraints);
+
+        
         addMatrixButton.setAction(actionMap.get("addMatrix")); // NOI18N
         addMatrixButton.setText(bundle.getString("addMatrixButton.text")); // NOI18N
         addMatrixButton.setToolTipText(bundle.getString("addMatrixButton.tip")); // NOI18N
         addMatrixButton.setName("addMatrixButton"); // NOI18N
+        addMatrixButton.setPreferredSize(addArgButton.getPreferredSize());
+        addMatrixButton.setHorizontalAlignment(SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -620,10 +636,7 @@ public final class VocabEditorV extends DatavyuDialog {
         moveArgLeftButton.setText(bundle.getString("moveArgLeftButton.text")); // NOI18N
         moveArgLeftButton.setToolTipText(bundle.getString("moveArgLeftButton.tip")); // NOI18N
         moveArgLeftButton.setIconTextGap(6);
-        moveArgLeftButton.setMaximumSize(new java.awt.Dimension(120, 23));
-        moveArgLeftButton.setMinimumSize(new java.awt.Dimension(120, 23));
         moveArgLeftButton.setName("moveArgLeftButton"); // NOI18N
-        moveArgLeftButton.setPreferredSize(new java.awt.Dimension(120, 23));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -637,10 +650,7 @@ public final class VocabEditorV extends DatavyuDialog {
         moveArgRightButton.setToolTipText(bundle.getString("moveArgRightButton.tip")); // NOI18N
         moveArgRightButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         moveArgRightButton.setIconTextGap(6);
-        moveArgRightButton.setMaximumSize(new java.awt.Dimension(120, 23));
-        moveArgRightButton.setMinimumSize(new java.awt.Dimension(120, 23));
         moveArgRightButton.setName("moveArgRightButton"); // NOI18N
-        moveArgRightButton.setPreferredSize(new java.awt.Dimension(120, 23));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 1;
@@ -649,25 +659,13 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 5);
         getContentPane().add(moveArgRightButton, gridBagConstraints);
 
-        addArgButton.setAction(actionMap.get("addArgument")); // NOI18N
-        addArgButton.setText(bundle.getString("addArgButton.text")); // NOI18N
-        addArgButton.setToolTipText(bundle.getString("addArgButton.tip")); // NOI18N
-        addArgButton.setName("addArgButton"); // NOI18N
-        addArgButton.setPreferredSize(addMatrixButton.getPreferredSize());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        getContentPane().add(addArgButton, gridBagConstraints);
-
         deleteButton.setAction(actionMap.get("delete")); // NOI18N
         deleteButton.setText(bundle.getString("deleteButton.text")); // NOI18N
         deleteButton.setToolTipText(bundle.getString("deleteButton.tip")); // NOI18N
-        deleteButton.setMaximumSize(new java.awt.Dimension(110, 23));
-        deleteButton.setMinimumSize(new java.awt.Dimension(110, 23));
+        deleteButton.setMaximumSize(new java.awt.Dimension(100, 23));
+        deleteButton.setMinimumSize(new java.awt.Dimension(100, 23));
         deleteButton.setName("deleteButton"); // NOI18N
-        deleteButton.setPreferredSize(new java.awt.Dimension(110, 23));
+        deleteButton.setPreferredSize(new java.awt.Dimension(100, 23));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;

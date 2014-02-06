@@ -231,7 +231,7 @@ public class NativeLoader {
         // Delete all of the other files that mongo has created
         try {
             FileUtils.deleteDirectory(nativeLibFolder);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if ((nativeLibFolder != null) && !nativeLibFolder.delete()) {

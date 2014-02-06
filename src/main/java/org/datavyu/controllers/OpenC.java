@@ -96,7 +96,7 @@ public final class OpenC {
     }
 
     /**
-     * Opens a file as an Datavyu archive.
+     * Opens a file as a Datavyu archive.
      *
      * @param archiveFile The archive to open as a project.
      */
