@@ -15,22 +15,17 @@
 package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
-
-
-import org.datavyu.Datavyu;
-
-
-import org.datavyu.util.ArrayDirection;
-
-import org.datavyu.views.discrete.SpreadsheetPanel;
-
 import com.usermetrix.jclient.UserMetrix;
-import java.util.List;
-import javax.swing.undo.UndoableEdit;
+import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.Variable;
 import org.datavyu.undoableedits.AddCellEdit;
+import org.datavyu.util.ArrayDirection;
+import org.datavyu.views.discrete.SpreadsheetPanel;
+
+import javax.swing.undo.UndoableEdit;
+import java.util.List;
 
 
 /**
@@ -38,13 +33,19 @@ import org.datavyu.undoableedits.AddCellEdit;
  */
 public final class CreateNewCellC {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(CreateNewCellC.class);
 
-    /** The view (the spreadsheet) for this controller. */
+    /**
+     * The view (the spreadsheet) for this controller.
+     */
     private SpreadsheetPanel view;
 
-    /** The model (the database) for this controller. */
+    /**
+     * The model (the database) for this controller.
+     */
     private Datastore model;
 
     /**
@@ -60,7 +61,6 @@ public final class CreateNewCellC {
      * Inserts a cell into the end of the supplied variable.
      *
      * @param v The variable that we want to add a cell too.
-     *
      * @return The cell that was just inserted.
      */
     public Cell createCell(final Variable v) {
@@ -125,8 +125,8 @@ public final class CreateNewCellC {
      * cell will be created.
      *
      * @param sourceCells The list of source cells that we wish to create cells
-     * adjacent too.
-     * @param direction The direction in which we wish to create adjacent cells.
+     *                    adjacent too.
+     * @param direction   The direction in which we wish to create adjacent cells.
      */
     public CreateNewCellC(final List<Cell> sourceCells,
                           final ArrayDirection direction) {
@@ -216,7 +216,7 @@ public final class CreateNewCellC {
      * selected column or the column that last had a cell added to it.
      *
      * @param milliseconds The number of milliseconds since the origin of the
-     * spreadsheet to create a new cell from.
+     *                     spreadsheet to create a new cell from.
      */
     public void createNewCell(final long milliseconds) {
 

@@ -14,13 +14,10 @@
  */
 package org.datavyu.views.discrete;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JPanel;
-import javax.swing.Scrollable;
-import javax.swing.SwingConstants;
 
 /**
  * SpreadsheetView implements the Scrollable interface and
@@ -28,13 +25,19 @@ import javax.swing.SwingConstants;
  */
 public class SpreadsheetView extends JPanel implements Scrollable {
 
-    /** Maximum unit scroll amount. */
+    /**
+     * Maximum unit scroll amount.
+     */
     private static final int MAX_UNIT_INCREMENT = 50;
 
-    /** The columns held in this SpreadsheetView. */
+    /**
+     * The columns held in this SpreadsheetView.
+     */
     private List<SpreadsheetColumn> columns;
 
-    /** Creates new form SpreadsheetView. */
+    /**
+     * Creates new form SpreadsheetView.
+     */
     public SpreadsheetView() {
         columns = new ArrayList<SpreadsheetColumn>();
         this.setDoubleBuffered(true);
@@ -72,7 +75,7 @@ public class SpreadsheetView extends JPanel implements Scrollable {
      * In this instance it returns getPreferredSize
      *
      * @return the preferredSize of a <code>JViewport</code> whose view
-     *    is this <code>SpreadsheetView</code>
+     * is this <code>SpreadsheetView</code>
      */
     @Override
     public final Dimension getPreferredScrollableViewportSize() {
@@ -94,14 +97,14 @@ public class SpreadsheetView extends JPanel implements Scrollable {
     public final boolean getScrollableTracksViewportHeight() {
         return false;
     }
-    
+
     /**
      * Temporary fix for cell-jumping behavior.
      * TODO: Make this work correctly.
      */
     @Override
     public final void scrollRectToVisible(Rectangle r) {
-        
+
     }
 
     /**
@@ -110,9 +113,9 @@ public class SpreadsheetView extends JPanel implements Scrollable {
      *
      * @param visibleRect The view area visible within the viewport
      * @param orientation VERTICAL or HORIZONTAL.
-     * @param direction Less than zero up/left, greater than zero down/right.
+     * @param direction   Less than zero up/left, greater than zero down/right.
      * @return The "unit" increment for scrolling in the specified direction.
-     *         This value should always be positive.
+     * This value should always be positive.
      */
     @Override
     public final int getScrollableUnitIncrement(final Rectangle visibleRect,
@@ -130,8 +133,8 @@ public class SpreadsheetView extends JPanel implements Scrollable {
         //and the nearest tick mark in the indicated direction.
         if (direction < 0) {
             int newPosition = currentPosition
-                                - (currentPosition / MAX_UNIT_INCREMENT)
-                                * MAX_UNIT_INCREMENT;
+                    - (currentPosition / MAX_UNIT_INCREMENT)
+                    * MAX_UNIT_INCREMENT;
             if (newPosition == 0) {
                 return MAX_UNIT_INCREMENT;
             } else {
@@ -139,8 +142,8 @@ public class SpreadsheetView extends JPanel implements Scrollable {
             }
         } else {
             return ((currentPosition / MAX_UNIT_INCREMENT) + 1)
-                   * MAX_UNIT_INCREMENT
-                   - currentPosition;
+                    * MAX_UNIT_INCREMENT
+                    - currentPosition;
         }
     }
 
@@ -150,9 +153,9 @@ public class SpreadsheetView extends JPanel implements Scrollable {
      *
      * @param visibleRect The view area visible within the viewport
      * @param orientation VERTICAL or HORIZONTAL.
-     * @param direction Less than zero up/left, greater than zero down/right.
+     * @param direction   Less than zero up/left, greater than zero down/right.
      * @return The "block" increment for scrolling in the specified direction.
-     *         This value should always be positive.
+     * This value should always be positive.
      */
     @Override
     public final int getScrollableBlockIncrement(final Rectangle visibleRect,

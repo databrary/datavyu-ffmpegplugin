@@ -23,47 +23,70 @@
 
 package org.datavyu.models.db;
 
-import org.bson.types.ObjectId;
-import org.datavyu.models.db.TextValue;
+import java.io.Serializable;
+import java.util.UUID;
 
-public final class MongoTextValue extends MongoValue implements TextValue {
-    
-    public MongoTextValue() { }
-    
-    public MongoTextValue(ObjectId parent_id) {
-        this.put("value", null);
-        this.put("parent_id", parent_id);
-        this.put("name", "val");
-        this.put("index", -1);
-        this.save();
-    }
-    
-    public MongoTextValue(ObjectId parent_id, String name, int index) {
-        this(parent_id);
-        this.put("name", name);
-        this.put("index", index);
-        this.save();
-    }
-    
-    /**
-     * Sets the value, this method leaves the value unchanged if the supplied
-     * input is invalid. Use isValid to test.
-     *
-     * @param value The new content to use for this value.
-     */
+
+public abstract class DatavyuValue implements Value, Serializable, Comparable<DatavyuValue> {
+
+    String value;
+    int index;
+    UUID parent_id;
+    UUID id = UUID.randomUUID();
+    String name = "";
+    Argument arg;
+
     @Override
-    public void set(final String value) {
-        if(isValid(value)){
-            this.put("value", value);
-            this.save();
+    public boolean isValid(final String value) {
+        return true;
+    } 
+
+    @Override
+    public void clear() {
+        this.value = null;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        if (value == null || value.isEmpty()) {
+            return true;
+        } else {
+            return false;
         }
     }
     
-    @Override
-    public void save() {
-        MongoDatastore.getDB().getCollection("text_values").save(this);
-        MongoDatastore.markDBAsChanged();
+    public int getIndex() {
+        return index;
     }
     
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
+    @Override
+    public int compareTo(DatavyuValue v) {
+        if (this.getIndex() < v.getIndex()) {
+            return -1;
+        } else if (this.getIndex() > v.getIndex()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public abstract void set(final String value);
+
+    public Argument getArgument() {
+        return arg;
+    }
+
+    @Override
+    public String toString() {
+        if (this.isEmpty()) {
+            return "<" + arg.name + ">";
+        } else {
+            return value;
+        }
+    }
 }

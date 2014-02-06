@@ -14,10 +14,10 @@
  */
 package org.datavyu.views.discrete.datavalues;
 
-import java.awt.event.KeyEvent;
-import javax.swing.text.JTextComponent;
-
 import org.datavyu.models.db.TextValue;
+
+import javax.swing.text.JTextComponent;
+import java.awt.event.KeyEvent;
 
 /**
  * This class is the character editor of a TextStringDataValue.
@@ -27,12 +27,14 @@ public final class TextStringDataValueEditor extends DataValueEditor {
     /**
      * String holding the reserved characters - these are characters that are
      * users are unable to enter into a text field.
-     *
+     * <p/>
      * BugzID:524 - If Character is an escape key - ignore it.
      */
     private static final String RESERVED_CHARS = "\u001B\t";
 
-    /** The model that this editor is manipulating */
+    /**
+     * The model that this editor is manipulating
+     */
     TextValue model;
 
     /**
@@ -50,7 +52,6 @@ public final class TextStringDataValueEditor extends DataValueEditor {
 
     /**
      * @param aChar Character to test
-     *
      * @return true if the character is a reserved character.
      */
     public boolean isReserved(final char aChar) {
@@ -66,7 +67,7 @@ public final class TextStringDataValueEditor extends DataValueEditor {
 
         // Just a regular vanilla keystroke - insert it into text field.
         if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
-            && !isReserved(e.getKeyChar())) {
+                && !isReserved(e.getKeyChar())) {
 
             // BugID: 26057841 - if the model is empty and we get a new line, correctly
             // empty the contents. (Selection gets all altered by java when new line
@@ -81,9 +82,9 @@ public final class TextStringDataValueEditor extends DataValueEditor {
 
             // If we have a delete or backspace key - do not insert.
             if (!(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                  && e.getKeyChar() == '\u007F') &&
-                !(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                  && e.getKeyChar() == '\u0008')) {
+                    && e.getKeyChar() == '\u007F') &&
+                    !(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                            && e.getKeyChar() == '\u0008')) {
                 currentValue.insert(getCaretPosition(), e.getKeyChar());
             }
 
@@ -101,7 +102,7 @@ public final class TextStringDataValueEditor extends DataValueEditor {
                 model.set(this.getText());
             }
 
-        // All other key strokes are consumed.
+            // All other key strokes are consumed.
         } else {
             e.consume();
         }

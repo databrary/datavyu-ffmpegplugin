@@ -14,15 +14,15 @@
  */
 package org.datavyu.views.discrete.layouts;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.JScrollPane;
 import org.datavyu.Datavyu;
 import org.datavyu.views.discrete.SpreadsheetCell;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.SpreadsheetView;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SheetLayoutOrdinal implements the ordinal style layout of SpreadsheetCells
@@ -45,7 +45,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
         /**
          * Constructor.
          *
-         * @param columnID The ID of the column we are ordering.
+         * @param columnID     The ID of the column we are ordering.
          * @param columnHeight The height of the column in pixels
          */
         public ColInfo(final int columnID, final int columnHeight) {
@@ -56,6 +56,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
 
     /**
      * SheetLayoutOrdinal constructor.
+     *
      * @param cols Reference to the SpreadsheetColumns in the spreadsheet.
      */
     public SheetLayoutOrdinal(final int margin) {
@@ -70,13 +71,13 @@ public class SheetLayoutOrdinal extends SheetLayout {
     @Override
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
-        
+
         Datavyu.getView().setRedraw(false);
 
         // This layout must be applied to a Spreadsheet panel.
         JScrollPane pane = (JScrollPane) parent;
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
-                                                         .getView();
+                .getView();
 
         List<ColInfo> columnHeight = new ArrayList<ColInfo>();
 
@@ -90,22 +91,22 @@ public class SheetLayoutOrdinal extends SheetLayout {
                 int ord = 1;
                 int currentHeight = 0;
                 SpreadsheetCell prevCell = null;
-                
+
                 for (SpreadsheetCell cell : col.getCellsTemporally()) {
-		    if(cell == null) {
-		        // We may have a race condition where a cell got deleted but
-			// we don't know about it yet
-			continue;
-		    }
+                    if (cell == null) {
+                        // We may have a race condition where a cell got deleted but
+                        // we don't know about it yet
+                        continue;
+                    }
                     Dimension d = cell.getPreferredSize();
                     if (cell.getCell().isSelected() && currentHeight != cell.getBounds().y) {
                         selectedHeight = currentHeight;
                     }
 
                     cell.setBounds(0,
-                                   currentHeight,
-                                   (col.getWidth() - marginSize),
-                                   (int) d.getHeight());
+                            currentHeight,
+                            (col.getWidth() - marginSize),
+                            (int) d.getHeight());
                     cell.setOrdinal(ord);
                     cell.repaint();
                     ord++;
@@ -126,9 +127,9 @@ public class SheetLayoutOrdinal extends SheetLayout {
                 // Put the new cell button at the end of the column.
                 Dimension d = col.getDataPanel().getNewCellButton().getPreferredSize();
                 col.getDataPanel().getNewCellButton().setBounds(0,
-                                                                currentHeight,
-                                                                parent.getWidth(),
-                                                                (int) d.getHeight());
+                        currentHeight,
+                        parent.getWidth(),
+                        (int) d.getHeight());
                 currentHeight += (int) d.getHeight();
                 columnHeight.add(new ColInfo(colID, currentHeight));
                 maxHeight = Math.max(maxHeight, currentHeight);
@@ -145,9 +146,9 @@ public class SheetLayoutOrdinal extends SheetLayout {
 
             col.getDataPanel().setHeight(maxHeight);
             col.getDataPanel().getPadding().setBounds(0,
-                                                      colHeight,
-                                                      col.getWidth(),
-                                                      (maxHeight - colHeight));
+                    colHeight,
+                    col.getWidth(),
+                    (maxHeight - colHeight));
         }
 
         if (selectedHeight != -1) {

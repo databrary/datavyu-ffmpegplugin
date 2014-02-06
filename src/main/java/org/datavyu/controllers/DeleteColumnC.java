@@ -16,25 +16,26 @@ package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-
 import org.datavyu.Datavyu;
-import java.util.List;
-import org.datavyu.views.discrete.SpreadsheetPanel;
-
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.Variable;
+import org.datavyu.views.discrete.SpreadsheetPanel;
+
+import java.util.List;
 
 /**
  * Controller for deleting cells from the database.
  */
 public final class DeleteColumnC {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(DeleteColumnC.class);
 
     /**
      * Constructor.
-     * 
+     *
      * @param colsToDelete The columns to remove from the database/spreadsheet.
      */
     public DeleteColumnC(final List<Variable> colsToDelete) {

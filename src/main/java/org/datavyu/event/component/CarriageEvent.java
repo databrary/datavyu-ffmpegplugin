@@ -14,10 +14,10 @@
  */
 package org.datavyu.event.component;
 
+import org.datavyu.models.id.Identifier;
+
 import java.util.EventObject;
 import java.util.List;
-
-import org.datavyu.models.id.Identifier;
 
 
 /**
@@ -30,38 +30,60 @@ public final class CarriageEvent extends EventObject {
      */
     private static final long serialVersionUID = 4009420871939032673L;
 
-    /** Describes the type of event that occured. */
+    /**
+     * Describes the type of event that occured.
+     */
     public enum EventType {
 
-        /** Snap position changed. */
+        /**
+         * Snap position changed.
+         */
         BOOKMARK_CHANGED,
 
-        /** Requesting snap position. */
+        /**
+         * Requesting snap position.
+         */
         BOOKMARK_REQUEST,
 
-        /** Requesting snap saving. */
+        /**
+         * Requesting snap saving.
+         */
         BOOKMARK_SAVE,
 
-        /** Track changed selection state. */
+        /**
+         * Track changed selection state.
+         */
         CARRIAGE_SELECTION,
 
-        /** Track changed offset position. */
+        /**
+         * Track changed offset position.
+         */
         OFFSET_CHANGE,
 
-        /** Track is (un)locked. */
+        /**
+         * Track is (un)locked.
+         */
         CARRIAGE_LOCK
     }
 
-    /** Track identifier. */
+    /**
+     * Track identifier.
+     */
     private final Identifier trackId;
 
-    /** New time offset, in milliseconds, for the given track. */
+    /**
+     * New time offset, in milliseconds, for the given track.
+     */
     private final long offset;
 
-    /** Duration of the track in milliseconds. */
+    /**
+     * Duration of the track in milliseconds.
+     */
     private final long duration;
 
-    /** Track bookmark positions in milliseconds. */
+    /**
+     * Track bookmark positions in milliseconds.
+     */
     private final List<Long> bookmarks;
 
     /**
@@ -70,10 +92,14 @@ public final class CarriageEvent extends EventObject {
      */
     private final long temporalPosition;
 
-    /** What event does this represent. */
+    /**
+     * What event does this represent.
+     */
     private final EventType eventType;
 
-    /** Were there input modifiers. */
+    /**
+     * Were there input modifiers.
+     */
     private final boolean hasModifiers;
 
     /**
@@ -87,9 +113,9 @@ public final class CarriageEvent extends EventObject {
      * @param hasModifiers;
      */
     public CarriageEvent(final Object source, final Identifier trackId,
-        final long offset, final List<Long> bookmarks, final long duration,
-        final long temporalPosition, final EventType eventType,
-        final boolean hasModifiers) {
+                         final long offset, final List<Long> bookmarks, final long duration,
+                         final long temporalPosition, final EventType eventType,
+                         final boolean hasModifiers) {
         super(source);
         this.trackId = trackId;
         this.offset = offset;
@@ -130,7 +156,7 @@ public final class CarriageEvent extends EventObject {
 
     /**
      * @return the temporal position of the mouse in milliseconds. Only
-     *         meaningful for OFFSET_CHANGE events.
+     * meaningful for OFFSET_CHANGE events.
      */
     public long getTemporalPosition() {
         return temporalPosition;

@@ -4,52 +4,52 @@
  */
 package org.datavyu.views;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import javax.swing.JOptionPane;
 import org.datavyu.Build;
 import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+
 
 /**
- *
  * @author eric
  */
 public class UpdateV extends javax.swing.JDialog {
 
     /* Private data */
-    private static final String VERSION_FILE      = "http://www.datavyu.org/version.txt";
-    private static final String PRE_VERSION_FILE  = "http://www.datavyu.org/pre_version.txt";
-    private static final String DOWNLOAD_PAGE     = "http://www.datavyu.org/download";
+    private static final String VERSION_FILE = "http://www.datavyu.org/version.txt";
+    private static final String PRE_VERSION_FILE = "http://www.datavyu.org/pre_version.txt";
+    private static final String DOWNLOAD_PAGE = "http://www.datavyu.org/download";
     private static final String PRE_DOWNLOAD_PAGE = "http://www.datavyu.org/download_pre";
     private boolean m_update_available = false;
     private ServerVersion m_server;
-    private LocalVersion  m_local;
+    private LocalVersion m_local;
 
     /* Private class for handling the local version number */
     private class LocalVersion {
         public String version = "";
-        public String build   = "";
+        public String build = "";
 
         public LocalVersion() {
             ResourceMap bMap = Application.getInstance(Datavyu.class).getContext().getResourceMap(Build.class);
             ResourceMap rMap = Application.getInstance(Datavyu.class).getContext().getResourceMap(Datavyu.class);
             version = rMap.getString("Application.version");
-            build   = bMap.getString("Application.build");
+            build = bMap.getString("Application.build");
         }
     }
 
     /* Private class for handling the server version number */
     private class ServerVersion {
         public String version = "";
-        public String build   = "";
+        public String build = "";
 
         public ServerVersion(final String version_file) {
             URL url;
@@ -60,7 +60,7 @@ public class UpdateV extends javax.swing.JDialog {
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 version = br.readLine();
-                build   = br.readLine();
+                build = br.readLine();
 
                 br.close();
             } catch (MalformedURLException e) {
@@ -78,8 +78,8 @@ public class UpdateV extends javax.swing.JDialog {
     public boolean IgnoreVersion() {
         Configuration config = Configuration.getInstance();
         String ignoreVersion = config.getIgnoreVersion();
-        
-        if(ignoreVersion == null || m_server == null) {
+
+        if (ignoreVersion == null || m_server == null) {
             return false;
         }
 
@@ -90,7 +90,7 @@ public class UpdateV extends javax.swing.JDialog {
         Configuration config = Configuration.getInstance();
         jcheck_get_prereleases.setSelected(config.getPrereleasePreference());
 
-        m_local  = new LocalVersion();
+        m_local = new LocalVersion();
         m_server = new ServerVersion(config.getPrereleasePreference() ? PRE_VERSION_FILE : VERSION_FILE);
 
         jlabel_current_version.setText(m_local.version);
@@ -204,68 +204,68 @@ public class UpdateV extends javax.swing.JDialog {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(30, 30, 30)
-                                .addComponent(jcheck_get_prereleases))
-                            .addGroup(layout.createSequentialGroup()
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(28, 28, 28)
-                                        .addComponent(jbutton_now, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jbutton_later, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jbutton_never))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel4)
-                                        .addGap(56, 56, 56)
-                                        .addComponent(jlabel_server_version))
-                                    .addComponent(update_message)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel1)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jlabel_current_version)))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(205, 205, 205)
-                        .addComponent(jSeparator1)))
-                .addContainerGap())
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(jLabel2)
+                                                                .addGap(30, 30, 30)
+                                                                .addComponent(jcheck_get_prereleases))
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addGap(28, 28, 28)
+                                                                                .addComponent(jbutton_now, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                .addGap(18, 18, 18)
+                                                                                .addComponent(jbutton_later, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                .addGap(18, 18, 18)
+                                                                                .addComponent(jbutton_never))
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addComponent(jLabel4)
+                                                                                .addGap(56, 56, 56)
+                                                                                .addComponent(jlabel_server_version))
+                                                                        .addComponent(update_message)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addComponent(jLabel1)
+                                                                                .addGap(18, 18, 18)
+                                                                                .addComponent(jlabel_current_version)))
+                                                                .addGap(0, 0, Short.MAX_VALUE))))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(205, 205, 205)
+                                                .addComponent(jSeparator1)))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jcheck_get_prereleases)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jlabel_current_version))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jlabel_server_version))
-                .addGap(18, 18, 18)
-                .addComponent(update_message, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jbutton_now)
-                    .addComponent(jbutton_later)
-                    .addComponent(jbutton_never))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel2)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jcheck_get_prereleases)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel1)
+                                        .addComponent(jlabel_current_version))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel4)
+                                        .addComponent(jlabel_server_version))
+                                .addGap(18, 18, 18)
+                                .addComponent(update_message, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jbutton_now)
+                                        .addComponent(jbutton_later)
+                                        .addComponent(jbutton_never))
+                                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -274,10 +274,9 @@ public class UpdateV extends javax.swing.JDialog {
         String url = config.getPrereleasePreference() ? PRE_DOWNLOAD_PAGE : DOWNLOAD_PAGE;
 
         try {
-          java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-          this.dispose();
-        }
-        catch (java.io.IOException e) {
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+            this.dispose();
+        } catch (java.io.IOException e) {
             System.out.println(e.getMessage());
 
             setTitle("Error Opening Website");
@@ -311,16 +310,14 @@ public class UpdateV extends javax.swing.JDialog {
     private void jcheck_get_prereleasesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcheck_get_prereleasesActionPerformed
 
         /* if we're selecting it, we need to confirm if the user is sure */
-        if (jcheck_get_prereleases.isSelected())
-        {
+        if (jcheck_get_prereleases.isSelected()) {
             int dialogResult;
-            dialogResult = JOptionPane.showConfirmDialog (null,
+            dialogResult = JOptionPane.showConfirmDialog(null,
                     "Pre-releases are not supported and may have bugs.  Are you sure?", "Prerelease Warning!",
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if(dialogResult == JOptionPane.YES_OPTION){
+            if (dialogResult == JOptionPane.YES_OPTION) {
                 jcheck_get_prereleases.setSelected(true);
-            }
-            else {
+            } else {
                 jcheck_get_prereleases.setSelected(false);
             }
         }
@@ -373,6 +370,7 @@ public class UpdateV extends javax.swing.JDialog {
             }
         });
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

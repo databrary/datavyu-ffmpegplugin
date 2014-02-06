@@ -14,8 +14,6 @@
  */
 package org.datavyu.models.id;
 
-import org.datavyu.models.id.Identifier;
-
 public class ID implements Identifier {
 
     private final long number;
@@ -28,7 +26,8 @@ public class ID implements Identifier {
      * (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = (prime * result) + (int) (number ^ (number >>> 32));
@@ -40,7 +39,8 @@ public class ID implements Identifier {
      * (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    @Override public boolean equals(final Object obj) {
+    @Override
+    public boolean equals(final Object obj) {
 
         if (this == obj)
             return true;

@@ -16,15 +16,14 @@ package org.datavyu.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.util.List;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import java.util.ArrayList;
-import org.datavyu.Datavyu;
 import org.datavyu.controllers.DeleteCellC;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Variable;
-import org.datavyu.views.discrete.SpreadsheetCell;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Undoable edit for removing cells.
@@ -89,10 +88,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
         LOGGER.event("Undoing remove cells");
         for (CellTO cellTO : cellTOV) {
             Variable var = model.getVariable(cellTO.getParentVariableName());
-            Cell newCell = var.createCell();
-            newCell.setOnset(cellTO.getOnset());
-            newCell.setOffset(cellTO.getOffset());
-            newCell.getValue().set(cellTO.getValue());
+            var.addCell(cellTO.getCell());
         }
         view.showSpreadsheet();
     }

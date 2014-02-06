@@ -14,41 +14,45 @@
  */
 package org.datavyu.views.discrete.datavalues;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-
-import javax.swing.JTextArea;
-
 import org.datavyu.Datavyu;
-import org.datavyu.views.discrete.EditorComponent;
-import org.datavyu.views.discrete.EditorTracker;
-
-import java.util.ArrayList;
-import java.util.List;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Value;
 import org.datavyu.models.db.Variable;
+import org.datavyu.views.discrete.EditorComponent;
+import org.datavyu.views.discrete.EditorTracker;
+
+import javax.swing.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JTextArea view of the Matrix (database cell) data.
  */
 public final class MatrixRootView extends JTextArea implements FocusListener {
 
-    /** The parent cell for this JPanel. */
+    /**
+     * The parent cell for this JPanel.
+     */
     private Cell parentCell = null;
 
-    /** All the editors that make up the representation of the data. */
+    /**
+     * All the editors that make up the representation of the data.
+     */
     private List<EditorComponent> allEditors;
 
-    /** The editor tracker responsible for the editor components. */
+    /**
+     * The editor tracker responsible for the editor components.
+     */
     private EditorTracker edTracker;
 
     /**
      * Creates a new instance of MatrixV.
-     * 
-     * @param cell The parent cell for this spreadsheet cell.
+     *
+     * @param cell   The parent cell for this spreadsheet cell.
      * @param matrix The Matrix holding datavalues that this view label will
-     * represent.
+     *               represent.
      */
     public MatrixRootView(final Cell cell, final Value value) {
         super();
@@ -59,7 +63,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         parentCell = cell;
         allEditors = new ArrayList<EditorComponent>();
         edTracker = new EditorTracker(this, allEditors);
-        
+
         setMatrix(value);
 
         addFocusListener(this);
@@ -79,7 +83,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * Sets the value that this MatrixRootView will represent.
-     * 
+     *
      * @param v The Value to display.
      */
     public void setMatrix(final Value v) {
@@ -114,7 +118,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
     /**
      * Used in the UISpec4j tests.
-     * 
+     *
      * @return The editor tracker for this MatrixRootView.
      */
     public EditorTracker getEdTracker() {

@@ -15,15 +15,12 @@
 package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
-
+import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.Datavyu;
-
-
+import org.datavyu.models.db.Cell;
 import org.datavyu.views.discrete.SpreadsheetPanel;
 
-import com.usermetrix.jclient.UserMetrix;
 import java.util.List;
-import org.datavyu.models.db.Cell;
 
 /**
  * Controller for deleting cells from the database.

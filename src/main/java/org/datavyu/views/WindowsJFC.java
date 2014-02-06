@@ -14,17 +14,12 @@
  */
 package org.datavyu.views;
 
-import java.awt.Component;
-import java.awt.Dimension;
-
-import javax.swing.Box;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 public class WindowsJFC extends BaseJFC {
-    @Override protected JDialog createDialog(final Component parent) {
+    @Override
+    protected JDialog createDialog(final Component parent) {
         JDialog dialog = super.createDialog(parent);
 
         JLabel pluginSelect = new JLabel();

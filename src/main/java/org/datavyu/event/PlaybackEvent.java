@@ -15,7 +15,6 @@
 package org.datavyu.event;
 
 import java.awt.event.InputEvent;
-
 import java.util.EventObject;
 
 
@@ -24,7 +23,9 @@ import java.util.EventObject;
  */
 public final class PlaybackEvent extends EventObject {
 
-    /** Enumeration of playback types. */
+    /**
+     * Enumeration of playback types.
+     */
     public enum PlaybackType {
         ADD_DATA, SET_CELL_ONSET, SET_CELL_OFFSET, GO_BACK,
         REWIND, PLAY, FORWARD, SHUTTLE_BACK, STOP, SHUTTLE_FORWARD, FIND,
@@ -32,10 +33,14 @@ public final class PlaybackEvent extends EventObject {
         NEW_CELL, SHOW_TRACKS
     }
 
-    /** Modifiers associated with this event. */
+    /**
+     * Modifiers associated with this event.
+     */
     private final int modifiers;
 
-    /** Type of playback control. */
+    /**
+     * Type of playback control.
+     */
     private final PlaybackType type;
 
     /**
@@ -57,16 +62,16 @@ public final class PlaybackEvent extends EventObject {
     /**
      * Constructs a new playback event.
      *
-     * @param source Source object.
-     * @param type Event type.
-     * @param goTime Go field time represented by the event.
-     * @param onsetTime Onset time represented by the event.
+     * @param source     Source object.
+     * @param type       Event type.
+     * @param goTime     Go field time represented by the event.
+     * @param onsetTime  Onset time represented by the event.
      * @param offsetTime Offset time represented by the event.
-     * @param modifiers Event modifiers.
+     * @param modifiers  Event modifiers.
      */
     public PlaybackEvent(final Object source, final PlaybackType type,
-        final long goTime, final long onsetTime, final long offsetTime,
-        final int modifiers) {
+                         final long goTime, final long onsetTime, final long offsetTime,
+                         final int modifiers) {
         super(source);
         this.type = type;
         this.goTime = goTime;

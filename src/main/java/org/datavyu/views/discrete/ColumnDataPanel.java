@@ -15,68 +15,73 @@
 package org.datavyu.views.discrete;
 
 import com.usermetrix.jclient.Logger;
-
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
-
-import java.util.AbstractList;
-import java.util.ArrayList;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.text.BadLocationException;
-
 import com.usermetrix.jclient.UserMetrix;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.Variable;
 import org.datavyu.util.Constants;
 
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.*;
+import java.util.List;
+
 /**
  * ColumnDataPanel panel that contains the SpreadsheetCell panels.
  */
 public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher {
-    /** Width of the column. */
+    /**
+     * Width of the column.
+     */
     private int columnWidth;
 
-    /** Height of the column. */
+    /**
+     * Height of the column.
+     */
     private int columnHeight;
 
-    /** The model that this variable represents. */
+    /**
+     * The model that this variable represents.
+     */
     private Variable model;
 
-    /** The cell selection listener used for cells in this column. */
+    /**
+     * The cell selection listener used for cells in this column.
+     */
     private CellSelectionListener cellSelectionL;
 
-    /** Collection of the SpreadsheetCells held in by this data panel. */
+    /**
+     * Collection of the SpreadsheetCells held in by this data panel.
+     */
     private List<SpreadsheetCell> cells;
 
-    /** The mapping between the database and the spreadsheet cells. */
+    /**
+     * The mapping between the database and the spreadsheet cells.
+     */
     private Map<Cell, SpreadsheetCell> viewMap;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = UserMetrix.getLogger(ColumnDataPanel.class);
 
-    /** button for creating a new empty cell. */
+    /**
+     * button for creating a new empty cell.
+     */
     private SpreadsheetEmptyCell newCellButton;
 
-    /** Padding for the bottom of the column. */
+    /**
+     * Padding for the bottom of the column.
+     */
     private JPanel padding;
 
     /**
      * Creates a new ColumnDataPanel.
      *
-     * @param db The datastore that this column data panel reflects.
-     * @param width The width of the new column data panel in pixels.
+     * @param db       The datastore that this column data panel reflects.
+     * @param width    The width of the new column data panel in pixels.
      * @param variable The Data Column that this panel represents.
      * @param cellSelL Spreadsheet cell selection listener.
      */
@@ -116,7 +121,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      */
     public void registerListeners() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                            .addKeyEventDispatcher(this);
+                .addKeyEventDispatcher(this);
     }
 
     /**
@@ -125,16 +130,16 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      */
     public void deregisterListeners() {
         KeyboardFocusManager.getCurrentKeyboardFocusManager()
-                            .removeKeyEventDispatcher(this);
+                .removeKeyEventDispatcher(this);
     }
 
     /**
      * Build the SpreadsheetCells and add to the DataPanel.
      *
-     * @param db The datastore holding cells that this column will represent.
+     * @param db       The datastore holding cells that this column will represent.
      * @param variable The variable to display.
      * @param cellSelL Spreadsheet listener to notify about cell selection
-     * changes.
+     *                 changes.
      */
     private void buildDataPanelCells(final Datastore db,
                                      final Variable variable,
@@ -189,11 +194,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /**
      * Insert a new SpreadsheetCell for a given cell.
      *
-     * @param db The database holding the cell that is being inserted into this
-     * column data panel.
-     * @param cell The cell to create and insert into this column data panel.
+     * @param db       The database holding the cell that is being inserted into this
+     *                 column data panel.
+     * @param cell     The cell to create and insert into this column data panel.
      * @param cellSelL SpreadsheetCellSelectionListener to notify of changes in
-     * selection.
+     *                 selection.
      */
     public void insertCell(final Datastore ds,
                            final Cell cell,
@@ -221,7 +226,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
     public void setHeight(final int height) {
         columnHeight = height;
-        setMaximumSize(new Dimension(columnWidth, columnHeight*2));
+        setMaximumSize(new Dimension(columnWidth, columnHeight * 2));
     }
 
     /**
@@ -229,7 +234,8 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      *
      * @return the preferred size of the data column.
      */
-    @Override public Dimension getPreferredSize() {
+    @Override
+    public Dimension getPreferredSize() {
         return new Dimension(columnWidth, columnHeight);
     }
 
@@ -293,7 +299,6 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
      * Dispatches the key event to the desired components.
      *
      * @param e The key event to dispatch.
-     *
      * @return true if the event has been consumed by this dispatch, false
      * otherwise
      */
@@ -304,10 +309,10 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         // arrow. Forget about it - just chuck it back to Java to deal with.
         if ((e.getID() != KeyEvent.KEY_PRESSED)
                 && ((e.getKeyCode() != KeyEvent.VK_UP)
-                    || (e.getKeyCode() != KeyEvent.VK_DOWN))) {
+                || (e.getKeyCode() != KeyEvent.VK_DOWN))) {
             return false;
         }
-	
+
         SpreadsheetCell[] components = this.getCellsTemporally().toArray(new SpreadsheetCell[0]);
         int numCells = components.length;
 
@@ -392,8 +397,8 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 if ((e.getKeyCode() == KeyEvent.VK_UP) && (i > 0)) {
 
                     try {
-			    
-			System.out.println(i);
+
+                        System.out.println(i);
 
                         // Determine if we are at the top of a multi-lined cell,
                         // if we are not on the top line - pressing up should

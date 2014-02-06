@@ -15,34 +15,11 @@
 package org.datavyu;
 
 import ca.beq.util.win32.registry.Win32Exception;
-import org.datavyu.views.VariableListV;
-import org.datavyu.views.DatavyuView;
-import org.datavyu.views.VideoConverterV;
-import org.datavyu.views.DataControllerV;
-import org.datavyu.views.UndoHistoryWindow;
-import org.datavyu.views.AboutV;
-import org.datavyu.views.UpdateV;
-import org.datavyu.views.UserMetrixV;
 import ch.randelshofer.quaqua.QuaquaManager;
-import com.mongodb.DB;
 import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Dimension;
-import java.awt.KeyEventDispatcher;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.util.EventObject;
-import java.util.Stack;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.swing.*;
-import org.jdesktop.application.*;
 import org.datavyu.controllers.project.ProjectController;
-import org.datavyu.models.db.MongoDatastore;
 import org.datavyu.models.db.TitleNotifier;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.project.Project;
@@ -52,12 +29,24 @@ import org.datavyu.util.MacHandler;
 import org.datavyu.util.NativeLoader;
 import org.datavyu.util.WindowsFileAssociations;
 import org.datavyu.util.WindowsKeyChar;
+import org.datavyu.views.*;
+import org.jdesktop.application.*;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.util.EventObject;
+import java.util.Stack;
 
 /**
  * The main class of the application.
  */
 public final class Datavyu extends SingleFrameApplication
-implements KeyEventDispatcher, TitleNotifier {
+        implements KeyEventDispatcher, TitleNotifier {
 
     /** Load required native libraries (JNI). */
     static {
@@ -73,10 +62,14 @@ implements KeyEventDispatcher, TitleNotifier {
         }
     }
 
-    /** The desired minimum initial width. */
+    /**
+     * The desired minimum initial width.
+     */
     private static final int INITMINX = 600;
 
-    /** The desired minimum initial height. */
+    /**
+     * The desired minimum initial height.
+     */
     private static final int INITMINY = 700;
 
     /**
@@ -86,65 +79,101 @@ implements KeyEventDispatcher, TitleNotifier {
      */
     private static DatavyuView VIEW;
 
-    /** All the supported platforms that Datavyu runs on. */
+    /**
+     * All the supported platforms that Datavyu runs on.
+     */
     public enum Platform {
 
-        /** Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard. */
+        /**
+         * Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard.
+         */
         MAC,
 
-        /** Generic windows platform. I.e. XP, vista, etc. */
+        /**
+         * Generic windows platform. I.e. XP, vista, etc.
+         */
         WINDOWS,
 
-        /** Generic Linux platform. */
+        /**
+         * Generic Linux platform.
+         */
         LINUX,
 
-        /** Unknown platform. */
+        /**
+         * Unknown platform.
+         */
         UNKNOWN
     }
 
-    /** The scripting engine that we use with Datavyu. */
+    /**
+     * The scripting engine that we use with Datavyu.
+     */
     private ScriptEngine rubyEngine;
 
-    /** The scripting engine manager that we use with Datavyu. */
+    /**
+     * The scripting engine manager that we use with Datavyu.
+     */
     private ScriptEngineManager m2;
 
-    /** The JRuby scripting engine manager that we use with Datavyu. */
+    /**
+     * The JRuby scripting engine manager that we use with Datavyu.
+     */
     private JRubyScriptEngineManager m;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(Datavyu.class);
 
-    /** The view to use when listing all variables in the database. */
+    /**
+     * The view to use when listing all variables in the database.
+     */
     private VariableListV listVarView;
 
-    /** The view to use when listing all the undoable actions. */
+    /**
+     * The view to use when listing all the undoable actions.
+     */
     private UndoHistoryWindow history;
 
-    /** The view to use for the quick time video controller. */
+    /**
+     * The view to use for the quick time video controller.
+     */
     private DataControllerV dataController;
 
-    /** The view to use when displaying information about Datavyu. */
+    /**
+     * The view to use when displaying information about Datavyu.
+     */
     private AboutV aboutWindow;
 
-    /** The view to use when displaying information about Datavyu updates. */
+    /**
+     * The view to use when displaying information about Datavyu updates.
+     */
     private UpdateV updateWindow;
 
-    /** Tracks if a NumPad key has been pressed. */
+    /**
+     * Tracks if a NumPad key has been pressed.
+     */
     private boolean numKeyDown = false;
 
-    /** The current project. */
+    /**
+     * The current project.
+     */
     private ProjectController projectController;
 
-    /** Opened windows. */
+    /**
+     * Opened windows.
+     */
     private Stack<Window> windows;
 
-    /** File path from the command line. */
+    /**
+     * File path from the command line.
+     */
     private String commandLineFile;
-    
+
     private VideoConverterV videoConverter;
-    
+
     public boolean ready = false;
-    
+
     public void setCommandLineFile(String s) {
         commandLineFile = s;
     }
@@ -154,7 +183,7 @@ implements KeyEventDispatcher, TitleNotifier {
      *
      * @param evt The event that triggered this action.
      * @return true if the KeyboardFocusManager should take no further action
-     *         with regard to the KeyEvent; false otherwise
+     * with regard to the KeyEvent; false otherwise
      */
     @Override
     public boolean dispatchKeyEvent(final KeyEvent evt) {
@@ -183,102 +212,102 @@ implements KeyEventDispatcher, TitleNotifier {
 
             switch (getPlatform()) {
 
-            // Code table used by Windows is different.
-            case WINDOWS: {
-                switch (WindowsKeyChar.remap(evt.getKeyChar())) {
+                // Code table used by Windows is different.
+                case WINDOWS: {
+                    switch (WindowsKeyChar.remap(evt.getKeyChar())) {
 
-                case '+':
-                case '-':
-                    // Plus and minus do not respond. Uncomment
-                    // the printout above to see what I mean.
+                        case '+':
+                        case '-':
+                            // Plus and minus do not respond. Uncomment
+                            // the printout above to see what I mean.
 
-                case 'O':
-                    getView().open();
-                    evt.consume();
+                        case 'O':
+                            getView().open();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case 'S':
-                    getView().save();
-                    evt.consume();
+                        case 'S':
+                            getView().save();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case 'N':
-                    getView().showNewProjectForm();
-                    evt.consume();
+                        case 'N':
+                            getView().showNewProjectForm();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case 'L':
-                    getView().newCellLeft();
-                    evt.consume();
+                        case 'L':
+                            getView().newCellLeft();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case 'R':
-                    getView().newCellRight();
-                    evt.consume();
+                        case 'R':
+                            getView().newCellRight();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                default:
-                    break;
+                        default:
+                            break;
+                    }
                 }
-            }
 
-            break;
+                break;
 
-            default: {
+                default: {
 
-                switch (evt.getKeyChar()) {
+                    switch (evt.getKeyChar()) {
 
-                case '=': // Can't access + without shift.
-                    getView().zoomIn();
-                    evt.consume();
+                        case '=': // Can't access + without shift.
+                            getView().zoomIn();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case '-':
-                    getView().zoomOut();
-                    evt.consume();
+                        case '-':
+                            getView().zoomOut();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case 'o':
-                    getView().open();
-                    evt.consume();
+                        case 'o':
+                            getView().open();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case 's':
-                    getView().save();
-                    evt.consume();
+                        case 's':
+                            getView().save();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case 'n':
-                    getView().showNewProjectForm();
-                    evt.consume();
+                        case 'n':
+                            getView().showNewProjectForm();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case 'l':
-                    getView().newCellLeft();
-                    evt.consume();
+                        case 'l':
+                            getView().newCellLeft();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                case 'r':
-                    getView().newCellRight();
-                    evt.consume();
+                        case 'r':
+                            getView().newCellRight();
+                            evt.consume();
 
-                    return true;
+                            return true;
 
-                default:
-                    break;
+                        default:
+                            break;
+                    }
                 }
-            }
             }
         }
 
@@ -288,31 +317,31 @@ implements KeyEventDispatcher, TitleNotifier {
 
             switch (evt.getKeyCode()) {
 
-            /**
-             * This case is because VK_PLUS is not linked to a key on the
-             * English keyboard. So the GUI is bound to VK_PLUS and VK_SUBTACT.
-             * VK_SUBTRACT is on the numpad, but this is short-circuited above.
-             * The cases return true to let the KeyboardManager know that there
-             * is nothing left to be done with these keys.
-             */
-            case KeyEvent.VK_EQUALS:
+                /**
+                 * This case is because VK_PLUS is not linked to a key on the
+                 * English keyboard. So the GUI is bound to VK_PLUS and VK_SUBTACT.
+                 * VK_SUBTRACT is on the numpad, but this is short-circuited above.
+                 * The cases return true to let the KeyboardManager know that there
+                 * is nothing left to be done with these keys.
+                 */
+                case KeyEvent.VK_EQUALS:
 
-                if (modifiers == keyMask) {
-                    VIEW.changeFontSize(DatavyuView.ZOOM_INTERVAL);
-                }
+                    if (modifiers == keyMask) {
+                        VIEW.changeFontSize(DatavyuView.ZOOM_INTERVAL);
+                    }
 
-                return true;
+                    return true;
 
-            case KeyEvent.VK_MINUS:
+                case KeyEvent.VK_MINUS:
 
-                if (modifiers == keyMask) {
-                    VIEW.changeFontSize(-DatavyuView.ZOOM_INTERVAL);
-                }
+                    if (modifiers == keyMask) {
+                        VIEW.changeFontSize(-DatavyuView.ZOOM_INTERVAL);
+                    }
 
-                return true;
+                    return true;
 
-            default:
-                break;
+                default:
+                    break;
             }
         }
 
@@ -363,136 +392,136 @@ implements KeyEventDispatcher, TitleNotifier {
 
         switch (evt.getKeyCode()) {
 
-        case KeyEvent.VK_DIVIDE:
+            case KeyEvent.VK_DIVIDE:
 
-            if (getPlatform().equals(Platform.MAC)) {
-                dataController.pressSetCellOffsetOSX();
-            } else {
+                if (getPlatform().equals(Platform.MAC)) {
+                    dataController.pressSetCellOffsetOSX();
+                } else {
+
+                    if (modifiers == InputEvent.SHIFT_MASK) {
+                        dataController.pressSetCellOffset();
+                    } else {
+                        dataController.pressSetCellOnset();
+                    }
+                }
+
+                break;
+
+            case KeyEvent.VK_EQUALS:
+
+                if (getPlatform().equals(Platform.MAC)) {
+                    dataController.pressPointCell();
+                }
+
+                break;
+
+            case KeyEvent.VK_ASTERISK:
+            case KeyEvent.VK_MULTIPLY:
+
+                if (!getPlatform().equals(Platform.MAC)) {
+                    dataController.pressPointCell();
+                }
+
+                break;
+
+            case KeyEvent.VK_NUMPAD7:
+                dataController.pressRewind();
+
+                break;
+
+            case KeyEvent.VK_NUMPAD8:
+                dataController.pressPlay();
+
+                break;
+
+            case KeyEvent.VK_NUMPAD9:
+                dataController.pressForward();
+
+                break;
+
+            case KeyEvent.VK_NUMPAD4:
+                dataController.pressShuttleBack();
+
+                break;
+
+            case KeyEvent.VK_NUMPAD2:
+                dataController.pressPause();
+
+                break;
+
+            case KeyEvent.VK_NUMPAD6:
+                dataController.pressShuttleForward();
+
+                break;
+
+            case KeyEvent.VK_NUMPAD1:
+
+                // We don't do the press Jog thing for jogging - as users often
+                // just hold the button down... Which causes weird problems when
+                // attempting to do multiple presses.
+                dataController.jogBackAction();
+
+                break;
+
+            case KeyEvent.VK_NUMPAD5:
+                dataController.pressStop();
+
+                break;
+
+            case KeyEvent.VK_NUMPAD3:
+
+                // We don't do the press Jog thing for jogging - as users often
+                // just hold the button down... Which causes weird problems when
+                // attempting to do multiple presses.
+                dataController.jogForwardAction();
+
+                break;
+
+            case KeyEvent.VK_NUMPAD0:
+                dataController.pressCreateNewCellSettingOffset();
+
+                break;
+
+            case KeyEvent.VK_DECIMAL:
+                dataController.pressSetCellOffset();
+
+                break;
+
+            case KeyEvent.VK_SUBTRACT:
+
+                if (modifiers == InputEvent.CTRL_MASK) {
+                    dataController.clearRegionOfInterestAction();
+                } else {
+                    dataController.pressGoBack();
+                }
+
+                break;
+
+            case KeyEvent.VK_ADD:
 
                 if (modifiers == InputEvent.SHIFT_MASK) {
-                    dataController.pressSetCellOffset();
+                    dataController.pressFind();
+                    dataController.findOffsetAction();
+                } else if (modifiers == InputEvent.CTRL_MASK) {
+                    dataController.pressFind();
+                    dataController.setRegionOfInterestAction();
                 } else {
-                    dataController.pressSetCellOnset();
+                    dataController.pressFind();
                 }
-            }
 
-            break;
+                break;
 
-        case KeyEvent.VK_EQUALS:
+            case KeyEvent.VK_ENTER:
+                dataController.pressCreateNewCell();
 
-            if (getPlatform().equals(Platform.MAC)) {
-                dataController.pressPointCell();
-            }
+                break;
 
-            break;
+            default:
 
-        case KeyEvent.VK_ASTERISK:
-        case KeyEvent.VK_MULTIPLY:
+                // Do nothing with the key.
+                result = false;
 
-            if (!getPlatform().equals(Platform.MAC)) {
-                dataController.pressPointCell();
-            }
-
-            break;
-
-        case KeyEvent.VK_NUMPAD7:
-            dataController.pressRewind();
-
-            break;
-
-        case KeyEvent.VK_NUMPAD8:
-            dataController.pressPlay();
-
-            break;
-
-        case KeyEvent.VK_NUMPAD9:
-            dataController.pressForward();
-
-            break;
-
-        case KeyEvent.VK_NUMPAD4:
-            dataController.pressShuttleBack();
-
-            break;
-
-        case KeyEvent.VK_NUMPAD2:
-            dataController.pressPause();
-
-            break;
-
-        case KeyEvent.VK_NUMPAD6:
-            dataController.pressShuttleForward();
-
-            break;
-
-        case KeyEvent.VK_NUMPAD1:
-
-            // We don't do the press Jog thing for jogging - as users often
-            // just hold the button down... Which causes weird problems when
-            // attempting to do multiple presses.
-            dataController.jogBackAction();
-
-            break;
-
-        case KeyEvent.VK_NUMPAD5:
-            dataController.pressStop();
-
-            break;
-
-        case KeyEvent.VK_NUMPAD3:
-
-            // We don't do the press Jog thing for jogging - as users often
-            // just hold the button down... Which causes weird problems when
-            // attempting to do multiple presses.
-            dataController.jogForwardAction();
-
-            break;
-
-        case KeyEvent.VK_NUMPAD0:
-            dataController.pressCreateNewCellSettingOffset();
-
-            break;
-
-        case KeyEvent.VK_DECIMAL:
-            dataController.pressSetCellOffset();
-
-            break;
-
-        case KeyEvent.VK_SUBTRACT:
-
-            if (modifiers == InputEvent.CTRL_MASK) {
-                dataController.clearRegionOfInterestAction();
-            } else {
-                dataController.pressGoBack();
-            }
-
-            break;
-
-        case KeyEvent.VK_ADD:
-
-            if (modifiers == InputEvent.SHIFT_MASK) {
-                dataController.pressFind();
-                dataController.findOffsetAction();
-            } else if (modifiers == InputEvent.CTRL_MASK) {
-                dataController.pressFind();
-                dataController.setRegionOfInterestAction();
-            } else {
-                dataController.pressFind();
-            }
-
-            break;
-
-        case KeyEvent.VK_ENTER:
-            dataController.pressCreateNewCell();
-
-            break;
-
-        default:
-
-            // Do nothing with the key.
-            result = false;
-
-            break;
+                break;
         }
 
         return result;
@@ -504,17 +533,17 @@ implements KeyEventDispatcher, TitleNotifier {
     public void showDataController() {
         Datavyu.getApplication().show(dataController);
     }
-    
+
     /**
      * Action for showing the video converter.
      */
     public void showVideoConverter() {
-	JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-	videoConverter = new VideoConverterV();
+        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        videoConverter = new VideoConverterV();
         Datavyu.getApplication().show(videoConverter);
     }
-    
-    
+
+
     /**
      * Action for showing the variable list.
      */
@@ -550,14 +579,12 @@ implements KeyEventDispatcher, TitleNotifier {
     /**
      * Action for opening the support site
      */
-    public void openSupportSite()
-    {
+    public void openSupportSite() {
         String url = "http://www.datavyu.org/support";
 
         try {
-          java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-        }
-        catch (java.io.IOException e) {
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+        } catch (java.io.IOException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -565,14 +592,12 @@ implements KeyEventDispatcher, TitleNotifier {
     /**
      * Action for opening the guide site
      */
-    public void openGuideSite()
-    {
+    public void openGuideSite() {
         String url = "https://github.com/databrary/datavyu/wiki";
 
         try {
-          java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-        }
-        catch (java.io.IOException e) {
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+        } catch (java.io.IOException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -613,11 +638,11 @@ implements KeyEventDispatcher, TitleNotifier {
     public void showErrorDialog() {
         JFrame mainFrame = Datavyu.getApplication().getMainFrame();
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-            .getResourceMap(Datavyu.class);
+                .getResourceMap(Datavyu.class);
 
         JOptionPane.showMessageDialog(mainFrame,
-            rMap.getString("ErrorDialog.message"),
-            rMap.getString("ErrorDialog.title"), JOptionPane.ERROR_MESSAGE);
+                rMap.getString("ErrorDialog.message"),
+                rMap.getString("ErrorDialog.title"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -632,7 +657,7 @@ implements KeyEventDispatcher, TitleNotifier {
     public boolean safeQuit() {
         JFrame mainFrame = Datavyu.getApplication().getMainFrame();
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-            .getResourceMap(Datavyu.class);
+                .getResourceMap(Datavyu.class);
 
         if (projectController.isChanged()) {
 
@@ -657,7 +682,7 @@ implements KeyEventDispatcher, TitleNotifier {
 
             // Button behaviour is platform dependent.
             return (getPlatform() == Platform.MAC) ? (selection == 1)
-                                                   : (selection == 0);
+                    : (selection == 0);
         } else {
 
             // Project hasn't been changed.
@@ -668,13 +693,13 @@ implements KeyEventDispatcher, TitleNotifier {
     /**
      * Action to call when the application is exiting.
      *
-     * @param event
-     *            The event that triggered this action.
+     * @param event The event that triggered this action.
      */
-    @Override protected void end() {
+    @Override
+    protected void end() {
         Datavyu.getApplication().getMainFrame().setVisible(false);
         UserMetrix.shutdown();
-	shutdown();
+        shutdown();
         super.end();
     }
 
@@ -687,7 +712,7 @@ implements KeyEventDispatcher, TitleNotifier {
     public boolean overwriteExisting() {
         JFrame mainFrame = Datavyu.getApplication().getMainFrame();
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-            .getResourceMap(Datavyu.class);
+                .getResourceMap(Datavyu.class);
         String defaultOpt = "Cancel";
         String altOpt = "Overwrite";
 
@@ -696,18 +721,18 @@ implements KeyEventDispatcher, TitleNotifier {
         if (getPlatform() == Platform.MAC) {
             a[0] = defaultOpt; // This has int value 0 if selected
             a[1] = altOpt; // This has int value 1 if selected.
-         } else {
+        } else {
             a[1] = defaultOpt; // This has int value 1 if selected
             a[0] = altOpt; // This has int value 0 if selected.
         }
 
         int sel =
 
-            JOptionPane.showOptionDialog(mainFrame,
-                rMap.getString("OverwriteDialog.message"),
-                rMap.getString("OverwriteDialog.title"),
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, a, defaultOpt);
+                JOptionPane.showOptionDialog(mainFrame,
+                        rMap.getString("OverwriteDialog.message"),
+                        rMap.getString("OverwriteDialog.title"),
+                        JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                        null, a, defaultOpt);
 
         // Button depends on platform now.
         if (getPlatform() == Platform.MAC) {
@@ -717,7 +742,8 @@ implements KeyEventDispatcher, TitleNotifier {
         }
     }
 
-    @Override protected void initialize(final String[] args) {
+    @Override
+    protected void initialize(final String[] args) {
 
         if (getPlatform() == Platform.MAC) {
 
@@ -744,21 +770,21 @@ implements KeyEventDispatcher, TitleNotifier {
         if (args.length > 0) {
             commandLineFile = args[0];
         }
-        
+
         windows = new Stack<Window>();
 
         // Initalise the logger (UserMetrix).
         LocalStorage ls = Datavyu.getApplication().getContext()
-            .getLocalStorage();
+                .getLocalStorage();
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-            .getResourceMap(Datavyu.class);
+                .getResourceMap(Datavyu.class);
 
         com.usermetrix.jclient.Configuration config =
-            new com.usermetrix.jclient.Configuration(2);
+                new com.usermetrix.jclient.Configuration(2);
         config.setTmpDirectory(ls.getDirectory().toString() + File.separator);
         config.addMetaData("build",
-            rMap.getString("Application.version") + ":"
-            + rMap.getString("Application.build"));
+                rMap.getString("Application.version") + ":"
+                        + rMap.getString("Application.build"));
         UserMetrix.initalise(config);
         LOGGER = UserMetrix.getLogger(Datavyu.class);
 
@@ -767,7 +793,7 @@ implements KeyEventDispatcher, TitleNotifier {
             UserMetrix.setCanSendLogs(false);
         } else {
             UserMetrix.setCanSendLogs(Configuration.getInstance()
-                .getCanSendLogs());
+                    .getCanSendLogs());
         }
 
         // Initalise scripting engine
@@ -805,7 +831,8 @@ implements KeyEventDispatcher, TitleNotifier {
     /**
      * At startup create and show the main frame of the application.
      */
-    @Override protected void startup() {
+    @Override
+    protected void startup() {
 
         // Make view the new view so we can keep track of it for hotkeys.
         VIEW = new DatavyuView(this);
@@ -834,25 +861,26 @@ implements KeyEventDispatcher, TitleNotifier {
         dataController = new DataControllerV(getMainFrame(), false);
 
         final Dimension screenSize = Toolkit.getDefaultToolkit()
-            .getScreenSize();
+                .getScreenSize();
         int x = getView().getFrame().getX();
 
         // don't let the data viewer fall below the bottom of the primary
         // screen, but also don't let it creep up above the screen either
         int y = getView().getFrame().getY() + getView().getFrame().getHeight();
         y = (int) Math.max(Math.min(y,
-                    screenSize.getHeight() - dataController.getHeight()), 0);
+                screenSize.getHeight() - dataController.getHeight()), 0);
         dataController.setLocation(x, y);
         show(dataController);
         VIEW.checkForAutosavedFile();
 
         // The DB we create by default doesn't really have any unsaved changes.
         projectController.getDB().markAsUnchanged();
-        
+
         ready();
     }
 
-    @Override protected void ready() {
+    @Override
+    protected void ready() {
 
         ready = true;
         if (commandLineFile != null) {
@@ -864,8 +892,8 @@ implements KeyEventDispatcher, TitleNotifier {
     /**
      * Clean up after ourselves.
      */
-    @Override protected void shutdown() {
-        MongoDatastore.stopMongo();
+    @Override
+    protected void shutdown() {
         NativeLoader.cleanAllTmpFiles();
         super.shutdown();
     }
@@ -877,7 +905,8 @@ implements KeyEventDispatcher, TitleNotifier {
      *
      * @param root The parent window.
      */
-    @Override protected void configureWindow(final java.awt.Window root) {
+    @Override
+    protected void configureWindow(final java.awt.Window root) {
     }
 
     /**
@@ -886,17 +915,13 @@ implements KeyEventDispatcher, TitleNotifier {
     @Override
     public void updateTitle() {
         SwingUtilities.invokeLater(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 if (VIEW != null) {
                     VIEW.updateTitle();
                 }
             }
         });
-    }
-
-    /** @return database */
-    public DB getDatabase() {
-        return MongoDatastore.getDB();
     }
 
     /**
@@ -919,7 +944,7 @@ implements KeyEventDispatcher, TitleNotifier {
 
     /**
      * @return The single instance of the scripting engine we use with
-     *         Datavyu.
+     * Datavyu.
      */
     public static ScriptEngine getScriptingEngine() {
         return Datavyu.getApplication().rubyEngine;
@@ -958,7 +983,7 @@ implements KeyEventDispatcher, TitleNotifier {
      * with Datavyu.
      *
      * @return The single data controller in use with this instance of
-     *         Datavyu.
+     * Datavyu.
      */
     public static DataControllerV getDataController() {
         return Datavyu.getApplication().dataController;
@@ -992,9 +1017,6 @@ implements KeyEventDispatcher, TitleNotifier {
      */
     public static void main(final String[] args) {
 
-        // Spin up the mongo process
-        MongoDatastore.startMongo();
-
         // If we are running on a MAC set some additional properties:
         if (Datavyu.getPlatform() == Platform.MAC) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -1003,16 +1025,17 @@ implements KeyEventDispatcher, TitleNotifier {
         }
 
         launch(Datavyu.class, args);
-	
-	Runtime.getRuntime().addShutdownHook(new Thread() {
-	public void run() {
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
 //			System.err.println("ERROR: Force shutdown command caught. Initiating shutdown.");
 //			Datavyu.getApplication().shutdown();
-		}
-	});
+            }
+        });
     }
 
-    @Override public void show(final JDialog dialog) {
+    @Override
+    public void show(final JDialog dialog) {
 
         if (windows == null) {
             windows = new Stack<Window>();
@@ -1022,7 +1045,8 @@ implements KeyEventDispatcher, TitleNotifier {
         super.show(dialog);
     }
 
-    @Override public void show(final JFrame frame) {
+    @Override
+    public void show(final JFrame frame) {
 
         if (windows == null) {
             windows = new Stack<Window>();
@@ -1071,7 +1095,6 @@ implements KeyEventDispatcher, TitleNotifier {
          * Calls safeQuit to check if we can exit.
          *
          * @param arg0 The event generating the quit call.
-         *
          * @return True if the application can quit, false otherwise.
          */
         @Override

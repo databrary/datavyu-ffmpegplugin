@@ -16,12 +16,6 @@ package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-
-import java.io.IOException;
-import javax.swing.Timer;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 import org.apache.commons.io.FilenameUtils;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.project.ProjectController;
@@ -29,72 +23,79 @@ import org.datavyu.models.db.UserWarningException;
 import org.datavyu.util.FileFilters.OPFFilter;
 import org.datavyu.util.FileFilters.SHAPAFilter;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
 public class AutosaveC implements ActionListener {
-   
-    /** The logger for this class. */
-    private static Logger LOGGER = UserMetrix.getLogger(DeleteColumnC.class);    
-    
+
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = UserMetrix.getLogger(DeleteColumnC.class);
+
     private static Timer timer;
     private static File f;
-    
+
     public static void setInterval(int interval) {
-        if(interval == 0)  {
-            if(timer != null)  {
+        if (interval == 0) {
+            if (timer != null) {
                 timer.stop();
-		timer = null;
+                timer = null;
             }
             return;
-	}
-	interval *= 60000;
-	if(timer == null)  {
-            timer = new Timer(interval,new AutosaveC());
+        }
+        interval *= 60000;
+        if (timer == null) {
+            timer = new Timer(interval, new AutosaveC());
             timer.start();
-	}
-        else  {
+        } else {
             timer.setDelay(interval);
-        }    
-    } 
+        }
+    }
 
-    public static void stop()  {
-        if(timer != null)  {
+    public static void stop() {
+        if (timer != null) {
             timer.stop();
-        }        
+        }
     }
 
     @Override
-    public void actionPerformed(ActionEvent evt)  {
+    public void actionPerformed(ActionEvent evt) {
         String baseName;
         String ext;
         // save the project
-        try {    
+        try {
             if (f != null) {
                 f.delete();
             }
             ProjectController projController = Datavyu.getProjectController();
             SaveC saveController = new SaveC();
             if (projController.isNewProject() || (projController.getProjectName() == null)) {
-                baseName = "~noname_"; 
+                baseName = "~noname_";
                 ext = ".opf";
-                f = File.createTempFile(baseName, ext);         
+                f = File.createTempFile(baseName, ext);
                 saveController.saveProject(f, projController.getProject(),
-                                           projController.getDB(), false);
+                        projController.getDB(), false);
             } else {
                 if ((projController.getLastSaveOption() instanceof SHAPAFilter)
                         || (projController.getLastSaveOption()
-                            instanceof OPFFilter)) {            
+                        instanceof OPFFilter)) {
                     baseName = "~" + projController.getProjectName() + "_";
-                    ext = ".opf"; 
-                    f = File.createTempFile(baseName, ext);          
+                    ext = ".opf";
+                    f = File.createTempFile(baseName, ext);
                     saveController.saveProject(f, projController.getProject(),
-                                               projController.getDB(), false);
-                // Save content just as a database.                          
-                } else {               
+                            projController.getDB(), false);
+                    // Save content just as a database.
+                } else {
                     String filename = "~" + projController.getDatabaseFileName();
                     baseName = FilenameUtils.getBaseName(filename) + "_";
                     ext = "." + FilenameUtils.getExtension(filename);
                     f = File.createTempFile(baseName, ext);
                     saveController.saveDatabase(f, projController.getDB(), false);
-                }                        
+                }
             }
         } catch (UserWarningException lee) {
             LOGGER.error("UserWarningException: Unable to autosave.", lee);
@@ -102,8 +103,9 @@ public class AutosaveC implements ActionListener {
             LOGGER.error("IOException: Unable to autosave.", ioe);
         } finally {
             f.deleteOnExit();
-        }                            
-    } 
+        }
+    }
 
-    private AutosaveC() {}    
+    private AutosaveC() {
+    }
 }

@@ -16,34 +16,45 @@ package org.datavyu.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.util.logging.Level;
-import javax.swing.text.JTextComponent;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
 import org.datavyu.util.SequentialNumberGenerator;
 import org.datavyu.views.discrete.EditorComponent;
 
+import javax.swing.text.JTextComponent;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.util.logging.Level;
+
 /**
  * This class is the character editor of a NominalDataValue.
  */
 public final class VENameEditor extends EditorComponent {
 
-    /** Parent Vocab Element. */
+    /**
+     * Parent Vocab Element.
+     */
     private Argument model;
-    
-    /** Parent Variable. */
+
+    /**
+     * Parent Variable.
+     */
     private Variable varModel;
 
-    /** String holding the reserved characters. */
+    /**
+     * String holding the reserved characters.
+     */
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(VENameEditor.class);
 
-    /** The parent editor window that this argument belongs too. */
+    /**
+     * The parent editor window that this argument belongs too.
+     */
     private VocabElementV parentView;
 
     /**
@@ -87,13 +98,13 @@ public final class VENameEditor extends EditorComponent {
             removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
-            
-            for(Argument arg : varModel.getVariableType().childArguments) {
-                if(arg.name.equals(model.name)) {
+
+            for (Argument arg : varModel.getVariableType().childArguments) {
+                if (arg.name.equals(model.name)) {
                     arg.name = currentValue.toString();
                 }
             }
-            
+
             try {
                 varModel.setName(currentValue.toString());
             } catch (UserWarningException ex) {
@@ -130,10 +141,10 @@ public final class VENameEditor extends EditorComponent {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
                 removeBehindCaret();
-                if(!getText().equals("")){
+                if (!getText().equals("")) {
                     model.name = getText();
-                }else{
-                    model.name = "unnamed"+ Integer.toString(SequentialNumberGenerator.getNextSeqNum());
+                } else {
+                    model.name = "unnamed" + Integer.toString(SequentialNumberGenerator.getNextSeqNum());
                 }
                 parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
@@ -142,10 +153,10 @@ public final class VENameEditor extends EditorComponent {
                 break;
             case KeyEvent.VK_DELETE:
                 removeAheadOfCaret();
-                if(!getText().equals("")){
+                if (!getText().equals("")) {
                     model.name = getText();
-                }else{
-                    model.name = "unnamed"+ Integer.toString(SequentialNumberGenerator.getNextSeqNum());
+                } else {
+                    model.name = "unnamed" + Integer.toString(SequentialNumberGenerator.getNextSeqNum());
                 }
                 parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();

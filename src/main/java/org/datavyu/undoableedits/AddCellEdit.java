@@ -14,19 +14,21 @@
  */
 package org.datavyu.undoableedits;
 
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
+import org.datavyu.Datavyu;
 import org.datavyu.controllers.CreateNewCellC;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Variable;
-import org.datavyu.Datavyu;
-import org.datavyu.views.discrete.SpreadsheetCell;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 
 /**
  * An undoable edit for adding a cell to the spreadsheet.
  */
 public class AddCellEdit extends SpreadsheetEdit {
-    /** Variable name **/
+    /**
+     * Variable name *
+     */
     private String varName;
 
     public AddCellEdit(String varName) {
@@ -47,7 +49,7 @@ public class AddCellEdit extends SpreadsheetEdit {
         newCellController.createCell(var);
         unselectAll();
         if ((var.getCells() != null) && (var.getCells().size() > 0)) {
-            Cell cell = var.getCells().get(var.getCells().size()-1);
+            Cell cell = var.getCells().get(var.getCells().size() - 1);
         }
         view.showSpreadsheet();
     }

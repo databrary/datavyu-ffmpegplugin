@@ -14,13 +14,14 @@
  */
 package org.datavyu.views.discrete.datavalues.vocabelements;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.text.JTextComponent;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Variable;
 import org.datavyu.views.discrete.EditorComponent;
 import org.datavyu.views.discrete.datavalues.FixedText;
+
+import javax.swing.text.JTextComponent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Factory for creating data value editors.
@@ -40,7 +41,6 @@ public class VocabElementEditorFactory {
      * @param ta The parent JTextComponent the editor is in.
      * @param ve The parent VocabElement the editor is in.
      * @param pv The parent VocabElementV the editor is in.
-     *
      * @return A vector of editor components to represent the element.
      */
     public static List<EditorComponent> buildVocabElement(final JTextComponent ta,
@@ -74,9 +74,8 @@ public class VocabElementEditorFactory {
      *
      * @param ta The parent JTextComponent the editor is in.
      * @param ve The parent VocabElement the editor is in.
-     * @param i The index of the argument within the element.
+     * @param i  The index of the argument within the element.
      * @param pv The parent VocabElementV the editor is in.
-     *
      * @return A vector of editor components to represent the argument.
      */
     public static List<EditorComponent> buildFormalArg(JTextComponent ta,
@@ -91,7 +90,7 @@ public class VocabElementEditorFactory {
         FormalArgTypeEditor curType = new FormalArgTypeEditor(ta, ve, i, pv);
         if (!curType.getText().equals("N")) //Nominal is our default. Only exceptional cases (from older versions) need be displayed. This may be possible to eliminate all together
         {
-            eds.add(new FixedText(ta, ":")); 
+            eds.add(new FixedText(ta, ":"));
             eds.add(curType);
         }
         eds.add(new FixedText(ta, ">"));

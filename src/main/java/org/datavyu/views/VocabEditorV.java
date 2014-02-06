@@ -16,18 +16,6 @@ package org.datavyu.views;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.undo.UndoableEdit;
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.DeleteColumnC;
 import org.datavyu.models.db.Argument;
@@ -39,30 +27,61 @@ import org.datavyu.undoableedits.RemoveVariableEdit;
 import org.datavyu.views.discrete.datavalues.vocabelements.FormalArgEditor;
 import org.datavyu.views.discrete.datavalues.vocabelements.VENameEditor;
 import org.datavyu.views.discrete.datavalues.vocabelements.VocabElementV;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.undo.UndoableEdit;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A view for editing the database vocab.
  */
 public final class VocabEditorV extends DatavyuDialog {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(VocabEditorV.class);
-    /** All the vocab views displayed in the editor. */
+    /**
+     * All the vocab views displayed in the editor.
+     */
     private List<VocabElementV> veViews;
-    /** The currently selected vocab element. */
+    /**
+     * The currently selected vocab element.
+     */
     private VocabElementV selectedVocabElement;
-    /** The currently selected formal argument. */
+    /**
+     * The currently selected formal argument.
+     */
     private FormalArgEditor selectedArgument;
-    /** Index of the currently selected formal argument within the element. */
+    /**
+     * Index of the currently selected formal argument within the element.
+     */
     private int selectedArgumentI;
-    /** Vertical frame for holding the current listing of Vocab elements. */
+    /**
+     * Vertical frame for holding the current listing of Vocab elements.
+     */
     private JPanel verticalFrame;
-    /** The handler for all keyboard shortcuts */
+    /**
+     * The handler for all keyboard shortcuts
+     */
     private KeyEventDispatcher ked;
-    /** Model */
+    /**
+     * Model
+     */
     Datastore ds;
 
-    /** Swing components. */
+    /**
+     * Swing components.
+     */
     private JButton addArgButton;
     private JButton addMatrixButton;
     private JButton closeButton;
@@ -80,7 +99,7 @@ public final class VocabEditorV extends DatavyuDialog {
      * Constructor.
      *
      * @param parent The parent frame for the vocab editor.
-     * @param modal Is this dialog to be modal or not?
+     * @param modal  Is this dialog to be modal or not?
      */
     public VocabEditorV(final Frame parent, final boolean modal) {
         super(parent, modal);
@@ -98,45 +117,47 @@ public final class VocabEditorV extends DatavyuDialog {
         // manage keyboard inputs
         KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         kfm.addKeyEventDispatcher(
-        ked = new KeyEventDispatcher(){
-            @Override
-            public boolean dispatchKeyEvent(final KeyEvent ke){
+                ked = new KeyEventDispatcher() {
+                    @Override
+                    public boolean dispatchKeyEvent(final KeyEvent ke) {
 
-                boolean result = false;
-                //determine what key was pressed
-                if(ke.getID()== KeyEvent.KEY_RELEASED){
-                    switch (ke.getKeyCode()){
+                        boolean result = false;
+                        //determine what key was pressed
+                        if (ke.getID() == KeyEvent.KEY_RELEASED) {
+                            switch (ke.getKeyCode()) {
 
-                        case KeyEvent.VK_ESCAPE:
-                            closeWindow();
-                            break;
+                                case KeyEvent.VK_ESCAPE:
+                                    closeWindow();
+                                    break;
+                            }
+                        }
+                        if (ke.isControlDown() && (ke.getID() == KeyEvent.KEY_RELEASED)) {
+                            switch (ke.getKeyCode()) {
+                                case KeyEvent.VK_M:
+                                    addMatrix();
+                                    break;
+                                case KeyEvent.VK_A:
+                                    if (selectedVocabElement != null) {
+                                        addArgument();
+                                    }
+                                    break;
+                                case KeyEvent.VK_S:
+                                    applyChanges();
+                                    break;
+                                case KeyEvent.VK_DELETE:
+                                    delete();
+                                    break;
+                                default:
+                                    result = false;
+                            }
+                        }
+
+                        if (result)
+                            ke.consume();
+
+                        return result;
                     }
-                }
-                if(ke.isControlDown() && (ke.getID()== KeyEvent.KEY_RELEASED)){
-                    switch(ke.getKeyCode()){
-                        case KeyEvent.VK_M:
-                            addMatrix();
-                            break;
-                        case KeyEvent.VK_A:
-                            if(selectedVocabElement!=null){addArgument();}
-                            break;
-                        case KeyEvent.VK_S:
-                            applyChanges();
-                            break;
-                        case KeyEvent.VK_DELETE:
-                            delete();
-                            break;
-                        default:
-                            result = false;
-                    }
-                }
-
-                if(result)
-                    ke.consume();
-
-                return result;
-            }
-        });
+                });
 
         // Populate current vocab list with vocab data from the database.
         veViews = new ArrayList<VocabElementV>();
@@ -177,7 +198,7 @@ public final class VocabEditorV extends DatavyuDialog {
             // Need to get the template from the variable.
             //Matrix m = v.getValue();
             //m.createArgument(Argument.type.NOMINAL);
-            
+
             VocabElementV matrixV = new VocabElementV(v.getVariableType(), v, this);
             verticalFrame.add(matrixV);
             veViews.add(matrixV);
@@ -185,14 +206,14 @@ public final class VocabEditorV extends DatavyuDialog {
             // record the effect
             UndoableEdit edit = new AddVariableEdit(varName, Argument.Type.MATRIX);
             Datavyu.getView().getUndoSupport().postEdit(edit);
-            
+
             matrixV.requestFocus();
             matrixV.rebuildContents();
-            
+
             applyChanges();
             updateDialogState();
-            
-        // Whoops, user has done something strange - show warning dialog.
+
+            // Whoops, user has done something strange - show warning dialog.
         } catch (UserWarningException fe) {
             Datavyu.getApplication().showWarningDialog(fe);
         }
@@ -208,9 +229,8 @@ public final class VocabEditorV extends DatavyuDialog {
      * Adds a vocab element to the vocab editor panel.
      *
      * @param va The vocab argument to add to the vocab editor.
-     *
      * @throws SystemErrorException If unable to add the vocab element to the
-     * vocab editor.
+     *                              vocab editor.
      */
     public void addVocabElement(final Variable var, final Argument va) {
         // The database dictates that vocab elements must have a single argument
@@ -222,27 +242,26 @@ public final class VocabEditorV extends DatavyuDialog {
         verticalFrame.add(vev);
         verticalFrame.validate();
         veViews.add(vev);
-        
-        vev.getDataView().addKeyListener(new KeyAdapter(){
+
+        vev.getDataView().addKeyListener(new KeyAdapter() {
             @Override
-            public void keyReleased(KeyEvent ke){
-                if(ke.isShiftDown()){
-                    if(ke.getKeyCode()==KeyEvent.VK_COMMA || ke.getKeyCode()==KeyEvent.VK_PERIOD){
+            public void keyReleased(KeyEvent ke) {
+                if (ke.isShiftDown()) {
+                    if (ke.getKeyCode() == KeyEvent.VK_COMMA || ke.getKeyCode() == KeyEvent.VK_PERIOD) {
                         addArgument();
                     }
-                }
-                else if(ke.getKeyCode()==KeyEvent.VK_COMMA ||
-                        ke.getKeyCode()==KeyEvent.VK_LEFT_PARENTHESIS ||
-                        ke.getKeyCode()==KeyEvent.VK_RIGHT_PARENTHESIS){
+                } else if (ke.getKeyCode() == KeyEvent.VK_COMMA ||
+                        ke.getKeyCode() == KeyEvent.VK_LEFT_PARENTHESIS ||
+                        ke.getKeyCode() == KeyEvent.VK_RIGHT_PARENTHESIS) {
                     addArgument();
                 }
-                if(ke.getKeyCode()== KeyEvent.VK_LEFT){
-                    if(ke.isControlDown() && moveArgLeftButton.isEnabled()){
+                if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
+                    if (ke.isControlDown() && moveArgLeftButton.isEnabled()) {
                         moveArgumentLeft();
                     }
                 }
-                if(ke.getKeyCode()==KeyEvent.VK_RIGHT){
-                    if(ke.isControlDown() && moveArgRightButton.isEnabled()){
+                if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    if (ke.isControlDown() && moveArgRightButton.isEnabled()) {
                         moveArgumentRight();
                     }
                 }
@@ -263,11 +282,11 @@ public final class VocabEditorV extends DatavyuDialog {
         Argument va = selectedVocabElement.getModel().childArguments.get(selectedArgumentI);
         Variable var = selectedVocabElement.getVariable();
         var.moveArgument(va.name, var.getArgumentIndex(va.name) - 1);
-        
+
         selectedVocabElement.rebuildContents();
 
         selectedVocabElement.requestFocus();
-        
+
         selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(va));
 
         applyChanges();
@@ -283,11 +302,11 @@ public final class VocabEditorV extends DatavyuDialog {
         Argument va = selectedVocabElement.getModel().childArguments.get(selectedArgumentI);
         Variable var = selectedVocabElement.getVariable();
         var.moveArgument(va.name, var.getArgumentIndex(va.name) + 1);
-        
+
         selectedVocabElement.rebuildContents();
 
         selectedVocabElement.requestFocus();
-        
+
         selectedVocabElement.requestArgFocus(selectedVocabElement.getArgumentView(va));
 
         applyChanges();
@@ -334,8 +353,8 @@ public final class VocabEditorV extends DatavyuDialog {
             edit = new RemoveVariableEdit(varsToDelete);
             new DeleteColumnC(varsToDelete);
             applyChanges();
-            
-        // User has argument selected - delete it from the vocab element.
+
+            // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             LOGGER.event("vocEd - delete argument");
             selectedVocabElement.getVariable().removeArgument(selectedArgument.getModel().name);
@@ -359,8 +378,8 @@ public final class VocabEditorV extends DatavyuDialog {
         LOGGER.event("vocEd - apply");
 
         int errors = 0;
-            for (int index=0; index < veViews.size();index++) {
-                VocabElementV vev = veViews.get(index);
+        for (int index = 0; index < veViews.size(); index++) {
+            VocabElementV vev = veViews.get(index);
 //                if (vev.hasChanged()) {
 //                    VocabElement ve = vev.getModel();
 //                    // identify if any of the arguments have the same name
@@ -414,27 +433,26 @@ public final class VocabEditorV extends DatavyuDialog {
 //                        //vev.setHasChanged(false);
 //                    }
 //                }
-            }
-            updateDialogState();
-            ((DatavyuView) Datavyu.getView())
-                    .showSpreadsheet();
+        }
+        updateDialogState();
+        ((DatavyuView) Datavyu.getView())
+                .showSpreadsheet();
 
 
-
-        for(int i = veViews.size()-1; i>= 0; i--){
+        for (int i = veViews.size() - 1; i >= 0; i--) {
             VocabElementV vev = veViews.get(i);
-            if(vev.isDeletable()){
+            if (vev.isDeletable()) {
                 //getLegacyDB().removeVocabElement(vev.getModel().getID());
             }
         }
 
-        if(errors!=0){
-            switch(errors){
+        if (errors != 0) {
+            switch (errors) {
                 case 1:
-                    JOptionPane.showMessageDialog(this, "Vocab Element name in use.","Error adding vocab", 2);
+                    JOptionPane.showMessageDialog(this, "Vocab Element name in use.", "Error adding vocab", 2);
                     break;
                 case 2:
-                    JOptionPane.showMessageDialog(this, "Code name in use.","Duplicate code name", 2);
+                    JOptionPane.showMessageDialog(this, "Code name in use.", "Duplicate code name", 2);
                     break;
             }
 
@@ -448,7 +466,7 @@ public final class VocabEditorV extends DatavyuDialog {
     @Action
     public void ok() {
         LOGGER.event("vocEd - ok");
-        if(applyChanges()==0){
+        if (applyChanges() == 0) {
             try {
                 disposeAll();
             } catch (Throwable e) {
@@ -487,7 +505,7 @@ public final class VocabEditorV extends DatavyuDialog {
      */
     public void updateDialogState() {
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-                                      .getResourceMap(VocabEditorV.class);
+                .getResourceMap(VocabEditorV.class);
 
         boolean containsC = false;
         selectedVocabElement = null;
@@ -498,7 +516,7 @@ public final class VocabEditorV extends DatavyuDialog {
             if (vev.hasFocus()) {
                 selectedVocabElement = vev;
                 selectedArgument = vev.getArgWithFocus();
-                if(selectedArgument != null)
+                if (selectedArgument != null)
                     selectedArgumentI = vev.getArgWithFocus().getArgPos();
                 else
                     selectedArgumentI = -1;
@@ -728,43 +746,35 @@ public final class VocabEditorV extends DatavyuDialog {
      */
     private void componentListnersInit() {
 
-        MouseAdapter ma = new MouseAdapter(){
+        MouseAdapter ma = new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent me){
+            public void mouseEntered(MouseEvent me) {
                 String component = me.getComponent().getName();
-                if(component.equals("closeButton")){
+                if (component.equals("closeButton")) {
                     statusBar.setText("Close the editor");
-                }
-                else if(component.equals("addMatrixButton")){
+                } else if (component.equals("addMatrixButton")) {
                     statusBar.setText("Add a new column. Hotkey: ctrl + M");
-                }
-                else if(component.equals("undoButton")){
+                } else if (component.equals("undoButton")) {
                     statusBar.setText("Undo a series of changes. Hotkey: ctrl + Z");
-                }
-                else if(component.equals("redoButton")){
+                } else if (component.equals("redoButton")) {
                     statusBar.setText("Redo any undone changes. Hotkey: ctrl + Y");
-                }
-                else if(component.equals("addArgButton")){
+                } else if (component.equals("addArgButton")) {
                     statusBar.setText("Add a new code to a column. Hotkey: ctrl + A");
-                }
-                else if(component.equals("deleteButton")){
+                } else if (component.equals("deleteButton")) {
                     statusBar.setText("Delete a code or column. Hotkey: ctrl + delete");
-                }
-                else if(component.equals("moveArgLeftButton")){
+                } else if (component.equals("moveArgLeftButton")) {
                     statusBar.setText("Move a code left within a column. Hotkey: ctrl + <-");
-                }
-                else if(component.equals("applyButton")){
+                } else if (component.equals("applyButton")) {
                     statusBar.setText("Apply changes to the vocab elements. Hotkey: ctrl + S");
-                }
-                else if(component.equals("moveArgRightButton")){
+                } else if (component.equals("moveArgRightButton")) {
                     statusBar.setText("Move a code right within a column. Hotkey: ctrl + ->");
-                }
-                else if(component.equals("okButton")){
+                } else if (component.equals("okButton")) {
                     statusBar.setText("Save changes and close the window.");
                 }
             }
+
             @Override
-            public void mouseExited(MouseEvent me){
+            public void mouseExited(MouseEvent me) {
                 statusBar.setText(" ");
             }
         };
@@ -782,7 +792,7 @@ public final class VocabEditorV extends DatavyuDialog {
     /**
      * Determine the number of the next matrix added to the vocab list
      */
-    private int getMatNameNum(){
+    private int getMatNameNum() {
         int max = 0;
         for (VocabElementV vev : veViews) {
             if (vev.getModel().type.equals(Argument.Type.MATRIX)) {

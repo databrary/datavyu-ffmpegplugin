@@ -14,20 +14,14 @@
  */
 package org.datavyu.controllers;
 
-import org.datavyu.models.db.DatastoreFactory;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import org.datavyu.Datavyu;
+import org.datavyu.models.db.*;
+
+import javax.swing.*;
 import java.io.*;
 import java.util.List;
-import javax.swing.JOptionPane;
-import org.datavyu.Datavyu;
-import org.datavyu.models.db.Argument;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.MatrixValue;
-import org.datavyu.models.db.UserWarningException;
-import org.datavyu.models.db.Value;
-import org.datavyu.models.db.Variable;
 
 /**
  * Controller for opening a database from disk.
@@ -54,7 +48,7 @@ public final class OpenDatabaseFileC {
      * Bool so we know whether or not we've had an error while reading in a file
      */
     private static boolean parse_error = false;
-    
+
     /**
      * The logger for this class.
      */
@@ -64,7 +58,6 @@ public final class OpenDatabaseFileC {
      * Opens a database.
      *
      * @param sourceFile The source file to open.
-     *
      * @return populated MacshapaDatabase on success, null otherwise.
      */
     public Datastore open(final File sourceFile) {
@@ -88,7 +81,6 @@ public final class OpenDatabaseFileC {
      * populate the database with data.
      *
      * @param sFile The source file to use when populating the database.
-     *
      * @return populated database on success, null otherwise.
      */
     public Datastore openAsMacSHAPADB(final File sFile) {
@@ -105,7 +97,6 @@ public final class OpenDatabaseFileC {
      * spreadsheet) with data.
      *
      * @param sFile The source file to use when populating the database.
-     *
      * @return populated database on success, null otherwise.
      */
     public Datastore openAsCSV(final File sFile) {
@@ -133,7 +124,6 @@ public final class OpenDatabaseFileC {
      * stream.
      *
      * @param inStream The stream to deserialized when populating the database.
-     *
      * @return populated database on sucess, null otherwise.
      */
     public Datastore openAsCSV(final InputStream inStream) {
@@ -205,7 +195,6 @@ public final class OpenDatabaseFileC {
      * Strips escape characters from a line of text.
      *
      * @param line The line of text to strip escape characters from.
-     *
      * @return The line free of escape characters, i.e. '\'.
      */
     private String stripEscChars(final String line) {
@@ -322,17 +311,18 @@ public final class OpenDatabaseFileC {
      return line;
      }
      */
+
     /**
      * Method to create data values for the formal arguments of a vocab element.
      *
-     * @param tokens The array of string tokens.
-     * @param startI The starting index to
+     * @param tokens    The array of string tokens.
+     * @param startI    The starting index to
      * @param destValue The destination value that we are populating.
      */
     private void parseFormalArgs(final String[] tokens,
-            final int startI,
-            final Argument destPattern,
-            final MatrixValue destValue) {
+                                 final int startI,
+                                 final Argument destPattern,
+                                 final MatrixValue destValue) {
 
 
         // Check to see if the list of tokens we have here is correct.
@@ -367,33 +357,31 @@ public final class OpenDatabaseFileC {
      * is the contents of a predicate variable.
      *
      * @param csvFile The csvFile we are currently parsing.
-     * @param var The variable that we will be adding cells too.
-     * @param arg The matrix template we are using when parsing individual
-     * matrix elements to put in the spreadsheet.
+     * @param var     The variable that we will be adding cells too.
+     * @param arg     The matrix template we are using when parsing individual
+     *                matrix elements to put in the spreadsheet.
      * @return The next line in the file that is not part of the block of text
      * in the CSV file.
-     *
      * @throws IOException If unable to read the file correctly.
      */
     private String parseMatrixVariable(final BufferedReader csvFile,
-            final Variable var,
-            final Argument arg) throws IOException {
+                                       final Variable var,
+                                       final Argument arg) throws IOException {
         String line = csvFile.readLine();
 
         while ((line != null) && Character.isDigit(line.charAt(0))) {
 
             // Remove backslashes if there are more than would be used for 
             // newline escapes
-            
-            if(line.contains("\\")) {
-                if(line.endsWith("\\\\n") || line.endsWith("\\\\r\\n")) {
+
+            if (line.contains("\\")) {
+                if (line.endsWith("\\\\n") || line.endsWith("\\\\r\\n")) {
                     line = line.replace("\\", "") + "\\\\n";
-                }
-                else {
+                } else {
                     line = line.replace("\\", "");
                 }
             }
-            
+
             // Split the line into tokens using a comma delimiter.
             String[] tokens = line.split(",");
 
@@ -420,18 +408,16 @@ public final class OpenDatabaseFileC {
      * is the contents of a variable.
      *
      * @param csvFile The csvFile we are currently parsing.
-     * @param var The variable that we will be adding cells too.
-     * @param The populator to use when converting the contents of the cell into
-     * a datavalue that can be inserted into the spreadsheet.
-     *
+     * @param var     The variable that we will be adding cells too.
+     * @param The     populator to use when converting the contents of the cell into
+     *                a datavalue that can be inserted into the spreadsheet.
      * @return The next line in the file that is not part of the block of text
      * in the CSV file.
-     *
      * @throws IOException If unable to read the file correctly.
      */
     private String parseEntries(final BufferedReader csvFile,
-            final Variable var,
-            final EntryPopulator populator)
+                                final Variable var,
+                                final EntryPopulator populator)
             throws IOException {
 
         // Keep parsing lines and putting them in the newly formed nominal
@@ -443,15 +429,14 @@ public final class OpenDatabaseFileC {
         int error_count = 0;
 
         while ((line != null) && Character.isDigit(line.charAt(0))) {
-            
+
             // Remove backslashes if there are more than would be used for 
             // newline escapes
-            
-            if(line.contains("\\")) {
-                if(line.endsWith("\\") || line.endsWith("\\\\")) {
+
+            if (line.contains("\\")) {
+                if (line.endsWith("\\") || line.endsWith("\\\\")) {
                     line = line.replace("\\", "") + "\\";
-                }
-                else {
+                } else {
                     line = line.replace("\\", "");
                 }
             }
@@ -500,12 +485,12 @@ public final class OpenDatabaseFileC {
             }
         }
 
-        if(error_line) {
-            JOptionPane.showMessageDialog(null, 
-                "Error reading file. " + String.valueOf(error_count) + 
-                    " cells could not be read.\nRecovered files have time 99:00:00:000.\nPlease send this file to Datavyu Support for further analysis!",
-                "Error reading file: Corrupted cells",
-                JOptionPane.ERROR_MESSAGE);
+        if (error_line) {
+            JOptionPane.showMessageDialog(null,
+                    "Error reading file. " + String.valueOf(error_count) +
+                            " cells could not be read.\nRecovered files have time 99:00:00:000.\nPlease send this file to Datavyu Support for further analysis!",
+                    "Error reading file: Corrupted cells",
+                    JOptionPane.ERROR_MESSAGE);
         }
 
         return line;
@@ -530,15 +515,13 @@ public final class OpenDatabaseFileC {
      * Parses the predicate definitions from the CSV file.
      *
      * @param csvFile The buffered reader containing the contents of the CSV
-     * file we are trying parse.
-     * @param ds The destination datastore for the csv file.
-     *
+     *                file we are trying parse.
+     * @param ds      The destination datastore for the csv file.
      * @return The next line to be parsed from the file.
-     *
      * @throws IOException If unable to read from the csvFile.
      */
     private String parseDefinitions(final BufferedReader csvFile,
-            final Datastore db)
+                                    final Datastore db)
             throws IOException {
 
         // Keep parsing lines and putting them in the newly formed nominal
@@ -574,9 +557,8 @@ public final class OpenDatabaseFileC {
      * Method to build a formal argument.
      *
      * @param content The string holding the formal argument content to be
-     * parsed.
-     * @param db The parent database for the formal argument.
-     *
+     *                parsed.
+     * @param db      The parent database for the formal argument.
      * @return The formal argument.
      */
     private Argument parseFormalArgument(final String content) {
@@ -608,18 +590,16 @@ public final class OpenDatabaseFileC {
      * Method to invoke when we encounter a block of text that is a variable.
      *
      * @param csvFile The CSV file we are currently reading.
-     * @param line The line of the CSV file we are currently reading.
-     * @param db The data store we are populating with data from the CSV file.
-     *
+     * @param line    The line of the CSV file we are currently reading.
+     * @param db      The data store we are populating with data from the CSV file.
      * @return The next String that is not part of the currently variable that
      * we are parsing.
-     *
-     * @throws IOException When we are unable to read from the csvFile.
+     * @throws IOException          When we are unable to read from the csvFile.
      * @throws UserWarningException When we are unable to create a new variable.
      */
     private String parseVariable(final BufferedReader csvFile,
-            final String line,
-            final Datastore db)
+                                 final String line,
+                                 final Datastore db)
             throws IOException, UserWarningException {
         return parseVariable(csvFile, line, db, "#2");
     }
@@ -628,20 +608,17 @@ public final class OpenDatabaseFileC {
      * Method to invoke when we encounter a block of text that is a variable.
      *
      * @param csvFile The CSV file we are currently reading.
-     * @param line The line of the CSV file we are currently reading.
-     * @param db The data store we are populating with data from the CSV file.
-     *
+     * @param line    The line of the CSV file we are currently reading.
+     * @param db      The data store we are populating with data from the CSV file.
      * @return The next String that is not part of the currently variable that
      * we are parsing.
-     *
-     * @throws IOException When we are unable to read from the csvFile.
-     *
+     * @throws IOException          When we are unable to read from the csvFile.
      * @throws UserWarningException When we are unable to create variables.
      */
     private String parseVariable(final BufferedReader csvFile,
-            final String line,
-            final Datastore ds,
-            final String version)
+                                 final String line,
+                                 final Datastore ds,
+                                 final String version)
             throws IOException, UserWarningException {
         // Determine the variable name and type.
         String[] tokens = line.split("\\(");
@@ -739,7 +716,6 @@ public final class OpenDatabaseFileC {
 
     /**
      * @param type The string containing the variable type.
-     *
      * @return The type of the variable.
      */
     private Argument.Type getVarType(final String type) {
@@ -779,7 +755,7 @@ public final class OpenDatabaseFileC {
         /**
          * Populates a DataValue from the supplied array of tokens.
          *
-         * @param tokens The tokens to use when building a DataValue.
+         * @param tokens    The tokens to use when building a DataValue.
          * @param destValue That this populator is filling with content.
          */
         abstract void populate(final String[] tokens, final Value destValue);
@@ -793,7 +769,7 @@ public final class OpenDatabaseFileC {
         /**
          * Populates a DataValue from the supplied array of tokens.
          *
-         * @param tokens The tokens to use when building a DataValue.
+         * @param tokens    The tokens to use when building a DataValue.
          * @param destValue That this populator is filling with content.
          */
         @Override
@@ -820,7 +796,7 @@ public final class OpenDatabaseFileC {
         /**
          * Populates a DataValue from the supplied array of tokens.
          *
-         * @param tokens The tokens to use when building a DataValue.
+         * @param tokens    The tokens to use when building a DataValue.
          * @param destValue That this populator is filling with content.
          */
         @Override
@@ -847,7 +823,7 @@ public final class OpenDatabaseFileC {
         /**
          * Populates a DataValue from the supplied array of tokens.
          *
-         * @param tokens The tokens to use when building a DataValue.
+         * @param tokens    The tokens to use when building a DataValue.
          * @param destValue That this populator is filling with content.
          */
         @Override
@@ -867,7 +843,7 @@ public final class OpenDatabaseFileC {
         /**
          * Populates a DataValue from the supplied array of tokens.
          *
-         * @param tokens The tokens to use when building a DataValue.
+         * @param tokens    The tokens to use when building a DataValue.
          * @param destValue That this populator is filling with content.
          */
         @Override

@@ -14,17 +14,19 @@
  */
 package org.datavyu.views;
 
-import javax.swing.GroupLayout;
-import javax.swing.JTextPane;
 import org.datavyu.Build;
 import org.datavyu.Datavyu;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
+import javax.swing.*;
+
 
 public class AboutV extends DatavyuDialog {
 
-    /** Creates new form AboutV */
+    /**
+     * Creates new form AboutV
+     */
     public AboutV(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -38,24 +40,24 @@ public class AboutV extends DatavyuDialog {
         version.setOpaque(false);
 
         ResourceMap bMap = Application.getInstance(Datavyu.class).getContext()
-            .getResourceMap(Build.class);
+                .getResourceMap(Build.class);
 
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-            .getResourceMap(Datavyu.class);
+                .getResourceMap(Datavyu.class);
 
         version.setText("<html><div style=\"color:#77BB21\">" + rMap.getString("Application.version")
-            + "<br>" + bMap.getString("Application.build") + "</span></html>");
+                + "<br>" + bMap.getString("Application.build") + "</span></html>");
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup(
                 GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING,
                 layout.createSequentialGroup().addContainerGap(380,
-                    Short.MAX_VALUE).addComponent(version).addGap(136, 136, 136)));
+                        Short.MAX_VALUE).addComponent(version).addGap(136, 136, 136)));
         layout.setVerticalGroup(layout.createParallelGroup(
                 GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING,
                 layout.createSequentialGroup().addContainerGap(250,
-                    Short.MAX_VALUE).addComponent(version).addGap(38, 38, 38)));
+                        Short.MAX_VALUE).addComponent(version).addGap(38, 38, 38)));
 
         this.add(p);
     }
@@ -84,27 +86,27 @@ public class AboutV extends DatavyuDialog {
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 646, Short.MAX_VALUE)
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 646, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 348, Short.MAX_VALUE)
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 348, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 270, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 270, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 69, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 69, Short.MAX_VALUE))
         );
 
         pack();
@@ -152,6 +154,7 @@ public class AboutV extends DatavyuDialog {
             }
         });
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables

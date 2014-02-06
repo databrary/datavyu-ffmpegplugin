@@ -14,16 +14,11 @@
  */
 package org.datavyu.views.discrete;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.List;
-import javax.swing.text.JTextComponent;
 import org.datavyu.views.discrete.datavalues.NoEditor;
+
+import javax.swing.text.JTextComponent;
+import java.awt.event.*;
+import java.util.List;
 
 /**
  * Keeps track of the current editor inside the JTextComponent.
@@ -31,29 +26,45 @@ import org.datavyu.views.discrete.datavalues.NoEditor;
  * text displayed by the JTextComponent.
  */
 public final class EditorTracker
-implements FocusListener, KeyListener, MouseListener {
+        implements FocusListener, KeyListener, MouseListener {
 
-    /** The JTextComponent that contains the EditorComponents. */
+    /**
+     * The JTextComponent that contains the EditorComponents.
+     */
     private JTextComponent textArea;
-    /** Vector of the EditorComponents. */
+    /**
+     * Vector of the EditorComponents.
+     */
     private List<EditorComponent> editors;
-    /** Current EditorComponent. */
+    /**
+     * Current EditorComponent.
+     */
     private EditorComponent currentEditor = NO_EDITOR;
-    /** Number of characters before of the current editor. */
+    /**
+     * Number of characters before of the current editor.
+     */
     private int preCharCount;
-    /** Number of characters after the current editor. */
+    /**
+     * Number of characters after the current editor.
+     */
     private int postCharCount;
-    /** NoEditor used when there is no sensible current editor. */
+    /**
+     * NoEditor used when there is no sensible current editor.
+     */
     private static final EditorComponent NO_EDITOR = new NoEditor();
-    /** Track the key up and down to avoid problem with key repeat. */
+    /**
+     * Track the key up and down to avoid problem with key repeat.
+     */
     private boolean gotKeyUp = true;
-    /** How many clicks make up a triple click. */
+    /**
+     * How many clicks make up a triple click.
+     */
     private static final int TRIPLE_CLICK_COUNT = 2;
 
     /**
      * Constructor.
      *
-     * @param ta JTextComponent containing the editors to track.
+     * @param ta  JTextComponent containing the editors to track.
      * @param eds Vector of the EditorComponents.
      */
     public EditorTracker(final JTextComponent ta,
@@ -76,7 +87,7 @@ implements FocusListener, KeyListener, MouseListener {
      *
      * @param newEd The new editor to set as the current.
      * @param start Start character location to select.
-     * @param end End character location to select.
+     * @param end   End character location to select.
      */
     public void setEditor(final EditorComponent newEd,
                           final int start,
@@ -91,9 +102,9 @@ implements FocusListener, KeyListener, MouseListener {
         calculatePrePostCounts();
 
         currentEditor.focusGained(null);
-       
+
         currentEditor.select(start, end);
-        
+
     }
 
     /**
@@ -254,9 +265,9 @@ implements FocusListener, KeyListener, MouseListener {
      */
     public void resetEditorText() {
         int newLength = textArea.getText().length()
-                        - (preCharCount + postCharCount);
+                - (preCharCount + postCharCount);
         currentEditor.resetText(textArea.getText()
-                     .substring(preCharCount, preCharCount + newLength));
+                .substring(preCharCount, preCharCount + newLength));
     }
 
     // *************************************************************************
@@ -290,7 +301,7 @@ implements FocusListener, KeyListener, MouseListener {
     public void keyTyped(KeyEvent e) {
         // Key stroke is NOT delete or backspace - handle this within the crazy
         // editors - otherwise we assume this has been handled by keyPressed.
-        if (!((e.getKeyChar() ==  '\u007F') || (e.getKeyChar() ==  '\u0008'))) {
+        if (!((e.getKeyChar() == '\u007F') || (e.getKeyChar() == '\u0008'))) {
             currentEditor.keyTyped(e);
         }
     }

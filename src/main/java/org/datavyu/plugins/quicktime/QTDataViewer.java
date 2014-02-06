@@ -15,36 +15,25 @@
 package org.datavyu.plugins.quicktime;
 
 import com.usermetrix.jclient.Logger;
-
-import java.awt.Dimension;
-
-import java.io.File;
-
-
+import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.util.Constants;
-
 import quicktime.QTException;
 import quicktime.QTSession;
-
 import quicktime.app.view.QTFactory;
-
 import quicktime.io.OpenMovieFile;
 import quicktime.io.QTFile;
-
 import quicktime.qd.QDDimension;
-
 import quicktime.std.StdQTConstants;
 import quicktime.std.StdQTException;
-
-
+import quicktime.std.clocks.TimeRecord;
 import quicktime.std.movies.Movie;
+import quicktime.std.movies.TimeInfo;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
-import com.usermetrix.jclient.UserMetrix;
-import javax.swing.JOptionPane;
-import quicktime.std.clocks.TimeRecord;
-import quicktime.std.movies.TimeInfo;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
 
 
 /**
@@ -53,16 +42,24 @@ import quicktime.std.movies.TimeInfo;
  */
 public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
-    /** The quicktime movie this viewer is displaying. */
+    /**
+     * The quicktime movie this viewer is displaying.
+     */
     private Movie movie;
 
-    /** The visual track for the above quicktime movie. */
+    /**
+     * The visual track for the above quicktime movie.
+     */
     private Track visualTrack;
 
-    /** The visual media for the above visual track. */
+    /**
+     * The visual media for the above visual track.
+     */
     private Media visualMedia;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(QTDataViewer.class);
 
     public QTDataViewer(final java.awt.Frame parent, final boolean modal) {
@@ -76,7 +73,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
             QTSession.open();
         } catch (Throwable e) {
             LOGGER.error("Unable to create " + this.getClass().getName(), e);
-	    e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -104,7 +101,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
             if (movie != null) {
                 return (long) Constants.TICKS_PER_SECOND
-                    * (long) movie.getDuration() / movie.getTimeScale();
+                        * (long) movie.getDuration() / movie.getTimeScale();
             }
         } catch (StdQTException ex) {
             LOGGER.error("Unable to determine QT movie duration", ex);
@@ -117,7 +114,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     protected void setQTDataFeed(final File videoFile) {
 
         try {
-	    QTFile v = new QTFile(videoFile);
+            QTFile v = new QTFile(videoFile);
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
             movie.setVolume(0.7F);
@@ -130,7 +127,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                     StdQTConstants.visualMediaCharacteristic,
                     StdQTConstants.movieTrackCharacteristic);
             visualMedia = visualTrack != null ? visualTrack.getMedia() : null;
-            
+
             // WARNING there seems to be a bug in QTJava where the video will be
             // rendered as blank if the QT component is added before the window
             // is displayable/visible
@@ -143,10 +140,10 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     @Override
     protected Dimension getQTVideoSize() {
         try {
-        	if (visualTrack != null) {
-	            QDDimension vtDim = visualTrack.getSize();
-	            return new Dimension(vtDim.getWidth(), vtDim.getHeight());
-        	}
+            if (visualTrack != null) {
+                QDDimension vtDim = visualTrack.getSize();
+                return new Dimension(vtDim.getWidth(), vtDim.getHeight());
+            }
         } catch (QTException e) {
             LOGGER.error("Unable to getQTNativeVideoSize", e);
         }
@@ -159,40 +156,44 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         float fps = 0;
 
         try {
-        	if (visualMedia != null) {
-	            // BugzID:928 - FPS calculations will fail when using H264.
-	            // Apparently the Quicktime for Java API does not support a whole
-	            // bunch of methods with H264.
-	            fps = (float) visualMedia.getSampleCount()
-	                / visualMedia.getDuration() * visualMedia.getTimeScale();
-	
-	            if ((visualMedia.getSampleCount() == 1.0)
-	                    || (visualMedia.getSampleCount() == 1)) {
-	                fps = correctFPS();
-	            }
-                    
-                    if(fps == 1) {
-                        throw new QTException(0);
-                    }
-        	}
+            if (visualMedia != null) {
+                // BugzID:928 - FPS calculations will fail when using H264.
+                // Apparently the Quicktime for Java API does not support a whole
+                // bunch of methods with H264.
+                fps = (float) visualMedia.getSampleCount()
+                        / visualMedia.getDuration() * visualMedia.getTimeScale();
+
+                if ((visualMedia.getSampleCount() == 1.0)
+                        || (visualMedia.getSampleCount() == 1)) {
+                    fps = correctFPS();
+                }
+
+                if (fps == 1) {
+                    throw new QTException(0);
+                }
+            }
         } catch (QTException e) {
             LOGGER.error("Unable to calculate FPS, assuming 30", e);
             String response = JOptionPane.showInputDialog(null,
-                "Datavyu was unable to detect the framerate of this video.\n"
-                    + "Please enter the framerate below (ex. 25, 29.97, 30)",
-                "Could not detect framerate",
+                    "Datavyu was unable to detect the framerate of this video.\n"
+                            + "Please enter the framerate below (ex. 25, 29.97, 30)",
+                    "Could not detect framerate",
 
-                JOptionPane.QUESTION_MESSAGE);
+                    JOptionPane.QUESTION_MESSAGE);
             fps = Float.valueOf(response);
         }
 
         return fps;
     }
 
-    /** How many milliseconds in a second? */
+    /**
+     * How many milliseconds in a second?
+     */
     private static final int MILLI = 1000;
 
-    /** How many frames to check when correcting the FPS. */
+    /**
+     * How many frames to check when correcting the FPS.
+     */
     private static final int CORRECTIONFRAMES = 5;
 
     /**
@@ -204,7 +205,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
      *
      * @return The best fps found in the first few frames.
      */
-    private float correctFPS() {        
+    private float correctFPS() {
         float minFrameLength = MILLI; // Set this to one second, as the "worst"
         float curFrameLen = 0;
         int curTime = 0;
@@ -273,7 +274,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
             if (movie != null) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
-                    Math.min(Math.max(position, 0), getDuration() - 1));
+                        Math.min(Math.max(position, 0), getDuration() - 1));
                 movie.setTime(time);
             }
         } catch (QTException e) {

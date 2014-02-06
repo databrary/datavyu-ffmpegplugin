@@ -16,39 +16,47 @@ package org.datavyu.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.BorderFactory;
-import javax.swing.JTextArea;
-import javax.swing.border.Border;
-import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Variable;
 import org.datavyu.views.discrete.EditorComponent;
 import org.datavyu.views.discrete.EditorTracker;
 
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * JTextArea view of the Matrix (database cell) data.
-*/
-public final class VocabElementRootView extends JTextArea  {
+ */
+public final class VocabElementRootView extends JTextArea {
 
-    /** The editors that make up the representation of the data. */
+    /**
+     * The editors that make up the representation of the data.
+     */
     private List<EditorComponent> editors;
 
-    /** The editor tracker responsible for the editor components. */
+    /**
+     * The editor tracker responsible for the editor components.
+     */
     private EditorTracker edTracker;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(VocabElementRootView.class);
 
-    /** Border to set the text area more aligned to the icons. */
+    /**
+     * Border to set the text area more aligned to the icons.
+     */
     private static Border GAP_BORDER = BorderFactory.createEmptyBorder(2, 0, 0, 0);
-    
+
     private VocabElementV pv;
+
     /**
      * Constructor
      *
      * @param vocabElement The vocab element that this root view is representing.
-     * @param pv The parent view that this root view belongs too.
+     * @param pv           The parent view that this root view belongs too.
      */
     public VocabElementRootView(final Variable vocabVariable,
                                 final VocabElementV pv) {
@@ -57,7 +65,7 @@ public final class VocabElementRootView extends JTextArea  {
         setWrapStyleWord(true);
         // just push down a little bit
         setBorder(GAP_BORDER);
-        
+
         this.pv = pv;
 
         editors = new ArrayList<EditorComponent>();

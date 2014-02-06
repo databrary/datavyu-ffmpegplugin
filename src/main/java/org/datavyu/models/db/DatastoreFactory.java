@@ -14,13 +14,11 @@
  */
 package org.datavyu.models.db;
 
-import org.datavyu.models.db.Datastore;
-
 /**
  * Factory for constructing new empty datastores.
  */
 public class DatastoreFactory {
     public static Datastore newDatastore() {
-        return new MongoDatastore();
+        return new DatavyuDatastore();
     }
 }

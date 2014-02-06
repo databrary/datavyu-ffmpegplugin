@@ -14,7 +14,7 @@
  */
 package org.datavyu.views.discrete.layouts;
 
-import javax.swing.ScrollPaneLayout;
+import javax.swing.*;
 
 /**
  * SheetLayout - abstract class for spreadsheet layouts.

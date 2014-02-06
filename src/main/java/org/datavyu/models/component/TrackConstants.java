@@ -14,9 +14,8 @@
  */
 package org.datavyu.models.component;
 
-import java.awt.Color;
-
-import javax.swing.ImageIcon;
+import javax.swing.*;
+import java.awt.*;
 
 
 public interface TrackConstants {
@@ -27,23 +26,33 @@ public interface TrackConstants {
     static final int ACTION_BUTTON_WIDTH = 20;
     static final int ACTION_BUTTON_HEIGHT = 20;
 
-    /** Icon for hiding a track video. */
+    /**
+     * Icon for hiding a track video.
+     */
     static final ImageIcon VIEWER_HIDE_ICON = new ImageIcon(TrackConstants.class
             .getResource("/icons/eye.png"));
 
-    /** Icon for showing the video. */
+    /**
+     * Icon for showing the video.
+     */
     static final ImageIcon VIEWER_SHOW_ICON = new ImageIcon(TrackConstants.class
             .getResource("/icons/eye-shut.png"));
 
-    /** Unlock icon. */
+    /**
+     * Unlock icon.
+     */
     static final ImageIcon UNLOCK_ICON = new ImageIcon(TrackConstants.class
             .getResource("/icons/track-unlock.png"));
 
-    /** Lock icon. */
+    /**
+     * Lock icon.
+     */
     static final ImageIcon LOCK_ICON = new ImageIcon(TrackConstants.class
             .getResource("/icons/track-lock.png"));
 
-    /** Delete icon. */
+    /**
+     * Delete icon.
+     */
     static final ImageIcon DELETE_ICON = new ImageIcon(TrackConstants.class
             .getResource("/icons/emblem-unreadable.png"));
 

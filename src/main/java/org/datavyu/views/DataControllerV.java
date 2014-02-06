@@ -14,110 +14,83 @@
  */
 package org.datavyu.views;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import java.io.File;
-
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.SimpleTimeZone;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileFilter;
-
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 import net.miginfocom.swing.MigLayout;
-
 import org.apache.commons.lang.NotImplementedException;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
 import org.datavyu.Datavyu;
-
 import org.datavyu.Datavyu.Platform;
-
 import org.datavyu.controllers.CreateNewCellC;
 import org.datavyu.controllers.SetNewCellStopTimeC;
 import org.datavyu.controllers.SetSelectedCellStartTimeC;
 import org.datavyu.controllers.SetSelectedCellStopTimeC;
 import org.datavyu.controllers.component.MixerController;
 import org.datavyu.controllers.id.IDController;
-
 import org.datavyu.event.component.CarriageEvent;
 import org.datavyu.event.component.TimescaleEvent;
 import org.datavyu.event.component.TracksControllerEvent;
 import org.datavyu.event.component.TracksControllerListener;
-
 import org.datavyu.models.PlaybackModel;
-import org.datavyu.models.component.MixerConstants;
-import org.datavyu.models.component.RegionState;
-import org.datavyu.models.component.TimescaleConstants;
-import org.datavyu.models.component.ViewportStateImpl;
-import org.datavyu.models.component.ViewportState;
+import org.datavyu.models.component.*;
 import org.datavyu.models.id.Identifier;
-
+import org.datavyu.plugins.DataViewer;
+import org.datavyu.plugins.Plugin;
 import org.datavyu.plugins.PluginManager;
-
 import org.datavyu.util.ClockTimer;
 import org.datavyu.util.ClockTimer.ClockListener;
 import org.datavyu.util.FloatUtils;
-
 import org.datavyu.views.component.TrackPainter;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
-
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.ActionMap;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-
-import org.datavyu.plugins.DataViewer;
-import org.datavyu.plugins.Plugin;
-import org.datavyu.views.DataController;
+import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 /**
  * Quicktime video controller.
  */
 public final class DataControllerV extends DatavyuDialog
-    implements ClockListener, TracksControllerListener, DataController,
+        implements ClockListener, TracksControllerListener, DataController,
         PropertyChangeListener {
 
     private static final double LOW_RATE = 5D;
 
-    /** One second in milliseconds. */
+    /**
+     * One second in milliseconds.
+     */
     private static final long ONE_SECOND = 1000L;
 
-    /** Rate of playback for rewinding. */
+    /**
+     * Rate of playback for rewinding.
+     */
     private static final float REWIND_RATE = -32F;
 
-    /** Rate of normal playback. */
+    /**
+     * Rate of normal playback.
+     */
     private static final float PLAY_RATE = 1F;
 
-    /** Rate of playback for fast forwarding. */
+    /**
+     * Rate of playback for fast forwarding.
+     */
     private static final float FFORWARD_RATE = 32F;
 
-    /** Sequence of allowable shuttle rates. */
+    /**
+     * Sequence of allowable shuttle rates.
+     */
     private static final float[] SHUTTLE_RATES;
 
     /**
@@ -133,21 +106,27 @@ public final class DataControllerV extends DatavyuDialog
     // Initialize SHUTTLE_RATES
     static {
         SHUTTLE_RATES = new float[]{
-            -32F,  -16F,  -8F,   -4F,    -2F,   -1F,
-            -1/2F, -1/4F, -1/8F, -1/16F, -1/32F,
-             0F,
-             1/32F, 1/16F, 1/8F,  1/4F,   1/2F,
-             1F,    2F,    4F,    8F,     16F,   32F
+                -32F, -16F, -8F, -4F, -2F, -1F,
+                -1 / 2F, -1 / 4F, -1 / 8F, -1 / 16F, -1 / 32F,
+                0F,
+                1 / 32F, 1 / 16F, 1 / 8F, 1 / 4F, 1 / 2F,
+                1F, 2F, 4F, 8F, 16F, 32F
         };
     }
 
-    /** The jump multiplier for shift-jogging. */
+    /**
+     * The jump multiplier for shift-jogging.
+     */
     private static final int SHIFTJOG = 5;
 
-    /** The jump multiplier for ctrl-shift-jogging. */
+    /**
+     * The jump multiplier for ctrl-shift-jogging.
+     */
     private static final int CTRLSHIFTJOG = 10;
 
-    /** Format for representing time. */
+    /**
+     * Format for representing time.
+     */
     private static final DateFormat CLOCK_FORMAT;
     private static final DateFormat CLOCK_FORMAT_HTML;
 
@@ -174,28 +153,42 @@ public final class DataControllerV extends DatavyuDialog
     // -------------------------------------------------------------------------
     // [static]
     //
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(DataControllerV.class);
 
-    /** Determines whether or not Shift is being held. */
+    /**
+     * Determines whether or not Shift is being held.
+     */
     private boolean shiftMask = false;
 
-    /** Determines whether or not Control is being held. */
+    /**
+     * Determines whether or not Control is being held.
+     */
     private boolean ctrlMask = false;
 
     // -------------------------------------------------------------------------
     //
     //
-    /** The list of viewers associated with this controller. */
+    /**
+     * The list of viewers associated with this controller.
+     */
     private Set<DataViewer> viewers;
 
-    /** Clock timer. */
+    /**
+     * Clock timer.
+     */
     private ClockTimer clock = new ClockTimer();
 
-    /** Is the tracks panel currently shown? */
+    /**
+     * Is the tracks panel currently shown?
+     */
     private boolean tracksPanelEnabled = true;
 
-    /** The controller for manipulating tracks. */
+    /**
+     * The controller for manipulating tracks.
+     */
     private MixerController mixerController;
 
     /** */
@@ -282,19 +275,20 @@ public final class DataControllerV extends DatavyuDialog
     /** */
     private javax.swing.JPanel tracksPanel;
 
-    /** Model containing playback information. */
+    /**
+     * Model containing playback information.
+     */
     private PlaybackModel playbackModel;
 
     // -------------------------------------------------------------------------
     // [initialization]
     //
+
     /**
      * Constructor. Creates a new DataControllerV.
      *
-     * @param parent
-     *            The parent of this form.
-     * @param modal
-     *            Should the dialog be modal or not?
+     * @param parent The parent of this form.
+     * @param modal  Should the dialog be modal or not?
      */
     public DataControllerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
@@ -327,11 +321,11 @@ public final class DataControllerV extends DatavyuDialog
         tracksPanel.add(mixerController.getTracksPanel(), "growx");
         mixerController.addTracksControllerListener(this);
         mixerController.getMixerModel().getViewportModel()
-            .addPropertyChangeListener(this);
+                .addPropertyChangeListener(this);
         mixerController.getMixerModel().getRegionModel()
-            .addPropertyChangeListener(this);
+                .addPropertyChangeListener(this);
         mixerController.getMixerModel().getNeedleModel()
-            .addPropertyChangeListener(this);
+                .addPropertyChangeListener(this);
 
         tracksPanelEnabled = true;
         showTracksPanel(tracksPanelEnabled);
@@ -350,8 +344,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Handles opening a data source.
      *
-     * @param jd
-     *            The file chooser used to open the data source.
+     * @param jd The file chooser used to open the data source.
      */
     private void openVideo(final PluginChooser chooser) {
         Plugin plugin = chooser.getSelectedPlugin();
@@ -366,19 +359,19 @@ public final class DataControllerV extends DatavyuDialog
                 dataViewer.setDataFeed(f);
                 dataViewer.seekTo(clock.getTime());
                 dataViewer.setDatastore(Datavyu.getProjectController()
-                    .getDB());
+                        .getDB());
                 addDataViewer(plugin.getTypeIcon(), dataViewer, f,
-                    dataViewer.getTrackPainter());
+                        dataViewer.getTrackPainter());
                 mixerController.bindTrackActions(dataViewer.getIdentifier(),
-                    dataViewer.getCustomActions());
+                        dataViewer.getCustomActions());
                 dataViewer.addViewerStateListener(
-                    mixerController.getTracksEditorController()
-                        .getViewerStateListener(dataViewer.getIdentifier()));
+                        mixerController.getTracksEditorController()
+                                .getViewerStateListener(dataViewer.getIdentifier()));
             } catch (Throwable t) {
                 LOGGER.error(t);
                 JOptionPane.showMessageDialog(null,
-                    "Could not open data source: " + t.getMessage());
-		t.printStackTrace();
+                        "Could not open data source: " + t.getMessage());
+                t.printStackTrace();
             }
         }
     }
@@ -386,8 +379,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Tells the Data Controller if shift is being held or not.
      *
-     * @param shift
-     *            True for shift held; false otherwise.
+     * @param shift True for shift held; false otherwise.
      */
     public void setShiftMask(final boolean shift) {
         shiftMask = shift;
@@ -396,8 +388,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Tells the Data Controller if ctrl is being held or not.
      *
-     * @param ctrl
-     *            True for ctrl held; false otherwise.
+     * @param ctrl True for ctrl held; false otherwise.
      */
     public void setCtrlMask(final boolean ctrl) {
         ctrlMask = ctrl;
@@ -406,9 +397,9 @@ public final class DataControllerV extends DatavyuDialog
     // -------------------------------------------------------------------------
     // [interface] org.datavyu.util.ClockTimer.Listener
     //
+
     /**
-     * @param time
-     *            Current clock time in milliseconds.
+     * @param time Current clock time in milliseconds.
      */
     public void clockStart(final long time) {
         resetSync();
@@ -439,8 +430,7 @@ public final class DataControllerV extends DatavyuDialog
     }
 
     /**
-     * @param time
-     *            Current clock time in milliseconds.
+     * @param time Current clock time in milliseconds.
      */
     public void clockTick(final long time) {
 
@@ -501,7 +491,7 @@ public final class DataControllerV extends DatavyuDialog
                          */
                         if (v.isPlaying()
                                 && (Math.abs(
-                                        v.getCurrentTime()
+                                v.getCurrentTime()
                                         - (time - v.getOffset())) > thresh)) {
                             v.seekTo(time - v.getOffset());
                         }
@@ -539,20 +529,17 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Determines whether a DataViewer has data for the desired time.
      *
-     * @param time
-     *            The time we wish to play at or seek to.
-     * @param view
-     *            The DataViewer to check.
+     * @param time The time we wish to play at or seek to.
+     * @param view The DataViewer to check.
      * @return True if data exists at this time, and false otherwise.
      */
     private boolean isWithinPlayRange(final long time, final DataViewer view) {
         return (time >= view.getOffset())
-            && (time < (view.getOffset() + view.getDuration()));
+                && (time < (view.getOffset() + view.getDuration()));
     }
 
     /**
-     * @param time
-     *            Current clock time in milliseconds.
+     * @param time Current clock time in milliseconds.
      */
     public void clockStop(final long time) {
         clock.stop();
@@ -569,8 +556,7 @@ public final class DataControllerV extends DatavyuDialog
     }
 
     /**
-     * @param rate
-     *            Current (updated) clock rate.
+     * @param rate Current (updated) clock rate.
      */
     public void clockRate(final float rate) {
         resetSync();
@@ -608,8 +594,7 @@ public final class DataControllerV extends DatavyuDialog
     }
 
     /**
-     * @param time
-     *            Current clock time in milliseconds.
+     * @param time Current clock time in milliseconds.
      */
     public void clockStep(final long time) {
         resetSync();
@@ -633,14 +618,13 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Set time location for data streams.
      *
-     * @param milliseconds
-     *            The millisecond time.
+     * @param milliseconds The millisecond time.
      */
     public void setCurrentTime(final long milliseconds) {
         resetSync();
         updateCurrentTimeLabel();
         mixerController.getMixerModel().getNeedleModel().setCurrentTime(
-            milliseconds);
+                milliseconds);
     }
 
     private void updateCurrentTimeLabel() {
@@ -658,7 +642,9 @@ public final class DataControllerV extends DatavyuDialog
         return clock.getTime();
     }
 
-    /** Recalculates the maximum viewer duration. */
+    /**
+     * Recalculates the maximum viewer duration.
+     */
     public void updateMaxViewerDuration() {
         long maxDuration = ViewportStateImpl.MINIMUM_MAX_END;
         Iterator<DataViewer> it = viewers.iterator();
@@ -672,20 +658,19 @@ public final class DataControllerV extends DatavyuDialog
         }
 
         mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(
-            maxDuration, true);
+                maxDuration, true);
 
         if (viewers.isEmpty()) {
             mixerController.getNeedleController().resetNeedlePosition();
             mixerController.getMixerModel().getRegionModel()
-                .resetPlaybackRegion();
+                    .resetPlaybackRegion();
         }
     }
 
     /**
      * Remove the specified viewer from the controller.
      *
-     * @param viewer
-     *            The viewer to shutdown.
+     * @param viewer The viewer to shutdown.
      * @return True if the controller contained this viewer.
      */
     public boolean shutdown(final DataViewer viewer) {
@@ -694,13 +679,13 @@ public final class DataControllerV extends DatavyuDialog
         boolean removed = viewers.remove(viewer);
 
         if (removed) {
-		
-	    viewer.clearDataFeed();
+
+            viewer.clearDataFeed();
 
             // BugzID:2000
             viewer.removeViewerStateListener(
-                mixerController.getTracksEditorController()
-                    .getViewerStateListener(viewer.getIdentifier()));
+                    mixerController.getTracksEditorController()
+                            .getViewerStateListener(viewer.getIdentifier()));
 
             // Recalculate the maximum playback duration.
             updateMaxViewerDuration();
@@ -718,8 +703,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Remove the specified viewer from the controller.
      *
-     * @param id
-     *            The identifier of the viewer to shutdown.
+     * @param id The identifier of the viewer to shutdown.
      */
     public void shutdown(final Identifier id) {
         DataViewer viewer = null;
@@ -750,8 +734,8 @@ public final class DataControllerV extends DatavyuDialog
 
         // BugzID:2000
         viewer.removeViewerStateListener(
-            mixerController.getTracksEditorController().getViewerStateListener(
-                viewer.getIdentifier()));
+                mixerController.getTracksEditorController().getViewerStateListener(
+                        viewer.getIdentifier()));
 
         // Recalculate the maximum playback duration.
         updateMaxViewerDuration();
@@ -770,7 +754,7 @@ public final class DataControllerV extends DatavyuDialog
      * @param id The identifier of the viewer to bind to.
      */
     public void bindWindowListenerToDataViewer(final Identifier id,
-        final WindowListener wl) {
+                                               final WindowListener wl) {
 
         DataViewer viewer = null;
 
@@ -794,7 +778,7 @@ public final class DataControllerV extends DatavyuDialog
      * @param id The identifier of the viewer to bind to.
      */
     public void setDataViewerVisibility(final Identifier id,
-        final boolean visible) {
+                                        final boolean visible) {
 
         DataViewer viewer = null;
 
@@ -815,11 +799,12 @@ public final class DataControllerV extends DatavyuDialog
 
     /**
      * Presents a confirmation dialog when removing a plugin from the project.
+     *
      * @return True if the plugin should be removed, false otherwise.
      */
     private boolean shouldRemove() {
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-            .getResourceMap(Datavyu.class);
+                .getResourceMap(Datavyu.class);
 
         String cancel = "Cancel";
         String ok = "OK";
@@ -842,18 +827,17 @@ public final class DataControllerV extends DatavyuDialog
 
         // Button behaviour is platform dependent.
         return (Datavyu.getPlatform() == Platform.MAC) ? (selection == 1)
-                                                         : (selection == 0);
+                : (selection == 0);
     }
 
     /**
      * Helper method for Building a button for the data controller - sets the
      * icon, selected icon, action map and name.
      *
-     * @param rMap The resource map that holds the icons for this button.
-     * @param aMap The action map holding the action that this button invokes.
-     * @param name The prefix to use when looking for actions and buttons.
+     * @param rMap     The resource map that holds the icons for this button.
+     * @param aMap     The action map holding the action that this button invokes.
+     * @param name     The prefix to use when looking for actions and buttons.
      * @param modifier The modifier (if any) to apply to the prefix. Maybe null.
-     *
      * @return A configured button.
      */
     private JButton buildButton(final ResourceMap rMap,
@@ -896,16 +880,17 @@ public final class DataControllerV extends DatavyuDialog
         final int fontSize = 11;
 
         org.jdesktop.application.ResourceMap resourceMap =
-            org.jdesktop.application.Application.getInstance(
-                org.datavyu.Datavyu.class).getContext().getResourceMap(
-                DataControllerV.class);
+                org.jdesktop.application.Application.getInstance(
+                        org.datavyu.Datavyu.class).getContext().getResourceMap(
+                        DataControllerV.class);
         setTitle(resourceMap.getString("title"));
         addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override public void windowClosing(
+            @Override
+            public void windowClosing(
                     final java.awt.event.WindowEvent evt) {
-                    formWindowClosing(evt);
-                }
-            });
+                formWindowClosing(evt);
+            }
+        });
 
         gridButtonPanel.setBackground(Color.WHITE);
         gridButtonPanel.setLayout(new MigLayout("wrap 5, ins 15 2 15 2"));
@@ -916,15 +901,15 @@ public final class DataControllerV extends DatavyuDialog
         addDataButton.setFocusPainted(false);
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent evt) {
-                    openVideoButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(final ActionEvent evt) {
+                openVideoButtonActionPerformed(evt);
+            }
+        });
         gridButtonPanel.add(addDataButton, "span 2, w 90!, h 25!");
 
         // Timestamp panel
         JPanel timestampPanel = new JPanel(new MigLayout("",
-                    "push[][][]0![]push"));
+                "push[][][]0![]push"));
         timestampPanel.setOpaque(false);
 
         // Timestamp label
@@ -951,24 +936,24 @@ public final class DataControllerV extends DatavyuDialog
 
         // Set cell onset button
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application
-            .getInstance(org.datavyu.Datavyu.class).getContext()
-            .getActionMap(DataControllerV.class, this);
+                .getInstance(org.datavyu.Datavyu.class).getContext()
+                .getActionMap(DataControllerV.class, this);
 
         gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
 
         // placeholder
         setCellOnsetButton = buildButton(resourceMap, actionMap,
-                                         "setCellOnset", null);
+                "setCellOnset", null);
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
         // Sync button
         pointCellButton = buildButton(resourceMap, actionMap,
-                                 "pointCell", null);
+                "pointCell", null);
         gridButtonPanel.add(pointCellButton, "w 45!, h 45!");
 
         // Set cell onset button.
         osxsetCellOffsetButton = buildButton(resourceMap, actionMap,
-                                         "setCellOffset", "osx");
+                "setCellOffset", "osx");
         gridButtonPanel.add(osxsetCellOffsetButton, "w 45!, h 45!");
 
         // Instant cell button.
@@ -985,23 +970,23 @@ public final class DataControllerV extends DatavyuDialog
 
         // Rewind video button
         rewindButton = buildButton(resourceMap, actionMap,
-                                   "rewind", null);
+                "rewind", null);
         gridButtonPanel.add(rewindButton, "w 45!, h 45!");
 
         // Play video button
         playButton = buildButton(resourceMap, actionMap,
-                                 "play", null);
+                "play", null);
         playButton.setRequestFocusEnabled(false);
         gridButtonPanel.add(playButton, "w 45!, h 45!");
 
         // Fast forward button
         forwardButton = buildButton(resourceMap, actionMap,
-                                    "forward", null);
+                "forward", null);
         gridButtonPanel.add(forwardButton, "w 45!, h 45!");
 
         // Go back button
         goBackButton = buildButton(resourceMap, actionMap,
-                                   "goBack", null);
+                "goBack", null);
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
 
         // Go back text field
@@ -1012,22 +997,22 @@ public final class DataControllerV extends DatavyuDialog
 
         // Shuttle back button
         shuttleBackButton = buildButton(resourceMap, actionMap,
-                                        "shuttleBack", null);
+                "shuttleBack", null);
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
         // Stop button
         stopButton = buildButton(resourceMap, actionMap,
-                                 "stop", null);
+                "stop", null);
         gridButtonPanel.add(stopButton, "w 45!, h 45!");
 
         // Shuttle forward button
         shuttleForwardButton = buildButton(resourceMap, actionMap,
-                                           "shuttleForward", null);
+                "shuttleForward", null);
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
 
         // Find button
         findButton = buildButton(resourceMap, actionMap,
-                                 "find", null);
+                "find", null);
         gridButtonPanel.add(findButton, "w 45!, h 45!");
 
         // Find text field
@@ -1038,24 +1023,24 @@ public final class DataControllerV extends DatavyuDialog
 
         // Jog back button
         jogBackButton = buildButton(resourceMap, actionMap,
-                                    "jogBack", null);
+                "jogBack", null);
         gridButtonPanel.add(jogBackButton, "w 45!, h 45!");
 
         // Pause button
         pauseButton = buildButton(resourceMap, actionMap,
-                                  "pause", null);
+                "pause", null);
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
         // Jog forward button
         jogForwardButton = buildButton(resourceMap, actionMap,
-                                       "jogForward", null);
+                "jogForward", null);
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
         // Create new cell button
         createNewCell = buildButton(resourceMap, actionMap, "createNewCell", null);
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(
-            javax.swing.SwingConstants.CENTER);
+                javax.swing.SwingConstants.CENTER);
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 92!");
 
         // Find offset field
@@ -1069,12 +1054,12 @@ public final class DataControllerV extends DatavyuDialog
 
         // Create new cell setting offset button
         createNewCellSettingOffset = buildButton(resourceMap, actionMap,
-                                                 "createNewCellAndSetOnset", null);
+                "createNewCellAndSetOnset", null);
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 92!, h 45!");
 
         // Set cell offset button
         setCellOffsetButton = buildButton(resourceMap, actionMap,
-                                          "setCellOffset", null);
+                "setCellOffset", null);
         gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
         // Show tracks button
@@ -1082,12 +1067,12 @@ public final class DataControllerV extends DatavyuDialog
                 "showTracksButton.hide.icon"));
         showTracksButton.setName("showTracksButton");
         showTracksButton.getAccessibleContext().setAccessibleName(
-            "Show Tracks");
+                "Show Tracks");
         showTracksButton.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent evt) {
-                    showTracksButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(final ActionEvent evt) {
+                showTracksButtonActionPerformed(evt);
+            }
+        });
         gridButtonPanel.add(showTracksButton, "w 80!, h 45!");
 
         getContentPane().setLayout(new MigLayout("hidemode 3, fillx",
@@ -1122,16 +1107,17 @@ public final class DataControllerV extends DatavyuDialog
         final int fontSize = 11;
 
         org.jdesktop.application.ResourceMap resourceMap =
-            org.jdesktop.application.Application.getInstance(
-                org.datavyu.Datavyu.class).getContext().getResourceMap(
-                DataControllerV.class);
+                org.jdesktop.application.Application.getInstance(
+                        org.datavyu.Datavyu.class).getContext().getResourceMap(
+                        DataControllerV.class);
         setTitle(resourceMap.getString("title"));
         addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override public void windowClosing(
+            @Override
+            public void windowClosing(
                     final java.awt.event.WindowEvent evt) {
-                    formWindowClosing(evt);
-                }
-            });
+                formWindowClosing(evt);
+            }
+        });
 
         gridButtonPanel.setBackground(Color.WHITE);
         gridButtonPanel.setLayout(new MigLayout("wrap 5"));
@@ -1142,15 +1128,15 @@ public final class DataControllerV extends DatavyuDialog
         addDataButton.setFocusPainted(false);
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent evt) {
-                    openVideoButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(final ActionEvent evt) {
+                openVideoButtonActionPerformed(evt);
+            }
+        });
         gridButtonPanel.add(addDataButton, "span 2, w 90!, h 25!");
 
         // Timestamp panel
         JPanel timestampPanel = new JPanel(new MigLayout("",
-                    "push[][][]0![]push"));
+                "push[][][]0![]push"));
         timestampPanel.setOpaque(false);
 
         // Timestamp label
@@ -1176,8 +1162,8 @@ public final class DataControllerV extends DatavyuDialog
         timestampPanel.add(jLabel2);
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application
-            .getInstance(org.datavyu.Datavyu.class).getContext()
-            .getActionMap(DataControllerV.class, this);
+                .getInstance(org.datavyu.Datavyu.class).getContext()
+                .getActionMap(DataControllerV.class, this);
 
         gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
 
@@ -1188,12 +1174,12 @@ public final class DataControllerV extends DatavyuDialog
 
         // Set cell onset button
         setCellOnsetButton = buildButton(resourceMap, actionMap,
-                                         "setCellOnset", "win");
+                "setCellOnset", "win");
         gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
         // Set new cell offset button
         pointCellButton = buildButton(resourceMap, actionMap,
-                                      "pointCell", "win");
+                "pointCell", "win");
         gridButtonPanel.add(pointCellButton, "w 45!, h 45!");
 
         // Go back button
@@ -1231,7 +1217,7 @@ public final class DataControllerV extends DatavyuDialog
 
         // Shuttle back button
         shuttleBackButton = buildButton(resourceMap, actionMap,
-                                        "shuttleBack", null);
+                "shuttleBack", null);
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
         // Stop button
@@ -1240,7 +1226,7 @@ public final class DataControllerV extends DatavyuDialog
 
         // Shuttle forward button
         shuttleForwardButton = buildButton(resourceMap, actionMap,
-                                           "shuttleForward", null);
+                "shuttleForward", null);
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
 
         // Find text field
@@ -1259,12 +1245,12 @@ public final class DataControllerV extends DatavyuDialog
 
         // Jog forward button
         jogForwardButton = buildButton(resourceMap, actionMap,
-                                       "jogForward", null);
+                "jogForward", null);
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
         // Create new cell button
         createNewCell = buildButton(resourceMap, actionMap,
-                                    "createNewCell", null);
+                "createNewCell", null);
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 95!");
@@ -1280,12 +1266,12 @@ public final class DataControllerV extends DatavyuDialog
 
         // Create new cell setting offset button
         createNewCellSettingOffset = buildButton(resourceMap, actionMap,
-                                                 "createNewCellAndSetOnset", null);
+                "createNewCellAndSetOnset", null);
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
 
         // Set cell offset button
         setCellOffsetButton = buildButton(resourceMap, actionMap,
-                                          "setCellOffset", null);
+                "setCellOffset", null);
         gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
         // Show tracks button
@@ -1293,12 +1279,12 @@ public final class DataControllerV extends DatavyuDialog
                 "showTracksButton.hide.icon"));
         showTracksButton.setName("showTracksButton");
         showTracksButton.getAccessibleContext().setAccessibleName(
-            "Show Tracks");
+                "Show Tracks");
         showTracksButton.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent evt) {
-                    showTracksButtonActionPerformed(evt);
-                }
-            });
+            public void actionPerformed(final ActionEvent evt) {
+                showTracksButtonActionPerformed(evt);
+            }
+        });
         gridButtonPanel.add(showTracksButton, "w 80!, h 45!");
 
         getContentPane().setLayout(new MigLayout("ins 0, hidemode 3, fillx",
@@ -1316,8 +1302,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user closes the data controller.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void formWindowClosing(final java.awt.event.WindowEvent evt) {
         setVisible(false);
@@ -1326,11 +1311,10 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the open button.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void openVideoButtonActionPerformed(
-        final java.awt.event.ActionEvent evt) {
+            final java.awt.event.ActionEvent evt) {
         LOGGER.event("Add data");
 
         PluginChooser chooser = null;
@@ -1338,23 +1322,23 @@ public final class DataControllerV extends DatavyuDialog
         // TODO finish this
         switch (Datavyu.getPlatform()) {
 
-        case WINDOWS:
-            chooser = new WindowsJFC();
+            case WINDOWS:
+                chooser = new WindowsJFC();
 
-            break;
+                break;
 
-        case MAC:
-            chooser = new MacOSJFC();
+            case MAC:
+                chooser = new MacOSJFC();
 
-            break;
+                break;
 
-        case LINUX:
-            chooser = new LinuxJFC();
+            case LINUX:
+                chooser = new LinuxJFC();
 
-            break;
+                break;
 
-        default:
-            throw new NotImplementedException("Plugin chooser unimplemented.");
+            default:
+                throw new NotImplementedException("Plugin chooser unimplemented.");
         }
 
         PluginManager pm = PluginManager.getInstance();
@@ -1372,11 +1356,10 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks the show tracks button.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void showTracksButtonActionPerformed(
-        final java.awt.event.ActionEvent evt) {
+            final java.awt.event.ActionEvent evt) {
         assert (evt.getSource() instanceof JButton);
 
         JButton button = (JButton) evt.getSource();
@@ -1404,22 +1387,19 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Adds a data viewer to this data controller.
      *
-     * @param icon
-     *            The icon associated with the data viewer.
-     * @param viewer
-     *            The new viewer that we are adding to the data controller.
-     * @param f
-     *            The parent file that the viewer represents.
+     * @param icon   The icon associated with the data viewer.
+     * @param viewer The new viewer that we are adding to the data controller.
+     * @param f      The parent file that the viewer represents.
      */
     private void addDataViewer(final ImageIcon icon, final DataViewer viewer,
-        final File f, final TrackPainter trackPainter) {
+                               final File f, final TrackPainter trackPainter) {
         assert viewer.getIdentifier() != null;
 
         addViewer(viewer, 0);
 
         // Add the file to the tracks information panel
         addTrack(viewer.getIdentifier(), icon, f.getAbsolutePath(), f.getName(),
-            viewer.getDuration(), viewer.getOffset(), trackPainter);
+                viewer.getDuration(), viewer.getOffset(), trackPainter);
 
         Datavyu.getProjectController().projectChanged();
     }
@@ -1436,33 +1416,25 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Adds a track to the tracks panel.
      *
-     * @param icon
-     *            Icon associated with the track
-     * @param mediaPath
-     *            Absolute file path to the media file.
-     * @param name
-     *            The name of the track to add.
-     * @param duration
-     *            The duration of the data feed in milliseconds.
-     * @param offset
-     *            The time offset of the data feed in milliseconds.
-     * @param trackPainter
-     *            Track painter to use.
+     * @param icon         Icon associated with the track
+     * @param mediaPath    Absolute file path to the media file.
+     * @param name         The name of the track to add.
+     * @param duration     The duration of the data feed in milliseconds.
+     * @param offset       The time offset of the data feed in milliseconds.
+     * @param trackPainter Track painter to use.
      */
     public void addTrack(final Identifier id, final ImageIcon icon,
-        final String mediaPath, final String name, final long duration,
-        final long offset, final TrackPainter trackPainter) {
+                         final String mediaPath, final String name, final long duration,
+                         final long offset, final TrackPainter trackPainter) {
         mixerController.addNewTrack(id, icon, mediaPath, name, duration, offset,
-            trackPainter);
+                trackPainter);
     }
 
     /**
      * Add a viewer to the data controller with the given offset.
      *
-     * @param viewer
-     *            The data viewer to add.
-     * @param offset
-     *            The offset value in milliseconds.
+     * @param viewer The data viewer to add.
+     * @param offset The offset value in milliseconds.
      */
     public void addViewer(final DataViewer viewer, final long offset) {
 
@@ -1499,13 +1471,14 @@ public final class DataControllerV extends DatavyuDialog
         }
 
         mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(
-            maxDuration, true);
+                maxDuration, true);
     }
 
     /**
      * Action to invoke when the user clicks the set cell onset button.
      */
-    @Action public void setCellOnsetAction() {
+    @Action
+    public void setCellOnsetAction() {
         LOGGER.event("Set cell onset");
         new SetSelectedCellStartTimeC(getCurrentTime());
         setFindTime(getCurrentTime());
@@ -1514,15 +1487,15 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the set cell offest button.
      */
-    @Action public void setCellOffsetAction() {
+    @Action
+    public void setCellOffsetAction() {
         LOGGER.event("Set cell offset");
         new SetSelectedCellStopTimeC(getCurrentTime());
         setFindOffsetField(getCurrentTime());
     }
 
     /**
-     * @param show
-     *            true to show the tracks layout, false otherwise.
+     * @param show true to show the tracks layout, false otherwise.
      */
     public void showTracksPanel(final boolean show) {
         tracksPanel.setVisible(show);
@@ -1534,33 +1507,31 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Handler for a TracksControllerEvent.
      *
-     * @param e
-     *            event
+     * @param e event
      */
     public void tracksControllerChanged(final TracksControllerEvent e) {
 
         switch (e.getTracksEvent()) {
 
-        case CARRIAGE_EVENT:
-            handleCarriageEvent((CarriageEvent) e.getEventObject());
+            case CARRIAGE_EVENT:
+                handleCarriageEvent((CarriageEvent) e.getEventObject());
 
-            break;
+                break;
 
-        case TIMESCALE_EVENT:
-            handleTimescaleEvent((TimescaleEvent) e.getEventObject());
+            case TIMESCALE_EVENT:
+                handleTimescaleEvent((TimescaleEvent) e.getEventObject());
 
-            break;
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
     }
 
     /**
      * Handles a TimescaleEvent.
      *
-     * @param e
-     *            The timescale event that triggered this action.
+     * @param e The timescale event that triggered this action.
      */
     private void handleTimescaleEvent(final TimescaleEvent e) {
         final boolean wasClockRunning = !clock.isStopped();
@@ -1594,27 +1565,26 @@ public final class DataControllerV extends DatavyuDialog
      * Handles a CarriageEvent (when the carriage moves due to user
      * interaction).
      *
-     * @param e
-     *            The carriage event that triggered this action.
+     * @param e The carriage event that triggered this action.
      */
     private void handleCarriageEvent(final CarriageEvent e) {
 
         switch (e.getEventType()) {
 
-        case OFFSET_CHANGE:
-            handleCarriageOffsetChangeEvent(e);
+            case OFFSET_CHANGE:
+                handleCarriageOffsetChangeEvent(e);
 
-            break;
+                break;
 
-        case CARRIAGE_LOCK:
-        case BOOKMARK_CHANGED:
-        case BOOKMARK_SAVE:
-            Datavyu.getProjectController().projectChanged();
+            case CARRIAGE_LOCK:
+            case BOOKMARK_CHANGED:
+            case BOOKMARK_SAVE:
+                Datavyu.getProjectController().projectChanged();
 
-            break;
+                break;
 
-        default:
-            throw new IllegalArgumentException("Unknown carriage event.");
+            default:
+                throw new IllegalArgumentException("Unknown carriage event.");
         }
     }
 
@@ -1648,14 +1618,14 @@ public final class DataControllerV extends DatavyuDialog
         }
 
         mixerController.getMixerModel().getViewportModel().setViewportMaxEnd(
-            maxDuration, false);
+                maxDuration, false);
     }
 
     private void handleNeedleChanged(final PropertyChangeEvent e) {
 
         if (clock.isStopped()) {
             final long newTime = mixerController.getMixerModel()
-                .getNeedleModel().getCurrentTime();
+                    .getNeedleModel().getCurrentTime();
             clock.setTime(newTime);
             clockStep(newTime);
         }
@@ -1665,14 +1635,14 @@ public final class DataControllerV extends DatavyuDialog
 
     private void handleRegionChanged(final PropertyChangeEvent e) {
         final RegionState region = mixerController.getMixerModel()
-            .getRegionModel().getRegion();
+                .getRegionModel().getRegion();
         playbackModel.setWindowPlayStart(region.getRegionStart());
         playbackModel.setWindowPlayEnd(region.getRegionEnd());
     }
 
     private void handleViewportChanged(final PropertyChangeEvent e) {
         final ViewportState viewport = mixerController.getMixerModel()
-            .getViewportModel().getViewport();
+                .getViewportModel().getViewport();
         playbackModel.setMaxDuration(viewport.getMaxEnd());
     }
 
@@ -1680,77 +1650,107 @@ public final class DataControllerV extends DatavyuDialog
     // Simulated clicks (for numpad calls)
     //
 
-    /** Simulates play button clicked. */
+    /**
+     * Simulates play button clicked.
+     */
     public void pressPlay() {
         playButton.doClick();
     }
 
-    /** Simulates forward button clicked. */
+    /**
+     * Simulates forward button clicked.
+     */
     public void pressForward() {
         forwardButton.doClick();
     }
 
-    /** Simulates rewind button clicked. */
+    /**
+     * Simulates rewind button clicked.
+     */
     public void pressRewind() {
         rewindButton.doClick();
     }
 
-    /** Simulates pause button clicked. */
+    /**
+     * Simulates pause button clicked.
+     */
     public void pressPause() {
         pauseButton.doClick();
     }
 
-    /** Simulates stop button clicked. */
+    /**
+     * Simulates stop button clicked.
+     */
     public void pressStop() {
         stopButton.doClick();
     }
 
-    /** Simulates shuttle forward button clicked. */
+    /**
+     * Simulates shuttle forward button clicked.
+     */
     public void pressShuttleForward() {
         shuttleForwardButton.doClick();
     }
 
-    /** Simulates shuttle back button clicked. */
+    /**
+     * Simulates shuttle back button clicked.
+     */
     public void pressShuttleBack() {
         shuttleBackButton.doClick();
     }
 
-    /** Simulates find button clicked. */
+    /**
+     * Simulates find button clicked.
+     */
     public void pressFind() {
         findButton.doClick();
     }
 
-    /** Simulates set cell onset button clicked. */
+    /**
+     * Simulates set cell onset button clicked.
+     */
     public void pressSetCellOnset() {
         setCellOnsetButton.doClick();
     }
 
-    /** Simulates set cell offset button clicked. */
+    /**
+     * Simulates set cell offset button clicked.
+     */
     public void pressSetCellOffset() {
         setCellOffsetButton.doClick();
     }
 
-    /** Simulates set cell offset button clicked. */
+    /**
+     * Simulates set cell offset button clicked.
+     */
     public void pressSetCellOffsetOSX() {
         osxsetCellOffsetButton.doClick();
     }
 
-    /** Simulates set new cell onset button clicked. */
+    /**
+     * Simulates set new cell onset button clicked.
+     */
     public void pressPointCell() {
         pointCellButton.doClick();
     }
 
-    /** Simulates go back button clicked. */
+    /**
+     * Simulates go back button clicked.
+     */
     public void pressGoBack() {
         goBackButton.doClick();
     }
 
-    /** Simulates create new cell button clicked. */
+    /**
+     * Simulates create new cell button clicked.
+     */
     public void pressCreateNewCell() {
         createNewCell.doClick();
     }
 
-    /** Simulates create new cell setting offset button clicked. */
+    /**
+     * Simulates create new cell setting offset button clicked.
+     */
     public void pressCreateNewCellSettingOffset() {
         createNewCellSettingOffset.doClick();
     }
@@ -1758,13 +1758,15 @@ public final class DataControllerV extends DatavyuDialog
     // ------------------------------------------------------------------------
     // Playback actions
     //
+
     /**
      * Action to invoke when the user clicks on the play button.
      */
-    @Action public void playAction() {
+    @Action
+    public void playAction() {
         LOGGER.event("Play");
-	System.out.println("Play button...");
-	System.out.println(System.currentTimeMillis());
+        System.out.println("Play button...");
+        System.out.println(System.currentTimeMillis());
 
         // BugzID:464 - When stopped at the end of the region of interest.
         // pressing play jumps the stream back to the start of the video before
@@ -1780,7 +1782,8 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the fast forward button.
      */
-    @Action public void forwardAction() {
+    @Action
+    public void forwardAction() {
         LOGGER.event("Fast forward");
         playAt(FFORWARD_RATE);
     }
@@ -1788,7 +1791,8 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the rewind button.
      */
-    @Action public void rewindAction() {
+    @Action
+    public void rewindAction() {
         LOGGER.event("Rewind");
         playAt(REWIND_RATE);
     }
@@ -1796,21 +1800,22 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the pause button.
      */
-    @Action public void pauseAction() {
+    @Action
+    public void pauseAction() {
         LOGGER.event("Pause");
-	System.out.println("Pause button...");
-	System.out.println(System.currentTimeMillis());
+        System.out.println("Pause button...");
+        System.out.println(System.currentTimeMillis());
 
         // Resume from pause at playback rate prior to pause.
         if (clock.isStopped()) {
             shuttleAt(playbackModel.getPauseRate());
 
-        // Pause views - store current playback rate.
+            // Pause views - store current playback rate.
         } else {
             playbackModel.setPauseRate(clock.getRate());
             clock.stop();
             lblSpeed.setText("["
-                + FloatUtils.doubleToFractionStr(
+                    + FloatUtils.doubleToFractionStr(
                     Double.valueOf(playbackModel.getPauseRate())) + "]");
         }
     }
@@ -1818,10 +1823,11 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the stop button.
      */
-    @Action public void stopAction() {
+    @Action
+    public void stopAction() {
         LOGGER.event("Stop event");
-	System.out.println("Stop button");
-	System.out.println(System.currentTimeMillis());
+        System.out.println("Stop button");
+        System.out.println(System.currentTimeMillis());
         clock.stop();
         playbackModel.setPauseRate(0);
     }
@@ -1831,7 +1837,8 @@ public final class DataControllerV extends DatavyuDialog
      *
      * @todo proper behavior for reversing shuttle direction?
      */
-    @Action public void shuttleForwardAction() {
+    @Action
+    public void shuttleForwardAction() {
         LOGGER.event("Shuttle forward");
         shuttle(1);
     }
@@ -1839,7 +1846,8 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the shuttle back button.
      */
-    @Action public void shuttleBackAction() {
+    @Action
+    public void shuttleBackAction() {
         LOGGER.event("Shuttle back");
         shuttle(-1);
     }
@@ -1848,8 +1856,7 @@ public final class DataControllerV extends DatavyuDialog
      * Searches the shuttle rates array for the given rate, and returns the
      * index.
      *
-     * @param pRate
-     *            The rate to search for.
+     * @param pRate The rate to search for.
      * @return The index of the rate, or -100 if not found.
      */
     private int findShuttleIndex(final float pRate) {
@@ -1866,8 +1873,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Populates the find time in the controller.
      *
-     * @param milliseconds
-     *            The time to use when populating the find field.
+     * @param milliseconds The time to use when populating the find field.
      */
     public void setFindTime(final long milliseconds) {
         findTextField.setText(CLOCK_FORMAT.format(milliseconds));
@@ -1876,8 +1882,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Populates the find offset time in the controller.
      *
-     * @param milliseconds
-     *            The time to use when populating the find field.
+     * @param milliseconds The time to use when populating the find field.
      */
     public void setFindOffsetField(final long milliseconds) {
         findOffsetField.setText(CLOCK_FORMAT.format(milliseconds));
@@ -1886,7 +1891,8 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the find button.
      */
-    @Action public void findAction() {
+    @Action
+    public void findAction() {
         LOGGER.event("Find");
 
         if (shiftMask) {
@@ -1931,11 +1937,11 @@ public final class DataControllerV extends DatavyuDialog
 
             final long newWindowPlayStart = findTextTime;
             final long newWindowPlayEnd = (findOffsetTime > newWindowPlayStart)
-                ? findOffsetTime : newWindowPlayStart;
+                    ? findOffsetTime : newWindowPlayStart;
             mixerController.getMixerModel().getRegionModel().setPlaybackRegion(
-                newWindowPlayStart, newWindowPlayEnd);
+                    newWindowPlayStart, newWindowPlayEnd);
             mixerController.getMixerModel().getNeedleModel().setCurrentTime(
-                newWindowPlayStart);
+                    newWindowPlayStart);
         } catch (ParseException e) {
             LOGGER.error("Unable to set playback region of interest", e);
         }
@@ -1944,7 +1950,8 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the go back button.
      */
-    @Action public void goBackAction() {
+    @Action
+    public void goBackAction() {
 
         try {
             LOGGER.event("Go back");
@@ -1963,7 +1970,8 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the jog backwards button.
      */
-    @Action public void jogBackAction() {
+    @Action
+    public void jogBackAction() {
         LOGGER.event("Jog back");
 
         int mul = 1;
@@ -1993,7 +2001,8 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the jog forwards button.
      */
-    @Action public void jogForwardAction() {
+    @Action
+    public void jogForwardAction() {
         LOGGER.event("Jog forward");
 
         int mul = 1;
@@ -2027,9 +2036,9 @@ public final class DataControllerV extends DatavyuDialog
     // ------------------------------------------------------------------------
     // [private] play back action helper functions
     //
+
     /**
-     * @param rate
-     *            Rate of play.
+     * @param rate Rate of play.
      */
     private void playAt(final float rate) {
         playbackModel.setPauseRate(0);
@@ -2037,8 +2046,7 @@ public final class DataControllerV extends DatavyuDialog
     }
 
     /**
-     * @param direction
-     *            The required direction of the shuttle.
+     * @param direction The required direction of the shuttle.
      */
     private void shuttle(final int shuttlejump) {
         float currentRate = clock.getRate();
@@ -2049,15 +2057,13 @@ public final class DataControllerV extends DatavyuDialog
 
         try {
             shuttleAt(SHUTTLE_RATES[findShuttleIndex(currentRate) + shuttlejump]);
-        }
-        catch (java.lang.ArrayIndexOutOfBoundsException e) {
+        } catch (java.lang.ArrayIndexOutOfBoundsException e) {
             System.out.println("Error finding shuttle index given current rate: " + currentRate);
         }
     }
 
     /**
-     * @param rate
-     *            Rate of shuttle.
+     * @param rate Rate of shuttle.
      */
     private void shuttleAt(final float rate) {
         clock.setRate(rate);
@@ -2065,8 +2071,7 @@ public final class DataControllerV extends DatavyuDialog
     }
 
     /**
-     * @param step
-     *            Milliseconds to jump.
+     * @param step Milliseconds to jump.
      */
     private void jump(final long step) {
         clock.stop();
@@ -2076,8 +2081,7 @@ public final class DataControllerV extends DatavyuDialog
     }
 
     /**
-     * @param time
-     *            Absolute time to jump to.
+     * @param time Absolute time to jump to.
      */
     private void jumpTo(final long time) {
         clock.stop();
@@ -2087,10 +2091,12 @@ public final class DataControllerV extends DatavyuDialog
     // -------------------------------------------------------------------------
     //
     //
+
     /**
      * Action to invoke when the user clicks on the create new cell button.
      */
-    @Action public void createNewCellAction() {
+    @Action
+    public void createNewCellAction() {
         LOGGER.event("New cell");
         CreateNewCellC controller = new CreateNewCellC();
         controller.createDefaultCell();
@@ -2099,7 +2105,8 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the new cell button.
      */
-    @Action public void createNewCellAndSetOnsetAction() {
+    @Action
+    public void createNewCellAndSetOnsetAction() {
         LOGGER.event("New cell set onset");
         new CreateNewCellC(getCurrentTime());
     }
@@ -2107,10 +2114,11 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the new cell offset button.
      */
-    @Action public void pointCellAction() {
+    @Action
+    public void pointCellAction() {
         LOGGER.event("Set new cell offset");
-	
-	long time = getCurrentTime();
+
+        long time = getCurrentTime();
         new CreateNewCellC(time);
         new SetNewCellStopTimeC(time);
         setFindOffsetField(time);
@@ -2119,10 +2127,12 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Action to invoke when the user clicks on the sync video button.
      */
-    @Action public void syncVideoAction() {
+    @Action
+    public void syncVideoAction() {
     }
 
-    @Override public void propertyChange(final PropertyChangeEvent e) {
+    @Override
+    public void propertyChange(final PropertyChangeEvent e) {
 
         if (e.getSource()
                 == mixerController.getNeedleController().getNeedleModel()) {

@@ -14,12 +14,13 @@
  */
 package org.datavyu.util;
 
-import java.util.Comparator;
 import org.datavyu.models.db.Variable;
 
+import java.util.Comparator;
+
 public class VariableSort implements Comparator<Variable> {
-	@Override
-	public int compare(Variable v1, Variable v2) {
-		return v1.getName().compareTo(v2.getName());
-	}
+    @Override
+    public int compare(Variable v1, Variable v2) {
+        return v1.getName().compareTo(v2.getName());
+    }
 }

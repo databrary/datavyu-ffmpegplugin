@@ -14,21 +14,13 @@
  */
 package org.datavyu.views;
 
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+import java.awt.*;
 
 
 public class MacOSJFC extends BaseJFC {
-    @Override protected JDialog createDialog(final Component parent) {
+    @Override
+    protected JDialog createDialog(final Component parent) {
         JDialog dialog = super.createDialog(parent);
 
         JLabel pluginSelect = new JLabel();

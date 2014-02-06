@@ -14,9 +14,8 @@
  */
 package org.datavyu.util.FileFilters;
 
-import java.io.File;
-
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
 
 /**
@@ -29,11 +28,13 @@ public class SHAPAFilter extends FileFilter {
     private SHAPAFilter() {
     }
 
-    @Override public boolean accept(final File file) {
+    @Override
+    public boolean accept(final File file) {
         return (file.getName().endsWith(".shapa") || file.isDirectory());
     }
 
-    @Override public String getDescription() {
+    @Override
+    public String getDescription() {
         return "Datavyu project files (*.shapa)";
     }
 

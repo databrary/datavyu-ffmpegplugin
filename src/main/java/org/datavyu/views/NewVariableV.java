@@ -15,32 +15,36 @@
 package org.datavyu.views;
 
 import com.usermetrix.jclient.Logger;
-import org.datavyu.Datavyu;
-
 import com.usermetrix.jclient.UserMetrix;
-import javax.swing.undo.UndoableEdit;
+import org.datavyu.Datavyu;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
 import org.datavyu.undoableedits.AddVariableEdit;
 
+import javax.swing.undo.UndoableEdit;
+
 /**
  * The dialog for users to add new variables to the spreadsheet.
  */
 public final class NewVariableV extends DatavyuDialog {
 
-    /** The database to add the new variable to. */
+    /**
+     * The database to add the new variable to.
+     */
     private Datastore model;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = UserMetrix.getLogger(NewVariableV.class);
 
     /**
      * Constructor, creates a new form to create a new variable.
      *
      * @param parent The parent of this form.
-     * @param modal Should the dialog be modal or not?
+     * @param modal  Should the dialog be modal or not?
      */
     public NewVariableV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
@@ -100,32 +104,32 @@ public final class NewVariableV extends DatavyuDialog {
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(layout.createSequentialGroup()
-                        .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .add(18, 18, 18)
-                        .add(cancelButton))
-                    .add(layout.createSequentialGroup()
-                        .add(jLabel1)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 290, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                                        .add(layout.createSequentialGroup()
+                                                .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                                .add(18, 18, 18)
+                                                .add(cancelButton))
+                                        .add(layout.createSequentialGroup()
+                                                .add(jLabel1)
+                                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                                .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 290, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
-                .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel1))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(cancelButton)
-                    .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(jLabel1))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                                        .add(cancelButton)
+                                        .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -146,12 +150,12 @@ public final class NewVariableV extends DatavyuDialog {
             UndoableEdit edit = new AddVariableEdit(getVariableName(), getVariableType());
 
             // Display any changes.
-            Datavyu.getView().getComponent().revalidate();           
+            Datavyu.getView().getComponent().revalidate();
             Datavyu.getView().getUndoSupport().postEdit(edit);
 
             dispose();
 
-        // Whoops, user has done something strange - show warning dialog.
+            // Whoops, user has done something strange - show warning dialog.
         } catch (UserWarningException fe) {
             Datavyu.getApplication().showWarningDialog(fe);
 
@@ -160,7 +164,7 @@ public final class NewVariableV extends DatavyuDialog {
 
     /**
      * The action to invoke when the user selects the cancel button.
-     * 
+     *
      * @param evt The event that triggered this action.
      */
     private void cancelButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cancelButtonActionPerformed
@@ -180,7 +184,7 @@ public final class NewVariableV extends DatavyuDialog {
      * @return The type of variable the user has selected to use.
      */
     public Argument.Type getVariableType() {
-         return Argument.Type.MATRIX; //this is now the only allowed 
+        return Argument.Type.MATRIX; //this is now the only allowed
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

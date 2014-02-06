@@ -15,50 +15,50 @@
 package org.datavyu.models.component;
 
 import java.beans.PropertyChangeListener;
-import org.datavyu.models.component.MixerModel;
-import org.datavyu.models.component.NeedleModel;
-import org.datavyu.models.component.RegionModel;
-import org.datavyu.models.component.ViewportModel;
 
 public final class MixerModelImpl extends MixerComponentModelImpl implements MixerModel {
     private final RegionModel regionModel;
     private final NeedleModel needleModel;
     private final ViewportModel viewportModel;
-    
+
     public MixerModelImpl() {
-    	super(null);
-    	viewportModel = new ViewportModelImpl(this);
-    	regionModel = new RegionModelImpl(this);
-    	needleModel = new NeedleModelImpl(this);
-    	
-    	wireListeners();
-    	((MixerComponentModelImpl) viewportModel).wireListeners();
-    	((MixerComponentModelImpl) regionModel).wireListeners();
-    	((MixerComponentModelImpl) needleModel).wireListeners();
+        super(null);
+        viewportModel = new ViewportModelImpl(this);
+        regionModel = new RegionModelImpl(this);
+        needleModel = new NeedleModelImpl(this);
+
+        wireListeners();
+        ((MixerComponentModelImpl) viewportModel).wireListeners();
+        ((MixerComponentModelImpl) regionModel).wireListeners();
+        ((MixerComponentModelImpl) needleModel).wireListeners();
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override public RegionModel getRegionModel() {
-    	return regionModel;
+    @Override
+    public RegionModel getRegionModel() {
+        return regionModel;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override public NeedleModel getNeedleModel() {
-    	return needleModel;
+    @Override
+    public NeedleModel getNeedleModel() {
+        return needleModel;
     }
 
     /**
      * {@inheritDoc}
      */
-	@Override public ViewportModel getViewportModel() {
-		return viewportModel;
-	}
-	
-    @Override public void addPropertyChangeListener(final PropertyChangeListener listener) {
-    	assert false;
+    @Override
+    public ViewportModel getViewportModel() {
+        return viewportModel;
+    }
+
+    @Override
+    public void addPropertyChangeListener(final PropertyChangeListener listener) {
+        assert false;
     }
 }

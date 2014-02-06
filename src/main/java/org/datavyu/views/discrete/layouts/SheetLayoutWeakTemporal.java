@@ -14,20 +14,14 @@
  */
 package org.datavyu.views.discrete.layouts;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import javax.swing.JScrollPane;
-import org.datavyu.Datavyu;
 import org.datavyu.views.discrete.SpreadsheetCell;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.SpreadsheetView;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 /**
  * SheetLayoutWeakTemporal - mimics the weak temporal ordering style from
@@ -58,6 +52,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             onset = cell.getOnsetTicks();
             offset = cell.getOffsetTicks();
         }
+
         // The cell that this row information is about.
         public SpreadsheetCell cell;
         public long onset;
@@ -78,7 +73,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     @Override
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
-        
+
         long overallTime = System.currentTimeMillis();
 
         onsetToLoc = new HashMap();
@@ -88,7 +83,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         JScrollPane pane = (JScrollPane) parent;
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
                 .getView();
-        
+
         // See if we need to redraw this spreadsheet
 //        if(!Datavyu.getProjectController().getDB().isChanged() && !Datavyu.getView().getRedraw()) {
 //            return;
@@ -191,58 +186,58 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
 
         int numCells = 0;
-        Set<Long> times = new TreeSet<Long>(); 
+        Set<Long> times = new TreeSet<Long>();
         HashMap<Long, List<SpreadsheetCell>> cellsByOnset = new HashMap<Long, List<SpreadsheetCell>>();
         HashMap<Long, List<SpreadsheetCell>> cellsByOffset = new HashMap<Long, List<SpreadsheetCell>>();
 
-        for(int key : cellCache.keySet()) {
-            for(SpreadsheetCell cell : cellCache.get(key)) {
+        for (int key : cellCache.keySet()) {
+            for (SpreadsheetCell cell : cellCache.get(key)) {
                 long onset = cell.getOnsetTicks();
                 long offset = cell.getOffsetTicks();
                 numCells += 1;
-                if(!cellsByOnset.containsKey(onset)) {
+                if (!cellsByOnset.containsKey(onset)) {
                     cellsByOnset.put(onset, new LinkedList<SpreadsheetCell>());
                 }
                 cellsByOnset.get(onset).add(cell);
-                
+
                 // Adjust the offsets of point and negative cells so we can
                 // place them easier
-                if(offset <= onset) {
+                if (offset <= onset) {
                     offset = onset + 1;
                 }
-                
-                if(!cellsByOffset.containsKey(offset)) {
+
+                if (!cellsByOffset.containsKey(offset)) {
                     cellsByOffset.put(offset, new LinkedList<SpreadsheetCell>());
                 }
                 cellsByOffset.get(offset).add(cell);
-                
+
                 times.add(onset);
                 times.add(offset);
-                
+
                 cell.setOverlapBorder(false);
             }
         }
-        
+
         Long[] timeArray = times.toArray(new Long[]{});
-        
+
         // Now go through all the times and try to map them to a position
         int maxPosition = 0;
         HashMap<Long, Integer> timeByLoc = new HashMap<Long, Integer>();
-        for(int i = 0; i < times.size(); i++) {
+        for (int i = 0; i < times.size(); i++) {
             Long time = timeArray[i];
             List<SpreadsheetCell> cellsWithOnset = cellsByOnset.get(time);
             List<SpreadsheetCell> cellsWithOffset = cellsByOffset.get(time);
-            
+
             // Get the minimum height we can go down from these cells
             int minHeight = 0;
-            if(cellsWithOnset != null) {
-                for(SpreadsheetCell cell : cellsWithOnset) {
-                    if(minHeight < cell.getPreferredSize().height) {
+            if (cellsWithOnset != null) {
+                for (SpreadsheetCell cell : cellsWithOnset) {
+                    if (minHeight < cell.getPreferredSize().height) {
                         minHeight = cell.getPreferredSize().height;
                     }
                 }
             }
-            
+
 //            if(cellsWithOffset != null) {
 //                for(SpreadsheetCell cell : cellsWithOffset) {
 //                    if(minHeight < cell.getPreferredSize().height) {
@@ -250,106 +245,106 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 //                    }
 //                }
 //            }
-            
+
             timeByLoc.put(time, maxPosition);
             maxPosition += minHeight;
 
         }
-        
-        for(int key : cellCache.keySet()) {
-            for(int i = 0; i < cellCache.get(key).size() - 1; i++) {
+
+        for (int key : cellCache.keySet()) {
+            for (int i = 0; i < cellCache.get(key).size() - 1; i++) {
                 SpreadsheetCell cell = cellCache.get(key).get(i);
-                SpreadsheetCell nextCell = cellCache.get(key).get(i+1);
+                SpreadsheetCell nextCell = cellCache.get(key).get(i + 1);
                 long onset = cell.getOnsetTicks();
                 long offset = cell.getOffsetTicks();
                 long nextOnset = nextCell.getOnsetTicks();
                 long nextOffset = nextCell.getOffsetTicks();
-                                
+
                 // Non-continuous cells
-                if(nextOnset - offset > 1) {
+                if (nextOnset - offset > 1) {
                     timeByLoc.put(nextOnset, timeByLoc.get(nextOnset) + gapSize);
-                    
-                    for(int j = 0; j < timeArray.length; j++) {
-                        if(timeArray[j] > nextOnset) {
+
+                    for (int j = 0; j < timeArray.length; j++) {
+                        if (timeArray[j] > nextOnset) {
                             timeByLoc.put(timeArray[j], timeByLoc.get(timeArray[j]) + gapSize);
                         }
                     }
                 }
-                
-                if(onset == nextOnset) {
-                    for(int j = 0; j < timeArray.length; j++) {
-                        if(timeArray[j] > nextOnset) {
+
+                if (onset == nextOnset) {
+                    for (int j = 0; j < timeArray.length; j++) {
+                        if (timeArray[j] > nextOnset) {
                             timeByLoc.put(timeArray[j], timeByLoc.get(timeArray[j]) + cell.getPreferredSize().height);
                         }
                     }
                 }
-                
+
             }
         }
-                
+
         // Set all of the cell positions now that we have figured them out
-        for(Long time : times) { 
+        for (Long time : times) {
             List<SpreadsheetCell> cellsWithOnset = cellsByOnset.get(time);
             List<SpreadsheetCell> cellsWithOffset = cellsByOffset.get(time);
-            
-            
-            if(cellsWithOnset != null) {
-                for(SpreadsheetCell cell : cellsWithOnset) {
+
+
+            if (cellsWithOnset != null) {
+                for (SpreadsheetCell cell : cellsWithOnset) {
 //                    if(!cell.isBeingProcessed()) {
-                        cell.setBounds(0, timeByLoc.get(time), width, cell.getPreferredSize().height);
+                    cell.setBounds(0, timeByLoc.get(time), width, cell.getPreferredSize().height);
 //                    }
                 }
             }
-            
-            if(cellsWithOffset != null) {
-                for(SpreadsheetCell cell : cellsWithOffset) {
+
+            if (cellsWithOffset != null) {
+                for (SpreadsheetCell cell : cellsWithOffset) {
 //                    if(!cell.isBeingProcessed()) {
-                        cell.setBounds(0, cell.getY(), width, (timeByLoc.get(time) - cell.getY()));
+                    cell.setBounds(0, cell.getY(), width, (timeByLoc.get(time) - cell.getY()));
 //                    }
                 }
             }
-            
-            if(maxHeight < timeByLoc.get(time)) {
+
+            if (maxHeight < timeByLoc.get(time)) {
                 maxHeight = timeByLoc.get(time);
             }
         }
 //        System.out.println(maxHeight);
-        
+
         // Set the working heights for all of the columns
         List<SpreadsheetColumn> visibleColumns = getVisibleColumns(mainView);
-        for(int key : cellCache.keySet()) {
+        for (int key : cellCache.keySet()) {
             SpreadsheetColumn col = visibleColumns.get(key);
 //            System.out.println(key);
 //            System.out.println(cellCache.get(key).size());
-            if(cellCache.get(key).size() > 0) {
-                SpreadsheetCell cell = cellCache.get(key).get(cellCache.get(key).size()-1);
+            if (cellCache.get(key).size() > 0) {
+                SpreadsheetCell cell = cellCache.get(key).get(cellCache.get(key).size() - 1);
                 col.setWorkingHeight(cell.getY() + cell.getHeight());
             }
         }
-        
+
         // Now go through each of the columns and shorten cells that overlap
         // with the one ahead of them to guarantee all cells can be seen
-        for(int key : cellCache.keySet()) {
-            for(int i = 0; i < cellCache.get(key).size() - 1; i++) {
+        for (int key : cellCache.keySet()) {
+            for (int i = 0; i < cellCache.get(key).size() - 1; i++) {
                 SpreadsheetCell curCell = cellCache.get(key).get(i);
-                SpreadsheetCell nextCell = cellCache.get(key).get(i+1);
+                SpreadsheetCell nextCell = cellCache.get(key).get(i + 1);
                 SpreadsheetColumn col = visibleColumns.get(key);
-              
-                if(curCell.getOffsetTicks() > nextCell.getOnsetTicks()) {
+
+                if (curCell.getOffsetTicks() > nextCell.getOnsetTicks()) {
                     curCell.setBounds(0, curCell.getY(), width, nextCell.getY() - curCell.getY());
                     curCell.setOverlapBorder(true);
                 }
-                
-                if(curCell.getOnsetTicks() == nextCell.getOnsetTicks()) {
+
+                if (curCell.getOnsetTicks() == nextCell.getOnsetTicks()) {
                     curCell.setBounds(0, curCell.getY(), width, curCell.getPreferredSize().height);
                     nextCell.setBounds(0, curCell.getY() + curCell.getHeight(), width, nextCell.getPreferredSize().height);
-                    if(col.getWorkingHeight() < nextCell.getY() + nextCell.getHeight()) {
+                    if (col.getWorkingHeight() < nextCell.getY() + nextCell.getHeight()) {
                         col.setWorkingHeight(nextCell.getY() + nextCell.getHeight());
                     }
                 }
             }
         }
-        
+
         padColumns(mainView, parent);
     }
 
@@ -359,12 +354,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
      * added to the bottom of each of the columns.
      *
      * @param mainView The actual spreadsheet that we are populating.
-     * @param parent The parent container that holds the spreadsheet.
+     * @param parent   The parent container that holds the spreadsheet.
      */
     private void padColumns(SpreadsheetView mainView, Container parent) {
         for (SpreadsheetColumn col : mainView.getColumns()) {
             Integer colHeight = col.getWorkingHeight();
-            
+
 //            System.out.println(colHeight);
 
             // Put the new cell button at the end of the column.

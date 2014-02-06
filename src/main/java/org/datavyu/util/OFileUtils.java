@@ -14,9 +14,9 @@
  */
 package org.datavyu.util;
 
-import java.io.File;
-
 import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
 
 
 /**
@@ -30,11 +30,11 @@ public final class OFileUtils {
      * @param path1
      * @param path2
      * @return String representing the longest common directory for path1 and
-     *         path2. null if no such common directory (i.e. if the files were
-     *         on different drives)
+     * path2. null if no such common directory (i.e. if the files were
+     * on different drives)
      */
     public static String longestCommonDir(final String path1,
-        final String path2) {
+                                          final String path2) {
 
         if ((path1 == null) || (path2 == null)) {
             throw new NullPointerException();
@@ -80,11 +80,11 @@ public final class OFileUtils {
      * @param basePath
      * @param path
      * @return a positive integer >= 0 denoting the difference in directory
-     *         levels if the difference can be determined. -1 if the difference
-     *         cannot be determined.
+     * levels if the difference can be determined. -1 if the difference
+     * cannot be determined.
      */
     public static int levelDifference(final String basePath,
-        final String path) {
+                                      final String path) {
 
         if ((basePath == null) || (path == null)) {
             throw new NullPointerException();
@@ -92,7 +92,7 @@ public final class OFileUtils {
 
         File base = new File(FilenameUtils.normalize(basePath, true));
         File ancestor = new File(FilenameUtils.getFullPath(
-                    FilenameUtils.normalize(path, true)));
+                FilenameUtils.normalize(path, true)));
 
         int diff = 0;
 
@@ -121,7 +121,7 @@ public final class OFileUtils {
      * @return null if filePath does not have basePath as a prefix.
      */
     public static String relativeToBase(final String basePath,
-        final String filePath) {
+                                        final String filePath) {
 
         if ((basePath == null) || (filePath == null)) {
             throw new NullPointerException();
@@ -136,5 +136,5 @@ public final class OFileUtils {
 
         return file.substring(base.length());
     }
-    
+
 }

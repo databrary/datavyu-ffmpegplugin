@@ -16,40 +16,50 @@ package org.datavyu.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.util.List;
-import javax.swing.text.JTextComponent;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Variable;
 import org.datavyu.views.discrete.EditorComponent;
+
+import javax.swing.text.JTextComponent;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * This class is the character editor of a NominalDataValue.
  */
 public final class FormalArgEditor extends EditorComponent {
-    
-    /** Parent Vocab Variable. */
+
+    /**
+     * Parent Vocab Variable.
+     */
     private Variable parentVariable;
 
-    /** Index of the formal arg. */
+    /**
+     * Index of the formal arg.
+     */
     private int argIndex;
 
-    /** String holding the reserved characters. */
+    /**
+     * String holding the reserved characters.
+     */
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(FormalArgEditor.class);
 
-    /** The parent editor window that this argument belongs too. */
+    /**
+     * The parent editor window that this argument belongs too.
+     */
     private VocabElementV parentView;
 
     /**
-     * @param ta The JTextComponent that this virtual editor floats ontop.
-     * @param pa The parent that this argument belongs too.
+     * @param ta    The JTextComponent that this virtual editor floats ontop.
+     * @param pa    The parent that this argument belongs too.
      * @param index The index of the argument within the parent vocabelement
-     * that this Editor will represent.
-     * @param pv The parent vocab element view that this editor belongs too.
+     *              that this Editor will represent.
+     * @param pv    The parent vocab element view that this editor belongs too.
      */
     public FormalArgEditor(final JTextComponent ta,
                            final Variable var,
@@ -88,7 +98,7 @@ public final class FormalArgEditor extends EditorComponent {
     public int getArgPos() {
         return argIndex;
     }
-    
+
     public void updateArgName(String newValue) {
         Argument current_arg = parentVariable.getVariableType();
         current_arg.childArguments.get(argIndex).name = newValue;
@@ -117,9 +127,9 @@ public final class FormalArgEditor extends EditorComponent {
             removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
-                        
+
             updateArgName(currentValue.toString());
-            
+
             // Advance caret over the top of the new char.
             int pos = this.getCaretPosition() + 1;
             this.setText(currentValue.toString());
@@ -134,7 +144,6 @@ public final class FormalArgEditor extends EditorComponent {
 
     /**
      * @param aChar Character to test
-     *
      * @return true if the character is a reserved character.
      */
     public boolean isReserved(final char aChar) {

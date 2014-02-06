@@ -14,9 +14,10 @@
  */
 package org.datavyu.views.discrete.datavalues;
 
+import org.datavyu.views.discrete.EditorComponent;
+
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import org.datavyu.views.discrete.EditorComponent;
 
 /**
  * NoEditor is used in EditorTracker when there is no sensible current Editor.
@@ -31,6 +32,7 @@ public final class NoEditor extends EditorComponent {
 
     /**
      * Subclass overrides to handle keyPressed events.
+     *
      * @param e KeyEvent details.
      */
     @Override
@@ -39,6 +41,7 @@ public final class NoEditor extends EditorComponent {
 
     /**
      * Subclass overrides to handle keyTyped events.
+     *
      * @param e KeyEvent details.
      */
     @Override
@@ -47,6 +50,7 @@ public final class NoEditor extends EditorComponent {
 
     /**
      * Subclass overrides to handle keyReleased events.
+     *
      * @param e KeyEvent details.
      */
     @Override
@@ -55,6 +59,7 @@ public final class NoEditor extends EditorComponent {
 
     /**
      * Subclass overrides to handle focusSet state.
+     *
      * @param fe FocusEvent details.
      */
     @Override

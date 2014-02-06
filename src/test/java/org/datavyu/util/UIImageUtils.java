@@ -14,30 +14,18 @@
  */
 package org.datavyu.util;
 
-import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.Point;
-import java.awt.Rectangle;
+import org.testng.Assert;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.JComponent;
-
-import java.awt.Robot;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
-
+import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
-
-import javax.imageio.ImageIO;
-
-import org.testng.Assert;
 
 
 /**
@@ -46,19 +34,22 @@ import org.testng.Assert;
  */
 public final class UIImageUtils {
 
-    /** Maximum distance one pixel can be away from another. */
+    /**
+     * Maximum distance one pixel can be away from another.
+     */
     public static final double MAX_PIXEL_DISTANCE = Math.sqrt((255 * 255)
             + (255 * 255) + (255 * 255));
 
     /**
      * Checks if two images are equal within 15%.
+     *
      * @param uiImage image1
      * @param refFile referenceImageFile
      * @return true if similar enough
      * @throws IOException on error reading file
      */
     public static Boolean areImagesEqual(final BufferedImage uiImage,
-        final File refFile) throws IOException {
+                                         final File refFile) throws IOException {
 
         // CONSTANTS
         // Pixel threshold as a percentage
@@ -71,16 +62,17 @@ public final class UIImageUtils {
 
     /**
      * Checks if two images are equal within given threshold
-     * @param uiImage image1
-     * @param refFile referenceImageFile
+     *
+     * @param uiImage      image1
+     * @param refFile      referenceImageFile
      * @param pixThreshold pixel threshold
      * @param errThreshold final error threshold
      * @return true if similar enough
      * @throws IOException on error reading file
      */
     public static Boolean areImagesEqual(final BufferedImage uiImage,
-        final File refFile, final double pixThreshold,
-        final double errThreshold) throws IOException {
+                                         final File refFile, final double pixThreshold,
+                                         final double errThreshold) throws IOException {
         final String tempFolder = System.getProperty("java.io.tmpdir");
 
         String filePrefix = "";
@@ -99,11 +91,11 @@ public final class UIImageUtils {
         if (!(uiImage.getHeight() == refImage.getHeight())
                 || !(uiImage.getWidth() == refImage.getWidth())) {
             ImageIO.write(uiImage, "png",
-                new File(tempFolder + "/" + filePrefix
-                    + "sameSize.png"));
+                    new File(tempFolder + "/" + filePrefix
+                            + "sameSize.png"));
             System.err.println("Image written to: "
-                + tempFolder + "/" + filePrefix
-                + "sameSize.png");
+                    + tempFolder + "/" + filePrefix
+                    + "sameSize.png");
         }
 
         Assert.assertEquals(uiImage.getHeight(), refImage.getHeight());
@@ -136,18 +128,18 @@ public final class UIImageUtils {
 
         if (!withinThreshold) {
             ImageIO.write(maskImage(uiImage, refImage), "png",
-                new File(tempFolder + "/" + filePrefix
-                    + "maskImage.png"));
+                    new File(tempFolder + "/" + filePrefix
+                            + "maskImage.png"));
             System.err.println("Image written to: "
-                + tempFolder + "/" + filePrefix
-                + "maskImage.png");
+                    + tempFolder + "/" + filePrefix
+                    + "maskImage.png");
 
             ImageIO.write(uiImage, "png",
-                new File(tempFolder + "/" + filePrefix
-                    + "capturedImage.png"));
+                    new File(tempFolder + "/" + filePrefix
+                            + "capturedImage.png"));
             System.err.println("Image written to: "
-                + tempFolder + "/" + filePrefix
-                + "capturedImage.png");
+                    + tempFolder + "/" + filePrefix
+                    + "capturedImage.png");
         }
 
         return withinThreshold;
@@ -155,6 +147,7 @@ public final class UIImageUtils {
 
     /**
      * Calculates the distance between two colors.
+     *
      * @param col1 first color
      * @param col2 second color
      * @return distance between col1 and col2
@@ -169,18 +162,19 @@ public final class UIImageUtils {
 
         double pixelDistance = Math.sqrt(((r1 - r2) * (r1 - r2))
                 + ((g1 - g2)
-                    * (g1 - g2)) + ((b1 - b2) * (b1 - b2)));
+                * (g1 - g2)) + ((b1 - b2) * (b1 - b2)));
 
         return pixelDistance;
     }
 
     /**
      * Captures screenshot of component and saves to a file.
+     *
      * @param component JComponent to capture screenshot
-     * @param saveAs file name
+     * @param saveAs    file name
      */
     public static void captureAsScreenshot(final JComponent component,
-        final File saveAs) {
+                                           final File saveAs) {
 
         try {
             Robot robot = new Robot();
@@ -200,12 +194,13 @@ public final class UIImageUtils {
     }
 
     /**
-    * Captures screenshot of component and saves to a file.
-    * @param frame JComponent to capture screenshot
-    * @param saveAs file name
-    */
+     * Captures screenshot of component and saves to a file.
+     *
+     * @param frame  JComponent to capture screenshot
+     * @param saveAs file name
+     */
     public static void captureAsScreenshot(final Frame frame,
-        final File saveAs) {
+                                           final File saveAs) {
 
         try {
             Robot robot = new Robot();
@@ -220,12 +215,13 @@ public final class UIImageUtils {
     }
 
     /**
-    * Captures screenshot of component and saves to a file.
-    * @param dialog JComponent to capture screenshot
-    * @param saveAs file name
-    */
+     * Captures screenshot of component and saves to a file.
+     *
+     * @param dialog JComponent to capture screenshot
+     * @param saveAs file name
+     */
     public static void captureAsScreenshot(final Dialog dialog,
-        final File saveAs) {
+                                           final File saveAs) {
 
         try {
             Robot robot = new Robot();
@@ -240,10 +236,11 @@ public final class UIImageUtils {
     }
 
     /**
-    * Captures screenshot of component and returns bufferedImage.
-    * @param dialog JComponent to capture screenshot
-    * @return BufferedImage of screenshot
-    */
+     * Captures screenshot of component and returns bufferedImage.
+     *
+     * @param dialog JComponent to capture screenshot
+     * @return BufferedImage of screenshot
+     */
     public static BufferedImage captureAsScreenshot(final Dialog dialog) {
         BufferedImage bi = null;
 
@@ -260,6 +257,7 @@ public final class UIImageUtils {
 
     /**
      * Returns a rectangle of the inside of the frame i.e. excluding borders.
+     *
      * @param frame frame to get rectangle from
      * @return frame Rectangle without borders
      */
@@ -271,12 +269,12 @@ public final class UIImageUtils {
 
         // Compensate for frame boundary
         locOnScreen.setLocation(locOnScreen.x + frame.getInsets().left,
-            locOnScreen.y + frame.getInsets().top);
+                locOnScreen.y + frame.getInsets().top);
         bounds.setRect(0, 0,
-            bounds.getWidth() - frame.getInsets().left
-            - frame.getInsets().right,
-            bounds.getHeight() - frame.getInsets().top
-            - frame.getInsets().bottom);
+                bounds.getWidth() - frame.getInsets().left
+                        - frame.getInsets().right,
+                bounds.getHeight() - frame.getInsets().top
+                        - frame.getInsets().bottom);
 
         bounds.setLocation(locOnScreen);
 
@@ -284,10 +282,11 @@ public final class UIImageUtils {
     }
 
     /**
-    * Returns a rectangle of the inside of the dialog i.e. excluding borders.
-    * @param dialog dialog to get rectangle from
-    * @return dialog Rectangle without borders
-    */
+     * Returns a rectangle of the inside of the dialog i.e. excluding borders.
+     *
+     * @param dialog dialog to get rectangle from
+     * @return dialog Rectangle without borders
+     */
     public static Rectangle getInternalRectangle(final Dialog dialog) {
 
         // Create Rectangle around component
@@ -296,12 +295,12 @@ public final class UIImageUtils {
 
         // Compensate for frame boundary
         locOnScreen.setLocation(locOnScreen.x + dialog.getInsets().left,
-            locOnScreen.y + dialog.getInsets().top);
+                locOnScreen.y + dialog.getInsets().top);
         bounds.setRect(0, 0,
-            bounds.getWidth() - dialog.getInsets().left
-            - dialog.getInsets().right,
-            bounds.getHeight() - dialog.getInsets().top
-            - dialog.getInsets().bottom);
+                bounds.getWidth() - dialog.getInsets().left
+                        - dialog.getInsets().right,
+                bounds.getHeight() - dialog.getInsets().top
+                        - dialog.getInsets().bottom);
 
         bounds.setLocation(locOnScreen);
 
@@ -309,10 +308,11 @@ public final class UIImageUtils {
     }
 
     /**
-    * Captures screenshot of component nd returns as BufferedImage.
-    * @param component JComponent to capture screenshot
-    * @return BufferedImage screenshot of component
-    */
+     * Captures screenshot of component nd returns as BufferedImage.
+     *
+     * @param component JComponent to capture screenshot
+     * @return BufferedImage screenshot of component
+     */
     public static BufferedImage captureAsScreenshot(final Component component) {
         BufferedImage bi = null;
 
@@ -333,10 +333,11 @@ public final class UIImageUtils {
     }
 
     /**
-    * Captures screenshot of component nd returns as BufferedImage.
-    * @param frame JComponent to capture screenshot
-    * @return BufferedImage screenshot of component
-    */
+     * Captures screenshot of component nd returns as BufferedImage.
+     *
+     * @param frame JComponent to capture screenshot
+     * @return BufferedImage screenshot of component
+     */
     public static BufferedImage captureAsScreenshot(final Frame frame) {
         BufferedImage bi = null;
 
@@ -360,12 +361,13 @@ public final class UIImageUtils {
      * From: http://stackoverflow.com/questions/221830/...
      * ...set-bufferedimage-alpha-mask-in-java
      * If images are not the same size, asserts false.
+     *
      * @param img1 an image to mask
      * @param img2 a mask image to lay over first
      * @return masked image
      */
     public static BufferedImage maskImage(final BufferedImage img1,
-        final BufferedImage img2) {
+                                          final BufferedImage img2) {
 
         // Assert false if images are not an equal size.
         Assert.assertEquals(img1.getHeight(), img2.getHeight());
@@ -383,14 +385,14 @@ public final class UIImageUtils {
 
                 // Get normalized difference
                 double normDistance = pixelDistance(i1Color, i2Color)
-                    / MAX_PIXEL_DISTANCE * 255;
+                        / MAX_PIXEL_DISTANCE * 255;
 
                 int color = i1Color.getRGB() & 0x00FFFFFF; // mask away any
-                                                           // alpha
+                // alpha
 
                 int mask = (int) normDistance << 24; // shift blue (normed
-                                                     // pixelDistance) into
-                                                     // alpha bits
+                // pixelDistance) into
+                // alpha bits
 
                 color |= mask;
                 result.setRGB(x, y, color);
@@ -403,12 +405,13 @@ public final class UIImageUtils {
     /**
      * Subtracts 2 images.
      * If images are not the same size, asserts false.
+     *
      * @param img1 an image to subtract from.
      * @param img2 an image to subtract.
      * @return difference image
      */
     public static BufferedImage subtractImage(final BufferedImage img1,
-        final BufferedImage img2) {
+                                              final BufferedImage img2) {
 
         // Assert false if images are not an equal size.
         Assert.assertEquals(img1.getHeight(), img2.getHeight());
@@ -432,20 +435,22 @@ public final class UIImageUtils {
     }
 
     /**
-      * Subtracts 2 images.
-      * If images are not the same size, asserts false.
+     * Subtracts 2 images.
+     * If images are not the same size, asserts false.
+     *
      * @param img1 an image to subtract from.
      * @param img2 an image to subtract.
      * @return difference image
      */
     public static BufferedImage subtractImage(final RenderedImage img1,
-        final RenderedImage img2) {
+                                              final RenderedImage img2) {
         return subtractImage(convertRenderedImage(img1),
                 convertRenderedImage(img2));
     }
 
     /**
      * Finds the integer difference between two colors, as int.
+     *
      * @param rgb1 color1
      * @param rgb2 color2
      * @return int difference between rgb1 and rgb2
@@ -462,6 +467,7 @@ public final class UIImageUtils {
 
     /**
      * Finds the integer difference between two colors, as int.
+     *
      * @param color1 color1
      * @param color2 color2
      * @return int difference between rgb1 and rgb2
@@ -477,6 +483,7 @@ public final class UIImageUtils {
 
     /**
      * Converts RenderedImage to BufferedImage.
+     *
      * @param img RenderedImage
      * @return BufferedImage conversion of RenderedImage img
      */

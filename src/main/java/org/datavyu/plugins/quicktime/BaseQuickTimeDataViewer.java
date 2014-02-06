@@ -14,147 +14,180 @@
  */
 package org.datavyu.plugins.quicktime;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.swing.AbstractButton;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JSlider;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import net.miginfocom.swing.MigLayout;
-
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.id.Identifier;
-
-import org.datavyu.views.DatavyuDialog;
-import org.datavyu.views.component.DefaultTrackPainter;
-import org.datavyu.views.component.TrackPainter;
-
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-
+import net.miginfocom.swing.MigLayout;
+import org.datavyu.models.db.Datastore;
+import org.datavyu.models.id.Identifier;
 import org.datavyu.plugins.CustomActions;
 import org.datavyu.plugins.CustomActionsAdapter;
 import org.datavyu.plugins.DataViewer;
 import org.datavyu.plugins.ViewerStateListener;
-
 import org.datavyu.views.DataController;
+import org.datavyu.views.DatavyuDialog;
+import org.datavyu.views.component.DefaultTrackPainter;
+import org.datavyu.views.component.TrackPainter;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 
 public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
-    implements DataViewer {
+        implements DataViewer {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(BaseQuickTimeDataViewer.class);
 
-    /** Rate for playback. */
+    /**
+     * Rate for playback.
+     */
     private float playRate;
 
-    /** Frames per second. */
+    /**
+     * Frames per second.
+     */
     private float fps = -1;
 
-    /** parent controller. */
+    /**
+     * parent controller.
+     */
     private DataController parent;
 
-    /** The playback offset of the movie in milliseconds. */
+    /**
+     * The playback offset of the movie in milliseconds.
+     */
     private long offset;
 
-    /** Is the movie currently playing? */
+    /**
+     * Is the movie currently playing?
+     */
     private boolean playing;
 
-    /** The current video file that this viewer is representing. */
+    /**
+     * The current video file that this viewer is representing.
+     */
     private File mediaFile;
 
-    /** Volume slider. */
+    /**
+     * Volume slider.
+     */
     private JSlider volumeSlider;
 
-    /** Dialog containing volume slider. */
+    /**
+     * Dialog containing volume slider.
+     */
     private JDialog volumeDialog;
 
-    /** Volume button. */
+    /**
+     * Volume button.
+     */
     private JButton volumeButton;
 
-    /** Resize button. */
+    /**
+     * Resize button.
+     */
     private JButton resizeButton;
 
-    /** Stores the desired volume the plugin should play at. */
+    /**
+     * Stores the desired volume the plugin should play at.
+     */
     private float volume = 1f;
 
-    /** Is the plugin visible? */
+    /**
+     * Is the plugin visible?
+     */
     private boolean isVisible = true;
 
-    /** The original size of the movie when first loaded. */
+    /**
+     * The original size of the movie when first loaded.
+     */
     private Dimension nativeVideoSize;
 
-    /** A context menu for resizing the video. */
+    /**
+     * A context menu for resizing the video.
+     */
     private JPopupMenu menuContext = new JPopupMenu();
 
-    /** Menu item for quarter size. */
+    /**
+     * Menu item for quarter size.
+     */
     private JMenuItem menuItemQuarter;
 
-    /** Menu item for half size. */
+    /**
+     * Menu item for half size.
+     */
     private JMenuItem menuItemHalf;
 
-    /** Menu item for three quarters size. */
+    /**
+     * Menu item for three quarters size.
+     */
     private JMenuItem menuItemThreeQuarters;
 
-    /** Menu item for full size. */
+    /**
+     * Menu item for full size.
+     */
     private JMenuItem menuItemFull;
 
-    /** Icon for displaying volume slider. */
+    /**
+     * Icon for displaying volume slider.
+     */
     private final ImageIcon volumeIcon = new ImageIcon(getClass().getResource(
-                "/icons/audio-volume.png"));
+            "/icons/audio-volume.png"));
 
-    /** Volume slider icon for when the video is hidden (volume is muted). */
+    /**
+     * Volume slider icon for when the video is hidden (volume is muted).
+     */
     private final ImageIcon mutedIcon = new ImageIcon(getClass().getResource(
-                "/icons/volume-muted.png"));
+            "/icons/volume-muted.png"));
 
-    /** Icon for resizing the video. */
+    /**
+     * Icon for resizing the video.
+     */
     private final ImageIcon resizeIcon = new ImageIcon(getClass().getResource(
-                "/icons/resize.png"));
+            "/icons/resize.png"));
 
-    /** The list of listeners interested in changes made to the project. */
+    /**
+     * The list of listeners interested in changes made to the project.
+     */
     private final List<ViewerStateListener> viewerListeners =
-        new LinkedList<ViewerStateListener>();
+            new LinkedList<ViewerStateListener>();
 
-    /** ID of this data viewer. */
+    /**
+     * ID of this data viewer.
+     */
     private Identifier id;
 
-    /** Custom actions handler. */
+    /**
+     * Custom actions handler.
+     */
     private CustomActions actions = new CustomActionsAdapter() {
-            @Override public AbstractButton getActionButton1() {
-                return volumeButton;
-            }
+        @Override
+        public AbstractButton getActionButton1() {
+            return volumeButton;
+        }
 
-            @Override public AbstractButton getActionButton2() {
-                return resizeButton;
-            }
+        @Override
+        public AbstractButton getActionButton2() {
+            return resizeButton;
+        }
 
-            @Override public AbstractButton getActionButton3() {
-                return null;
-            }
-        };
+        @Override
+        public AbstractButton getActionButton3() {
+            return null;
+        }
+    };
 
 
     // ------------------------------------------------------------------------
@@ -165,7 +198,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
      * Constructor - creates new video viewer.
      */
     public BaseQuickTimeDataViewer(final java.awt.Frame parent,
-        final boolean modal) {
+                                   final boolean modal) {
 
         super(parent, modal);
 
@@ -177,20 +210,21 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         volumeButton.setBorderPainted(false);
         volumeButton.setContentAreaFilled(false);
         volumeButton.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(final ActionEvent e) {
-                    handleActionButtonEvent1(e);
-                }
-            });
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                handleActionButtonEvent1(e);
+            }
+        });
 
         volumeSlider = new JSlider(JSlider.VERTICAL, 0, 100, 70);
         volumeSlider.setMajorTickSpacing(10);
         volumeSlider.setPaintTicks(true);
         volumeSlider.setName("volumeSlider");
         volumeSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(final ChangeEvent e) {
-                    handleVolumeSliderEvent(e);
-                }
-            });
+            public void stateChanged(final ChangeEvent e) {
+                handleVolumeSliderEvent(e);
+            }
+        });
 
         volumeDialog = new JDialog(parent, false);
         volumeDialog.setUndecorated(true);
@@ -200,50 +234,53 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         volumeDialog.setName("volumeDialog");
         volumeDialog.getContentPane().add(volumeSlider, "pushx, pushy");
         volumeDialog.addMouseListener(new MouseAdapter() {
-                @Override public void mouseClicked(final MouseEvent e) {
-                    volumeDialog.setVisible(false);
-                }
-            });
+            @Override
+            public void mouseClicked(final MouseEvent e) {
+                volumeDialog.setVisible(false);
+            }
+        });
         volumeDialog.addWindowFocusListener(new WindowAdapter() {
-                @Override public void windowLostFocus(final WindowEvent e) {
-                    volumeDialog.setVisible(false);
-                }
-            });
+            @Override
+            public void windowLostFocus(final WindowEvent e) {
+                volumeDialog.setVisible(false);
+            }
+        });
 
         resizeButton = new JButton();
         resizeButton.setIcon(resizeIcon);
         resizeButton.setBorderPainted(false);
         resizeButton.setContentAreaFilled(false);
         resizeButton.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(final ActionEvent e) {
-                    handleActionButtonEvent2(e);
-                }
-            });
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                handleActionButtonEvent2(e);
+            }
+        });
 
         menuItemQuarter = new JMenuItem("25% size");
         menuItemQuarter.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    scaleVideo(0.25f);
-                }
-            });
+            public void actionPerformed(final ActionEvent e) {
+                scaleVideo(0.25f);
+            }
+        });
         menuItemHalf = new JMenuItem("50% size");
         menuItemHalf.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    scaleVideo(0.5f);
-                }
-            });
+            public void actionPerformed(final ActionEvent e) {
+                scaleVideo(0.5f);
+            }
+        });
         menuItemThreeQuarters = new JMenuItem("75% size");
         menuItemThreeQuarters.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    scaleVideo(0.75f);
-                }
-            });
+            public void actionPerformed(final ActionEvent e) {
+                scaleVideo(0.75f);
+            }
+        });
         menuItemFull = new JMenuItem("100% size");
         menuItemFull.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    scaleVideo(1);
-                }
-            });
+            public void actionPerformed(final ActionEvent e) {
+                scaleVideo(1);
+            }
+        });
         menuContext.add(menuItemQuarter);
         menuContext.add(menuItemHalf);
         menuContext.add(menuItemThreeQuarters);
@@ -277,21 +314,22 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
 
     /**
      * @return The duration of the movie in milliseconds. If -1 is returned, the
-     *         movie's duration cannot be determined.
+     * movie's duration cannot be determined.
      */
     public abstract long getDuration();
 
     private double getAspectRatio() {
         return (nativeVideoSize != null)
-            ? (nativeVideoSize.getWidth() / nativeVideoSize.getHeight()) : 1;
+                ? (nativeVideoSize.getWidth() / nativeVideoSize.getHeight()) : 1;
     }
 
-    @Override public void validate() {
+    @Override
+    public void validate() {
 
         // BugzID:753 - Locks the window to the videos aspect ratio.
         int newHeight = getHeight();
         int newWidth = (int) (getVideoHeight() * getAspectRatio())
-            + getInsets().left + getInsets().right;
+                + getInsets().left + getInsets().right;
         setSize(newWidth, newHeight);
 
         super.validate();
@@ -299,6 +337,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
 
     /**
      * Scales the video to the desired ratio.
+     *
      * @param scale The new ratio to scale to, where 1.0 = original size, 2.0 = 200% zoom, etc.
      */
     private void scaleVideo(final float scale) {
@@ -307,7 +346,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         // lock the aspect ratio
         if (getAspectRatio() > 0.0) {
             int newWidth = (int) (scaleHeight * getAspectRatio())
-                + getInsets().left + getInsets().right;
+                    + getInsets().left + getInsets().right;
             int newHeight = scaleHeight + getInsets().bottom + getInsets().top;
 
             setSize(newWidth, newHeight);
@@ -332,7 +371,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         }
 
         int newWidth = (int) (height * getAspectRatio()) + getInsets().left
-            + getInsets().right;
+                + getInsets().right;
         int newHeight = height + getInsets().bottom + getInsets().top;
 
         setSize(newWidth, newHeight);
@@ -347,8 +386,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     }
 
     /**
-     * @param offset
-     *            The playback offset of the movie in milliseconds.
+     * @param offset The playback offset of the movie in milliseconds.
      */
     public void setOffset(final long offset) {
         this.offset = offset;
@@ -376,13 +414,13 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
 
         nativeVideoSize = getQTVideoSize();
         setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(),
-            (int) nativeVideoSize.getHeight());
+                (int) nativeVideoSize.getHeight());
         pack();
 
-        if(fps == -1) {
+        if (fps == -1) {
             fps = getQTFPS();
         } // otherwise we loaded it from the settings
-        
+
         System.out.println("FPS:");
         System.out.println(fps);
     }
@@ -403,8 +441,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     /**
      * Sets parent data controller.
      *
-     * @param dataController
-     *            The data controller to be set as parent.
+     * @param dataController The data controller to be set as parent.
      */
     public void setParentController(final DataController dataController) {
         parent = dataController;
@@ -470,7 +507,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
      * Shows an interface for toggling the playback volume.
      *
      * @see org.datavyu.views.continuous.CustomActionListener
-     *      #handleActionButtonEvent1(java.awt.event.ActionEvent)
+     * #handleActionButtonEvent1(java.awt.event.ActionEvent)
      */
     private void handleActionButtonEvent1(final ActionEvent event) {
 
@@ -486,11 +523,13 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
 
         if (isVisible) {
             menuContext.show(resizeButton.getParent(), resizeButton.getX(),
-                resizeButton.getY());
+                    resizeButton.getY());
         }
     }
 
-    /** Notifies listeners that a change to the project has occurred. */
+    /**
+     * Notifies listeners that a change to the project has occurred.
+     */
     private void notifyChange() {
 
         for (ViewerStateListener listener : viewerListeners) {
@@ -530,7 +569,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
             if ((property != null) && !property.equals("")) {
                 setVideoHeight(Integer.parseInt(property));
             }
-            
+
             property = settings.getProperty("fps");
             System.out.println(property);
             if ((property != null) && !property.equals("")) {
@@ -559,13 +598,15 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         }
     }
 
-    @Override public void addViewerStateListener(
-        final ViewerStateListener vsl) {
+    @Override
+    public void addViewerStateListener(
+            final ViewerStateListener vsl) {
         viewerListeners.add(vsl);
     }
 
-    @Override public void removeViewerStateListener(
-        final ViewerStateListener vsl) {
+    @Override
+    public void removeViewerStateListener(
+            final ViewerStateListener vsl) {
         viewerListeners.remove(vsl);
     }
 
@@ -581,10 +622,10 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     private void initComponents() {
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
-                public void windowClosing(final WindowEvent evt) {
-                    formWindowClosing(evt);
-                }
-            });
+            public void windowClosing(final WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         pack();
     }
@@ -592,8 +633,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     /**
      * Action to invoke when the QTDataViewer window is being hidden.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void formWindowClosing(final WindowEvent evt) {
         stop();
@@ -604,27 +644,33 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
 
     protected abstract void cleanUp();
 
-    @Override public CustomActions getCustomActions() {
+    @Override
+    public CustomActions getCustomActions() {
         return actions;
     }
 
-    @Override public void setIdentifier(final Identifier id) {
+    @Override
+    public void setIdentifier(final Identifier id) {
         this.id = id;
     }
 
-    @Override public Identifier getIdentifier() {
+    @Override
+    public Identifier getIdentifier() {
         return id;
     }
 
-    @Override public void setDatastore(final Datastore sDB) {
+    @Override
+    public void setDatastore(final Datastore sDB) {
         // not currently needed
     }
 
-    @Override public void clearDataFeed() {
+    @Override
+    public void clearDataFeed() {
         cleanUp();
     }
 
-    @Override public void setDataViewerVisible(final boolean isVisible) {
+    @Override
+    public void setDataViewerVisible(final boolean isVisible) {
         setVisible(isVisible);
         this.isVisible = isVisible;
         setVolume();

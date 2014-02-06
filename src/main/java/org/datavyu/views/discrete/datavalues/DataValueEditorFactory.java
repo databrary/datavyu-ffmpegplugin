@@ -14,16 +14,12 @@
  */
 package org.datavyu.views.discrete.datavalues;
 
-import javax.swing.text.JTextComponent;
+import org.datavyu.models.db.*;
+import org.datavyu.views.discrete.EditorComponent;
 
+import javax.swing.text.JTextComponent;
 import java.util.ArrayList;
 import java.util.List;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.MatrixValue;
-import org.datavyu.models.db.NominalValue;
-import org.datavyu.models.db.TextValue;
-import org.datavyu.models.db.Value;
-import org.datavyu.views.discrete.EditorComponent;
 
 
 /**
@@ -42,8 +38,7 @@ public class DataValueEditorFactory {
      * data cell.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param c The parent cell the editors resides within.
-     *
+     * @param c  The parent cell the editors resides within.
      * @return A vector of editor components to represent the matrix.
      */
     public static List<EditorComponent> buildMatrix(final JTextComponent ta,
@@ -85,8 +80,7 @@ public class DataValueEditorFactory {
      * data cell's matrix.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param v The value that we are building an editor for.
-     *
+     * @param v  The value that we are building an editor for.
      * @return The editor component that represents the supplied value
      */
     public static EditorComponent buildMatrixArg(final JTextComponent ta,
@@ -103,8 +97,7 @@ public class DataValueEditorFactory {
      * Creates a data value view from the specified data value within a matrix.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param v The value this editor manipulates
-     *
+     * @param v  The value this editor manipulates
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildTextString(final JTextComponent ta,
@@ -116,8 +109,7 @@ public class DataValueEditorFactory {
      * Creates a data value view from the specified data value within a matrix.
      *
      * @param ta The parent JTextComponent the editor is in.
-     * @param v The value this editor manipulates
-     *
+     * @param v  The value this editor manipulates
      * @return An editor component to represent the specified data value.
      */
     public static EditorComponent buildNominal(final JTextComponent ta,

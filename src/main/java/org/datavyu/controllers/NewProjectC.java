@@ -14,9 +14,10 @@
  */
 package org.datavyu.controllers;
 
-import javax.swing.JFrame;
 import org.datavyu.Datavyu;
 import org.datavyu.views.NewProjectV;
+
+import javax.swing.*;
 
 /**
  * Controller for creating a new project.

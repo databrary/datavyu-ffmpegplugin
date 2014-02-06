@@ -22,17 +22,18 @@
  */
 package org.datavyu.undoableedits;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Variable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Variable Transfer Object for holding changes that need to be transferred
  * from undo/redo states to the datastore.
  */
-public final class VariableTO implements Comparable<VariableTO>{
+public final class VariableTO implements Comparable<VariableTO> {
 
     private List<CellTO> cellTOs;
 
@@ -45,7 +46,7 @@ public final class VariableTO implements Comparable<VariableTO>{
     /**
      * Constructor.
      *
-     * @param var The variable we are creating a transfer object for.
+     * @param var         The variable we are creating a transfer object for.
      * @param varPosition The position of the variable in the spreadsheet.
      */
     public VariableTO(final Variable var, final int varPosition) {
@@ -54,7 +55,7 @@ public final class VariableTO implements Comparable<VariableTO>{
         cellTOs = new ArrayList<CellTO>();
         variablePosition = varPosition;
 
-        for(Cell c : var.getCells()) {
+        for (Cell c : var.getCells()) {
             cellTOs.add(new CellTO(c, var));
         }
     }
@@ -89,7 +90,7 @@ public final class VariableTO implements Comparable<VariableTO>{
 
     @Override
     public int compareTo(VariableTO t) {
-       return this.variablePosition - t.variablePosition;
+        return this.variablePosition - t.variablePosition;
     }
-    
+
 }

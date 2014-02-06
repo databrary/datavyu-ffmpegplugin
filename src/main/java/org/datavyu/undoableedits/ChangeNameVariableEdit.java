@@ -16,22 +16,25 @@ package org.datavyu.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 /**
  *
  */
 public class ChangeNameVariableEdit extends SpreadsheetEdit {
-    /** The logger for this class. */
-    private static final Logger LOGGER = UserMetrix.getLogger(ChangeNameVariableEdit.class);  
+    /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = UserMetrix.getLogger(ChangeNameVariableEdit.class);
     private String oldVarName;
     private String newVarName;
-    
+
     public ChangeNameVariableEdit(String oldVarName, String newVarName) {
         super();
         this.oldVarName = oldVarName;
@@ -43,11 +46,11 @@ public class ChangeNameVariableEdit extends SpreadsheetEdit {
         String msg = "";
 
         if (canUndo()) {
-            msg = "Change Variable Name from \"" + newVarName +  "\"" + " to " 
-                                  + "\"" + oldVarName +  "\"";
+            msg = "Change Variable Name from \"" + newVarName + "\"" + " to "
+                    + "\"" + oldVarName + "\"";
         } else {
-            msg = "Change Variable Name from \"" + oldVarName +  "\"" + " to " 
-                                  + "\"" + newVarName +  "\"";            
+            msg = "Change Variable Name from \"" + oldVarName + "\"" + " to "
+                    + "\"" + newVarName + "\"";
         }
         return msg;
     }
@@ -77,13 +80,13 @@ public class ChangeNameVariableEdit extends SpreadsheetEdit {
             unselectAll();
             //selectVarName(oldVarName);
         } catch (UserWarningException uwe) {
-             Datavyu.getApplication().showWarningDialog(uwe);
-             throw new CannotRedoException();
+            Datavyu.getApplication().showWarningDialog(uwe);
+            throw new CannotRedoException();
         }
     }
 
     private void selectVarName(String varName) {
         SpreadsheetColumn sCol = this.getSpreadsheetColumn(varName);
         if (sCol != null) sCol.setSelected(true);
-    } 
+    }
 }

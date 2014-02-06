@@ -16,86 +16,111 @@ package org.datavyu.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.net.URL;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.Border;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Variable;
 import org.datavyu.views.VocabEditorV;
 import org.datavyu.views.discrete.EditorComponent;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.net.URL;
 
 /**
  * A view for a vocab element.
  */
 public class VocabElementV extends JPanel {
 
-    /** The width of icon to use in the vocab element view. */
+    /**
+     * The width of icon to use in the vocab element view.
+     */
     private static final int VE_WIDTH = 22;
 
-    /** The height of the icon to use in the vocab element view. */
+    /**
+     * The height of the icon to use in the vocab element view.
+     */
     private static final int VE_HEIGHT = 22;
 
-    /** The dimensions to use for icons in the vocab element view. */
+    /**
+     * The dimensions to use for icons in the vocab element view.
+     */
     private static final Dimension ICON_SIZE = new Dimension(VE_WIDTH,
-                                                             VE_HEIGHT);
+            VE_HEIGHT);
 
-    /** The label to use for the type of vocab element. */
+    /**
+     * The label to use for the type of vocab element.
+     */
     private JLabel typeIcon;
 
-    /** The label to use for if this vocab element has changed. */
+    /**
+     * The label to use for if this vocab element has changed.
+     */
     private JLabel deltaIcon;
 
-    /** The label to use for if this vocab element is marked for removal. */
+    /**
+     * The label to use for if this vocab element is marked for removal.
+     */
     private JLabel deleteIcon;
 
-    /** The rootView of the VocabElement. */
+    /**
+     * The rootView of the VocabElement.
+     */
     private VocabElementRootView veRootView;
 
-    /** The icon to use for if this vocab element has changed or not. */
+    /**
+     * The icon to use for if this vocab element has changed or not.
+     */
     private ImageIcon deltaImageIcon;
 
-    /** Has this vocab element changed or not? */
+    /**
+     * Has this vocab element changed or not?
+     */
     private boolean hasVEChanged;
 
-    /** Is this vocab element view marked for removal? */
+    /**
+     * Is this vocab element view marked for removal?
+     */
     private boolean deleteVE;
 
-    /** The underlying variable model that this vocab element view represents. */    
+    /**
+     * The underlying variable model that this vocab element view represents.
+     */
     private Variable varModel;
 
-    /** The parent editor for this vocab element view. */
+    /**
+     * The parent editor for this vocab element view.
+     */
     private VocabEditorV parentEditor;
 
-    /** Border adds a line across and a bit of space between */
+    /**
+     * Border adds a line across and a bit of space between
+     */
     private static Border LINE_BORDER =
-        BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY),
-                BorderFactory.createEmptyBorder(3, 0, 3, 0));
+            BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY),
+                    BorderFactory.createEmptyBorder(3, 0, 3, 0));
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(VocabElementV.class);
 
-    /** the light blue colour used for backgrounds */
-    private static Color lightBlue = new Color(224,248,255,255);
-    private static Color lightRed = new Color(255,200,200,255);
+    /**
+     * the light blue colour used for backgrounds
+     */
+    private static Color lightBlue = new Color(224, 248, 255, 255);
+    private static Color lightRed = new Color(255, 200, 200, 255);
 
     public VocabElementV(Argument vocabArgument, Variable var, VocabEditorV vev) {
 
         ResourceMap rMap = Application.getInstance(Datavyu.class)
-                                      .getContext()
-                                      .getResourceMap(VocabElementV.class);
+                .getContext()
+                .getResourceMap(VocabElementV.class);
 
         URL iconURL = getClass().getResource(rMap.getString("delta.icon"));
         deltaImageIcon = new ImageIcon(iconURL);
@@ -137,16 +162,17 @@ public class VocabElementV extends JPanel {
         veRootView.setBackground(Color.WHITE);
         leftPanel.setOpaque(false);
 
-        veRootView.addFocusListener(new FocusAdapter(){
+        veRootView.addFocusListener(new FocusAdapter() {
             @Override
-            public void focusGained(FocusEvent fe){
-                if(!deleteVE){
+            public void focusGained(FocusEvent fe) {
+                if (!deleteVE) {
                     setBG(lightBlue);
                 }
             }
+
             @Override
-            public void focusLost(FocusEvent fe){
-                if(!deleteVE){
+            public void focusLost(FocusEvent fe) {
+                if (!deleteVE) {
                     setBG(Color.WHITE);
                 }
             }
@@ -200,7 +226,7 @@ public class VocabElementV extends JPanel {
      * vocab element has changed or not.
      *
      * @param hasChanged Has the vocab element changed or not; true if yes,
-     * false otherwise.
+     *                   false otherwise.
      */
     public final void setHasChanged(final boolean hasChanged) {
         if (hasChanged) {
@@ -224,7 +250,6 @@ public class VocabElementV extends JPanel {
      * Gets a view for the supplied formal argument.
      *
      * @param fa The argument that we want a view for.
-     *
      * @return The view for the supplied formal argument if it exists, null
      * otherwise.
      */
@@ -233,7 +258,7 @@ public class VocabElementV extends JPanel {
             if (ed.getClass() == FormalArgEditor.class) {
                 FormalArgEditor fArgEd = (FormalArgEditor) ed;
 
-                if (fArgEd.getModel().equals(fa)) {                    
+                if (fArgEd.getModel().equals(fa)) {
                     return fArgEd;
                 }
             }
@@ -247,7 +272,7 @@ public class VocabElementV extends JPanel {
     public final Argument getModel() {
         return varModel.getVariableType();
     }
-    
+
     public final Variable getVariable() {
         return varModel;
     }
@@ -278,7 +303,7 @@ public class VocabElementV extends JPanel {
      */
     public final FormalArgEditor getArgWithFocus() {
         EditorComponent ed = veRootView.getEdTracker()
-                             .findEditor(veRootView.getCaretPosition());
+                .findEditor(veRootView.getCaretPosition());
         if (ed.getClass().equals(FormalArgEditor.class)) {
             return (FormalArgEditor) ed;
         }
@@ -297,7 +322,7 @@ public class VocabElementV extends JPanel {
      * Sets the deleted flag for this vocab element.
      *
      * @param delete True if this entire vocab element is flagged for deletion,
-     * false otherwise.
+     *               false otherwise.
      */
     public final void setDeleted(final boolean delete) {
         if (delete) {
@@ -339,23 +364,23 @@ public class VocabElementV extends JPanel {
         return deleteIcon;
     }
 
-     /**
+    /**
      * @return JLabel delete icon.
      */
     public final JLabel getTypeIcon() {
         return typeIcon;
     }
 
-    public final void setBG(Color col){
+    public final void setBG(Color col) {
         this.setBackground(col);
     }
 
     @Override
-    public final void requestFocus(){
+    public final void requestFocus() {
         veRootView.requestFocus();
     }
 
-    public final void requestFocus(VENameEditor veNEd){
+    public final void requestFocus(VENameEditor veNEd) {
         veRootView.requestFocus();
         veRootView.getEdTracker().setEditor(veNEd);
     }

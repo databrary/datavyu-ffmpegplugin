@@ -23,28 +23,25 @@
 
 package org.datavyu.models.db;
 
-import org.bson.types.ObjectId;
-import org.datavyu.models.db.NominalValue;
+import java.util.UUID;
 
-public final class MongoNominalValue extends MongoValue implements NominalValue {
-    
-    public MongoNominalValue() {}
-    
-    public MongoNominalValue(ObjectId parent_id) {
-        this.put("value", null);
-        this.put("parent_id", parent_id);
-        this.put("name", "val");
-        this.put("index", -1);
-        this.save();
+public final class DatavyuTextValue extends DatavyuValue implements TextValue {
+
+    public DatavyuTextValue() {
     }
-    
-    public MongoNominalValue(ObjectId parent_id, String name, int index) {
+
+    public DatavyuTextValue(UUID parent_id) {
+        this.parent_id = parent_id;
+        this.index = -1;
+    }
+
+    public DatavyuTextValue(UUID parent_id, String name, int index, Argument arg) {
         this(parent_id);
-        this.put("name", name);
-        this.put("index", index);
-        this.save();
+        this.name = name;
+        this.index = index;
+        this.arg = arg;
     }
-    
+
     /**
      * Sets the value, this method leaves the value unchanged if the supplied
      * input is invalid. Use isValid to test.
@@ -53,15 +50,10 @@ public final class MongoNominalValue extends MongoValue implements NominalValue 
      */
     @Override
     public void set(final String value) {
-        this.put("value", value);
-        this.save();
+        if (isValid(value)) {
+            this.value = value;
+        }
     }
-    
-    
-    
-    @Override
-    public void save() {
-        MongoDatastore.getDB().getCollection("nominal_values").save(this);
-        MongoDatastore.markDBAsChanged();
-    }
+
+
 }

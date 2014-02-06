@@ -11,11 +11,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */package org.datavyu.util.FileFilters;
-
-import java.io.File;
+ */
+package org.datavyu.util.FileFilters;
 
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
 
 /**
@@ -31,18 +31,19 @@ public final class FrameCSVFilter extends FileFilter {
     /**
      * @return The description of the file filter.
      */
-    @Override public String getDescription() {
+    @Override
+    public String getDescription() {
         return "Frame-by-frame CSV file (*.csv)";
     }
 
     /**
      * Determines if the file filter will accept the supplied file.
      *
-     * @param file
-     *            The file to check if this file will accept.
+     * @param file The file to check if this file will accept.
      * @return true if the file is to be accepted, false otherwise.
      */
-    @Override public boolean accept(final File file) {
+    @Override
+    public boolean accept(final File file) {
         return (file.getName().endsWith(".csv") || file.isDirectory());
     }
 }

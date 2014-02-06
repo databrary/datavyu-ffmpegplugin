@@ -14,13 +14,9 @@
  */
 package org.datavyu.models.project;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
+
+import java.io.*;
 
 
 /**
@@ -28,25 +24,39 @@ import org.apache.commons.io.IOUtils;
  */
 public final class ViewerSetting {
 
-    /** ViewerSetting specification version. */
+    /**
+     * ViewerSetting specification version.
+     */
     public static final int VERSION = 3;
 
-    /** Track settings associated with this data viewer. */
+    /**
+     * Track settings associated with this data viewer.
+     */
     private TrackSettings trackSettings;
 
-    /** Fully qualified name of the plugin */
+    /**
+     * Fully qualified name of the plugin
+     */
     private String pluginName;
 
-    /** Plugin classifier. */
+    /**
+     * Plugin classifier.
+     */
     private String pluginClassifier;
 
-    /** Absolute file path to the data source */
+    /**
+     * Absolute file path to the data source
+     */
     private String filePath;
 
-    /** Playback offset in milliseconds */
+    /**
+     * Playback offset in milliseconds
+     */
     private long offset;
 
-    /** ID of settings file. */
+    /**
+     * ID of settings file.
+     */
     private String settingsId;
 
     private byte[] settingsData;
@@ -78,8 +88,7 @@ public final class ViewerSetting {
     }
 
     /**
-     * @param trackSettings
-     *            track settings used by this data viewer.
+     * @param trackSettings track settings used by this data viewer.
      */
     public void setTrackSettings(final TrackSettings trackSettings) {
         this.trackSettings = trackSettings;
@@ -93,8 +102,7 @@ public final class ViewerSetting {
     }
 
     /**
-     * @param filePath
-     *            Absolute file path to the data source.
+     * @param filePath Absolute file path to the data source.
      */
     public void setFilePath(final String filePath) {
         this.filePath = filePath;
@@ -102,17 +110,21 @@ public final class ViewerSetting {
 
     /**
      * Retained for backwards compatibility.
+     *
      * @return
      */
-    @Deprecated public long getOffset() {
+    @Deprecated
+    public long getOffset() {
         return offset;
     }
 
     /**
      * Retained for backwards compatibility.
+     *
      * @param offset
      */
-    @Deprecated public void setOffset(final long offset) {
+    @Deprecated
+    public void setOffset(final long offset) {
         this.offset = offset;
     }
 
@@ -132,8 +144,7 @@ public final class ViewerSetting {
     }
 
     /**
-     * @param pluginClassifier
-     *            the pluginClassifier to set
+     * @param pluginClassifier the pluginClassifier to set
      */
     public void setPluginClassifier(final String pluginClassifier) {
         this.pluginClassifier = pluginClassifier;
@@ -148,6 +159,7 @@ public final class ViewerSetting {
 
     /**
      * Set the identifier for these settings.
+     *
      * @param settingsId Identifier to use.
      */
     public void setSettingsId(final String settingsId) {
@@ -157,6 +169,7 @@ public final class ViewerSetting {
     /**
      * Copy viewer settings from the given input stream into an internal buffer.
      * The settings can be read using {@link #getSettingsInputStream()}.
+     *
      * @param is InputStream to copy from.
      */
     public void copySettings(final InputStream is) {
@@ -177,9 +190,10 @@ public final class ViewerSetting {
 
     /**
      * Write the viewer settings to the given output stream.
+     *
      * @param os OutputStream to write to.
      * @throws IOException If there are problems writing to the given output
-     * stream.
+     *                     stream.
      */
     public void writeSettings(final OutputStream os) throws IOException {
         settingsOutput.writeTo(os);

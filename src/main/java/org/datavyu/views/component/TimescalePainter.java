@@ -14,23 +14,15 @@
  */
 package org.datavyu.views.component;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.geom.GeneralPath;
-
-
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.JComponent;
-
 import org.datavyu.models.component.MixerModel;
 import org.datavyu.models.component.TimescaleModel;
 import org.datavyu.models.component.ViewportState;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.GeneralPath;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -63,29 +55,32 @@ public final class TimescalePainter extends JComponent {
         repaint();
     }
 
-    @Override public final boolean contains(final Point p) {
-    	return contains(p.x, p.y);
+    @Override
+    public final boolean contains(final Point p) {
+        return contains(p.x, p.y);
     }
 
-    @Override public final boolean contains(final int x, final int y) {
-    	return isPointInTimescale(x, y) || isPointInZoomWindowIndicator(x, y);
+    @Override
+    public final boolean contains(final int x, final int y) {
+        return isPointInTimescale(x, y) || isPointInZoomWindowIndicator(x, y);
     }
 
     public boolean isPointInTimescale(final int x, final int y) {
-        return (x >= 0) && (x < getSize().width) && 
-        	(y >= 0 && y < timescaleModel.getTimescaleHeight());
-    }
-    
-    public boolean isPointInZoomWindowIndicator(final int x, final int y) {
-        return (x >= 0) && (x < getSize().width) && 
-    		(y >= (timescaleModel.getHeight() - timescaleModel.getZoomWindowIndicatorHeight()));
+        return (x >= 0) && (x < getSize().width) &&
+                (y >= 0 && y < timescaleModel.getTimescaleHeight());
     }
 
-    
+    public boolean isPointInZoomWindowIndicator(final int x, final int y) {
+        return (x >= 0) && (x < getSize().width) &&
+                (y >= (timescaleModel.getHeight() - timescaleModel.getZoomWindowIndicatorHeight()));
+    }
+
+
     /**
      * This method paints the timing scale.
      */
-    @Override public void paintComponent(final Graphics g) {
+    @Override
+    public void paintComponent(final Graphics g) {
         super.paintComponent(g);
 
         if (mixer == null) {
@@ -96,26 +91,26 @@ public final class TimescalePainter extends JComponent {
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON);
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
         final long end = viewport.getMaxEnd();
 
         final int zoomWindowIndicatorBottom = timescaleModel.getHeight() - 1;
         final int zoomWindowIndicatorTop = zoomWindowIndicatorBottom
-            - timescaleModel.getZoomWindowIndicatorHeight() + 1;
+                - timescaleModel.getZoomWindowIndicatorHeight() + 1;
 
         final int transitionAreaBottom = zoomWindowIndicatorTop;
         final int transitionAreaTop = transitionAreaBottom
-            - timescaleModel.getZoomWindowToTrackTransitionHeight() + 1;
+                - timescaleModel.getZoomWindowToTrackTransitionHeight() + 1;
         final float transitionAreaLeft = 0;
         final float transitionAreaRight = getWidth();
 
         final float minimumZoomIndicatorWidth = 1f;
         float zoomIndicatorWidth =
-            (float) (viewport.getViewEnd() - viewport.getViewStart())
-            * getWidth() / end;
+                (float) (viewport.getViewEnd() - viewport.getViewStart())
+                        * getWidth() / end;
         zoomIndicatorWidth = Math.min(Math.max(zoomIndicatorWidth,
-                    minimumZoomIndicatorWidth), getWidth());
+                minimumZoomIndicatorWidth), getWidth());
 
         float zoomWindowIndicatorX = (float) ((double) viewport.getViewStart()
                 * getWidth() / end);
@@ -128,27 +123,27 @@ public final class TimescalePainter extends JComponent {
 
         // draw the background of the time scale
         final Color backgroundColor =
-            timescaleModel.getTimescaleBackgroundColor();
+                timescaleModel.getTimescaleBackgroundColor();
         g2d.setColor(backgroundColor);
         g2d.fillRect(0, 0, getWidth(), transitionAreaTop);
 
         g2d.fillRect(0, zoomWindowIndicatorTop, getWidth(),
-            timescaleModel.getZoomWindowIndicatorHeight());
+                timescaleModel.getZoomWindowIndicatorHeight());
 
         // draw the current zoom indicator window
         g2d.setColor(timescaleModel.getZoomWindowIndicatorColor());
 
         GeneralPath zoomWindowIndicator = new GeneralPath();
         zoomWindowIndicator.moveTo(zoomWindowIndicatorX,
-            zoomWindowIndicatorTop);
+                zoomWindowIndicatorTop);
         zoomWindowIndicator.lineTo(zoomWindowIndicatorX,
-            zoomWindowIndicatorTop
-            + timescaleModel.getZoomWindowIndicatorHeight());
+                zoomWindowIndicatorTop
+                        + timescaleModel.getZoomWindowIndicatorHeight());
         zoomWindowIndicator.lineTo(zoomWindowIndicatorX + zoomIndicatorWidth,
-            zoomWindowIndicatorTop
-            + timescaleModel.getZoomWindowIndicatorHeight());
+                zoomWindowIndicatorTop
+                        + timescaleModel.getZoomWindowIndicatorHeight());
         zoomWindowIndicator.lineTo(zoomWindowIndicatorX + zoomIndicatorWidth,
-            zoomWindowIndicatorTop);
+                zoomWindowIndicatorTop);
         zoomWindowIndicator.closePath();
         g2d.fill(zoomWindowIndicator);
 
@@ -163,18 +158,18 @@ public final class TimescalePainter extends JComponent {
         GeneralPath shape = new GeneralPath();
         shape.moveTo(transitionAreaLeft, transitionAreaTop);
         shape.curveTo(transitionAreaLeft,
-            (transitionAreaTop
-                + (transitionAreaBottom * transitionCurveBottomWeight))
-            / (transitionCurveBottomWeight + 1), zoomWindowIndicatorX,
-            transitionAreaTop, zoomWindowIndicatorX, transitionAreaBottom);
+                (transitionAreaTop
+                        + (transitionAreaBottom * transitionCurveBottomWeight))
+                        / (transitionCurveBottomWeight + 1), zoomWindowIndicatorX,
+                transitionAreaTop, zoomWindowIndicatorX, transitionAreaBottom);
         shape.lineTo(zoomWindowIndicatorX + zoomIndicatorWidth,
-            transitionAreaBottom);
+                transitionAreaBottom);
         shape.curveTo(zoomWindowIndicatorX + zoomIndicatorWidth,
-            transitionAreaTop, transitionAreaRight,
-            (transitionAreaTop
-                + (transitionAreaBottom * transitionCurveBottomWeight))
-            / (transitionCurveBottomWeight + 1), transitionAreaRight,
-            transitionAreaTop);
+                transitionAreaTop, transitionAreaRight,
+                (transitionAreaTop
+                        + (transitionAreaBottom * transitionCurveBottomWeight))
+                        / (transitionCurveBottomWeight + 1), transitionAreaRight,
+                transitionAreaTop);
         shape.closePath();
         g2d.fill(shape);
 
@@ -184,14 +179,14 @@ public final class TimescalePainter extends JComponent {
 
         final Set<Long> plottedMarkers = new HashSet<Long>(1000);
         final int maxMarkerHeight = timescaleModel.getHeight()
-            - timescaleModel.getZoomWindowIndicatorHeight()
-            - timescaleModel.getZoomWindowToTrackTransitionHeight();
+                - timescaleModel.getZoomWindowIndicatorHeight()
+                - timescaleModel.getZoomWindowToTrackTransitionHeight();
 
         final Color hoursColor = timescaleModel.getHoursMarkerColor();
         final Color minutesColor = timescaleModel.getMinutesMarkerColor();
         final Color secondsColor = timescaleModel.getSecondsMarkerColor();
         final Color millisecondsColor =
-            timescaleModel.getMillisecondsMarkerColor();
+                timescaleModel.getMillisecondsMarkerColor();
 
         final long hourIntervalsInMS = 60 * 60 * 1000;
         final long minuteIntervalsInMS = 60 * 1000;
@@ -201,70 +196,61 @@ public final class TimescalePainter extends JComponent {
         final int minuteIntervalsMarkerHeight = hourIntervalsMarkerHeight - 10;
         final int secondIntervalsMarkerHeight = hourIntervalsMarkerHeight - 20;
         final int tenMillisecondIntervalsMarkerHeight =
-            hourIntervalsMarkerHeight - 25;
+                hourIntervalsMarkerHeight - 25;
 
         paintMarkers(g2d, viewport, plottedMarkers, hourIntervalsInMS,
-            majorMarkerWidth, hourIntervalsMarkerHeight, 150000, 130000,
-            hoursColor, backgroundColor);
+                majorMarkerWidth, hourIntervalsMarkerHeight, 150000, 130000,
+                hoursColor, backgroundColor);
         paintMarkers(g2d, viewport, plottedMarkers, 10 * minuteIntervalsInMS,
-            minorMarkerWidth, hourIntervalsMarkerHeight, 140000, 30000,
-            hoursColor, backgroundColor);
+                minorMarkerWidth, hourIntervalsMarkerHeight, 140000, 30000,
+                hoursColor, backgroundColor);
         paintMarkers(g2d, viewport, plottedMarkers, minuteIntervalsInMS,
-            majorMarkerWidth, minuteIntervalsMarkerHeight, 15000, 2000,
-            minutesColor, backgroundColor);
+                majorMarkerWidth, minuteIntervalsMarkerHeight, 15000, 2000,
+                minutesColor, backgroundColor);
         paintMarkers(g2d, viewport, plottedMarkers, 10 * secondIntervalsInMS,
-            minorMarkerWidth, minuteIntervalsMarkerHeight, 4000, 900,
-            minutesColor, backgroundColor);
+                minorMarkerWidth, minuteIntervalsMarkerHeight, 4000, 900,
+                minutesColor, backgroundColor);
         paintMarkers(g2d, viewport, plottedMarkers, secondIntervalsInMS,
-            majorMarkerWidth, secondIntervalsMarkerHeight, 400, 1, secondsColor,
-            backgroundColor);
+                majorMarkerWidth, secondIntervalsMarkerHeight, 400, 1, secondsColor,
+                backgroundColor);
         paintMarkers(g2d, viewport, plottedMarkers, secondIntervalsInMS / 10,
-            minorMarkerWidth, secondIntervalsMarkerHeight, 60, 1, secondsColor,
-            backgroundColor);
+                minorMarkerWidth, secondIntervalsMarkerHeight, 60, 1, secondsColor,
+                backgroundColor);
         paintMarkers(g2d, viewport, plottedMarkers, secondIntervalsInMS / 100,
-            minorMarkerWidth, tenMillisecondIntervalsMarkerHeight, 5, 1,
-            millisecondsColor, backgroundColor);
+                minorMarkerWidth, tenMillisecondIntervalsMarkerHeight, 5, 1,
+                millisecondsColor, backgroundColor);
     }
 
     /**
      * Draws the time interval markers for a specific time interval (hours,
      * minutes, or seconds, etc).
      *
-     * @param g2d
-     *            graphics object that the markers will be drawn with
+     * @param g2d              graphics object that the markers will be drawn with
      * @param viewport
-     * @param plottedMarkers
-     *            set of markers (time in milliseconds) that have already been
-     *            drawn, and therefore should be omitted from being drawn again
-     * @param intervalTime
-     *            time interval (milliseconds) between markers to be drawn, e.g.
-     *            1000 for seconds markers
-     * @param width
-     *            width of the marker lines in pixels
-     * @param intervalHeight
-     *            height of the marker lines in pixels (bottom-aligned)
-     * @param startFadeMsPerPx
-     *            time scale resolution at which the fading begins (the markers
-     *            will not be drawn when the time scale resolution has a higher
-     *            milliseconds/pixel value than this value)
-     * @param stopFadeMsPerPx
-     *            time scale resolution at which the interval markers are fully
-     *            visible (when the time scale resolution is between
-     *            startFadeMsPerPx and stopFadeMsPerPx, the markers will become
-     *            progressively more visible)
-     * @param foregroundColor
-     *            color of the markers
-     * @param backgroundColor
-     *            background color that the markers will fade in from
+     * @param plottedMarkers   set of markers (time in milliseconds) that have already been
+     *                         drawn, and therefore should be omitted from being drawn again
+     * @param intervalTime     time interval (milliseconds) between markers to be drawn, e.g.
+     *                         1000 for seconds markers
+     * @param width            width of the marker lines in pixels
+     * @param intervalHeight   height of the marker lines in pixels (bottom-aligned)
+     * @param startFadeMsPerPx time scale resolution at which the fading begins (the markers
+     *                         will not be drawn when the time scale resolution has a higher
+     *                         milliseconds/pixel value than this value)
+     * @param stopFadeMsPerPx  time scale resolution at which the interval markers are fully
+     *                         visible (when the time scale resolution is between
+     *                         startFadeMsPerPx and stopFadeMsPerPx, the markers will become
+     *                         progressively more visible)
+     * @param foregroundColor  color of the markers
+     * @param backgroundColor  background color that the markers will fade in from
      */
     private void paintMarkers(final Graphics2D g2d, final ViewportState viewport,
-        final Set<Long> plottedMarkers, final long intervalTime,
-        final float width, final int intervalHeight,
-        final double startFadeMsPerPx, final double stopFadeMsPerPx,
-        final Color foregroundColor, final Color backgroundColor) {
+                              final Set<Long> plottedMarkers, final long intervalTime,
+                              final float width, final int intervalHeight,
+                              final double startFadeMsPerPx, final double stopFadeMsPerPx,
+                              final Color foregroundColor, final Color backgroundColor) {
         final int markerBottom = timescaleModel.getHeight()
-            - timescaleModel.getZoomWindowIndicatorHeight()
-            - timescaleModel.getZoomWindowToTrackTransitionHeight();
+                - timescaleModel.getZoomWindowIndicatorHeight()
+                - timescaleModel.getZoomWindowToTrackTransitionHeight();
 
         final double currentMsPerPx = viewport.getResolution();
 
@@ -280,7 +266,7 @@ public final class TimescalePainter extends JComponent {
 
             // the markers are still being faded in at this resolution - a cubic function is used to smoothly fade in the interval lines by making them progressively thicker
             double x = (currentMsPerPx - startFadeMsPerPx)
-                / (stopFadeMsPerPx - startFadeMsPerPx);
+                    / (stopFadeMsPerPx - startFadeMsPerPx);
             x = Math.pow(x, 3);
             lineWidthRatio = (float) x;
         }
@@ -293,7 +279,7 @@ public final class TimescalePainter extends JComponent {
                 - (viewport.getViewStart() % intervalTime)) % intervalTime;
 
         for (long plotTime = viewport.getViewStart() + leftPadTime;
-                plotTime <= viewport.getViewEnd(); plotTime += intervalTime) {
+             plotTime <= viewport.getViewEnd(); plotTime += intervalTime) {
 
             if (plottedMarkers.contains(plotTime)) {
 

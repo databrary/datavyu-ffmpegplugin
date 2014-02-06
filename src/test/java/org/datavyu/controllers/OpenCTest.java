@@ -15,16 +15,18 @@
 package org.datavyu.controllers;
 
 import com.usermetrix.jclient.UserMetrix;
-import java.io.File;
-import java.util.List;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.Variable;
-import org.testng.annotations.Test;
-
-import static junit.framework.Assert.assertEquals;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Cell;
-import org.testng.annotations.*;
+import org.datavyu.models.db.Datastore;
+import org.datavyu.models.db.Variable;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import java.io.File;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * Tests for opening Datavyu project and CSV files.

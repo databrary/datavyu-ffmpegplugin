@@ -15,17 +15,13 @@
 package org.datavyu;
 
 import com.usermetrix.jclient.Logger;
-import java.awt.Color;
-import java.awt.Font;
-
-import java.io.File;
-import java.io.IOException;
-
+import com.usermetrix.jclient.UserMetrix;
+import org.datavyu.util.ConfigProperties;
 import org.jdesktop.application.LocalStorage;
 
-import org.datavyu.util.ConfigProperties;
-
-import com.usermetrix.jclient.UserMetrix;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 
 /**
@@ -34,64 +30,104 @@ import com.usermetrix.jclient.UserMetrix;
  */
 public final class Configuration {
 
-    /** The name of the configuration file. */
+    /**
+     * The name of the configuration file.
+     */
     private static final String CONFIG_FILE = "settings.xml";
 
-    /** The single instance of the configuration object for Datavyu. */
+    /**
+     * The single instance of the configuration object for Datavyu.
+     */
     private static Configuration instance = null;
 
-    /** The default font to be used by Datavyu. */
+    /**
+     * The default font to be used by Datavyu.
+     */
     private static final Font DEFAULT_FONT = new Font("Arial", Font.PLAIN, 14);
 
-    /** The default font to be used by Datavyu labels. */
+    /**
+     * The default font to be used by Datavyu labels.
+     */
     private static final Font LABEL_FONT = new Font("Arial", Font.PLAIN, 12);
 
-    /** The default data font size to be used by Datavyu labels. */
+    /**
+     * The default data font size to be used by Datavyu labels.
+     */
     private static final float DATA_FONT_SIZE = 14;
 
-    /** The default label font size to be used by Datavyu labels. */
+    /**
+     * The default label font size to be used by Datavyu labels.
+     */
     private static final float LABEL_FONT_SIZE = 12;
 
-    /** The colour to use for the border. */
+    /**
+     * The colour to use for the border.
+     */
     public static final Color BORDER_COLOUR = new Color(175, 175, 175);
 
-    /** The default spreadsheet background colour. */
+    /**
+     * The default spreadsheet background colour.
+     */
     private static final Color DEFAULT_BACKGROUND = new Color(249, 249, 249);
 
-    /** The default spreadsheet foreground colour. */
+    /**
+     * The default spreadsheet foreground colour.
+     */
     private static final Color DEFAULT_FOREGROUND = new Color(58, 58, 58);
 
-    /** The default spreadsheet ordinal foreground colour. */
+    /**
+     * The default spreadsheet ordinal foreground colour.
+     */
     private static final Color DEFAULT_ORDINAL = new Color(175, 175, 175);
 
-    /** The default spreadsheet time stamp foreground colour. */
+    /**
+     * The default spreadsheet time stamp foreground colour.
+     */
     private static final Color DEFAULT_TIMESTAMP = new Color(90, 90, 90);
 
-    /** The default spreadsheet selected colour. */
+    /**
+     * The default spreadsheet selected colour.
+     */
     private static final Color DEFAULT_SELECTED = new Color(176, 197, 227);
 
-    /** The default spreadsheet overlap colour. */
+    /**
+     * The default spreadsheet overlap colour.
+     */
     private static final Color DEFAULT_OVERLAP = Color.RED;
 
-    /** Fill colour of a carriage in the unselected/normal state. */
+    /**
+     * Fill colour of a carriage in the unselected/normal state.
+     */
     private static final Color DEFAULT_NORMAL_CARRIAGE_COLOR = new Color(169, 218, 248);
 
-    /** Outline colour of a carriage in the unselected/normal state. */
+    /**
+     * Outline colour of a carriage in the unselected/normal state.
+     */
     private static final Color DEFAULT_NORMAL_OUTLINE_COLOR = new Color(129, 167, 188);
 
-    /** Fill colour of a carriage in the selected state. */
+    /**
+     * Fill colour of a carriage in the selected state.
+     */
     private static final Color DEFAULT_SELECTED_CARRIAGE_COLOR = new Color(138, 223, 162);
 
-    /** Outline colour of a carriage in the selected state. */
+    /**
+     * Outline colour of a carriage in the selected state.
+     */
     private static final Color DEFAULT_SELECTED_OUTLINE_COLOR = new Color(105, 186, 128);
 
-    /** The configuration properties. */
+    /**
+     * The configuration properties.
+     */
     private ConfigProperties properties;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(Configuration.class);
 
-    /** Default font type. */
+    /**
+     * Default font type.
+     */
     private Font newFont = null;
 
     /**
@@ -103,7 +139,7 @@ public final class Configuration {
         // Try to load the configuration properties from disk.
         try {
             LocalStorage ls = Datavyu.getApplication().getContext()
-                .getLocalStorage();
+                    .getLocalStorage();
             properties = (ConfigProperties) ls.load(CONFIG_FILE);
 
             // Oh-noes, can't load configuration file from disk.
@@ -123,13 +159,13 @@ public final class Configuration {
             properties.setSSSelectedColour(DEFAULT_SELECTED);
             properties.setSSOverlapColour(DEFAULT_OVERLAP);
             properties.setMixerInterfaceNormalCarriageColour(
-                DEFAULT_NORMAL_CARRIAGE_COLOR);
+                    DEFAULT_NORMAL_CARRIAGE_COLOR);
             properties.setMixerInterfaceNormalOutlineColour(
-                DEFAULT_NORMAL_OUTLINE_COLOR);
+                    DEFAULT_NORMAL_OUTLINE_COLOR);
             properties.setMixerInterfaceSelectedCarriageColour(
-                DEFAULT_SELECTED_CARRIAGE_COLOR);
+                    DEFAULT_SELECTED_CARRIAGE_COLOR);
             properties.setMixerInterfaceSelectedOutlineColour(
-                DEFAULT_SELECTED_OUTLINE_COLOR);
+                    DEFAULT_SELECTED_OUTLINE_COLOR);
             properties.setIgnoreVersion("");
             properties.setPrereleasePreference(false);
 
@@ -144,7 +180,7 @@ public final class Configuration {
         } catch (Exception ex) {
             ex.printStackTrace();
             System.err.println(fontFileName
-                + " can't be loaded. Using default font");
+                    + " can't be loaded. Using default font");
         }
 
         properties.setSSOrdinalColour(DEFAULT_ORDINAL);
@@ -168,13 +204,13 @@ public final class Configuration {
         // If one property is null, just reset all.
         if (properties.getMixerInterfaceNormalCarriageColour() == null) {
             properties.setMixerInterfaceNormalCarriageColour(
-                DEFAULT_NORMAL_CARRIAGE_COLOR);
+                    DEFAULT_NORMAL_CARRIAGE_COLOR);
             properties.setMixerInterfaceNormalOutlineColour(
-                DEFAULT_NORMAL_OUTLINE_COLOR);
+                    DEFAULT_NORMAL_OUTLINE_COLOR);
             properties.setMixerInterfaceSelectedCarriageColour(
-                DEFAULT_SELECTED_CARRIAGE_COLOR);
+                    DEFAULT_SELECTED_CARRIAGE_COLOR);
             properties.setMixerInterfaceSelectedOutlineColour(
-                DEFAULT_SELECTED_OUTLINE_COLOR);
+                    DEFAULT_SELECTED_OUTLINE_COLOR);
             save();
         }
     }
@@ -195,8 +231,7 @@ public final class Configuration {
      * Sets and saves (to the config file) the data font to use on the
      * spreadsheet.
      *
-     * @param font
-     *            The new data font to use on the spreadsheet.
+     * @param font The new data font to use on the spreadsheet.
      */
     public void setSSDataFont(final Font font) {
         properties.setSSDataFont(font);
@@ -212,6 +247,7 @@ public final class Configuration {
 
     /**
      * Changes the data font size.
+     *
      * @param size new font size
      */
     public void setSSDataFontSize(final float size) {
@@ -223,8 +259,7 @@ public final class Configuration {
      * Sets and saves (to the config file) the data font to use on the
      * spreadsheet.
      *
-     * @param font
-     *            The new data font to use on the spreadsheet.
+     * @param font The new data font to use on the spreadsheet.
      */
     public void setSSLabelFont(final Font font) {
         properties.setSSLabelFont(font);
@@ -242,8 +277,7 @@ public final class Configuration {
      * Sets and saves (to the config file) the background colour of the
      * spreadsheet.
      *
-     * @param colour
-     *            The new colour to use for the spreadsheet background.
+     * @param colour The new colour to use for the spreadsheet background.
      */
     public void setSSBackgroundColour(final Color colour) {
         properties.setSSBackgroundColour(colour);
@@ -261,8 +295,7 @@ public final class Configuration {
      * Sets and saves (to the config file) the foreground colour of the
      * spreadsheet.
      *
-     * @param colour
-     *            The new colour to use for the spreadsheet foreground.
+     * @param colour The new colour to use for the spreadsheet foreground.
      */
     public void setSSForegroundColour(final Color colour) {
         properties.setSSForegroundColour(colour);
@@ -280,8 +313,7 @@ public final class Configuration {
      * Sets and saves (to the config file) the ordinal foreground colour of the
      * spreadsheet.
      *
-     * @param colour
-     *            The new colour to use for the spreadsheet ordinal foreground.
+     * @param colour The new colour to use for the spreadsheet ordinal foreground.
      */
     public void setSSOrdinalColour(final Color colour) {
         properties.setSSOrdinalColour(colour);
@@ -299,8 +331,7 @@ public final class Configuration {
      * Sets and saves (to the config file) the ordinal foreground colour of the
      * spreadsheet.
      *
-     * @param colour
-     *            The new colour to use for the spreadsheet ordinal foreground.
+     * @param colour The new colour to use for the spreadsheet ordinal foreground.
      */
     public void setSSTimestampColour(final Color colour) {
         properties.setSSTimestampColour(colour);
@@ -318,8 +349,7 @@ public final class Configuration {
      * Sets and saves (to the config file) the selected colour of the
      * spreadsheet.
      *
-     * @param colour
-     *            The new colour to use for spreadsheet selections.
+     * @param colour The new colour to use for spreadsheet selections.
      */
     public void setSSSelectedColour(final Color colour) {
         properties.setSSSelectedColour(colour);
@@ -337,8 +367,7 @@ public final class Configuration {
      * Sets and saves (to the config file) the overlap colour of the
      * spreadsheet.
      *
-     * @param colour
-     *            The new colour to use for spreadsheet overlaps.
+     * @param colour The new colour to use for spreadsheet overlaps.
      */
     public void setSSOverlapColour(final Color colour) {
         properties.setSSOverlapColour(colour);
@@ -356,8 +385,7 @@ public final class Configuration {
      * Sets and saves (to the config file) the last directory the user navigated
      * too in a chooser.
      *
-     * @param location
-     *            The last location that the user navigated too.
+     * @param location The last location that the user navigated too.
      */
     public void setLCDirectory(final File location) {
         properties.setLCDirectory(location.toString());
@@ -388,8 +416,7 @@ public final class Configuration {
     }
 
     /**
-     * @param newColour
-     *            the mixerInterfaceSelectedCarriageColour to set
+     * @param newColour the mixerInterfaceSelectedCarriageColour to set
      */
     public void setMixerInterfaceSelectedCarriageColour(final Color newColour) {
         properties.setMixerInterfaceSelectedCarriageColour(newColour);
@@ -404,8 +431,7 @@ public final class Configuration {
     }
 
     /**
-     * @param newColour
-     *            the mixerInterfaceSelectedOutlineColour to set
+     * @param newColour the mixerInterfaceSelectedOutlineColour to set
      */
     public void setMixerInterfaceSelectedOutlineColour(final Color newColour) {
         properties.setMixerInterfaceSelectedOutlineColour(newColour);
@@ -420,8 +446,7 @@ public final class Configuration {
     }
 
     /**
-     * @param version
-     *            the ignoreVersion to set
+     * @param version the ignoreVersion to set
      */
     public void setIgnoreVersion(final String version) {
         properties.setIgnoreVersion(version);
@@ -436,8 +461,7 @@ public final class Configuration {
     }
 
     /**
-     * @param preference
-     *            true if prereleases are preferred
+     * @param preference true if prereleases are preferred
      */
     public void setPrereleasePreference(boolean preference) {
         properties.setPrereleasePreference(preference);
@@ -452,8 +476,7 @@ public final class Configuration {
     }
 
     /**
-     * @param newColour
-     *            the mixerInterfaceNormalCarriageColour to set
+     * @param newColour the mixerInterfaceNormalCarriageColour to set
      */
     public void setMixerInterfaceNormalCarriageColour(final Color newColour) {
         properties.setMixerInterfaceNormalCarriageColour(newColour);
@@ -468,8 +491,7 @@ public final class Configuration {
     }
 
     /**
-     * @param newColour
-     *            the mixerInterfaceNormalOutlineColour to set
+     * @param newColour the mixerInterfaceNormalOutlineColour to set
      */
     public void setMixerInterfaceNormalOutlineColour(final Color newColour) {
         properties.setMixerInterfaceNormalOutlineColour(newColour);
@@ -485,7 +507,7 @@ public final class Configuration {
         // Try to save the configuration properties to disk.
         try {
             LocalStorage ls = Datavyu.getApplication().getContext()
-                .getLocalStorage();
+                    .getLocalStorage();
             ls.save(properties, CONFIG_FILE);
 
             // Oh-noes, can't save configuration file to disk.

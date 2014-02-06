@@ -15,22 +15,17 @@
 package org.datavyu.views.discrete.datavalues;
 
 import com.usermetrix.jclient.Logger;
-import java.awt.event.FocusEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.text.JTextComponent;
-
-import org.datavyu.views.discrete.EditorComponent;
-
 import com.usermetrix.jclient.UserMetrix;
-import javax.swing.undo.UndoableEdit;
-import org.datavyu.Datavyu;
-
 import org.datavyu.models.db.MatrixValue;
 import org.datavyu.models.db.NominalValue;
 import org.datavyu.models.db.TextValue;
 import org.datavyu.models.db.Value;
+import org.datavyu.views.discrete.EditorComponent;
+
+import javax.swing.text.JTextComponent;
+import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * DataValueEditor - abstract class extending EditorComponent. Adds
@@ -38,28 +33,36 @@ import org.datavyu.models.db.Value;
  */
 public abstract class DataValueEditor extends EditorComponent {
 
-    /** The value that this view represents. */
+    /**
+     * The value that this view represents.
+     */
     private Value model = null;
-    
-    /** The specific type of model this view represents. */
+
+    /**
+     * The specific type of model this view represents.
+     */
     private Class modelType = null;
 
-    /** Text when editor gained focus (became current editor). */
+    /**
+     * Text when editor gained focus (became current editor).
+     */
     private String textOnFocus;
 
-    /** The logger for this class. */
-    private static Logger LOGGER = UserMetrix.getLogger(DataValueEditor.class);   
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = UserMetrix.getLogger(DataValueEditor.class);
 
     /**
      * Constructor.
-     * 
-     * @param tc JTextComponent this editor works with.
+     *
+     * @param tc    JTextComponent this editor works with.
      * @param Value The value this data value editor manipulates
      */
     public DataValueEditor(final JTextComponent tc,
                            final Value value) {
         super(tc);
-        
+
         // So far all DataValueEditors are editable
         setEditable(true);
         model = value;
@@ -89,7 +92,7 @@ public abstract class DataValueEditor extends EditorComponent {
     // FocusListener Overrides
     // *************************************************************************
     @Override
-    public void focusGained(final FocusEvent fe) {        
+    public void focusGained(final FocusEvent fe) {
         textOnFocus = getText();
     }
 
@@ -103,7 +106,7 @@ public abstract class DataValueEditor extends EditorComponent {
             // notify the listeners
             Datavyu.getView().getUndoSupport().postEdit(edit);
 */
-        }   
+        }
     }
 
     // *************************************************************************
@@ -112,99 +115,99 @@ public abstract class DataValueEditor extends EditorComponent {
     @Override
     public void keyPressed(final KeyEvent e) {
         switch (e.getKeyCode()) {
-        case KeyEvent.VK_BACK_SPACE:
-            if (!model.isEmpty()) {
-                removeBehindCaret();
-                updateModelText();
-            }
-            e.consume();
-            break;
-        case KeyEvent.VK_DELETE:
-            if (!model.isEmpty()) {
-                removeAheadOfCaret();
-                updateModelText();
-            }
-            e.consume();
-            break;
-
-        case KeyEvent.VK_LEFT:
-            int selectStart = getSelectionStart();
-            int selectEnd = getSelectionEnd();
-
-            // Move caret to the left.
-            int c = Math.max(0, getCaretPosition() - 1);
-            setCaretPosition(c);
-
-            // If after the move, we have a character to the left is
-            // preserved character we need to skip one before passing
-            // the key event down to skip again (effectively skipping
-            // the preserved character).
-            int b = Math.max(0, getCaretPosition());
-            c = Math.max(0, getCaretPosition() - 1);
-            if (isPreserved(getText().charAt(b))
-                    || isPreserved(getText().charAt(c))) {
-                setCaretPosition(Math.max(0, getCaretPosition() - 1));
-            }
-            e.consume();
-
-            // If the user is holding down shift - alter the selection as
-            // well as the caret position.
-            if (e.getModifiers() == InputEvent.SHIFT_MASK) {
-                // Shrink selection left - removed entire selection.
-                if (getCaretPosition() == selectStart) {
-                    select(selectStart, selectStart);
-                    // Grow selection left.
-                } else if (getCaretPosition() < selectStart) {
-                    select(selectEnd, getCaretPosition());
-                    // Shrink selection left.
-                } else {
-                    select(selectStart, getCaretPosition());
+            case KeyEvent.VK_BACK_SPACE:
+                if (!model.isEmpty()) {
+                    removeBehindCaret();
+                    updateModelText();
                 }
-            }
-
-            break;
-
-        case KeyEvent.VK_RIGHT:
-            selectStart = getSelectionStart();
-            selectEnd = getSelectionEnd();
-
-            // Move caret to the right.
-            c = Math.min(getText().length(), getCaretPosition() + 1);
-            setCaretPosition(c);
-
-            // If after the move, we have a character to the right that
-            // is a preserved character, we need to skip one before
-            // passing the key event down to skip again (effectively
-            // skipping the preserved character)
-            b = Math.min(getText().length() - 1, getCaretPosition());
-            c = Math.min(getText().length() - 1, getCaretPosition() + 1);
-            if (c < getText().length()
-                    && (isPreserved(getText().charAt(c)) || isPreserved(getText()
-                            .charAt(b)))) {
-                setCaretPosition(Math.min(getText().length() - 1,
-                        getCaretPosition() + 1));
-            }
-            e.consume();
-
-            // If the user is holding down shift - alter the selection as
-            // well as the caret position.
-            if (e.getModifiers() == InputEvent.SHIFT_MASK) {
-                // Shrink selection right - removed entire selection.
-                if (getCaretPosition() == selectEnd) {
-                    select(selectEnd, selectEnd);
-                    // Grow selection right.
-                } else if (getCaretPosition() > selectEnd) {
-                    select(selectStart, getCaretPosition());
-                    // Shrink select right.
-                } else {
-                    select(getCaretPosition(), selectEnd);
+                e.consume();
+                break;
+            case KeyEvent.VK_DELETE:
+                if (!model.isEmpty()) {
+                    removeAheadOfCaret();
+                    updateModelText();
                 }
-            }
+                e.consume();
+                break;
 
-            break;
+            case KeyEvent.VK_LEFT:
+                int selectStart = getSelectionStart();
+                int selectEnd = getSelectionEnd();
 
-        default:
-            break;
+                // Move caret to the left.
+                int c = Math.max(0, getCaretPosition() - 1);
+                setCaretPosition(c);
+
+                // If after the move, we have a character to the left is
+                // preserved character we need to skip one before passing
+                // the key event down to skip again (effectively skipping
+                // the preserved character).
+                int b = Math.max(0, getCaretPosition());
+                c = Math.max(0, getCaretPosition() - 1);
+                if (isPreserved(getText().charAt(b))
+                        || isPreserved(getText().charAt(c))) {
+                    setCaretPosition(Math.max(0, getCaretPosition() - 1));
+                }
+                e.consume();
+
+                // If the user is holding down shift - alter the selection as
+                // well as the caret position.
+                if (e.getModifiers() == InputEvent.SHIFT_MASK) {
+                    // Shrink selection left - removed entire selection.
+                    if (getCaretPosition() == selectStart) {
+                        select(selectStart, selectStart);
+                        // Grow selection left.
+                    } else if (getCaretPosition() < selectStart) {
+                        select(selectEnd, getCaretPosition());
+                        // Shrink selection left.
+                    } else {
+                        select(selectStart, getCaretPosition());
+                    }
+                }
+
+                break;
+
+            case KeyEvent.VK_RIGHT:
+                selectStart = getSelectionStart();
+                selectEnd = getSelectionEnd();
+
+                // Move caret to the right.
+                c = Math.min(getText().length(), getCaretPosition() + 1);
+                setCaretPosition(c);
+
+                // If after the move, we have a character to the right that
+                // is a preserved character, we need to skip one before
+                // passing the key event down to skip again (effectively
+                // skipping the preserved character)
+                b = Math.min(getText().length() - 1, getCaretPosition());
+                c = Math.min(getText().length() - 1, getCaretPosition() + 1);
+                if (c < getText().length()
+                        && (isPreserved(getText().charAt(c)) || isPreserved(getText()
+                        .charAt(b)))) {
+                    setCaretPosition(Math.min(getText().length() - 1,
+                            getCaretPosition() + 1));
+                }
+                e.consume();
+
+                // If the user is holding down shift - alter the selection as
+                // well as the caret position.
+                if (e.getModifiers() == InputEvent.SHIFT_MASK) {
+                    // Shrink selection right - removed entire selection.
+                    if (getCaretPosition() == selectEnd) {
+                        select(selectEnd, selectEnd);
+                        // Grow selection right.
+                    } else if (getCaretPosition() > selectEnd) {
+                        select(selectStart, getCaretPosition());
+                        // Shrink select right.
+                    } else {
+                        select(getCaretPosition(), selectEnd);
+                    }
+                }
+
+                break;
+
+            default:
+                break;
         }
     }
 
@@ -223,7 +226,7 @@ public abstract class DataValueEditor extends EditorComponent {
     /**
      * Determine if the editor tracker permits sub selections within the
      * component.
-     * 
+     *
      * @return True if permitted to perform sub selection, false otherwise.
      */
     @Override
@@ -233,9 +236,9 @@ public abstract class DataValueEditor extends EditorComponent {
 
     /**
      * Override selection to catch if the value is null.
-     * 
+     *
      * @param startClick Start character of the selection.
-     * @param endClick End character of the selection.
+     * @param endClick   End character of the selection.
      */
     @Override
     public final void select(final int startClick, final int endClick) {

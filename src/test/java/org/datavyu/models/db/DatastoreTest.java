@@ -14,41 +14,40 @@
  */
 package org.datavyu.models.db;
 
-import java.util.List;
-import java.util.ArrayList;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
 import org.testng.annotations.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for the Datastore interface.
  */
 public class DatastoreTest {
 
-    /** The model we are testing. */
+    /**
+     * The model we are testing.
+     */
     private Datastore model;
 
-    /** The modelListener we are testing. */
+    /**
+     * The modelListener we are testing.
+     */
     private DatastoreListener modelListener;
 
-    /** The title notifier we are testing. */
+    /**
+     * The title notifier we are testing.
+     */
     private TitleNotifier titleListener;
 
     @BeforeClass
     public void spinUp() {
-        MongoDatastore.startMongo();
     }
 
     @AfterClass
     public void spinDown() {
-        MongoDatastore.stopMongo();
     }
 
     @BeforeMethod
@@ -104,7 +103,7 @@ public class DatastoreTest {
         verify(titleListener).updateTitle();
     }
 
-    @Test (expectedExceptions = UserWarningException.class)
+    @Test(expectedExceptions = UserWarningException.class)
     public void unableToCreateVariable() throws UserWarningException {
         model.createVariable("foo", Argument.Type.TEXT);
         model.createVariable("foo", Argument.Type.TEXT);

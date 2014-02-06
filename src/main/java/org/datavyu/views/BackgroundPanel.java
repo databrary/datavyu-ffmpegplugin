@@ -16,18 +16,22 @@ package org.datavyu.views;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Graphics;
-import java.awt.Image;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
 
 public class BackgroundPanel extends JPanel {
-    /** The image to use as the background. */
+    /**
+     * The image to use as the background.
+     */
     Image image;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(BackgroundPanel.class);
 
     public BackgroundPanel(String resource) {

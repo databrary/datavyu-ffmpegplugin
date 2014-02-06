@@ -16,6 +16,7 @@ package org.datavyu.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
@@ -23,12 +24,14 @@ import javax.swing.undo.CannotUndoException;
 /**
  *
  */
-public abstract class MoveArgumentLeftEdit extends VocabEditorEdit {    
-    /** The logger for this class. */
+public abstract class MoveArgumentLeftEdit extends VocabEditorEdit {
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = UserMetrix.getLogger(MoveArgumentLeftEdit.class);
-    
-    public MoveArgumentLeftEdit() { 
-        super();         
+
+    public MoveArgumentLeftEdit() {
+        super();
     }
 
     @Override
@@ -42,11 +45,11 @@ public abstract class MoveArgumentLeftEdit extends VocabEditorEdit {
 
     }
 
-    @Override 
-    public void redo() throws CannotUndoException {        
+    @Override
+    public void redo() throws CannotUndoException {
         super.redo();
 
-    } 
-  
+    }
+
 }
 

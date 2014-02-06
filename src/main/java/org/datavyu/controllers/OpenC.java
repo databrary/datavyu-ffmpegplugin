@@ -16,15 +16,13 @@ package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-
-import java.io.File;
-
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import org.datavyu.models.db.Datastore;
-
 import org.datavyu.models.project.Project;
 import org.datavyu.models.project.ViewerSetting;
+
+import java.io.File;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 
 /**
@@ -32,13 +30,19 @@ import org.datavyu.models.project.ViewerSetting;
  */
 public final class OpenC {
 
-    /** A reference to the database that this controller opened. */
+    /**
+     * A reference to the database that this controller opened.
+     */
     private Datastore database = null;
 
-    /** A reference to the projec that this controller opened. */
+    /**
+     * A reference to the projec that this controller opened.
+     */
     private Project project = null;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(OpenC.class);
 
     /**
@@ -49,6 +53,8 @@ public final class OpenC {
     public void openDatabase(final File databaseFile) {
         OpenDatabaseFileC odc = new OpenDatabaseFileC();
         database = odc.open(databaseFile);
+
+        database.deselectAll();
     }
 
     /**
@@ -82,9 +88,11 @@ public final class OpenC {
             if (project != null) {
                 OpenDatabaseFileC odc = new OpenDatabaseFileC();
                 database = odc.open(new File(projectFile.getParent(),
-                            project.getDatabaseFileName()));
+                        project.getDatabaseFileName()));
             }
         }
+
+        database.deselectAll();
     }
 
     /**
@@ -135,6 +143,8 @@ public final class OpenC {
             LOGGER.error("Unable to open project archive", e);
             e.printStackTrace();
         }
+
+        database.deselectAll();
     }
 
     /**

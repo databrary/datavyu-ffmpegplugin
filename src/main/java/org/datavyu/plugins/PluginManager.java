@@ -14,43 +14,23 @@
  */
 package org.datavyu.plugins;
 
+import com.google.common.collect.*;
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
+import org.datavyu.Datavyu;
+import org.jdesktop.application.LocalStorage;
+
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
-
 import java.lang.reflect.Method;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import javax.swing.filechooser.FileFilter;
-
-import org.jdesktop.application.LocalStorage;
-
-import org.datavyu.Datavyu;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
-import org.datavyu.plugins.DataViewer;
-import org.datavyu.plugins.Filter;
-import org.datavyu.plugins.Plugin;
 
 
 /**
@@ -61,14 +41,18 @@ import org.datavyu.plugins.Plugin;
  */
 public final class PluginManager {
 
-    /** A reference to the interface that plugins must override. */
+    /**
+     * A reference to the interface that plugins must override.
+     */
     private static final Class<?> PLUGIN_CLASS;
 
     static {
         PLUGIN_CLASS = Plugin.class;
     }
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(PluginManager.class);
 
     //
@@ -76,22 +60,34 @@ public final class PluginManager {
     // !!! WARNING: instance must be last static - or Datavyu will crash !!!
     // 
     //
-    /** The single instance of the PluginManager for Datavyu. */
+    /**
+     * The single instance of the PluginManager for Datavyu.
+     */
     private static final PluginManager INSTANCE = new PluginManager();
 
-    /** Set of plugins. */
+    /**
+     * Set of plugins.
+     */
     private Set<Plugin> plugins;
 
-    /** Set of names of the plugins we have added. */
+    /**
+     * Set of names of the plugins we have added.
+     */
     private Set<String> pluginNames;
 
-    /** Mapping between plugin classifiers and plugins. */
+    /**
+     * Mapping between plugin classifiers and plugins.
+     */
     private Multimap<String, Plugin> pluginClassifiers;
 
-    /** The list of plugins associated with data viewer class name. */
+    /**
+     * The list of plugins associated with data viewer class name.
+     */
     private Map<String, Plugin> pluginLookup;
 
-    /** Merged file filters for plugins of the same name. */
+    /**
+     * Merged file filters for plugins of the same name.
+     */
     private Map<String, GroupFileFilter> filters;
 
     /**
@@ -131,7 +127,7 @@ public final class PluginManager {
             // Quaqua workaround
             if ((resource != null)
                     && resource.toString().equals(
-                        "file:/System/Library/Java/")) {
+                    "file:/System/Library/Java/")) {
                 resource = null;
             }
 
@@ -231,7 +227,7 @@ public final class PluginManager {
             // in the "plugins" directory for jar files that correctly conform
             // to the Datavyu plugin interface.
             LocalStorage ls = Datavyu.getApplication().getContext()
-                .getLocalStorage();
+                    .getLocalStorage();
             File pluginDir = new File(ls.getDirectory().toString()
                     + "/plugins");
 
@@ -284,21 +280,19 @@ public final class PluginManager {
     /**
      * Injects A plugin into the classpath.
      *
-     * @param f
-     *            The jar file to inject into the classpath.
-     * @throws IOException
-     *             If unable to inject the plugin into the class path.
+     * @param f The jar file to inject into the classpath.
+     * @throws IOException If unable to inject the plugin into the class path.
      */
     private void injectPlugin(final File f) throws IOException {
         URLClassLoader sysLoader = (URLClassLoader) ClassLoader
-            .getSystemClassLoader();
+                .getSystemClassLoader();
         Class<?> sysclass = URLClassLoader.class;
 
         try {
-            Class<?>[] parameters = new Class[] { URL.class };
+            Class<?>[] parameters = new Class[]{URL.class};
             Method method = sysclass.getDeclaredMethod("addURL", parameters);
             method.setAccessible(true);
-            method.invoke(sysLoader, new Object[] { f.toURL() });
+            method.invoke(sysLoader, new Object[]{f.toURL()});
         } catch (Throwable t) {
             LOGGER.error("Unable to inject class into class path.", t);
         }
@@ -309,9 +303,8 @@ public final class PluginManager {
      * plugin manager. Will only add the class if it implements the plugin
      * interface.
      *
-     * @param className
-     *            The fully qualified class name to attempt to add to the list
-     *            of plugins.
+     * @param className The fully qualified class name to attempt to add to the list
+     *                  of plugins.
      */
     private void addPlugin(final String className) {
 
@@ -400,20 +393,21 @@ public final class PluginManager {
     public Iterable<Plugin> getPlugins() {
         List<Plugin> p = Lists.newArrayList(plugins);
         Collections.sort(p, new Comparator<Plugin>() {
-                @Override public int compare(final Plugin o1, final Plugin o2) {
+            @Override
+            public int compare(final Plugin o1, final Plugin o2) {
 
-                    // Want the QuickTime video plugin to always be first.
-                    if ("QuickTime Video".equals(o1.getPluginName())) {
-                        return -1;
-                    }
-
-                    if ("QuickTime Video".equals(o2.getPluginName())) {
-                        return 1;
-                    }
-
-                    return o1.getPluginName().compareTo(o2.getPluginName());
+                // Want the QuickTime video plugin to always be first.
+                if ("QuickTime Video".equals(o1.getPluginName())) {
+                    return -1;
                 }
-            });
+
+                if ("QuickTime Video".equals(o2.getPluginName())) {
+                    return 1;
+                }
+
+                return o1.getPluginName().compareTo(o2.getPluginName());
+            }
+        });
 
         return p;
     }
@@ -422,14 +416,12 @@ public final class PluginManager {
      * Searches for and returns a plugin compatible with the given classifier
      * and data file.
      *
-     * @param classifier
-     *            Plugin classifier string.
-     * @param file
-     *            The data file to open.
+     * @param classifier Plugin classifier string.
+     * @param file       The data file to open.
      * @return The first compatible plugin that is found, null otherwise.
      */
     public Plugin getCompatiblePlugin(final String classifier,
-        final File file) {
+                                      final File file) {
 
         for (Plugin candidate : pluginClassifiers.get(classifier)) {
 
@@ -445,11 +437,10 @@ public final class PluginManager {
     }
 
     /**
-     * @param dataViewer
-     *            The fully-qualified class name of the data viewer
-     *            implementation
+     * @param dataViewer The fully-qualified class name of the data viewer
+     *                   implementation
      * @return The {@link Plugin} used to build the data viewer if it exists,
-     *         {@code null} otherwise.
+     * {@code null} otherwise.
      */
     public Plugin getAssociatedPlugin(final String dataViewer) {
         return pluginLookup.get(dataViewer);

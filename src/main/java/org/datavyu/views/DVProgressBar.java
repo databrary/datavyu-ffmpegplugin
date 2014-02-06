@@ -4,20 +4,19 @@
  */
 package org.datavyu.views;
 
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Date;
-import javax.swing.SwingUtilities;
 
 /**
- *
  * @author eric
  */
 public class DVProgressBar extends javax.swing.JDialog {
 
     private boolean m_error;
     private boolean m_cancel;
-    private int     m_progress;
-    private long    m_start_time_msec;
+    private int m_progress;
+    private long m_start_time_msec;
 
     /**
      * Creates new form DVProgressBar
@@ -25,8 +24,8 @@ public class DVProgressBar extends javax.swing.JDialog {
     public DVProgressBar(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        m_error    = false;
-        m_cancel   = false;
+        m_error = false;
+        m_cancel = false;
         m_progress = 0;
         jProgressBar.setIndeterminate(true);
         m_start_time_msec = new Date().getTime();
@@ -35,10 +34,12 @@ public class DVProgressBar extends javax.swing.JDialog {
     public void setProgress(final int value) {
         this.setProgress(value, "");
     }
+
     public boolean setProgress(final int value, final String update) {
         m_progress = value;
         SwingUtilities.invokeLater(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 if (value != -1) {
                     jProgressBar.setIndeterminate(false);
                     jProgressBar.setValue(value);
@@ -49,8 +50,7 @@ public class DVProgressBar extends javax.swing.JDialog {
         return m_cancel;
     }
 
-    public void setError(final String update)
-    {
+    public void setError(final String update) {
         setProgress(m_progress, update);
         m_error = true;
         jLabel_message.setText(update);
@@ -63,8 +63,9 @@ public class DVProgressBar extends javax.swing.JDialog {
 
     public void setIndeterminate(final boolean indeterminate) {
         SwingUtilities.invokeLater(new Runnable() {
-            @Override public void run() {
-               jProgressBar.setIndeterminate(indeterminate);
+            @Override
+            public void run() {
+                jProgressBar.setIndeterminate(indeterminate);
             }
         });
     }
@@ -119,30 +120,30 @@ public class DVProgressBar extends javax.swing.JDialog {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel_message)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton_cancel))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel_message)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jButton_cancel))
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel_message)
-                    .addComponent(jButton_cancel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel_message)
+                                        .addComponent(jButton_cancel))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+                                .addContainerGap())
         );
 
         pack();
@@ -197,6 +198,7 @@ public class DVProgressBar extends javax.swing.JDialog {
             }
         });
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_cancel;
     private javax.swing.JLabel jLabel_message;

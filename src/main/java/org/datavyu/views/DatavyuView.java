@@ -14,75 +14,17 @@
  */
 package org.datavyu.views;
 
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileFilter;
-
-import org.apache.commons.io.FilenameUtils;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.FrameView;
-import org.jdesktop.application.ResourceMap;
-import org.jdesktop.application.SingleFrameApplication;
-
-import org.datavyu.Configuration;
-import org.datavyu.Datavyu;
-import org.datavyu.RecentFiles;
-
-import org.datavyu.Datavyu.Platform;
-
-import org.datavyu.controllers.CreateNewCellC;
-import org.datavyu.controllers.DeleteCellC;
-import org.datavyu.controllers.DeleteColumnC;
-import org.datavyu.controllers.NewProjectC;
-import org.datavyu.controllers.NewVariableC;
-import org.datavyu.controllers.OpenC;
-import org.datavyu.controllers.RunScriptC;
-import org.datavyu.controllers.SaveC;
-import org.datavyu.controllers.VocabEditorC;
-import org.datavyu.controllers.project.ProjectController;
-
-import org.datavyu.event.component.FileDropEvent;
-import org.datavyu.event.component.FileDropEventListener;
-
-import org.datavyu.util.ArrayDirection;
-import org.datavyu.util.FileFilters.CSVFilter;
-import org.datavyu.util.FileFilters.MODBFilter;
-import org.datavyu.util.FileFilters.OPFFilter;
-import org.datavyu.util.FileFilters.SHAPAFilter;
-
-import org.datavyu.views.discrete.SpreadsheetColumn;
-import org.datavyu.views.discrete.SpreadsheetPanel;
-import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
-
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.List;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.UndoableEdit;
-import javax.swing.undo.UndoableEditSupport;
-import org.datavyu.controllers.AutosaveC;
+import org.apache.commons.io.FilenameUtils;
+import org.datavyu.Configuration;
+import org.datavyu.Datavyu;
+import org.datavyu.Datavyu.Platform;
+import org.datavyu.RecentFiles;
+import org.datavyu.controllers.*;
+import org.datavyu.controllers.project.ProjectController;
+import org.datavyu.event.component.FileDropEvent;
+import org.datavyu.event.component.FileDropEventListener;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.UserWarningException;
@@ -91,11 +33,26 @@ import org.datavyu.undoableedits.RemoveCellEdit;
 import org.datavyu.undoableedits.RemoveVariableEdit;
 import org.datavyu.undoableedits.RunScriptEdit;
 import org.datavyu.undoableedits.SpreadsheetUndoManager;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-import org.datavyu.controllers.ExportDatabaseFileC;
-import org.datavyu.util.FileFilters.CellCSVFilter;
-import org.datavyu.util.FileFilters.FrameCSVFilter;
+import org.datavyu.util.ArrayDirection;
+import org.datavyu.util.FileFilters.*;
+import org.datavyu.views.discrete.SpreadsheetColumn;
+import org.datavyu.views.discrete.SpreadsheetPanel;
+import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.*;
+
+import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.undo.UndoableEdit;
+import javax.swing.undo.UndoableEditSupport;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
 
 
 /**
@@ -103,9 +60,11 @@ import org.datavyu.util.FileFilters.FrameCSVFilter;
  * initially see.
  */
 public final class DatavyuView extends FrameView
-    implements FileDropEventListener {
+        implements FileDropEventListener {
 
-    /** The directory holding a users favourite scripts. */
+    /**
+     * The directory holding a users favourite scripts.
+     */
     static final String FAV_DIR = "favourites";
 
     // Variable for the amount to raise the font size by when zooming.
@@ -116,10 +75,14 @@ public final class DatavyuView extends FrameView
     public static final int ZOOM_MAX_SIZE = 42;
     public static final int ZOOM_MIN_SIZE = 8;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(DatavyuView.class);
 
-    /** The spreadsheet panel for this view. */
+    /**
+     * The spreadsheet panel for this view.
+     */
     private SpreadsheetPanel panel;
 
     private static boolean redraw = true;
@@ -208,34 +171,33 @@ public final class DatavyuView extends FrameView
     /**
      * Constructor.
      *
-     * @param app
-     *            The SingleFrameApplication that invoked this main FrameView.
+     * @param app The SingleFrameApplication that invoked this main FrameView.
      */
     public DatavyuView(final SingleFrameApplication app) {
         super(app);
 
         KeyboardFocusManager manager = KeyboardFocusManager
-            .getCurrentKeyboardFocusManager();
+                .getCurrentKeyboardFocusManager();
 
         manager.addKeyEventDispatcher(new KeyEventDispatcher() {
 
-                /**
-                 * Dispatches the keystroke to the correct action.
-                 *
-                 * @param evt The event that triggered this action.
-                 * @return true if the KeyboardFocusManager should take no further
-                 * action with regard to the KeyEvent; false otherwise.
-                 */
-                @Override
-                public boolean dispatchKeyEvent(final KeyEvent evt) {
+            /**
+             * Dispatches the keystroke to the correct action.
+             *
+             * @param evt The event that triggered this action.
+             * @return true if the KeyboardFocusManager should take no further
+             * action with regard to the KeyEvent; false otherwise.
+             */
+            @Override
+            public boolean dispatchKeyEvent(final KeyEvent evt) {
 
-                    // Pass the keyevent onto the keyswitchboard so that it can
-                    // route it to the correct action.
+                // Pass the keyevent onto the keyswitchboard so that it can
+                // route it to the correct action.
 //                    spreadsheetMenuSelected(null);
 
-                    return Datavyu.getApplication().dispatchKeyEvent(evt);
-                }
-            });
+                return Datavyu.getApplication().dispatchKeyEvent(evt);
+            }
+        });
 
         // generated GUI builder code
         initComponents();
@@ -311,7 +273,7 @@ public final class DatavyuView extends FrameView
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         setComponent(panel);
-        
+
         System.out.println(getComponent());
 
         // initialize the undo/redo system
@@ -325,36 +287,36 @@ public final class DatavyuView extends FrameView
         pushMenuItem.setVisible(false);
         pullMenuItem.setVisible(false);
         jSeparator10.setVisible(false);
-        
+
     }
 
 
     public void checkForAutosavedFile() {
         // Check for autosaved file (crash condition)
         try {
-            File tempfile = File.createTempFile("test","");
+            File tempfile = File.createTempFile("test", "");
             String path = FilenameUtils.getFullPath(tempfile.getPath());
             tempfile.delete();
             File folder = new File(path);
             File[] listOfFiles = folder.listFiles();
             for (File f : listOfFiles) {
                 if ((f.isFile()) &&
-                     (
-                      (FilenameUtils.wildcardMatchOnSystem(f.getName(), "~*.opf")) ||
-                      (FilenameUtils.wildcardMatchOnSystem(f.getName(), "~*.csv"))
-                     )
-                   ) { // the last time datavyu crashed
+                        (
+                                (FilenameUtils.wildcardMatchOnSystem(f.getName(), "~*.opf")) ||
+                                        (FilenameUtils.wildcardMatchOnSystem(f.getName(), "~*.csv"))
+                        )
+                        ) { // the last time datavyu crashed
 
-                   // Show the Dialog
-                   if (JOptionPane.showConfirmDialog(null,
-                           "Datavyu has detected an unsaved file. Would you like recover this file ?",
-                           "Datavyu",
-                           JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    // Show the Dialog
+                    if (JOptionPane.showConfirmDialog(null,
+                            "Datavyu has detected an unsaved file. Would you like recover this file ?",
+                            "Datavyu",
+                            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                         openRecoveredFile(f);
                         this.saveAs();
-                   }
-                   // delete the recovered file
-                   f.delete();
+                    }
+                    // delete the recovered file
+                    f.delete();
                 }
             }
         } catch (IOException ex) {
@@ -367,7 +329,6 @@ public final class DatavyuView extends FrameView
     }
 
 
-
     /**
      * Update the title of the application.
      */
@@ -375,7 +336,7 @@ public final class DatavyuView extends FrameView
         // Show the project name instead of database.
         JFrame mainFrame = Datavyu.getApplication().getMainFrame();
         ResourceMap rMap = Datavyu.getApplication().getContext()
-                                    .getResourceMap(Datavyu.class);
+                .getResourceMap(Datavyu.class);
         String postFix = "";
         ProjectController projectController = Datavyu.getProjectController();
 
@@ -416,13 +377,13 @@ public final class DatavyuView extends FrameView
         this.getFrame().addWindowListener(exitListener);
         this.getFrame().setTitle(title);
     }
-    
 
 
     /**
      * Action for creating a new project.
      */
-    @Action public void showNewProjectForm() {
+    @Action
+    public void showNewProjectForm() {
 
         if (Datavyu.getApplication().safeQuit()) {
             new NewProjectC();
@@ -434,7 +395,8 @@ public final class DatavyuView extends FrameView
     /**
      * Action for saving the current database as a file.
      */
-    @Action public void save() {
+    @Action
+    public void save() {
 
         try {
             SaveC saveC = new SaveC();
@@ -452,7 +414,7 @@ public final class DatavyuView extends FrameView
                 // Force people to use new
                 if ((projController.getLastSaveOption() instanceof SHAPAFilter)
                         || (projController.getLastSaveOption()
-                            instanceof OPFFilter)) {
+                        instanceof OPFFilter)) {
 
                     // BugzID:1804 - Need to store the original absolute path of
                     // the
@@ -460,15 +422,15 @@ public final class DatavyuView extends FrameView
                     // search when
                     // loading, if the project file is moved around.
                     projController.setOriginalProjectDirectory(
-                        projController.getProjectDirectory());
+                            projController.getProjectDirectory());
 
                     projController.updateProject();
                     projController.setLastSaveOption(OPFFilter.INSTANCE);
 
                     saveController.saveProject(new File(projController.getProjectDirectory(),
-                                                        projController.getProjectName() + ".opf"),
-                                               projController.getProject(),
-                                               projController.getDB());
+                            projController.getProjectName() + ".opf"),
+                            projController.getProject(),
+                            projController.getDB());
 
                     projController.markProjectAsUnchanged();
                     projController.getDB().markAsUnchanged();
@@ -476,7 +438,7 @@ public final class DatavyuView extends FrameView
                     // Save content just as a database.
                 } else {
                     File file = new File(projController.getProjectDirectory(),
-                                         projController.getDatabaseFileName());
+                            projController.getDatabaseFileName());
                     saveC.saveDatabase(file, projController.getDB());
 
                     projController.markProjectAsUnchanged();
@@ -495,13 +457,14 @@ public final class DatavyuView extends FrameView
     /**
      * Action for saving the current project as a particular file.
      */
-    @Action public void saveAs() {
+    @Action
+    public void saveAs() {
         DatavyuFileChooser jd = new DatavyuFileChooser();
 
         jd.addChoosableFileFilter(MODBFilter.INSTANCE);
         jd.addChoosableFileFilter(CSVFilter.INSTANCE);
         jd.addChoosableFileFilter(OPFFilter.INSTANCE);
-        
+
         jd.setAcceptAllFileFilterUsed(false);
         jd.setFileFilter(OPFFilter.INSTANCE);
 
@@ -511,17 +474,18 @@ public final class DatavyuView extends FrameView
             save(jd);
         }
     }
-    
+
     /**
      * Action for exporting the current project as a particular file.
      */
-    @Action public void exportFile() {
+    @Action
+    public void exportFile() {
         DatavyuFileChooser jd = new DatavyuFileChooser();
-	
-	// Not fully implemented
+
+        // Not fully implemented
 //	jd.addChoosableFileFilter(FrameCSVFilter.INSTANCE);
-	
-	jd.addChoosableFileFilter(CellCSVFilter.INSTANCE);
+
+        jd.addChoosableFileFilter(CellCSVFilter.INSTANCE);
 
         int result = jd.showSaveDialog(getComponent());
 
@@ -529,46 +493,45 @@ public final class DatavyuView extends FrameView
             exportToCSV(jd);
         }
     }
-    
-    private void exportToCSV(final DatavyuFileChooser fc) {
-	ProjectController projController = Datavyu.getProjectController();
-        projController.updateProject();
-	
-	try {
-		ExportDatabaseFileC exportC = new ExportDatabaseFileC();
-		
-		FileFilter filter = fc.getFileFilter();
-		String dbFileName = fc.getSelectedFile().getPath();
-		if (!dbFileName.endsWith(".csv")) {
-			dbFileName = dbFileName.concat(".csv");
-		}
 
-		// Only save if the project file does not exists or if the user
-		// confirms a file overwrite in the case that the file exists.
-		if (!canSave(fc.getSelectedFile().getParent(), dbFileName)) {
-			return;
-		}
-		File f = new File(fc.getSelectedFile().getParent(), dbFileName);
-		
-		if(filter instanceof FrameCSVFilter) {
-			exportC.exportByFrame(dbFileName, projController.getDB());
-		}
-		else if (filter instanceof CellCSVFilter) {
-			exportC.exportAsCells(dbFileName, projController.getDB());
-		}
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
+    private void exportToCSV(final DatavyuFileChooser fc) {
+        ProjectController projController = Datavyu.getProjectController();
+        projController.updateProject();
+
+        try {
+            ExportDatabaseFileC exportC = new ExportDatabaseFileC();
+
+            FileFilter filter = fc.getFileFilter();
+            String dbFileName = fc.getSelectedFile().getPath();
+            if (!dbFileName.endsWith(".csv")) {
+                dbFileName = dbFileName.concat(".csv");
+            }
+
+            // Only save if the project file does not exists or if the user
+            // confirms a file overwrite in the case that the file exists.
+            if (!canSave(fc.getSelectedFile().getParent(), dbFileName)) {
+                return;
+            }
+            File f = new File(fc.getSelectedFile().getParent(), dbFileName);
+
+            if (filter instanceof FrameCSVFilter) {
+                exportC.exportByFrame(dbFileName, projController.getDB());
+            } else if (filter instanceof CellCSVFilter) {
+                exportC.exportAsCells(dbFileName, projController.getDB());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean canSave(final String directory, final String file) {
         File newFile = new File(directory, file);
 
         return ((newFile.exists()
-                    && Datavyu.getApplication().overwriteExisting())
+                && Datavyu.getApplication().overwriteExisting())
                 || !newFile.exists());
     }
-    
+
     private void export(final DatavyuFileChooser fc) {
         ProjectController projController = Datavyu.getProjectController();
         projController.updateProject();
@@ -623,7 +586,7 @@ public final class DatavyuView extends FrameView
 
                 projController.getDB().setName(dbFileName);
                 projController.setProjectDirectory(fc.getSelectedFile()
-                    .getParent());
+                        .getParent());
                 projController.setDatabaseFileName(dbFileName);
 
                 // Save as a project
@@ -648,13 +611,13 @@ public final class DatavyuView extends FrameView
                 // when
                 // loading, if the project file is moved around.
                 projController.setOriginalProjectDirectory(fc.getSelectedFile()
-                    .getParent());
+                        .getParent());
 
                 projController.updateProject();
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
-                                           archiveName),
-                                  projController.getProject(),
-                                  projController.getDB());
+                        archiveName),
+                        projController.getProject(),
+                        projController.getDB());
                 projController.setProjectDirectory(fc.getSelectedFile().getParent());
 
             }
@@ -722,7 +685,7 @@ public final class DatavyuView extends FrameView
 
                 projController.getDB().setName(dbFileName);
                 projController.setProjectDirectory(fc.getSelectedFile()
-                    .getParent());
+                        .getParent());
                 projController.setDatabaseFileName(dbFileName);
 
                 // Save as a project
@@ -747,13 +710,13 @@ public final class DatavyuView extends FrameView
                 // when
                 // loading, if the project file is moved around.
                 projController.setOriginalProjectDirectory(fc.getSelectedFile()
-                    .getParent());
+                        .getParent());
 
                 projController.updateProject();
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
-                                           archiveName),
-                                  projController.getProject(),
-                                  projController.getDB());
+                        archiveName),
+                        projController.getProject(),
+                        projController.getDB());
                 projController.setProjectDirectory(fc.getSelectedFile().getParent());
 
             }
@@ -770,7 +733,8 @@ public final class DatavyuView extends FrameView
     /**
      * Action for loading an Datavyu project from disk.
      */
-    @Action public void open() {
+    @Action
+    public void open() {
 
         if (Datavyu.getApplication().safeQuit()) {
             DatavyuFileChooser jd = new DatavyuFileChooser();
@@ -788,7 +752,9 @@ public final class DatavyuView extends FrameView
         }
     }
 
-    /** Simulate loading an Datavyu project from file chooser. */
+    /**
+     * Simulate loading an Datavyu project from file chooser.
+     */
     public void open(final File file) {
 
         if (!Datavyu.getApplication().safeQuit()) {
@@ -834,7 +800,7 @@ public final class DatavyuView extends FrameView
 
             progressBar.setProgress(10, "Opening project");
             boolean open_success = false;
-            if ((filter == SHAPAFilter.INSTANCE)  || (filter == OPFFilter.INSTANCE)) {
+            if ((filter == SHAPAFilter.INSTANCE) || (filter == OPFFilter.INSTANCE)) {
                 // Opening a project or project archive file
                 open_success = openProject(jd.getSelectedFile());
             } else {
@@ -842,8 +808,7 @@ public final class DatavyuView extends FrameView
                 open_success = openDatabase(jd.getSelectedFile());
             }
 
-            if (!open_success)
-            {
+            if (!open_success) {
                 progressBar.setError("Error opening project!");
                 return null;
             }
@@ -899,14 +864,14 @@ public final class DatavyuView extends FrameView
         task = new OpenTask(progressBar, jd);
         task.execute();
     }
-    
+
     public void openExternalFile(final File f) {
         Datavyu.getApplication().resetApp();
-        
+
         DatavyuFileChooser jd = new DatavyuFileChooser();
         jd.setSelectedFile(f);
         jd.setFileFilter(OPFFilter.INSTANCE);
-        
+
         open(jd);
     }
 
@@ -937,7 +902,6 @@ public final class DatavyuView extends FrameView
         // Default is to highlight cells when created - clear selection on load.
         panel.clearCellSelection();
     }
-
 
 
     private boolean openDatabase(final File databaseFile) {
@@ -1005,63 +969,72 @@ public final class DatavyuView extends FrameView
     /**
      * Action for creating a new variable.
      */
-    @Action public void showNewVariableForm() {
+    @Action
+    public void showNewVariableForm() {
         new NewVariableC();
     }
 
     /**
      * Action for editing vocabs.
      */
-    @Action public void showVocabEditor() {
+    @Action
+    public void showVocabEditor() {
         new VocabEditorC();
     }
 
     /**
      * Action for showing the variable list.
      */
-    @Action public void showVariableList() {
+    @Action
+    public void showVariableList() {
         Datavyu.getApplication().showVariableList();
     }
 
     /**
      * Action for showing the quicktime video controller.
      */
-    @Action public void showQTVideoController() {
+    @Action
+    public void showQTVideoController() {
         Datavyu.getApplication().showDataController();
     }
-    
+
     /**
      * Action for showing the video converter dialog.
      */
-    @Action public void showVideoConverter() {
+    @Action
+    public void showVideoConverter() {
         Datavyu.getApplication().showVideoConverter();
     }
 
     /**
      * Action for showing the about window.
      */
-    @Action public void showAboutWindow() {
+    @Action
+    public void showAboutWindow() {
         Datavyu.getApplication().showAboutWindow();
     }
 
     /**
      * Action for opening the support site
      */
-    @Action public void openSupportSite() {
+    @Action
+    public void openSupportSite() {
         Datavyu.getApplication().openSupportSite();
     }
 
     /**
      * Action for opening the guide
      */
-    @Action public void openGuideSite() {
+    @Action
+    public void openGuideSite() {
         Datavyu.getApplication().openGuideSite();
     }
 
     /**
      * Action for showing the update window.
      */
-    @Action public void showUpdateWindow() {
+    @Action
+    public void showUpdateWindow() {
         Datavyu.getApplication().showUpdateWindow();
     }
 
@@ -1079,10 +1052,13 @@ public final class DatavyuView extends FrameView
     /**
      * Action for showing the spreadsheet.
      */
-    @Action public void showSpreadsheet() {
+    @Action
+    public void showSpreadsheet() {
         showSpreadsheet(null);
     }
-    @Action public void showSpreadsheet(DVProgressBar progressBar) {
+
+    @Action
+    public void showSpreadsheet(DVProgressBar progressBar) {
         weakTemporalOrderMenuItem.setSelected(false);
         //strongTemporalOrderMenuItem.setSelected(false); //COMMENTED OUT UNTIL IMPLEMENTED: 1-23-2014 jc
 
@@ -1092,7 +1068,7 @@ public final class DatavyuView extends FrameView
             this.clearSpreadsheet();
         }
 
-        
+
         panel = new SpreadsheetPanel(Datavyu.getProjectController().getDB(), progressBar);
         panel.registerListeners();
         panel.addFileDropEventListener(this);
@@ -1110,7 +1086,8 @@ public final class DatavyuView extends FrameView
     /**
      * Action for invoking a script.
      */
-    @Action public void runScript() {
+    @Action
+    public void runScript() {
         try {
             RunScriptC scriptC = new RunScriptC();
             // record the effect
@@ -1126,7 +1103,8 @@ public final class DatavyuView extends FrameView
     /**
      * Action for removing columns from the database.
      */
-    @Action public void deleteColumn() {
+    @Action
+    public void deleteColumn() {
         Datastore ds = Datavyu.getProjectController().getDB();
         List<Variable> selectedVariables = ds.getSelectedVariables();
 
@@ -1143,7 +1121,8 @@ public final class DatavyuView extends FrameView
     /**
      * Action for hiding columns.
      */
-    @Action public void hideColumn() {
+    @Action
+    public void hideColumn() {
         LOGGER.event("Hidding columns");
         Datastore ds = Datavyu.getProjectController().getDB();
 
@@ -1158,7 +1137,8 @@ public final class DatavyuView extends FrameView
     /**
      * Action for showing all columns.
      */
-    @Action public void showAllColumns() {
+    @Action
+    public void showAllColumns() {
         LOGGER.event("Showing all columns");
         Datastore ds = Datavyu.getProjectController().getDB();
 
@@ -1174,7 +1154,8 @@ public final class DatavyuView extends FrameView
     /**
      * Action for changing variable name.
      */
-    @Action public void changeColumnName() {
+    @Action
+    public void changeColumnName() {
         // Only one column should be selected, but just in case, we'll only
         // change the first column
         Variable var = Datavyu.getProjectController().getDB().getSelectedVariables().get(0);
@@ -1191,9 +1172,10 @@ public final class DatavyuView extends FrameView
     /**
      * Action for removing cells from the database.
      */
-    @Action public void deleteCells() {
+    @Action
+    public void deleteCells() {
         List<Cell> selectedCells = Datavyu.getProjectController()
-                                            .getDB().getSelectedCells();
+                .getDB().getSelectedCells();
 
         // record the effect
         UndoableEdit edit = new RemoveCellEdit(selectedCells);
@@ -1230,7 +1212,8 @@ public final class DatavyuView extends FrameView
     /**
      * Checks if changes should be discarded, if so (or no changes) then quits.
      */
-    @Action public void safeQuit() {
+    @Action
+    public void safeQuit() {
         Datavyu.getApplication().exit();
         System.exit(0);
     }
@@ -1238,7 +1221,8 @@ public final class DatavyuView extends FrameView
     /**
      * Undo Action.
      */
-    @Action public void history() {
+    @Action
+    public void history() {
         //JOptionPane.showMessageDialog(null, "Undo History.", "History", JOptionPane.INFORMATION_MESSAGE);
         Datavyu.getApplication().showHistory();
     }
@@ -1246,23 +1230,26 @@ public final class DatavyuView extends FrameView
     /**
      * Undo Action.
      */
-    @Action public void undo() {
-         spreadsheetUndoManager.undo();
-         refreshUndoRedo();
+    @Action
+    public void undo() {
+        spreadsheetUndoManager.undo();
+        refreshUndoRedo();
     }
 
     /**
      * Redo Action.
      */
-    @Action public void redo() {
-         spreadsheetUndoManager.redo();
-         refreshUndoRedo();
+    @Action
+    public void redo() {
+        spreadsheetUndoManager.redo();
+        refreshUndoRedo();
     }
 
     /**
      * Push Action.
      */
-    @Action public void push() {
+    @Action
+    public void push() {
 /*
         System.out.println("push");
         Jackrabbit jr = Jackrabbit.getJackRabbit();
@@ -1273,7 +1260,8 @@ public final class DatavyuView extends FrameView
     /**
      * Redo Action.
      */
-    @Action public void pull() {
+    @Action
+    public void pull() {
         System.out.println("pull");
 /*
         Jackrabbit jr = Jackrabbit.getJackRabbit();
@@ -1309,7 +1297,7 @@ public final class DatavyuView extends FrameView
         jSeparator7 = new javax.swing.JSeparator();
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
-	exportMenuItem = new javax.swing.JMenuItem();
+        exportMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         spreadsheetMenu = new javax.swing.JMenu();
@@ -1346,7 +1334,7 @@ public final class DatavyuView extends FrameView
         pullMenuItem = new javax.swing.JMenuItem();
         controllerMenu = new javax.swing.JMenu();
         qtControllerItem = new javax.swing.JMenuItem();
-	videoConverterMenuItem = new javax.swing.JMenuItem();
+        videoConverterMenuItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
         runScriptMenuItem = new javax.swing.JMenuItem();
         runRecentScriptMenu = new javax.swing.JMenu();
@@ -1367,18 +1355,18 @@ public final class DatavyuView extends FrameView
         org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
-            mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(mainPanelLayout.createSequentialGroup()
-                .add(119, 119, 119)
-                .add(jLabel1)
-                .addContainerGap(149, Short.MAX_VALUE))
+                mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(mainPanelLayout.createSequentialGroup()
+                                .add(119, 119, 119)
+                                .add(jLabel1)
+                                .addContainerGap(149, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
-            mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(mainPanelLayout.createSequentialGroup()
-                .add(55, 55, 55)
-                .add(jLabel1)
-                .addContainerGap(184, Short.MAX_VALUE))
+                mainPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                        .add(mainPanelLayout.createSequentialGroup()
+                                .add(55, 55, 55)
+                                .add(jLabel1)
+                                .addContainerGap(184, Short.MAX_VALUE))
         );
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(DatavyuView.class);
         resourceMap.injectComponents(mainPanel);
@@ -1405,8 +1393,10 @@ public final class DatavyuView extends FrameView
             public void menuSelected(javax.swing.event.MenuEvent evt) {
                 openRecentFileMenuMenuSelected(evt);
             }
+
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
+
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
@@ -1427,8 +1417,8 @@ public final class DatavyuView extends FrameView
         saveAsMenuItem.setAction(actionMap.get("saveAs")); // NOI18N
         saveAsMenuItem.setName("saveAsMenuItem"); // NOI18N
         fileMenu.add(saveAsMenuItem);
-	
-	exportMenuItem.setAction(actionMap.get("exportFile")); // NOI18N
+
+        exportMenuItem.setAction(actionMap.get("exportFile")); // NOI18N
         exportMenuItem.setName("exportMenuItem"); // NOI18N
         fileMenu.add(exportMenuItem);
 
@@ -1451,8 +1441,10 @@ public final class DatavyuView extends FrameView
             public void menuSelected(javax.swing.event.MenuEvent evt) {
 //                spreadsheetMenuSelected(evt);
             }
+
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
+
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
@@ -1624,8 +1616,8 @@ public final class DatavyuView extends FrameView
         qtControllerItem.setAction(actionMap.get("showQTVideoController")); // NOI18N
         qtControllerItem.setName("qtControllerItem"); // NOI18N
         controllerMenu.add(qtControllerItem);
-	
-	videoConverterMenuItem.setAction(actionMap.get("showVideoConverter")); // NOI18N
+
+        videoConverterMenuItem.setAction(actionMap.get("showVideoConverter")); // NOI18N
         videoConverterMenuItem.setName("videoConverterMenuItem"); // NOI18N
         controllerMenu.add(videoConverterMenuItem);
 
@@ -1636,8 +1628,10 @@ public final class DatavyuView extends FrameView
             public void menuSelected(javax.swing.event.MenuEvent evt) {
                 populateFavourites(evt);
             }
+
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
+
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
@@ -1651,8 +1645,10 @@ public final class DatavyuView extends FrameView
             public void menuSelected(javax.swing.event.MenuEvent evt) {
                 populateRecentScripts(evt);
             }
+
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
             }
+
             public void menuCanceled(javax.swing.event.MenuEvent evt) {
             }
         });
@@ -1689,21 +1685,21 @@ public final class DatavyuView extends FrameView
         supportMenuItem.setName("supportMenuItem");
         //TODO - don't add this on Macs.  Instead it will be in the "Application Menu"
         //if (Datavyu.getPlatform() != Platform.MAC) {
-            helpMenu.add(supportMenuItem);
+        helpMenu.add(supportMenuItem);
         //}
 
         guideMenuItem.setAction(actionMap.get("openGuideSite"));
         guideMenuItem.setName("guideMenuItem");
         //TODO - don't add this on Macs.  Instead it will be in the "Application Menu"
         //if (Datavyu.getPlatform() != Platform.MAC) {
-            helpMenu.add(guideMenuItem);
+        helpMenu.add(guideMenuItem);
         //}
 
         updateMenuItem.setAction(actionMap.get("showUpdateWindow")); // NOI18N
         updateMenuItem.setName("updateMenuItem"); // NOI18N
         //TODO - don't add this on Macs.  Instead it will be in the "Application Menu"
         //if (Datavyu.getPlatform() != Platform.MAC) {
-            helpMenu.add(updateMenuItem);
+        helpMenu.add(updateMenuItem);
         //}
 
         menuBar.add(helpMenu);
@@ -1713,7 +1709,7 @@ public final class DatavyuView extends FrameView
     }// </editor-fold>//GEN-END:initComponents
 
     private void openRecentFileMenuMenuSelected(
-        final javax.swing.event.MenuEvent evt) { // GEN-FIRST:event_openRecentFileMenuMenuSelected
+            final javax.swing.event.MenuEvent evt) { // GEN-FIRST:event_openRecentFileMenuMenuSelected
 
         // Flush the menu - excluding the top menu item.
         int size = openRecentFileMenu.getMenuComponentCount();
@@ -1729,34 +1725,33 @@ public final class DatavyuView extends FrameView
     } // GEN-LAST:event_openRecentFileMenuMenuSelected
 
     private void hideSelectedColumnsMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_hideSelectedColumnsMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_hideSelectedColumnsMenuItemActionPerformed
         hideColumn();
         this.getSpreadsheetPanel().deselectAll();
     } // GEN-LAST:event_hideSelectedColumnsMenuItemActionPerformed
 
     private void ShowAllVariablesMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_ShowAllVariablesMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_ShowAllVariablesMenuItemActionPerformed
         showAllColumns();
         this.getSpreadsheetPanel().deselectAll();
     } // GEN-LAST:event_ShowAllVariablesMenuItemActionPerformed
 
     private void changeVarNameMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_changeVarNameMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_changeVarNameMenuItemActionPerformed
         changeColumnName();
     } // GEN-LAST:event_changeVarNameMenuItemActionPerformed
 
     private void tileWindowsMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_tileWindowsMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_tileWindowsMenuItemActionPerformed
     } // GEN-LAST:event_tileWindowsMenuItemActionPerformed
 
     /**
      * The action to invoke when the user selects 'strong temporal ordering'.
      *
-     * @param evt
-     *            The event that fired this action.
+     * @param evt The event that fired this action.
      */
     private void strongTemporalMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) {
+            final java.awt.event.ActionEvent evt) {
         setRedraw(true);
         // GEN-FIRST:event_strongTemporalMenuItemActionPerformed
         weakTemporalOrderMenuItem.setSelected(false);
@@ -1766,11 +1761,10 @@ public final class DatavyuView extends FrameView
     /**
      * The action to invoke when the user selects 'weak temporal ordering'.
      *
-     * @param evt
-     *            The event that fired this action.
+     * @param evt The event that fired this action.
      */
     private void weakTemporalMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) {
+            final java.awt.event.ActionEvent evt) {
         setRedraw(true);
         // GEN-FIRST:event_weakTemporalMenuItemActionPerformed
         //strongTemporalOrderMenuItem.setSelected(false); //COMMENTED OUT UNTIL IMPLEMENTED: 1-23-2014 jc
@@ -1781,8 +1775,7 @@ public final class DatavyuView extends FrameView
      * The action to invoke when the user selects 'recent scripts' from the
      * scripting menu.
      *
-     * @param evt
-     *            The event that fired this action.
+     * @param evt The event that fired this action.
      */
     private void populateRecentScripts(final javax.swing.event.MenuEvent evt) { // GEN-FIRST:event_populateRecentScripts
 
@@ -1801,8 +1794,7 @@ public final class DatavyuView extends FrameView
     /**
      * The action to invoke when the user selects 'scripts' from the main menu.
      *
-     * @param evt
-     *            The event that fired this action.
+     * @param evt The event that fired this action.
      */
     private void populateFavourites(final javax.swing.event.MenuEvent evt) { // GEN-FIRST:event_populateFavourites
 
@@ -1845,11 +1837,10 @@ public final class DatavyuView extends FrameView
      * = Function to 'zoom out' (make font size smaller) by ZOOM_INTERVAL
      * points.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void zoomInMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_zoomInMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_zoomInMenuItemActionPerformed
         zoomIn();
     } // GEN-LAST:event_zoomInMenuItemActionPerformed
 
@@ -1863,7 +1854,7 @@ public final class DatavyuView extends FrameView
      * @param evt
      */
     private void zoomOutMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_zoomOutMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_zoomOutMenuItemActionPerformed
         zoomOut();
     } // GEN-LAST:event_zoomOutMenuItemActionPerformed
 
@@ -1874,11 +1865,10 @@ public final class DatavyuView extends FrameView
     /**
      * Function to reset the zoom level to the default size.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void resetZoomMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_resetZoomMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_resetZoomMenuItemActionPerformed
 
         Configuration config = Configuration.getInstance();
         Font f = config.getSSDataFont();
@@ -1889,17 +1879,16 @@ public final class DatavyuView extends FrameView
     /**
      * The method to invoke when the use selects the spreadsheet menu item.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void spreadsheetMenuSelected(
-        final javax.swing.event.MenuEvent evt) { // GEN-FIRST:event_spreadsheetMenuMenuSelected
+            final javax.swing.event.MenuEvent evt) { // GEN-FIRST:event_spreadsheetMenuMenuSelected
 
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-                                      .getResourceMap(DatavyuView.class);
+                .getResourceMap(DatavyuView.class);
 
         List<Variable> selectedCols = Datavyu.getProjectController().getDB()
-                                               .getSelectedVariables();
+                .getSelectedVariables();
 
         if (selectedCols.isEmpty()) {
             deleteColumnMenuItem.setEnabled(false);
@@ -1924,7 +1913,7 @@ public final class DatavyuView extends FrameView
         }
 
         List<Cell> selectedCells = Datavyu.getProjectController().getDB()
-                                            .getSelectedCells();
+                .getSelectedCells();
 
         if (selectedCells.isEmpty()) {
             deleteCellMenuItem.setEnabled(false);
@@ -1966,11 +1955,10 @@ public final class DatavyuView extends FrameView
     /**
      * The action to invoke when the user selects new cell from the menu.
      *
-     * @param evt
-     *            The event that fired this action.
+     * @param evt The event that fired this action.
      */
     private void newCellMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellMenuItemActionPerformed
         CreateNewCellC controller = new CreateNewCellC();
         controller.createDefaultCell();
     } // GEN-LAST:event_newCellMenuItemActionPerformed
@@ -1979,17 +1967,16 @@ public final class DatavyuView extends FrameView
      * The action to invoke when the user selects new cell to the left from the
      * menu.
      *
-     * @param evt
-     *            The event that fired this action.
+     * @param evt The event that fired this action.
      */
     private void newCellLeftMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellLeftMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellLeftMenuItemActionPerformed
         newCellLeft();
     } // GEN-LAST:event_newCellLeftMenuItemActionPerformed
 
     public void newCellLeft() {
         List<Cell> selectedCells = Datavyu.getProjectController()
-                                            .getDB().getSelectedCells();
+                .getDB().getSelectedCells();
 
         new CreateNewCellC(selectedCells, ArrayDirection.LEFT);
     }
@@ -1998,17 +1985,16 @@ public final class DatavyuView extends FrameView
      * The action to invoke when the user selects new cell to the right from the
      * menu.
      *
-     * @param evt
-     *            The event that fired this action.
+     * @param evt The event that fired this action.
      */
     private void newCellRightMenuItemActionPerformed(
-        final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellRightMenuItemActionPerformed
+            final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_newCellRightMenuItemActionPerformed
         newCellRight();
     } // GEN-LAST:event_newCellRightMenuItemActionPerformed
 
     public void newCellRight() {
         List<Cell> selectedCells = Datavyu.getProjectController()
-                                            .getDB().getSelectedCells();
+                .getDB().getSelectedCells();
 
         new CreateNewCellC(selectedCells, ArrayDirection.RIGHT);
     }
@@ -2018,8 +2004,7 @@ public final class DatavyuView extends FrameView
      * creates and revalidates a new panel to show the font update. This will
      * not make the font smaller than smallestSize.
      *
-     * @param sizeDif
-     *            The number to add to the current font size.
+     * @param sizeDif The number to add to the current font size.
      */
     public void changeFontSize(final int sizeDif) {
         Configuration config = Configuration.getInstance();
@@ -2044,8 +2029,7 @@ public final class DatavyuView extends FrameView
     /**
      * Creates a new menu item for running a named script.
      *
-     * @param f
-     *            The file to run when menu item is selected.
+     * @param f The file to run when menu item is selected.
      * @return The jmenuitem that can be added to a menu.
      */
     public JMenuItem createScriptMenuItemFromFile(final File f) {
@@ -2053,11 +2037,11 @@ public final class DatavyuView extends FrameView
         menuItem.setText(f.toString());
         menuItem.setName(f.toString());
         menuItem.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(
+            public void actionPerformed(
                     final java.awt.event.ActionEvent evt) {
-                    runRecentScript(evt);
-                }
-            });
+                runRecentScript(evt);
+            }
+        });
 
         return menuItem;
     }
@@ -2065,8 +2049,7 @@ public final class DatavyuView extends FrameView
     /**
      * Creates a new menu item for opening a file.
      *
-     * @param file
-     *            The file to open.
+     * @param file The file to open.
      * @return The menu item associated with the file.
      */
     private JMenuItem createRecentFileMenuItem(final File file) {
@@ -2074,10 +2057,10 @@ public final class DatavyuView extends FrameView
         menuItem.setText(file.toString());
         menuItem.setName(file.toString());
         menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(final ActionEvent e) {
-                    open(file);
-                }
-            });
+            public void actionPerformed(final ActionEvent e) {
+                open(file);
+            }
+        });
 
         return menuItem;
     }
@@ -2085,8 +2068,7 @@ public final class DatavyuView extends FrameView
     /**
      * The action to invoke when the user selects a recent script to run.
      *
-     * @param evt
-     *            The event that triggered this action.
+     * @param evt The event that triggered this action.
      */
     private void runRecentScript(final java.awt.event.ActionEvent evt) {
 
@@ -2116,38 +2098,38 @@ public final class DatavyuView extends FrameView
         return panel;
     }
 
-  public void refreshUndoRedo() {
+    public void refreshUndoRedo() {
 
-     // refresh undo
-     undoSpreadSheetMenuItem.setText( spreadsheetUndoManager.getUndoPresentationName() );
-     undoSpreadSheetMenuItem.setEnabled( spreadsheetUndoManager.canUndo() );
+        // refresh undo
+        undoSpreadSheetMenuItem.setText(spreadsheetUndoManager.getUndoPresentationName());
+        undoSpreadSheetMenuItem.setEnabled(spreadsheetUndoManager.canUndo());
 
-     // refresh redo
-     redoSpreadSheetMenuItem.setText( spreadsheetUndoManager.getRedoPresentationName() );
-     redoSpreadSheetMenuItem.setEnabled( spreadsheetUndoManager.canRedo() );
+        // refresh redo
+        redoSpreadSheetMenuItem.setText(spreadsheetUndoManager.getRedoPresentationName());
+        redoSpreadSheetMenuItem.setEnabled(spreadsheetUndoManager.canRedo());
 
-     // Display any changes.
-     //showSpreadsheet();
+        // Display any changes.
+        //showSpreadsheet();
 
-     panel.revalidate();
-     panel.repaint();
+        panel.revalidate();
+        panel.repaint();
 
-  }
+    }
 
 
-  /**
-  * An undo/redo adapter. The adapter is notified when
-  * an undo edit occur.
-  * The adaptor extract the edit from the event, add it
-  * to the UndoManager, and refresh the GUI
-  */
+    /**
+     * An undo/redo adapter. The adapter is notified when
+     * an undo edit occur.
+     * The adaptor extract the edit from the event, add it
+     * to the UndoManager, and refresh the GUI
+     */
 
-  private class UndoAdapter implements UndoableEditListener {
-     @Override
-     public void undoableEditHappened (UndoableEditEvent evt) {
-     	UndoableEdit edit = evt.getEdit();
-     	spreadsheetUndoManager.addEdit( edit );
-     	refreshUndoRedo();
-     }
-  }
+    private class UndoAdapter implements UndoableEditListener {
+        @Override
+        public void undoableEditHappened(UndoableEditEvent evt) {
+            UndoableEdit edit = evt.getEdit();
+            spreadsheetUndoManager.addEdit(edit);
+            refreshUndoRedo();
+        }
+    }
 }

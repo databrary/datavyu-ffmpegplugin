@@ -14,15 +14,13 @@
  */
 package org.datavyu.controllers.component;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.JComponent;
-
 import org.datavyu.models.component.MixerModel;
 import org.datavyu.models.component.SnapMarkerModel;
-
 import org.datavyu.views.component.SnapMarkerPainter;
+
+import javax.swing.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 
 /**
@@ -30,10 +28,14 @@ import org.datavyu.views.component.SnapMarkerPainter;
  */
 public final class SnapMarkerController implements PropertyChangeListener {
 
-    /** View */
+    /**
+     * View
+     */
     private final SnapMarkerPainter view;
 
-    /** Models */
+    /**
+     * Models
+     */
     private final SnapMarkerModel snapMarkerModel;
     private final MixerModel mixerModel;
 
@@ -75,7 +77,8 @@ public final class SnapMarkerController implements PropertyChangeListener {
         return view;
     }
 
-    @Override public void propertyChange(final PropertyChangeEvent evt) {
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt) {
         if (evt.getSource() == mixerModel.getViewportModel()) {
             view.repaint();
         }

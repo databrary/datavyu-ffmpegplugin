@@ -15,14 +15,14 @@
 package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
-import org.datavyu.Datavyu;
-
 import com.usermetrix.jclient.UserMetrix;
-import javax.swing.undo.UndoableEdit;
+import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.undoableedits.ChangeCellEdit;
 import org.datavyu.undoableedits.ChangeOffsetCellEdit;
+
+import javax.swing.undo.UndoableEdit;
 
 /**
  * Controller for setting all selected cells to have the specified stop time /
@@ -30,14 +30,16 @@ import org.datavyu.undoableedits.ChangeOffsetCellEdit;
  */
 public class SetSelectedCellStopTimeC {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(SetSelectedCellStopTimeC.class);
 
     /**
      * Sets all selected cells to have the specified stop time / offset.
-     * 
+     *
      * @param milliseconds The time in milliseconds to use for all selected
-     * cells offset / stop time.
+     *                     cells offset / stop time.
      */
     public SetSelectedCellStopTimeC(final long milliseconds) {
         LOGGER.event("set selected cell offset");

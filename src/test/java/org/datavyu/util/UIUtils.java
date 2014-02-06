@@ -15,39 +15,20 @@
 package org.datavyu.util;
 
 
-import org.datavyu.util.FloatUtils;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-
-import java.text.SimpleDateFormat;
-
-import java.util.SimpleTimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.parser.ParserDelegator;
-
-
 import org.apache.commons.io.IOUtils;
-
+import org.datavyu.controllers.RunScriptC;
 import org.fest.swing.edt.GuiActionRunner;
 import org.fest.swing.edt.GuiTask;
 
-import org.datavyu.controllers.RunScriptC;
-
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.parser.ParserDelegator;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.SimpleTimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -60,12 +41,16 @@ public final class UIUtils {
      */
     public static final String[] VAR_TYPES = {
             "TEXT", "PREDICATE", "INTEGER", "NOMINAL", "MATRIX", "FLOAT"
-        };
+    };
 
-    /** BLOCK_SIZE for files. */
+    /**
+     * BLOCK_SIZE for files.
+     */
     private static final int BLOCK_SIZE = 65536;
 
-    /** Maximum time allowed for a script to load. */
+    /**
+     * Maximum time allowed for a script to load.
+     */
     public static final int SCRIPT_LOAD_TIMEOUT = 5000;
 
     /**
@@ -76,13 +61,14 @@ public final class UIUtils {
 
     /**
      * Checks if two text files are equal.
+     *
      * @param file1 First file
      * @param file2 Second file
-     * @throws IOException on file read error
      * @return true if equal, else false
+     * @throws IOException on file read error
      */
     public static Boolean areFilesSameByteComp(final File file1,
-        final File file2) throws IOException {
+                                               final File file2) throws IOException {
 
         // Check file sizes first
         if (file1.length() != file2.length()) {
@@ -111,13 +97,14 @@ public final class UIUtils {
 
     /**
      * Checks if two text files are equal.
+     *
      * @param file1 First file
      * @param file2 Second file
-     * @throws IOException on file read error
      * @return true if equal, else false
+     * @throws IOException on file read error
      */
     public static Boolean areFilesSameLineComp(final File file1,
-        final File file2) throws IOException {
+                                               final File file2) throws IOException {
         FileReader fr1 = new FileReader(file1);
         FileReader fr2 = new FileReader(file2);
 
@@ -152,6 +139,7 @@ public final class UIUtils {
 
     /**
      * "Copies" str to the clipboard.
+     *
      * @param str String to copy
      */
     public static void setClipboard(final String str) {
@@ -161,12 +149,13 @@ public final class UIUtils {
 
     /**
      * Checks if two values are equal as doubles or as strings.
+     *
      * @param value1 first value
      * @param value2 second value
      * @return true if equal
      */
     public static boolean equalValues(final String value1,
-        final String value2) {
+                                      final String value2) {
 
         if ((value1.startsWith("<") && value1.endsWith(">"))
                 || (value2.startsWith("<") && value2.endsWith(">"))) {
@@ -183,7 +172,7 @@ public final class UIUtils {
 
                 // Handle doubles
                 boolean result = FloatUtils.closeEnough(Double.parseDouble(
-                            value1), Double.parseDouble(value2));
+                        value1), Double.parseDouble(value2));
 
                 if (!result) {
                     System.out.println(value1 + "\n" + value2 + "\n");
@@ -207,6 +196,7 @@ public final class UIUtils {
 
     /**
      * Returns all arguments in a matrix type as a String array.
+     *
      * @param matrixValue matrix string
      * @return String array with all matrix arguments
      */
@@ -218,6 +208,7 @@ public final class UIUtils {
 
     /**
      * Converts milliseconds to a timestamp string.
+     *
      * @param milliseconds number of milliseconds
      * @return Timestamp String
      */
@@ -231,15 +222,16 @@ public final class UIUtils {
     }
 
     /**
-    * @param r rectange to find centre of
-    * @return point at centre of rectange.
-    */
+     * @param r rectange to find centre of
+     * @return point at centre of rectange.
+     */
     public static Point centerOf(final Rectangle r) {
         return new Point(r.x + (r.width / 2), r.y + (r.height / 2));
     }
 
     /**
      * Copies one file to another.
+     *
      * @param src source file
      * @param dst destination file
      * @throws IOException on IOException
@@ -263,22 +255,23 @@ public final class UIUtils {
     /**
      * Due to a bug in FEST we need to invoke Datavyu code directly to run
      * scripts in OSX.
+     *
      * @param script script to run
      */
     public static void runScriptOnOSX(final File script) {
         GuiActionRunner.execute(new GuiTask() {
 
-                public void executeInEDT() {
+            public void executeInEDT() {
 
-                    try {
-                        RunScriptC scriptC = new RunScriptC(script.toString());
-                        scriptC.execute();
-                    } catch (IOException e) {
-                        System.err.println(
+                try {
+                    RunScriptC scriptC = new RunScriptC(script.toString());
+                    scriptC.execute();
+                } catch (IOException e) {
+                    System.err.println(
                             "Unable to invoke script:" + e.toString());
-                    }
                 }
-            });
+            }
+        });
     }
 
     public static String getInnerTextFromHTML(final String html) {
@@ -286,16 +279,16 @@ public final class UIUtils {
 
         try {
             HTMLEditorKit.ParserCallback callback =
-                new HTMLEditorKit.ParserCallback() {
-                    public void handleText(final char[] data, final int pos) {
-                        s.append(data);
-                    }
-                };
+                    new HTMLEditorKit.ParserCallback() {
+                        public void handleText(final char[] data, final int pos) {
+                            s.append(data);
+                        }
+                    };
             new ParserDelegator().parse(new StringReader(html), callback,
-                false);
+                    false);
         } catch (IOException ex) {
             Logger.getLogger(UIUtils.class.getName()).log(Level.SEVERE, null,
-                ex);
+                    ex);
         }
 
         return s.toString();

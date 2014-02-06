@@ -15,55 +15,55 @@
 package org.datavyu.util;
 
 import com.google.common.collect.Iterables;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import org.apache.commons.io.FileUtils;
+import org.datavyu.Datavyu;
+
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import javax.swing.JOptionPane;
-import org.apache.commons.io.FileUtils;
-import org.datavyu.Datavyu;
 
 
 public class NativeLoader {
 
-    /** The size of the buffer to use when un zipping native libraries. */
+    /**
+     * The size of the buffer to use when un zipping native libraries.
+     */
     private static final int BUFFER = 16384;
 
-    /** The list of all the native loaded odds and ends that need unpacking. */
+    /**
+     * The list of all the native loaded odds and ends that need unpacking.
+     */
     private static final ArrayList<File> loadedLibs = new ArrayList<File>();
 
-    /** The folder that we stash all our native libs within. */
+    /**
+     * The folder that we stash all our native libs within.
+     */
     private static File nativeLibFolder;
 
     /**
      * Load the given native library.
      *
      * @param libName Name of the library, extensions (dll, jnilib) removed. OSX
-     * libraries should have the "lib" suffix removed.
-     *
+     *                libraries should have the "lib" suffix removed.
      * @throws Exception If the library cannot be loaded.
      */
     public static void LoadNativeLib(final String libName) throws Exception {
         Enumeration<URL> resources;
         String extension;
-        
+
         if (System.getProperty("os.name").contains("Mac")) {
             extension = ".jnilib";
             resources = NativeLoader.class.getClassLoader()
-                                    .getResources("lib" + libName + extension);
+                    .getResources("lib" + libName + extension);
 
         } else {
             extension = ".dll";
             resources = NativeLoader.class.getClassLoader()
-                                    .getResources(libName + extension);
+                    .getResources(libName + extension);
         }
 
         File outfile;
@@ -114,16 +114,15 @@ public class NativeLoader {
      *
      * @param appJar The jar containing the native app that you want to unpack.
      * @return The path of the native app as unpacked to a temporary location.
-     *
      * @throws Exception If unable to unpack the native app to a temporary
-     * location.
+     *                   location.
      */
     public static String unpackNativeApp(final String appJar) throws Exception {
         final String nativeLibraryPath;
 
         if (nativeLibFolder == null) {
             nativeLibraryPath = System.getProperty("java.io.tmpdir")
-                                + UUID.randomUUID().toString() + "nativelibs";
+                    + UUID.randomUUID().toString() + "nativelibs";
             nativeLibFolder = new File(nativeLibraryPath);
 
             if (!nativeLibFolder.exists()) {
@@ -139,10 +138,9 @@ public class NativeLoader {
         // during tests.
 
         String searchPath = System.getProperty("surefire.test.class.path")
-                            + File.pathSeparator
-                            + System.getProperty("java.class.path")
-                ;
-        
+                + File.pathSeparator
+                + System.getProperty("java.class.path");
+
         // This is done for the Windows build so it can find the dependencies
         // if the cwd is different from the program dir
         if (Datavyu.getPlatform() == Datavyu.Platform.WINDOWS) {
@@ -150,8 +148,8 @@ public class NativeLoader {
                     .getCodeSource().getLocation().getPath()).getParentFile().getAbsolutePath();
             String[] splitPath = searchPath.split(File.pathSeparator);
             searchPath = "";
-            for(int i = 0; i < splitPath.length; i++) {
-                if(!splitPath[i].startsWith("C:\\")) {
+            for (int i = 0; i < splitPath.length; i++) {
+                if (!splitPath[i].startsWith("C:\\")) {
                     searchPath += path;
                 }
                 searchPath += File.separator + splitPath[i] + File.pathSeparator;
@@ -185,7 +183,7 @@ public class NativeLoader {
                     // Create a temporary output location for the library.
                     FileOutputStream out = new FileOutputStream(outFile);
                     BufferedOutputStream dest = new BufferedOutputStream(out,
-                                                                         BUFFER);
+                            BUFFER);
                     int count;
                     byte[] data = new byte[BUFFER];
 
@@ -205,7 +203,7 @@ public class NativeLoader {
             // Unable to find jar file - abort decompression.
         } else {
             System.err.println("Unable to find jar file for unpacking: "
-                               + appJar + ". Java classpath is:");
+                    + appJar + ". Java classpath is:");
 
             for (String s : System.getProperty("java.class.path").split(File.pathSeparator)) {
                 System.err.println("    " + s);
@@ -229,13 +227,13 @@ public class NativeLoader {
                 System.err.println("Unable to delete temp file: " + loadedLib);
             }
         }
-	
-	// Delete all of the other files that mongo has created
-	try {
-		FileUtils.deleteDirectory(nativeLibFolder);
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
+
+        // Delete all of the other files that mongo has created
+        try {
+            FileUtils.deleteDirectory(nativeLibFolder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if ((nativeLibFolder != null) && !nativeLibFolder.delete()) {
             System.err.println("Unable to delete temp folder: + " + nativeLibFolder);
         }

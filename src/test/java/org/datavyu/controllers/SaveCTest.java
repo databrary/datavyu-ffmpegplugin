@@ -14,21 +14,18 @@
  */
 package org.datavyu.controllers;
 
-import org.datavyu.models.db.DatastoreFactory;
 import com.usermetrix.jclient.UserMetrix;
-import java.io.File;
-import java.io.IOException;
+import org.datavyu.models.db.*;
+import org.datavyu.models.project.Project;
 import org.datavyu.util.UIUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.IOException;
+
 import static junit.framework.Assert.assertTrue;
-import org.datavyu.models.db.Argument;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.UserWarningException;
-import org.datavyu.models.db.Variable;
-import org.datavyu.models.project.Project;
 
 /**
  * Tests for saving Datavyu project and CSV files.

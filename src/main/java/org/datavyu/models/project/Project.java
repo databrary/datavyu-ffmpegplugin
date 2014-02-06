@@ -14,10 +14,10 @@
  */
 package org.datavyu.models.project;
 
+import org.apache.commons.io.FilenameUtils;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.commons.io.FilenameUtils;
 
 
 /**
@@ -26,26 +26,37 @@ import org.apache.commons.io.FilenameUtils;
  */
 public final class Project {
 
-    /** Project specification version. */
+    /**
+     * Project specification version.
+     */
     public static final int VERSION = 5;
 
-    /** Name of this project. */
+    /**
+     * Name of this project.
+     */
     private String projectName;
 
-    /** Database file name. */
+    /**
+     * Database file name.
+     */
     private String databaseFileName;
 
-    /** The directory that the project file resides in. */
+    /**
+     * The directory that the project file resides in.
+     */
     private String projectDirectory;
 
-    /** The directory that the project file was saved to. Could be the same as
+    /**
+     * The directory that the project file was saved to. Could be the same as
      * the project directory, and could importantly be blank in the case of
-     * loading older project files. */
+     * loading older project files.
+     */
     private String originalProjectDirectory;
 
     private List<ViewerSetting> viewerSettings;
 
-    @Deprecated private List<TrackSettings> interfaceSettings;
+    @Deprecated
+    private List<TrackSettings> interfaceSettings;
 
     /**
      * Constructor.
@@ -87,8 +98,7 @@ public final class Project {
     }
 
     /**
-     * @param fileName
-     *            the database file name. Does not include directory.
+     * @param fileName the database file name. Does not include directory.
      */
     public void setDatabaseFileName(final String fileName) {
         databaseFileName = fileName;
@@ -104,8 +114,7 @@ public final class Project {
     /**
      * Sets the name of the project.
      *
-     * @param newProjectName
-     *            The new name to use for this project.
+     * @param newProjectName The new name to use for this project.
      */
     public void setProjectName(final String newProjectName) {
 
@@ -114,7 +123,7 @@ public final class Project {
 
         // Set the name of the project.
         String name = FilenameUtils.removeExtension(FilenameUtils.getName(
-                    newProjectName));
+                newProjectName));
 
         if ("".equals(name)) {
             name = "Project1";
@@ -124,7 +133,7 @@ public final class Project {
     }
 
     public void setViewerSettings(
-        final Iterable<ViewerSetting> viewerSettings) {
+            final Iterable<ViewerSetting> viewerSettings) {
 
         if (viewerSettings != null) {
             this.viewerSettings = new LinkedList<ViewerSetting>();
@@ -135,8 +144,9 @@ public final class Project {
         }
     }
 
-    @Deprecated public void setTrackSettings(
-        final Iterable<TrackSettings> interfaceSettings) {
+    @Deprecated
+    public void setTrackSettings(
+            final Iterable<TrackSettings> interfaceSettings) {
 
         if (interfaceSettings != null) {
             this.interfaceSettings = new LinkedList<TrackSettings>();
@@ -149,13 +159,14 @@ public final class Project {
 
     /**
      * @return Viewer settings used for each media file being managed by
-     *         Datavyu.
+     * Datavyu.
      */
     public Iterable<ViewerSetting> getViewerSettings() {
         return viewerSettings;
     }
 
-    @Deprecated public Iterable<TrackSettings> getTrackSettings() {
+    @Deprecated
+    public Iterable<TrackSettings> getTrackSettings() {
         return interfaceSettings;
     }
 
@@ -167,23 +178,25 @@ public final class Project {
     }
 
     /**
-     * @param projectDirectory
-     *            the projectDirectory to set
+     * @param projectDirectory the projectDirectory to set
      */
     public void setProjectDirectory(final String projectDirectory) {
         this.projectDirectory = projectDirectory;
     }
 
-    /** @return the directory the project file was saved to. */
+    /**
+     * @return the directory the project file was saved to.
+     */
     public String getOriginalProjectDirectory() {
         return originalProjectDirectory;
     }
 
-    /** @param originalProjectDirectory sets the directory the project file was
-     * saved to.
+    /**
+     * @param originalProjectDirectory sets the directory the project file was
+     *                                 saved to.
      */
     public void setOriginalProjectDirectory(
-        final String originalProjectDirectory) {
+            final String originalProjectDirectory) {
         this.originalProjectDirectory = originalProjectDirectory;
     }
 

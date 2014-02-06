@@ -14,35 +14,36 @@
  */
 package org.datavyu.models.db;
 
-import org.datavyu.models.db.DatastoreFactory;
-import org.datavyu.models.db.Argument;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.UserWarningException;
-import org.datavyu.models.db.Value;
-import org.datavyu.models.db.Variable;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests for the TextValue Interface
  */
 public class TextValueTest {
-    
-    /** The parent Datastore for the TextValue we are testing. */
+
+    /**
+     * The parent Datastore for the TextValue we are testing.
+     */
     private Datastore ds;
 
-    /** The parent variable for the TextValue we are testing. */
+    /**
+     * The parent variable for the TextValue we are testing.
+     */
     private Variable var;
 
-    /** The parent cell for the TextValue we are testing. */
+    /**
+     * The parent cell for the TextValue we are testing.
+     */
     private Cell cell;
 
-    /** The value that we are testing. */
+    /**
+     * The value that we are testing.
+     */
     private Value model;
 
     @BeforeMethod
@@ -71,7 +72,6 @@ public class TextValueTest {
         model.clear();
         assertTrue(model.isEmpty());
     }
-    
-    
-    
+
+
 }

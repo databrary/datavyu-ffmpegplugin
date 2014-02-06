@@ -16,20 +16,23 @@ package org.datavyu.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 import org.datavyu.controllers.DeleteColumnC;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
 
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Undoable script edit.
  */
 public class RunScriptEdit extends SpreadsheetEdit {
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = UserMetrix.getLogger(RunScriptEdit.class);
 
     private String scriptPath;

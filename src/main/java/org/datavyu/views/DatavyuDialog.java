@@ -14,7 +14,7 @@
  */
 package org.datavyu.views;
 
-import javax.swing.JDialog;
+import javax.swing.*;
 
 /**
  * Generic Datavyu dialog - handles work common to all dialogs (handling of
@@ -26,7 +26,7 @@ public abstract class DatavyuDialog extends JDialog {
      * Constructor. Creates a new DatavyuDialog.
      *
      * @param parent The parent of this form.
-     * @param modal Should the dialog be modal or not?
+     * @param modal  Should the dialog be modal or not?
      */
     public DatavyuDialog(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);

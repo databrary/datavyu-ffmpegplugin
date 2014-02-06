@@ -14,10 +14,11 @@
  */
 package org.datavyu.views.discrete.datavalues;
 
+import org.datavyu.views.discrete.EditorComponent;
+
+import javax.swing.text.JTextComponent;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.text.JTextComponent;
-import org.datavyu.views.discrete.EditorComponent;
 
 /**
  * Leaf item in the Editor Component for fixed text like brackets and commas.
@@ -30,8 +31,8 @@ public class FixedText extends EditorComponent {
     /**
      * Constructor.
      *
-     * @param ta The Parent JTextComponent that this FixedText editor is nested
-     * within.
+     * @param ta   The Parent JTextComponent that this FixedText editor is nested
+     *             within.
      * @param text The inital text to use for this Fixedtext component.
      */
     public FixedText(final JTextComponent ta, final String text) {

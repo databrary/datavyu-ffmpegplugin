@@ -16,15 +16,15 @@ package org.datavyu.views;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Frame;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.NewProjectC;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.DatastoreFactory;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 /**
@@ -32,7 +32,9 @@ import org.datavyu.models.db.DatastoreFactory;
  */
 public final class NewProjectV extends DatavyuDialog {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(NewProjectV.class);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -49,7 +51,7 @@ public final class NewProjectV extends DatavyuDialog {
      * Creates new form NewDatabaseView.
      *
      * @param parent The parent of this JDialog.
-     * @param modal Is this dialog modal or not?
+     * @param modal  Is this dialog modal or not?
      */
     public NewProjectV(final Frame parent, final boolean modal) {
         super(parent, modal);
@@ -83,9 +85,9 @@ public final class NewProjectV extends DatavyuDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         org.jdesktop.application.ResourceMap resourceMap =
-            org.jdesktop.application.Application.getInstance(
-                org.datavyu.Datavyu.class).getContext().getResourceMap(
-                NewProjectV.class);
+                org.jdesktop.application.Application.getInstance(
+                        org.datavyu.Datavyu.class).getContext().getResourceMap(
+                        NewProjectV.class);
         setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
         setResizable(false);
@@ -111,68 +113,68 @@ public final class NewProjectV extends DatavyuDialog {
         cancelButton.setText(resourceMap.getString("cancelButton.text")); // NOI18N
         cancelButton.setName("cancelButton"); // NOI18N
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(
+            public void actionPerformed(
                     final java.awt.event.ActionEvent evt) {
-                    cancelButtonActionPerformed(evt);
-                }
-            });
+                cancelButtonActionPerformed(evt);
+            }
+        });
 
         okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
         okButton.setName("okButton"); // NOI18N
         okButton.setPreferredSize(new java.awt.Dimension(65, 23));
         okButton.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(
+            public void actionPerformed(
                     final java.awt.event.ActionEvent evt) {
-                    okButtonActionPerformed(evt);
-                }
-            });
+                okButtonActionPerformed(evt);
+            }
+        });
 
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup(
                 GroupLayout.Alignment.LEADING).addGroup(
                 layout.createSequentialGroup().addContainerGap().addGroup(
-                    layout.createParallelGroup(
-                        GroupLayout.Alignment.LEADING).addGroup(
-                        layout.createSequentialGroup().addGroup(
-                            layout.createParallelGroup(
-                                GroupLayout.Alignment.LEADING).addComponent(
-                                jLabel2).addComponent(jLabel1)).addPreferredGap(
-                            LayoutStyle.ComponentPlacement.RELATED).addGroup(
-                            layout.createParallelGroup(
-                                GroupLayout.Alignment.TRAILING).addComponent(
-                                nameField, GroupLayout.DEFAULT_SIZE, 274,
-                                Short.MAX_VALUE).addComponent(jScrollPane1,
+                        layout.createParallelGroup(
+                                GroupLayout.Alignment.LEADING).addGroup(
+                                layout.createSequentialGroup().addGroup(
+                                        layout.createParallelGroup(
+                                                GroupLayout.Alignment.LEADING).addComponent(
+                                                jLabel2).addComponent(jLabel1)).addPreferredGap(
+                                        LayoutStyle.ComponentPlacement.RELATED).addGroup(
+                                        layout.createParallelGroup(
+                                                GroupLayout.Alignment.TRAILING).addComponent(
+                                                nameField, GroupLayout.DEFAULT_SIZE, 274,
+                                                Short.MAX_VALUE).addComponent(jScrollPane1,
+                                                GroupLayout.Alignment.TRAILING,
+                                                GroupLayout.DEFAULT_SIZE, 274,
+                                                Short.MAX_VALUE))).addGroup(
                                 GroupLayout.Alignment.TRAILING,
-                                GroupLayout.DEFAULT_SIZE, 274,
-                                Short.MAX_VALUE))).addGroup(
-                        GroupLayout.Alignment.TRAILING,
-                        layout.createSequentialGroup().addComponent(okButton,
-                            GroupLayout.PREFERRED_SIZE,
-                            GroupLayout.DEFAULT_SIZE,
-                            GroupLayout.PREFERRED_SIZE).addPreferredGap(
-                            LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(cancelButton))).addContainerGap()));
+                                layout.createSequentialGroup().addComponent(okButton,
+                                        GroupLayout.PREFERRED_SIZE,
+                                        GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.PREFERRED_SIZE).addPreferredGap(
+                                        LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(cancelButton))).addContainerGap()));
         layout.setVerticalGroup(layout.createParallelGroup(
                 GroupLayout.Alignment.LEADING).addGroup(
                 layout.createSequentialGroup().addContainerGap().addGroup(
-                    layout.createParallelGroup(
-                        GroupLayout.Alignment.BASELINE).addComponent(
-                        jLabel1).addComponent(nameField,
-                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                        GroupLayout.PREFERRED_SIZE)).addPreferredGap(
-                    LayoutStyle.ComponentPlacement.RELATED).addGroup(
-                    layout.createParallelGroup(
-                        GroupLayout.Alignment.LEADING).addComponent(jLabel2)
-                        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE,
-                            111, GroupLayout.PREFERRED_SIZE)).addPreferredGap(
-                    LayoutStyle.ComponentPlacement.UNRELATED).addGroup(
-                    layout.createParallelGroup(
-                        GroupLayout.Alignment.BASELINE).addComponent(
-                        cancelButton).addComponent(okButton,
-                        GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                        GroupLayout.PREFERRED_SIZE)).addContainerGap(
-                    GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+                        layout.createParallelGroup(
+                                GroupLayout.Alignment.BASELINE).addComponent(
+                                jLabel1).addComponent(nameField,
+                                GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.PREFERRED_SIZE)).addPreferredGap(
+                        LayoutStyle.ComponentPlacement.RELATED).addGroup(
+                        layout.createParallelGroup(
+                                GroupLayout.Alignment.LEADING).addComponent(jLabel2)
+                                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE,
+                                        111, GroupLayout.PREFERRED_SIZE)).addPreferredGap(
+                        LayoutStyle.ComponentPlacement.UNRELATED).addGroup(
+                        layout.createParallelGroup(
+                                GroupLayout.Alignment.BASELINE).addComponent(
+                                cancelButton).addComponent(okButton,
+                                GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.PREFERRED_SIZE)).addContainerGap(
+                        GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
         pack();
     } // </editor-fold>//GEN-END:initComponents

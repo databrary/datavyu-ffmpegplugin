@@ -14,36 +14,33 @@
  */
 package org.datavyu.models.db;
 
-import org.datavyu.models.db.DatastoreFactory;
-import java.util.ArrayList;
-import java.util.List;
-import org.datavyu.models.db.Argument;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.UserWarningException;
-import org.datavyu.models.db.Variable;
-import org.datavyu.models.db.VariableListener;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertNotSame;
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
  * Tests for the Variable Interface
  */
 public class VariableTest {
-    /** The parent datastore for the variable. */
+    /**
+     * The parent datastore for the variable.
+     */
     private Datastore ds;
 
-    /** The model we are testing. */
+    /**
+     * The model we are testing.
+     */
     private Variable model;
 
-    /** the modelListener we are testing. */
+    /**
+     * the modelListener we are testing.
+     */
     private VariableListener modelListener;
 
     @BeforeMethod
@@ -180,49 +177,49 @@ public class VariableTest {
         assertEquals(model.getCellTemporally(0), c2);
     }
 
-     @Test(expectedExceptions = UserWarningException.class)
-     public void uniqueVariableNames() throws UserWarningException {
-         ds.createVariable("test", Argument.Type.TEXT);
-     }
+    @Test(expectedExceptions = UserWarningException.class)
+    public void uniqueVariableNames() throws UserWarningException {
+        ds.createVariable("test", Argument.Type.TEXT);
+    }
 
-     @Test(expectedExceptions = UserWarningException.class)
-     public void nameWithCharacters() throws UserWarningException {
-         ds.createVariable("", Argument.Type.TEXT);
-     }
+    @Test(expectedExceptions = UserWarningException.class)
+    public void nameWithCharacters() throws UserWarningException {
+        ds.createVariable("", Argument.Type.TEXT);
+    }
 
-     @Test
-     public void trimWhiteSpace() throws UserWarningException {
-         Variable var = ds.createVariable(" blah ", Argument.Type.TEXT);
-         assertEquals(var.getName(), "blah");
-     }
+    @Test
+    public void trimWhiteSpace() throws UserWarningException {
+        Variable var = ds.createVariable(" blah ", Argument.Type.TEXT);
+        assertEquals(var.getName(), "blah");
+    }
 
-     @Test(expectedExceptions = UserWarningException.class)
-     public void badCharacter1() throws UserWarningException {
-         ds.createVariable("as)ds", Argument.Type.TEXT);
-     }
+    @Test(expectedExceptions = UserWarningException.class)
+    public void badCharacter1() throws UserWarningException {
+        ds.createVariable("as)ds", Argument.Type.TEXT);
+    }
 
-     @Test(expectedExceptions = UserWarningException.class)
-     public void badCharacter2() throws UserWarningException {
-         ds.createVariable("ac(dc", Argument.Type.TEXT);
-     }
+    @Test(expectedExceptions = UserWarningException.class)
+    public void badCharacter2() throws UserWarningException {
+        ds.createVariable("ac(dc", Argument.Type.TEXT);
+    }
 
-     @Test(expectedExceptions = UserWarningException.class)
-     public void badCharacter3() throws UserWarningException {
-         ds.createVariable("ac>dc", Argument.Type.TEXT);
-     }
+    @Test(expectedExceptions = UserWarningException.class)
+    public void badCharacter3() throws UserWarningException {
+        ds.createVariable("ac>dc", Argument.Type.TEXT);
+    }
 
-     @Test(expectedExceptions = UserWarningException.class)
-     public void badCharacter4() throws UserWarningException {
-         ds.createVariable("ac<dc", Argument.Type.TEXT);
-     }
+    @Test(expectedExceptions = UserWarningException.class)
+    public void badCharacter4() throws UserWarningException {
+        ds.createVariable("ac<dc", Argument.Type.TEXT);
+    }
 
-     @Test(expectedExceptions = UserWarningException.class)
-     public void badCharacter5() throws UserWarningException {
-         ds.createVariable("ac,dc", Argument.Type.TEXT);
-     }
+    @Test(expectedExceptions = UserWarningException.class)
+    public void badCharacter5() throws UserWarningException {
+        ds.createVariable("ac,dc", Argument.Type.TEXT);
+    }
 
-     @Test(expectedExceptions = UserWarningException.class)
-     public void badCharacter6() throws UserWarningException {
-         ds.createVariable("ac\"dc", Argument.Type.TEXT);
-     }
+    @Test(expectedExceptions = UserWarningException.class)
+    public void badCharacter6() throws UserWarningException {
+        ds.createVariable("ac\"dc", Argument.Type.TEXT);
+    }
 }

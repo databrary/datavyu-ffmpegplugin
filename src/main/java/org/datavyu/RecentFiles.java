@@ -14,30 +14,19 @@
  */
 package org.datavyu;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
 import org.apache.commons.io.IOUtils;
-
 import org.jdesktop.application.LocalStorage;
-
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -48,27 +37,39 @@ public enum RecentFiles {
 
     INSTANCE;
 
-    /** Max files per list to remember. */
+    /**
+     * Max files per list to remember.
+     */
     private static final int HISTORY_LIMIT = 5;
 
-    /** Name of the history file to load from. */
+    /**
+     * Name of the history file to load from.
+     */
     private static final String fileName = "recent_files.yml";
 
-    /** Class logger. */
+    /**
+     * Class logger.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(RecentFiles.class);
 
-    /** List of recently opened projects. */
+    /**
+     * List of recently opened projects.
+     */
     private List<File> projects;
 
-    /** List of recently opened scripts. */
+    /**
+     * List of recently opened scripts.
+     */
     private List<File> scripts;
 
-    /** The history file to read and write to. */
+    /**
+     * The history file to read and write to.
+     */
     private final File historyFile;
 
     private RecentFiles() {
         LocalStorage storage = Datavyu.getApplication().getContext()
-            .getLocalStorage();
+                .getLocalStorage();
 
         projects = new LinkedList<File>();
         scripts = new LinkedList<File>();

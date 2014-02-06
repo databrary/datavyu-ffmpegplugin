@@ -30,6 +30,9 @@ import org.datavyu.models.db.Variable;
  * undo / redo states to the datastore.
  */
 public final class CellTO {
+    private Cell cell;
+    private Variable variable;
+
     private long onset;
 
     private long offset;
@@ -49,10 +52,14 @@ public final class CellTO {
         onset = newCell.getOnset();
         offset = newCell.getOffset();
         value = newCell.getValueAsString();
+        value = value.substring(1, value.length() - 1);
+
+        cell = newCell;
+        variable = parentVariable;
         //Remove ()
-        if (newCell.getValue().isEmpty()) {
-            value = "<" + variableName + ">";
-        }
+//        if (newCell.getValue().isEmpty()) {
+//            value = "<" + variableName + ">";
+//        }
     }
 
     /**
@@ -81,5 +88,13 @@ public final class CellTO {
      */
     public String getParentVariableName() {
         return variableName;
+    }
+
+    public Cell getCell() {
+        return cell;
+    }
+
+    public Variable getVariable() {
+        return variable;
     }
 }

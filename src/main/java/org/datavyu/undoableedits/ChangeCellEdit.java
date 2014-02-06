@@ -14,19 +14,22 @@
  */
 package org.datavyu.undoableedits;
 
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Variable;
 import org.datavyu.util.Constants;
 import org.datavyu.views.discrete.SpreadsheetCell;
 
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+
 /**
  * An undoable edit for altering the contents of a cell.
  */
 abstract public class ChangeCellEdit extends SpreadsheetEdit {
-    /** Column's index */
+    /**
+     * Column's index
+     */
     protected int colIndex = -1;
 
     /**
@@ -37,18 +40,20 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
 
     protected String columnName;
 
-    /** The granularity of the edit - fine or coarse. */
+    /**
+     * The granularity of the edit - fine or coarse.
+     */
     protected Granularity granularity;
 
     public Granularity getGranularity() {
         return granularity;
     }
-    
+
     public enum Granularity {
         FINEGRAINED,
         COARSEGRAINED
     }
-    
+
     public ChangeCellEdit(Cell c, Granularity granularity) {
         // New constructor.
         super();
@@ -57,7 +62,7 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
         Variable var = Datavyu.getProjectController().getDB().getVariable(c);
         columnName = var.getName();
 
-        for(Cell cell : var.getCells()) {
+        for (Cell cell : var.getCells()) {
             ord++;
 
             if (cell.equals(c)) {
@@ -86,7 +91,7 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
         super.undo();
         updateCell();
     }
-   
+
     protected void updateCell() {
         Variable var = Datavyu.getProjectController().getDB().getVariable(columnName);
         Cell cell = var.getCells().get(ord);
@@ -97,23 +102,23 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
         }
 */
     }
-    
+
     abstract protected void updateCell(Cell cell);
-    
+
     protected void updateSpreadsheetCell(Cell cell) {
         unselectAll();
         SpreadsheetCell sCell = getSpreadsheetCell(cell);
         cell.setHighlighted(true);
         sCell.requestFocusInWindow();
-        selectField(sCell);    
+        selectField(sCell);
     }
-    
+
     abstract protected void selectField(SpreadsheetCell sCell);
 
     @Override
     public boolean equals(Object obj) {
-        return (obj instanceof ChangeCellEdit) && 
-               ((ChangeCellEdit)obj).granularity == this.granularity;
+        return (obj instanceof ChangeCellEdit) &&
+                ((ChangeCellEdit) obj).granularity == this.granularity;
     }
 
     @Override

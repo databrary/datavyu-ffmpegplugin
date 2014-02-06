@@ -15,40 +15,44 @@
 package org.datavyu.views.discrete.datavalues;
 
 import com.usermetrix.jclient.Logger;
-import java.awt.Dimension;
+import com.usermetrix.jclient.UserMetrix;
+import org.datavyu.Datavyu;
+import org.datavyu.models.db.Cell;
+import org.datavyu.models.db.Variable;
+import org.datavyu.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.JTextField;
-
-import org.datavyu.Datavyu;
-import org.datavyu.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
-
-import com.usermetrix.jclient.UserMetrix;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Variable;
-
 /**
  * JTextArea view of the Matrix (database cell) data.
  */
 public final class TimeStampTextField extends JTextField
-implements FocusListener, KeyListener {
+        implements FocusListener, KeyListener {
 
-    /** The parent cell for this JPanel. */
+    /**
+     * The parent cell for this JPanel.
+     */
     private Cell parentCell = null;
 
-    /** The editors that make up the representation of the data. */
+    /**
+     * The editors that make up the representation of the data.
+     */
     private TimeStampDataValueEditor myEditor;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(TimeStampTextField.class);
 
     /**
      * Creates a new instance of MatrixV.
      *
-     * @param cell The parent datacell for this spreadsheet cell.
+     * @param cell   The parent datacell for this spreadsheet cell.
      * @param tsType Which TimeStamp of the cell to display. represent.
      */
     public TimeStampTextField(final Cell cell, final TimeStampSource tsType) {
@@ -108,7 +112,7 @@ implements FocusListener, KeyListener {
      * Override to address bug(?) in JTextField see java bug id 4446522 for
      * discussion. Probably not the final answer but resolves the clipping of
      * first character displayed.
-     * 
+     *
      * @return the dimension of this textfield
      */
     @Override
@@ -135,7 +139,7 @@ implements FocusListener, KeyListener {
             // method names don't reflect usage - we didn't really create this
             // cell just now.
             Variable var = Datavyu.getProjectController().getDB()
-                                    .getVariable(parentCell);
+                    .getVariable(parentCell);
 
             Datavyu.getProjectController().setLastCreatedVariable(var);
             Datavyu.getProjectController().setLastSelectedCell(parentCell);

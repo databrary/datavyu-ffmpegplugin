@@ -16,29 +16,32 @@ package org.datavyu.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.util.List;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
+import org.datavyu.Datavyu;
 import org.datavyu.controllers.DeleteColumnC;
+import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import java.util.ArrayList;
 import java.util.Collections;
-import org.datavyu.Datavyu;
-import org.datavyu.models.db.Cell;
+import java.util.List;
 
 /**
  * Undoable edit for removing cells from the spreadsheet.
  */
-public class RemoveVariableEdit extends VocabEditorEdit {    
-    /** The logger for this class. */
+public class RemoveVariableEdit extends VocabEditorEdit {
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = UserMetrix.getLogger(RemoveVariableEdit.class);
 
     private List<VariableTO> varToDeleteTOs;
 
     public RemoveVariableEdit(List<Variable> varsToDelete) {
         varToDeleteTOs = new ArrayList<VariableTO>();
-        
+
         for (Variable var : varsToDelete) {
             int pos = 0;
             for (Variable var2 : model.getAllVariables()) {
@@ -87,8 +90,8 @@ public class RemoveVariableEdit extends VocabEditorEdit {
         Datavyu.getView().showSpreadsheet();
     }
 
-    @Override 
-    public void redo() throws CannotUndoException {        
+    @Override
+    public void redo() throws CannotUndoException {
         super.redo();
 
         List<Variable> varsToDelete = new ArrayList<Variable>();
@@ -98,5 +101,5 @@ public class RemoveVariableEdit extends VocabEditorEdit {
 
         new DeleteColumnC(varsToDelete);
         unselectAll();
-    }   
+    }
 }

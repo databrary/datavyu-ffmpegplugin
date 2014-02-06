@@ -14,16 +14,13 @@
  */
 package org.datavyu.plugins;
 
-import java.io.File;
-
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.filechooser.FileFilter;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.datavyu.plugins.Filter;
+
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
+import java.util.List;
+import java.util.Set;
 
 
 public final class GroupFileFilter extends FileFilter {
@@ -36,7 +33,8 @@ public final class GroupFileFilter extends FileFilter {
         filters = Lists.newArrayList();
     }
 
-    @Override public boolean accept(final File f) {
+    @Override
+    public boolean accept(final File f) {
 
         if (f.isDirectory()) {
             return true;
@@ -52,7 +50,8 @@ public final class GroupFileFilter extends FileFilter {
         return false;
     }
 
-    @Override public String getDescription() {
+    @Override
+    public String getDescription() {
         Set<String> extensions = Sets.newTreeSet();
 
         for (Filter filter : filters) {

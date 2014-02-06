@@ -15,50 +15,26 @@
 package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintWriter;
-
-import java.util.List;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-
-import javax.swing.JFileChooser;
-import javax.swing.JTextArea;
-
+import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.Datavyu;
 import org.datavyu.RecentFiles;
-
+import org.datavyu.models.db.*;
 import org.datavyu.util.FileFilters.RBFilter;
 import org.datavyu.util.FileFilters.RFilter;
-
 import org.datavyu.views.ConsoleV;
 import org.datavyu.views.DatavyuFileChooser;
 import org.datavyu.views.DatavyuView;
-
-import com.usermetrix.jclient.UserMetrix;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.swing.SwingWorker;
-import org.datavyu.models.db.Argument;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.MatrixValue;
-import org.datavyu.models.db.Value;
-import org.datavyu.models.db.Variable;
 import rcaller.RCaller;
 import rcaller.RCode;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+import javax.swing.*;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -66,24 +42,36 @@ import rcaller.RCode;
  */
 public final class RunScriptC extends SwingWorker<Object, String> {
 
-    /** the maximum size of the recently ran script list. */
+    /**
+     * the maximum size of the recently ran script list.
+     */
     private static final int MAX_RECENT_SCRIPT_SIZE = 5;
 
-    /** The path to the script file we are executing. */
+    /**
+     * The path to the script file we are executing.
+     */
     private final File scriptFile;
 
-    /** The View that the results of the scripting engine are displayed too. */
+    /**
+     * The View that the results of the scripting engine are displayed too.
+     */
     private JTextArea console = null;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(RunScriptC.class);
 
-    /** output stream for messages coming from the scripting engine. */
+    /**
+     * output stream for messages coming from the scripting engine.
+     */
     private PipedInputStream consoleOutputStream;
 
-    /** input stream for displaying messages from the scripting engine. */
+    /**
+     * input stream for displaying messages from the scripting engine.
+     */
     private PrintWriter consoleWriter;
-    
+
     private OutputStream sIn;
 
     /**
@@ -95,7 +83,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         DatavyuFileChooser jd = new DatavyuFileChooser();
         jd.addChoosableFileFilter(RFilter.INSTANCE);
         jd.addChoosableFileFilter(RBFilter.INSTANCE);
-	
+
         int result = jd.showOpenDialog(Datavyu.getApplication()
                 .getMainFrame());
 
@@ -111,14 +99,13 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      * Constructs and invokes the runscript controller.
      *
      * @param file The absolute path to the script file you wish to invoke.
-     *
      * @throws IOException If unable to create the run script controller.
      */
     public RunScriptC(final String file) throws IOException {
         scriptFile = new File(file);
         init();
     }
-    
+
     public String getScriptFilePath() {
         return this.scriptFile.getAbsolutePath();
     }
@@ -127,226 +114,222 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      * Initalises the controller for running scripts.
      *
      * @throws IOException If unable to initalise the controller for running
-     * scripts.
+     *                     scripts.
      */
     private void init() throws IOException {
         Datavyu.getApplication().show(ConsoleV.getInstance());
         console = ConsoleV.getInstance().getConsole();
-        
+
         consoleOutputStream = new PipedInputStream();
         sIn = new PipedOutputStream(consoleOutputStream);
         consoleWriter = new PrintWriter(sIn);
     }
 
-    @Override protected Object doInBackground() {
+    @Override
+    protected Object doInBackground() {
         LOGGER.event("run script");
 
         ReaderThread t = new ReaderThread();
         t.start();
 
         RecentFiles.rememberScript(scriptFile);
-        
-        if(scriptFile.getName().endsWith(".rb")) {
+
+        if (scriptFile.getName().endsWith(".rb")) {
             runRubyScript(scriptFile);
-        }
-        else if(scriptFile.getName().endsWith(".r") || scriptFile.getName().endsWith(".R")) {
+        } else if (scriptFile.getName().endsWith(".r") || scriptFile.getName().endsWith(".R")) {
             runRScript(scriptFile);
         }
-	
-	// Close the output stream to kill our reader thread
-	try {
+
+        // Close the output stream to kill our reader thread
+        try {
             consoleWriter.flush();
 //	    consoleOutputStream.close();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-                
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
-    
+
     private void runRubyScript(File scriptFile) {
-	    ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
-	    rubyEngine.getContext().setWriter(consoleWriter);
-            rubyEngine.getContext().setErrorWriter(consoleWriter);
-            try {
-                consoleWriter.println("\n*************************");
-		consoleWriter.println("\nRunning Script: " + scriptFile.getName());
-                consoleWriter.println("*************************");
+        ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
+        rubyEngine.getContext().setWriter(consoleWriter);
+        rubyEngine.getContext().setErrorWriter(consoleWriter);
+        try {
+            consoleWriter.println("\n*************************");
+            consoleWriter.println("\nRunning Script: " + scriptFile.getName());
+            consoleWriter.println("*************************");
 
-                consoleWriter.flush();
-                
-                // Place reference to various Datavyu functionality.
-                rubyEngine.put("db", Datavyu.getProjectController().getDB());
-                rubyEngine.put("pj", Datavyu.getProjectController().getProject());
-                rubyEngine.put("mixer", Datavyu.getDataController().getMixerController());
-                rubyEngine.put("viewers", Datavyu.getDataController());
+            consoleWriter.flush();
 
-                FileReader reader = new FileReader(scriptFile);
-                rubyEngine.eval(reader);
-                consoleWriter.flush();
+            // Place reference to various Datavyu functionality.
+            rubyEngine.put("db", Datavyu.getProjectController().getDB());
+            rubyEngine.put("pj", Datavyu.getProjectController().getProject());
+            rubyEngine.put("mixer", Datavyu.getDataController().getMixerController());
+            rubyEngine.put("viewers", Datavyu.getDataController());
 
-                reader = null;
-		
-                // Remove references.
-                rubyEngine.put("db", null);
-                rubyEngine.put("pj", null);
-                rubyEngine.put("mixer", null);
-                rubyEngine.put("viewers", null);
-		
-		consoleWriter.println("\nScript completed successfully.");
-                consoleWriter.flush();
+            FileReader reader = new FileReader(scriptFile);
+            rubyEngine.eval(reader);
+            consoleWriter.flush();
 
-            } catch (ScriptException e) {
-                consoleWriter.flush();
-                consoleWriter.println("***** SCRIPT ERROR *****");
-                consoleWriter.println("@Line " + e.getLineNumber() + ":\n   '"
+            reader = null;
+
+            // Remove references.
+            rubyEngine.put("db", null);
+            rubyEngine.put("pj", null);
+            rubyEngine.put("mixer", null);
+            rubyEngine.put("viewers", null);
+
+            consoleWriter.println("\nScript completed successfully.");
+            consoleWriter.flush();
+
+        } catch (ScriptException e) {
+            consoleWriter.flush();
+            consoleWriter.println("***** SCRIPT ERROR *****");
+            consoleWriter.println("@Line " + e.getLineNumber() + ":\n   '"
                     + e.getMessage() + "'");
-                
-                consoleWriter.println("*************************");
-                consoleWriter.flush();
-		
-		System.out.println("Script Error");
 
-                LOGGER.error("Unable to execute script: ", e);
-            } catch (FileNotFoundException e) {
-		consoleWriter.println("File not found script");
-                LOGGER.error("Unable to execute script: ", e);
-	    }
+            consoleWriter.println("*************************");
+            consoleWriter.flush();
+
+            System.out.println("Script Error");
+
+            LOGGER.error("Unable to execute script: ", e);
+        } catch (FileNotFoundException e) {
+            consoleWriter.println("File not found script");
+            LOGGER.error("Unable to execute script: ", e);
+        }
     }
-    
+
     private void runRScript(File scriptFile) {
-            // Initialize RCaller and tell it where the rscript application is
-	    RCaller caller = new RCaller();
+        // Initialize RCaller and tell it where the rscript application is
+        RCaller caller = new RCaller();
+        try {
+
+
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                // We have to find it because Windows doesn't keep
+                // anything in reasonable places.
+
+                // We will check in two places: Program Files and then
+                // Program Files (x86)
+
+
+                String program_files = System.getenv("ProgramFiles");
+                String program_files_x86 = System.getenv("ProgramFiles(x86)");
+
+                if (new File(program_files + "/R/").exists()) {
+                    // Loop over directories in here
+                } else if (program_files_x86 != null && new File(program_files_x86 + "/R/").exists()) {
+                    // Loop over directories in here
+                }
+
+                caller.setRscriptExecutable(null);
+            } else {
+                caller.setRscriptExecutable("/usr/bin/rscript");
+            }
+        } catch (Exception e) {
+            // Ut oh, R isn't installed.
+            e.printStackTrace();
+        }
+        caller.redirectROutputToStream(sIn);
+
+        // Initialize our code buffer and database string representation
+        RCode code = new RCode();
+        HashMap db = convertDbToColStrings();
+        HashMap<String, File> temp_files = new HashMap<String, File>();
+
+        // Write the database out to tempory files
+        Iterator it = db.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+
+            // Now write this out to a temporary file
+            File outfile = new File(System.getProperty("java.io.tmpdir"), (String) pairs.getKey());
             try {
-		
-		
-		if(System.getProperty("os.name").startsWith("Windows")) {
-			// We have to find it because Windows doesn't keep
-			// anything in reasonable places.
-			
-			// We will check in two places: Program Files and then
-			// Program Files (x86)
-			
-			
-			String program_files = System.getenv("ProgramFiles");
-			String program_files_x86 = System.getenv("ProgramFiles(x86)");
-			
-			if(new File(program_files + "/R/").exists()) {
-				// Loop over directories in here
-			} else if (program_files_x86 != null && new File(program_files_x86 + "/R/").exists()) {
-				// Loop over directories in here
-			}
-			
-			caller.setRscriptExecutable(null);
-		} else {
-			caller.setRscriptExecutable("/usr/bin/rscript");
-		}
+                BufferedWriter output = new BufferedWriter(new FileWriter(outfile));
+                output.write((String) pairs.getValue());
+                output.close();
+
+                temp_files.put((String) pairs.getKey(), outfile);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            catch(Exception e) {
-                // Ut oh, R isn't installed.
-		e.printStackTrace();
-            }
-            caller.redirectROutputToStream(sIn);
-            
-            // Initialize our code buffer and database string representation
-            RCode code = new RCode();
-            HashMap db = convertDbToColStrings();
-            HashMap<String, File> temp_files = new HashMap<String, File>();
-            
-            // Write the database out to tempory files
-            Iterator it = db.entrySet().iterator();
+
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+        // Create the R code to read in the temporary db files into a structure
+        // called db
+        code.addRCode("db <- list()");
+        try {
+            // Load each of the temporary files created above into R
+            it = temp_files.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry pairs = (Map.Entry)it.next();
-                
-                // Now write this out to a temporary file
-                File outfile = new File(System.getProperty("java.io.tmpdir"), (String)pairs.getKey());
-                try {
-                    BufferedWriter output = new BufferedWriter(new FileWriter(outfile));
-                    output.write((String)pairs.getValue());
-                    output.close();
-                    
-                    temp_files.put((String)pairs.getKey(), outfile);
-                }
-                catch(Exception e) {
-                    e.printStackTrace();
-                }
-                                
+                Map.Entry pairs = (Map.Entry) it.next();
+
+                String load = "db[[\"" + ((String) pairs.getKey()).toLowerCase() + "\"]] <- read.csv(\"" + ((File) pairs.getValue()).getPath() + "\",header=TRUE, sep=',')";
+                code.addRCode(load);
+
                 it.remove(); // avoids a ConcurrentModificationException
             }
-            
-            // Create the R code to read in the temporary db files into a structure
-            // called db
-            code.addRCode("db <- list()");
-            try {
-                // Load each of the temporary files created above into R
-                it = temp_files.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pairs = (Map.Entry)it.next();
-                    
-                    String load = "db[[\"" + ((String)pairs.getKey()).toLowerCase() + "\"]] <- read.csv(\"" + ((File)pairs.getValue()).getPath() + "\",header=TRUE, sep=',')";
-                    code.addRCode(load);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-                    it.remove(); // avoids a ConcurrentModificationException
-                }
+        // Set up plotting. If something gets plotted, display it.
+        // Otherwise, just run the code.
+        try {
+            File plt = code.startPlot();
+            code.R_source(scriptFile.getPath());
+            caller.setRCode(code);
+            caller.runOnly();
+            code.endPlot();
+            if (plt.length() > 0) {
+                code.showPlot(plt);
             }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
-            
-            // Set up plotting. If something gets plotted, display it.
-            // Otherwise, just run the code.
-            try {
-                File plt = code.startPlot();
-                code.R_source(scriptFile.getPath());
-                caller.setRCode(code);
-                caller.runOnly();
-                code.endPlot();
-                if(plt.length() > 0) {
-                    code.showPlot(plt);
-                }
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    
+
     // TODO
     private void updateDbFromR() {
-        
+
     }
-    
-    /** Convert the Datavyu database to a csv file per column.
-        This allows for easy reading into R. */
+
+    /**
+     * Convert the Datavyu database to a csv file per column.
+     * This allows for easy reading into R.
+     */
     private HashMap<String, String> convertDbToColStrings() {
         Datastore db = Datavyu.getProjectController().getDB();
         HashMap<String, String> str_db = new HashMap<String, String>();
 
         String str_var;
-        for(Variable v : db.getAllVariables()) {
+        for (Variable v : db.getAllVariables()) {
             str_var = "ordinal,onset,offset";
-            if(v.getVariableType().type == Argument.Type.MATRIX) {
-                for(Argument a : v.getVariableType().childArguments) {
+            if (v.getVariableType().type == Argument.Type.MATRIX) {
+                for (Argument a : v.getVariableType().childArguments) {
                     str_var += "," + a.name;
                 }
-            }
-            else {
+            } else {
                 str_var += ",arg";
             }
             str_var += "\n";
-            for(int i = 0; i < v.getCellsTemporally().size(); i++) {
+            for (int i = 0; i < v.getCellsTemporally().size(); i++) {
                 Cell c = v.getCellsTemporally().get(i);
-                
-                String row = String.format("%d,%d,%d", i+1, c.getOnset(), c.getOffset());
-                if(v.getVariableType().type == Argument.Type.MATRIX) {
-                    for(Value val : ((MatrixValue)c.getValue()).getArguments()) {
+
+                String row = String.format("%d,%d,%d", i + 1, c.getOnset(), c.getOffset());
+                if (v.getVariableType().type == Argument.Type.MATRIX) {
+                    for (Value val : ((MatrixValue) c.getValue()).getArguments()) {
                         row += ",";
-                        if(!val.isEmpty())
+                        if (!val.isEmpty())
                             row += val.toString();
                     }
-                }
-                else {
+                } else {
                     row += ",";
-                    if(!c.getValue().isEmpty()) {
+                    if (!c.getValue().isEmpty()) {
                         row += c.getValue().toString();
                     }
                 }
@@ -354,18 +337,20 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             }
             str_db.put(v.getName(), str_var);
         }
-        
+
         return str_db;
     }
-    
-    @Override protected void done() {
+
+    @Override
+    protected void done() {
 
         // Display any changes.
         DatavyuView view = (DatavyuView) Datavyu.getView();
         view.showSpreadsheet();
     }
 
-    @Override protected void process(final List<String> chunks) {
+    @Override
+    protected void process(final List<String> chunks) {
 
         for (String chunk : chunks) {
             console.append(chunk);
@@ -382,23 +367,26 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      */
     class ReaderThread extends Thread {
 
-        /** The size of the buffer to use while ingesting data. */
+        /**
+         * The size of the buffer to use while ingesting data.
+         */
         private static final int BUFFER_SIZE = 32 * 1024;
 
         /**
          * The method to invoke when the thread is started.
          */
-        @Override public void run() {
+        @Override
+        public void run() {
             final byte[] buf = new byte[BUFFER_SIZE];
-	    
-	    int len;
+
+            int len;
 
             try {
                 while ((len = consoleOutputStream.read(buf)) != -1) {
                     if (len > 0) {
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
-			System.out.println(s);
+                        System.out.println(s);
                         publish(s);
                     }
 

@@ -14,22 +14,17 @@
  */
 package org.datavyu.views.component;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.geom.GeneralPath;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import javax.swing.JComponent;
-
 import org.datavyu.models.component.MixerModel;
 import org.datavyu.models.component.NeedleConstants;
 import org.datavyu.models.component.NeedleModelImpl;
 import org.datavyu.models.component.ViewportState;
 import org.datavyu.views.DataControllerV;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.GeneralPath;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * This class paints a timing needle.
@@ -41,7 +36,9 @@ public final class NeedlePainter extends JComponent implements PropertyChangeLis
      */
     private static final long serialVersionUID = -6157748998316240030L;
 
-    /** Polygon region for the needle marker */
+    /**
+     * Polygon region for the needle marker
+     */
     private GeneralPath needleMarker;
 
     private NeedleModelImpl needleModel;
@@ -50,31 +47,34 @@ public final class NeedlePainter extends JComponent implements PropertyChangeLis
     public NeedlePainter(final NeedleModelImpl needleModel) {
         this.needleModel = needleModel;
         this.mixer = needleModel.getMixerModel();
-        
+
         needleModel.addPropertyChangeListener(this);
     }
 
-    @Override public boolean contains(final Point p) {
-    	return contains(p.x, p.y);
+    @Override
+    public boolean contains(final Point p) {
+        return contains(p.x, p.y);
     }
-    
-    @Override public boolean contains(int x, int y) {
-    	return needleMarker != null && needleMarker.contains(x, y);
+
+    @Override
+    public boolean contains(int x, int y) {
+        return needleMarker != null && needleMarker.contains(x, y);
     }
-    
+
     public double getDataTrackTopY() {
-    	return NeedleConstants.NEEDLE_HEAD_HEIGHT;
+        return NeedleConstants.NEEDLE_HEAD_HEIGHT;
     }
-    
+
     public double getZoomWindowIndicatorTopY() {
-    	return getSize().height - needleModel.getZoomIndicatorHeight();
+        return getSize().height - needleModel.getZoomIndicatorHeight();
     }
 
     public double getTransitionAreaTopY() {
-    	return getZoomWindowIndicatorTopY() - needleModel.getTimescaleTransitionHeight();
+        return getZoomWindowIndicatorTopY() - needleModel.getTimescaleTransitionHeight();
     }
-    
-    @Override public void paintComponent(final Graphics g) {
+
+    @Override
+    public void paintComponent(final Graphics g) {
 
         if ((needleModel == null) || (mixer == null)) {
             return;
@@ -84,83 +84,83 @@ public final class NeedlePainter extends JComponent implements PropertyChangeLis
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON);
+                RenderingHints.VALUE_ANTIALIAS_ON);
 
         assert (NeedleConstants.NEEDLE_HEAD_WIDTH > 0)
-            && (NeedleConstants.NEEDLE_HEAD_HEIGHT > 0);
+                && (NeedleConstants.NEEDLE_HEAD_HEIGHT > 0);
 
         final double needleHeadWidth = NeedleConstants.NEEDLE_HEAD_WIDTH;
-        
+
         final long currentTime = needleModel.getCurrentTime();
         double needlePositionX = viewport.computePixelXOffset(currentTime) + needleHeadWidth;
         final boolean isNeedleInViewport = viewport.isTimeInViewport(currentTime);
-        
+
         if (isNeedleInViewport) {
-        	// draw the triangular needle head
-	        needleMarker = new GeneralPath();
-	        needleMarker.moveTo((float) (needlePositionX - needleHeadWidth), 0); // top-left
-	        needleMarker.lineTo((float) (needlePositionX + needleHeadWidth), 0); // top-right
-	        needleMarker.lineTo((float) needlePositionX, (float) getDataTrackTopY()); // bottom
-	        needleMarker.closePath();
-	
-	        g2d.setColor(needleModel.getNeedleColor());
-	        g2d.fill(needleMarker);
-	
-	        g2d.setColor(needleModel.getNeedleColor().darker());
-	        g2d.draw(needleMarker);
-	
-	        // Draw the timing needle
-	        float x1 = (float) needlePositionX;
-	        float y1 = (float) getDataTrackTopY();
-	        float x2 = (float) needlePositionX;
-	        float y2 = (float) getTransitionAreaTopY();
-	
-	        GeneralPath line = new GeneralPath();
-	        line.moveTo(x1, y1);
-	        line.lineTo(x2, y2);
-	
-	        assert NeedleConstants.NEEDLE_WIDTH > 0;
-	        g2d.setStroke(new BasicStroke((float) NeedleConstants.NEEDLE_WIDTH));
-	        g2d.draw(line);
+            // draw the triangular needle head
+            needleMarker = new GeneralPath();
+            needleMarker.moveTo((float) (needlePositionX - needleHeadWidth), 0); // top-left
+            needleMarker.lineTo((float) (needlePositionX + needleHeadWidth), 0); // top-right
+            needleMarker.lineTo((float) needlePositionX, (float) getDataTrackTopY()); // bottom
+            needleMarker.closePath();
+
+            g2d.setColor(needleModel.getNeedleColor());
+            g2d.fill(needleMarker);
+
+            g2d.setColor(needleModel.getNeedleColor().darker());
+            g2d.draw(needleMarker);
+
+            // Draw the timing needle
+            float x1 = (float) needlePositionX;
+            float y1 = (float) getDataTrackTopY();
+            float x2 = (float) needlePositionX;
+            float y2 = (float) getTransitionAreaTopY();
+
+            GeneralPath line = new GeneralPath();
+            line.moveTo(x1, y1);
+            line.lineTo(x2, y2);
+
+            assert NeedleConstants.NEEDLE_WIDTH > 0;
+            g2d.setStroke(new BasicStroke((float) NeedleConstants.NEEDLE_WIDTH));
+            g2d.draw(line);
         }
 
         g2d.setColor(needleModel.getNeedleColor().darker());
 
         // paint the needle transition area
         final double zoomWindowIndicatorX = ((double) currentTime * viewport.getViewWidth() / viewport.getMaxEnd()) + Math.ceil(NeedleConstants.NEEDLE_HEAD_WIDTH);
-        
+
         final int transitionCurveBottomWeight = 10;
         assert transitionCurveBottomWeight >= 0;
 
         GeneralPath shape = new GeneralPath();
         shape.moveTo(needlePositionX, getTransitionAreaTopY());
         shape.curveTo(needlePositionX,
-            (getTransitionAreaTopY()
-                + (getZoomWindowIndicatorTopY() * transitionCurveBottomWeight))
-            / (transitionCurveBottomWeight + 1), zoomWindowIndicatorX,
-            getTransitionAreaTopY(), zoomWindowIndicatorX, getZoomWindowIndicatorTopY());
+                (getTransitionAreaTopY()
+                        + (getZoomWindowIndicatorTopY() * transitionCurveBottomWeight))
+                        / (transitionCurveBottomWeight + 1), zoomWindowIndicatorX,
+                getTransitionAreaTopY(), zoomWindowIndicatorX, getZoomWindowIndicatorTopY());
         final float strokeWidth = (float) NeedleConstants.NEEDLE_WIDTH / (isNeedleInViewport ? 2.0f : 5.0f);
         g2d.setStroke(new BasicStroke(strokeWidth));
         g2d.draw(shape);
-        
+
         // paint the needle in the zoom window indicator
 
         GeneralPath needleMarker = new GeneralPath();
         needleMarker.moveTo(zoomWindowIndicatorX, getZoomWindowIndicatorTopY());
         needleMarker.lineTo(zoomWindowIndicatorX, getSize().height);
-        
+
         g2d.setStroke(new BasicStroke((float) NeedleConstants.NEEDLE_WIDTH));
-        g2d.draw(needleMarker);        
+        g2d.draw(needleMarker);
     }
 
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if (evt.getSource() == needleModel) {
-			repaint();
-			updateToolTipText();
-		}
-	}
-	
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource() == needleModel) {
+            repaint();
+            updateToolTipText();
+        }
+    }
+
     private void updateToolTipText() {
         setToolTipText(DataControllerV.formatTime(needleModel.getCurrentTime()));
     }

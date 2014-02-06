@@ -16,24 +16,31 @@ package org.datavyu.views.discrete.datavalues.vocabelements;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import javax.swing.text.JTextComponent;
 import org.datavyu.models.db.Argument;
 import org.datavyu.views.discrete.EditorComponent;
+
+import javax.swing.text.JTextComponent;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * This class is the character editor of a NominalDataValue.
  */
 public final class FormalArgTypeEditor extends EditorComponent {
 
-    /** Parent Vocab Element. */
+    /**
+     * Parent Vocab Element.
+     */
     private Argument parentArgument;
 
-    /** Index of the formal arg. */
+    /**
+     * Index of the formal arg.
+     */
     private int argIndex;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(FormalArgTypeEditor.class);
 
     public FormalArgTypeEditor(final JTextComponent ta,

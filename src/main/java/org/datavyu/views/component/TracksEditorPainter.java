@@ -14,14 +14,11 @@
  */
 package org.datavyu.views.component;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
-import javax.swing.JPanel;
-
+import net.miginfocom.swing.MigLayout;
 import org.datavyu.models.component.TimescaleConstants;
 
-import net.miginfocom.swing.MigLayout;
+import javax.swing.*;
+import java.awt.*;
 
 
 public final class TracksEditorPainter extends JPanel {

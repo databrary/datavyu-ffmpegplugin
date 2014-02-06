@@ -15,13 +15,28 @@
 package org.datavyu.views.discrete;
 
 import com.usermetrix.jclient.Logger;
+import com.usermetrix.jclient.UserMetrix;
+import org.datavyu.Datavyu;
+import org.datavyu.Datavyu.Platform;
+import org.datavyu.controllers.NewVariableC;
+import org.datavyu.event.component.FileDropEvent;
+import org.datavyu.event.component.FileDropEventListener;
+import org.datavyu.models.db.Cell;
+import org.datavyu.models.db.Datastore;
+import org.datavyu.models.db.DatastoreListener;
+import org.datavyu.models.db.Variable;
+import org.datavyu.util.ArrayDirection;
+import org.datavyu.util.Constants;
+import org.datavyu.views.DVProgressBar;
+import org.datavyu.views.discrete.layouts.SheetLayoutFactory;
+import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
+import javax.swing.*;
+import javax.swing.Box.Filler;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -31,51 +46,13 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-
 import java.io.File;
 import java.io.IOException;
-
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.ActionMap;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.Box.Filler;
-
-import org.jdesktop.application.Action;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
-import org.datavyu.Datavyu;
-
-import org.datavyu.Datavyu.Platform;
-
-import org.datavyu.controllers.NewVariableC;
-
-import org.datavyu.event.component.FileDropEvent;
-import org.datavyu.event.component.FileDropEventListener;
-
-
-import org.datavyu.util.ArrayDirection;
-
-import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
-
-import com.usermetrix.jclient.UserMetrix;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.DatastoreListener;
-import org.datavyu.models.db.Variable;
-import org.datavyu.util.Constants;
-import org.datavyu.views.DVProgressBar;
-import org.datavyu.views.discrete.layouts.SheetLayoutFactory;
 
 
 /**
@@ -83,55 +60,81 @@ import org.datavyu.views.discrete.layouts.SheetLayoutFactory;
  * Datavyu database as a spreadsheet.
  */
 public final class SpreadsheetPanel extends JPanel
-implements DatastoreListener,
-           CellSelectionListener,
-           ColumnSelectionListener,
-           KeyEventDispatcher {
+        implements DatastoreListener,
+        CellSelectionListener,
+        ColumnSelectionListener,
+        KeyEventDispatcher {
 
-    /** To use when navigating left. */
+    /**
+     * To use when navigating left.
+     */
     static final int LEFT_DIR = -1;
 
-    /** To use when navigating right. */
+    /**
+     * To use when navigating right.
+     */
     static final int RIGHT_DIR = 1;
 
-    /** Scrollable view inserted into the JScrollPane. */
+    /**
+     * Scrollable view inserted into the JScrollPane.
+     */
     private SpreadsheetView mainView;
 
-    /** View showing the Column titles. */
+    /**
+     * View showing the Column titles.
+     */
     private JPanel headerView;
 
-    /** The Database being viewed. */
+    /**
+     * The Database being viewed.
+     */
     private Datastore datastore;
 
-    /** Vector of the Spreadsheetcolumns added to the Spreadsheet. */
+    /**
+     * Vector of the Spreadsheetcolumns added to the Spreadsheet.
+     */
     private List<SpreadsheetColumn> columns;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = UserMetrix.getLogger(SpreadsheetPanel.class);
 
-    /** Reference to the scrollPane. */
+    /**
+     * Reference to the scrollPane.
+     */
     private JScrollPane scrollPane;
 
-    /** New variable button to be added to the column header panel. */
+    /**
+     * New variable button to be added to the column header panel.
+     */
     private JButton newVar = new JButton();
 
-    /** The currently highlighted cell. */
+    /**
+     * The currently highlighted cell.
+     */
     private SpreadsheetCell highlightedCell;
 
-    /** Last selected cell - used as an end point for continous selections. */
+    /**
+     * Last selected cell - used as an end point for continous selections.
+     */
     private SpreadsheetCell lastSelectedCell;
 
-    /** The layout that is currently being used. */
+    /**
+     * The layout that is currently being used.
+     */
     private SheetLayoutType currentLayoutType;
 
-    /** List containing listeners interested in file drop events. */
+    /**
+     * List containing listeners interested in file drop events.
+     */
     private final transient CopyOnWriteArrayList<FileDropEventListener> fileDropListeners;
 
     /**
      * Constructor.
      *
      * @param db The model (i.e. database) that we are creating the view
-     * (i.e. Spreadsheet panel) for.
+     *           (i.e. Spreadsheet panel) for.
      */
     public SpreadsheetPanel(final Datastore db, DVProgressBar progressBar) {
         setName(this.getClass().getSimpleName());
@@ -168,7 +171,7 @@ implements DatastoreListener,
         scrollPane.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, rightCorner);
 
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-                                      .getResourceMap(SpreadsheetPanel.class);
+                .getResourceMap(SpreadsheetPanel.class);
 
         // Set up the add new variable button
         newVar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, Color.black));
@@ -176,11 +179,11 @@ implements DatastoreListener,
         newVar.setToolTipText(rMap.getString("add.tooltip"));
 
         ActionMap aMap = Application.getInstance(Datavyu.class).getContext()
-                                    .getActionMap(SpreadsheetPanel.class, this);
+                .getActionMap(SpreadsheetPanel.class, this);
         newVar.setAction(aMap.get("openNewVarMenu"));
         newVar.setText(" + ");
         newVar.setSize(SpreadsheetColumn.DEFAULT_COLUMN_WIDTH,
-                       SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+                SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
 
         // set the database and layout the columns
@@ -218,13 +221,13 @@ implements DatastoreListener,
     private void buildColumns(DVProgressBar progressBar) {
         List<Variable> vlist = getDatastore().getAllVariables();
         int pb_increment = 0;
-        int i=0;
+        int i = 0;
 
         if (progressBar != null) {
             pb_increment = (100 - progressBar.getProgress()) / vlist.size();
         }
 
-        for(Variable v : vlist) {
+        for (Variable v : vlist) {
             if (progressBar != null) {
                 progressBar.setProgress(progressBar.getProgress() + pb_increment, "Adding column " + ++i + " of " + vlist.size());
             }
@@ -235,7 +238,7 @@ implements DatastoreListener,
     /**
      * Add a column panel to the scroll panel.
      *
-     * @param db database.
+     * @param db  database.
      * @param var The variable that this column represents.
      */
     private void addColumn(final Datastore db, final Variable var) {
@@ -262,7 +265,8 @@ implements DatastoreListener,
     /**
      * Remove all the columns from the spreadsheet panel.
      */
-    @Override public void removeAll() {
+    @Override
+    public void removeAll() {
         for (SpreadsheetColumn col : columns) {
             col.deregisterListeners();
             col.clear();
@@ -371,7 +375,6 @@ implements DatastoreListener,
      * Dispatches the key event to the desired components.
      *
      * @param e The key event to dispatch.
-     *
      * @return true if the event has been consumed by this dispatch, false
      * otherwise
      */
@@ -383,7 +386,7 @@ implements DatastoreListener,
         // with.
         if ((e.getID() == KeyEvent.KEY_PRESSED)
                 && ((e.getKeyCode() == KeyEvent.VK_LEFT)
-                    || (e.getKeyCode() == KeyEvent.VK_RIGHT))) {
+                || (e.getKeyCode() == KeyEvent.VK_RIGHT))) {
 
             // User is attempting to move to the column to the left.
             if ((e.getKeyCode() == KeyEvent.VK_LEFT)
@@ -410,7 +413,7 @@ implements DatastoreListener,
      * Highlights a cell in an adjacent column.
      *
      * @param direction The direction in which you wish to highlight an
-     * adjacent column.
+     *                  adjacent column.
      */
     private void highlightAdjacentCell(final int direction) {
 
@@ -422,7 +425,7 @@ implements DatastoreListener,
         for (int colID = 0; colID < columns.size(); colID++) {
 
             for (int cellID = 0; cellID < columns.get(colID).getCells().size();
-                    cellID++) {
+                 cellID++) {
 
                 // For each of the cells in the columns - look for the
                 // highlighted cell.
@@ -441,7 +444,7 @@ implements DatastoreListener,
                                 (columns.get(newColID).getCells().size() - 1));
 
                         SpreadsheetCell newCell = columns.get(newColID)
-                            .getCells().get(newCellID);
+                                .getCells().get(newCellID);
                         newCell.requestFocus();
                         setHighlightedCell(newCell);
 
@@ -454,8 +457,7 @@ implements DatastoreListener,
 
     /**
      * @param dir The direction in which to search for adjacent cells (left or
-     * right).
-     *
+     *            right).
      * @return An indication of the columns adjacent of the current cell
      * selection,
      * 0 = no columns to the left of the current cell selection.
@@ -470,7 +472,7 @@ implements DatastoreListener,
                 if (datastore.getAllVariables().get(i).equals(datastore.getVariable(cell))) {
                     // We have at least one column to the left of the cells.
                     if (((i + dir.getModifier()) >= 0) && ((i + dir.getModifier())
-                                < datastore.getAllVariables().size())) {
+                            < datastore.getAllVariables().size())) {
                         result++;
                     }
 
@@ -518,16 +520,17 @@ implements DatastoreListener,
      * Method to invoke when the user clicks on the "+" icon in the spreadsheet
      * header.
      */
-    @Action public void openNewVarMenu() {
+    @Action
+    public void openNewVarMenu() {
         new NewVariableC();
     }
 
     /**
      * Moves a given column to the left by a certain number of positions.
      *
-     * @param var The variable for the column to move
+     * @param var       The variable for the column to move
      * @param positions the number of positions to the left to move the given
-     * column.
+     *                  column.
      */
     public void moveColumnLeft(final Variable var, final int positions) {
         LOGGER.event("move column left");
@@ -553,10 +556,10 @@ implements DatastoreListener,
 
     /**
      * Moves a given column to the right by a certain number of positions.
-     * @param var The variable for the column to move
      *
+     * @param var       The variable for the column to move
      * @param positions the number for positions to the right to move the given
-     * column.
+     *                  column.
      */
     public void moveColumnRight(final Variable var, final int positions) {
         LOGGER.event("move column right");
@@ -582,7 +585,8 @@ implements DatastoreListener,
     /**
      * Removes the source column and reinserts the column at a given
      * destination.
-     * @param source index of the source column
+     *
+     * @param source      index of the source column
      * @param destination index of the destination column
      */
     private void shuffleColumn(final int source, final int destination) {
@@ -634,7 +638,6 @@ implements DatastoreListener,
      * layout.
      *
      * @param col The column to fetch the cells from.
-     *
      * @return The cells in ordinal order if SheetLayoutType is Ordinal,
      * otherwise the cells will be in temporal order.
      */
@@ -811,7 +814,7 @@ implements DatastoreListener,
      * @param listener The listener to remove.
      */
     public void removeFileDropEventListener(
-        final FileDropEventListener listener) {
+            final FileDropEventListener listener) {
 
         synchronized (this) {
             fileDropListeners.remove(listener);
@@ -849,7 +852,7 @@ implements DatastoreListener,
         /**
          * The event handler for when a file is dropped onto the interface.
          *
-         *@param dtde The event to handle.
+         * @param dtde The event to handle.
          */
         @Override
         public void drop(final DropTargetDropEvent dtde) {

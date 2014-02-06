@@ -15,32 +15,28 @@
 package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStream;
-
+import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.controllers.project.DatavyuProjectConstructor;
 import org.datavyu.models.project.Project;
 import org.yaml.snakeyaml.Loader;
 import org.yaml.snakeyaml.Yaml;
 
-import com.usermetrix.jclient.UserMetrix;
+import java.io.*;
 
 /**
  * Controller for opening and loading Datavyu project files that are on disk.
  */
 public final class OpenProjectFileC {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(OpenProjectFileC.class);
 
     /**
      * Opens and loads a project file from disk.
      *
-     * @param inFile
-     *            The project file to open and load, absolute path
+     * @param inFile The project file to open and load, absolute path
      * @return valid project if file was opened and loaded, null otherwise.
      */
     public Project open(final File inFile) {
@@ -67,8 +63,7 @@ public final class OpenProjectFileC {
      * Opens and loads a project file from a stream. The caller is responsible
      * for managing the stream.
      *
-     * @param inStream
-     *            The stream to deserialize and load
+     * @param inStream The stream to deserialize and load
      * @return valid project if stream was deserialized, null otherwise.
      */
     public Project open(final InputStream inStream) {

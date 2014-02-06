@@ -14,31 +14,22 @@
  */
 package org.datavyu.controllers.component;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.event.MouseEvent;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.SimpleTimeZone;
-
-import javax.swing.JComponent;
-import javax.swing.event.EventListenerList;
-import javax.swing.event.MouseInputAdapter;
-
 import org.datavyu.event.component.TimescaleEvent;
 import org.datavyu.event.component.TimescaleListener;
-
 import org.datavyu.models.component.MixerModel;
 import org.datavyu.models.component.TimescaleConstants;
 import org.datavyu.models.component.TimescaleModel;
 import org.datavyu.models.component.ViewportState;
-
 import org.datavyu.views.DataControllerV;
 import org.datavyu.views.component.TimescalePainter;
+
+import javax.swing.*;
+import javax.swing.event.EventListenerList;
+import javax.swing.event.MouseInputAdapter;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 
 /**
@@ -46,14 +37,20 @@ import org.datavyu.views.component.TimescalePainter;
  */
 public final class TimescaleController implements PropertyChangeListener {
 
-    /** View */
+    /**
+     * View
+     */
     private final TimescalePainter view;
 
-    /** Models */
+    /**
+     * Models
+     */
     private final TimescaleModel timescaleModel;
     private final MixerModel mixerModel;
 
-    /** Listeners interested in needle painter events */
+    /**
+     * Listeners interested in needle painter events
+     */
     private final EventListenerList listenerList;
 
     public TimescaleController(final MixerModel mixerModel) {
@@ -63,8 +60,8 @@ public final class TimescaleController implements PropertyChangeListener {
         timescaleModel.setZoomWindowIndicatorHeight(8);
         timescaleModel.setZoomWindowToTrackTransitionHeight(20);
         timescaleModel.setHeight(50
-            + timescaleModel.getZoomWindowIndicatorHeight()
-            + timescaleModel.getZoomWindowToTrackTransitionHeight());
+                + timescaleModel.getZoomWindowIndicatorHeight()
+                + timescaleModel.getZoomWindowToTrackTransitionHeight());
         timescaleModel.setZoomWindowIndicatorColor(new Color(192, 192, 192));
         timescaleModel.setTimescaleBackgroundColor(new Color(237, 237, 237));
 
@@ -72,7 +69,7 @@ public final class TimescaleController implements PropertyChangeListener {
         timescaleModel.setMinutesMarkerColor(TimescaleConstants.MINUTES_COLOR);
         timescaleModel.setSecondsMarkerColor(TimescaleConstants.SECONDS_COLOR);
         timescaleModel.setMillisecondsMarkerColor(
-            TimescaleConstants.MILLISECONDS_COLOR);
+                TimescaleConstants.MILLISECONDS_COLOR);
 
         final TimescaleEventListener listener = new TimescaleEventListener();
         view.addMouseListener(listener);
@@ -99,7 +96,8 @@ public final class TimescaleController implements PropertyChangeListener {
         return view;
     }
 
-    @Override public void propertyChange(final PropertyChangeEvent evt) {
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt) {
         if (evt.getSource() == mixerModel.getViewportModel()) {
             view.repaint();
         }
@@ -120,16 +118,16 @@ public final class TimescaleController implements PropertyChangeListener {
     }
 
     public void jumpToTime(final long jumpTime, final boolean togglePlaybackMode) {
-    	fireJumpEvent(jumpTime, togglePlaybackMode);
+        fireJumpEvent(jumpTime, togglePlaybackMode);
     }
-    
+
     /**
      * Used to fire a new event informing listeners about the new needle time.
      *
      * @param newTime
      */
     private void fireJumpEvent(final long jumpTime,
-        final boolean togglePlaybackMode) {
+                               final boolean togglePlaybackMode) {
 
         synchronized (this) {
             TimescaleEvent e = new TimescaleEvent(this, jumpTime,
@@ -159,67 +157,74 @@ public final class TimescaleController implements PropertyChangeListener {
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
         private boolean isDraggingOnTimescale = false;
         private boolean isDraggingOnZoomWindowIndicator = false;
-        
-        @Override public void mouseEntered(final MouseEvent e) {
+
+        @Override
+        public void mouseEntered(final MouseEvent e) {
             JComponent source = (JComponent) e.getSource();
             source.setCursor(crosshairCursor);
         }
 
-        @Override public void mouseExited(final MouseEvent e) {
+        @Override
+        public void mouseExited(final MouseEvent e) {
             JComponent source = (JComponent) e.getSource();
             source.setCursor(defaultCursor);
         }
 
-        @Override public void mouseMoved(final MouseEvent e) {
-       		mouseEntered(e);
-       		
+        @Override
+        public void mouseMoved(final MouseEvent e) {
+            mouseEntered(e);
+
             viewport = mixerModel.getViewportModel().getViewport();
-        	if (view.isPointInTimescale(e.getX(), e.getY())) {
-            	view.setToolTipText(DataControllerV.formatTime(calculateNewNeedlePositionOnTimescale(e)));
-        	} else {
-        		view.setToolTipText(null);
-        	}
+            if (view.isPointInTimescale(e.getX(), e.getY())) {
+                view.setToolTipText(DataControllerV.formatTime(calculateNewNeedlePositionOnTimescale(e)));
+            } else {
+                view.setToolTipText(null);
+            }
         }
-        
-        @Override public void mousePressed(final MouseEvent e) {
+
+        @Override
+        public void mousePressed(final MouseEvent e) {
             viewport = mixerModel.getViewportModel().getViewport();
 
             if (view.isPointInTimescale(e.getX(), e.getY())) {
-	            if (e.getButton() == MouseEvent.BUTTON1) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
                     fireJumpEvent(calculateNewNeedlePositionOnTimescale(e), false);
                     isDraggingOnTimescale = true;
                 }
             } else if (view.isPointInZoomWindowIndicator(e.getX(), e.getY())) {
-	            if (e.getButton() == MouseEvent.BUTTON1) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
                     fireJumpEvent(calculateNewNeedlePositionOnZoomWindow(e), false);
                     isDraggingOnZoomWindowIndicator = true;
                 }
             }
         }
 
-        @Override public void mouseReleased(final MouseEvent e) {
-        	isDraggingOnTimescale = false;
-        	isDraggingOnZoomWindowIndicator = false;
+        @Override
+        public void mouseReleased(final MouseEvent e) {
+            isDraggingOnTimescale = false;
+            isDraggingOnZoomWindowIndicator = false;
         }
 
-        @Override public void mouseClicked(final MouseEvent e) {
+        @Override
+        public void mouseClicked(final MouseEvent e) {
             if ((e.getButton() == MouseEvent.BUTTON1) && ((e.getClickCount() % 2) == 0)) {
-            	if (view.isPointInTimescale(e.getX(), e.getY())) {
-	                fireJumpEvent(calculateNewNeedlePositionOnTimescale(e), true);
-	        	} else if (view.isPointInZoomWindowIndicator(e.getX(), e.getY())) {
-	                fireJumpEvent(calculateNewNeedlePositionOnZoomWindow(e), true);
-	        	}
-        	}
+                if (view.isPointInTimescale(e.getX(), e.getY())) {
+                    fireJumpEvent(calculateNewNeedlePositionOnTimescale(e), true);
+                } else if (view.isPointInZoomWindowIndicator(e.getX(), e.getY())) {
+                    fireJumpEvent(calculateNewNeedlePositionOnZoomWindow(e), true);
+                }
+            }
         }
 
-        @Override public void mouseDragged(final MouseEvent e) {
+        @Override
+        public void mouseDragged(final MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
-            	if (isDraggingOnTimescale) {
-            		fireJumpEvent(calculateNewNeedlePositionOnTimescale(e), false);
-	        	} else if (isDraggingOnZoomWindowIndicator) {
-            		fireJumpEvent(calculateNewNeedlePositionOnZoomWindow(e), false);
-	        	}
-        	}
+                if (isDraggingOnTimescale) {
+                    fireJumpEvent(calculateNewNeedlePositionOnTimescale(e), false);
+                } else if (isDraggingOnZoomWindowIndicator) {
+                    fireJumpEvent(calculateNewNeedlePositionOnZoomWindow(e), false);
+                }
+            }
         }
 
         private long calculateNewNeedlePositionOnTimescale(final MouseEvent e) {
@@ -227,7 +232,7 @@ public final class TimescaleController implements PropertyChangeListener {
             final long newTime = viewport.computeTimeFromXOffset(dx) + viewport.getViewStart();
             return Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd());
         }
-        
+
         private long calculateNewNeedlePositionOnZoomWindow(final MouseEvent e) {
             final int dx = Math.min(Math.max(e.getX(), 0), view.getSize().width);
             final long newTime = Math.round((double) dx * viewport.getMaxEnd() / view.getSize().width);

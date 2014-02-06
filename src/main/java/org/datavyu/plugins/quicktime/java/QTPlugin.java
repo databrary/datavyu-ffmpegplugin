@@ -14,55 +14,52 @@
  */
 package org.datavyu.plugins.quicktime.java;
 
-import java.io.FileFilter;
-
-import java.net.URL;
-
-import java.util.List;
-
-import javax.swing.ImageIcon;
-
+import com.google.common.collect.Lists;
+import com.sun.jna.Platform;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-
-import com.google.common.collect.Lists;
-
-import com.sun.jna.Platform;
-
 import org.datavyu.plugins.DataViewer;
 import org.datavyu.plugins.Filter;
 import org.datavyu.plugins.FilterNames;
 import org.datavyu.plugins.Plugin;
-
 import org.datavyu.plugins.quicktime.QTDataViewer;
+
+import javax.swing.*;
+import java.io.FileFilter;
+import java.net.URL;
+import java.util.List;
 
 
 public final class QTPlugin implements Plugin {
 
     private static final Filter VIDEO_FILTER = new Filter() {
-            final SuffixFileFilter ff;
-            final List<String> ext;
+        final SuffixFileFilter ff;
+        final List<String> ext;
 
-            {
-                ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mp4");
-                ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
-            }
+        {
+            ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mp4");
+            ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
+        }
 
-            @Override public FileFilter getFileFilter() {
-                return ff;
-            }
+        @Override
+        public FileFilter getFileFilter() {
+            return ff;
+        }
 
-            @Override public String getName() {
-                return FilterNames.VIDEO.getFilterName();
-            }
+        @Override
+        public String getName() {
+            return FilterNames.VIDEO.getFilterName();
+        }
 
-            @Override public Iterable<String> getExtensions() {
-                return ext;
-            }
-        };
+        @Override
+        public Iterable<String> getExtensions() {
+            return ext;
+        }
+    };
 
-    @Override public DataViewer getNewDataViewer(final java.awt.Frame parent,
-        final boolean modal) {
+    @Override
+    public DataViewer getNewDataViewer(final java.awt.Frame parent,
+                                       final boolean modal) {
 
         if (Platform.isMac() || Platform.isWindows()) {
             return new QTDataViewer(parent, modal);
@@ -74,26 +71,31 @@ public final class QTPlugin implements Plugin {
     /**
      * @return icon representing this plugin.
      */
-    @Override public ImageIcon getTypeIcon() {
+    @Override
+    public ImageIcon getTypeIcon() {
         URL typeIconURL = getClass().getResource(
                 "/icons/gstreamerplugin-icon.png");
 
         return new ImageIcon(typeIconURL);
     }
 
-    @Override public String getClassifier() {
+    @Override
+    public String getClassifier() {
         return "datavyu.video";
     }
 
-    @Override public Filter[] getFilters() {
-        return new Filter[] { VIDEO_FILTER };
+    @Override
+    public Filter[] getFilters() {
+        return new Filter[]{VIDEO_FILTER};
     }
 
-    @Override public String getPluginName() {
+    @Override
+    public String getPluginName() {
         return "QuickTime Video";
     }
 
-    @Override public Class<? extends DataViewer> getViewerClass() {
+    @Override
+    public Class<? extends DataViewer> getViewerClass() {
 
         if (Platform.isMac() || Platform.isWindows()) {
             return QTDataViewer.class;

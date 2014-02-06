@@ -15,14 +15,14 @@
 package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
-import org.datavyu.Datavyu;
-
 import com.usermetrix.jclient.UserMetrix;
-import javax.swing.undo.UndoableEdit;
+import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.undoableedits.ChangeCellEdit.Granularity;
 import org.datavyu.undoableedits.ChangeOnsetCellEdit;
+
+import javax.swing.undo.UndoableEdit;
 
 /**
  * Controller for setting all selected cells to have the specified start time /
@@ -30,14 +30,16 @@ import org.datavyu.undoableedits.ChangeOnsetCellEdit;
  */
 public class SetSelectedCellStartTimeC {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(SetSelectedCellStartTimeC.class);
 
     /**
      * Sets all selected cells to have the specified start time / onset.
-     * 
+     *
      * @param milliseconds The time in milliseconds to use for all selected
-     * cells onset / start time.
+     *                     cells onset / start time.
      */
     public SetSelectedCellStartTimeC(final long milliseconds) {
         LOGGER.event("set selected cell onset");

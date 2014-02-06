@@ -14,11 +14,10 @@
  */
 package org.datavyu.views;
 
-import java.awt.Component;
-
-import javax.swing.JFileChooser;
-
 import org.datavyu.Configuration;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 /**
@@ -31,14 +30,14 @@ public final class DatavyuFileChooser extends JFileChooser {
      * appears in the approve button is determined by the L&F.
      *
      * @param parent the parent component of the dialog, can be null; see
-     * showDialog for details
-     *
+     *               showDialog for details
      * @return The return state of the file chooser on popdown:
      * JFileChooser.CANCEL_OPTION
      * JFileChooser.APPROVE_OPTION
      * JFileCHooser.ERROR_OPTION if an error occurs or the dialog is dismissed
      */
-    @Override public int showOpenDialog(final Component parent) {
+    @Override
+    public int showOpenDialog(final Component parent) {
         this.setCurrentDirectory(Configuration.getInstance().getLCDirectory());
 
         int result = super.showOpenDialog(parent);
@@ -52,14 +51,14 @@ public final class DatavyuFileChooser extends JFileChooser {
      * appears in the approve button is determined by the L&F.
      *
      * @param parent the parent component of the dialog, can be null; see
-     * showDialog for details
-     *
+     *               showDialog for details
      * @return The return state of the file chooser on popdown:
      * JFileChooser.CANCEL_OPTION
      * JFileChooser.APPROVE_OPTION
      * JFileCHooser.ERROR_OPTION if an error occurs or the dialog is dismissed
      */
-    @Override public int showSaveDialog(final Component parent) {
+    @Override
+    public int showSaveDialog(final Component parent) {
         this.setCurrentDirectory(Configuration.getInstance().getLCDirectory());
 
         int result = super.showSaveDialog(parent);

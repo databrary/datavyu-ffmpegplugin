@@ -14,19 +14,13 @@
  */
 package org.datavyu.views.component;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.geom.GeneralPath;
-
-import javax.swing.JComponent;
-
 import org.datavyu.models.component.MixerModel;
 import org.datavyu.models.component.SnapMarkerModel;
 import org.datavyu.models.component.ViewportState;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.GeneralPath;
 
 
 /**
@@ -41,7 +35,7 @@ public final class SnapMarkerPainter extends JComponent {
 
     private static final Color SNAP_MARKER_COLOR = new Color(169, 149, 202);
     private static final float SNAP_MARKER_WIDTH = 2.5f;
-    
+
     private SnapMarkerModel snapMarkerModel;
 
     private MixerModel mixer;
@@ -64,23 +58,26 @@ public final class SnapMarkerPainter extends JComponent {
         repaint();
     }
 
-    @Override public final boolean contains(final Point p) {
+    @Override
+    public final boolean contains(final Point p) {
         return contains(p.x, p.y);
     }
 
-    @Override public final boolean contains(final int x, final int y) {
-    	return false;
+    @Override
+    public final boolean contains(final int x, final int y) {
+        return false;
     }
-    
-    @Override public void paintComponent(final Graphics g) {
+
+    @Override
+    public void paintComponent(final Graphics g) {
         if ((snapMarkerModel == null) || (mixer == null)) {
             return;
         }
 
         final Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON);
-        
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
         final ViewportState viewport = mixer.getViewportModel().getViewport();
         final long markerTime = snapMarkerModel.getMarkerTime();
 
@@ -93,7 +90,7 @@ public final class SnapMarkerPainter extends JComponent {
         GeneralPath snapMarker = new GeneralPath();
         snapMarker.moveTo(markerX, 0);
         snapMarker.lineTo(markerX, getHeight());
-        
+
         g2d.setColor(SNAP_MARKER_COLOR);
         g2d.setStroke(new BasicStroke(SNAP_MARKER_WIDTH));
         g2d.draw(snapMarker);

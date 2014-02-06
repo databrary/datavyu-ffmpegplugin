@@ -16,7 +16,8 @@ package org.datavyu.controllers;
 
 import org.datavyu.Datavyu;
 import org.datavyu.views.NewVariableV;
-import javax.swing.JFrame;
+
+import javax.swing.*;
 
 /**
  * Controller for creating new variables.

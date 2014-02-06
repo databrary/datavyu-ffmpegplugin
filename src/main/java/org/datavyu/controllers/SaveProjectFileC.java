@@ -15,23 +15,24 @@
 package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
-import java.io.IOException;
-import java.io.OutputStream;
-
+import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.controllers.project.DatavyuProjectRepresenter;
 import org.datavyu.models.project.Project;
 import org.yaml.snakeyaml.Dumper;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import com.usermetrix.jclient.UserMetrix;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Controller for saving the Datavyu project to disk.
  */
 public final class SaveProjectFileC {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(SaveProjectFileC.class);
 
     /**
@@ -39,7 +40,7 @@ public final class SaveProjectFileC {
      * for closing the output stream.
      *
      * @param outStream The output stream to use for the project.
-     * @param project The project you wish to serialize.
+     * @param project   The project you wish to serialize.
      */
     public void save(final OutputStream outStream, final Project project) {
         LOGGER.event("save to stream");

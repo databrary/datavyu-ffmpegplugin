@@ -16,40 +16,42 @@ package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
 import org.datavyu.Datavyu;
 import org.datavyu.RecentFiles;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.project.Project;
 import org.datavyu.models.project.ViewerSetting;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Master controller for handling project and database file saving logic.
  */
 public final class SaveC {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(SaveC.class);
 
     /**
      * Saves only a database to disk.
      *
      * @param databaseFile The location to save the database too.
-     * @param datastore The datastore to save to disk.
-     *
+     * @param datastore    The datastore to save to disk.
      * @throws UswerWarningException If unable to save the database.
      */
     public void saveDatabase(final String databaseFile,
                              final Datastore datastore)
-    throws UserWarningException {
+            throws UserWarningException {
         this.saveDatabase(new File(databaseFile), datastore);
     }
 
@@ -57,13 +59,12 @@ public final class SaveC {
      * Saves only a database to disk.
      *
      * @param databaseFile The location to save the database too.
-     * @param datastore The datastore to save to disk.
-     *
+     * @param datastore    The datastore to save to disk.
      * @throws UserWarningException If unable to save the database.
      */
     public void saveDatabase(final File databaseFile,
                              final Datastore datastore)
-    throws UserWarningException {
+            throws UserWarningException {
         saveDatabase(databaseFile, datastore, true);
     }
 
@@ -71,38 +72,37 @@ public final class SaveC {
      * Saves only a database to disk.
      *
      * @param databaseFile The location to save the database too.
-     * @param datastore The datastore to save to disk.
-     * @param remember Add this project to the rememberProject list.
+     * @param datastore    The datastore to save to disk.
+     * @param remember     Add this project to the rememberProject list.
      * @throws UserWarningException If unable to save the database.
      */
     public void saveDatabase(final File databaseFile,
                              final Datastore datastore,
                              boolean remember)
-    throws UserWarningException {
+            throws UserWarningException {
         LOGGER.event("saving database");
 
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
         saveDBC.saveDatabase(databaseFile, datastore);
         if (remember) {
             RecentFiles.rememberProject(databaseFile);
-        }    
+        }
     }
-    
-    
+
+
     /**
      * Saves an entire project, including database to disk.
      *
      * @param projectFile The destination to save the project too.
-     * @param project The project to save to disk.
-     * @param datastore The datastore to save to disk.
-     *
+     * @param project     The project to save to disk.
+     * @param datastore   The datastore to save to disk.
      * @throws UserWarningException If unable to save the entire project to
-     * disk.
+     *                              disk.
      */
     public void saveProject(final File projectFile,
                             final Project project,
                             final Datastore datastore)
-    throws UserWarningException {
+            throws UserWarningException {
         saveProject(projectFile, project, datastore, true);
     }
 
@@ -110,12 +110,11 @@ public final class SaveC {
      * Saves an entire project, including database to disk.
      *
      * @param projectFile The destination to save the project too.
-     * @param project The project to save to disk.
-     * @param datastore The datastore to save to disk.
-     * @param remember Add this project to the rememberProject list.
-     * 
+     * @param project     The project to save to disk.
+     * @param datastore   The datastore to save to disk.
+     * @param remember    Add this project to the rememberProject list.
      * @throws UserWarningException If unable to save the entire project to
-     * disk.
+     *                              disk.
      */
     public void saveProject(final File projectFile,
                             final Project project,
@@ -154,18 +153,18 @@ public final class SaveC {
             if (remember) {
                 RecentFiles.rememberProject(projectFile);
             }
-            
+
         } catch (FileNotFoundException e) {
             ResourceMap rMap = Application.getInstance(Datavyu.class)
-                                          .getContext().getResourceMap(Datavyu.class);
+                    .getContext().getResourceMap(Datavyu.class);
             e.printStackTrace();
             throw new UserWarningException(rMap.getString("UnableToSave.message", projectFile), e);
         } catch (IOException e) {
             ResourceMap rMap = Application.getInstance(Datavyu.class)
-                                          .getContext().getResourceMap(Datavyu.class);
+                    .getContext().getResourceMap(Datavyu.class);
             e.printStackTrace();
             throw new UserWarningException(rMap.getString("UnableToSave.message", projectFile), e);
         }
     }
-    
+
 }

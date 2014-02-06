@@ -15,134 +15,158 @@
 package org.datavyu.views.discrete;
 
 import com.usermetrix.jclient.Logger;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.Box.Filler;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.MatteBorder;
-
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
+import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
-
-import org.datavyu.views.discrete.datavalues.MatrixRootView;
-import org.datavyu.views.discrete.datavalues.TimeStampTextField;
-import org.datavyu.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
-
-import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.CellListener;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.Value;
+import org.datavyu.views.discrete.datavalues.MatrixRootView;
+import org.datavyu.views.discrete.datavalues.TimeStampDataValueEditor.TimeStampSource;
+import org.datavyu.views.discrete.datavalues.TimeStampTextField;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.Box.Filler;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.MatteBorder;
+import java.awt.*;
+import java.awt.event.*;
 
 
 /**
  * Visual representation of a spreadsheet cell.
  */
 public class SpreadsheetCell extends JPanel
-implements MouseListener, FocusListener, CellListener {
+        implements MouseListener, FocusListener, CellListener {
 
-    /** Width of spacer between onset and offset timestamps. */
+    /**
+     * Width of spacer between onset and offset timestamps.
+     */
     private static final int TIME_SPACER = 5;
 
-    /** Border to use when a cell is highlighted. */
+    /**
+     * Border to use when a cell is highlighted.
+     */
     private static final Border HIGHLIGHT_BORDER = new CompoundBorder(
             new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
             new MatteBorder(3, 3, 3, 3, Configuration.getInstance().getSSSelectedColour()));
 
-    /** Border to use when a cell is highlighted and overlapping cell. */
+    /**
+     * Border to use when a cell is highlighted and overlapping cell.
+     */
     private static final Border HIGHLIGHT_OVERLAP_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
-                new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSOverlapColour())),
+                    new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
+                    new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSOverlapColour())),
             new MatteBorder(3,
-                3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
+                    3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
 
-    /** Border to use when a cell is selected. */
+    /**
+     * Border to use when a cell is selected.
+     */
     private static final Border FILL_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
-                new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSSelectedColour())),
+                    new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
+                    new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSSelectedColour())),
             new MatteBorder(3,
-                3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
+                    3, 0, 3, Configuration.getInstance().getSSSelectedColour()));
 
-    /** Border to use when a cell is selected. */
+    /**
+     * Border to use when a cell is selected.
+     */
     private static final Border FILL_OVERLAP_BORDER = HIGHLIGHT_OVERLAP_BORDER;
 
-    /** Border to use for normal cell. No extra information to show. */
+    /**
+     * Border to use for normal cell. No extra information to show.
+     */
     private static final Border NORMAL_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(1, 0, 1, 0, Configuration.BORDER_COLOUR),
-                new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSBackgroundColour())),
+                    new MatteBorder(1, 0, 1, 0, Configuration.BORDER_COLOUR),
+                    new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSBackgroundColour())),
             new MatteBorder(3, 3, 0, 3,
-                Configuration.getInstance().getSSBackgroundColour()));
+                    Configuration.getInstance().getSSBackgroundColour()));
 
-    /** Border to use if cell overlaps with another. */
+    /**
+     * Border to use if cell overlaps with another.
+     */
     public static final Border OVERLAP_BORDER = new CompoundBorder(
             new CompoundBorder(
-                new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
-                new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSOverlapColour())),
+                    new MatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR),
+                    new MatteBorder(0, 0, 3, 0, Configuration.getInstance().getSSOverlapColour())),
             new MatteBorder(3,
-                3, 0, 3, Configuration.getInstance().getSSBackgroundColour()));
+                    3, 0, 3, Configuration.getInstance().getSSBackgroundColour()));
 
-    /** Border to use for normal cell if there is no strut (abuts prev cell). */
+    /**
+     * Border to use for normal cell if there is no strut (abuts prev cell).
+     */
     public static final Border STRUT_BORDER = BorderFactory.createMatteBorder(0, 0, 1, 0, Configuration.BORDER_COLOUR);
 
-    /** The panel that displays the cell. */
+    /**
+     * The panel that displays the cell.
+     */
     private JPanel cellPanel;
 
-    /** A panel for holding the header to the cell. */
+    /**
+     * A panel for holding the header to the cell.
+     */
     private JPanel topPanel;
 
-    /** A panel for holding the value of the cell. */
+    /**
+     * A panel for holding the value of the cell.
+     */
     private MatrixRootView dataPanel;
 
-    /** The Ordinal display component. */
+    /**
+     * The Ordinal display component.
+     */
     private JLabel ord;
 
-    /** The Onset display component. */
+    /**
+     * The Onset display component.
+     */
     private TimeStampTextField onset;
 
-    /** The Offset display component. */
+    /**
+     * The Offset display component.
+     */
     private TimeStampTextField offset;
 
-    /** The cell that this SpreadsheetCell represents. */
+    /**
+     * The cell that this SpreadsheetCell represents.
+     */
     private Cell model;
 
     boolean isLaid = false;
 
-    /** Component that sets the width of the cell. */
+    /**
+     * Component that sets the width of the cell.
+     */
     private Filler stretcher;
 
-    /** strut creates the gap between this cell and the previous cell. */
+    /**
+     * strut creates the gap between this cell and the previous cell.
+     */
     private Filler strut;
 
-    /** Does this cell overlap another? */
+    /**
+     * Does this cell overlap another?
+     */
     private boolean cellOverlap = false;
 
-    /** The spreadsheet cell selection listener. */
+    /**
+     * The spreadsheet cell selection listener.
+     */
     private CellSelectionListener cellSelL;
 
-    /** Onset has been processed and layout position calculated. */
+    /**
+     * Onset has been processed and layout position calculated.
+     */
     private boolean onsetProcessed = false;
-    
+
     private boolean beingProcessed = false;
 
     public boolean isBeingProcessed() {
@@ -152,12 +176,14 @@ implements MouseListener, FocusListener, CellListener {
     public void setBeingProcessed(boolean beingProcessed) {
         this.beingProcessed = beingProcessed;
     }
-    
+
     public void forceCellRefresh() {
         model = model.getFreshCell();
     }
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetCell.class);
 
     public SpreadsheetCell(final Datastore cellDB,
@@ -168,7 +194,7 @@ implements MouseListener, FocusListener, CellListener {
         setName(this.getClass().getSimpleName());
 
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-                                      .getResourceMap(SpreadsheetCell.class);
+                .getResourceMap(SpreadsheetCell.class);
 
         // Check the selected state of the datacell
         // If it is already selected in the database, we need to inform
@@ -178,8 +204,8 @@ implements MouseListener, FocusListener, CellListener {
         cellPanel = new JPanel();
         cellPanel.addMouseListener(this);
         strut = new Filler(new Dimension(0, 0),
-                           new Dimension(0, 0),
-                           new Dimension(Short.MAX_VALUE, 0));
+                new Dimension(0, 0),
+                new Dimension(Short.MAX_VALUE, 0));
 
         setLayout(new BorderLayout());
         this.add(strut, BorderLayout.NORTH);
@@ -267,7 +293,7 @@ implements MouseListener, FocusListener, CellListener {
      * Set if onset has been processed. Used in the temporal layout algorithm.
      *
      * @param onsetProcessed true to mark that the onset has been processed.
-     * False otherwise.
+     *                       False otherwise.
      */
     public void setOnsetProcessed(final boolean isOnsetProcessed) {
         onsetProcessed = isOnsetProcessed;
@@ -339,7 +365,7 @@ implements MouseListener, FocusListener, CellListener {
      * @return Offset ticks as a long.
      */
     public long getOffsetTicks() {
-        if(model.getOffset() < model.getOnset()) {
+        if (model.getOffset() < model.getOnset()) {
             return model.getOnset();
         }
         return model.getOffset();
@@ -359,14 +385,13 @@ implements MouseListener, FocusListener, CellListener {
      * Mark the cell as selected in the database.
      *
      * @param sel The selection state to use when marking the cell. True if the
-     * cell is selected, false otherwise.
-     *
+     *            cell is selected, false otherwise.
      * @Deprecated should manipulate the model directly, not the view.
      */
     @Deprecated
     public void selectCellInDB(final boolean sel) {
         model = model.getFreshCell();
-        
+
         // Set the selection within the database.
         model.setSelected(sel);
 
@@ -384,7 +409,7 @@ implements MouseListener, FocusListener, CellListener {
      * Set the border of the cell.
      *
      * @param overlap true if the cell overlaps with the following cell, false
-     * otherwise.
+     *                otherwise.
      */
     public void setOverlapBorder(final boolean overlap) {
         cellOverlap = overlap;
@@ -414,22 +439,22 @@ implements MouseListener, FocusListener, CellListener {
 
     public void selectOnset() {
         onset.selectAll();
-        offset.select(0,0);
-        dataPanel.select(0,0);
+        offset.select(0, 0);
+        dataPanel.select(0, 0);
         onset.requestFocusInWindow();
     }
 
     public void selectOffset() {
         offset.selectAll();
-        onset.select(0,0);
-        dataPanel.select(0,0);
+        onset.select(0, 0);
+        dataPanel.select(0, 0);
         offset.requestFocusInWindow();
     }
 
     public void selectVal() {
         dataPanel.selectAll();
-        onset.select(0,0);
-        offset.select(0,0);
+        onset.select(0, 0);
+        offset.select(0, 0);
         dataPanel.requestFocusInWindow();
     }
 
@@ -469,40 +494,40 @@ implements MouseListener, FocusListener, CellListener {
     @Override
     public void offsetChanged(final long newOffset) {
         offset.setValue();
-	if(model.isSelected()) {
-	    // Update the find windows to the newly selected cell's values
-	    Datavyu.getDataController().setFindTime(model.getOnset());
+        if (model.isSelected()) {
+            // Update the find windows to the newly selected cell's values
+            Datavyu.getDataController().setFindTime(model.getOnset());
             Datavyu.getDataController().setFindOffsetField(model.getOffset());
-	}
+        }
     }
 
     @Override
     public void onsetChanged(final long newOnset) {
         onset.setValue();
-	if(model.isSelected()) {
-	    Datavyu.getDataController().setFindTime(model.getOnset());
-	    Datavyu.getDataController().setFindOffsetField(model.getOffset());
-	}
+        if (model.isSelected()) {
+            Datavyu.getDataController().setFindTime(model.getOnset());
+            Datavyu.getDataController().setFindOffsetField(model.getOffset());
+        }
     }
 
     @Override
     public void highlightingChange(final boolean isHighlighted) {
         updateSelectionDisplay();
-        if(model.isSelected()) {
-	    // Update the find windows to the newly selected cell's values
-	    Datavyu.getDataController().setFindTime(model.getOnset());
+        if (model.isSelected()) {
+            // Update the find windows to the newly selected cell's values
+            Datavyu.getDataController().setFindTime(model.getOnset());
             Datavyu.getDataController().setFindOffsetField(model.getOffset());
-	}
+        }
     }
 
     @Override
     public void selectionChange(final boolean isSelected) {
         updateSelectionDisplay();
-        if(model.isSelected()) {
-	    // Update the find windows to the newly selected cell's values
-	    Datavyu.getDataController().setFindTime(model.getOnset());
+        if (model.isSelected()) {
+            // Update the find windows to the newly selected cell's values
+            Datavyu.getDataController().setFindTime(model.getOnset());
             Datavyu.getDataController().setFindOffsetField(model.getOffset());
-	}
+        }
     }
 
     @Override
@@ -530,8 +555,8 @@ implements MouseListener, FocusListener, CellListener {
 
         Class source = me.getSource().getClass();
         boolean isEditorSrc = (source.equals(TimeStampTextField.class)
-                               || (source.equals(MatrixRootView.class)));
-        
+                || (source.equals(MatrixRootView.class)));
+
         model = model.getFreshCell();
 
         // User has clicked in magic spot, without modifier. Clear
@@ -544,9 +569,9 @@ implements MouseListener, FocusListener, CellListener {
             if (model.isSelected()) {
                 cellSelL.addCellToSelection(this);
             }
-	    
-        // User has clicked on editor or magic spot with modifier. Add
-        // this cell to the current selection.
+
+            // User has clicked on editor or magic spot with modifier. Add
+            // this cell to the current selection.
         } else if (groupSel && !contSel) {
             ord.requestFocus();
             model.setHighlighted(!model.isSelected());
@@ -555,14 +580,14 @@ implements MouseListener, FocusListener, CellListener {
                 cellSelL.addCellToSelection(this);
             }
 
-        // User has clicked on editor or magic spot with shift modifier.
-        // Add this cell and everything in between the current selection.
+            // User has clicked on editor or magic spot with shift modifier.
+            // Add this cell and everything in between the current selection.
         } else if (contSel) {
             ord.requestFocus();
             cellSelL.addCellToContinousSelection(this);
 
-        // User has clicked somewhere in the cell without modifier. This
-        // cell needs to be highlighted.
+            // User has clicked somewhere in the cell without modifier. This
+            // cell needs to be highlighted.
         } else {
             // Only change selection if not selected.
             if (!model.isHighlighted()) {
@@ -572,9 +597,9 @@ implements MouseListener, FocusListener, CellListener {
                 cellSelL.setHighlightedCell(this);
             }
         }
-	
-	// Update the find windows to the newly selected cell's values
-	Datavyu.getDataController().setFindTime(model.getOnset());
+
+        // Update the find windows to the newly selected cell's values
+        Datavyu.getDataController().setFindTime(model.getOnset());
         Datavyu.getDataController().setFindOffsetField(model.getOffset());
     }
 
@@ -592,16 +617,16 @@ implements MouseListener, FocusListener, CellListener {
     @Override
     public void focusGained(final FocusEvent e) {
         model = model.getFreshCell();
-        
+
         if (model.isHighlighted() && (cellPanel.getBorder().equals(NORMAL_BORDER)
-                            || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
+                || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
             model.setSelected(true);
         }
     }
 
     @Override
     public void focusLost(final FocusEvent e) {
-        model = model.getFreshCell();
+        model.setSelected(false);
     }
 
     @Override

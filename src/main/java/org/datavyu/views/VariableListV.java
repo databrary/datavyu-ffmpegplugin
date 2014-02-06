@@ -17,66 +17,86 @@ package org.datavyu.views;
 import com.google.common.collect.HashBiMap;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import org.datavyu.Datavyu;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JTextField;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import net.miginfocom.swing.MigLayout;
-import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
+import org.datavyu.Datavyu;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.DatastoreListener;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.ResourceMap;
+
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  * The dialog to list database variables.
  */
 public final class VariableListV extends DatavyuDialog
-implements TableModelListener, DatastoreListener {
+        implements TableModelListener, DatastoreListener {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(VariableListV.class);
 
-    /** The column for if a variable is visible or not. */
+    /**
+     * The column for if a variable is visible or not.
+     */
     private static final int VCOLUMN = 0;
 
-    /** The column for a variables name. */
+    /**
+     * The column for a variables name.
+     */
     private static final int NCOLUMN = 1;
 
-    /** The column for a variables type. */
+    /**
+     * The column for a variables type.
+     */
     private static final int TCOLUMN = 2;
 
-    /** The total number of columns in the variables list. */
+    /**
+     * The total number of columns in the variables list.
+     */
     private static final int TOTAL_COLUMNS = 3;
 
-    /** Datastore for holding all the information in the variable list. */
+    /**
+     * Datastore for holding all the information in the variable list.
+     */
     private Datastore datastore;
 
-    /** The table model of the JTable that lists the actual variables. */
+    /**
+     * The table model of the JTable that lists the actual variables.
+     */
     private VListTableModel tableModel;
 
-    /** Visual components for the dialog. */
+    /**
+     * Visual components for the dialog.
+     */
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable variableList;
 
-    /** Mapping between database column id - to the table model. */
+    /**
+     * Mapping between database column id - to the table model.
+     */
     private HashBiMap<Variable, Integer> dbToTableMap;
 
-    /** Resource map holding all the string information. */
+    /**
+     * Resource map holding all the string information.
+     */
     private ResourceMap rMap = Application.getInstance(Datavyu.class)
-                                          .getContext()
-                                          .getResourceMap(VariableListV.class);
+            .getContext()
+            .getResourceMap(VariableListV.class);
 
     /**
      * Creates new form ListVariablesView.
      *
      * @param parent The parent frame for this dialog.
-     * @param modal Is this dialog to be modal (true), or not.
-     * @param ds The Datastore containing the variables you wish to list.
+     * @param modal  Is this dialog to be modal (true), or not.
+     * @param ds     The Datastore containing the variables you wish to list.
      */
     public VariableListV(final java.awt.Frame parent,
                          final boolean modal,
@@ -95,7 +115,7 @@ implements TableModelListener, DatastoreListener {
 
         //Use JTextfield to edit variable name cells
         variableList.getColumnModel().getColumn(NCOLUMN)
-                    .setCellEditor(new DefaultCellEditor(new JTextField()));
+                .setCellEditor(new DefaultCellEditor(new JTextField()));
 
         populateTable();
     }
@@ -129,7 +149,7 @@ implements TableModelListener, DatastoreListener {
             insertRow(var, rMap);
         }
     }
-    
+
     public void recreateMap() {
         dbToTableMap.clear();
         for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -198,7 +218,7 @@ implements TableModelListener, DatastoreListener {
      * Inserts a row at the end of the variable list.
      *
      * @param variable The variable to add to the list.
-     * @param rMap The resource map - used to find localised string bundles
+     * @param rMap     The resource map - used to find localised string bundles
      */
     public void insertRow(final Variable variable, final ResourceMap rMap) {
         insertRow(variable, rMap, -1);
@@ -208,7 +228,7 @@ implements TableModelListener, DatastoreListener {
      * Add a new row to the variable list.
      *
      * @param variable The Variable being added to the list.
-     * @param rMap The resource map - used to find localised string bundles.
+     * @param rMap     The resource map - used to find localised string bundles.
      * @param position The position to place the new row.
      */
     public void insertRow(final Variable variable,
@@ -276,22 +296,22 @@ implements TableModelListener, DatastoreListener {
     @Override
     public void variableHidden(final Variable hiddenVariable) {
         tableModel.setValueAt(!hiddenVariable.isHidden(),
-                              dbToTableMap.get(hiddenVariable),
-                              VCOLUMN);
+                dbToTableMap.get(hiddenVariable),
+                VCOLUMN);
     }
 
     @Override
     public void variableVisible(final Variable visibleVariable) {
         tableModel.setValueAt(!visibleVariable.isHidden(),
-                              dbToTableMap.get(visibleVariable),
-                              VCOLUMN);
+                dbToTableMap.get(visibleVariable),
+                VCOLUMN);
     }
 
     @Override
     public void variableNameChange(final Variable editedVariable) {
         tableModel.setValueAt(editedVariable.getName(),
-                              dbToTableMap.get(editedVariable),
-                              NCOLUMN);
+                dbToTableMap.get(editedVariable),
+                NCOLUMN);
     }
 
     private class VListTableModel extends DefaultTableModel {

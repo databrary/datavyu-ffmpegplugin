@@ -16,16 +16,13 @@ package org.datavyu.views.discrete;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
+import org.datavyu.Configuration;
+
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.awt.datatransfer.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.text.JTextComponent;
-import org.datavyu.Configuration;
 
 /**
  * EditorComponent - Abstract class for editing a segment of text within a
@@ -34,31 +31,49 @@ import org.datavyu.Configuration;
  */
 public abstract class EditorComponent implements ClipboardOwner {
 
-    /** JTextComponent containing this EditorComponent. */
+    /**
+     * JTextComponent containing this EditorComponent.
+     */
     private JTextComponent parentComp;
 
-    /** Character position in the JTextComponent where this editor begins. */
+    /**
+     * Character position in the JTextComponent where this editor begins.
+     */
     private int startPos;
 
-    /** Local copy of this editor's text. */
+    /**
+     * Local copy of this editor's text.
+     */
     private String editorText;
 
-    /** Is the editorComponent editable?  Used by EditorTracker. */
+    /**
+     * Is the editorComponent editable?  Used by EditorTracker.
+     */
     private boolean editable;
 
-    /** Does the editorComponent allow Return characters to be input? */
+    /**
+     * Does the editorComponent allow Return characters to be input?
+     */
     private boolean acceptsReturnKey;
 
-    /** A list of characters that can not be removed from this view. */
+    /**
+     * A list of characters that can not be removed from this view.
+     */
     private String preservedChars;
 
-    /** Are we deleting characters, or replacing them with a substitute? */
+    /**
+     * Are we deleting characters, or replacing them with a substitute?
+     */
     private boolean isDeletingChar;
 
-    /** The character to use as a substitute if we are doing replacement. */
+    /**
+     * The character to use as a substitute if we are doing replacement.
+     */
     private char replaceChar;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(EditorComponent.class);
 
     /**
@@ -128,13 +143,13 @@ public abstract class EditorComponent implements ClipboardOwner {
         this();
         parentComp = tc;
         parentComp.setBackground(Configuration.getInstance()
-                                              .getSSBackgroundColour());
+                .getSSBackgroundColour());
     }
 
     /**
      * Constructor.
      *
-     * @param tc JTextComponent this editor works with.
+     * @param tc   JTextComponent this editor works with.
      * @param text text to initialise the editor to.
      */
     public EditorComponent(final JTextComponent tc, final String text) {
@@ -217,16 +232,16 @@ public abstract class EditorComponent implements ClipboardOwner {
     /**
      * Utility function for replacing a segment of a string with another.
      *
-     * @param text new segment of text to set.
+     * @param text  new segment of text to set.
      * @param start start position of the new text.
-     * @param end length of the segment being replaced.
+     * @param end   length of the segment being replaced.
      */
     private void replaceRange(final String text,
                               final int start,
                               final int end) {
         String fullText = parentComp.getText();
         parentComp.setText(fullText.substring(0, start) + text
-                                                    + fullText.substring(end));
+                + fullText.substring(end));
     }
 
     /**
@@ -314,7 +329,7 @@ public abstract class EditorComponent implements ClipboardOwner {
      * the JTextComponent.
      *
      * @param startClick character position of the start of the click.
-     * @param endClick character position of the end of the click.
+     * @param endClick   character position of the end of the click.
      */
     public void select(final int startClick, final int endClick) {
         if (parentComp != null) {
@@ -342,14 +357,14 @@ public abstract class EditorComponent implements ClipboardOwner {
         // Copy the selection into the clipboard.
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         String aString = this.getText()
-                             .substring(this.getSelectionStart(),
-                                        this.getSelectionEnd());
+                .substring(this.getSelectionStart(),
+                        this.getSelectionEnd());
         StringSelection stringSelection = new StringSelection(aString);
         clipboard.setContents(stringSelection, this);
 
         // Pass in a backspace character to delete the current selection.
         KeyEvent ke = new KeyEvent(this.getParentComponent(), 0, 0,
-                                   0, 0, '\u0008');
+                0, 0, '\u0008');
         this.keyPressed(ke);
         this.keyTyped(ke); //@todo All delete and backspace code should be in keyPressed, not keyTyped
     }
@@ -363,7 +378,7 @@ public abstract class EditorComponent implements ClipboardOwner {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable contents = clipboard.getContents(null);
         boolean hasText = (contents != null)
-                 && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+                && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
 
         // No valid text in clipboard. Bail.
         if (!hasText) {
@@ -374,11 +389,11 @@ public abstract class EditorComponent implements ClipboardOwner {
         try {
             // Get the text from the clipboard
             String text = (String) contents
-                                   .getTransferData(DataFlavor.stringFlavor);
+                    .getTransferData(DataFlavor.stringFlavor);
 
             for (int i = 0; i < text.length(); i++) {
                 KeyEvent ke = new KeyEvent(this.getParentComponent(), 0, 0,
-                                           0, 0, text.charAt(i));
+                        0, 0, text.charAt(i));
                 this.keyTyped(ke);
             }
 
@@ -391,7 +406,7 @@ public abstract class EditorComponent implements ClipboardOwner {
      * Rather than delete characters.
      *
      * @param c The character to use when deleting (rather than deleting - the
-     * supplied character is used to replace).
+     *          supplied character is used to replace).
      */
     public final void setDeleteChar(final char c) {
         isDeletingChar = false;
@@ -410,7 +425,6 @@ public abstract class EditorComponent implements ClipboardOwner {
 
     /**
      * @param aChar Character to test
-     *
      * @return true if the character is a reserved character.
      */
     public final boolean isPreserved(final char aChar) {
@@ -428,10 +442,10 @@ public abstract class EditorComponent implements ClipboardOwner {
         if ((getSelectionEnd() - getSelectionStart()) > 0) {
             removeSelectedText();
 
-        // Underlying Text field has no selection, just a caret. Go ahead and
-        // manipulate it as such.
+            // Underlying Text field has no selection, just a caret. Go ahead and
+            // manipulate it as such.
         } else if (getText() != null && getText().length() > 0
-                   && getCaretPosition() < getText().length()) {
+                && getCaretPosition() < getText().length()) {
             // Check ahead of caret to see if it is a preserved character. If
             // the character is preserved - simply move the caret ahead one spot
             // and leave the preserved character untouched.
@@ -464,8 +478,8 @@ public abstract class EditorComponent implements ClipboardOwner {
         if ((getSelectionEnd() - getSelectionStart()) > 0) {
             removeSelectedText();
 
-        // Underlying text field has no selection, just a caret. Go ahead and
-        // manipulate it as such.
+            // Underlying text field has no selection, just a caret. Go ahead and
+            // manipulate it as such.
         } else if (getText() != null && getText().length() > 0) {
             // Check behind the caret to see if it is a preserved character. If
             // the character is preserved - simply move the caret back one spot
@@ -517,7 +531,7 @@ public abstract class EditorComponent implements ClipboardOwner {
                     pos++;
                 }
 
-            // Current character is reserved, skip over current position.
+                // Current character is reserved, skip over current position.
             } else {
                 pos++;
             }

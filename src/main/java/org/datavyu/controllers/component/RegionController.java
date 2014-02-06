@@ -14,24 +14,16 @@
  */
 package org.datavyu.controllers.component;
 
-import java.awt.Component;
-import java.awt.Cursor;
+import org.datavyu.models.component.*;
+import org.datavyu.views.component.RegionView;
+
+import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
-import javax.swing.JComponent;
-import javax.swing.event.MouseInputAdapter;
-
-import org.datavyu.models.component.MixerModel;
-import org.datavyu.models.component.RegionState;
-import org.datavyu.models.component.RegionConstants;
-import org.datavyu.models.component.RegionModel;
-import org.datavyu.models.component.ViewportState;
-
-import org.datavyu.views.component.RegionView;
 
 /**
  * RegionController is responsible for managing a RegionPainter.
@@ -50,11 +42,11 @@ public final class RegionController implements PropertyChangeListener {
         view.addMouseListener(markerListener);
         view.addMouseMotionListener(markerListener);
     }
-    
+
     public RegionModel getModel() {
-    	return mixerModel.getRegionModel();
+        return mixerModel.getRegionModel();
     }
-    
+
     /**
      * @return View used by the controller
      */
@@ -62,7 +54,8 @@ public final class RegionController implements PropertyChangeListener {
         return view;
     }
 
-    @Override public void propertyChange(final PropertyChangeEvent evt) {
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt) {
         if (evt.getSource() == mixerModel.getViewportModel()) {
             view.repaint();
         }
@@ -74,7 +67,9 @@ public final class RegionController implements PropertyChangeListener {
     private final class RegionMarkerMouseListener extends MouseInputAdapter {
         private boolean onStartMarker;
         private boolean onEndMarker;
-        /** offset in pixels from the region marker position to where the marker was "picked up" for dragging */
+        /**
+         * offset in pixels from the region marker position to where the marker was "picked up" for dragging
+         */
         private double offset;
 
         private ViewportState viewport;
@@ -88,14 +83,16 @@ public final class RegionController implements PropertyChangeListener {
             onEndMarker = false;
         }
 
-        @Override public void mouseEntered(final MouseEvent e) {
+        @Override
+        public void mouseEntered(final MouseEvent e) {
             final JComponent source = (JComponent) e.getSource();
             if (view.contains(e.getPoint())) {
                 source.setCursor(eastResizeCursor);
             }
         }
 
-        @Override public void mousePressed(final MouseEvent e) {
+        @Override
+        public void mousePressed(final MouseEvent e) {
             final Component source = (Component) e.getSource();
             final GeneralPath startMarker = view.getStartMarkerPolygon();
             final GeneralPath endMarker = view.getEndMarkerPolygon();
@@ -105,32 +102,34 @@ public final class RegionController implements PropertyChangeListener {
             onEndMarker = endMarker.contains(e.getPoint());
             assert !(onStartMarker && onEndMarker); // can't be on both markers at the same time
             source.setCursor((onStartMarker || onEndMarker) ? eastResizeCursor : defaultCursor);
-          	offset = e.getX() - viewport.computePixelXOffset(onStartMarker ? regionState.getRegionStart() : regionState.getRegionEnd()) - RegionConstants.RMARKER_WIDTH;
+            offset = e.getX() - viewport.computePixelXOffset(onStartMarker ? regionState.getRegionStart() : regionState.getRegionEnd()) - RegionConstants.RMARKER_WIDTH;
         }
 
-        @Override public void mouseDragged(final MouseEvent e) {
+        @Override
+        public void mouseDragged(final MouseEvent e) {
             if (onStartMarker || onEndMarker) {
-            	assert viewport != null;
+                assert viewport != null;
                 assert !(onStartMarker && onEndMarker);
-            	
+
                 double x = Math.min(Math.max(e.getX() - offset, 0), view.getSize().width) - RegionConstants.RMARKER_WIDTH;
                 double newTime = viewport.computeTimeFromXOffset(x) + viewport.getViewStart();
                 newTime = Math.round(Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd()));
-                
+
                 final RegionModel regionModel = mixerModel.getRegionModel();
                 final RegionState region = regionModel.getRegion();
-                
+
                 if (onStartMarker) {
-                	newTime = Math.min(newTime, region.getRegionEnd());
-                	regionModel.setPlaybackRegionStart((long) newTime);
+                    newTime = Math.min(newTime, region.getRegionEnd());
+                    regionModel.setPlaybackRegionStart((long) newTime);
                 } else {
-                	newTime = Math.max(newTime, region.getRegionStart());
-                	regionModel.setPlaybackRegionEnd((long) newTime);
+                    newTime = Math.max(newTime, region.getRegionStart());
+                    regionModel.setPlaybackRegionEnd((long) newTime);
                 }
             }
         }
 
-        @Override public void mouseReleased(final MouseEvent e) {
+        @Override
+        public void mouseReleased(final MouseEvent e) {
             onStartMarker = false;
             onEndMarker = false;
             viewport = null;

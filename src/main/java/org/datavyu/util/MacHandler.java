@@ -16,31 +16,32 @@ package org.datavyu.util;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
+import org.datavyu.Datavyu;
+
 import java.io.File;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import org.datavyu.Datavyu;
-import org.datavyu.models.db.MongoDatastore;
 
 
 /**
  * Ok this curly piece of work is a bit body of reflection to basically achieve
  * the following snippet of code that will ultimately compile on any platform.
- *
+ * <p/>
  * public class MacOSAboutHandler extends Application {
- *
+ * <p/>
  * public MacOSAboutHandler() { addApplicationListener(new AboutBoxHandler()); }
- *
+ * <p/>
  * class AboutBoxHandler extends ApplicationAdapter { public void
  * handleAbout(ApplicationEvent event) {
  * Datavyu.getApplication().showAboutWindow(); event.setHandled(true); } } }
  */
 public class MacHandler {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(MacHandler.class);
 
     /**
@@ -54,7 +55,7 @@ public class MacHandler {
 
             Class applc = Class.forName("com.apple.eawt.ApplicationListener");
             Object listener = Proxy.newProxyInstance(Thread.currentThread()
-                    .getContextClassLoader(), new Class[] { applc },
+                    .getContextClassLoader(), new Class[]{applc},
                     new HandlerForApplicationAdapter());
 
             // Add the listener to the application.
@@ -82,18 +83,13 @@ public class MacHandler {
         /**
          * Called when a method in the proxy object is being invoked.
          *
-         * @param proxy
-         *            The object we are proxying.
-         * @param method
-         *            The method that is being invoked.
-         * @param args
-         *            The arguments being supplied to the method.
-         *
-         *
+         * @param proxy  The object we are proxying.
+         * @param method The method that is being invoked.
+         * @param args   The arguments being supplied to the method.
          * @return Value for the method being invoked.
          */
         public Object invoke(final Object proxy, final Method method,
-            final Object[] args) {
+                             final Object[] args) {
 
             try {
                 Class ae = Class.forName("com.apple.eawt.ApplicationEvent");
@@ -129,8 +125,7 @@ public class MacHandler {
 
                     if (shouldQuit) {
                         Datavyu.getApplication().getMainFrame().setVisible(
-                            false);
-                        MongoDatastore.stopMongo();
+                                false);
                         NativeLoader.cleanAllTmpFiles();
                         UserMetrix.shutdown();
                     }
@@ -144,8 +139,8 @@ public class MacHandler {
 
                     String fileName = (String) getFilename.invoke(args[0],
                             null);
-                    
-                    if(Datavyu.getApplication().ready) {
+
+                    if (Datavyu.getApplication().ready) {
                         Datavyu.getApplication().getView().openExternalFile(new File(
                                 fileName));
                     } else {

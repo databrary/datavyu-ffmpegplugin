@@ -14,20 +14,21 @@
  */
 package org.datavyu.undoableedits;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.ListModel;
+import org.datavyu.undoableedits.ChangeCellEdit.Granularity;
+
+import javax.swing.*;
 import javax.swing.event.ListDataListener;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
-import org.datavyu.undoableedits.ChangeCellEdit.Granularity;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  */
-public class SpreadsheetUndoManager  extends UndoManager implements ListModel {
+public class SpreadsheetUndoManager extends UndoManager implements ListModel {
 
     List<ListDataListener> listeners;
 
@@ -64,7 +65,7 @@ public class SpreadsheetUndoManager  extends UndoManager implements ListModel {
                         cond = (ue.getClass() == o.getClass())
                                 && (((ChangeCellEdit) o).granularity == Granularity.FINEGRAINED);
                         if (cond) {
-                            edits.removeElementAt(edits.size()-1);
+                            edits.removeElementAt(edits.size() - 1);
                         }
                     } while (cond && edits.size() > 0);
                 } else if (prevEdit.equals(cce)) { // FINEGRAINED
@@ -95,8 +96,8 @@ public class SpreadsheetUndoManager  extends UndoManager implements ListModel {
         int size = edits.size();
         List<UndoableEdit> v = new ArrayList<UndoableEdit>(size);
 
-        for (int i=size-1; i>=0; i--) {
-            UndoableEdit u = (UndoableEdit)edits.elementAt(i);
+        for (int i = size - 1; i >= 0; i--) {
+            UndoableEdit u = (UndoableEdit) edits.elementAt(i);
             if (u.canUndo() && u.isSignificant()) {
                 v.add(u);
             }
@@ -110,8 +111,8 @@ public class SpreadsheetUndoManager  extends UndoManager implements ListModel {
     public synchronized List<UndoableEdit> getRedoableEdits() {
         int size = edits.size();
         List<UndoableEdit> v = new ArrayList<UndoableEdit>(size);
-        for (int i=0; i<size; i++) {
-            UndoableEdit u = (UndoableEdit)edits.elementAt(i);
+        for (int i = 0; i < size; i++) {
+            UndoableEdit u = (UndoableEdit) edits.elementAt(i);
             if (u.canRedo() && u.isSignificant()) {
                 v.add(u);
             }

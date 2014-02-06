@@ -14,18 +14,17 @@
  */
 package org.datavyu.controllers.project;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.datavyu.models.project.Project;
 import org.datavyu.models.project.TrackSettings;
 import org.datavyu.models.project.ViewerSetting;
-
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
+
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 /**
@@ -93,7 +92,7 @@ public class DatavyuProjectRepresenter extends Representer {
             map.put("locked", interfaceSettings.isLocked());
 
             final List<Long> bookmarks =
-                interfaceSettings.getBookmarkPositions();
+                    interfaceSettings.getBookmarkPositions();
 
             if (bookmarks.isEmpty()) {
 

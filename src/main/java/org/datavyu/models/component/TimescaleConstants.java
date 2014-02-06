@@ -14,7 +14,7 @@
  */
 package org.datavyu.models.component;
 
-import java.awt.Color;
+import java.awt.*;
 
 
 /**

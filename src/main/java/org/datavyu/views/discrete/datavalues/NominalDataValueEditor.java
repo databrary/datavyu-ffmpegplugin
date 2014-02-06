@@ -14,11 +14,11 @@
  */
 package org.datavyu.views.discrete.datavalues;
 
+import org.datavyu.models.db.NominalValue;
+
+import javax.swing.text.JTextComponent;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.text.JTextComponent;
-
-import org.datavyu.models.db.NominalValue;
 
 /**
  * This class is the character editor of a NominalDataValue.
@@ -28,18 +28,20 @@ public final class NominalDataValueEditor extends DataValueEditor {
     /**
      * String holding the reserved characters - these are characters that are
      * users are unable to enter into a nominal field.
-     *
+     * <p/>
      * BugzID:524 - If Character is an escape key - ignore it.
      */
     private static final String RESERVED_CHARS = ")(<>|,;\t\r\n\"\u001B";
 
-    /** The model that this editor is manipulating */
+    /**
+     * The model that this editor is manipulating
+     */
     NominalValue model;
 
     /**
      * Constructor.
      *
-     * @param ta The parent JTextComponent the editor resides within.
+     * @param ta           The parent JTextComponent the editor resides within.
      * @param NominalValue The value this editor manipulates.
      */
     public NominalDataValueEditor(final JTextComponent ta,
@@ -50,7 +52,6 @@ public final class NominalDataValueEditor extends DataValueEditor {
 
     /**
      * @param aChar Character to test
-     *
      * @return true if the character is a reserved character.
      */
     public boolean isReserved(final char aChar) {
@@ -78,15 +79,15 @@ public final class NominalDataValueEditor extends DataValueEditor {
 
         // Just a regular vanilla keystroke - insert it into nominal field.
         if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
-            && !isReserved(e.getKeyChar())) {
+                && !isReserved(e.getKeyChar())) {
             this.removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
-            
+
             // If we have a delete or backspace key - do not insert.
             if (!(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                  && e.getKeyChar() == '\u007F') &&
-                !(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
-                  && e.getKeyChar() == '\u0008')) {
+                    && e.getKeyChar() == '\u007F') &&
+                    !(e.getKeyLocation() == KeyEvent.KEY_LOCATION_UNKNOWN
+                            && e.getKeyChar() == '\u0008')) {
                 currentValue.insert(getCaretPosition(), e.getKeyChar());
             }
 
@@ -96,7 +97,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
             this.setCaretPosition(pos);
             e.consume();
 
-        // All other keystrokes are consumed.
+            // All other keystrokes are consumed.
         } else {
             e.consume();
         }
@@ -107,7 +108,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
             //ndv.setItsValue(this.getText());
             //updateDatabase();
 
-        // BugzID:668 - The user is reverting back to a 'placeholder' state.
+            // BugzID:668 - The user is reverting back to a 'placeholder' state.
         } else if (this.getText().equals("")) {
             model.clear();
             //ndv.clearValue();

@@ -15,36 +15,21 @@
 package org.datavyu.views.discrete;
 
 import com.usermetrix.jclient.Logger;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.Box.Filler;
-
+import com.usermetrix.jclient.UserMetrix;
+import org.datavyu.Configuration;
+import org.datavyu.Datavyu;
+import org.datavyu.controllers.CreateNewCellC;
+import org.datavyu.models.db.Variable;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import org.datavyu.Configuration;
-import org.datavyu.Datavyu;
-
-import com.usermetrix.jclient.UserMetrix;
-
-import java.awt.Color;
-
+import javax.swing.*;
+import javax.swing.Box.Filler;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
-import org.datavyu.controllers.CreateNewCellC;
-
-import org.datavyu.models.db.Variable;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 
 /**
@@ -52,42 +37,66 @@ import org.datavyu.models.db.Variable;
  */
 public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
 
-    /** Width of spacer between onset and offset timestamps. */
+    /**
+     * Width of spacer between onset and offset timestamps.
+     */
     private static final int TIME_SPACER = 5;
 
     private static final int ALPHA = 70;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = UserMetrix.getLogger(SpreadsheetEmptyCell.class);
 
-    /** Border to use for normal cell. No extra information to show. */
+    /**
+     * Border to use for normal cell. No extra information to show.
+     */
     private static final Border NORMAL_BORDER = new MatteBorder(0, 0, 1, 1, Configuration.BORDER_COLOUR);
 
-    /** The panel that displays the cell. */
+    /**
+     * The panel that displays the cell.
+     */
     private JPanel cellPanel;
 
-    /** A panel for holding the header to the cell. */
+    /**
+     * A panel for holding the header to the cell.
+     */
     private JPanel topPanel;
 
-    /** A panel for holding the value of the cell. */
+    /**
+     * A panel for holding the value of the cell.
+     */
     private JLabel dataPanel;
 
-    /** The Ordinal display component. */
+    /**
+     * The Ordinal display component.
+     */
     private JLabel ord;
 
-    /** The Onset display component. */
+    /**
+     * The Onset display component.
+     */
     private JLabel onset;
 
-    /** The Offset display component. */
+    /**
+     * The Offset display component.
+     */
     private JLabel offset;
 
-    /** Component that sets the width of the cell. */
+    /**
+     * Component that sets the width of the cell.
+     */
     private Filler stretcher;
 
-    /** strut creates the gap between this cell and the previous cell. */
+    /**
+     * strut creates the gap between this cell and the previous cell.
+     */
     private Filler strut;
 
-    /** Variable model for what we are adding cells too. */
+    /**
+     * Variable model for what we are adding cells too.
+     */
     private Variable model;
 
     /**
@@ -103,13 +112,13 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
         setName(this.getClass().getSimpleName());
 
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
-                                      .getResourceMap(SpreadsheetCell.class);
+                .getResourceMap(SpreadsheetCell.class);
 
         cellPanel = new JPanel();
         cellPanel.addMouseListener(this);
         strut = new Filler(new Dimension(0, 0),
-                           new Dimension(0, 0),
-                           new Dimension(Short.MAX_VALUE, 0));
+                new Dimension(0, 0),
+                new Dimension(Short.MAX_VALUE, 0));
 
         setLayout(new BorderLayout());
         this.add(strut, BorderLayout.NORTH);
@@ -193,7 +202,8 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
      *
      * @return the maximum size of the cell.
      */
-    @Override public final Dimension getMaximumSize() {
+    @Override
+    public final Dimension getMaximumSize() {
         Dimension mysize = super.getPreferredSize();
 
         if ((mysize != null) && (mysize.height < (layoutPreferredHeight + strut.getHeight()))) {
@@ -209,7 +219,8 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
      *
      * @return the preferred size of the cell.
      */
-    @Override public final Dimension getPreferredSize() {
+    @Override
+    public final Dimension getPreferredSize() {
         return getMaximumSize();
     }
 
@@ -219,15 +230,15 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
      *
      * @return the minimum size of the cell.
      */
-    @Override public final Dimension getMinimumSize() {
+    @Override
+    public final Dimension getMinimumSize() {
         return getMaximumSize();
     }
 
     /**
      * Set the width of the SpreadsheetCell.
      *
-     * @param width
-     *            New width of the SpreadsheetCell.
+     * @param width New width of the SpreadsheetCell.
      */
     public void setWidth(final int width) {
         Dimension d = new Dimension(width, 0);
@@ -237,46 +248,46 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
     /**
      * The action to invoke when the mouse enters this component.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
-    @Override public void mouseEntered(final MouseEvent me) {
+    @Override
+    public void mouseEntered(final MouseEvent me) {
     }
 
     /**
      * The action to invoke when the mouse exits this component.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
-    @Override public void mouseExited(final MouseEvent me) {
+    @Override
+    public void mouseExited(final MouseEvent me) {
     }
 
     /**
      * The action to invoke when a mouse button is pressed.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
-    @Override public void mousePressed(final MouseEvent me) {
+    @Override
+    public void mousePressed(final MouseEvent me) {
     }
 
     /**
      * The action to invoke when a mouse button is released.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
-    @Override public void mouseReleased(final MouseEvent me) {
+    @Override
+    public void mouseReleased(final MouseEvent me) {
     }
 
     /**
      * The action to invoke when a mouse button is clicked.
      *
-     * @param me
-     *            The mouse event that triggered this action.
+     * @param me The mouse event that triggered this action.
      */
-    @Override public void mouseClicked(final MouseEvent me) {
+    @Override
+    public void mouseClicked(final MouseEvent me) {
         LOGGER.event("Pressed empty cell");
         CreateNewCellC controller = new CreateNewCellC();
         controller.createDefaultCell(model);
@@ -287,7 +298,8 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
      *
      * @param g
      */
-    @Override public void paint(final Graphics g) {
+    @Override
+    public void paint(final Graphics g) {
         // BugzID:474 - Set the size at paint time - somewhere else may have
         // altered the font.
         dataPanel.setFont(Configuration.getInstance().getSSDataFont());

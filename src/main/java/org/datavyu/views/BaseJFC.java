@@ -14,13 +14,11 @@
  */
 package org.datavyu.views;
 
-import java.util.List;
-
-import javax.swing.JComboBox;
-
+import com.google.common.collect.Lists;
 import org.datavyu.plugins.Plugin;
 
-import com.google.common.collect.Lists;
+import javax.swing.*;
+import java.util.List;
 
 public abstract class BaseJFC extends PluginChooser {
     protected JComboBox pluginsBox;
@@ -45,14 +43,16 @@ public abstract class BaseJFC extends PluginChooser {
                 "Unsupported File", JOptionPane.ERROR_MESSAGE);
         }
     }
-*/    
+*/
 
-    @Override public void addPlugin(final Plugin plugin) {
+    @Override
+    public void addPlugin(final Plugin plugin) {
         PluginCallback pc = new PluginCallback(plugin);
         plugins.add(pc);
     }
 
-    @Override public void addPlugin(final Iterable<Plugin> plugins) {
+    @Override
+    public void addPlugin(final Iterable<Plugin> plugins) {
 
         for (Plugin plugin : plugins) {
             PluginCallback pc = new PluginCallback(plugin);
@@ -60,7 +60,8 @@ public abstract class BaseJFC extends PluginChooser {
         }
     }
 
-    @Override public Plugin getSelectedPlugin() {
+    @Override
+    public Plugin getSelectedPlugin() {
         Object selected = pluginsBox.getSelectedItem();
 
         return ((PluginCallback) selected).plugin;

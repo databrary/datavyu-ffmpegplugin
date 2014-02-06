@@ -14,9 +14,10 @@
  */
 package org.datavyu.controllers;
 
-import javax.swing.JFrame;
 import org.datavyu.Datavyu;
 import org.datavyu.views.VocabEditorV;
+
+import javax.swing.*;
 
 /**
  * A controller for invoking the vocab editor.

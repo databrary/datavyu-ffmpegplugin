@@ -15,27 +15,29 @@
 package org.datavyu.controllers;
 
 import com.usermetrix.jclient.Logger;
-import org.datavyu.Datavyu;
-
 import com.usermetrix.jclient.UserMetrix;
-import javax.swing.undo.UndoableEdit;
+import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.undoableedits.ChangeCellEdit;
 import org.datavyu.undoableedits.ChangeOffsetCellEdit;
+
+import javax.swing.undo.UndoableEdit;
 
 /**
  * Controller for setting the stop time (offset) of a new cell.
  */
 public final class SetNewCellStopTimeC {
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(SetNewCellStopTimeC.class);
 
     /**
      * Sets the stop time of the last cell that was created.
-     * 
+     *
      * @param milliseconds The number of milliseconds since the origin of the
-     * spreadsheet to set the stop time for.
+     *                     spreadsheet to set the stop time for.
      */
     public SetNewCellStopTimeC(final long milliseconds) {
         LOGGER.event("set new cell offset");

@@ -14,17 +14,16 @@
  */
 package org.datavyu.controllers.project;
 
-import java.util.List;
-import java.util.Map;
-
 import org.datavyu.models.project.Project;
 import org.datavyu.models.project.TrackSettings;
 import org.datavyu.models.project.ViewerSetting;
-
 import org.yaml.snakeyaml.constructor.AbstractConstruct;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**

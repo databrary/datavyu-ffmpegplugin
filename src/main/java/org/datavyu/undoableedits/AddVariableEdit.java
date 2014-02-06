@@ -16,24 +16,27 @@ package org.datavyu.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 import org.datavyu.controllers.DeleteColumnC;
-import java.util.ArrayList;
-import java.util.List;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  */
 public class AddVariableEdit extends VocabEditorEdit {
-    /** The logger for this class. */
-    private static final Logger LOGGER = UserMetrix.getLogger(AddVariableEdit.class);  
+    /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = UserMetrix.getLogger(AddVariableEdit.class);
     private String varName;
     private Argument.Type varType;
-    
+
     public AddVariableEdit(String variableName, Argument.Type variableType) {
         super();
         this.varName = variableName;
@@ -53,7 +56,7 @@ public class AddVariableEdit extends VocabEditorEdit {
             model.createVariable(varName, varType);
 
         } catch (UserWarningException e) {
-             LOGGER.error("Unable to redo New Column.", e);
+            LOGGER.error("Unable to redo New Column.", e);
         }
     }
 
@@ -64,5 +67,5 @@ public class AddVariableEdit extends VocabEditorEdit {
         cols.add(model.getVariable(varName));
         new DeleteColumnC(cols);
     }
-    
+
 }

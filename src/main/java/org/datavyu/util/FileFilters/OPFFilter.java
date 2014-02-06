@@ -14,9 +14,8 @@
  */
 package org.datavyu.util.FileFilters;
 
-import java.io.File;
-
 import javax.swing.filechooser.FileFilter;
+import java.io.File;
 
 
 /**
@@ -29,11 +28,13 @@ public class OPFFilter extends FileFilter {
     private OPFFilter() {
     }
 
-    @Override public boolean accept(final File file) {
+    @Override
+    public boolean accept(final File file) {
         return (file.getName().endsWith(".opf") || file.isDirectory());
     }
 
-    @Override public String getDescription() {
+    @Override
+    public String getDescription() {
         return "Datavyu project file (*.opf)";
     }
 
