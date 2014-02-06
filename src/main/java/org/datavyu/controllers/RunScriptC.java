@@ -73,6 +73,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     private PrintWriter consoleWriter;
 
     private OutputStream sIn;
+    
+    private String outString ="";
 
     /**
      * Constructs and invokes the runscript controller.
@@ -152,9 +154,11 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     }
 
     private void runRubyScript(File scriptFile) {
+        outString = "";
         ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
         rubyEngine.getContext().setWriter(consoleWriter);
         rubyEngine.getContext().setErrorWriter(consoleWriter);
+
         try {
             consoleWriter.println("\n*************************");
             consoleWriter.println("\nRunning Script: " + scriptFile.getName());
@@ -185,10 +189,10 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
         } catch (ScriptException e) {
             consoleWriter.flush();
+            
+            String msg = makeFriendlyRubyErrorMsg(outString, e);
             consoleWriter.println("***** SCRIPT ERROR *****");
-            consoleWriter.println("@Line " + e.getLineNumber() + ":\n   '"
-                    + e.getMessage() + "'");
-
+            consoleWriter.println(msg);
             consoleWriter.println("*************************");
             consoleWriter.flush();
 
@@ -198,6 +202,34 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         } catch (FileNotFoundException e) {
             consoleWriter.println("File not found script");
             LOGGER.error("Unable to execute script: ", e);
+        }
+    }
+    
+    private String makeFriendlyRubyErrorMsg(String out, ScriptException e)
+    {
+        try{
+            int scriptTagIndex = out.lastIndexOf("<script>:");
+            int endIndex = out.indexOf("org.jruby.embed.EvalFailedException:");
+
+            int errorLine;
+            if (endIndex == -1)
+                errorLine = Integer.parseInt(out.substring(scriptTagIndex).replaceAll("[^0-9]",""));
+            else
+                errorLine = Integer.parseInt(out.substring(scriptTagIndex, endIndex).replaceAll("[^0-9]",""));
+
+            LineNumberReader lnr = new LineNumberReader(new FileReader(scriptFile));
+            while (lnr.getLineNumber() < errorLine-1) lnr.readLine();
+            
+            String s;
+            if (endIndex == -1) s = out.substring(out.lastIndexOf('*')+1);
+            else s = out.substring(out.lastIndexOf('*')+1, endIndex);
+            s += "\nSee line " + errorLine + " of "+scriptFile+":";
+            s += "\n" + lnr.readLine();
+            
+            return s;
+        } catch(Exception e2) //if <script>: is not found in previous output, or other error occurs, default to exception's message
+        {
+            return e.getMessage();
         }
     }
 
@@ -363,7 +395,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     /**
      * Separate thread for polling the incoming data from the scripting engine.
      * The data from the scripting engine gets placed directly into the
-     * consoleOutput
+     * consoleOutput and also kept in outString for revisiting during 
+     * error reporting
      */
     class ReaderThread extends Thread {
 
@@ -386,6 +419,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     if (len > 0) {
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
+                        outString += s;
                         System.out.println(s);
                         publish(s);
                     }
