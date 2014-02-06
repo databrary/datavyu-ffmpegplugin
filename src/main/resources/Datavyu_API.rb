@@ -86,7 +86,6 @@ import 'org.datavyu.models.db.Cell'
 import 'org.datavyu.models.db.Argument'
 import 'org.datavyu.models.project.Project'
 import 'org.datavyu.controllers.SaveC'
-import 'com.mongodb.BasicDBObject'
 import 'org.datavyu.controllers.OpenC'
 import 'org.datavyu.controllers.project.ProjectController'
 
