@@ -592,8 +592,7 @@ public final class Datavyu extends SingleFrameApplication
     /**
      * Action for opening the guide site
      */
-    public void openGuideSite()
-    {
+    public void openGuideSite() {
         String url = "http://www.datavyu.org/user-guide/index.html";
 
         try {
@@ -665,21 +664,24 @@ public final class Datavyu extends SingleFrameApplication
             String cancel = "Cancel";
             String no = "Don't save";
             String yes = "Save";
-            int noIndex; int yesIndex;
-            
+            int noIndex;
+            int yesIndex;
+
             String[] options = new String[3];
             //Mac and Windows typically order these buttons differently
             if (getPlatform() == Platform.MAC) {
                 options[0] = yes;
                 options[1] = cancel;
                 options[2] = no;
-                noIndex = 2; yesIndex = 0;
-                
+                noIndex = 2;
+                yesIndex = 0;
+
             } else {
                 options[0] = yes;
                 options[1] = no;
                 options[2] = cancel;
-                yesIndex = 0; noIndex = 1;
+                yesIndex = 0;
+                noIndex = 1;
             }
 
             int selection = JOptionPane.showOptionDialog(mainFrame,
@@ -702,7 +704,6 @@ public final class Datavyu extends SingleFrameApplication
     /**
      * Action to call when the application is exiting.
      *
-     * @param event The event that triggered this action.
      */
     @Override
     protected void end() {
