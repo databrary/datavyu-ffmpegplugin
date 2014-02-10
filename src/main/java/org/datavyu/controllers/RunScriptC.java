@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 
 /**
@@ -207,25 +208,27 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     
     private String makeFriendlyRubyErrorMsg(String out, ScriptException e)
     {
-        try{
-            int scriptTagIndex = out.lastIndexOf("<script>:");
+        try{                                    
+            String s = "";
             int endIndex = out.indexOf("org.jruby.embed.EvalFailedException:");
-
-            int errorLine;
-            if (endIndex == -1)
-                errorLine = Integer.parseInt(out.substring(scriptTagIndex).replaceAll("[^0-9]",""));
-            else
-                errorLine = Integer.parseInt(out.substring(scriptTagIndex, endIndex).replaceAll("[^0-9]",""));
-
-            LineNumberReader lnr = new LineNumberReader(new FileReader(scriptFile));
-            while (lnr.getLineNumber() < errorLine-1) lnr.readLine();
-            
-            String s;
             if (endIndex == -1) s = out.substring(out.lastIndexOf('*')+1);
             else s = out.substring(out.lastIndexOf('*')+1, endIndex);
-            s += "\nSee line " + errorLine + " of "+scriptFile+":";
-            s += "\n" + lnr.readLine();
             
+            String linesOut = "";
+            StringTokenizer outputTokenizer = new StringTokenizer(out, "\n");
+            while(outputTokenizer.hasMoreTokens())
+            {
+                String curLine = outputTokenizer.nextToken();
+                int scriptTagIndex = curLine.lastIndexOf("<script>:");
+                if (scriptTagIndex != -1)
+                {
+                    int errorLine = Integer.parseInt(curLine.substring(scriptTagIndex).replaceAll("[^0-9]",""));
+                    LineNumberReader scriptLNR = new LineNumberReader(new FileReader(scriptFile));
+                    while(scriptLNR.getLineNumber() < errorLine-1) scriptLNR.readLine(); //for some reason setLineNumber doesn't work as excpected
+                    linesOut = "\nSee line " + errorLine + " of "+scriptFile+":" + "\n" + scriptLNR.readLine() + linesOut;
+                }                    
+            }
+            s += linesOut;
             return s;
         } catch(Exception e2) //if <script>: is not found in previous output, or other error occurs, default to exception's message
         {
