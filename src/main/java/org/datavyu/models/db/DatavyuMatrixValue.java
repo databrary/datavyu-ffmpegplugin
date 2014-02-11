@@ -36,9 +36,6 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
     public DatavyuMatrixValue() {
     }
 
-    /**
-     * Default constructor for serializing/deserializing with Mongo
-     */
     public DatavyuMatrixValue(UUID parent_id, Argument type) {
         this.parentId = parent_id;
         values = new ArrayList<Value>();

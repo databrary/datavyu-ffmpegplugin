@@ -31,12 +31,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Acts as a connector between Datavyu and a MongoDB instance.
+ * Acts as a connector between Datavyu's various data structures.
  */
 public class DatavyuDatastore implements Datastore {
 
-    // The logger for the mongo datastore -- Can't use in startMongo because
-    // UserMetrix has not been initalised yet
+    // The logger for the datastore
     private static Logger LOGGER = UserMetrix.getLogger(DatavyuDatastore.class);
 
     // Name of the datastore - does not need to persist - is used for file names.
