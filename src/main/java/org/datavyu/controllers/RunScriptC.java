@@ -210,10 +210,15 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     {
         try{                                    
             String s = "";
+            //s should begin with ruby-relevant error portion, NOT full java stack
+            //which would be of little interest to the user and only obscures what matters
             int endIndex = out.indexOf("org.jruby.embed.EvalFailedException:");
             if (endIndex == -1) s = out.substring(out.lastIndexOf('*')+1);
             else s = out.substring(out.lastIndexOf('*')+1, endIndex);
             
+            //for each script error print the relevant line number. these are listed
+            //in OPPOSITE of stack order so that the top of the stack (most likely to be
+            //where the actual error lies), is the last thing shown and most apparent to user
             String linesOut = "";
             StringTokenizer outputTokenizer = new StringTokenizer(out, "\n");
             while(outputTokenizer.hasMoreTokens())
@@ -224,7 +229,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 {
                     int errorLine = Integer.parseInt(curLine.substring(scriptTagIndex).replaceAll("[^0-9]",""));
                     LineNumberReader scriptLNR = new LineNumberReader(new FileReader(scriptFile));
-                    while(scriptLNR.getLineNumber() < errorLine-1) scriptLNR.readLine(); //for some reason setLineNumber doesn't work as excpected
+                    while(scriptLNR.getLineNumber() < errorLine-1) scriptLNR.readLine(); //advance to errorLine
                     linesOut = "\nSee line " + errorLine + " of "+scriptFile+":" + "\n" + scriptLNR.readLine() + linesOut;
                 }                    
             }
