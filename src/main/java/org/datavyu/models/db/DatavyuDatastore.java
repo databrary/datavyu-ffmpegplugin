@@ -25,10 +25,7 @@ package org.datavyu.models.db;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Acts as a connector between Datavyu's various data structures.
@@ -49,6 +46,8 @@ public class DatavyuDatastore implements Datastore {
     //
     private List<DatastoreListener> dbListeners = new ArrayList<DatastoreListener>();
     private Map<String, Variable> variables;
+
+    private VariableCompartor variableCompartor = new VariableCompartor();
 
 
     public DatavyuDatastore() {
@@ -77,6 +76,7 @@ public class DatavyuDatastore implements Datastore {
         for (String s : variables.keySet()) {
             varList.add(variables.get(s));
         }
+        Collections.sort(varList, variableCompartor);
         return varList;
     }
 
