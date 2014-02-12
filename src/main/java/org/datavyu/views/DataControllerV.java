@@ -246,7 +246,7 @@ public final class DataControllerV extends DatavyuDialog
     private javax.swing.JButton rewindButton;
 
     /** */
-    private javax.swing.JButton osxsetCellOffsetButton;
+    private javax.swing.JButton ninesetCellOffsetButton;
 
     /** */
     private javax.swing.JButton setCellOffsetButton;
@@ -259,6 +259,8 @@ public final class DataControllerV extends DatavyuDialog
 
     /** */
     private javax.swing.JButton showTracksButton;
+    
+    private javax.swing.JButton showTracksSmallButton;
 
     /** */
     private javax.swing.JButton shuttleBackButton;
@@ -952,9 +954,9 @@ public final class DataControllerV extends DatavyuDialog
         gridButtonPanel.add(pointCellButton, "w 45!, h 45!");
 
         // Set cell onset button.
-        osxsetCellOffsetButton = buildButton(resourceMap, actionMap,
-                "setCellOffset", "osx");
-        gridButtonPanel.add(osxsetCellOffsetButton, "w 45!, h 45!");
+        ninesetCellOffsetButton = buildButton(resourceMap, actionMap,
+                "setCellOffset", "nine");
+        gridButtonPanel.add(ninesetCellOffsetButton, "w 45!, h 45!");
 
         // Instant cell button.
         JButton placeholder2 = new JButton();
@@ -1172,19 +1174,53 @@ public final class DataControllerV extends DatavyuDialog
         placeholder.setFocusPainted(false);
         gridButtonPanel.add(placeholder, "w 45!, h 45!");
 
-        // Set cell onset button
-        setCellOnsetButton = buildButton(resourceMap, actionMap,
-                "setCellOnset", "win");
-        gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
-
-        // Set new cell offset button
+        //Point cell with forward slash
         pointCellButton = buildButton(resourceMap, actionMap,
                 "pointCell", "win");
         gridButtonPanel.add(pointCellButton, "w 45!, h 45!");
 
+        //SHOW-HIDE WITH ASTERISK -- NOT IMPLEMENTED
+        showTracksSmallButton = new JButton();      
+        showTracksSmallButton.setIcon(resourceMap.getIcon(
+                "winshowTracksSmallButton.show.icon"));
+        showTracksSmallButton.setName("winshowTracksSmallButton");
+        showTracksSmallButton.getAccessibleContext().setAccessibleName(
+                "Show Tracks");
+        showTracksSmallButton.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent evt) {
+                showTracksButtonActionPerformed(evt);
+            }
+        });
+        gridButtonPanel.add(showTracksSmallButton, "w 45!, h 45!");
+        
         // Go back button
         goBackButton = buildButton(resourceMap, actionMap, "goBack", null);
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
+        
+        // Go back text field
+        goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        goBackTextField.setText("00:00:05:000");
+        goBackTextField.setName("goBackTextField");
+        gridButtonPanel.add(goBackTextField, "w 80!, h 45!");
+
+        // Set cell onset button with 7
+        setCellOnsetButton = buildButton(resourceMap, actionMap,
+                "setCellOnset", null);
+        gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
+
+        // Play video button with 8
+        playButton = buildButton(resourceMap, actionMap, "play", null);
+        playButton.setRequestFocusEnabled(false);
+        gridButtonPanel.add(playButton, "w 45!, h 45!");
+
+        // Set cell offset button with 9
+        ninesetCellOffsetButton = buildButton(resourceMap, actionMap,
+                "setCellOffset", "nine");
+        gridButtonPanel.add(ninesetCellOffsetButton, "w 45!, h 45!");
+
+        // Find button
+        findButton = buildButton(resourceMap, actionMap, "find", "win");
+        gridButtonPanel.add(findButton, "span 1 2, w 45!, h 95!");
 
         // Sync video button
         JButton placeholder2 = new JButton();
@@ -1192,39 +1228,16 @@ public final class DataControllerV extends DatavyuDialog
         placeholder2.setFocusPainted(false);
         gridButtonPanel.add(placeholder2, "w 80!, h 45!");
 
-        // Rewind video button
-        rewindButton = buildButton(resourceMap, actionMap, "rewind", null);
-        gridButtonPanel.add(rewindButton, "w 45!, h 45!");
-
-        // Play video button
-        playButton = buildButton(resourceMap, actionMap, "play", null);
-        playButton.setRequestFocusEnabled(false);
-        gridButtonPanel.add(playButton, "w 45!, h 45!");
-
-        // Fast forward button
-        forwardButton = buildButton(resourceMap, actionMap, "forward", null);
-        gridButtonPanel.add(forwardButton, "w 45!, h 45!");
-
-        // Find button
-        findButton = buildButton(resourceMap, actionMap, "find", "win");
-        gridButtonPanel.add(findButton, "span 1 2, w 45!, h 95!");
-
-        // Go back text field
-        goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
-        goBackTextField.setText("00:00:05:000");
-        goBackTextField.setName("goBackTextField");
-        gridButtonPanel.add(goBackTextField, "w 80!, h 45!");
-
-        // Shuttle back button
+        // Shuttle back button with 4
         shuttleBackButton = buildButton(resourceMap, actionMap,
                 "shuttleBack", null);
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
-        // Stop button
+        // Stop button with 5
         stopButton = buildButton(resourceMap, actionMap, "stop", null);
         gridButtonPanel.add(stopButton, "w 45!, h 45!");
 
-        // Shuttle forward button
+        // Shuttle forward button with 6
         shuttleForwardButton = buildButton(resourceMap, actionMap,
                 "shuttleForward", null);
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
@@ -1235,20 +1248,20 @@ public final class DataControllerV extends DatavyuDialog
         findTextField.setName("findOnsetLabel");
         gridButtonPanel.add(findTextField, "w 80!, h 45!");
 
-        // Jog back button
+        // Jog back button with 1
         jogBackButton = buildButton(resourceMap, actionMap, "jogBack", null);
         gridButtonPanel.add(jogBackButton, "w 45!, h 45!");
 
-        // Pause button
+        // Pause button with 2
         pauseButton = buildButton(resourceMap, actionMap, "pause", null);
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
-        // Jog forward button
+        // Jog forward button with 3
         jogForwardButton = buildButton(resourceMap, actionMap,
                 "jogForward", null);
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
-        // Create new cell button
+        // Create new cell button with enter
         createNewCell = buildButton(resourceMap, actionMap,
                 "createNewCell", null);
         createNewCell.setAlignmentY(0.0F);
@@ -1264,14 +1277,14 @@ public final class DataControllerV extends DatavyuDialog
         findOffsetField.setName("findOffsetLabel");
         gridButtonPanel.add(findOffsetField, "w 80!, h 45!");
 
-        // Create new cell setting offset button
+        // Create new cell setting offset button with zero
         createNewCellSettingOffset = buildButton(resourceMap, actionMap,
                 "createNewCellAndSetOnset", null);
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
 
         // Set cell offset button
         setCellOffsetButton = buildButton(resourceMap, actionMap,
-                "setCellOffset", null);
+                "setCellOffset", "period");
         gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
         // Show tracks button
@@ -1368,15 +1381,16 @@ public final class DataControllerV extends DatavyuDialog
                 DataControllerV.class);
 
         if (tracksPanelEnabled) {
-            LOGGER.event("Show tracks");
+            LOGGER.event("Show tracks (" + button.getName() + ")");
 
             // Panel is being displayed, hide it
-            button.setIcon(resourceMap.getIcon("showTracksButton.show.icon"));
+            button.setIcon(resourceMap.getIcon(button.getName() + ".show.icon"));
+            
         } else {
-            LOGGER.event("Hide tracks");
+            LOGGER.event("Hide tracks (" + button.getName() + ")");
 
             // Panel is hidden, show it
-            button.setIcon(resourceMap.getIcon("showTracksButton.hide.icon"));
+            button.setIcon(resourceMap.getIcon(button.getName() + ".hide.icon"));
         }
 
         tracksPanelEnabled = !tracksPanelEnabled;
@@ -1716,15 +1730,15 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Simulates set cell offset button clicked.
      */
-    public void pressSetCellOffset() {
+    public void pressSetCellOffsetPeriod() {
         setCellOffsetButton.doClick();
     }
 
     /**
      * Simulates set cell offset button clicked.
      */
-    public void pressSetCellOffsetOSX() {
-        osxsetCellOffsetButton.doClick();
+    public void pressSetCellOffsetNine() {
+        ninesetCellOffsetButton.doClick();
     }
 
     /**
