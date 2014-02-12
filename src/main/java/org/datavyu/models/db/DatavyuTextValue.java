@@ -35,6 +35,11 @@ public final class DatavyuTextValue extends DatavyuValue implements TextValue {
         this.index = -1;
     }
 
+    public DatavyuTextValue(UUID parent_id, Argument arg) {
+        this(parent_id);
+        this.arg = arg;
+    }
+
     public DatavyuTextValue(UUID parent_id, String name, int index, Argument arg) {
         this(parent_id);
         this.name = name;

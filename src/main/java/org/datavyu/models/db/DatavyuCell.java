@@ -60,9 +60,9 @@ public class DatavyuCell implements Cell {
         // Build argument list from the argument given
 
         if (type.type == Argument.Type.NOMINAL) {
-            this.value = new DatavyuNominalValue(getID());
+            this.value = new DatavyuNominalValue(getID(), type);
         } else if (type.type == Argument.Type.TEXT) {
-            this.value = new DatavyuTextValue(getID());
+            this.value = new DatavyuTextValue(getID(), type);
         } else {
             this.value = new DatavyuMatrixValue(getID(), type);
         }
