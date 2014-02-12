@@ -189,9 +189,9 @@ public final class VocabEditorV extends DatavyuDialog {
      */
     @Action
     public void addMatrix() {
-        String varName = "matrix" + getMatNameNum();
+        String varName = "column" + getMatNameNum();
         try {
-            LOGGER.event("vocEd - add matrix");
+            LOGGER.event("vocEd - add column");
 
             // perform the action
             Variable v = ds.createVariable(varName, Argument.Type.MATRIX);

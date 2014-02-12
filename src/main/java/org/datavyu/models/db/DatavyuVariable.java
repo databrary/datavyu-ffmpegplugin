@@ -26,7 +26,7 @@ package org.datavyu.models.db;
 import java.util.*;
 
 /**
- * Maps a variable object to a mongo powered datastore.
+ * Maps a variable object to a datastore.
  */
 public final class DatavyuVariable implements Variable {
     // All the listeners for variables in teh datastore.
@@ -94,7 +94,7 @@ public final class DatavyuVariable implements Variable {
 
 
     /**
-     * @return The internal ID (mongo id) for this variable.
+     * @return The internal ID for this variable.
      */
     public UUID getID() {
         return variableId;

@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 
 /**
@@ -73,6 +74,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     private PrintWriter consoleWriter;
 
     private OutputStream sIn;
+    
+    private String outString ="";
 
     /**
      * Constructs and invokes the runscript controller.
@@ -152,9 +155,11 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     }
 
     private void runRubyScript(File scriptFile) {
+        outString = "";
         ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
         rubyEngine.getContext().setWriter(consoleWriter);
         rubyEngine.getContext().setErrorWriter(consoleWriter);
+
         try {
             consoleWriter.println("\n*************************");
             consoleWriter.println("\nRunning Script: " + scriptFile.getName());
@@ -185,10 +190,10 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
         } catch (ScriptException e) {
             consoleWriter.flush();
+            
+            String msg = makeFriendlyRubyErrorMsg(outString, e);
             consoleWriter.println("***** SCRIPT ERROR *****");
-            consoleWriter.println("@Line " + e.getLineNumber() + ":\n   '"
-                    + e.getMessage() + "'");
-
+            consoleWriter.println(msg);
             consoleWriter.println("*************************");
             consoleWriter.flush();
 
@@ -198,6 +203,41 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         } catch (FileNotFoundException e) {
             consoleWriter.println("File not found script");
             LOGGER.error("Unable to execute script: ", e);
+        }
+    }
+    
+    private String makeFriendlyRubyErrorMsg(String out, ScriptException e)
+    {
+        try{                                    
+            String s = "";
+            //s should begin with ruby-relevant error portion, NOT full java stack
+            //which would be of little interest to the user and only obscures what matters
+            int endIndex = out.indexOf("org.jruby.embed.EvalFailedException:");
+            if (endIndex == -1) s = out.substring(out.lastIndexOf('*')+1);
+            else s = out.substring(out.lastIndexOf('*')+1, endIndex);
+            
+            //for each script error print the relevant line number. these are listed
+            //in OPPOSITE of stack order so that the top of the stack (most likely to be
+            //where the actual error lies), is the last thing shown and most apparent to user
+            String linesOut = "";
+            StringTokenizer outputTokenizer = new StringTokenizer(out, "\n");
+            while(outputTokenizer.hasMoreTokens())
+            {
+                String curLine = outputTokenizer.nextToken();
+                int scriptTagIndex = curLine.lastIndexOf("<script>:");
+                if (scriptTagIndex != -1)
+                {
+                    int errorLine = Integer.parseInt(curLine.substring(scriptTagIndex).replaceAll("[^0-9]",""));
+                    LineNumberReader scriptLNR = new LineNumberReader(new FileReader(scriptFile));
+                    while(scriptLNR.getLineNumber() < errorLine-1) scriptLNR.readLine(); //advance to errorLine
+                    linesOut = "\nSee line " + errorLine + " of "+scriptFile+":" + "\n" + scriptLNR.readLine() + linesOut;
+                }                    
+            }
+            s += linesOut;
+            return s;
+        } catch(Exception e2) //if <script>: is not found in previous output, or other error occurs, default to exception's message
+        {
+            return e.getMessage();
         }
     }
 
@@ -363,7 +403,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     /**
      * Separate thread for polling the incoming data from the scripting engine.
      * The data from the scripting engine gets placed directly into the
-     * consoleOutput
+     * consoleOutput and also kept in outString for revisiting during 
+     * error reporting
      */
     class ReaderThread extends Thread {
 
@@ -386,6 +427,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     if (len > 0) {
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
+                        outString += s;
                         System.out.println(s);
                         publish(s);
                     }

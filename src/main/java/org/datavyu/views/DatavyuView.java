@@ -161,7 +161,6 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem undoSpreadSheetMenuItem;
     private javax.swing.JMenuItem vocabEditorMenuItem;
     private javax.swing.JCheckBoxMenuItem weakTemporalOrderMenuItem;
-    private javax.swing.JMenu windowMenu;
     private javax.swing.JMenuItem zoomInMenuItem;
     private javax.swing.JMenu zoomMenu;
     private javax.swing.JMenuItem zoomOutMenuItem;
@@ -1328,7 +1327,6 @@ public final class DatavyuView extends FrameView
         recentScriptsHeader = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JSeparator();
         favScripts = new javax.swing.JMenuItem();
-        windowMenu = new javax.swing.JMenu();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
         updateMenuItem = new javax.swing.JMenuItem();
@@ -1647,9 +1645,6 @@ public final class DatavyuView extends FrameView
 
         menuBar.add(scriptMenu);
 
-        windowMenu.setName("windowMenu"); // NOI18N
-
-        menuBar.add(windowMenu);
 
         helpMenu.setAction(actionMap.get("showVariableList")); // NOI18N
         helpMenu.setName("helpMenu"); // NOI18N

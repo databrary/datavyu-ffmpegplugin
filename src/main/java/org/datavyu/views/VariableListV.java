@@ -54,11 +54,6 @@ public final class VariableListV extends DatavyuDialog
     private static final int NCOLUMN = 1;
 
     /**
-     * The column for a variables type.
-     */
-    private static final int TCOLUMN = 2;
-
-    /**
      * The total number of columns in the variables list.
      */
     private static final int TOTAL_COLUMNS = 3;
@@ -111,7 +106,6 @@ public final class VariableListV extends DatavyuDialog
         // Set the names of the columns.
         tableModel.addColumn(rMap.getString("Table.visibleColumn"));
         tableModel.addColumn(rMap.getString("Table.nameColumn"));
-        tableModel.addColumn(rMap.getString("Table.typeColumn")); //lose this?
 
         //Use JTextfield to edit variable name cells
         variableList.getColumnModel().getColumn(NCOLUMN)
@@ -238,32 +232,6 @@ public final class VariableListV extends DatavyuDialog
 
         vals[VCOLUMN] = !variable.isHidden();
         vals[NCOLUMN] = variable.getName();
-
-        // Bring back Type listing: 2579
-        /*
-        switch (dbColumn.getItsMveType()) {
-            case FLOAT:
-                vals[TCOLUMN] = rMap.getString("VarType.float");
-                break;
-            case INTEGER:
-                vals[TCOLUMN] = rMap.getString("VarType.integer");
-                break;
-            case TEXT:
-                vals[TCOLUMN] = rMap.getString("VarType.text");
-                break;
-            case NOMINAL:
-                vals[TCOLUMN] = rMap.getString("VarType.nominal");
-                break;
-            case PREDICATE:
-                vals[TCOLUMN] = rMap.getString("VarType.predicate");
-                break;
-            case MATRIX:
-                vals[TCOLUMN] = rMap.getString("VarType.matrix");
-                break;
-            default:
-                vals[TCOLUMN] = rMap.getString("VarType.undefined");
-                break;
-        }*/
 
         // Add new row to table model.
         int rowId = tableModel.getRowCount();

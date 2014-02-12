@@ -27,8 +27,8 @@ public class UpdateV extends javax.swing.JDialog {
     /* Private data */
     private static final String VERSION_FILE = "http://www.datavyu.org/version.txt";
     private static final String PRE_VERSION_FILE = "http://www.datavyu.org/pre_version.txt";
-    private static final String DOWNLOAD_PAGE = "http://www.datavyu.org/download";
-    private static final String PRE_DOWNLOAD_PAGE = "http://www.datavyu.org/download_pre";
+    private static final String DOWNLOAD_PAGE = "http://www.datavyu.org/download.html";
+    private static final String PRE_DOWNLOAD_PAGE = "http://www.datavyu.org/download.html";
     private boolean m_update_available = false;
     private ServerVersion m_server;
     private LocalVersion m_local;
