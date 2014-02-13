@@ -393,8 +393,13 @@ public final class Datavyu extends SingleFrameApplication
         switch (evt.getKeyCode()) {
 
             case KeyEvent.VK_DIVIDE:
+                //Win - point cell
+                if (!getPlatform().equals(Platform.MAC)) {
+                    dataController.pressPointCell();
+                }
+                
+                //Mac - Show/hide
 
-                    //FILL THIS IN!!!!!
                 break;
 
             case KeyEvent.VK_EQUALS:
@@ -406,13 +411,10 @@ public final class Datavyu extends SingleFrameApplication
                 break;
 
             case KeyEvent.VK_ASTERISK:
-                //Win hide/show. Mac nothing
+                
                 break;
             case KeyEvent.VK_MULTIPLY:
-
-                if (!getPlatform().equals(Platform.MAC)) {
-                    dataController.pressPointCell();
-                }
+                //Win - Show/hide
 
                 break;
 
