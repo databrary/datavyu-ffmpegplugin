@@ -82,16 +82,16 @@ public final class VocabEditorV extends DatavyuDialog {
     /**
      * Swing components.
      */
-    private JButton addArgButton;
-    private JButton addMatrixButton;
+    private JButton addCodeButton;
+    private JButton addColumnButton;
     private JButton closeButton;
     private JScrollPane currentVocabList;
     private JButton deleteButton;
     private JLabel jLabel1;
     private JScrollPane jScrollPane1;
     private JTextArea jTextArea1;
-    private JButton moveArgLeftButton;
-    private JButton moveArgRightButton;
+    private JButton moveCodeLeftButton;
+    private JButton moveCodeRightButton;
     private JLabel statusBar;
     private JSeparator statusSeperator;
 
@@ -134,11 +134,11 @@ public final class VocabEditorV extends DatavyuDialog {
                         if (ke.isControlDown() && (ke.getID() == KeyEvent.KEY_RELEASED)) {
                             switch (ke.getKeyCode()) {
                                 case KeyEvent.VK_M:
-                                    addMatrix();
+                                    addColumn();
                                     break;
                                 case KeyEvent.VK_A:
                                     if (selectedVocabElement != null) {
-                                        addArgument();
+                                        addCode();
                                     }
                                     break;
                                 case KeyEvent.VK_S:
@@ -188,7 +188,7 @@ public final class VocabEditorV extends DatavyuDialog {
      * The action to invoke when the user clicks on the add matrix button.
      */
     @Action
-    public void addMatrix() {
+    public void addColumn() {
         String varName = "column" + getMatNameNum();
         try {
             LOGGER.event("vocEd - add column");
@@ -248,20 +248,20 @@ public final class VocabEditorV extends DatavyuDialog {
             public void keyReleased(KeyEvent ke) {
                 if (ke.isShiftDown()) {
                     if (ke.getKeyCode() == KeyEvent.VK_COMMA || ke.getKeyCode() == KeyEvent.VK_PERIOD) {
-                        addArgument();
+                        addCode();
                     }
                 } else if (ke.getKeyCode() == KeyEvent.VK_COMMA ||
                         ke.getKeyCode() == KeyEvent.VK_LEFT_PARENTHESIS ||
                         ke.getKeyCode() == KeyEvent.VK_RIGHT_PARENTHESIS) {
-                    addArgument();
+                    addCode();
                 }
                 if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
-                    if (ke.isControlDown() && moveArgLeftButton.isEnabled()) {
+                    if (ke.isControlDown() && moveCodeLeftButton.isEnabled()) {
                         moveArgumentLeft();
                     }
                 }
                 if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    if (ke.isControlDown() && moveArgRightButton.isEnabled()) {
+                    if (ke.isControlDown() && moveCodeRightButton.isEnabled()) {
                         moveArgumentRight();
                     }
                 }
@@ -314,10 +314,10 @@ public final class VocabEditorV extends DatavyuDialog {
     }
 
     /**
-     * The action to invoke when the user clicks on the add argument button.
+     * The action to invoke when the user clicks on the add code button.
      */
     @Action
-    public void addArgument() {
+    public void addCode() {
         Variable var = selectedVocabElement.getVariable();
         Argument fa = var.addArgument(Argument.Type.NOMINAL);
         selectedVocabElement.setModel(var.getVariableType());
@@ -542,10 +542,10 @@ public final class VocabEditorV extends DatavyuDialog {
         // functionality.
 /*
         if (selectedVocabElement != null) {
-            addArgButton.setEnabled(true);
+            addCodeButton.setEnabled(true);
             deleteButton.setEnabled(true);
         } else {
-            addArgButton.setEnabled(false);
+            addCodeButton.setEnabled(false);
             deleteButton.setEnabled(false);
         }
 */
@@ -555,19 +555,19 @@ public final class VocabEditorV extends DatavyuDialog {
             // can shift the argument around.
             selectedVocabElement.getModel().childArguments.lastIndexOf(selectedArgument.getModel());
             if (selectedArgumentI > 0) {
-                moveArgLeftButton.setEnabled(true);
+                moveCodeLeftButton.setEnabled(true);
             } else {
-                moveArgLeftButton.setEnabled(false);
+                moveCodeLeftButton.setEnabled(false);
             }
 
             if (selectedArgumentI < (selectedVocabElement.getModel().childArguments.size() - 1)) {
-                moveArgRightButton.setEnabled(true);
+                moveCodeRightButton.setEnabled(true);
             } else {
-                moveArgRightButton.setEnabled(false);
+                moveCodeRightButton.setEnabled(false);
             }
         } else {
-            moveArgLeftButton.setEnabled(false);
-            moveArgRightButton.setEnabled(false);
+            moveCodeLeftButton.setEnabled(false);
+            moveCodeRightButton.setEnabled(false);
         }
     }
 
@@ -579,10 +579,10 @@ public final class VocabEditorV extends DatavyuDialog {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        addMatrixButton = new javax.swing.JButton();
-        moveArgLeftButton = new javax.swing.JButton();
-        moveArgRightButton = new javax.swing.JButton();
-        addArgButton = new javax.swing.JButton();
+        addColumnButton = new javax.swing.JButton();
+        moveCodeLeftButton = new javax.swing.JButton();
+        moveCodeRightButton = new javax.swing.JButton();
+        addCodeButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         currentVocabList = new javax.swing.JScrollPane();
         closeButton = new javax.swing.JButton();
@@ -605,59 +605,59 @@ public final class VocabEditorV extends DatavyuDialog {
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getActionMap(VocabEditorV.class, this);
 
-        addArgButton.setAction(actionMap.get("addArgument")); // NOI18N
-        addArgButton.setText(bundle.getString("addArgButton.text")); // NOI18N
-        addArgButton.setToolTipText(bundle.getString("addArgButton.tip")); // NOI18N
-        addArgButton.setName("addArgButton"); // NOI18N        
-        addArgButton.setHorizontalAlignment(SwingConstants.LEFT);
+        addCodeButton.setAction(actionMap.get("addCode")); // NOI18N
+        addCodeButton.setText(bundle.getString("addCodeButton.text")); // NOI18N
+        addCodeButton.setToolTipText(bundle.getString("addCodeButton.tip")); // NOI18N
+        addCodeButton.setName("addCodeButton"); // NOI18N        
+        addCodeButton.setHorizontalAlignment(SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        getContentPane().add(addArgButton, gridBagConstraints);
+        getContentPane().add(addCodeButton, gridBagConstraints);
 
         
-        addMatrixButton.setAction(actionMap.get("addMatrix")); // NOI18N
-        addMatrixButton.setText(bundle.getString("addMatrixButton.text")); // NOI18N
-        addMatrixButton.setToolTipText(bundle.getString("addMatrixButton.tip")); // NOI18N
-        addMatrixButton.setName("addMatrixButton"); // NOI18N
-        addMatrixButton.setPreferredSize(addArgButton.getPreferredSize());
-        addMatrixButton.setHorizontalAlignment(SwingConstants.LEFT);
+        addColumnButton.setAction(actionMap.get("addColumn")); // NOI18N
+        addColumnButton.setText(bundle.getString("addColumnButton.text")); // NOI18N
+        addColumnButton.setToolTipText(bundle.getString("addColumnButton.tip")); // NOI18N
+        addColumnButton.setName("addColumnButton"); // NOI18N
+        addColumnButton.setPreferredSize(addCodeButton.getPreferredSize());
+        addColumnButton.setHorizontalAlignment(SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-        getContentPane().add(addMatrixButton, gridBagConstraints);
+        getContentPane().add(addColumnButton, gridBagConstraints);
 
-        moveArgLeftButton.setAction(actionMap.get("moveArgumentLeft")); // NOI18N
+        moveCodeLeftButton.setAction(actionMap.get("moveArgumentLeft")); // NOI18N
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(VocabEditorV.class);
-        moveArgLeftButton.setIcon(resourceMap.getIcon("moveArgLeftButton.icon")); // NOI18N
-        moveArgLeftButton.setText(bundle.getString("moveArgLeftButton.text")); // NOI18N
-        moveArgLeftButton.setToolTipText(bundle.getString("moveArgLeftButton.tip")); // NOI18N
-        moveArgLeftButton.setIconTextGap(6);
-        moveArgLeftButton.setName("moveArgLeftButton"); // NOI18N
+        moveCodeLeftButton.setIcon(resourceMap.getIcon("moveCodeLeftButton.icon")); // NOI18N
+        moveCodeLeftButton.setText(bundle.getString("moveCodeLeftButton.text")); // NOI18N
+        moveCodeLeftButton.setToolTipText(bundle.getString("moveCodeLeftButton.tip")); // NOI18N
+        moveCodeLeftButton.setIconTextGap(6);
+        moveCodeLeftButton.setName("moveCodeLeftButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        getContentPane().add(moveArgLeftButton, gridBagConstraints);
+        getContentPane().add(moveCodeLeftButton, gridBagConstraints);
 
-        moveArgRightButton.setAction(actionMap.get("moveArgumentRight")); // NOI18N
-        moveArgRightButton.setIcon(resourceMap.getIcon("moveArgRightButton.icon")); // NOI18N
-        moveArgRightButton.setText(bundle.getString("moveArgRightButton.text")); // NOI18N
-        moveArgRightButton.setToolTipText(bundle.getString("moveArgRightButton.tip")); // NOI18N
-        moveArgRightButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        moveArgRightButton.setIconTextGap(6);
-        moveArgRightButton.setName("moveArgRightButton"); // NOI18N
+        moveCodeRightButton.setAction(actionMap.get("moveArgumentRight")); // NOI18N
+        moveCodeRightButton.setIcon(resourceMap.getIcon("moveCodeRightButton.icon")); // NOI18N
+        moveCodeRightButton.setText(bundle.getString("moveCodeRightButton.text")); // NOI18N
+        moveCodeRightButton.setToolTipText(bundle.getString("moveCodeRightButton.tip")); // NOI18N
+        moveCodeRightButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        moveCodeRightButton.setIconTextGap(6);
+        moveCodeRightButton.setName("moveCodeRightButton"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 5);
-        getContentPane().add(moveArgRightButton, gridBagConstraints);
+        getContentPane().add(moveCodeRightButton, gridBagConstraints);
 
         deleteButton.setAction(actionMap.get("delete")); // NOI18N
         deleteButton.setText(bundle.getString("deleteButton.text")); // NOI18N
@@ -750,21 +750,21 @@ public final class VocabEditorV extends DatavyuDialog {
                 String component = me.getComponent().getName();
                 if (component.equals("closeButton")) {
                     statusBar.setText("Close the editor");
-                } else if (component.equals("addMatrixButton")) {
+                } else if (component.equals("addColumnButton")) {
                     statusBar.setText("Add a new column. Hotkey: ctrl + M");
                 } else if (component.equals("undoButton")) {
                     statusBar.setText("Undo a series of changes. Hotkey: ctrl + Z");
                 } else if (component.equals("redoButton")) {
                     statusBar.setText("Redo any undone changes. Hotkey: ctrl + Y");
-                } else if (component.equals("addArgButton")) {
+                } else if (component.equals("addCodeButton")) {
                     statusBar.setText("Add a new code to a column. Hotkey: ctrl + A");
                 } else if (component.equals("deleteButton")) {
                     statusBar.setText("Delete a code or column. Hotkey: ctrl + delete");
-                } else if (component.equals("moveArgLeftButton")) {
+                } else if (component.equals("moveCodeLeftButton")) {
                     statusBar.setText("Move a code left within a column. Hotkey: ctrl + <-");
                 } else if (component.equals("applyButton")) {
                     statusBar.setText("Apply changes to the vocab elements. Hotkey: ctrl + S");
-                } else if (component.equals("moveArgRightButton")) {
+                } else if (component.equals("moveCodeRightButton")) {
                     statusBar.setText("Move a code right within a column. Hotkey: ctrl + ->");
                 } else if (component.equals("okButton")) {
                     statusBar.setText("Save changes and close the window.");
@@ -778,12 +778,12 @@ public final class VocabEditorV extends DatavyuDialog {
         };
 
         currentVocabList.addMouseListener(ma);
-        addMatrixButton.addMouseListener(ma);
+        addColumnButton.addMouseListener(ma);
         deleteButton.addMouseListener(ma);
         closeButton.addMouseListener(ma);
-        addArgButton.addMouseListener(ma);
-        moveArgLeftButton.addMouseListener(ma);
-        moveArgRightButton.addMouseListener(ma);
+        addCodeButton.addMouseListener(ma);
+        moveCodeLeftButton.addMouseListener(ma);
+        moveCodeRightButton.addMouseListener(ma);
 
     }
 
