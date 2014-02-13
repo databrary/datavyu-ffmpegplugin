@@ -120,9 +120,9 @@ public final class DataControllerV extends DatavyuDialog
     private static final int SHIFTJOG = 5;
 
     /**
-     * The jump multiplier for ctrl-shift-jogging.
+     * The jump multiplier for ctrl-jogging.
      */
-    private static final int CTRLSHIFTJOG = 10;
+    private static final int CTRLJOG = 10;
 
     /**
      * Format for representing time.
@@ -1995,7 +1995,7 @@ public final class DataControllerV extends DatavyuDialog
         }
 
         if (ctrlMask) {
-            mul = CTRLSHIFTJOG;
+            mul = CTRLJOG;
         }
 
         long stepSize = ((-ONE_SECOND) / (long) playbackModel.getCurrentFPS());
@@ -2026,7 +2026,7 @@ public final class DataControllerV extends DatavyuDialog
         }
 
         if (ctrlMask) {
-            mul = CTRLSHIFTJOG;
+            mul = CTRLJOG;
         }
 
         long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
