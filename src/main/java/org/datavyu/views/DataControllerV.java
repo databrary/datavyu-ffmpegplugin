@@ -256,9 +256,6 @@ public final class DataControllerV extends DatavyuDialog
 
     /** */
     private javax.swing.JButton pointCellButton;
-
-    /** */
-    private javax.swing.JButton showTracksButton;
     
     private javax.swing.JButton showTracksSmallButton;
 
@@ -867,16 +864,15 @@ public final class DataControllerV extends DatavyuDialog
      */
     private void initComponentsMac() {
         gridButtonPanel = new javax.swing.JPanel();
-
         goBackTextField = new javax.swing.JTextField();
         findTextField = new javax.swing.JTextField();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
         lblSpeed = new javax.swing.JLabel();
+        createNewCell = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
-        showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
@@ -895,7 +891,7 @@ public final class DataControllerV extends DatavyuDialog
         });
 
         gridButtonPanel.setBackground(Color.WHITE);
-        gridButtonPanel.setLayout(new MigLayout("wrap 5, ins 15 2 15 2"));
+        gridButtonPanel.setLayout(new MigLayout("wrap 5"));
 
         // Add data button
         addDataButton.setText(resourceMap.getString("addDataButton.text"));
@@ -936,114 +932,117 @@ public final class DataControllerV extends DatavyuDialog
         jLabel2.setText("x");
         timestampPanel.add(jLabel2);
 
-        // Set cell onset button
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application
                 .getInstance(org.datavyu.Datavyu.class).getContext()
                 .getActionMap(DataControllerV.class, this);
 
         gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
 
-        // placeholder
-        setCellOnsetButton = buildButton(resourceMap, actionMap,
-                "setCellOnset", null);
-        gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
+        JButton placeholder = new JButton();
+        placeholder.setEnabled(false);
+        placeholder.setFocusPainted(false);
+        gridButtonPanel.add(placeholder, "w 45!, h 45!");
 
-        // Sync button
+        //Point cell with equals
         pointCellButton = buildButton(resourceMap, actionMap,
-                "pointCell", null);
+                "pointCell", "osx");
         gridButtonPanel.add(pointCellButton, "w 45!, h 45!");
 
-        // Set cell onset button.
-        ninesetCellOffsetButton = buildButton(resourceMap, actionMap,
-                "setCellOffset", "nine");
-        gridButtonPanel.add(ninesetCellOffsetButton, "w 45!, h 45!");
-
-        // Instant cell button.
+        //Show/hide with forward slash
+        showTracksSmallButton = new JButton();      
+        showTracksSmallButton.setIcon(resourceMap.getIcon(
+                "osxshowTracksSmallButton.show.icon"));
+        showTracksSmallButton.setName("osxshowTracksSmallButton");
+        showTracksSmallButton.getAccessibleContext().setAccessibleName(
+                "Show Tracks");
+        showTracksSmallButton.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent evt) {
+                showTracksButtonActionPerformed(evt);
+            }
+        });
+        gridButtonPanel.add(showTracksSmallButton, "w 45!, h 45!");
+        
+        //placeholder at asterisk location
         JButton placeholder2 = new JButton();
         placeholder2.setEnabled(false);
         placeholder2.setFocusPainted(false);
         gridButtonPanel.add(placeholder2, "w 45!, h 45!");
-
+        
         // Sync video button
         JButton placeholder3 = new JButton();
         placeholder3.setEnabled(false);
         placeholder3.setFocusPainted(false);
         gridButtonPanel.add(placeholder3, "w 80!, h 45!");
+        
 
-        // Rewind video button
-        rewindButton = buildButton(resourceMap, actionMap,
-                "rewind", null);
-        gridButtonPanel.add(rewindButton, "w 45!, h 45!");
+        // Set cell onset button with 7
+        setCellOnsetButton = buildButton(resourceMap, actionMap,
+                "setCellOnset", null);
+        gridButtonPanel.add(setCellOnsetButton, "w 45!, h 45!");
 
-        // Play video button
-        playButton = buildButton(resourceMap, actionMap,
-                "play", null);
+        // Play video button with 8
+        playButton = buildButton(resourceMap, actionMap, "play", null);
         playButton.setRequestFocusEnabled(false);
         gridButtonPanel.add(playButton, "w 45!, h 45!");
 
-        // Fast forward button
-        forwardButton = buildButton(resourceMap, actionMap,
-                "forward", null);
-        gridButtonPanel.add(forwardButton, "w 45!, h 45!");
+        // Set cell offset button with 9
+        ninesetCellOffsetButton = buildButton(resourceMap, actionMap,
+                "setCellOffset", "nine");
+        gridButtonPanel.add(ninesetCellOffsetButton, "w 45!, h 45!");
 
         // Go back button
-        goBackButton = buildButton(resourceMap, actionMap,
-                "goBack", null);
+        goBackButton = buildButton(resourceMap, actionMap, "goBack", null);
         gridButtonPanel.add(goBackButton, "w 45!, h 45!");
 
         // Go back text field
         goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
         goBackTextField.setText("00:00:05:000");
         goBackTextField.setName("goBackTextField");
-        gridButtonPanel.add(goBackTextField, "w 80!, h 45!");
+        gridButtonPanel.add(goBackTextField, "w 80!, h 45!");        
 
-        // Shuttle back button
+        // Shuttle back button with 4
         shuttleBackButton = buildButton(resourceMap, actionMap,
                 "shuttleBack", null);
         gridButtonPanel.add(shuttleBackButton, "w 45!, h 45!");
 
-        // Stop button
-        stopButton = buildButton(resourceMap, actionMap,
-                "stop", null);
+        // Stop button with 5
+        stopButton = buildButton(resourceMap, actionMap, "stop", null);
         gridButtonPanel.add(stopButton, "w 45!, h 45!");
 
-        // Shuttle forward button
+        // Shuttle forward button with 6
         shuttleForwardButton = buildButton(resourceMap, actionMap,
                 "shuttleForward", null);
         gridButtonPanel.add(shuttleForwardButton, "w 45!, h 45!");
-
+                
         // Find button
-        findButton = buildButton(resourceMap, actionMap,
-                "find", null);
+        findButton = buildButton(resourceMap, actionMap, "find", "osx");
         gridButtonPanel.add(findButton, "w 45!, h 45!");
-
+        
         // Find text field
         findTextField.setHorizontalAlignment(SwingConstants.CENTER);
         findTextField.setText("00:00:00:000");
         findTextField.setName("findOnsetLabel");
         gridButtonPanel.add(findTextField, "w 80!, h 45!");
 
-        // Jog back button
-        jogBackButton = buildButton(resourceMap, actionMap,
-                "jogBack", null);
+        // Jog back button with 1
+        jogBackButton = buildButton(resourceMap, actionMap, "jogBack", null);
         gridButtonPanel.add(jogBackButton, "w 45!, h 45!");
 
-        // Pause button
-        pauseButton = buildButton(resourceMap, actionMap,
-                "pause", null);
+        // Pause button with 2
+        pauseButton = buildButton(resourceMap, actionMap, "pause", null);
         gridButtonPanel.add(pauseButton, "w 45!, h 45!");
 
-        // Jog forward button
+        // Jog forward button with 3
         jogForwardButton = buildButton(resourceMap, actionMap,
                 "jogForward", null);
         gridButtonPanel.add(jogForwardButton, "w 45!, h 45!");
 
-        // Create new cell button
-        createNewCell = buildButton(resourceMap, actionMap, "createNewCell", null);
+        // Create new cell button with enter
+        createNewCell = buildButton(resourceMap, actionMap,
+                "createNewCell", null);
         createNewCell.setAlignmentY(0.0F);
-        createNewCell.setHorizontalTextPosition(
-                javax.swing.SwingConstants.CENTER);
-        gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 92!");
+        createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        gridButtonPanel.add(createNewCell, "span 1 2, w 45!, h 95!");
 
         // Find offset field
         findOffsetField.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1054,30 +1053,20 @@ public final class DataControllerV extends DatavyuDialog
         findOffsetField.setName("findOffsetLabel");
         gridButtonPanel.add(findOffsetField, "w 80!, h 45!");
 
-        // Create new cell setting offset button
+        // Create new cell setting offset button with zero
         createNewCellSettingOffset = buildButton(resourceMap, actionMap,
                 "createNewCellAndSetOnset", null);
-        gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 92!, h 45!");
+        gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
 
         // Set cell offset button
         setCellOffsetButton = buildButton(resourceMap, actionMap,
-                "setCellOffset", null);
+                "setCellOffset", "period");
         gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
-        // Show tracks button
-        showTracksButton.setIcon(resourceMap.getIcon(
-                "showTracksButton.hide.icon"));
-        showTracksButton.setName("showTracksButton");
-        showTracksButton.getAccessibleContext().setAccessibleName(
-                "Show Tracks");
-        showTracksButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent evt) {
-                showTracksButtonActionPerformed(evt);
-            }
-        });
-        gridButtonPanel.add(showTracksButton, "w 80!, h 45!");
-
-        getContentPane().setLayout(new MigLayout("hidemode 3, fillx",
+        //bottom-right now empty. formerly the big show/hide
+        
+        
+        getContentPane().setLayout(new MigLayout("ins 0, hidemode 3, fillx",
                 "[growprio 0]0[]", ""));
         getContentPane().add(gridButtonPanel, "");
         getContentPane().setBackground(Color.WHITE);
@@ -1103,7 +1092,6 @@ public final class DataControllerV extends DatavyuDialog
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         findOffsetField = new javax.swing.JTextField();
-        showTracksButton = new javax.swing.JButton();
         tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
