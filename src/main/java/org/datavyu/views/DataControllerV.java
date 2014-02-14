@@ -1179,7 +1179,7 @@ public final class DataControllerV extends DatavyuDialog
                 "pointCell", "win");
         gridButtonPanel.add(pointCellButton, "w 45!, h 45!");
 
-        //SHOW-HIDE WITH ASTERISK -- NOT IMPLEMENTED
+        //Show/hide with asterisk
         showTracksSmallButton = new JButton();      
         showTracksSmallButton.setIcon(resourceMap.getIcon(
                 "winshowTracksSmallButton.show.icon"));
@@ -1287,19 +1287,9 @@ public final class DataControllerV extends DatavyuDialog
                 "setCellOffset", "period");
         gridButtonPanel.add(setCellOffsetButton, "w 45!, h 45!");
 
-        // Show tracks button
-        showTracksButton.setIcon(resourceMap.getIcon(
-                "showTracksButton.hide.icon"));
-        showTracksButton.setName("showTracksButton");
-        showTracksButton.getAccessibleContext().setAccessibleName(
-                "Show Tracks");
-        showTracksButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent evt) {
-                showTracksButtonActionPerformed(evt);
-            }
-        });
-        gridButtonPanel.add(showTracksButton, "w 80!, h 45!");
-
+        //bottom-right now empty. formerly the big show/hide
+        
+        
         getContentPane().setLayout(new MigLayout("ins 0, hidemode 3, fillx",
                 "[growprio 0]0[]", ""));
         getContentPane().add(gridButtonPanel, "");
@@ -1669,6 +1659,10 @@ public final class DataControllerV extends DatavyuDialog
      */
     public void pressPlay() {
         playButton.doClick();
+    }
+    
+    public void pressShowTracksSmall() {
+        showTracksSmallButton.doClick();
     }
 
     /**
