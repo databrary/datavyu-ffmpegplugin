@@ -968,7 +968,7 @@ public final class DataControllerV extends DatavyuDialog
         placeholder2.setFocusPainted(false);
         gridButtonPanel.add(placeholder2, "w 45!, h 45!");
         
-        // Sync video button
+        //Placeholder - perhaps eventually the sync video button
         JButton placeholder3 = new JButton();
         placeholder3.setEnabled(false);
         placeholder3.setFocusPainted(false);
@@ -1210,7 +1210,7 @@ public final class DataControllerV extends DatavyuDialog
         findButton = buildButton(resourceMap, actionMap, "find", "win");
         gridButtonPanel.add(findButton, "span 1 2, w 45!, h 95!");
 
-        // Sync video button
+        //Placeholder - perhaps eventually the sync video button
         JButton placeholder2 = new JButton();
         placeholder2.setEnabled(false);
         placeholder2.setFocusPainted(false);
@@ -2125,6 +2125,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void syncVideoAction() {
+        //not yet implemented
     }
 
     @Override
