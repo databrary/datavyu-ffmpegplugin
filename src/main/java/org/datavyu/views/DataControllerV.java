@@ -873,7 +873,10 @@ public final class DataControllerV extends DatavyuDialog
 
         return result;
     }
-    
+
+    /**
+     * Helper method for creating placeholder buttons
+     */
     private JButton makePlaceholderButton(){
         JButton jb = new JButton();
         jb.setEnabled(false);
