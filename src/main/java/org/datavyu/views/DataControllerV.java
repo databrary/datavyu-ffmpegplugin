@@ -137,7 +137,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * The 80x40 size for the text fields to the right of numpad
      */
-    private static final String WIDE_TEXT_FIELD_SIZE = "w 80!, h 45!";
+    private static final String WIDE_TEXT_FIELD_SIZE = "w 90!, h 45!";
     
     /**
      * Format for representing time.
@@ -216,10 +216,10 @@ public final class DataControllerV extends DatavyuDialog
     private javax.swing.JButton findButton;
 
     /** */
-    private javax.swing.JTextField findOffsetField;
+    private javax.swing.JTextField offsetTextField;
 
     /** */
-    private javax.swing.JTextField findTextField;
+    private javax.swing.JTextField onsetTextField;
 
     /** */
     private javax.swing.JButton forwardButton;
@@ -884,21 +884,38 @@ public final class DataControllerV extends DatavyuDialog
         return jb;
     }
             
-
+    private JPanel makeLabelAndTextfieldPanel(JLabel l, JTextField tf)
+    {
+        JPanel jp = new JPanel();
+        jp.add(l);
+        jp.add(tf);
+        return jp;
+    }
+    
+    /**
+     * Helper method for creating placeholder buttons
+     */
+    private JButton makePlaceholderButton(boolean vis){
+        JButton jb = new JButton();
+        jb.setEnabled(false);
+        jb.setFocusPainted(false);
+        jb.setVisible(vis);
+        return jb;
+    }
     /**
      * Initialize the view for Macs.
      */
     private void initComponentsMac() {
         gridButtonPanel = new javax.swing.JPanel();
         goBackTextField = new javax.swing.JTextField();
-        findTextField = new javax.swing.JTextField();
+        onsetTextField = new javax.swing.JTextField();
+        offsetTextField = new javax.swing.JTextField();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
         lblSpeed = new javax.swing.JLabel();
         createNewCell = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        findOffsetField = new javax.swing.JTextField();
         tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
@@ -975,7 +992,7 @@ public final class DataControllerV extends DatavyuDialog
         //Show/hide with forward slash
         showTracksSmallButton = new JButton();      
         showTracksSmallButton.setIcon(resourceMap.getIcon(
-                "osxshowTracksSmallButton.show.icon"));
+                "osxshowTracksSmallButton.hide.icon"));
         showTracksSmallButton.setName("osxshowTracksSmallButton");
         showTracksSmallButton.getAccessibleContext().setAccessibleName(
                 "Show Tracks");
@@ -990,7 +1007,7 @@ public final class DataControllerV extends DatavyuDialog
         gridButtonPanel.add(makePlaceholderButton(), NUMPAD_KEY_SIZE);
         
         //Placeholder - perhaps eventually the sync video button
-        gridButtonPanel.add(makePlaceholderButton(), WIDE_TEXT_FIELD_SIZE);
+        gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
         
 
         // Set cell onset button with 7
@@ -1016,7 +1033,7 @@ public final class DataControllerV extends DatavyuDialog
         goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
         goBackTextField.setText("00:00:05:000");
         goBackTextField.setName("goBackTextField");
-        gridButtonPanel.add(goBackTextField, WIDE_TEXT_FIELD_SIZE);        
+        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Go back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);        
 
         // Shuttle back button with 4
         shuttleBackButton = buildButton(resourceMap, actionMap,
@@ -1035,13 +1052,9 @@ public final class DataControllerV extends DatavyuDialog
         // Find button
         findButton = buildButton(resourceMap, actionMap, "find", "osx");
         gridButtonPanel.add(findButton, NUMPAD_KEY_SIZE);
-        
-        // Find text field
-        findTextField.setHorizontalAlignment(SwingConstants.CENTER);
-        findTextField.setText("00:00:00:000");
-        findTextField.setName("findOnsetLabel");
-        gridButtonPanel.add(findTextField, WIDE_TEXT_FIELD_SIZE);
 
+        gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
+        
         // Jog back button with 1
         jogBackButton = buildButton(resourceMap, actionMap, "jogBack", null);
         gridButtonPanel.add(jogBackButton, NUMPAD_KEY_SIZE);
@@ -1062,14 +1075,13 @@ public final class DataControllerV extends DatavyuDialog
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridButtonPanel.add(createNewCell, TALL_NUMPAD_KEY_SIZE);
 
-        // Find offset field
-        findOffsetField.setHorizontalAlignment(SwingConstants.CENTER);
-        findOffsetField.setText("00:00:00:000");
-        findOffsetField.setToolTipText(resourceMap.getString(
-                "findOffsetField.toolTipText"));
-        findOffsetField.setEnabled(false);
-        findOffsetField.setName("findOffsetLabel");
-        gridButtonPanel.add(findOffsetField, WIDE_TEXT_FIELD_SIZE);
+        // Onset text field
+        onsetTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        onsetTextField.setText("00:00:00:000");
+        onsetTextField.setToolTipText(resourceMap.getString(
+                "onsetTextField.toolTipText"));
+        onsetTextField.setName("findOnsetLabel");
+        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Onset"), onsetTextField), WIDE_TEXT_FIELD_SIZE);
 
         // Create new cell setting offset button with zero
         createNewCellSettingOffset = buildButton(resourceMap, actionMap,
@@ -1081,7 +1093,14 @@ public final class DataControllerV extends DatavyuDialog
                 "setCellOffset", "period");
         gridButtonPanel.add(setCellOffsetButton, NUMPAD_KEY_SIZE);
 
-        //bottom-right now empty. formerly the big show/hide
+        // Offset text field
+        offsetTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        offsetTextField.setText("00:00:00:000");
+        offsetTextField.setToolTipText(resourceMap.getString(
+                "offsetTextField.toolTipText"));
+        offsetTextField.setEnabled(false); //do we really want this? i don't see what makes it different from onset
+        offsetTextField.setName("findOffsetLabel");
+        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Offset"), offsetTextField), WIDE_TEXT_FIELD_SIZE);
         
         
         getContentPane().setLayout(new MigLayout("ins 0, hidemode 3, fillx",
@@ -1102,14 +1121,14 @@ public final class DataControllerV extends DatavyuDialog
     private void initComponents() {
         gridButtonPanel = new javax.swing.JPanel();
         goBackTextField = new javax.swing.JTextField();
-        findTextField = new javax.swing.JTextField();
+        onsetTextField = new javax.swing.JTextField();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
         lblSpeed = new javax.swing.JLabel();
         createNewCell = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        findOffsetField = new javax.swing.JTextField();
+        offsetTextField = new javax.swing.JTextField();
         tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
@@ -1186,7 +1205,7 @@ public final class DataControllerV extends DatavyuDialog
         //Show/hide with asterisk
         showTracksSmallButton = new JButton();      
         showTracksSmallButton.setIcon(resourceMap.getIcon(
-                "winshowTracksSmallButton.show.icon"));
+                "winshowTracksSmallButton.hide.icon"));
         showTracksSmallButton.setName("winshowTracksSmallButton");
         showTracksSmallButton.getAccessibleContext().setAccessibleName(
                 "Show Tracks");
@@ -1205,7 +1224,7 @@ public final class DataControllerV extends DatavyuDialog
         goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
         goBackTextField.setText("00:00:05:000");
         goBackTextField.setName("goBackTextField");
-        gridButtonPanel.add(goBackTextField, WIDE_TEXT_FIELD_SIZE);
+        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Go back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);
 
         // Set cell onset button with 7
         setCellOnsetButton = buildButton(resourceMap, actionMap,
@@ -1227,7 +1246,7 @@ public final class DataControllerV extends DatavyuDialog
         gridButtonPanel.add(findButton, TALL_NUMPAD_KEY_SIZE);
 
         //Placeholder - perhaps eventually the sync video button
-        gridButtonPanel.add(makePlaceholderButton(), WIDE_TEXT_FIELD_SIZE);
+        gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
 
         // Shuttle back button with 4
         shuttleBackButton = buildButton(resourceMap, actionMap,
@@ -1242,12 +1261,8 @@ public final class DataControllerV extends DatavyuDialog
         shuttleForwardButton = buildButton(resourceMap, actionMap,
                 "shuttleForward", null);
         gridButtonPanel.add(shuttleForwardButton, NUMPAD_KEY_SIZE);
-
-        // Find text field
-        findTextField.setHorizontalAlignment(SwingConstants.CENTER);
-        findTextField.setText("00:00:00:000");
-        findTextField.setName("findOnsetLabel");
-        gridButtonPanel.add(findTextField, WIDE_TEXT_FIELD_SIZE);
+                
+        gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
 
         // Jog back button with 1
         jogBackButton = buildButton(resourceMap, actionMap, "jogBack", null);
@@ -1268,15 +1283,14 @@ public final class DataControllerV extends DatavyuDialog
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridButtonPanel.add(createNewCell, TALL_NUMPAD_KEY_SIZE);
-
-        // Find offset field
-        findOffsetField.setHorizontalAlignment(SwingConstants.CENTER);
-        findOffsetField.setText("00:00:00:000");
-        findOffsetField.setToolTipText(resourceMap.getString(
-                "findOffsetField.toolTipText"));
-        findOffsetField.setEnabled(false);
-        findOffsetField.setName("findOffsetLabel");
-        gridButtonPanel.add(findOffsetField, WIDE_TEXT_FIELD_SIZE);
+        
+        // Onset text field
+        onsetTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        onsetTextField.setText("00:00:00:000");
+        onsetTextField.setToolTipText(resourceMap.getString(
+                "onsetTextField.toolTipText"));
+        onsetTextField.setName("findOnsetLabel");
+        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Onset"), onsetTextField), WIDE_TEXT_FIELD_SIZE);
 
         // Create new cell setting offset button with zero
         createNewCellSettingOffset = buildButton(resourceMap, actionMap,
@@ -1288,7 +1302,14 @@ public final class DataControllerV extends DatavyuDialog
                 "setCellOffset", "period");
         gridButtonPanel.add(setCellOffsetButton, NUMPAD_KEY_SIZE);
 
-        //bottom-right now empty. formerly the big show/hide
+        // Offset text field
+        offsetTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        offsetTextField.setText("00:00:00:000");
+        offsetTextField.setToolTipText(resourceMap.getString(
+                "offsetTextField.toolTipText"));
+        offsetTextField.setEnabled(false); //do we really want this? i don't see what makes it different from onset
+        offsetTextField.setName("findOffsetLabel");
+        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Offset"), offsetTextField), WIDE_TEXT_FIELD_SIZE);
         
         
         getContentPane().setLayout(new MigLayout("ins 0, hidemode 3, fillx",
@@ -1486,7 +1507,7 @@ public final class DataControllerV extends DatavyuDialog
     public void setCellOnsetAction() {
         LOGGER.event("Set cell onset");
         new SetSelectedCellStartTimeC(getCurrentTime());
-        setFindTime(getCurrentTime());
+        setOnsetField(getCurrentTime());
     }
 
     /**
@@ -1496,7 +1517,7 @@ public final class DataControllerV extends DatavyuDialog
     public void setCellOffsetAction() {
         LOGGER.event("Set cell offset");
         new SetSelectedCellStopTimeC(getCurrentTime());
-        setFindOffsetField(getCurrentTime());
+        setOffsetField(getCurrentTime());
     }
 
     /**
@@ -1884,8 +1905,8 @@ public final class DataControllerV extends DatavyuDialog
      *
      * @param milliseconds The time to use when populating the find field.
      */
-    public void setFindTime(final long milliseconds) {
-        findTextField.setText(CLOCK_FORMAT.format(milliseconds));
+    public void setOnsetField(final long milliseconds) {
+        onsetTextField.setText(CLOCK_FORMAT.format(milliseconds));
     }
 
     /**
@@ -1893,8 +1914,8 @@ public final class DataControllerV extends DatavyuDialog
      *
      * @param milliseconds The time to use when populating the find field.
      */
-    public void setFindOffsetField(final long milliseconds) {
-        findOffsetField.setText(CLOCK_FORMAT.format(milliseconds));
+    public void setOffsetField(final long milliseconds) {
+        offsetTextField.setText(CLOCK_FORMAT.format(milliseconds));
     }
 
     /**
@@ -1909,7 +1930,7 @@ public final class DataControllerV extends DatavyuDialog
         } else {
 
             try {
-                jumpTo(CLOCK_FORMAT.parse(findTextField.getText()).getTime());
+                jumpTo(CLOCK_FORMAT.parse(onsetTextField.getText()).getTime());
             } catch (ParseException e) {
                 LOGGER.error("unable to find within video", e);
             }
@@ -1922,7 +1943,7 @@ public final class DataControllerV extends DatavyuDialog
     public void findOffsetAction() {
 
         try {
-            jumpTo(CLOCK_FORMAT.parse(findOffsetField.getText()).getTime());
+            jumpTo(CLOCK_FORMAT.parse(offsetTextField.getText()).getTime());
         } catch (ParseException e) {
             LOGGER.error("unable to find within video", e);
         }
@@ -1940,9 +1961,9 @@ public final class DataControllerV extends DatavyuDialog
 
         try {
             final long findTextTime = CLOCK_FORMAT.parse(
-                    findTextField.getText()).getTime();
+                    onsetTextField.getText()).getTime();
             final long findOffsetTime = CLOCK_FORMAT.parse(
-                    findOffsetField.getText()).getTime();
+                    offsetTextField.getText()).getTime();
 
             final long newWindowPlayStart = findTextTime;
             final long newWindowPlayEnd = (findOffsetTime > newWindowPlayStart)
@@ -2130,7 +2151,7 @@ public final class DataControllerV extends DatavyuDialog
         long time = getCurrentTime();
         new CreateNewCellC(time);
         new SetNewCellStopTimeC(time);
-        setFindOffsetField(time);
+        setOffsetField(time);
     }
 
     /**
