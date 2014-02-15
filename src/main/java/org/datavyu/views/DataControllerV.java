@@ -139,6 +139,8 @@ public final class DataControllerV extends DatavyuDialog
      */
     private static final String WIDE_TEXT_FIELD_SIZE = "w 90!, h 45!";
     
+    private static final Font TEXT_FIELD_FONT = new Font("Arial", Font.PLAIN, 10);
+    
     /**
      * Format for representing time.
      */
@@ -887,6 +889,7 @@ public final class DataControllerV extends DatavyuDialog
     private JPanel makeLabelAndTextfieldPanel(JLabel l, JTextField tf)
     {
         JPanel jp = new JPanel();
+        tf.setFont(TEXT_FIELD_FONT);
         jp.add(l);
         jp.add(tf);
         return jp;
