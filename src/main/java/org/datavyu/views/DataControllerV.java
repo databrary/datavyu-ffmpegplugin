@@ -1038,7 +1038,7 @@ public final class DataControllerV extends DatavyuDialog
         goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
         goBackTextField.setText("00:00:05:000");
         goBackTextField.setName("goBackTextField");
-        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Go back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);        
+        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Jump back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);        
 
         // Shuttle back button with 4
         shuttleBackButton = buildButton(resourceMap, actionMap,
@@ -1229,7 +1229,7 @@ public final class DataControllerV extends DatavyuDialog
         goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
         goBackTextField.setText("00:00:05:000");
         goBackTextField.setName("goBackTextField");
-        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Go back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);
+        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Jump back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);
 
         // Set cell onset button with 7
         setCellOnsetButton = buildButton(resourceMap, actionMap,
