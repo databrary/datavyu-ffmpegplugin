@@ -66,7 +66,7 @@
         <string>$JAVAROOT/repo/org/jruby/jruby-complete/1.6.7.2/jruby-complete-1.6.7.2.jar</string>
         <string>$JAVAROOT/repo/org/jdesktop/appframework/1.0.3/appframework-1.0.3.jar</string>
         <string>$JAVAROOT/repo/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar</string>
-        <string>$JAVAROOT/repo/org/datavyu/datavyu-lib/0.0.82/datavyu-lib-0.0.82.jar</string>
+        <string>$JAVAROOT/repo/org/datavyu/datavyu-lib/0.0.83/datavyu-lib-0.0.83.jar</string>
         <string>$JAVAROOT/repo/org/yaml/snakeyaml/1.7/snakeyaml-1.7.jar</string>
         <string>$JAVAROOT/repo/com/usermetrix/UserMetrix-jclient/0.0.6/UserMetrix-jclient-0.0.6.jar</string>
         <string>$JAVAROOT/repo/com/miglayout/miglayout/3.7.3.1/miglayout-3.7.3.1-swing.jar</string>
