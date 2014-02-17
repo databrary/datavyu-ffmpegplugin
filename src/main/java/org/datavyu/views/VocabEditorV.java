@@ -346,13 +346,17 @@ public final class VocabEditorV extends DatavyuDialog {
         UndoableEdit edit = null;
         // User has vocab element selected - delete it from the editor.
         if (selectedVocabElement != null && selectedArgument == null) {
-            LOGGER.event("vocEd - delete element");
-            // record the effect
-            List<Variable> varsToDelete = new ArrayList<Variable>();
-            varsToDelete.add(selectedVocabElement.getVariable());
-            edit = new RemoveVariableEdit(varsToDelete);
-            new DeleteColumnC(varsToDelete);
-            applyChanges();
+            if (JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the variable " +
+                    selectedVocabElement.getVariable().getName() + "?", "Confirm delete variable",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                LOGGER.event("vocEd - delete element");
+                // record the effect
+                List<Variable> varsToDelete = new ArrayList<Variable>();
+                varsToDelete.add(selectedVocabElement.getVariable());
+                edit = new RemoveVariableEdit(varsToDelete);
+                new DeleteColumnC(varsToDelete);
+                applyChanges();
+            }
 
             // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
