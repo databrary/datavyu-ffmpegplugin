@@ -400,8 +400,8 @@ public class SpreadsheetCell extends JPanel
             // this cell just now.
             Datavyu.getProjectController().setLastCreatedCell(model);
             Datavyu.getProjectController().setLastSelectedCell(model);
-            Datavyu.getDataController().setFindTime(model.getOnset());
-            Datavyu.getDataController().setFindOffsetField(model.getOffset());
+            Datavyu.getDataController().setOnsetField(model.getOnset());
+            Datavyu.getDataController().setOffsetField(model.getOffset());
         }
     }
 
@@ -496,8 +496,8 @@ public class SpreadsheetCell extends JPanel
         offset.setValue();
         if (model.isSelected()) {
             // Update the find windows to the newly selected cell's values
-            Datavyu.getDataController().setFindTime(model.getOnset());
-            Datavyu.getDataController().setFindOffsetField(model.getOffset());
+            Datavyu.getDataController().setOnsetField(model.getOnset());
+            Datavyu.getDataController().setOffsetField(model.getOffset());
         }
     }
 
@@ -505,8 +505,8 @@ public class SpreadsheetCell extends JPanel
     public void onsetChanged(final long newOnset) {
         onset.setValue();
         if (model.isSelected()) {
-            Datavyu.getDataController().setFindTime(model.getOnset());
-            Datavyu.getDataController().setFindOffsetField(model.getOffset());
+            Datavyu.getDataController().setOnsetField(model.getOnset());
+            Datavyu.getDataController().setOffsetField(model.getOffset());
         }
     }
 
@@ -515,8 +515,8 @@ public class SpreadsheetCell extends JPanel
         updateSelectionDisplay();
         if (model.isSelected()) {
             // Update the find windows to the newly selected cell's values
-            Datavyu.getDataController().setFindTime(model.getOnset());
-            Datavyu.getDataController().setFindOffsetField(model.getOffset());
+            Datavyu.getDataController().setOnsetField(model.getOnset());
+            Datavyu.getDataController().setOffsetField(model.getOffset());
         }
     }
 
@@ -525,8 +525,8 @@ public class SpreadsheetCell extends JPanel
         updateSelectionDisplay();
         if (model.isSelected()) {
             // Update the find windows to the newly selected cell's values
-            Datavyu.getDataController().setFindTime(model.getOnset());
-            Datavyu.getDataController().setFindOffsetField(model.getOffset());
+            Datavyu.getDataController().setOnsetField(model.getOnset());
+            Datavyu.getDataController().setOffsetField(model.getOffset());
         }
     }
 
@@ -599,8 +599,8 @@ public class SpreadsheetCell extends JPanel
         }
 
         // Update the find windows to the newly selected cell's values
-        Datavyu.getDataController().setFindTime(model.getOnset());
-        Datavyu.getDataController().setFindOffsetField(model.getOffset());
+        Datavyu.getDataController().setOnsetField(model.getOnset());
+        Datavyu.getDataController().setOffsetField(model.getOffset());
     }
 
     @Override

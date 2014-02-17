@@ -393,39 +393,37 @@ public final class Datavyu extends SingleFrameApplication
         switch (evt.getKeyCode()) {
 
             case KeyEvent.VK_DIVIDE:
-
+                //Mac - Show/hide
                 if (getPlatform().equals(Platform.MAC)) {
-                    dataController.pressSetCellOffsetOSX();
-                } else {
-
-                    if (modifiers == InputEvent.SHIFT_MASK) {
-                        dataController.pressSetCellOffset();
-                    } else {
-                        dataController.pressSetCellOnset();
-                    }
+                    dataController.pressShowTracksSmall();
                 }
-
+                //Win - point cell
+                else{
+                    dataController.pressPointCell();
+                }
+                
                 break;
 
             case KeyEvent.VK_EQUALS:
-
+                //Mac - point cell
                 if (getPlatform().equals(Platform.MAC)) {
                     dataController.pressPointCell();
                 }
-
+                //Win - nothing
                 break;
 
             case KeyEvent.VK_ASTERISK:
+                
+                break;
             case KeyEvent.VK_MULTIPLY:
-
+                //Win - Show/hide
                 if (!getPlatform().equals(Platform.MAC)) {
-                    dataController.pressPointCell();
+                    dataController.pressShowTracksSmall();
                 }
-
                 break;
 
             case KeyEvent.VK_NUMPAD7:
-                dataController.pressRewind();
+                dataController.pressSetCellOnset();
 
                 break;
 
@@ -435,7 +433,7 @@ public final class Datavyu extends SingleFrameApplication
                 break;
 
             case KeyEvent.VK_NUMPAD9:
-                dataController.pressForward();
+                dataController.pressSetCellOffsetNine();
 
                 break;
 
@@ -444,8 +442,8 @@ public final class Datavyu extends SingleFrameApplication
 
                 break;
 
-            case KeyEvent.VK_NUMPAD2:
-                dataController.pressPause();
+            case KeyEvent.VK_NUMPAD5:
+                dataController.pressStop();
 
                 break;
 
@@ -463,8 +461,8 @@ public final class Datavyu extends SingleFrameApplication
 
                 break;
 
-            case KeyEvent.VK_NUMPAD5:
-                dataController.pressStop();
+            case KeyEvent.VK_NUMPAD2:
+                dataController.pressPause();
 
                 break;
 
@@ -483,7 +481,7 @@ public final class Datavyu extends SingleFrameApplication
                 break;
 
             case KeyEvent.VK_DECIMAL:
-                dataController.pressSetCellOffset();
+                dataController.pressSetCellOffsetPeriod();
 
                 break;
 
