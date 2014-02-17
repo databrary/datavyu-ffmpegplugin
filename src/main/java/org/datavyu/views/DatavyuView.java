@@ -786,6 +786,11 @@ public final class DatavyuView extends FrameView
         @Override
         public Void doInBackground() {
 
+            if (!jd.getSelectedFile().exists()) {
+                progressBar.setError("ERROR: File not found");
+                return null;
+            }
+
             progressBar.setProgress(0, "Preparing spreadsheet");
             FileFilter filter = jd.getFileFilter();
             clearSpreadsheet();
