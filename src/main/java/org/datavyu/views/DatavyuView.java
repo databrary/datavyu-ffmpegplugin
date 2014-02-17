@@ -759,7 +759,6 @@ public final class DatavyuView extends FrameView
         fc.setSelectedFile(file);
 
         String ext = FilenameUtils.getExtension(file.getAbsolutePath());
-
         if ("shapa".equalsIgnoreCase(ext)) {
             fc.setFileFilter(SHAPAFilter.INSTANCE);
             open(fc);
@@ -848,14 +847,17 @@ public final class DatavyuView extends FrameView
      * @param jd The file chooser to use.
      */
     private void open(final DatavyuFileChooser jd) {
-        Datavyu.getApplication().resetApp();
+        if (Datavyu.getApplication().safeQuit()) {
 
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-        progressBar = new DVProgressBar(mainFrame, false);
-        Datavyu.getApplication().show(progressBar);
+            Datavyu.getApplication().resetApp();
 
-        task = new OpenTask(progressBar, jd);
-        task.execute();
+            JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+            progressBar = new DVProgressBar(mainFrame, false);
+            Datavyu.getApplication().show(progressBar);
+
+            task = new OpenTask(progressBar, jd);
+            task.execute();
+        }
     }
 
     public void openExternalFile(final File f) {
