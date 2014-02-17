@@ -283,6 +283,16 @@ public final class DatavyuView extends FrameView
         pullMenuItem.setVisible(false);
         jSeparator10.setVisible(false);
 
+        this.getFrame().setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        WindowListener exitListener = new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Datavyu.getApplication().exit();
+            }
+        };
+        this.getFrame().addWindowListener(exitListener);
+
     }
 
 
@@ -361,15 +371,7 @@ public final class DatavyuView extends FrameView
 
         mainFrame.setTitle(title);
 //        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.getFrame().setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        WindowListener exitListener = new WindowAdapter() {
 
-            @Override
-            public void windowClosing(WindowEvent e) {
-                Datavyu.getApplication().exit();
-            }
-        };
-        this.getFrame().addWindowListener(exitListener);
         this.getFrame().setTitle(title);
     }
 
