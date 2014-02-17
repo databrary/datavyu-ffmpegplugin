@@ -102,10 +102,10 @@ public class SpreadsheetView extends JPanel implements Scrollable {
      * Temporary fix for cell-jumping behavior.
      * TODO: Make this work correctly.
      */
-    @Override
-    public final void scrollRectToVisible(Rectangle r) {
-
-    }
+//    @Override
+//    public final void scrollRectToVisible(Rectangle r) {
+//
+//    }
 
     /**
      * Computes the scroll increment that will completely expose one new row
