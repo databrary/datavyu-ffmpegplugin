@@ -49,6 +49,8 @@ public final class OpenDatabaseFileC {
      */
     private static boolean parse_error = false;
 
+    private int numVarsRead = 0;
+
     /**
      * The logger for this class.
      */
@@ -662,6 +664,8 @@ public final class OpenDatabaseFileC {
         Variable newVar = ds.createVariable(varName, variableType);
         newVar.setHidden(!varVisible);
 
+        newVar.setOrderIndex(numVarsRead);
+        numVarsRead++;
         // Read text variable.
         if (variableType == Argument.Type.TEXT) {
             return parseEntries(csvFile,

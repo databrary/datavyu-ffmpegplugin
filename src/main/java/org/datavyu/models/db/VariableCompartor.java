@@ -9,6 +9,13 @@ import java.util.Comparator;
  */
 public class VariableCompartor implements Comparator<Variable> {
     public int compare(Variable c1, Variable c2) {
-        return c1.getName().compareToIgnoreCase(c2.getName());
+        if (c1.getOrderIndex() < c2.getOrderIndex()) {
+            return -1;
+        } else if (c1.getOrderIndex() == c2.getOrderIndex()) {
+            return 0;
+        } else {
+            return 1;
+        }
+//        return c1.getName().compareToIgnoreCase(c2.getName());
     }
 }

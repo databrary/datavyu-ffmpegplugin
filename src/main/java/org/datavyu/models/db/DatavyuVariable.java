@@ -39,6 +39,7 @@ public final class DatavyuVariable implements Variable {
     private Boolean highlighted;
     private Boolean hidden;
     private String name;
+    private int orderIndex = -1;
 
     private static CellCompartor cellCompartor = new CellCompartor();
 
@@ -278,5 +279,15 @@ public final class DatavyuVariable implements Variable {
     @Override
     public void removeListener(final VariableListener listener) {
         getListeners(getID()).remove(listener);
+    }
+
+    @Override
+    public void setOrderIndex(final int newIndex) {
+        orderIndex = newIndex;
+    }
+
+    @Override
+    public int getOrderIndex() {
+        return orderIndex;
     }
 }

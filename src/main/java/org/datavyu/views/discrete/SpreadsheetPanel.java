@@ -260,6 +260,10 @@ public final class SpreadsheetPanel extends JPanel
 
         // and add it to our maintained ref collection
         columns.add(col);
+
+        var.setOrderIndex(columns.size() - 1);
+
+//        updateColumnIndex();
     }
 
     /**
@@ -536,12 +540,7 @@ public final class SpreadsheetPanel extends JPanel
         LOGGER.event("move column left");
 
         // What index does the given column sit at
-        int columnIndex = -1;
-        for (int i = 0; i < columns.size(); i++) {
-            if (columns.get(i).getVariable().equals(var)) {
-                columnIndex = i;
-            }
-        }
+        int columnIndex = var.getOrderIndex();
 
         if (columnIndex >= 0) {
             int newIndex = columnIndex - positions;
@@ -549,8 +548,17 @@ public final class SpreadsheetPanel extends JPanel
             if (newIndex < 0) {
                 newIndex = 0;
             }
-
+//            updateColumnIndex();
             shuffleColumn(columnIndex, newIndex);
+        }
+    }
+
+    public void updateColumnIndex() {
+        // What index does the given column sit at
+
+        int columnIndex = -1;
+        for (int i = 0; i < columns.size(); i++) {
+            columns.get(i).getVariable().setOrderIndex(i);
         }
     }
 
@@ -565,18 +573,13 @@ public final class SpreadsheetPanel extends JPanel
         LOGGER.event("move column right");
 
         // What index does the column sit at
-        int columnIndex = -1;
-        for (int i = 0; i < columns.size(); i++) {
-
-            if (columns.get(i).getVariable().equals(var)) {
-                columnIndex = i;
-            }
-        }
+        int columnIndex = var.getOrderIndex();
 
         if (columnIndex >= 0) {
             int newIndex = columnIndex + positions;
 
             if (newIndex < columns.size()) {
+//                updateColumnIndex();
                 shuffleColumn(columnIndex, newIndex);
             }
         }
@@ -597,13 +600,12 @@ public final class SpreadsheetPanel extends JPanel
         if (source == destination) {
             return;
         }
-
-        Variable sourceVar = datastore.getAllVariables().get(source);
-        datastore.getAllVariables().remove(source);
-        datastore.getAllVariables().add(destination, sourceVar);
+        System.out.println(source + ", " + destination);
 
         // Reorder the columns vector
         SpreadsheetColumn sourceColumn = columns.get(source);
+        columns.get(source).getVariable().setOrderIndex(destination);
+        columns.get(destination).getVariable().setOrderIndex(source);
         columns.remove(source);
         columns.add(destination, sourceColumn);
 
@@ -630,6 +632,7 @@ public final class SpreadsheetPanel extends JPanel
             mainView.add(data);
         }
 
+//        updateColumnIndex();
         revalidate();
     }
 
