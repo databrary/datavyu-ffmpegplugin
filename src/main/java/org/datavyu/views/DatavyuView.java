@@ -29,6 +29,7 @@ import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
+import org.datavyu.plugins.DataViewer;
 import org.datavyu.undoableedits.RemoveCellEdit;
 import org.datavyu.undoableedits.RemoveVariableEdit;
 import org.datavyu.undoableedits.RunScriptEdit;
@@ -285,6 +286,23 @@ public final class DatavyuView extends FrameView
 
         this.getFrame().setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         WindowListener exitListener = new WindowAdapter() {
+            @Override
+            public void windowIconified(WindowEvent e) {
+                Datavyu.getApplication().getMainFrame().setState(e.WINDOW_ICONIFIED);
+                Datavyu.getDataController().setVisible(false);
+                for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
+                    dv.setDataViewerVisible(false);
+                }
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+                Datavyu.getApplication().getMainFrame().setState(e.WINDOW_DEICONIFIED);
+                Datavyu.getDataController().setVisible(true);
+                for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
+                    dv.setDataViewerVisible(true);
+                }
+            }
 
             @Override
             public void windowClosing(WindowEvent e) {
