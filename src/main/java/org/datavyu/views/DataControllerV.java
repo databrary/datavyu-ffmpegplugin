@@ -1964,21 +1964,23 @@ public final class DataControllerV extends DatavyuDialog
      */
     public void setRegionOfInterestAction() {
 
-        try {
-            final long findTextTime = CLOCK_FORMAT.parse(
-                    onsetTextField.getText()).getTime();
-            final long findOffsetTime = CLOCK_FORMAT.parse(
-                    offsetTextField.getText()).getTime();
+        if (this.getDataViewers().size() > 0) {
+            try {
+                final long findTextTime = CLOCK_FORMAT.parse(
+                        onsetTextField.getText()).getTime();
+                final long findOffsetTime = CLOCK_FORMAT.parse(
+                        offsetTextField.getText()).getTime();
 
-            final long newWindowPlayStart = findTextTime;
-            final long newWindowPlayEnd = (findOffsetTime > newWindowPlayStart)
-                    ? findOffsetTime : newWindowPlayStart;
-            mixerController.getMixerModel().getRegionModel().setPlaybackRegion(
-                    newWindowPlayStart, newWindowPlayEnd);
-            mixerController.getMixerModel().getNeedleModel().setCurrentTime(
-                    newWindowPlayStart);
-        } catch (ParseException e) {
-            LOGGER.error("Unable to set playback region of interest", e);
+                final long newWindowPlayStart = findTextTime;
+                final long newWindowPlayEnd = (findOffsetTime > newWindowPlayStart)
+                        ? findOffsetTime : newWindowPlayStart;
+                mixerController.getMixerModel().getRegionModel().setPlaybackRegion(
+                        newWindowPlayStart, newWindowPlayEnd);
+                mixerController.getMixerModel().getNeedleModel().setCurrentTime(
+                        newWindowPlayStart);
+            } catch (ParseException e) {
+                LOGGER.error("Unable to set playback region of interest", e);
+            }
         }
     }
 
