@@ -626,7 +626,7 @@ public class SpreadsheetCell extends JPanel
 
     @Override
     public void focusLost(final FocusEvent e) {
-        model.setSelected(false);
+//        model.setSelected(false);
     }
 
     @Override
