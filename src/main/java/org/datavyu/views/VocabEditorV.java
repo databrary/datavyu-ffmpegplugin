@@ -627,6 +627,7 @@ public final class VocabEditorV extends DatavyuDialog {
         addColumnButton.setToolTipText(bundle.getString("addColumnButton.tip")); // NOI18N
         addColumnButton.setName("addColumnButton"); // NOI18N
         addColumnButton.setMinimumSize(addCodeButton.getPreferredSize());
+        addColumnButton.setPreferredSize(addCodeButton.getPreferredSize());
         addColumnButton.setHorizontalAlignment(SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
