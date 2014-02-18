@@ -30,30 +30,30 @@ public interface TrackConstants {
      * Icon for hiding a track video.
      */
     static final ImageIcon VIEWER_HIDE_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/glyph/eye.png"));
+            .getResource("/icons/eye.png"));
 
     /**
      * Icon for showing the video.
      */
     static final ImageIcon VIEWER_SHOW_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/glyph/eye-shut.png"));
+            .getResource("/icons/eye-shut.png"));
 
     /**
      * Unlock icon.
      */
     static final ImageIcon UNLOCK_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/glyph/track-unlock.png"));
+            .getResource("/icons/track-unlock.png"));
 
     /**
      * Lock icon.
      */
     static final ImageIcon LOCK_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/glyph/track-lock.png"));
+            .getResource("/icons/track-lock.png"));
 
     /**
      * Delete icon.
      */
     static final ImageIcon DELETE_ICON = new ImageIcon(TrackConstants.class
-            .getResource("/icons/glyph/emblem-unreadable.png"));
+            .getResource("/icons/close-track-x.png"));
 
 }

@@ -144,19 +144,19 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
      * Icon for displaying volume slider.
      */
     private final ImageIcon volumeIcon = new ImageIcon(getClass().getResource(
-                "/icons/glyph/audio-volume.png"));
+                "/icons/volume.png"));
 
     /**
      * Volume slider icon for when the video is hidden (volume is muted).
      */
     private final ImageIcon mutedIcon = new ImageIcon(getClass().getResource(
-                "/icons/glyph/volume-muted.png"));
+                "/icons/volume-muted.png"));
 
     /**
      * Icon for resizing the video.
      */
     private final ImageIcon resizeIcon = new ImageIcon(getClass().getResource(
-                "/icons/glyph/resize.png"));
+                "/icons/resize.png"));
 
     /**
      * The list of listeners interested in changes made to the project.
