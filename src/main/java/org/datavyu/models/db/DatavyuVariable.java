@@ -195,9 +195,9 @@ public final class DatavyuVariable implements Variable {
             throw new UserWarningException("Unable to add variable, a name must be supplied.");
         }
 
-        // Pre-conditions, check to make sure newName doesn't contain invalid chars.
-        if (newName.contains("(") || newName.contains(")") || newName.contains("<") || newName.contains(">") || newName.contains(",") || newName.contains("\"")) {
-            throw new UserWarningException("Unable to add variable, name must not contain any: ') ( > < , \"'");
+        // Pre-conditions, check to make sure newName doesn't contain invalid chars.or begin with a number
+        if (!isNameValid(newName)) {
+            throw new UserWarningException("Unable to add variable:\n\tName must not contain any: ') ( > < , \"'\n\tName must not begin with a number or a space\n\tName should not exceed 100 characters");
         }
 
         this.name = newName;
@@ -205,6 +205,20 @@ public final class DatavyuVariable implements Variable {
         for(VariableListener vl : getListeners(getID()) ) {
             vl.nameChanged(newName);
         }
+    }
+    
+    private boolean isNameValid(String nameCandidate)
+    {
+        boolean empty = nameCandidate == null || nameCandidate.isEmpty();
+        if (empty) return false;
+        
+        boolean illegalChars = nameCandidate.contains("(") || nameCandidate.contains(")") || nameCandidate.contains("<") || nameCandidate.contains(">") || nameCandidate.contains(",") || nameCandidate.contains("\"");
+        boolean startsWithNum = !empty && Character.isDigit(nameCandidate.charAt(0));
+        boolean startsWithSpace = !empty && nameCandidate.charAt(0) == ' ';
+        boolean tooLong = nameCandidate.length() > 100;
+                
+        return !illegalChars && !startsWithNum && !startsWithSpace && !tooLong;
+
     }
 
     @Override
