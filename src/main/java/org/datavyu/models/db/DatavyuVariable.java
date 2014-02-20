@@ -192,12 +192,12 @@ public final class DatavyuVariable implements Variable {
     public void setName(final String newName) throws UserWarningException {
         // Pre-conditions, the newName must have at least one character.
         if (newName.length() < 1) {
-            throw new UserWarningException("Unable to add variable, a name must be supplied.");
+            throw new UserWarningException("Unable to add column, a name must be supplied.");
         }
 
         // Pre-conditions, check to make sure newName doesn't contain invalid chars.or begin with a number
         if (!isNameValid(newName)) {
-            throw new UserWarningException("Unable to add variable:\n\tName must not contain any: ') ( > < , \"'\n\tName must not begin with a number or a space\n\tName should not exceed 100 characters");
+            throw new UserWarningException("Unable to add column:\n\tOnly alphanumeric characters and underscore are permitted.\n\tName must begin with a letter\n\tMust contain fewer than 255 characters");
         }
 
         this.name = newName;
@@ -209,16 +209,7 @@ public final class DatavyuVariable implements Variable {
     
     private boolean isNameValid(String nameCandidate)
     {
-        boolean empty = nameCandidate == null || nameCandidate.isEmpty();
-        if (empty) return false;
-        
-        boolean illegalChars = nameCandidate.contains("(") || nameCandidate.contains(")") || nameCandidate.contains("<") || nameCandidate.contains(">") || nameCandidate.contains(",") || nameCandidate.contains("\"");
-        boolean startsWithNum = !empty && Character.isDigit(nameCandidate.charAt(0));
-        boolean startsWithSpace = !empty && nameCandidate.charAt(0) == ' ';
-        boolean tooLong = nameCandidate.length() > 100;
-                
-        return !illegalChars && !startsWithNum && !startsWithSpace && !tooLong;
-
+        return nameCandidate != null && nameCandidate.matches("[a-zA-Z][a-zA-Z0-9_]*") && nameCandidate.length() < 255;
     }
 
     @Override
