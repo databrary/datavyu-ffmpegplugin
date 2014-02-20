@@ -365,10 +365,6 @@ public final class Datavyu extends SingleFrameApplication
             }
         }
 
-        if (evt.getKeyCode() == KeyEvent.VK_CLEAR && evt.getID() == KeyEvent.KEY_PRESSED) {
-            dataController.pressSetCellOnset();
-        }
-
         /**
          * The following cases handle numpad keystrokes.
          */
