@@ -147,7 +147,7 @@ public class DatavyuDatastore implements Datastore {
         // Check to make sure the variable name is not already in use:
         Variable varTest = getVariable(name);
         if (varTest != null) {
-            throw new UserWarningException("Unable to add column, one with the same name already exists.");
+            throw new UserWarningException("Unable to add column with name '"+name+"', one with the same name already exists.");
         }
 
         Variable v = new DatavyuVariable(name, new Argument("code01", type));
