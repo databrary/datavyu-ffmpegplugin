@@ -31,7 +31,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
      * <p/>
      * BugzID:524 - If Character is an escape key - ignore it.
      */
-    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n\"\u001B";
+    private static final String RESERVED_CHARS = "<>\t\u001B";
 
     /**
      * The model that this editor is manipulating
@@ -47,6 +47,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
     public NominalDataValueEditor(final JTextComponent ta,
                                   final NominalValue nv) {
         super(ta, nv);
+        setAcceptReturnKey(true);
         model = nv;
     }
 
@@ -80,6 +81,15 @@ public final class NominalDataValueEditor extends DataValueEditor {
         // Just a regular vanilla keystroke - insert it into nominal field.
         if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
                 && !isReserved(e.getKeyChar())) {
+            
+            // BugID: 26057841 - if the model is empty and we get a new line, correctly
+            // empty the contents. (Selection gets all altered by java when new line
+            // is mashed into the edtior).
+            if (model.isEmpty() && e.getKeyChar() == '\n') {
+                getParentComponent().setText(getText());
+                this.selectAll();
+            }
+            
             this.removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
 
