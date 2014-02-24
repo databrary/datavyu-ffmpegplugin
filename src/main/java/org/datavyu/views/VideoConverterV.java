@@ -262,7 +262,7 @@ public class VideoConverterV extends javax.swing.JFrame {
         else
         {
             cancelButton.setEnabled(true);
-            statusLabel.setText("In preogress");
+            statusLabel.setText("In progress...");
         }
     }//GEN-LAST:event_progressBarStateChanged
 
