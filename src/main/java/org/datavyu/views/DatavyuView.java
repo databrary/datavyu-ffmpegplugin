@@ -1463,7 +1463,7 @@ public final class DatavyuView extends FrameView
 
         showSpreadsheetMenuItem.setAction(actionMap.get("showSpreadsheet")); // NOI18N
         showSpreadsheetMenuItem.setName("showSpreadsheetMenuItem"); // NOI18N
-        spreadsheetMenu.add(showSpreadsheetMenuItem);
+        //spreadsheetMenu.add(showSpreadsheetMenuItem);
 
         jSeparator1.setName("jSeparator1"); // NOI18N
         spreadsheetMenu.add(jSeparator1);
