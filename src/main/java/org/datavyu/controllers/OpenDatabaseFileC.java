@@ -661,7 +661,7 @@ public final class OpenDatabaseFileC {
 
         // Create variable to put cells within.
         Argument.Type variableType = getVarType(varType);
-        Variable newVar = ds.createVariable(varName, variableType);
+        Variable newVar = ds.createVariable(varName, variableType, true);
         newVar.setHidden(!varVisible);
 
         newVar.setOrderIndex(numVarsRead);

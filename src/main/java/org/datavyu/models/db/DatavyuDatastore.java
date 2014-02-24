@@ -144,13 +144,19 @@ public class DatavyuDatastore implements Datastore {
     @Override
     public Variable createVariable(final String name, final Argument.Type type)
             throws UserWarningException {
+        return createVariable(name, type, false);
+    }
+    
+    @Override
+    public Variable createVariable(final String name, final Argument.Type type, boolean grandfathered)
+            throws UserWarningException {
         // Check to make sure the variable name is not already in use:
         Variable varTest = getVariable(name);
         if (varTest != null) {
             throw new UserWarningException("Unable to add column with name '"+name+"', one with the same name already exists.");
         }
 
-        Variable v = new DatavyuVariable(name, new Argument("code01", type));
+        Variable v = new DatavyuVariable(name, new Argument("code01", type), grandfathered);
         variables.put(name, v);
 
         for (DatastoreListener dbl : this.dbListeners) {
@@ -159,7 +165,7 @@ public class DatavyuDatastore implements Datastore {
 
         markDBAsChanged();
         return v;
-    }
+    }        
 
     @Override
     public void removeVariable(final Variable var) {

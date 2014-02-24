@@ -78,14 +78,26 @@ public final class DatavyuVariable implements Variable {
      * @param type The type to use for the variable being constructed.
      */
     public DatavyuVariable(String name, Argument type) throws UserWarningException {
-        this.setName(name);
+        this(name, type, false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param name The name to use for the variable being constructed.
+     * @param type The type to use for the variable being constructed.
+     * @param grandfatehred Flag to exempt variable from naming rules.
+     */
+    public DatavyuVariable(String name, Argument type, boolean grandfathered) throws UserWarningException {
+        this.setName(name, grandfathered);
         this.setVariableType(type);
         this.setHidden(false);
         this.setSelected(true);
 
         DatavyuDatastore.markDBAsChanged();
     }
-
+    
+    
     public void addCell(Cell cell) {
         if (cell.getValue().getArgument() == this.getVariableType()) {
             cells.add(cell);
@@ -187,16 +199,22 @@ public final class DatavyuVariable implements Variable {
     public String getName() {
         return name;
     }
-
+    
     @Override
-    public void setName(final String newName) throws UserWarningException {
+    public void setName(final String newName) throws UserWarningException
+    {
+        this.setName(newName, false);
+    }
+    
+    
+    public void setName(final String newName, boolean grandfathered) throws UserWarningException {
         // Pre-conditions, the newName must have at least one character.
         if (newName.length() < 1) {
             throw new UserWarningException("Unable to add column, a name must be supplied.");
         }
 
-        // Pre-conditions, check to make sure newName doesn't contain invalid chars.or begin with a number
-        if (!isNameValid(newName)) {
+        // Pre-conditions, check to make sure newName doesn't contain invalid chars or begin with a number or underscore
+        if (!grandfathered && !isNameValid(newName)) {
             throw new UserWarningException("Unable to add column:\n\tOnly alphanumeric characters and underscore are permitted.\n\tName must begin with a letter\n\tMust contain fewer than 255 characters");
         }
 
