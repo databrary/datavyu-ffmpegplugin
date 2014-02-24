@@ -408,6 +408,7 @@ implements VariableListener,
                     return;
                 }
             }
+            datastore.updateVariableName(variable.getName(), newName, variable);
             variable.setName(newName);
             UndoableEdit edit = new ChangeNameVariableEdit(variable.getName(), newName);
             Datavyu.getView().getComponent().revalidate();
