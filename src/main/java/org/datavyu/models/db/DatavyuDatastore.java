@@ -198,6 +198,12 @@ public class DatavyuDatastore implements Datastore {
     }
 
     @Override
+    public void updateVariableName(String oldName, String newName, Variable variable) {
+        this.variables.remove(oldName);
+        this.variables.put(newName, variable);
+    }
+
+    @Override
     public boolean isChanged() {
         return DatavyuDatastore.changed;
     }

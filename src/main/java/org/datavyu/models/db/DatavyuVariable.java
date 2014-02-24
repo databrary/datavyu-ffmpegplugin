@@ -200,6 +200,7 @@ public final class DatavyuVariable implements Variable {
             throw new UserWarningException("Unable to add column:\n\tOnly alphanumeric characters and underscore are permitted.\n\tName must begin with a letter\n\tMust contain fewer than 255 characters");
         }
 
+        // Change name, update hash table
         this.name = newName;
 
         for(VariableListener vl : getListeners(getID()) ) {
