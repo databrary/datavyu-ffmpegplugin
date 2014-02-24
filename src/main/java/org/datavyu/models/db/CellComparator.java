@@ -7,7 +7,7 @@ import java.util.Comparator;
  * Date: 2/5/14
  * Time: 3:56 PM
  */
-public class CellCompartor implements Comparator<Cell> {
+public class CellComparator implements Comparator<Cell> {
     public int compare(Cell c1, Cell c2) {
         if (c1.getOnset() < c2.getOnset()) {
             return -1;

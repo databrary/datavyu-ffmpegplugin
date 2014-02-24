@@ -47,7 +47,7 @@ public class DatavyuDatastore implements Datastore {
     private List<DatastoreListener> dbListeners = new ArrayList<DatastoreListener>();
     private Map<String, Variable> variables;
 
-    private VariableCompartor variableCompartor = new VariableCompartor();
+    private VariableComparator VariableComparator = new VariableComparator();
 
 
     public DatavyuDatastore() {
@@ -76,7 +76,7 @@ public class DatavyuDatastore implements Datastore {
         for (String s : variables.keySet()) {
             varList.add(variables.get(s));
         }
-        Collections.sort(varList, variableCompartor);
+        Collections.sort(varList, VariableComparator);
         return varList;
     }
 

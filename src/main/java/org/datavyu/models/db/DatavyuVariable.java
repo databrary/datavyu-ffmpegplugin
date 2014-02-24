@@ -41,7 +41,7 @@ public final class DatavyuVariable implements Variable {
     private String name;
     private int orderIndex = -1;
 
-    private static CellCompartor cellCompartor = new CellCompartor();
+    private static CellComparator CellComparator = new CellComparator();
 
     /**
      * @param variableId The ID of the variable we want the listeners for.
@@ -134,7 +134,7 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public Cell getCellTemporally(final int index) {
-        Collections.sort(cells, cellCompartor);
+        Collections.sort(cells, CellComparator);
         return cells.get(index);
     }
 
@@ -150,7 +150,7 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public List<Cell> getCellsTemporally() {
-        Collections.sort(cells, cellCompartor);
+        Collections.sort(cells, CellComparator);
         return cells;
     }
 
