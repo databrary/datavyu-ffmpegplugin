@@ -45,7 +45,7 @@ public final class VENameEditor extends EditorComponent {
     /**
      * String holding the reserved characters.
      */
-    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
+    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n .-";
 
     /**
      * The logger for this class.
@@ -93,7 +93,7 @@ public final class VENameEditor extends EditorComponent {
      */
     @Override
     public void keyTyped(final KeyEvent e) {
-        // The backspace key removes digits from behind the caret.
+
         if (!this.isReserved(e.getKeyChar())) {
             removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
@@ -104,12 +104,8 @@ public final class VENameEditor extends EditorComponent {
                     arg.name = currentValue.toString();
                 }
             }
-
-            try {
-                varModel.setName(currentValue.toString());
-            } catch (UserWarningException ex) {
-                java.util.logging.Logger.getLogger(VENameEditor.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            
+            attemptRename(currentValue);
 
             // Advance caret over the top of the new char.
             int pos = this.getCaretPosition() + 1;
@@ -121,6 +117,16 @@ public final class VENameEditor extends EditorComponent {
         }
 
         e.consume();
+    }
+    
+    private void attemptRename(StringBuilder currentValue)
+    {
+        try {
+                varModel.setName(currentValue.toString());
+            } catch (UserWarningException ex) {
+                System.out.println("Invalid edit. Last good name: " + varModel.getName());
+                java.util.logging.Logger.getLogger(VENameEditor.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }
 
     /**
@@ -138,6 +144,7 @@ public final class VENameEditor extends EditorComponent {
      */
     @Override
     public void keyPressed(final KeyEvent e) {
+        StringBuilder currentValue;
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
                 removeBehindCaret();
@@ -150,6 +157,8 @@ public final class VENameEditor extends EditorComponent {
                 parentView.getParentDialog().updateDialogState();
 
                 e.consume();
+                currentValue = new StringBuilder(getText());
+                attemptRename(currentValue);
                 break;
             case KeyEvent.VK_DELETE:
                 removeAheadOfCaret();
@@ -160,7 +169,10 @@ public final class VENameEditor extends EditorComponent {
                 }
                 parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
-
+                e.consume();
+                
+                currentValue = new StringBuilder(getText());
+                attemptRename(currentValue);
                 e.consume();
                 break;
             default:
