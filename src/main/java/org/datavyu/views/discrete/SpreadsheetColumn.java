@@ -444,7 +444,9 @@ implements VariableListener,
     // *************************************************************************
     @Override
     public void nameChanged(final String newName) {
-        this.setText(newName + "  (" + variable.getVariableType().type + ")");
+        String headerText = newName;
+        if (variable.getVariableType().type != Argument.Type.MATRIX) headerText += variable.getVariableType().type;
+        this.setText(headerText);
     }
 
     @Override
