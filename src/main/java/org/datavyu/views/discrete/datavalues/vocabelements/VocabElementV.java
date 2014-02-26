@@ -53,14 +53,9 @@ public class VocabElementV extends JPanel {
             VE_HEIGHT);
 
     /**
-     * The label to use for the type of vocab element.
-     */
-    private JLabel typeIcon;
-
-    /**
      * The label to use for if this vocab element has changed.
      */
-    private JLabel deltaIcon;
+    private JLabel invalidBangIcon;
 
     /**
      * The label to use for if this vocab element is marked for removal.
@@ -75,12 +70,19 @@ public class VocabElementV extends JPanel {
     /**
      * The icon to use for if this vocab element has changed or not.
      */
-    private ImageIcon deltaImageIcon;
+    private ImageIcon bangIcon;
+    
+    private String bangIconText;
 
     /**
-     * Has this vocab element changed or not?
+     * Is the name currently displayed for this column invalid
      */
-    private boolean hasVEChanged;
+    private boolean invalidState;
+    
+     /**
+     * Most recent valid name - the name currently stored in model
+     */
+    private String lastValidState;
 
     /**
      * Is this vocab element view marked for removal?
@@ -123,24 +125,24 @@ public class VocabElementV extends JPanel {
                 .getResourceMap(VocabElementV.class);
 
         URL iconURL = getClass().getResource(rMap.getString("delta.icon"));
-        deltaImageIcon = new ImageIcon(iconURL);
-        hasVEChanged = false;
+        bangIconText = rMap.getString("delta.tooltip");
+        
+        bangIcon = new ImageIcon(iconURL);
         deleteVE = false;
         parentEditor = vev;
         varModel = var;
 
-        deltaIcon = new JLabel();
-        deltaIcon.setMaximumSize(ICON_SIZE);
-        deltaIcon.setMinimumSize(ICON_SIZE);
-        deltaIcon.setPreferredSize(ICON_SIZE);
-        deltaIcon.setToolTipText(rMap.getString("delta.tooltip"));
+        invalidBangIcon = new JLabel();
+        invalidBangIcon.setMaximumSize(ICON_SIZE);
+        invalidBangIcon.setMinimumSize(ICON_SIZE);
+        invalidBangIcon.setPreferredSize(ICON_SIZE);
 
         veRootView = new VocabElementRootView(var, this);
 
         JPanel leftPanel = new JPanel();
         FlowLayout flayout = new FlowLayout(FlowLayout.LEFT, 5, 0);
         leftPanel.setLayout(flayout);
-        leftPanel.add(deltaIcon);
+        leftPanel.add(invalidBangIcon);
         veRootView.setOpaque(false);
         veRootView.setBackground(Color.WHITE);
         leftPanel.setOpaque(false);
@@ -195,29 +197,38 @@ public class VocabElementV extends JPanel {
         veRootView.setVocabElement(varModel, this);
     }
 
-    /**
-     * Updates the vocab element view with a visual representation of if the
-     * vocab element has changed or not.
-     *
-     * @param hasChanged Has the vocab element changed or not; true if yes,
-     *                   false otherwise.
-     */
-    public final void setHasChanged(final boolean hasChanged) {
-        if (hasChanged) {
-            deltaIcon.setIcon(deltaImageIcon);
-        } else {
-            deltaIcon.setIcon(null);
+    
+    public final void setInvalid(final boolean invalid, final String lastValidName) {
+       invalidState = invalid;
+       lastValidState = lastValidName;
+       
+       if(invalid)
+       {
+           invalidBangIcon.setIcon(bangIcon);
+           invalidBangIcon.setToolTipText(bangIconText);
         }
+       else 
+       {
+           invalidBangIcon.setIcon(null);
+           invalidBangIcon.setToolTipText(null);
+       }
 
-        hasVEChanged = hasChanged;
+       parentEditor.refreshNameWarnings();
     }
-
-    /**
-     * @return Has the vocab element changed or not; true if yes, false
-     * otherwise.
-     */
-    public final boolean hasChanged() {
-        return hasVEChanged;
+    
+    public boolean getInvalid()
+    {
+        return invalidState;
+    }
+    
+    public String getLastValid()
+    {
+        return lastValidState;
+    }
+    
+    public String getCurrentNameDisplay()
+    {
+        return veRootView.getNameEditor().getText();
     }
 
     /**
@@ -327,8 +338,8 @@ public class VocabElementV extends JPanel {
     /**
      * @return JLabel change/delta icon.
      */
-    public final JLabel getChangedIcon() {
-        return deltaIcon;
+    public final JLabel getInvalidIcon() {
+        return invalidBangIcon;
     }
 
     public final void setBG(Color col) {

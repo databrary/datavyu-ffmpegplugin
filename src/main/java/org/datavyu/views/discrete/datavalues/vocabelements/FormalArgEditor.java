@@ -135,7 +135,6 @@ public final class FormalArgEditor extends EditorComponent {
             this.setText(currentValue.toString());
             this.setCaretPosition(pos);
 
-            parentView.setHasChanged(true);
             parentView.getParentDialog().updateDialogState();
         }
 
@@ -164,7 +163,6 @@ public final class FormalArgEditor extends EditorComponent {
                 updateArgName(getText());
                 //vocabElement.replaceFormalArg(model, argIndex);
 
-                parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
 
                 e.consume();
@@ -175,7 +173,6 @@ public final class FormalArgEditor extends EditorComponent {
                 updateArgName(getText());
                 //vocabElement.replaceFormalArg(model, argIndex);
 
-                parentView.setHasChanged(true);
                 parentView.getParentDialog().updateDialogState();
                 e.consume();
                 break;

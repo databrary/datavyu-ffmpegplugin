@@ -45,7 +45,7 @@ public final class VENameEditor extends EditorComponent {
     /**
      * String holding the reserved characters.
      */
-    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n .-";
+    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n .-!@#$%^&*()+=\\'\"";
 
     /**
      * The logger for this class.
@@ -105,18 +105,22 @@ public final class VENameEditor extends EditorComponent {
                 }
             }
             
-            attemptRename(currentValue);
-
             // Advance caret over the top of the new char.
             int pos = this.getCaretPosition() + 1;
             this.setText(currentValue.toString());
             this.setCaretPosition(pos);
 
-            parentView.setHasChanged(true);
+            attemptRename(currentValue);
+            //parentView.setHasChanged(true);
             parentView.getParentDialog().updateDialogState();
         }
 
         e.consume();
+    }
+ 
+    private void attemptRename()
+    {
+        attemptRename(new StringBuilder(getText()));
     }
     
     private void attemptRename(StringBuilder currentValue)
@@ -127,7 +131,9 @@ public final class VENameEditor extends EditorComponent {
                 System.out.println("Invalid edit. Last good name: " + varModel.getName());
                 java.util.logging.Logger.getLogger(VENameEditor.class.getName()).log(Level.SEVERE, null, ex);
             }
+        parentView.setInvalid(isCurrentNameInvalid(), varModel.getName());
     }
+
 
     /**
      * @param aChar Character to test
@@ -144,7 +150,6 @@ public final class VENameEditor extends EditorComponent {
      */
     @Override
     public void keyPressed(final KeyEvent e) {
-        StringBuilder currentValue;
         switch (e.getKeyCode()) {
             case KeyEvent.VK_BACK_SPACE:
                 removeBehindCaret();
@@ -153,12 +158,12 @@ public final class VENameEditor extends EditorComponent {
                 } else {
                     model.name = "unnamed" + Integer.toString(SequentialNumberGenerator.getNextSeqNum());
                 }
-                parentView.setHasChanged(true);
+
                 parentView.getParentDialog().updateDialogState();
 
                 e.consume();
-                currentValue = new StringBuilder(getText());
-                attemptRename(currentValue);
+                 
+                attemptRename();
                 break;
             case KeyEvent.VK_DELETE:
                 removeAheadOfCaret();
@@ -167,13 +172,11 @@ public final class VENameEditor extends EditorComponent {
                 } else {
                     model.name = "unnamed" + Integer.toString(SequentialNumberGenerator.getNextSeqNum());
                 }
-                parentView.setHasChanged(true);
+
                 parentView.getParentDialog().updateDialogState();
                 e.consume();
                 
-                currentValue = new StringBuilder(getText());
-                attemptRename(currentValue);
-                e.consume();
+                attemptRename();
                 break;
             default:
                 break;
@@ -187,5 +190,10 @@ public final class VENameEditor extends EditorComponent {
      */
     @Override
     public void keyReleased(final KeyEvent e) {
+    }
+    
+    public boolean isCurrentNameInvalid()
+    {
+        return !varModel.getName().equals(getText());
     }
 }

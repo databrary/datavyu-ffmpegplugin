@@ -94,6 +94,7 @@ public final class VocabEditorV extends DatavyuDialog {
     private JButton moveCodeRightButton;
     private JLabel statusBar;
     private JSeparator statusSeperator;
+    private JLabel nameWarningsLabel;
 
     /**
      * Constructor.
@@ -238,7 +239,6 @@ public final class VocabEditorV extends DatavyuDialog {
         var.addArgument(Argument.Type.NOMINAL);
 
         VocabElementV vev = new VocabElementV(va, var, this);
-        vev.setHasChanged(true);
         verticalFrame.add(vev);
         verticalFrame.validate();
         veViews.add(vev);
@@ -325,7 +325,6 @@ public final class VocabEditorV extends DatavyuDialog {
         String type = "Nominal"; //Hardcoded. Was previously (String) argTypeComboBox.getSelectedItem() but this form element is now removed
         LOGGER.event("vocEd - add argument:" + type);
 
-        selectedVocabElement.setHasChanged(true);
         selectedVocabElement.rebuildContents();
 
         // Select the contents of the newly created formal argument.
@@ -362,7 +361,6 @@ public final class VocabEditorV extends DatavyuDialog {
         } else if (selectedArgument != null) {
             LOGGER.event("vocEd - delete argument");
             selectedVocabElement.getVariable().removeArgument(selectedArgument.getModel().name);
-            selectedVocabElement.setHasChanged(true);
             selectedVocabElement.rebuildContents();
             applyChanges();
         }
@@ -511,7 +509,7 @@ public final class VocabEditorV extends DatavyuDialog {
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
                 .getResourceMap(VocabEditorV.class);
 
-        boolean containsC = false;
+        //boolean containsC = false;
         selectedVocabElement = null;
         selectedArgument = null;
 
@@ -527,9 +525,10 @@ public final class VocabEditorV extends DatavyuDialog {
             }
 
             // A vocab element contains a change - enable certain things.
-            if (vev.hasChanged() || vev.isDeletable()) {
-                containsC = true;
-            }
+            //jc 2-26: not sure what this was intended for. if re-enabling, beware that .hasChanged() is gone.
+            //if (vev.hasChanged() || vev.isDeletable()) {
+            //    containsC = true;
+            //}
         }
 /*New
         if (containsC) {
@@ -593,6 +592,7 @@ public final class VocabEditorV extends DatavyuDialog {
         statusBar = new javax.swing.JLabel();
         statusSeperator = new javax.swing.JSeparator();
         jLabel1 = new javax.swing.JLabel();
+        nameWarningsLabel = new javax.swing.JLabel();
 
         jScrollPane1.setName("jScrollPane1"); // NOI18N
 
@@ -617,7 +617,7 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        //gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         getContentPane().add(addCodeButton, gridBagConstraints);
 
@@ -703,7 +703,19 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
         getContentPane().add(closeButton, gridBagConstraints);
-
+        
+        nameWarningsLabel.setText(""); // NOI18N
+        nameWarningsLabel.setName("nameWarningLabel"); // NOI18N
+        nameWarningsLabel.setForeground(Color.RED);
+        nameWarningsLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 0);
+        getContentPane().add(nameWarningsLabel, gridBagConstraints);
+        
         statusBar.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         statusBar.setText(resourceMap.getString("statusBar.text")); // NOI18N
         statusBar.setDoubleBuffered(true);
@@ -804,6 +816,33 @@ public final class VocabEditorV extends DatavyuDialog {
         }
 
         return max + 1;
+    }
+    
+        
+    public void refreshNameWarnings()
+    {
+        String s = "";
+        for(VocabElementV i : veViews)
+        {
+            if (i.getInvalid())
+            {
+                s += i.getCurrentNameDisplay() + " is an invalid name. "; 
+                //s += " still called '"+i.getLastValid()+"'. "; //this would include a reminder of what the last valid name was
+            }
+                
+        }
+        
+        if (s.isEmpty()) 
+        {
+            s = "All changes applied.";
+            nameWarningsLabel.setForeground(Color.BLACK);
+        }
+        else
+        {
+            nameWarningsLabel.setForeground(Color.RED);
+        }
+        
+        nameWarningsLabel.setText(s);
     }
 
     /**
