@@ -354,6 +354,8 @@ public final class VocabEditorV extends DatavyuDialog {
                 varsToDelete.add(selectedVocabElement.getVariable());
                 edit = new RemoveVariableEdit(varsToDelete);
                 new DeleteColumnC(varsToDelete);
+                
+                deleteElementVFromView(selectedVocabElement.getVariable().getName());
                 applyChanges();
             }
 
@@ -369,6 +371,20 @@ public final class VocabEditorV extends DatavyuDialog {
         if (edit != null) {
             // notify the listeners
             Datavyu.getView().getUndoSupport().postEdit(edit);
+        }
+    }
+    
+    private void deleteElementVFromView(String name)
+    {
+        for (VocabElementV i : veViews)
+        {
+            if (name.equals(i.getCurrentNameDisplay()))
+            {
+                veViews.remove(i);
+                verticalFrame.remove(i);
+                
+                return;
+            }
         }
     }
 
