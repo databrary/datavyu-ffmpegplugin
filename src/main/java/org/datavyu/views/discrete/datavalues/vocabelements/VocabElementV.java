@@ -228,7 +228,7 @@ public class VocabElementV extends JPanel {
     
     public String getCurrentNameDisplay()
     {
-        return veRootView.getNameEditor().getText();
+        return getNameComponent().getText();
     }
 
     /**

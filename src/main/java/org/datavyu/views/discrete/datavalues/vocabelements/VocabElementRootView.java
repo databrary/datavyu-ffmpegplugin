@@ -127,8 +127,5 @@ public final class VocabElementRootView extends JTextArea {
         return editors;
     }
     
-    public EditorComponent getNameEditor()
-    {
-        return editors.get(0);
-    }
 }
+
