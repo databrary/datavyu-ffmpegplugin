@@ -30,6 +30,7 @@ import org.datavyu.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 import javax.swing.*;
 import javax.swing.undo.UndoableEdit;
@@ -727,7 +728,7 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 6;
+        gridBagConstraints.gridwidth = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 0);
         getContentPane().add(nameWarningsLabel, gridBagConstraints);
@@ -842,23 +843,25 @@ public final class VocabEditorV extends DatavyuDialog {
         {
             if (i.getInvalid())
             {
-                s += i.getCurrentNameDisplay() + " is an invalid name. "; 
-                //s += " still called '"+i.getLastValid()+"'. "; //this would include a reminder of what the last valid name was
+                String curString = i.getCurrentNameDisplay();
+                if (!s.isEmpty()) s += ", ";
+                if (curString.isEmpty()) s += "<i>(empty string)</i>";
+                s += "<i>"+escapeHtml(i.getCurrentNameDisplay()) + "</i>  "; 
+                //s += "remains '"+i.getLastValid()+"'. "; //this would include a reminder of what the last valid name was
             }
                 
         }
         
         if (s.isEmpty()) 
         {
-            s = "All changes applied.";
+            nameWarningsLabel.setText("All changes applied.");
             nameWarningsLabel.setForeground(Color.BLACK);
         }
         else
         {
+            nameWarningsLabel.setText("<html><b><u>Invalid names:</u></b> " + s + "<br />Names must begin with a letter, be non-empty, and underscore is the ONLY permitted special character.</html>");
             nameWarningsLabel.setForeground(Color.RED);
         }
-        
-        nameWarningsLabel.setText(s);
     }
 
     /**
