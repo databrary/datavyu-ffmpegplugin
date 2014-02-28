@@ -98,12 +98,6 @@ public final class VENameEditor extends EditorComponent {
             removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());
-
-            for (Argument arg : varModel.getVariableType().childArguments) {
-                if (arg.name.equals(model.name)) {
-                    arg.name = currentValue.toString();
-                }
-            }
             
             // Advance caret over the top of the new char.
             int pos = this.getCaretPosition() + 1;
@@ -111,7 +105,6 @@ public final class VENameEditor extends EditorComponent {
             this.setCaretPosition(pos);
 
             attemptRename(currentValue);
-            //parentView.setHasChanged(true);
             parentView.getParentDialog().updateDialogState();
         }
 

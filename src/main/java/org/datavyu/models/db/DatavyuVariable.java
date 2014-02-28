@@ -36,7 +36,7 @@ public final class DatavyuVariable implements Variable {
             new HashMap<UUID, List<VariableListener>>();
     final private UUID variableId = UUID.randomUUID();
     private List<Cell> cells = new ArrayList<Cell>();
-    private Argument type = null;
+    private Argument rootNodeArgument = null;
     private Boolean selected;
     private Boolean highlighted;
     private Boolean hidden;
@@ -154,12 +154,12 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public Argument getVariableType() {
-        return type;
+        return rootNodeArgument;
     }
 
     @Override
-    public void setVariableType(final Argument newType) {
-        type = newType;
+    public void setVariableType(final Argument a) {
+        rootNodeArgument = a;
     }
 
     @Override
