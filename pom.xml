@@ -729,12 +729,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.datavyu</groupId>
-            <artifactId>datavyu-lib</artifactId>
-            <version>0.0.85</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.7</version>
