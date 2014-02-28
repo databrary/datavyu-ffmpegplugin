@@ -15,12 +15,12 @@
 * Fixed the create\_mutually\_exclusive script to correct an error where the final cell was not written to the spreadsheet.
 * Fixed a bug that was preventing output from being written to the scripting console.
 * Improved video playback performance issues on Windows and Mac.
-* Fixed some cases where cells failed to display correctly when temporal ordering is active.
+* Fixed some cases where cells failed to display correctly when temporal alignment is active.
 
 ### Known Issues
   * In some cases, the asterisk in the title bar indicating that changes have been made to the file may not appear/disappear correctly
   * Hidden variables may be listed as shown in the variable list
-  * Temporal ordering displays cells incorrectly in rare cases
+  * Temporal alignment displays cells incorrectly in rare cases
   * Windows will not correctly handle opening a file by double clicking it once Datavyu is already open.
 
 # Datavyu 1.0.3 Release Notes
@@ -48,4 +48,4 @@
   * Video playback on Windows may be laggy
   * In some cases, the asterisk in the title bar indicating that changes have been made to the file may not appear/disappear correctly
   * Hidden variables may be listed as shown in the variable list
-  * Temporal ordering displays cells incorrectly in rare cases
+  * Temporal alignment displays cells incorrectly in rare cases

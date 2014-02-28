@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * SheetLayoutWeakTemporal - mimics the weak temporal ordering style from
+ * SheetLayoutWeakTemporal - mimics the weak temporal alignment style from
  * original MacSHAPA.
  */
 public class SheetLayoutWeakTemporal extends SheetLayout {
@@ -95,7 +95,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 //        maxHeight = 0;
         maxHeight = parent.getHeight();
 
-        // Determine the ratio/scale to use with temporal ordering, we pick the
+        // Determine the ratio/scale to use with temporal alignment, we pick the
         // the largest column size in pixels and temporal length in ticks to
         // use as an aggressive ratio/scale to fit as many cells on the screen
         // as possible.

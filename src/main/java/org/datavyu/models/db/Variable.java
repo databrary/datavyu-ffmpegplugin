@@ -76,7 +76,7 @@ public interface Variable {
     void setVariableType(final Argument newType);
 
     /**
-     * @return All the cells stored in the variable using a temporal order.
+     * @return All the cells stored in the variable using a temporal alignment.
      */
     List<Cell> getCellsTemporally();
 

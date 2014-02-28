@@ -642,7 +642,7 @@ public final class SpreadsheetPanel extends JPanel
      *
      * @param col The column to fetch the cells from.
      * @return The cells in ordinal order if SheetLayoutType is Ordinal,
-     * otherwise the cells will be in temporal order.
+     * otherwise the cells will be in temporal alignment.
      */
     public List<SpreadsheetCell> getOrderedCells(SpreadsheetColumn col) {
         if (this.currentLayoutType == SheetLayoutType.Ordinal) {

@@ -28,8 +28,8 @@ public final class SheetLayoutFactory {
          * no temporal relation to each other across the spreadsheet.
          */
         Ordinal,
-        /** Weak temporal order layout.  Cells distribute down and across
-         * the spreadsheet preserving their temporal order but in the
+        /** Weak temporal alignment layout.  Cells distribute down and across
+         * the spreadsheet preserving their temporal alignment but in the
          * least space required to show this.
          */
         WeakTemporal
