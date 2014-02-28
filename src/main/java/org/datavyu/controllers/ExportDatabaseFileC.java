@@ -309,45 +309,6 @@ public final class ExportDatabaseFileC {
         PrintStream ps = new PrintStream(outStream);
         ps.println("#4");
 
-        /**
-         PREDICATES CURRENTLY UNSUPPORTED - TODO REIMPLEMENT.
-
-         // Dump out all the predicates held within the database.
-         Vector<PredicateVocabElement> predicates = db.getPredVEs();
-         if (predicates.size() > 0) {
-         int counter = 0;
-
-         //Read them in reverse because they're loaded in reverse.
-         //This can be resolved by finding why they're loaded in reverse (database)
-         //for (PredicateVocabElement pve : predicates) {\
-         for (int i = predicates.size() - 1; i >= 0; i--) {
-         PredicateVocabElement pve = predicates.elementAt(i);
-         ps.printf("%d:%s-", counter,
-         StringUtils.escapeCSV(pve.getName()));
-
-         for (int j = 0; j < pve.getNumFormalArgs(); j++) {
-         FormalArgument fa = pve.getFormalArgCopy(j);
-         String name = fa.getFargName().substring(1,
-         fa.getFargName().length() - 1);
-         if (fa.getFargType() == FArgType.UNTYPED || fa.getFargType() == FArgType.UNDEFINED) {
-         ps.printf("%s|%s", StringUtils.escapeCSV(name),
-         FArgType.NOMINAL.toString());
-         } else {
-         ps.printf("%s|%s", StringUtils.escapeCSV(name),
-         fa.getFargType().toString());
-         }
-
-         if (j < (pve.getNumFormalArgs() - 1)) {
-         ps.print(',');
-         }
-         }
-
-         ps.println();
-         counter++;
-         }
-         }
-         */
-
         for (Variable variable : ds.getAllVariables()) {
             ps.printf("%s (%s,%s,%s)",
                     StringUtils.escapeCSV(variable.getName()),

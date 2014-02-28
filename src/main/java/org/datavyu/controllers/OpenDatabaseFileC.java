@@ -145,25 +145,20 @@ public final class OpenDatabaseFileC {
             if ("#4".equalsIgnoreCase(line)) {
 
                 //Version 4 includes a comment for columns.
-                line = parseDefinitions(csvFile, db);
-
+                line = csvFile.readLine();
                 while (line != null) {
                     line = parseVariable(csvFile, line, db, "#4");
                 }
             } else if ("#3".equalsIgnoreCase(line)) {
 
                 //Version 3 includes column visible status after the column type
-                // Parse predicate definitions first.
-                line = parseDefinitions(csvFile, db);
-
+                line = csvFile.readLine();
                 while (line != null) {
                     line = parseVariable(csvFile, line, db, "#3");
                 }
             } else if ("#2".equalsIgnoreCase(line)) {
 
-                // Parse predicate definitions first.
-                line = parseDefinitions(csvFile, db);
-
+                line = csvFile.readLine();
                 while (line != null) {
                     line = parseVariable(csvFile, line, db);
                 }
@@ -243,78 +238,6 @@ public final class OpenDatabaseFileC {
     }
 
     /**
-     * Method to invoke when we encounter a block of text in the CSV file that
-     * is the contents of a predicate variable.
-     *
-     * @param csvFile The csvFile we are currently parsing.
-     * @param dc The variable that we will be adding cells too.
-     *
-     * @return The next line in the file that is not part of the block of text
-     * in the CSV file.
-     *
-     * @throws IOException If unable to read the file correctly.
-     */
-    /* TODO: PREDICATE VARIABLES CURRENTLY UNSUPPORTED
-     private String parsePredicateVariable(final BufferedReader csvFile,
-     final DataColumn dc)
-     throws IOException, SystemErrorException {
-
-     // Keep parsing lines and putting them in the newly formed nominal
-     // variable until we get to a line indicating the end of file or a new
-     // variable section.
-     String line = csvFile.readLine();
-
-     while ((line != null) && Character.isDigit(line.charAt(0))) {
-
-     // Split the line into tokens using '\,' '(' & ')' as delimiters.
-     String[] tokens = line.split("[,\\()]");
-
-     // Create the data cell from line in the CSV file.
-     DataCell cell = new DataCell(dc.getDB(), dc.getID(),
-     dc.getItsMveID());
-
-     // Set the onset and offset from tokens in the line.
-     cell.setOnset(new TimeStamp(tokens[DATA_ONSET]));
-     cell.setOffset(new TimeStamp(tokens[DATA_OFFSET]));
-
-     // Empty predicate - just add the empty data cell.
-     if (tokens.length == DATA_INDEX) {
-
-     // Add the populated cell to the database.
-     dc.getDB().appendCell(cell);
-
-     } else {
-
-     // Non empty predicate - need to check if we need to add an
-     // entry to the vocab, and create it if it doesn't exist.
-     // Otherwise we just plow ahead and add the predicate to the
-     // database.
-     PredicateVocabElement pve = dc.getDB().getPredVE(
-     tokens[DATA_INDEX]);
-
-     Predicate p = new Predicate(dc.getDB(), pve.getID(),
-     parseFormalArgs(tokens, DATA_INDEX + 1, dc, pve));
-     PredDataValue pdv = new PredDataValue(dc.getDB());
-     pdv.setItsValue(p);
-
-     // Insert the datavalue in the cell.
-     long mveId = dc.getDB().getMatrixVE(dc.getItsMveID()).getID();
-     Matrix m = Matrix.Construct(dc.getDB(), mveId, pdv);
-     cell.setVal(m);
-
-     // Add the populated cell to the database.
-     dc.getDB().appendCell(cell);
-     }
-
-     // Get the next line in the file for reading.
-     line = csvFile.readLine();
-     }
-
-     return line;
-     }
-     */
-
-    /**
      * Method to create data values for the formal arguments of a vocab element.
      *
      * @param tokens    The array of string tokens.
@@ -356,7 +279,7 @@ public final class OpenDatabaseFileC {
 
     /**
      * Method to invoke when we encounter a block of text in the CSV file that
-     * is the contents of a predicate variable.
+     * is the contents of a matrix variable.
      *
      * @param csvFile The csvFile we are currently parsing.
      * @param var     The variable that we will be adding cells too.
@@ -514,48 +437,6 @@ public final class OpenDatabaseFileC {
     }
 
     /**
-     * Parses the predicate definitions from the CSV file.
-     *
-     * @param csvFile The buffered reader containing the contents of the CSV
-     *                file we are trying parse.
-     * @param ds      The destination datastore for the csv file.
-     * @return The next line to be parsed from the file.
-     * @throws IOException If unable to read from the csvFile.
-     */
-    private String parseDefinitions(final BufferedReader csvFile,
-                                    final Datastore db)
-            throws IOException {
-
-        // Keep parsing lines and putting them in the newly formed nominal
-        // variable until we get to a line indicating the end of file or a new
-        // variable section.
-        String line = csvFile.readLine();
-
-        while ((line != null) && Character.isDigit(line.charAt(0))) {
-
-            /*
-             * TODO Parsing predicates.
-             *
-             // Parse arguments - for predicate vocab element.
-             String[] token = line.split(":|(?<!\\\\)-");
-             PredicateVocabElement pve = new PredicateVocabElement(db,
-             this.stripEscChars(token[1]));
-
-             for (String arg : token[2].split(",")) {
-             pve.appendFormalArg(parseFormalArgument(arg, db));
-             }
-
-             db.addPredVE(pve);
-             */
-
-            // Get the next line in the file for reading.
-            line = csvFile.readLine();
-        }
-
-        return line;
-    }
-
-    /**
      * Method to build a formal argument.
      *
      * @param content The string holding the formal argument content to be
@@ -678,19 +559,7 @@ public final class OpenDatabaseFileC {
                     newVar,
                     new PopulateNominal());
 
-        }/* else if (getVarType(varType)
-         == MatrixVocabElement.MatrixType.INTEGER) {
-         // Read integer variable.
-         return parseEntries(csvFile,
-         newVar.getLegacyVariable(),
-         new PopulateInteger(legacyDb));
-
-         } else if (getVarType(varType) == MatrixVocabElement.MatrixType.FLOAT) {
-         return parseEntries(csvFile,
-         newVar.getLegacyVariable(),
-         new PopulateFloat(legacyDb));
-
-         }*/ else if (variableType == Argument.Type.MATRIX) {
+        } else if (variableType == Argument.Type.MATRIX) {
 
             // Read matrix variable - Build vocab for matrix.
             String[] vocabString = tokens[1].split("(?<!\\\\)-");
@@ -709,12 +578,7 @@ public final class OpenDatabaseFileC {
 
             return parseMatrixVariable(csvFile, newVar, newArg);
 
-            // Read predicate variable.
-        } /*else if (getVarType(varType)
-         == MatrixVocabElement.MatrixType.PREDICATE) {
-         return parsePredicateVariable(csvFile, newVar.getLegacyVariable());
-         }*/
-
+        } 
         throw new IllegalStateException("Unknown variable type.");
     }
 
@@ -763,60 +627,6 @@ public final class OpenDatabaseFileC {
          * @param destValue That this populator is filling with content.
          */
         abstract void populate(final String[] tokens, final Value destValue);
-    }
-
-    /**
-     * EntryPopulator for creating integer values.
-     */
-    private class PopulateInteger extends EntryPopulator {
-
-        /**
-         * Populates a DataValue from the supplied array of tokens.
-         *
-         * @param tokens    The tokens to use when building a DataValue.
-         * @param destValue That this populator is filling with content.
-         */
-        @Override
-        void populate(final String[] tokens, final Value destValue) {
-            /*
-             IntDataValue idv = new IntDataValue(getDatabase());
-
-             // BugzID:722 - Only populate the value if we have one from the file
-             if (tokens.length > DATA_INDEX) {
-             idv.setItsValue(tokens[DATA_INDEX]);
-             }
-
-             return idv;
-             */
-            // TODO: Support integer values.
-        }
-    }
-
-    /**
-     * EntryPopulator for creating float values.
-     */
-    private class PopulateFloat extends EntryPopulator {
-
-        /**
-         * Populates a DataValue from the supplied array of tokens.
-         *
-         * @param tokens    The tokens to use when building a DataValue.
-         * @param destValue That this populator is filling with content.
-         */
-        @Override
-        void populate(final String[] tokens, final Value destValue) {
-            /*
-             FloatDataValue fdv = new FloatDataValue(getDatabase());
-
-             // BugzID:722 - Only populate the value if we have one from the file
-             if (tokens.length > DATA_INDEX) {
-             fdv.setItsValue(tokens[DATA_INDEX]);
-             }
-
-             return fdv;
-             */
-            // TODO - Implement.
-        }
     }
 
     /**
