@@ -31,7 +31,7 @@ public final class NominalDataValueEditor extends DataValueEditor {
      * <p/>
      * BugzID:524 - If Character is an escape key - ignore it.
      */
-    private static final String RESERVED_CHARS = "<>\t\u001B";
+    private static final String RESERVED_CHARS = "\t\u001B";
 
     /**
      * The model that this editor is manipulating
