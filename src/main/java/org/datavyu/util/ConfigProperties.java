@@ -103,6 +103,11 @@ public final class ConfigProperties implements Serializable {
      * Version number to ignore for update reminders
      */
     private String ignoreVersion;
+    
+    /**
+     * true if column name warnings should be displayed
+     */
+    private boolean columnNameWarnings = true;
 
     /**
      * true if prereleases are preferred
@@ -343,6 +348,22 @@ public final class ConfigProperties implements Serializable {
      */
     public void setIgnoreVersion(final String version) {
         ignoreVersion = version;
+    }
+    
+    /**
+     * @return whether or not to display warnings for illegal column names
+     */    
+    public boolean getColumnNameWarning()
+    {
+        return columnNameWarnings;
+    }
+    
+    /**
+     * @param b whether or not to display warnings for illegal column names
+     */    
+    public void setColumnNameWarning(final boolean b)
+    {
+        columnNameWarnings = b;
     }
 
     /**

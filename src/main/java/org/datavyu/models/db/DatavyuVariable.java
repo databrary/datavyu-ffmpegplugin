@@ -24,6 +24,8 @@
 package org.datavyu.models.db;
 
 import java.util.*;
+import javax.swing.JOptionPane;
+import org.datavyu.Configuration;
 
 /**
  * Maps a variable object to a datastore.
@@ -217,9 +219,15 @@ public final class DatavyuVariable implements Variable {
         if (!grandfathered && !isNameValid(newName)) {
             throw new UserWarningException("Unable to add column:\n\tOnly alphanumeric characters and underscore are permitted.\n\tName must begin with a letter\n\tMust contain fewer than 255 characters");
         }
-
+        
         if (grandfathered && !isNameValid(newName)) {
-            //do something concerning warning generation here
+            Configuration config = Configuration.getInstance();
+            //TODO: Perhaps I should abstract this out or deal with it through exception
+            if (config.getColumnNameWarning())
+            {
+                if (JOptionPane.showConfirmDialog(null, newName + " is no longer a valid column name.\nColumn names should begin with letter, and underscore is the only permitted special character.\nIt is highly recommended you manually rename this column immediately or use the nifty script in favourites.\nContinue showing this warning?", "Warning!", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                    config.setColumnNameWarning(false);
+            }
         }        
         
         // Change name, update hash table

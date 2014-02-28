@@ -167,6 +167,7 @@ public final class Configuration {
             properties.setMixerInterfaceSelectedOutlineColour(
                     DEFAULT_SELECTED_OUTLINE_COLOR);
             properties.setIgnoreVersion("");
+            properties.setColumnNameWarning(true);
             properties.setPrereleasePreference(false);
 
             save();
@@ -450,6 +451,23 @@ public final class Configuration {
      */
     public void setIgnoreVersion(final String version) {
         properties.setIgnoreVersion(version);
+        save();
+    }
+    
+    /**
+     * @return whether or not to display warnings for illegal column names
+     */    
+    public boolean getColumnNameWarning()
+    {
+        return properties.getColumnNameWarning();
+    }
+    
+    /**
+     * @param b whether or not to display warnings for illegal column names
+     */    
+    public void setColumnNameWarning(final boolean b)
+    {
+        properties.setColumnNameWarning(b);
         save();
     }
 
