@@ -87,19 +87,19 @@ public final class ConsoleV extends DatavyuDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(ConsoleV.class);
-        setTitle(resourceMap.getString("Form.title")); // NOI18N
-        setName("Form"); // NOI18N
+        setTitle(resourceMap.getString("Form.title")); 
+        setName("Form"); 
 
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
+        jScrollPane1.setName("jScrollPane1"); 
 
         console.setColumns(20);
         console.setRows(5);
         console.setMinimumSize(new java.awt.Dimension(200, 150));
-        console.setName("console"); // NOI18N
+        console.setName("console"); 
         jScrollPane1.setViewportView(console);
 
-        closeButton.setText(resourceMap.getString("closeButton.text")); // NOI18N
-        closeButton.setName("closeButton"); // NOI18N
+        closeButton.setText(resourceMap.getString("closeButton.text")); 
+        closeButton.setName("closeButton"); 
         closeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeButtonActionPerformed(evt);

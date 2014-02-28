@@ -121,9 +121,9 @@ public final class VariableListV extends DatavyuDialog
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(rMap.getString("variableListDialog.title"));
-        setName("variableListDialog"); // NOI18N
+        setName("variableListDialog"); 
 
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
+        jScrollPane1.setName("jScrollPane1"); 
 
         variableList.setModel(tableModel);
         variableList.setMinimumSize(new java.awt.Dimension(400, 200));

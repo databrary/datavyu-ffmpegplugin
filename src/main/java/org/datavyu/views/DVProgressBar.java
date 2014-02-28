@@ -101,12 +101,12 @@ public class DVProgressBar extends javax.swing.JDialog {
 
         jProgressBar.setIndeterminate(true);
 
-        jLabel_message.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabel_message.setFont(new java.awt.Font("Tahoma", 0, 12)); 
         jLabel_message.setText("Running...");
 
         jTextArea.setEditable(false);
         jTextArea.setColumns(20);
-        jTextArea.setFont(new java.awt.Font("Courier New", 0, 10)); // NOI18N
+        jTextArea.setFont(new java.awt.Font("Courier New", 0, 10)); 
         jTextArea.setRows(5);
         jScrollPane1.setViewportView(jTextArea);
 

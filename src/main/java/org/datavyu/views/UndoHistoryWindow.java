@@ -56,7 +56,7 @@ public class UndoHistoryWindow extends DatavyuDialog {
         setTitle("Undo History");
         setBounds(new java.awt.Rectangle(4, 22, 400, 800));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setName("undoHistoryWindow"); // NOI18N
+        setName("undoHistoryWindow"); 
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
                 formWindowGainedFocus(evt);

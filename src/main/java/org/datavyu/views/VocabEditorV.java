@@ -611,25 +611,25 @@ public final class VocabEditorV extends DatavyuDialog {
         jLabel1 = new javax.swing.JLabel();
         nameWarningsLabel = new javax.swing.JLabel();
 
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
+        jScrollPane1.setName("jScrollPane1"); 
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
-        jTextArea1.setName("jTextArea1"); // NOI18N
+        jTextArea1.setName("jTextArea1"); 
         jScrollPane1.setViewportView(jTextArea1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/datavyu/views/resources/VocabEditorV"); // NOI18N
-        setTitle(bundle.getString("window.title")); // NOI18N
-        setName("Form"); // NOI18N
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/datavyu/views/resources/VocabEditorV"); 
+        setTitle(bundle.getString("window.title")); 
+        setName("Form"); 
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getActionMap(VocabEditorV.class, this);
 
-        addCodeButton.setAction(actionMap.get("addCode")); // NOI18N
-        addCodeButton.setText(bundle.getString("addCodeButton.text")); // NOI18N
-        addCodeButton.setToolTipText(bundle.getString("addCodeButton.tip")); // NOI18N
-        addCodeButton.setName("addCodeButton"); // NOI18N        
+        addCodeButton.setAction(actionMap.get("addCode")); 
+        addCodeButton.setText(bundle.getString("addCodeButton.text")); 
+        addCodeButton.setToolTipText(bundle.getString("addCodeButton.tip")); 
+        addCodeButton.setName("addCodeButton");         
         addCodeButton.setHorizontalAlignment(SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -639,10 +639,10 @@ public final class VocabEditorV extends DatavyuDialog {
         getContentPane().add(addCodeButton, gridBagConstraints);
 
         
-        addColumnButton.setAction(actionMap.get("addColumn")); // NOI18N
-        addColumnButton.setText(bundle.getString("addColumnButton.text")); // NOI18N
-        addColumnButton.setToolTipText(bundle.getString("addColumnButton.tip")); // NOI18N
-        addColumnButton.setName("addColumnButton"); // NOI18N
+        addColumnButton.setAction(actionMap.get("addColumn")); 
+        addColumnButton.setText(bundle.getString("addColumnButton.text")); 
+        addColumnButton.setToolTipText(bundle.getString("addColumnButton.tip")); 
+        addColumnButton.setName("addColumnButton"); 
         addColumnButton.setMinimumSize(addCodeButton.getPreferredSize());
         addColumnButton.setPreferredSize(addCodeButton.getPreferredSize());
         addColumnButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -652,13 +652,13 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         getContentPane().add(addColumnButton, gridBagConstraints);
 
-        moveCodeLeftButton.setAction(actionMap.get("moveArgumentLeft")); // NOI18N
+        moveCodeLeftButton.setAction(actionMap.get("moveArgumentLeft")); 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(VocabEditorV.class);
-        moveCodeLeftButton.setIcon(resourceMap.getIcon("moveCodeLeftButton.icon")); // NOI18N
-        moveCodeLeftButton.setText(bundle.getString("moveCodeLeftButton.text")); // NOI18N
-        moveCodeLeftButton.setToolTipText(bundle.getString("moveCodeLeftButton.tip")); // NOI18N
+        moveCodeLeftButton.setIcon(resourceMap.getIcon("moveCodeLeftButton.icon")); 
+        moveCodeLeftButton.setText(bundle.getString("moveCodeLeftButton.text")); 
+        moveCodeLeftButton.setToolTipText(bundle.getString("moveCodeLeftButton.tip")); 
         moveCodeLeftButton.setIconTextGap(6);
-        moveCodeLeftButton.setName("moveCodeLeftButton"); // NOI18N
+        moveCodeLeftButton.setName("moveCodeLeftButton"); 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -666,13 +666,13 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
         getContentPane().add(moveCodeLeftButton, gridBagConstraints);
 
-        moveCodeRightButton.setAction(actionMap.get("moveArgumentRight")); // NOI18N
-        moveCodeRightButton.setIcon(resourceMap.getIcon("moveCodeRightButton.icon")); // NOI18N
-        moveCodeRightButton.setText(bundle.getString("moveCodeRightButton.text")); // NOI18N
-        moveCodeRightButton.setToolTipText(bundle.getString("moveCodeRightButton.tip")); // NOI18N
+        moveCodeRightButton.setAction(actionMap.get("moveArgumentRight")); 
+        moveCodeRightButton.setIcon(resourceMap.getIcon("moveCodeRightButton.icon")); 
+        moveCodeRightButton.setText(bundle.getString("moveCodeRightButton.text")); 
+        moveCodeRightButton.setToolTipText(bundle.getString("moveCodeRightButton.tip")); 
         moveCodeRightButton.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         moveCodeRightButton.setIconTextGap(6);
-        moveCodeRightButton.setName("moveCodeRightButton"); // NOI18N
+        moveCodeRightButton.setName("moveCodeRightButton"); 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 1;
@@ -681,12 +681,12 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 5);
         getContentPane().add(moveCodeRightButton, gridBagConstraints);
 
-        deleteButton.setAction(actionMap.get("delete")); // NOI18N
-        deleteButton.setText(bundle.getString("deleteButton.text")); // NOI18N
-        deleteButton.setToolTipText(bundle.getString("deleteButton.tip")); // NOI18N
+        deleteButton.setAction(actionMap.get("delete")); 
+        deleteButton.setText(bundle.getString("deleteButton.text")); 
+        deleteButton.setToolTipText(bundle.getString("deleteButton.tip")); 
         deleteButton.setMaximumSize(new java.awt.Dimension(100, 23));
         deleteButton.setMinimumSize(new java.awt.Dimension(100, 23));
-        deleteButton.setName("deleteButton"); // NOI18N
+        deleteButton.setName("deleteButton"); 
         deleteButton.setPreferredSize(new java.awt.Dimension(100, 23));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
@@ -697,7 +697,7 @@ public final class VocabEditorV extends DatavyuDialog {
         getContentPane().add(deleteButton, gridBagConstraints);
 
         currentVocabList.setMinimumSize(new java.awt.Dimension(23, 200));
-        currentVocabList.setName("currentVocabList"); // NOI18N
+        currentVocabList.setName("currentVocabList"); 
         currentVocabList.setPreferredSize(new java.awt.Dimension(200, 200));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -710,10 +710,10 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(currentVocabList, gridBagConstraints);
 
-        closeButton.setAction(actionMap.get("closeWindow")); // NOI18N
-        closeButton.setText(bundle.getString("closeButton.closeText")); // NOI18N
-        closeButton.setToolTipText(bundle.getString("closeButton.closeTip")); // NOI18N
-        closeButton.setName("closeButton"); // NOI18N
+        closeButton.setAction(actionMap.get("closeWindow")); 
+        closeButton.setText(bundle.getString("closeButton.closeText")); 
+        closeButton.setToolTipText(bundle.getString("closeButton.closeTip")); 
+        closeButton.setName("closeButton"); 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 3;
@@ -721,8 +721,8 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
         getContentPane().add(closeButton, gridBagConstraints);
         
-        nameWarningsLabel.setText(""); // NOI18N
-        nameWarningsLabel.setName("nameWarningLabel"); // NOI18N
+        nameWarningsLabel.setText(""); 
+        nameWarningsLabel.setName("nameWarningLabel"); 
         nameWarningsLabel.setForeground(Color.RED);
         nameWarningsLabel.setHorizontalAlignment(SwingConstants.LEFT);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -734,12 +734,12 @@ public final class VocabEditorV extends DatavyuDialog {
         getContentPane().add(nameWarningsLabel, gridBagConstraints);
         
         statusBar.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        statusBar.setText(resourceMap.getString("statusBar.text")); // NOI18N
+        statusBar.setText(resourceMap.getString("statusBar.text")); 
         statusBar.setDoubleBuffered(true);
         statusBar.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         statusBar.setMaximumSize(new java.awt.Dimension(100, 14));
         statusBar.setMinimumSize(new java.awt.Dimension(10, 14));
-        statusBar.setName("statusBar"); // NOI18N
+        statusBar.setName("statusBar"); 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
@@ -747,10 +747,10 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         getContentPane().add(statusBar, gridBagConstraints);
-        statusBar.getAccessibleContext().setAccessibleName(resourceMap.getString("statusBar.AccessibleContext.accessibleName")); // NOI18N
+        statusBar.getAccessibleContext().setAccessibleName(resourceMap.getString("statusBar.AccessibleContext.accessibleName")); 
 
         statusSeperator.setMinimumSize(new java.awt.Dimension(100, 10));
-        statusSeperator.setName("statusSeperator"); // NOI18N
+        statusSeperator.setName("statusSeperator"); 
         statusSeperator.setPreferredSize(new java.awt.Dimension(2, 2));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -760,10 +760,10 @@ public final class VocabEditorV extends DatavyuDialog {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         getContentPane().add(statusSeperator, gridBagConstraints);
 
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setText(resourceMap.getString("jLabel1.text")); 
         jLabel1.setMaximumSize(new java.awt.Dimension(85, 5));
         jLabel1.setMinimumSize(new java.awt.Dimension(80, 5));
-        jLabel1.setName("jLabel1"); // NOI18N
+        jLabel1.setName("jLabel1"); 
         jLabel1.setPreferredSize(new java.awt.Dimension(85, 5));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;

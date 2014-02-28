@@ -76,7 +76,7 @@ public class VideoConverterV extends javax.swing.JFrame {
 
         setTitle("Convert Videos");
         setMinimumSize(new java.awt.Dimension(571, 192));
-        setName("Convert Videos"); // NOI18N
+        setName("Convert Videos"); 
 
         convertButton.setText("Convert Video");
         convertButton.setEnabled(false);

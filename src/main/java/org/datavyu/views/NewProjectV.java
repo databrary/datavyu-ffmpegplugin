@@ -88,30 +88,30 @@ public final class NewProjectV extends DatavyuDialog {
                 org.jdesktop.application.Application.getInstance(
                         org.datavyu.Datavyu.class).getContext().getResourceMap(
                         NewProjectV.class);
-        setTitle(resourceMap.getString("Form.title")); // NOI18N
-        setName("Form"); // NOI18N
+        setTitle(resourceMap.getString("Form.title")); 
+        setName("Form"); 
         setResizable(false);
 
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
-        jLabel1.setToolTipText(resourceMap.getString("jLabel1.toolTipText")); // NOI18N
-        jLabel1.setName("jLabel1"); // NOI18N
+        jLabel1.setText(resourceMap.getString("jLabel1.text")); 
+        jLabel1.setToolTipText(resourceMap.getString("jLabel1.toolTipText")); 
+        jLabel1.setName("jLabel1"); 
 
-        jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
-        jLabel2.setToolTipText(resourceMap.getString("jLabel2.toolTipText")); // NOI18N
-        jLabel2.setName("jLabel2"); // NOI18N
+        jLabel2.setText(resourceMap.getString("jLabel2.text")); 
+        jLabel2.setToolTipText(resourceMap.getString("jLabel2.toolTipText")); 
+        jLabel2.setName("jLabel2"); 
 
-        nameField.setName("nameField"); // NOI18N
+        nameField.setName("nameField"); 
 
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
+        jScrollPane1.setName("jScrollPane1"); 
 
         descriptionField.setColumns(20);
-        descriptionField.setFont(resourceMap.getFont("descriptionField.font")); // NOI18N
+        descriptionField.setFont(resourceMap.getFont("descriptionField.font")); 
         descriptionField.setRows(5);
-        descriptionField.setName("descriptionField"); // NOI18N
+        descriptionField.setName("descriptionField"); 
         jScrollPane1.setViewportView(descriptionField);
 
-        cancelButton.setText(resourceMap.getString("cancelButton.text")); // NOI18N
-        cancelButton.setName("cancelButton"); // NOI18N
+        cancelButton.setText(resourceMap.getString("cancelButton.text")); 
+        cancelButton.setName("cancelButton"); 
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(
                     final java.awt.event.ActionEvent evt) {
@@ -119,8 +119,8 @@ public final class NewProjectV extends DatavyuDialog {
             }
         });
 
-        okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
-        okButton.setName("okButton"); // NOI18N
+        okButton.setText(resourceMap.getString("okButton.text")); 
+        okButton.setName("okButton"); 
         okButton.setPreferredSize(new java.awt.Dimension(65, 23));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(

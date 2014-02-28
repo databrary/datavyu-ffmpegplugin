@@ -154,7 +154,7 @@ public class UpdateV extends javax.swing.JDialog {
         setModal(true);
         setResizable(false);
 
-        jbutton_now.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jbutton_now.setFont(new java.awt.Font("Tahoma", 1, 11)); 
         jbutton_now.setText("Now");
         jbutton_now.setToolTipText("Take me to the download page");
         jbutton_now.addActionListener(new java.awt.event.ActionListener() {
@@ -189,7 +189,7 @@ public class UpdateV extends javax.swing.JDialog {
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); 
         jLabel2.setText("Checking for updates...");
 
         jcheck_get_prereleases.setText("Get Prereleases");

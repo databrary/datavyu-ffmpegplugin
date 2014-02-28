@@ -1360,9 +1360,9 @@ public final class DatavyuView extends FrameView
         supportMenuItem = new javax.swing.JMenuItem();
         guideMenuItem = new javax.swing.JMenuItem();
 
-        mainPanel.setName("mainPanel"); // NOI18N
+        mainPanel.setName("mainPanel"); 
 
-        jLabel1.setName("jLabel1"); // NOI18N
+        jLabel1.setName("jLabel1"); 
 
         org.jdesktop.layout.GroupLayout mainPanelLayout = new org.jdesktop.layout.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
@@ -1383,24 +1383,24 @@ public final class DatavyuView extends FrameView
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(DatavyuView.class);
         resourceMap.injectComponents(mainPanel);
 
-        menuBar.setName("menuBar"); // NOI18N
+        menuBar.setName("menuBar"); 
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getActionMap(DatavyuView.class, this);
-        fileMenu.setAction(actionMap.get("saveAs")); // NOI18N
-        fileMenu.setName("fileMenu"); // NOI18N
+        fileMenu.setAction(actionMap.get("saveAs")); 
+        fileMenu.setName("fileMenu"); 
 
-        newMenuItem.setAction(actionMap.get("showNewProjectForm")); // NOI18N
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/datavyu/views/resources/DatavyuView"); // NOI18N
-        newMenuItem.setText(bundle.getString("file_new.text")); // NOI18N
-        newMenuItem.setName("newMenuItem"); // NOI18N
+        newMenuItem.setAction(actionMap.get("showNewProjectForm")); 
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/datavyu/views/resources/DatavyuView"); 
+        newMenuItem.setText(bundle.getString("file_new.text")); 
+        newMenuItem.setName("newMenuItem"); 
         fileMenu.add(newMenuItem);
 
-        openMenuItem.setAction(actionMap.get("open")); // NOI18N
-        openMenuItem.setText(bundle.getString("file_open.text")); // NOI18N
-        openMenuItem.setName(bundle.getString("file_open.text")); // NOI18N
+        openMenuItem.setAction(actionMap.get("open")); 
+        openMenuItem.setText(bundle.getString("file_open.text")); 
+        openMenuItem.setName(bundle.getString("file_open.text")); 
         fileMenu.add(openMenuItem);
 
-        openRecentFileMenu.setName("openRecentFileMenu"); // NOI18N
+        openRecentFileMenu.setName("openRecentFileMenu"); 
         openRecentFileMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
                 openRecentFileMenuMenuSelected(evt);
@@ -1414,41 +1414,41 @@ public final class DatavyuView extends FrameView
         });
 
         jMenuItem2.setEnabled(false);
-        jMenuItem2.setName("jMenuItem2"); // NOI18N
+        jMenuItem2.setName("jMenuItem2"); 
         openRecentFileMenu.add(jMenuItem2);
 
         fileMenu.add(openRecentFileMenu);
 
-        jSeparator7.setName("jSeparator7"); // NOI18N
+        jSeparator7.setName("jSeparator7"); 
         fileMenu.add(jSeparator7);
 
-        saveMenuItem.setAction(actionMap.get("save")); // NOI18N
-        saveMenuItem.setName("saveMenuItem"); // NOI18N
+        saveMenuItem.setAction(actionMap.get("save")); 
+        saveMenuItem.setName("saveMenuItem"); 
         fileMenu.add(saveMenuItem);
 
-        saveAsMenuItem.setAction(actionMap.get("saveAs")); // NOI18N
-        saveAsMenuItem.setName("saveAsMenuItem"); // NOI18N
+        saveAsMenuItem.setAction(actionMap.get("saveAs")); 
+        saveAsMenuItem.setName("saveAsMenuItem"); 
         fileMenu.add(saveAsMenuItem);
 
-        exportMenuItem.setAction(actionMap.get("exportFile")); // NOI18N
-        exportMenuItem.setName("exportMenuItem"); // NOI18N
+        exportMenuItem.setAction(actionMap.get("exportFile")); 
+        exportMenuItem.setName("exportMenuItem"); 
         fileMenu.add(exportMenuItem);
 
-        fileMenuSeparator.setName("fileMenuSeparator"); // NOI18N
+        fileMenuSeparator.setName("fileMenuSeparator"); 
         if (Datavyu.getPlatform() != Platform.MAC) {
             fileMenu.add(fileMenuSeparator);
         }
 
-        exitMenuItem.setAction(actionMap.get("safeQuit")); // NOI18N
-        exitMenuItem.setName("exitMenuItem"); // NOI18N
+        exitMenuItem.setAction(actionMap.get("safeQuit")); 
+        exitMenuItem.setName("exitMenuItem"); 
         if (Datavyu.getPlatform() != Platform.MAC) {
             fileMenu.add(exitMenuItem);
         }
 
         menuBar.add(fileMenu);
 
-        spreadsheetMenu.setAction(actionMap.get("showQTVideoController")); // NOI18N
-        spreadsheetMenu.setName("spreadsheetMenu"); // NOI18N
+        spreadsheetMenu.setAction(actionMap.get("showQTVideoController")); 
+        spreadsheetMenu.setName("spreadsheetMenu"); 
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
 //                spreadsheetMenuSelected(evt);
@@ -1461,29 +1461,29 @@ public final class DatavyuView extends FrameView
             }
         });
 
-        showSpreadsheetMenuItem.setAction(actionMap.get("showSpreadsheet")); // NOI18N
-        showSpreadsheetMenuItem.setName("showSpreadsheetMenuItem"); // NOI18N
+        showSpreadsheetMenuItem.setAction(actionMap.get("showSpreadsheet")); 
+        showSpreadsheetMenuItem.setName("showSpreadsheetMenuItem"); 
         //spreadsheetMenu.add(showSpreadsheetMenuItem);
 
-        jSeparator1.setName("jSeparator1"); // NOI18N
+        jSeparator1.setName("jSeparator1"); 
         spreadsheetMenu.add(jSeparator1);
 
-        jMenuItem1.setAction(actionMap.get("showNewVariableForm")); // NOI18N
-        jMenuItem1.setName("jMenuItem1"); // NOI18N
+        jMenuItem1.setAction(actionMap.get("showNewVariableForm")); 
+        jMenuItem1.setName("jMenuItem1"); 
         spreadsheetMenu.add(jMenuItem1);
 
-        newVariableMenuItem.setAction(actionMap.get("showVariableList")); // NOI18N
-        newVariableMenuItem.setName("newVariableMenuItem"); // NOI18N
+        newVariableMenuItem.setAction(actionMap.get("showVariableList")); 
+        newVariableMenuItem.setName("newVariableMenuItem"); 
         spreadsheetMenu.add(newVariableMenuItem);
 
-        vocabEditorMenuItem.setAction(actionMap.get("showVocabEditor")); // NOI18N
-        vocabEditorMenuItem.setName("vocabEditorMenuItem"); // NOI18N
+        vocabEditorMenuItem.setAction(actionMap.get("showVocabEditor")); 
+        vocabEditorMenuItem.setName("vocabEditorMenuItem"); 
         spreadsheetMenu.add(vocabEditorMenuItem);
 
-        jSeparator2.setName("jSeparator2"); // NOI18N
+        jSeparator2.setName("jSeparator2"); 
         spreadsheetMenu.add(jSeparator2);
 
-        newCellMenuItem.setName("newCellMenuItem"); // NOI18N
+        newCellMenuItem.setName("newCellMenuItem"); 
         newCellMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newCellMenuItemActionPerformed(evt);
@@ -1491,7 +1491,7 @@ public final class DatavyuView extends FrameView
         });
         spreadsheetMenu.add(newCellMenuItem);
 
-        newCellLeftMenuItem.setName("newCellLeftMenuItem"); // NOI18N
+        newCellLeftMenuItem.setName("newCellLeftMenuItem"); 
         newCellLeftMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newCellLeftMenuItemActionPerformed(evt);
@@ -1499,7 +1499,7 @@ public final class DatavyuView extends FrameView
         });
         spreadsheetMenu.add(newCellLeftMenuItem);
 
-        newCellRightMenuItem.setName("newCellRightMenuItem"); // NOI18N
+        newCellRightMenuItem.setName("newCellRightMenuItem"); 
         newCellRightMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newCellRightMenuItemActionPerformed(evt);
@@ -1507,10 +1507,10 @@ public final class DatavyuView extends FrameView
         });
         spreadsheetMenu.add(newCellRightMenuItem);
 
-        jSeparator8.setName("jSeparator8"); // NOI18N
+        jSeparator8.setName("jSeparator8"); 
         spreadsheetMenu.add(jSeparator8);
 
-        changeVarNameMenuItem.setName("changeVarNameMenuItem"); // NOI18N
+        changeVarNameMenuItem.setName("changeVarNameMenuItem"); 
         changeVarNameMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 changeVarNameMenuItemActionPerformed(evt);
@@ -1518,7 +1518,7 @@ public final class DatavyuView extends FrameView
         });
         spreadsheetMenu.add(changeVarNameMenuItem);
 
-        hideSelectedColumnsMenuItem.setName("hideSelectedColumnsMenuItem"); // NOI18N
+        hideSelectedColumnsMenuItem.setName("hideSelectedColumnsMenuItem"); 
         hideSelectedColumnsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hideSelectedColumnsMenuItemActionPerformed(evt);
@@ -1526,7 +1526,7 @@ public final class DatavyuView extends FrameView
         });
         spreadsheetMenu.add(hideSelectedColumnsMenuItem);
 
-        ShowAllVariablesMenuItem.setName("ShowAllVariablesMenuItem"); // NOI18N
+        ShowAllVariablesMenuItem.setName("ShowAllVariablesMenuItem"); 
         ShowAllVariablesMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ShowAllVariablesMenuItemActionPerformed(evt);
@@ -1534,36 +1534,36 @@ public final class DatavyuView extends FrameView
         });
         spreadsheetMenu.add(ShowAllVariablesMenuItem);
 
-        jSeparator3.setName("jSeparator3"); // NOI18N
+        jSeparator3.setName("jSeparator3"); 
         spreadsheetMenu.add(jSeparator3);
 
-        deleteColumnMenuItem.setAction(actionMap.get("deleteColumn")); // NOI18N
-        deleteColumnMenuItem.setName("deleteColumnMenuItem"); // NOI18N
+        deleteColumnMenuItem.setAction(actionMap.get("deleteColumn")); 
+        deleteColumnMenuItem.setName("deleteColumnMenuItem"); 
         spreadsheetMenu.add(deleteColumnMenuItem);
 
-        deleteCellMenuItem.setAction(actionMap.get("deleteCells")); // NOI18N
-        deleteCellMenuItem.setName("deleteCellMenuItem"); // NOI18N
+        deleteCellMenuItem.setAction(actionMap.get("deleteCells")); 
+        deleteCellMenuItem.setName("deleteCellMenuItem"); 
         spreadsheetMenu.add(deleteCellMenuItem);
 
-        jSeparator6.setName("jSeparator6"); // NOI18N
+        jSeparator6.setName("jSeparator6"); 
         spreadsheetMenu.add(jSeparator6);
 
-        historySpreadSheetMenuItem.setAction(actionMap.get("history")); // NOI18N
-        historySpreadSheetMenuItem.setName("historySpreadSheetMenuItem"); // NOI18N
+        historySpreadSheetMenuItem.setAction(actionMap.get("history")); 
+        historySpreadSheetMenuItem.setName("historySpreadSheetMenuItem"); 
         spreadsheetMenu.add(historySpreadSheetMenuItem);
 
-        undoSpreadSheetMenuItem.setAction(actionMap.get("undo")); // NOI18N
-        undoSpreadSheetMenuItem.setName("undoSpreadSheetMenuItem"); // NOI18N
+        undoSpreadSheetMenuItem.setAction(actionMap.get("undo")); 
+        undoSpreadSheetMenuItem.setName("undoSpreadSheetMenuItem"); 
         spreadsheetMenu.add(undoSpreadSheetMenuItem);
 
-        redoSpreadSheetMenuItem.setAction(actionMap.get("redo")); // NOI18N
-        redoSpreadSheetMenuItem.setName("redoSpreadSheetMenuItem"); // NOI18N
+        redoSpreadSheetMenuItem.setAction(actionMap.get("redo")); 
+        redoSpreadSheetMenuItem.setName("redoSpreadSheetMenuItem"); 
         spreadsheetMenu.add(redoSpreadSheetMenuItem);
 
-        jSeparator9.setName("jSeparator9"); // NOI18N
+        jSeparator9.setName("jSeparator9"); 
         spreadsheetMenu.add(jSeparator9);
 
-        weakTemporalOrderMenuItem.setName("weakTemporalOrderMenuItem"); // NOI18N
+        weakTemporalOrderMenuItem.setName("weakTemporalOrderMenuItem"); 
         weakTemporalOrderMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 weakTemporalMenuItemActionPerformed(evt);
@@ -1571,9 +1571,9 @@ public final class DatavyuView extends FrameView
         });
         spreadsheetMenu.add(weakTemporalOrderMenuItem);
 
-        zoomMenu.setName("zoomMenu"); // NOI18N
+        zoomMenu.setName("zoomMenu"); 
 
-        zoomInMenuItem.setName("zoomInMenuItem"); // NOI18N
+        zoomInMenuItem.setName("zoomInMenuItem"); 
         zoomInMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 zoomInMenuItemActionPerformed(evt);
@@ -1581,7 +1581,7 @@ public final class DatavyuView extends FrameView
         });
         zoomMenu.add(zoomInMenuItem);
 
-        zoomOutMenuItem.setName("zoomOutMenuItem"); // NOI18N
+        zoomOutMenuItem.setName("zoomOutMenuItem"); 
         zoomOutMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 zoomOutMenuItemActionPerformed(evt);
@@ -1589,10 +1589,10 @@ public final class DatavyuView extends FrameView
         });
         zoomMenu.add(zoomOutMenuItem);
 
-        jSeparator5.setName("jSeparator5"); // NOI18N
+        jSeparator5.setName("jSeparator5"); 
         zoomMenu.add(jSeparator5);
 
-        resetZoomMenuItem.setName("resetZoomMenuItem"); // NOI18N
+        resetZoomMenuItem.setName("resetZoomMenuItem"); 
         resetZoomMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetZoomMenuItemActionPerformed(evt);
@@ -1602,32 +1602,32 @@ public final class DatavyuView extends FrameView
 
         spreadsheetMenu.add(zoomMenu);
 
-        jSeparator10.setName("jSeparator10"); // NOI18N
+        jSeparator10.setName("jSeparator10"); 
         spreadsheetMenu.add(jSeparator10);
 
-        pushMenuItem.setAction(actionMap.get("push")); // NOI18N
-        pushMenuItem.setName("pushMenuItem"); // NOI18N
+        pushMenuItem.setAction(actionMap.get("push")); 
+        pushMenuItem.setName("pushMenuItem"); 
         spreadsheetMenu.add(pushMenuItem);
 
-        pullMenuItem.setAction(actionMap.get("pull")); // NOI18N
-        pullMenuItem.setName("pullMenuItem"); // NOI18N
+        pullMenuItem.setAction(actionMap.get("pull")); 
+        pullMenuItem.setName("pullMenuItem"); 
         spreadsheetMenu.add(pullMenuItem);
 
         menuBar.add(spreadsheetMenu);
 
-        controllerMenu.setName("controllerMenu"); // NOI18N
+        controllerMenu.setName("controllerMenu"); 
 
-        qtControllerItem.setAction(actionMap.get("showQTVideoController")); // NOI18N
-        qtControllerItem.setName("qtControllerItem"); // NOI18N
+        qtControllerItem.setAction(actionMap.get("showQTVideoController")); 
+        qtControllerItem.setName("qtControllerItem"); 
         controllerMenu.add(qtControllerItem);
 
-        videoConverterMenuItem.setAction(actionMap.get("showVideoConverter")); // NOI18N
-        videoConverterMenuItem.setName("videoConverterMenuItem"); // NOI18N
+        videoConverterMenuItem.setAction(actionMap.get("showVideoConverter")); 
+        videoConverterMenuItem.setName("videoConverterMenuItem"); 
         controllerMenu.add(videoConverterMenuItem);
 
         menuBar.add(controllerMenu);
 
-        scriptMenu.setName("scriptMenu"); // NOI18N
+        scriptMenu.setName("scriptMenu"); 
         scriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
                 populateFavourites(evt);
@@ -1640,11 +1640,11 @@ public final class DatavyuView extends FrameView
             }
         });
 
-        runScriptMenuItem.setAction(actionMap.get("runScript")); // NOI18N
-        runScriptMenuItem.setName("runScriptMenuItem"); // NOI18N
+        runScriptMenuItem.setAction(actionMap.get("runScript")); 
+        runScriptMenuItem.setName("runScriptMenuItem"); 
         scriptMenu.add(runScriptMenuItem);
 
-        runRecentScriptMenu.setName("runRecentScriptMenu"); // NOI18N
+        runRecentScriptMenu.setName("runRecentScriptMenu"); 
         runRecentScriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
                 populateRecentScripts(evt);
@@ -1658,26 +1658,26 @@ public final class DatavyuView extends FrameView
         });
 
         recentScriptsHeader.setEnabled(false);
-        recentScriptsHeader.setName("recentScriptsHeader"); // NOI18N
+        recentScriptsHeader.setName("recentScriptsHeader"); 
         runRecentScriptMenu.add(recentScriptsHeader);
 
         scriptMenu.add(runRecentScriptMenu);
 
-        jSeparator4.setName("jSeparator4"); // NOI18N
+        jSeparator4.setName("jSeparator4"); 
         scriptMenu.add(jSeparator4);
 
         favScripts.setEnabled(false);
-        favScripts.setName("favScripts"); // NOI18N
+        favScripts.setName("favScripts"); 
         scriptMenu.add(favScripts);
 
         menuBar.add(scriptMenu);
 
 
-        helpMenu.setAction(actionMap.get("showVariableList")); // NOI18N
-        helpMenu.setName("helpMenu"); // NOI18N
+        helpMenu.setAction(actionMap.get("showVariableList")); 
+        helpMenu.setName("helpMenu"); 
 
-        aboutMenuItem.setAction(actionMap.get("showAboutWindow")); // NOI18N
-        aboutMenuItem.setName("aboutMenuItem"); // NOI18N
+        aboutMenuItem.setAction(actionMap.get("showAboutWindow")); 
+        aboutMenuItem.setName("aboutMenuItem"); 
         if (Datavyu.getPlatform() != Platform.MAC) {
             helpMenu.add(aboutMenuItem);
         }
@@ -1696,8 +1696,8 @@ public final class DatavyuView extends FrameView
         helpMenu.add(guideMenuItem);
         //}
 
-        updateMenuItem.setAction(actionMap.get("showUpdateWindow")); // NOI18N
-        updateMenuItem.setName("updateMenuItem"); // NOI18N
+        updateMenuItem.setAction(actionMap.get("showUpdateWindow")); 
+        updateMenuItem.setName("updateMenuItem"); 
         //TODO - don't add this on Macs.  Instead it will be in the "Application Menu"
         //if (Datavyu.getPlatform() != Platform.MAC) {
         helpMenu.add(updateMenuItem);

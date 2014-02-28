@@ -49,35 +49,35 @@ public class UserMetrixV extends DatavyuDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(UserMetrixV.class);
-        setTitle(resourceMap.getString("Form.title")); // NOI18N
-        setName("Form"); // NOI18N
+        setTitle(resourceMap.getString("Form.title")); 
+        setName("Form"); 
         setResizable(false);
 
-        radioCanSend.setFont(resourceMap.getFont("radioCanSend.font")); // NOI18N
-        radioCanSend.setText(resourceMap.getString("radioCanSend.text")); // NOI18N
-        radioCanSend.setName("radioCanSend"); // NOI18N
+        radioCanSend.setFont(resourceMap.getFont("radioCanSend.font")); 
+        radioCanSend.setText(resourceMap.getString("radioCanSend.text")); 
+        radioCanSend.setName("radioCanSend"); 
         radioCanSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioCanSendActionPerformed(evt);
             }
         });
 
-        radioDoNotSend.setText(resourceMap.getString("radioDoNotSend.text")); // NOI18N
-        radioDoNotSend.setName("radioDoNotSend"); // NOI18N
+        radioDoNotSend.setText(resourceMap.getString("radioDoNotSend.text")); 
+        radioDoNotSend.setName("radioDoNotSend"); 
         radioDoNotSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioDoNotSendActionPerformed(evt);
             }
         });
 
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
+        jScrollPane1.setName("jScrollPane1"); 
 
-        Blurb.setBackground(resourceMap.getColor("Blurb.background")); // NOI18N
+        Blurb.setBackground(resourceMap.getColor("Blurb.background")); 
         Blurb.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
         Blurb.setEditable(false);
-        Blurb.setText(resourceMap.getString("Blurb.text")); // NOI18N
+        Blurb.setText(resourceMap.getString("Blurb.text")); 
         Blurb.setMargin(new java.awt.Insets(10, 10, 10, 10));
-        Blurb.setName("Blurb"); // NOI18N
+        Blurb.setName("Blurb"); 
         jScrollPane1.setViewportView(Blurb);
 
         GroupLayout layout = new GroupLayout(getContentPane());
