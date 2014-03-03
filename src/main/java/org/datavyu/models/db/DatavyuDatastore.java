@@ -156,7 +156,11 @@ public class DatavyuDatastore implements Datastore {
             throw new UserWarningException("Unable to add column with name '"+name+"', one with the same name already exists.");
         }
 
-        Variable v = new DatavyuVariable(name, new Argument(name+name.hashCode(), type), grandfathered);
+        Argument rootNode;
+        if (type == Argument.Type.MATRIX) rootNode = new Argument(name+name.hashCode(), type);
+        else rootNode = new Argument("var", type);
+                
+        Variable v = new DatavyuVariable(name, rootNode, grandfathered);
         variables.put(name, v);
 
         for (DatastoreListener dbl : this.dbListeners) {
