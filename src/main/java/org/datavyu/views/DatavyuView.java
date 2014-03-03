@@ -1451,7 +1451,7 @@ public final class DatavyuView extends FrameView
         spreadsheetMenu.setName("spreadsheetMenu"); 
         spreadsheetMenu.addMenuListener(new javax.swing.event.MenuListener() {
             public void menuSelected(javax.swing.event.MenuEvent evt) {
-//                spreadsheetMenuSelected(evt);
+                spreadsheetMenuSelected(evt);
             }
 
             public void menuDeselected(javax.swing.event.MenuEvent evt) {
