@@ -665,7 +665,6 @@
                         <preCp>jruby-engine-1.1.6.jar</preCp>
                         <preCp>jruby-complete-1.6.5.jar</preCp>
                         <preCp>appframework-1.0.3.jar</preCp>
-                        <preCp>datavyu-lib-0.0.85.jar</preCp>
                         <preCp>snakeyaml-1.7.jar</preCp>
                         <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
                         <preCp>miglayout-3.7.3.1-swing.jar</preCp>
