@@ -96,7 +96,7 @@ public class UpdateV extends javax.swing.JDialog {
         jlabel_current_version.setText(m_local.version);
         jlabel_server_version.setText(m_server.version);
 
-        m_update_available = !m_server.version.equals("") && !m_local.version.equals(m_server.version);
+        m_update_available = !m_server.version.equals("") && (m_local.version.compareTo(m_server.version) < 0);
 
         /* show alternative dialog info, when update is not available */
         if (!m_update_available) {
