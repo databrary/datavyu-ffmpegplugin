@@ -57,6 +57,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import quicktime.QTSession;
 
 
 /**
@@ -175,6 +176,13 @@ public final class DataControllerV extends DatavyuDialog
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(DataControllerV.class);
+    
+    private static final String QT_WARNING_MESSAGE = 
+            "Quicktime's Java libraries are not found.\n"
+            + "You must install these libraries to load videos using Quicktime.\n"
+            + "Note that for Quicktime versions 7.7.5 or later under Windows, you must manually include the Java libraries under Custom install\n"
+            + "See the User Guide at www.datavyu.org for details.\n\n"
+            + "You may try to use VLC instead but it is not fully supported.";
 
     /**
      * Determines whether or not Shift is being held.
@@ -296,6 +304,8 @@ public final class DataControllerV extends DatavyuDialog
      * Model containing playback information.
      */
     private PlaybackModel playbackModel;
+    
+    private boolean qtWarningShown = false;
 
     // -------------------------------------------------------------------------
     // [initialization]
@@ -948,6 +958,19 @@ public final class DataControllerV extends DatavyuDialog
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent evt) {
+                System.out.println("In the action perfoiermer!");
+                try 
+                {
+                    Class.forName("QTSession");
+                } 
+                catch(Exception e) 
+                {
+                    if(!qtWarningShown)
+                    {
+                        JOptionPane.showMessageDialog(null, DataControllerV.QT_WARNING_MESSAGE, "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
+                        qtWarningShown = true;
+                    }
+                }
                 openVideoButtonActionPerformed(evt);
             }
         });
@@ -1161,6 +1184,18 @@ public final class DataControllerV extends DatavyuDialog
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent evt) {
+                try 
+                {
+                    Class.forName("QTSession");
+                } 
+                catch(Exception e) 
+                {
+                    if(!qtWarningShown)
+                    {
+                        JOptionPane.showMessageDialog(null, DataControllerV.QT_WARNING_MESSAGE, "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
+                        qtWarningShown = true;
+                    }
+                }
                 openVideoButtonActionPerformed(evt);
             }
         });
