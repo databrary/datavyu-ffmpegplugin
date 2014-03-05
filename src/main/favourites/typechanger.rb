@@ -24,4 +24,5 @@ begin
       end
    end
    puts "\nNumber of columns changed: " + count.to_s
+   puts "\nFile is NOT saved. It is recommended that you do so as soon as you verify that you are content with the changes."
 end
