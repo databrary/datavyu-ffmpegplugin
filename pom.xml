@@ -436,6 +436,14 @@
                             </includes>
                         </fileSet>
                     </resources>
+                    <additionalResources>
+			<fileSet>
+				<directory>src/main/favourites/</directory>
+				<includes>
+					<include>*.rb</include>
+				</includes>
+			</fileSet>
+                    </additionalResources>
                     <iconFile>${basedir}/src/main/resources/icons/datavyu.icns</iconFile>
                     <javaApplicationStub>${basedir}/src/main/mac-resources/JavaApplicationStub</javaApplicationStub>
                     <dictionaryFile>${basedir}/Info.plist</dictionaryFile>
