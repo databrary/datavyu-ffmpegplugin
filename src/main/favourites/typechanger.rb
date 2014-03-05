@@ -4,10 +4,11 @@
 require 'Datavyu_API.rb'
 
 begin
+   count = 0
    allColumns = getColumnList()
    for cName in allColumns
       cur = getColumn(cName)
-      if cur.type.to_s != "MATRIX"
+      if cur.db_var.getVariableType.type != Argument::Type::MATRIX
         puts cur.name + " is of type " + cur.type.to_s
         newCol = createNewColumn(cur.name, "var")
         for cell in cur.cells
@@ -18,7 +19,9 @@ begin
             puts "\tCell recreated: " + newCell.onset.to_s + ',' + newCell.offset.to_s+','+newCell.var
         end
         setColumn(newCol)
-        puts newCol.name + " successfully recreated as " + getColumn(newCol.name).type.to_s #should say MATRIX
+        puts "\t"+ newCol.name + " recreated as " + getColumn(newCol.name).type.to_s #should say MATRIX
+        count += 1
       end
    end
+   puts "\nNumber of columns changed: " + count.to_s
 end

@@ -540,19 +540,19 @@ def setVariable(*args)
        var.db_var = v
    end
 
-   p var
+   #p var
    if var.dirty
        # deleteVariable(name)
        # If the variable is dirty, then we have to do something to the vocab.
        # Compare the variable's vocab and the Ruby cell version to see
        # what is different.
 
-       p var.db_var
+       #p var.db_var
        if var.db_var.getVariableType.type == Argument::Type::MATRIX
            values = var.db_var.getVariableType.childArguments
-           p values
+           #p values
            for arg in var.old_args
-            p var.old_args
+            #p var.old_args
                flag = false
                for dbarg in values
                    if arg == dbarg.name
