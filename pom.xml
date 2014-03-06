@@ -438,9 +438,9 @@
                     </resources>
                     <additionalResources>
 			<fileSet>
-				<directory>src/main/favourites/</directory>
+				<directory>src/main/</directory>
 				<includes>
-					<include>*.rb</include>
+					<include>favourites/*.rb</include>
 				</includes>
 			</fileSet>
                     </additionalResources>
