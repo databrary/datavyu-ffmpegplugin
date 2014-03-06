@@ -58,6 +58,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import quicktime.QTSession;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 
 /**
@@ -177,13 +179,15 @@ public final class DataControllerV extends DatavyuDialog
      */
     private static Logger LOGGER = UserMetrix.getLogger(DataControllerV.class);
     
-    private static final String QT_WARNING_MESSAGE = 
-            "Quicktime's Java libraries are not found.\n"
-            + "You must install these libraries to load videos using Quicktime.\n"
-            + "Note that for Quicktime versions 7.7.5 or later under Windows, you must manually include the Java libraries under Custom install\n"
-            + "See the User Guide at www.datavyu.org for details.\n\n"
-            + "You may try to use VLC instead but it is not fully supported.";
-
+    private static final String QT_URL = "http://www.datavyu.org/user-guide/guide/install.html";
+    private static final String QT_IN_PAGE_HREF = "#software-requirements";
+    
+    private static final String QT_WARNING_MSG = 
+            "<html><body>Quicktime's Java libraries are not found.<br />"
+            + "You must install these libraries to load videos using Quicktime.<br />"
+            + "Note that for Quicktime versions 7.7.5 or later under Windows, you must manually include the Java libraries under Custom install<br />"
+            + "See the User Guide at <a href=\""+QT_URL+QT_IN_PAGE_HREF+"\">"+QT_URL+"</a> for details.</body></html>";
+    
     /**
      * Determines whether or not Shift is being held.
      */
@@ -961,13 +965,13 @@ public final class DataControllerV extends DatavyuDialog
                 System.out.println("In the action perfoiermer!");
                 try 
                 {
-                    Class.forName("QTSession");
+                    Class.forName("quicktime.QTSession");
                 } 
                 catch(Exception e) 
                 {
                     if(!qtWarningShown)
                     {
-                        JOptionPane.showMessageDialog(null, DataControllerV.QT_WARNING_MESSAGE, "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(null, makeEditorPaneWithLinks(QT_WARNING_MSG), "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
                         qtWarningShown = true;
                     }
                 }
@@ -1186,13 +1190,13 @@ public final class DataControllerV extends DatavyuDialog
             public void actionPerformed(final ActionEvent evt) {
                 try 
                 {
-                    Class.forName("QTSession");
+                    Class.forName("quicktime.QTSession");
                 } 
                 catch(Exception e) 
                 {
                     if(!qtWarningShown)
                     {
-                        JOptionPane.showMessageDialog(null, DataControllerV.QT_WARNING_MESSAGE, "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(null, makeEditorPaneWithLinks(QT_WARNING_MSG), "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
                         qtWarningShown = true;
                     }
                 }
@@ -1362,6 +1366,28 @@ public final class DataControllerV extends DatavyuDialog
         getContentPane().add(tracksPanel, "growx");
 
         pack();
+    }
+    
+    //Create a JEditorPane with working hyperlinks
+    private JEditorPane makeEditorPaneWithLinks(String s)
+    {
+        JEditorPane out = new JEditorPane("text/html", s);
+        out.addHyperlinkListener(new HyperlinkListener()
+            {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent e)
+                {
+                    if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
+                        try {
+                            System.out.println("Attempting hyperlink");
+                            java.awt.Desktop.getDesktop().browse(java.net.URI.create(e.getURL().toString()));
+                        }
+                        catch(Exception ex) {System.out.println("hyperlink failed");}
+                }
+            });
+        out.setEditable(false);
+        out.setBackground((new JLabel()).getBackground());
+        return out;
     }
 
     /**
