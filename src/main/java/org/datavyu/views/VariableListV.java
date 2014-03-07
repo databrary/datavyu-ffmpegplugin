@@ -25,6 +25,7 @@ import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
+import org.datavyu.models.db.DatavyuDatastore;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -204,6 +205,7 @@ public final class VariableListV extends DatavyuDialog
                 }
             }
 
+            DatavyuDatastore.markDBAsChanged();
             Datavyu.getView().getComponent().revalidate();
         }
     }
