@@ -118,14 +118,12 @@ public class DatavyuDatastore implements Datastore {
                 if (c.isSelected()) c.setSelected(false);
             }
         }
-        markDBAsChanged();
     }
 
     @Override
     public void deselectAll() {
         this.clearCellSelection();
         this.clearVariableSelection();
-        markDBAsChanged();
     }
 
     @Override
