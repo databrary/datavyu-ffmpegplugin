@@ -310,6 +310,10 @@ public final class DataControllerV extends DatavyuDialog
     private PlaybackModel playbackModel;
     
     private boolean qtWarningShown = false;
+    
+    private org.jdesktop.application.ResourceMap resourceMap;
+    
+    private javax.swing.ActionMap actionMap;
 
     // -------------------------------------------------------------------------
     // [initialization]
@@ -328,10 +332,19 @@ public final class DataControllerV extends DatavyuDialog
 
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
+        resourceMap =
+                org.jdesktop.application.Application.getInstance(
+                        org.datavyu.Datavyu.class).getContext().getResourceMap(
+                        DataControllerV.class);
+        
+        actionMap = org.jdesktop.application.Application
+                .getInstance(org.datavyu.Datavyu.class).getContext()
+                .getActionMap(DataControllerV.class, this);        
+        
         if (Datavyu.getPlatform() == Platform.MAC) {
-            initComponentsMac();
+            initComponents("osx");
         } else {
-            initComponents();
+            initComponents("win");
         }
 
         setResizable(false);
@@ -865,42 +878,31 @@ public final class DataControllerV extends DatavyuDialog
      * Helper method for Building a button for the data controller - sets the
      * icon, selected icon, action map and name.
      *
-     * @param rMap     The resource map that holds the icons for this button.
-     * @param aMap     The action map holding the action that this button invokes.
      * @param name     The prefix to use when looking for actions and buttons.
      * @param modifier The modifier (if any) to apply to the prefix. Maybe null.
      * @return A configured button.
      */
-    private JButton buildButton(final ResourceMap rMap,
-                                final ActionMap aMap,
-                                final String name,
+    private JButton buildButton(final String name,
                                 final String modifier) {
-
+        String dotModifier;
+        if(!(modifier == null) && !modifier.isEmpty()) dotModifier = "."+modifier;
+        else dotModifier = "";
+        
         JButton result = new JButton();
-        result.setAction(aMap.get(name + "Action"));
-        if (modifier == null) {
-            result.setIcon(rMap.getIcon(name + "Button.icon"));
-            result.setPressedIcon(rMap.getIcon(name + "SelectedButton.icon"));
-        } else {
-            result.setIcon(rMap.getIcon(modifier + name + "Button.icon"));
-            result.setPressedIcon(rMap.getIcon(modifier + name + "SelectedButton.icon"));
-        }
+        result.setAction(actionMap.get(name + "Action"));
+        result.setIcon(resourceMap.getIcon(name + "Button.icon" + dotModifier));
+        result.setPressedIcon(resourceMap.getIcon(name + "SelectedButton.icon" + dotModifier));
         result.setFocusPainted(false);
         result.setName(name + "Button");
 
         return result;
     }
 
-    /**
-     * Helper method for creating placeholder buttons
-     */
-    private JButton makePlaceholderButton(){
-        JButton jb = new JButton();
-        jb.setEnabled(false);
-        jb.setFocusPainted(false);
-        return jb;
+    private JButton buildButton(final String name)
+    {
+        return buildButton(name, null);
     }
-            
+       
     private JPanel makeLabelAndTextfieldPanel(JLabel l, JTextField tf)
     {
         JPanel jp = new JPanel();
@@ -921,28 +923,32 @@ public final class DataControllerV extends DatavyuDialog
         jb.setVisible(vis);
         return jb;
     }
+
     /**
-     * Initialize the view for Macs.
+     * Helper method for creating placeholder buttons
      */
-    private void initComponentsMac() {
+    private JButton makePlaceholderButton(){
+        return makePlaceholderButton(true);
+    }
+
+    /**
+     * Initialize the view for OS other than Macs.
+     */
+    private void initComponents(String osModifier) {      
         gridButtonPanel = new javax.swing.JPanel();
         goBackTextField = new javax.swing.JTextField();
         onsetTextField = new javax.swing.JTextField();
-        offsetTextField = new javax.swing.JTextField();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
         lblSpeed = new javax.swing.JLabel();
         createNewCell = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        offsetTextField = new javax.swing.JTextField();
         tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
 
-        org.jdesktop.application.ResourceMap resourceMap =
-                org.jdesktop.application.Application.getInstance(
-                        org.datavyu.Datavyu.class).getContext().getResourceMap(
-                        DataControllerV.class);
         setTitle(resourceMap.getString("title"));
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -962,7 +968,6 @@ public final class DataControllerV extends DatavyuDialog
         addDataButton.setName("addDataButton");
         addDataButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent evt) {
-                System.out.println("In the action perfoiermer!");
                 try 
                 {
                     Class.forName("quicktime.QTSession");
@@ -1007,25 +1012,20 @@ public final class DataControllerV extends DatavyuDialog
         jLabel2.setText("x");
         timestampPanel.add(jLabel2);
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application
-                .getInstance(org.datavyu.Datavyu.class).getContext()
-                .getActionMap(DataControllerV.class, this);
-
         gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
 
-        //placeholder at 'clear' location
+        //placeholder at topleft: 'clear' or 'numlock' position
         gridButtonPanel.add(makePlaceholderButton(), NUMPAD_KEY_SIZE);
 
-        //Point cell with equals
-        pointCellButton = buildButton(resourceMap, actionMap,
-                "pointCell", "osx");
+        //Point cell: Mac equal sign, windows forward slash
+        pointCellButton = buildButton("pointCell", osModifier);
         gridButtonPanel.add(pointCellButton, NUMPAD_KEY_SIZE);
 
-        //Show/hide with forward slash
+        //Show/hide: Mac forward flash, windows asterisk
         showTracksSmallButton = new JButton();      
         showTracksSmallButton.setIcon(resourceMap.getIcon(
-                "osxshowTracksSmallButton.hide.icon"));
-        showTracksSmallButton.setName("osxshowTracksSmallButton");
+                "showTracksSmallButton.hide.icon."+osModifier));
+        showTracksSmallButton.setName(osModifier + "showTracksSmallButton");
         showTracksSmallButton.getAccessibleContext().setAccessibleName(
                 "Show Tracks");
         showTracksSmallButton.addActionListener(new ActionListener() {
@@ -1035,78 +1035,90 @@ public final class DataControllerV extends DatavyuDialog
         });
         gridButtonPanel.add(showTracksSmallButton, NUMPAD_KEY_SIZE);
         
-        //placeholder at asterisk location
-        gridButtonPanel.add(makePlaceholderButton(), NUMPAD_KEY_SIZE);
-        
-        //Placeholder - perhaps eventually the sync video button
-        gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
-        
+        //MAC and WINDOWS DIFFER HERE (1)
+        if(osModifier.equals("osx"))
+        {
+            //Placeholder at asterisk location
+            gridButtonPanel.add(makePlaceholderButton(), NUMPAD_KEY_SIZE);
 
+            //Placeholder - perhaps eventually the sync video button
+            gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
+        }
+        else
+        {
+            addGoBackPair();
+        }
+        
         // Set cell onset button with 7
-        setCellOnsetButton = buildButton(resourceMap, actionMap,
-                "setCellOnset", null);
+        setCellOnsetButton = buildButton("setCellOnset");
         gridButtonPanel.add(setCellOnsetButton, NUMPAD_KEY_SIZE);
 
         // Play video button with 8
-        playButton = buildButton(resourceMap, actionMap, "play", null);
+        playButton = buildButton("play");
         playButton.setRequestFocusEnabled(false);
         gridButtonPanel.add(playButton, NUMPAD_KEY_SIZE);
 
         // Set cell offset button with 9
-        ninesetCellOffsetButton = buildButton(resourceMap, actionMap,
-                "setCellOffset", "nine");
+        ninesetCellOffsetButton = buildButton("setCellOffset", "nine");
         gridButtonPanel.add(ninesetCellOffsetButton, NUMPAD_KEY_SIZE);
 
-        // Go back button
-        goBackButton = buildButton(resourceMap, actionMap, "goBack", null);
-        gridButtonPanel.add(goBackButton, NUMPAD_KEY_SIZE);
+        //MAC and WINDOWS DIFFER HERE (2)
+        if(osModifier.equals("osx"))
+        {
+            addGoBackPair();
+        }
+        else
+        {
+            //Find button (big plus)
+            findButton = buildButton("find", "win");
+            gridButtonPanel.add(findButton, TALL_NUMPAD_KEY_SIZE);
 
-        // Go back text field
-        goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
-        goBackTextField.setText("00:00:05:000");
-        goBackTextField.setName("goBackTextField");
-        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Jump back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);        
-
+            //Placeholder - perhaps eventually the sync video button
+            gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
+        }
+        
         // Shuttle back button with 4
-        shuttleBackButton = buildButton(resourceMap, actionMap,
-                "shuttleBack", null);
+        shuttleBackButton = buildButton("shuttleBack");
         gridButtonPanel.add(shuttleBackButton, NUMPAD_KEY_SIZE);
 
         // Stop button with 5
-        stopButton = buildButton(resourceMap, actionMap, "stop", null);
+        stopButton = buildButton("stop");
         gridButtonPanel.add(stopButton, NUMPAD_KEY_SIZE);
 
         // Shuttle forward button with 6
-        shuttleForwardButton = buildButton(resourceMap, actionMap,
-                "shuttleForward", null);
+        shuttleForwardButton = buildButton("shuttleForward");
         gridButtonPanel.add(shuttleForwardButton, NUMPAD_KEY_SIZE);
                 
-        // Find button
-        findButton = buildButton(resourceMap, actionMap, "find", "osx");
-        gridButtonPanel.add(findButton, NUMPAD_KEY_SIZE);
+        //MAC and WINDOWS DIFFER HERE (3)
+        if(osModifier.equals("osx"))
+        {
+            //Find button (small plus)
+            findButton = buildButton("find", "osx");
+            gridButtonPanel.add(findButton, NUMPAD_KEY_SIZE);
 
-        gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
-        
+            gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
+        }
+        else gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
+            
+
         // Jog back button with 1
-        jogBackButton = buildButton(resourceMap, actionMap, "jogBack", null);
+        jogBackButton = buildButton("jogBack");
         gridButtonPanel.add(jogBackButton, NUMPAD_KEY_SIZE);
 
         // Pause button with 2
-        pauseButton = buildButton(resourceMap, actionMap, "pause", null);
+        pauseButton = buildButton("pause");
         gridButtonPanel.add(pauseButton, NUMPAD_KEY_SIZE);
 
         // Jog forward button with 3
-        jogForwardButton = buildButton(resourceMap, actionMap,
-                "jogForward", null);
+        jogForwardButton = buildButton("jogForward");
         gridButtonPanel.add(jogForwardButton, NUMPAD_KEY_SIZE);
 
         // Create new cell button with enter
-        createNewCell = buildButton(resourceMap, actionMap,
-                "createNewCell", null);
+        createNewCell = buildButton("createNewCell");
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridButtonPanel.add(createNewCell, TALL_NUMPAD_KEY_SIZE);
-
+        
         // Onset text field
         onsetTextField.setHorizontalAlignment(SwingConstants.CENTER);
         onsetTextField.setText("00:00:00:000");
@@ -1116,13 +1128,11 @@ public final class DataControllerV extends DatavyuDialog
         gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Onset"), onsetTextField), WIDE_TEXT_FIELD_SIZE);
 
         // Create new cell setting offset button with zero
-        createNewCellSettingOffset = buildButton(resourceMap, actionMap,
-                "createNewCellAndSetOnset", null);
+        createNewCellSettingOffset = buildButton("createNewCellAndSetOnset");
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
 
         // Set cell offset button
-        setCellOffsetButton = buildButton(resourceMap, actionMap,
-                "setCellOffset", "period");
+        setCellOffsetButton = buildButton("setCellOffset", "period");
         gridButtonPanel.add(setCellOffsetButton, NUMPAD_KEY_SIZE);
 
         // Offset text field
@@ -1146,226 +1156,19 @@ public final class DataControllerV extends DatavyuDialog
 
         pack();
     }
-
-    /**
-     * Initialize the view for OS other than Macs.
-     */
-    private void initComponents() {
-        gridButtonPanel = new javax.swing.JPanel();
-        goBackTextField = new javax.swing.JTextField();
-        onsetTextField = new javax.swing.JTextField();
-        addDataButton = new javax.swing.JButton();
-        timestampLabel = new javax.swing.JLabel();
-        lblSpeed = new javax.swing.JLabel();
-        createNewCell = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        offsetTextField = new javax.swing.JTextField();
-        tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
-
-        final int fontSize = 11;
-
-        org.jdesktop.application.ResourceMap resourceMap =
-                org.jdesktop.application.Application.getInstance(
-                        org.datavyu.Datavyu.class).getContext().getResourceMap(
-                        DataControllerV.class);
-        setTitle(resourceMap.getString("title"));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(
-                    final java.awt.event.WindowEvent evt) {
-                formWindowClosing(evt);
-            }
-        });
-
-        gridButtonPanel.setBackground(Color.WHITE);
-        gridButtonPanel.setLayout(new MigLayout("wrap 5"));
-
-        // Add data button
-        addDataButton.setText(resourceMap.getString("addDataButton.text"));
-        addDataButton.setFont(new Font("Tahoma", Font.PLAIN, fontSize));
-        addDataButton.setFocusPainted(false);
-        addDataButton.setName("addDataButton");
-        addDataButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent evt) {
-                try 
-                {
-                    Class.forName("quicktime.QTSession");
-                } 
-                catch(Exception e) 
-                {
-                    if(!qtWarningShown)
-                    {
-                        JOptionPane.showMessageDialog(null, makeEditorPaneWithLinks(QT_WARNING_MSG), "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
-                        qtWarningShown = true;
-                    }
-                }
-                openVideoButtonActionPerformed(evt);
-            }
-        });
-        gridButtonPanel.add(addDataButton, "span 2, w 90!, h 25!");
-
-        // Timestamp panel
-        JPanel timestampPanel = new JPanel(new MigLayout("",
-                "push[][][]0![]push"));
-        timestampPanel.setOpaque(false);
-
-        // Timestamp label
-        timestampLabel.setFont(new Font("Tahoma", Font.BOLD, fontSize));
-        timestampLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        timestampLabel.setText("00:00:00:000");
-        timestampLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-        timestampLabel.setName("timestampLabel");
-        timestampPanel.add(timestampLabel);
-
-        jLabel1.setText("@");
-        timestampPanel.add(jLabel1);
-
-        lblSpeed.setFont(new Font("Tahoma", Font.BOLD, fontSize));
-        lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1,
-                2));
-        lblSpeed.setName("lblSpeed");
-        lblSpeed.setText("0");
-        timestampPanel.add(lblSpeed);
-
-        jLabel2.setFont(new Font("Tahoma", Font.BOLD, fontSize));
-        jLabel2.setText("x");
-        timestampPanel.add(jLabel2);
-
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application
-                .getInstance(org.datavyu.Datavyu.class).getContext()
-                .getActionMap(DataControllerV.class, this);
-
-        gridButtonPanel.add(timestampPanel, "span 3, pushx, growx");
-
-        //placeholder at topleft: 'clear' or 'numlock' position
-        gridButtonPanel.add(makePlaceholderButton(), NUMPAD_KEY_SIZE);
-
-        //Point cell with forward slash
-        pointCellButton = buildButton(resourceMap, actionMap,
-                "pointCell", "win");
-        gridButtonPanel.add(pointCellButton, NUMPAD_KEY_SIZE);
-
-        //Show/hide with asterisk
-        showTracksSmallButton = new JButton();      
-        showTracksSmallButton.setIcon(resourceMap.getIcon(
-                "winshowTracksSmallButton.hide.icon"));
-        showTracksSmallButton.setName("winshowTracksSmallButton");
-        showTracksSmallButton.getAccessibleContext().setAccessibleName(
-                "Show Tracks");
-        showTracksSmallButton.addActionListener(new ActionListener() {
-            public void actionPerformed(final ActionEvent evt) {
-                showTracksButtonActionPerformed(evt);
-            }
-        });
-        gridButtonPanel.add(showTracksSmallButton, NUMPAD_KEY_SIZE);
-        
-        // Go back button
-        goBackButton = buildButton(resourceMap, actionMap, "goBack", null);
+    
+    private void addGoBackPair()
+    {
+        //Go back button - minus key
+        goBackButton = buildButton("goBack", null);
         gridButtonPanel.add(goBackButton, NUMPAD_KEY_SIZE);
         
-        // Go back text field
+        //Go back text field
         goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
         goBackTextField.setText("00:00:05:000");
         goBackTextField.setName("goBackTextField");
         gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Jump back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);
 
-        // Set cell onset button with 7
-        setCellOnsetButton = buildButton(resourceMap, actionMap,
-                "setCellOnset", null);
-        gridButtonPanel.add(setCellOnsetButton, NUMPAD_KEY_SIZE);
-
-        // Play video button with 8
-        playButton = buildButton(resourceMap, actionMap, "play", null);
-        playButton.setRequestFocusEnabled(false);
-        gridButtonPanel.add(playButton, NUMPAD_KEY_SIZE);
-
-        // Set cell offset button with 9
-        ninesetCellOffsetButton = buildButton(resourceMap, actionMap,
-                "setCellOffset", "nine");
-        gridButtonPanel.add(ninesetCellOffsetButton, NUMPAD_KEY_SIZE);
-
-        // Find button
-        findButton = buildButton(resourceMap, actionMap, "find", "win");
-        gridButtonPanel.add(findButton, TALL_NUMPAD_KEY_SIZE);
-
-        //Placeholder - perhaps eventually the sync video button
-        gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
-
-        // Shuttle back button with 4
-        shuttleBackButton = buildButton(resourceMap, actionMap,
-                "shuttleBack", null);
-        gridButtonPanel.add(shuttleBackButton, NUMPAD_KEY_SIZE);
-
-        // Stop button with 5
-        stopButton = buildButton(resourceMap, actionMap, "stop", null);
-        gridButtonPanel.add(stopButton, NUMPAD_KEY_SIZE);
-
-        // Shuttle forward button with 6
-        shuttleForwardButton = buildButton(resourceMap, actionMap,
-                "shuttleForward", null);
-        gridButtonPanel.add(shuttleForwardButton, NUMPAD_KEY_SIZE);
-                
-        gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
-
-        // Jog back button with 1
-        jogBackButton = buildButton(resourceMap, actionMap, "jogBack", null);
-        gridButtonPanel.add(jogBackButton, NUMPAD_KEY_SIZE);
-
-        // Pause button with 2
-        pauseButton = buildButton(resourceMap, actionMap, "pause", null);
-        gridButtonPanel.add(pauseButton, NUMPAD_KEY_SIZE);
-
-        // Jog forward button with 3
-        jogForwardButton = buildButton(resourceMap, actionMap,
-                "jogForward", null);
-        gridButtonPanel.add(jogForwardButton, NUMPAD_KEY_SIZE);
-
-        // Create new cell button with enter
-        createNewCell = buildButton(resourceMap, actionMap,
-                "createNewCell", null);
-        createNewCell.setAlignmentY(0.0F);
-        createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        gridButtonPanel.add(createNewCell, TALL_NUMPAD_KEY_SIZE);
-        
-        // Onset text field
-        onsetTextField.setHorizontalAlignment(SwingConstants.CENTER);
-        onsetTextField.setText("00:00:00:000");
-        onsetTextField.setToolTipText(resourceMap.getString(
-                "onsetTextField.toolTipText"));
-        onsetTextField.setName("findOnsetLabel");
-        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Onset"), onsetTextField), WIDE_TEXT_FIELD_SIZE);
-
-        // Create new cell setting offset button with zero
-        createNewCellSettingOffset = buildButton(resourceMap, actionMap,
-                "createNewCellAndSetOnset", null);
-        gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
-
-        // Set cell offset button
-        setCellOffsetButton = buildButton(resourceMap, actionMap,
-                "setCellOffset", "period");
-        gridButtonPanel.add(setCellOffsetButton, NUMPAD_KEY_SIZE);
-
-        // Offset text field
-        offsetTextField.setHorizontalAlignment(SwingConstants.CENTER);
-        offsetTextField.setText("00:00:00:000");
-        offsetTextField.setToolTipText(resourceMap.getString(
-                "offsetTextField.toolTipText"));
-        offsetTextField.setEnabled(false); //do we really want this? i don't see what makes it different from onset
-        offsetTextField.setName("findOffsetLabel");
-        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Offset"), offsetTextField), WIDE_TEXT_FIELD_SIZE);
-        
-        
-        getContentPane().setLayout(new MigLayout("ins 0, hidemode 3, fillx",
-                "[growprio 0]0[]", ""));
-        getContentPane().add(gridButtonPanel, "");
-        getContentPane().setBackground(Color.WHITE);
-
-        tracksPanel.setBackground(Color.WHITE);
-        tracksPanel.setVisible(false);
-        getContentPane().add(tracksPanel, "growx");
-
-        pack();
     }
     
     //Create a JEditorPane with working hyperlinks
