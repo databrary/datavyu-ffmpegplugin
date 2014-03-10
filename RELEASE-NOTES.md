@@ -7,13 +7,13 @@
 
 ### Changes
 * The names of some software features were changed to adhere to a more intuitive naming scheme:
-'''* "Vocab Editor" --> "Code Editor"
-'''* "Observation" --> "Cell"
-'''* "Argument" --> "Code" 
-'''* "Temporal Ordering" --> "Temporal Alignment"
-'''* "Variable" --> "Column"
-'''* "Data Viewer" --> "Media Player" 
-'''* "Data Viewer Controller" --> "Controller" 
+* "Vocab Editor" --> "Code Editor"
+* "Observation" --> "Cell"
+* "Argument" --> "Code" 
+* "Temporal Ordering" --> "Temporal Alignment"
+* "Variable" --> "Column"
+* "Data Viewer" --> "Media Player" 
+* "Data Viewer Controller" --> "Controller" 
 * Quicktime 7.7.5 no longer includes java libraries when you install the program but you can very simply custom  include them in your download. Please follow the steps provided below. Those who update their quicktime version to this newest version and those who download the newest version and any new ones after it will have to custom download the program. See our:ref:`installation < >` page to guide you. 
 * The :ref: 'Controller < >' has a new format that is no standard between PC and Mac keyboards.
 * Users are now restricted to Matrix-style columns. Text and nominal columns can no longer be created but pre-existing instances from saved files are still supported. Since it is now the only type of column, matrices are now referred to simply as columns.
