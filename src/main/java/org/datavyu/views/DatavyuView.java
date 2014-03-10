@@ -114,6 +114,7 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem updateMenuItem;
     private javax.swing.JMenuItem supportMenuItem;
     private javax.swing.JMenuItem guideMenuItem;
+    private javax.swing.JMenuItem citationMenuItem;
     private javax.swing.JMenuItem changeVarNameMenuItem;
     private javax.swing.JMenu controllerMenu;
     private javax.swing.JMenuItem deleteCellMenuItem;
@@ -1056,6 +1057,16 @@ public final class DatavyuView extends FrameView
     public void showUpdateWindow() {
         Datavyu.getApplication().showUpdateWindow();
     }
+    
+    /**
+     * Action for showing the citation dialog
+     */
+    @Action
+    public void showCitationDialog() {
+        ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
+                .getResourceMap(DatavyuView.class);
+        JOptionPane.showMessageDialog(null, rMap.getString("citationText.text"), "How to Cite Datavyu", JOptionPane.INFORMATION_MESSAGE);
+    }
 
     /**
      * Clears the contents of the spreadsheet.
@@ -1360,6 +1371,7 @@ public final class DatavyuView extends FrameView
         updateMenuItem = new javax.swing.JMenuItem();
         supportMenuItem = new javax.swing.JMenuItem();
         guideMenuItem = new javax.swing.JMenuItem();
+        citationMenuItem = new javax.swing.JMenuItem();
         
         scriptMenuPermanentsList = new ArrayList();
 
@@ -1709,6 +1721,10 @@ public final class DatavyuView extends FrameView
         //if (Datavyu.getPlatform() != Platform.MAC) {
         helpMenu.add(updateMenuItem);
         //}
+        
+        citationMenuItem.setAction(actionMap.get("showCitationDialog")); 
+        citationMenuItem.setName("citationMenuItem"); 
+        helpMenu.add(citationMenuItem);
 
         menuBar.add(helpMenu);
         resourceMap.injectComponents(menuBar);
