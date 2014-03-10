@@ -452,6 +452,9 @@ end
 def getVariable(name)
 
    var = $db.getVariable(name)
+   if (var == nil) 
+    printNoColumnFoundWarning(name.to_s)
+   end
 
    # Convert each cell into an array and store in an array of arrays
    cells = var.getCells()
@@ -1427,7 +1430,15 @@ def deleteVariable(colname)
      colname = colname.name
    end
    col = $db.getVariable(colname)
+   if (col == nil) 
+    printNoColumnFoundWarning(colname.to_s)
+   end
    $db.removeVariable(col)
+end
+
+# Let the user know that a given column was not found. Error is confusing, this should clarify.
+def printNoColumnFoundWarning(colName)
+    puts "WARNING: No column with name '" + colName + "' was found!"
 end
 
 
