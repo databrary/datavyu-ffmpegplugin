@@ -14,7 +14,7 @@
 * "Variable" --> "Column"
 * "Data Viewer" --> "Media Player" 
 * "Data Viewer Controller" --> "Controller" 
-* Quicktime 7.7.5 no longer includes java libraries when you install the program but you can very simply custom  include them in your download. Please follow the steps provided below. Those who update their quicktime version to this newest version and those who download the newest version and any new ones after it will have to custom download the program. See our:ref:`installation < >` page to guide you. 
+* Quicktime 7.7.5 no longer includes java libraries when you install the program but you can very simply custom  include them in your download. Please follow the steps provided below. Those who update their quicktime version to this newest version and those who download the newest version and any new ones after it will have to custom download the program. See our :ref:`installation < >` page to guide you. 
 * The :ref: 'Controller < >' has a new format that is no standard between PC and Mac keyboards.
 * Users are now restricted to Matrix-style columns. Text and nominal columns can no longer be created but pre-existing instances from saved files are still supported. Since it is now the only type of column, matrices are now referred to simply as columns.
 * Restrictions on column names have been enforced to prevent problems in the scripting interface. Column names must begin with a letter. Only letters, numbers and underscores are allowed in column names. Previously created columns that do not adhere to these restrictions will continue to work, but new column names (or name changes) will be restricted. We have provided a script in favorites folder that will turn periods into underscores in existing columns to aid the transition. 
