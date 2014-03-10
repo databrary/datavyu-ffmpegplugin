@@ -1,4 +1,23 @@
-# Datavyu 1.0.4rev3 Release Notes
+# Datavyu 1.1 Release Notes
+## 03/10/2014
+
+### Additions
+* Created more prompts to save to prevent accidental data loss.
+* Minimizing the spreadsheet window will minimize all Datavyu windows.
+
+### Changes
+* The names of some software features were changed to adhere to a more intuitive naming scheme:
+* * "Vocab Editor" --> "Code Editor
+* * "Observation" --> "Cell"
+* * "Argument" --> "Code" 
+* * "Temporal Ordering" --> "Temporal Alignment"
+* * "Variable" --> "Column
+* * "Data Viewer" --> "Media Player" 
+* * "Data Viewer Controller" --> "Controller" 
+* Quicktime 7.7.5 no longer includes java libraries when you install the program but you can very simply custom  include them in your download. Please follow the steps provided below. Those who update their quicktime version to this newest version and those who download the newest version and any new ones after it will have to custom download the program.
+
+
+# Datavyu 1.04rev3 Release Notes
 ## 12/11/2013
 
 ### Additions
