@@ -53,8 +53,8 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Level;
-
 
 /**
  * The main FrameView, representing the interface for Datavyu the user will
@@ -157,6 +157,7 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem exportMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenu scriptMenu;
+    private ArrayList scriptMenuPermanentsList;
     private javax.swing.JMenuItem showSpreadsheetMenuItem;
     private javax.swing.JMenu spreadsheetMenu;
     private javax.swing.JMenuItem undoSpreadSheetMenuItem;
@@ -1359,6 +1360,8 @@ public final class DatavyuView extends FrameView
         updateMenuItem = new javax.swing.JMenuItem();
         supportMenuItem = new javax.swing.JMenuItem();
         guideMenuItem = new javax.swing.JMenuItem();
+        
+        scriptMenuPermanentsList = new ArrayList();
 
         mainPanel.setName("mainPanel"); 
 
@@ -1643,6 +1646,7 @@ public final class DatavyuView extends FrameView
         runScriptMenuItem.setAction(actionMap.get("runScript")); 
         runScriptMenuItem.setName("runScriptMenuItem"); 
         scriptMenu.add(runScriptMenuItem);
+        scriptMenuPermanentsList.add("runScriptMenuItem");
 
         runRecentScriptMenu.setName("runRecentScriptMenu"); 
         runRecentScriptMenu.addMenuListener(new javax.swing.event.MenuListener() {
@@ -1662,13 +1666,16 @@ public final class DatavyuView extends FrameView
         runRecentScriptMenu.add(recentScriptsHeader);
 
         scriptMenu.add(runRecentScriptMenu);
+        scriptMenuPermanentsList.add("runRecentScriptMenu");
 
         jSeparator4.setName("jSeparator4"); 
         scriptMenu.add(jSeparator4);
+        scriptMenuPermanentsList.add("jSeparator4");
 
         favScripts.setEnabled(false);
         favScripts.setName("favScripts"); 
         scriptMenu.add(favScripts);
+        scriptMenuPermanentsList.add("favScripts");
 
         menuBar.add(scriptMenu);
 
@@ -1789,22 +1796,15 @@ public final class DatavyuView extends FrameView
         // is just a stub for a starting point. Search for the favScripts as the
         // starting point for deleting existing scripts from the menu.
         Component[] list = scriptMenu.getMenuComponents();
-        int start = 0;
-
-        for (Component c : list) {
-            start++;
-
-            if (c.getName().equals("favScripts")) {
-                break;
-            }
-        }
-
-        // Delete every menu item from 'favScripts' down to the end of the list.
-        // Favscripts are
-        int size = scriptMenu.getMenuComponentCount();
-
-        for (int i = start; i < size; i++) {
-            scriptMenu.remove(i);
+        
+        for (Component c : list) 
+        {
+            /*if (!c.getName().equals("runRecentScriptMenu")
+                    && !c.getName().equals("runScriptMenuItem")
+                    && !c.getName().equals("favScripts")
+                    && !c.getName().equals("jSeparator4"))*/
+            if (!scriptMenuPermanentsList.contains(c.getName()))
+                scriptMenu.remove(c);
         }
 
         // Get list of favourite scripts from the favourites folder.
