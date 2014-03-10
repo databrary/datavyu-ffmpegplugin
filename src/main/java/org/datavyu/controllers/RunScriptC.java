@@ -201,9 +201,10 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
             LOGGER.error("Unable to execute script: ", e);
         } catch (FileNotFoundException e) {
-            consoleWriter.println("File not found script");
+            consoleWriter.println("File not found. " + e.getMessage());
             LOGGER.error("Unable to execute script: ", e);
         }
+        consoleWriter.flush();
     }
     
     private String makeFriendlyRubyErrorMsg(String out, ScriptException e)
