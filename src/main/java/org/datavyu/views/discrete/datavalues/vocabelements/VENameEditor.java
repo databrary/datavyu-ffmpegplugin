@@ -21,6 +21,7 @@ import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
 import org.datavyu.util.SequentialNumberGenerator;
 import org.datavyu.views.discrete.EditorComponent;
+import org.datavyu.Datavyu;
 
 import javax.swing.text.JTextComponent;
 import java.awt.event.FocusEvent;
@@ -125,12 +126,19 @@ public final class VENameEditor extends EditorComponent {
     
     private void attemptRename(StringBuilder currentValue)
     {
-        try {
-                varModel.setName(currentValue.toString());
-            } catch (UserWarningException ex) {
-                System.out.println("Invalid edit. Last good name: " + varModel.getName());
-                java.util.logging.Logger.getLogger(VENameEditor.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        if (Datavyu.getProjectController().getDB().getVariable(currentValue.toString()) == null)
+        {
+            try {
+                    varModel.setName(currentValue.toString());
+                } catch (UserWarningException ex) {
+                    System.out.println("Invalid edit. Last good name: " + varModel.getName());
+                    java.util.logging.Logger.getLogger(VENameEditor.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
+        else
+        {
+            System.out.println("DUPLICATE kthx");
+        }
         parentView.setInvalid(isCurrentNameInvalid(), varModel.getName());
     }
 
