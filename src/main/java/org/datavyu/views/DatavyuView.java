@@ -1890,6 +1890,15 @@ public final class DatavyuView extends FrameView
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
                 .getResourceMap(DatavyuView.class);
 
+        int totalNumberOfColumns = Datavyu.getProjectController().getDB().getAllVariables().size();
+        
+        if (totalNumberOfColumns == 0) {
+            newCellMenuItem.setEnabled(false);
+        }
+        else {
+            newCellMenuItem.setEnabled(true);
+        }
+        
         List<Variable> selectedCols = Datavyu.getProjectController().getDB()
                 .getSelectedVariables();
 
