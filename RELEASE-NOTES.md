@@ -14,8 +14,8 @@
   * "Variable" --> "Column"
   * "Data Viewer" --> "Media Player" 
   * "Data Viewer Controller" --> "Controller" 
-* Quicktime 7.7.5 no longer includes java libraries when you install the program but you can very simply custom  include them in your download. Please follow the steps provided below. Those who update their quicktime version to this newest version and those who download the newest version and any new ones after it will have to custom download the program. See our :ref:`installation < >` page to guide you. 
-* The :ref: 'Controller < >' has a new format that is no standard between PC and Mac keyboards.
+* Quicktime 7.7.5 no longer includes java libraries, but you can easily include them in your download. For new installs and for Quicktime updates, lease follow the steps provided on the [installation page](http://www.datavyu.org/user-guide/guide/install.html). 
+* The [Controller](http://www.datavyu.org/user-guide/guide/controller.html) has a new format that is no standard between PC and Mac keyboards.
 * Users are now restricted to Matrix-style columns. Text and nominal columns can no longer be created but pre-existing instances from saved files are still supported. Since it is now the only type of column, matrices are now referred to simply as columns.
 * Restrictions on column names have been enforced to prevent problems in the scripting interface. Column names must begin with a letter. Only letters, numbers and underscores are allowed in column names. Previously created columns that do not adhere to these restrictions will continue to work, but new column names (or name changes) will be restricted. We have provided a script in favorites folder that will turn periods into underscores in existing columns to aid the transition. 
 * Datavyu is no longer uses Mongo DB. Eliminating this outside dependency means:
@@ -36,7 +36,7 @@
 * Undo history is not always accurate.
 * You can click, hold down, and drag a code name within a cell but it does not influence the code itself and it does not save. Please save your file and reopen it. 
 * Occasionally, running a script will produce no output when in fact, the script did work.
-* Saving a file rarely does not make the asterisk at the top of the file go away.
+* The changed file marker (*) doesn't always disappear on save.
 * VLC support still unreliable.
 
 
