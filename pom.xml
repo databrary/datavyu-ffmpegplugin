@@ -156,6 +156,16 @@
             </roles>
             <timezone>-5</timezone>
         </developer>
+
+	<developer>
+	    <id>jon</id>
+	    <name>Jon Coe</name>
+	    <email>jonmcoe@_no_spam_gmail.com</email>
+	    <roles>
+		<role>Developer</role>
+	    </roles>
+	    <timezone>-5</timezone>
+	</developer>
     </developers>
 
     <contributors>
@@ -187,7 +197,13 @@
             <name>Kasey Soska</name>
             <email>kasey.soska@_no_spam_nyu.edu</email>
             <timezone>-5</timezone>
-        </contributor>
+    	</contributor>
+
+	<contributor>
+	    <name>Vicky Foo</name>
+	    <email>vjf210@_no_spam_nyu.edu</email>
+	    <timezone>-5</timezone>
+	</contributor>
     </contributors>
 
     <!--  <reporting>
@@ -201,12 +217,6 @@
           </plugin>
         </plugins>
       </reporting>-->
-
-    <!-- Our continous integration server. -->
-    <ciManagement>
-        <system>hudson</system>
-        <url>http://datavyu.org/hudson/</url>
-    </ciManagement>
 
     <!-- Our bugtracking. -->
     <issueManagement>
