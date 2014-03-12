@@ -164,7 +164,7 @@ public final class VocabEditorV extends DatavyuDialog {
         addWindowFocusListener(
             new java.awt.event.WindowAdapter() {
                 public void windowGainedFocus(java.awt.event.WindowEvent e) {
-                     makeElements();
+                     if (!isCurrent()) makeElements(); 
             }});
         
         makeElements();
@@ -195,6 +195,19 @@ public final class VocabEditorV extends DatavyuDialog {
         updateDialogState();
     }
 
+    private boolean isCurrent()
+    {
+        List<Variable> varList = Datavyu.getProjectController().getDB().getAllVariables();
+        java.util.ListIterator<Variable> varIt = varList.listIterator();
+        for(VocabElementV v : veViews) //wish i could map...
+        {
+            String curVocab = v.getNameComponent().getText();
+            String curDatastore = varIt.next().getName();
+            if (!curVocab.equals(curDatastore)) return false;
+        }
+        
+        return !varIt.hasNext(); //return true iff both lists are exhausted
+    }
 
     /**
      * The action to invoke when the user clicks on the add matrix button.
