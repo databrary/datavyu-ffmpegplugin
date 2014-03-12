@@ -24,21 +24,27 @@ import javax.swing.*;
  */
 public class VocabEditorC {
 
+    private static final VocabEditorC c = new VocabEditorC(); //singleton
+    private VocabEditorV view;
+    
     /**
      * Constructor.
      */
-    public VocabEditorC() {
-        // Create the view, register this controller with it and display it.
-        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-        VocabEditorV view = new VocabEditorV(mainFrame, false);
+    private VocabEditorC() {}     
         
-        /*
-        try {
-            Datavyu.getProjectController().getLegacyDB().getDatabase().registerVocabListListener(view);
-        } catch (SystemErrorException ex) {
-            Logger.getLogger(VocabEditorC.class.getName()).log(Level.SEVERE, null, ex);
+    public static VocabEditorC getController()
+    {
+        return c;
+    }
+    
+    public void showView()
+    {
+        if(view == null) //If we don't already have a view open...
+        {
+            // ...create the view with mainFrame as parent
+            JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+            view = new VocabEditorV(mainFrame, false);           
         }
-        */
-        Datavyu.getApplication().show(view);
+        Datavyu.getApplication().show(view); //Display view
     }
 }

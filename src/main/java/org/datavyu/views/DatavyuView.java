@@ -99,7 +99,11 @@ public final class DatavyuView extends FrameView
     public SpreadsheetUndoManager getSpreadsheetUndoManager() {
         return spreadsheetUndoManager;
     }
-
+    
+    /**
+     * the code editor's controller
+     */    
+    private VocabEditorC vec = VocabEditorC.getController();
 
     UndoableEditSupport undoSupport; // event support
 
@@ -999,7 +1003,7 @@ public final class DatavyuView extends FrameView
      */
     @Action
     public void showVocabEditor() {
-        new VocabEditorC();
+        vec.showView();
     }
 
     /**
