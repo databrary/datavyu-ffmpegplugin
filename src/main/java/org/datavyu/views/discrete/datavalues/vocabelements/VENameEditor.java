@@ -94,7 +94,7 @@ public final class VENameEditor extends EditorComponent {
     @Override
     public void keyTyped(final KeyEvent e) {
 
-        if (!this.isReserved(e.getKeyChar())) {
+        if (!this.isReserved(e.getKeyChar()) && !e.isControlDown()) {
             removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
             currentValue.insert(getCaretPosition(), e.getKeyChar());

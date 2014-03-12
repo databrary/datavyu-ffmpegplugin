@@ -122,7 +122,7 @@ public final class FormalArgEditor extends EditorComponent {
      */
     @Override
     public void keyTyped(KeyEvent e) {
-        if (!this.isReserved(e.getKeyChar())) {
+        if (!this.isReserved(e.getKeyChar()) && !e.isControlDown()) {
 
             removeSelectedText();
             StringBuilder currentValue = new StringBuilder(getText());
