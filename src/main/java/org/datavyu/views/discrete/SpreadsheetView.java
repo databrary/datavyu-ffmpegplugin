@@ -51,6 +51,17 @@ public class SpreadsheetView extends JPanel implements Scrollable {
     public void addColumn(final SpreadsheetColumn newColumn) {
         columns.add(newColumn);
         this.add(newColumn.getDataPanel());
+        newColumn.setSelected(newColumn.isSelected()); //this will ensure visual highlighting accurately reflects variable selected state
+    }
+    
+    /**
+     * Iterates through columns highlighting those, and only those, that should be
+     */    
+    public void hightlightColumns() {
+        for (SpreadsheetColumn sc : columns)
+        {
+            sc.setSelected(sc.isSelected());
+        }
     }
 
     /**

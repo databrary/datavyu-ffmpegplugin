@@ -310,7 +310,7 @@ implements VariableListener,
     }
 
     /**
-     * @return selected status.
+     * @return selected status of column
      */
     public boolean getSelected() {
         return selected;
@@ -343,7 +343,7 @@ implements VariableListener,
     }
 
     /**
-     * @return selection status.
+     * @return selection status of underlying variable
      */
     public boolean isSelected() {
         return variable.isSelected();
