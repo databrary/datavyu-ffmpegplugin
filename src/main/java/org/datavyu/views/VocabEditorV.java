@@ -884,7 +884,7 @@ public final class VocabEditorV extends DatavyuDialog {
         }
         else
         {
-            nameWarningsLabel.setText("<html><b><u>Invalid names:</u></b> " + s + "<br />Names must begin with a letter, be non-empty, and underscore is the ONLY permitted special character.</html>");
+            nameWarningsLabel.setText("<html><b><u>Invalid names:</u></b> " + s + "<br />Names must begin with a letter, be non-empty, and underscore is the ONLY permitted special character. Repeated names are not allowed.</html>");
             nameWarningsLabel.setForeground(Color.RED);
         }
     }

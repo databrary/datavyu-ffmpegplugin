@@ -1,4 +1,48 @@
-# Datavyu 1.0.4rev3 Release Notes
+# Datavyu 1.1 Release Notes
+## 03/10/2014
+
+### Additions
+* Created more prompts to save to prevent accidental data loss.
+* Minimizing the spreadsheet window will minimize all Datavyu windows.
+
+### Changes
+* The names of some software features were changed to adhere to a more intuitive naming scheme:
+  * "Vocab Editor" --> "Code Editor"
+  * "Observation" --> "Cell"
+  * "Argument" --> "Code" 
+  * "Temporal Ordering" --> "Temporal Alignment"
+  * "Variable" --> "Column"
+  * "Data Viewer" --> "Media Player" 
+  * "Data Viewer Controller" --> "Controller" 
+* Quicktime 7.7.5 no longer includes java libraries, but you can easily include them in your download. For new installs and for Quicktime updates, please follow the steps provided on the [installation page](http://www.datavyu.org/user-guide/guide/install.html). 
+* The [Controller](http://www.datavyu.org/user-guide/guide/controller.html) has a new format that is no standard between PC and Mac keyboards.
+* Users are now restricted to Matrix-style columns. Text and nominal columns can no longer be created but pre-existing instances from saved files are still supported. Since it is now the only type of column, matrices are now referred to simply as columns.
+* Restrictions on column names have been enforced to prevent problems in the scripting interface. Column names must begin with a letter. Only letters, numbers and underscores are allowed in column names. Previously created columns that do not adhere to these restrictions will continue to work, but new column names (or name changes) will be restricted. We have provided a script in favorites folder that will turn periods into underscores in existing columns to aid the transition. 
+* Datavyu is no longer uses Mongo DB. Eliminating this outside dependency means:
+  * Datavyu is less memory intensive.
+  * The Datavyu application is smaller.
+  * Startup and file loading are faster.
+  * Errors when closing Datavyu on Windows machines have been fixed.
+
+### Bug Fixes
+* Fixed issues causing cells to overlap when temporal alignment is turned on.
+* When running scripts, more informative status messages are printed to the console window.
+* You no longer have to scroll when you code a long spreadsheet.
+* Column location in the spreadsheet is saved.
+* Hide/Show columns list is saved. 
+
+### Known Issues
+* The arrow keys do not always allow you to move from code to code in the code editor and spreadsheet but the tab and shit tab keys have the same function. 
+* Undo history is not always accurate.
+* You can click, hold down, and drag a code name within a cell but it does not influence the code itself and it does not save. Please save your file and reopen it. 
+* Occasionally, running a script will produce no output when in fact, the script did work.
+* The changed file marker (*) doesn't always disappear on save.
+* VLC support still unreliable.
+
+
+
+
+# Datavyu 1.04rev3 Release Notes
 ## 12/11/2013
 
 ### Additions
