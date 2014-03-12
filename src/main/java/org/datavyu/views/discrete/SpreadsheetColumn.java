@@ -253,21 +253,22 @@ implements VariableListener,
         //Edit variable name on double click
         String newName = "";
 
-        while (newName != null) {
+        boolean exitFlag = false;
+        while (!exitFlag) {
             newName = (String) JOptionPane.showInputDialog(null, null, "New column name",
                                                            JOptionPane.PLAIN_MESSAGE, null, null, getColumnName());
 
             if (newName != null) {
                 try {
                     setColumnName(newName);
-                    break;
+                    exitFlag = true;
 
                 } catch (UserWarningException ex) {
-                    continue;
+                    exitFlag = false;
                 }
 
             } else {
-                break;
+                exitFlag = true;
             }
         }
     }
