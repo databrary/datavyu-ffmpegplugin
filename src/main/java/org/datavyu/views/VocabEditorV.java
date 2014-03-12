@@ -589,6 +589,8 @@ public final class VocabEditorV extends DatavyuDialog {
             moveCodeLeftButton.setEnabled(false);
             moveCodeRightButton.setEnabled(false);
         }
+
+        toFront(); //to fix Bug 120 - code editor losing focus on Windows
     }
 
     /**
