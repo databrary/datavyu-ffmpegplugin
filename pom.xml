@@ -210,8 +210,8 @@
 
     <!-- Our bugtracking. -->
     <issueManagement>
-        <system>Fogbugz</system>
-        <url>https://datavyu.org/fogbugz</url>
+        <system>Bugzilla</system>
+        <url>https://datavyu.org/bugs</url>
     </issueManagement>
 
     <!-- Our source control. -->
