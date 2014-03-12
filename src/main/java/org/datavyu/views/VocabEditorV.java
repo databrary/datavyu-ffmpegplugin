@@ -160,7 +160,17 @@ public final class VocabEditorV extends DatavyuDialog {
                         return result;
                     }
                 });
+        
+        addWindowFocusListener(
+            new java.awt.event.WindowAdapter() {
+                public void windowGainedFocus(java.awt.event.WindowEvent e) {
+                     makeElements();
+            }});
+        
+        makeElements();
+    }
 
+    private void makeElements() {
         // Populate current vocab list with vocab data from the database.
         veViews = new ArrayList<VocabElementV>();
         verticalFrame = new JPanel();
