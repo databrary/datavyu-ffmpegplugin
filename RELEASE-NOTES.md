@@ -37,7 +37,7 @@
 * You can click, hold down, and drag a code name within a cell but it does not influence the code itself and it does not save. Please save your file and reopen it. 
 * Occasionally, running a script will produce no output when in fact, the script did work.
 * The changed file marker (*) doesn't always disappear on save.
-* VLC support still unreliable.
+* VLC cannot accurately determine frame rates of our videos and thus is unsupported in Datavyu.
 
 
 
