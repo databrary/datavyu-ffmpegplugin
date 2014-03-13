@@ -47,4 +47,13 @@ public class VocabEditorC {
         }
         Datavyu.getApplication().show(view); //Display view
     }
+    
+    public void killView()
+    {
+        if (view != null)
+        {
+            //view.closeWindow();
+            view = null;
+        }
+    }
 }
