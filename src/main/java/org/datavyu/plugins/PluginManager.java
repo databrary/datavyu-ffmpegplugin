@@ -31,6 +31,7 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.lang.reflect.Modifier;
 
 
 /**
@@ -326,7 +327,9 @@ public final class PluginManager {
 
                 Class<?> testClass = Class.forName(cName);
 
-                if (PLUGIN_CLASS.isAssignableFrom(testClass)) {
+                if (PLUGIN_CLASS.isAssignableFrom(testClass) && 
+                        (testClass.getModifiers() & (Modifier.ABSTRACT | Modifier.INTERFACE)) == 0)
+                {
                     Plugin p = (Plugin) testClass.newInstance();
 
                     String pluginName = p.getPluginName();
