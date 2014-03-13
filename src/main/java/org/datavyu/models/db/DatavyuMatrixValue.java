@@ -47,11 +47,6 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
     }
 
     @Override
-    public void set(final String value) {
-        this.value = value;
-    }
-
-    @Override
     public String toString() {
         String result = "";
         List<Value> values = getArguments();

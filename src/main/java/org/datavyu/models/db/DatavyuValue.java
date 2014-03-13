@@ -25,6 +25,7 @@ package org.datavyu.models.db;
 
 import java.io.Serializable;
 import java.util.UUID;
+import org.datavyu.Datavyu;
 
 
 public abstract class DatavyuValue implements Value, Serializable, Comparable<DatavyuValue> {
@@ -75,7 +76,14 @@ public abstract class DatavyuValue implements Value, Serializable, Comparable<Da
     }
 
     @Override
-    public abstract void set(final String value);
+    public void set(final String value)
+    {
+        if(!value.equals(this.value))
+        {
+            this.value = value;
+            DatavyuDatastore.markDBAsChanged();   
+        }
+    };
 
     public Argument getArgument() {
         return arg;

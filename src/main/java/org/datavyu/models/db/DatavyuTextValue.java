@@ -46,19 +46,4 @@ public final class DatavyuTextValue extends DatavyuValue implements TextValue {
         this.index = index;
         this.arg = arg;
     }
-
-    /**
-     * Sets the value, this method leaves the value unchanged if the supplied
-     * input is invalid. Use isValid to test.
-     *
-     * @param value The new content to use for this value.
-     */
-    @Override
-    public void set(final String value) {
-        if (isValid(value)) {
-            this.value = value;
-        }
-    }
-
-
 }

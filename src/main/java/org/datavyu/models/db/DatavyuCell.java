@@ -110,6 +110,7 @@ public class DatavyuCell implements Cell {
 
     @Override
     public void setOffset(final long newOffset) {
+        if (newOffset != offset) DatavyuDatastore.markDBAsChanged();
         offset = newOffset;
         for (CellListener cl : getListeners(getID())) {
             cl.offsetChanged(offset);
@@ -118,10 +119,7 @@ public class DatavyuCell implements Cell {
 
     @Override
     public void setOffset(final String newOffset) {
-        offset = convertTimestampToMS(newOffset);
-        for (CellListener cl : getListeners(getID())) {
-            cl.offsetChanged(offset);
-        }
+        setOffset(convertTimestampToMS(newOffset));
     }
 
     @Override
@@ -137,14 +135,12 @@ public class DatavyuCell implements Cell {
 
     @Override
     public void setOnset(final String newOnset) {
-        onset = convertTimestampToMS(newOnset);
-        for (CellListener cl : getListeners(getID())) {
-            cl.onsetChanged(onset);
-        }
+        setOnset(convertTimestampToMS(newOnset));
     }
 
     @Override
     public void setOnset(final long newOnset) {
+        if (newOnset != onset) DatavyuDatastore.markDBAsChanged();
         onset = newOnset;
         for (CellListener cl : getListeners(getID())) {
             cl.onsetChanged(onset);
