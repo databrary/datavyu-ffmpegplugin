@@ -1093,7 +1093,7 @@ public final class DatavyuView extends FrameView
 
     @Action
     public void showSpreadsheet(DVProgressBar progressBar) {
-        weakTemporalAlignmentMenuItem.setSelected(false);
+        //weakTemporalAlignmentMenuItem.setSelected(false);
 
         // need to add changes to maintain spreadsheet view after change
         // Create a fresh spreadsheet component and redraw the component.
@@ -1114,6 +1114,7 @@ public final class DatavyuView extends FrameView
         // The default is to create cells that are highlighted - ensure that
         // they are deselected.
         panel.clearCellSelection();
+        setSheetLayout();
     }
 
     /**
