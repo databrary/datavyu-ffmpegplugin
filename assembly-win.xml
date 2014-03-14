@@ -23,15 +23,11 @@
       <outputDirectory>/</outputDirectory>
    </file>
   </files>
+  
+  <dependencySets>
+    <dependencySet>
+        <includes/>
+    </dependencySet>
+  </dependencySets>
 
-  <binaries>
-    <dependencySets>
-      <dependencySet>
-          <includes/>
-          <excludes>
-              <exclude>org.datavyu:datavyu</exclude>
-          </excludes>
-      </dependencySet>
-    </dependencySets>
-  </binaries>
 </assembly>
