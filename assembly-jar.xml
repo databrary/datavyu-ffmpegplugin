@@ -17,11 +17,15 @@
     </fileSet>
   </fileSets>
 
-  <binaries>
-    <dependencySets>
-      <dependencySet>
-          <includes/>
-      </dependencySet>
-    </dependencySets>
-  </binaries>
+  <moduleSets>
+    <moduleSet>
+      <binaries>
+        <dependencySets>
+          <dependencySet>
+              <includes/>
+          </dependencySet>
+        </dependencySets>
+      </binaries>
+    </moduleSet>
+  </moduleSets>
 </assembly>
