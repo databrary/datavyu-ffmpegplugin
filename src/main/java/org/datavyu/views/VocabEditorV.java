@@ -165,7 +165,12 @@ public final class VocabEditorV extends DatavyuDialog {
             new java.awt.event.WindowAdapter() {
                 public void windowGainedFocus(java.awt.event.WindowEvent e) {
                      if (!isCurrent()) makeElements(); 
-            }});
+                }
+                
+                public void windowLostFocus(java.awt.event.WindowEvent e) {
+                    //applyChanges(); //update spreadsheet here?
+                }
+                });
         
         makeElements();
     }
@@ -386,6 +391,7 @@ public final class VocabEditorV extends DatavyuDialog {
             // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             LOGGER.event("vocEd - delete argument");
+            //no edit created for this!!!
             selectedVocabElement.getVariable().removeArgument(selectedArgument.getModel().name);
             selectedVocabElement.rebuildContents();
             applyChanges();
