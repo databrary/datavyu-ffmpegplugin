@@ -23,6 +23,7 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.component.MixerController;
 import org.datavyu.controllers.id.IDController;
+import org.datavyu.controllers.VocabEditorC;
 import org.datavyu.models.component.TrackModel;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
@@ -170,6 +171,9 @@ public final class ProjectController {
     public void setDatastore(final Datastore newDS) {
         db = newDS;
         db.setTitleNotifier(Datavyu.getApplication());
+        
+        //don't let code editor instance corresponding to an old Datastore hang around!
+        VocabEditorC.getController().killView();
     }
 
     /**

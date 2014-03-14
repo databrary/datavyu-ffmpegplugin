@@ -22,9 +22,9 @@ import javax.swing.*;
 /**
  * A controller for invoking the vocab editor.
  */
-public class VocabEditorC {
+public final class VocabEditorC {
 
-    private static final VocabEditorC c = new VocabEditorC(); //singleton
+    private static VocabEditorC c = null; //singleton
     private VocabEditorV view;
     
     /**
@@ -34,26 +34,23 @@ public class VocabEditorC {
         
     public static VocabEditorC getController()
     {
+        if (c == null) c = new VocabEditorC();
         return c;
     }
     
     public void showView()
     {
-        if(view == null) //If we don't already have a view open...
+        if(view == null) //If we don't already have a view...
         {
             // ...create the view with mainFrame as parent
             JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-            view = new VocabEditorV(mainFrame, false);           
+            view = new VocabEditorV(mainFrame, false);
         }
         Datavyu.getApplication().show(view); //Display view
     }
     
     public void killView()
     {
-        if (view != null)
-        {
-            //view.closeWindow();
-            view = null;
-        }
+        view = null;
     }
 }

@@ -1081,7 +1081,6 @@ public final class DatavyuView extends FrameView
         // Create a freash spreadsheet component and redraw the component.
         panel.deregisterListeners();
         panel.removeFileDropEventListener(this);
-        vec.killView();
     }
 
     /**
