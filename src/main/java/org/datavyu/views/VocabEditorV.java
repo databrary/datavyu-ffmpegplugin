@@ -149,6 +149,12 @@ public final class VocabEditorV extends DatavyuDialog {
                                 case KeyEvent.VK_DELETE:
                                     delete();
                                     break;
+                                case KeyEvent.VK_LEFT:
+                                    if (moveCodeLeftButton.isEnabled()) moveArgumentLeft(); //on mac may want to advise ctrl+shift+left (ctrl+left switches detsktops)
+                                    break;
+                                case KeyEvent.VK_RIGHT:
+                                    if (moveCodeRightButton.isEnabled()) moveArgumentRight();
+                                    break;
                                 default:
                                     result = false;
                             }
@@ -253,53 +259,6 @@ public final class VocabEditorV extends DatavyuDialog {
         KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         kfm.removeKeyEventDispatcher(ked);
         dispose();
-    }
-
-    /**
-     * Adds a vocab element to the vocab editor panel.
-     *
-     * @param va The vocab argument to add to the vocab editor.
-     * @throws SystemErrorException If unable to add the vocab element to the
-     *                              vocab editor.
-     */
-    public void addVocabElement(final Variable var, final Argument va) {
-        // The database dictates that vocab elements must have a single argument
-        // add a default to get started.
-        var.addArgument(Argument.Type.NOMINAL);
-
-        VocabElementV vev = new VocabElementV(va, var, this);
-        verticalFrame.add(vev);
-        verticalFrame.validate();
-        veViews.add(vev);
-
-        vev.getDataView().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent ke) {
-                if (ke.isShiftDown()) {
-                    if (ke.getKeyCode() == KeyEvent.VK_COMMA || ke.getKeyCode() == KeyEvent.VK_PERIOD) {
-                        addCode();
-                    }
-                } else if (ke.getKeyCode() == KeyEvent.VK_COMMA ||
-                        ke.getKeyCode() == KeyEvent.VK_LEFT_PARENTHESIS ||
-                        ke.getKeyCode() == KeyEvent.VK_RIGHT_PARENTHESIS) {
-                    addCode();
-                }
-                if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
-                    if (ke.isControlDown() && moveCodeLeftButton.isEnabled()) {
-                        moveArgumentLeft();
-                    }
-                }
-                if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    if (ke.isControlDown() && moveCodeRightButton.isEnabled()) {
-                        moveArgumentRight();
-                    }
-                }
-            }
-        });
-
-        VENameEditor veNEd = vev.getNameComponent();
-        vev.requestFocus(veNEd);
-
     }
 
     /**
