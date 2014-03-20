@@ -113,7 +113,7 @@ public final class Datavyu extends SingleFrameApplication
     /**
      * The scripting engine manager that we use with Datavyu.
      */
-    private ScriptEngineManager m2;
+    private static ScriptEngineManager m2;
 
     /**
      * The JRuby scripting engine manager that we use with Datavyu.
@@ -800,23 +800,9 @@ public final class Datavyu extends SingleFrameApplication
                     .getCanSendLogs());
         }
 
-        // Initalise scripting engine
-        rubyEngine = null;
-
-        // we need to avoid using the
-        // javax.script.ScriptEngineManager, so that Datavyu can work in
-        // java 1.5. Instead we use the JRubyScriptEngineManager BugzID: 236
-        m = new JRubyScriptEngineManager();
-
-        // Whoops - JRubyScriptEngineManager may have failed, if that does
-        // not construct engines for jruby correctly, switch to
-        // javax.script.ScriptEngineManager
-        if (m.getEngineFactories().isEmpty()) {
-            m2 = new ScriptEngineManager();
-            rubyEngine = m2.getEngineByName("jruby");
-        } else {
-            rubyEngine = m.getEngineByName("jruby");
-        }
+        // Init scripting engine
+        m2 = new ScriptEngineManager();
+//        rubyEngine = m2.getEngineByName("jruby");
 
         // Initialize plugin manager
         PluginManager.getInstance();
@@ -951,7 +937,7 @@ public final class Datavyu extends SingleFrameApplication
      * Datavyu.
      */
     public static ScriptEngine getScriptingEngine() {
-        return Datavyu.getApplication().rubyEngine;
+        return m2.getEngineByName("jruby");
     }
 
     /**

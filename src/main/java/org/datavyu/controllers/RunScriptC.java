@@ -31,11 +31,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.swing.*;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 
 /**
@@ -174,6 +170,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             rubyEngine.put("viewers", Datavyu.getDataController());
 
             FileReader reader = new FileReader(scriptFile);
+
+            rubyEngine.getContext().setWriter(consoleWriter);
+            rubyEngine.getContext().setErrorWriter(consoleWriter);
             rubyEngine.eval(reader);
             consoleWriter.flush();
 
