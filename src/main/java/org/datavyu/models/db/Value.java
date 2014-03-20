@@ -60,4 +60,6 @@ public interface Value {
      */
     @Override
     String toString();
+    
+    String serialize();
 }

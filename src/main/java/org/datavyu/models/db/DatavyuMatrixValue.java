@@ -67,6 +67,22 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
 
         return result;
     }
+    
+    public String serialize() {
+        List<Value> values = getArguments();
+
+        StringBuilder result = new StringBuilder("(");
+        for (Iterator<Value> i = values.iterator(); i.hasNext();) {
+            Value v = i.next();
+            result.append(v.serialize());
+            if (i.hasNext()) 
+                result.append(',');
+        }
+        result.append(')');
+
+        return result.toString();
+    }
+
 
     @Override
     public List<Value> getArguments() {

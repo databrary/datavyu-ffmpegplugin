@@ -97,4 +97,9 @@ public abstract class DatavyuValue implements Value, Serializable, Comparable<Da
             return value;
         }
     }
+    
+    public String serialize() {
+        if(value == null) return "";
+        return value;
+    }
 }
