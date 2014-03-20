@@ -32,7 +32,7 @@
 * Hide/Show columns list is saved. 
 
 ### Known Issues
-* The arrow keys do not always allow you to move from code to code in the code editor and spreadsheet but the tab and shit tab keys have the same function. 
+* The arrow keys do not always allow you to move from code to code in the code editor and spreadsheet but the tab and shift tab keys have the same function. 
 * Undo history is not always accurate.
 * You can click, hold down, and drag a code name within a cell but it does not influence the code itself and it does not save. Please save your file and reopen it. 
 * Occasionally, running a script will produce no output when in fact, the script did work.
