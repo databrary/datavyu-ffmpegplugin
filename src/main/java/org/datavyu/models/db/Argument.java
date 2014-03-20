@@ -51,6 +51,8 @@ public final class Argument implements Serializable {
     // The ID of this variable
     public long id;
 
+    private int lastCodeNumber = 0;
+
     /**
      * Constructor.
      *
@@ -80,7 +82,8 @@ public final class Argument implements Serializable {
     }
 
     public Argument addChildArgument(final Type newType) {
-        Argument child = new Argument(String.format("code%02d", childArguments.size() + 1), newType);
+        Argument child = new Argument(String.format("code%02d", lastCodeNumber + 1), newType);
+        lastCodeNumber++;
         childArguments.add(child);
         return child;
     }
