@@ -398,7 +398,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
                     try {
 
-                        System.out.println(i);
+                        //System.out.println("Up pressed from cell at index " + i);
 
                         // Determine if we are at the top of a multi-lined cell,
                         // if we are not on the top line - pressing up should
@@ -439,6 +439,13 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                         be.printStackTrace();
                         LOGGER.error("BadLocation on arrow up", be);
                     }
+                }
+                if ((e.getKeyCode() == KeyEvent.VK_UP) && (i == 0))
+                {
+                    //TODO: skip to first arg of cell
+                    
+                    //System.out.println("CEILING!");
+                    return true;
                 }
 
                 // The key stroke is down - select the editor component in the
@@ -481,7 +488,13 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                         LOGGER.error("BadLocation on arrow down", be);
                     }
                 }
-
+                if ((e.getKeyCode() == KeyEvent.VK_DOWN) && ((i + 1) == numCells)) 
+                {
+                    //TODO: skip to last arg of cell
+                    
+                    //System.out.println("FLOOR!");
+                    return true;
+                }
                 return false;
             }
         }
