@@ -78,10 +78,14 @@ public abstract class DatavyuValue implements Value, Serializable, Comparable<Da
     @Override
     public void set(final String value)
     {
-        if(!value.equals(this.value))
+        if(!value.equals(toString()) && !value.equals(this.value))
         {
             this.value = value;
             DatavyuDatastore.markDBAsChanged();   
+        }
+        else
+        {
+            //System.out.println("STOPPED set to " + value);
         }
     };
 
