@@ -25,10 +25,7 @@ import org.datavyu.controllers.*;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.event.component.FileDropEvent;
 import org.datavyu.event.component.FileDropEventListener;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.UserWarningException;
-import org.datavyu.models.db.Variable;
+import org.datavyu.models.db.*;
 import org.datavyu.plugins.DataViewer;
 import org.datavyu.undoableedits.RemoveCellEdit;
 import org.datavyu.undoableedits.RemoveVariableEdit;
@@ -43,6 +40,8 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.*;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileFilter;
@@ -52,8 +51,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -171,6 +170,7 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem zoomInMenuItem;
     private javax.swing.JMenu zoomMenu;
     private javax.swing.JMenuItem zoomOutMenuItem;
+    private JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -271,10 +271,22 @@ public final class DatavyuView extends FrameView
             panel.removeFileDropEventListener(this);
         }
 
-        panel = new SpreadsheetPanel(Datavyu.getProjectController().getDB(), null);
+        tabbedPane = new JTabbedPane();
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JTabbedPane t = (JTabbedPane) e.getSource();
+                SpreadsheetPanel sp = (SpreadsheetPanel) t.getComponentAt(t.getSelectedIndex());
+                Datavyu.setProjectController(sp.getProjectController());
+            }
+        });
+        setComponent(tabbedPane);
+
+        panel = new SpreadsheetPanel(DatastoreFactory.newDatastore(), null);
         panel.registerListeners();
         panel.addFileDropEventListener(this);
-        setComponent(panel);
+
+        tabbedPane.add(panel);
 
         System.out.println(getComponent());
 
@@ -936,7 +948,7 @@ public final class DatavyuView extends FrameView
 
         // Make a project for the new database.
         if (openC.getDatastore() != null) {
-            Datavyu.newProjectController();
+//            Datavyu.newProjectController();
 
             ProjectController projController = Datavyu.getProjectController();
 
@@ -956,7 +968,7 @@ public final class DatavyuView extends FrameView
         openC.openProject(projectFile);
 
         if ((openC.getProject() != null) && (openC.getDatastore() != null)) {
-            Datavyu.newProjectController(openC.getProject());
+//            Datavyu.newProjectController(openC.getProject());
             Datavyu.getProjectController().setDatastore(openC.getDatastore());
             Datavyu.getProjectController().setProjectDirectory(projectFile.getParent());
             Datavyu.getProjectController().loadProject();
@@ -1105,7 +1117,8 @@ public final class DatavyuView extends FrameView
         panel = new SpreadsheetPanel(Datavyu.getProjectController().getDB(), progressBar);
         panel.registerListeners();
         panel.addFileDropEventListener(this);
-        setComponent(panel);
+        tabbedPane.add(panel);
+//        setComponent(panel);
         getComponent().revalidate();
         getComponent().repaint();
         getComponent().resetKeyboardActions();
@@ -2112,7 +2125,7 @@ public final class DatavyuView extends FrameView
      * @return SpreadsheetPanel panel
      */
     public SpreadsheetPanel getSpreadsheetPanel() {
-        return panel;
+        return (SpreadsheetPanel) tabbedPane.getSelectedComponent();
     }
 
     public void refreshUndoRedo() {

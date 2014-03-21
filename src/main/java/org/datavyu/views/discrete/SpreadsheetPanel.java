@@ -19,15 +19,18 @@ import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.Datavyu;
 import org.datavyu.Datavyu.Platform;
 import org.datavyu.controllers.NewVariableC;
+import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.event.component.FileDropEvent;
 import org.datavyu.event.component.FileDropEventListener;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.DatastoreListener;
 import org.datavyu.models.db.Variable;
+import org.datavyu.models.project.Project;
 import org.datavyu.util.ArrayDirection;
 import org.datavyu.util.Constants;
 import org.datavyu.views.DVProgressBar;
+import org.datavyu.views.DataControllerV;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import org.jdesktop.application.Action;
@@ -64,6 +67,13 @@ public final class SpreadsheetPanel extends JPanel
         CellSelectionListener,
         ColumnSelectionListener,
         KeyEventDispatcher {
+
+    /**
+     * The current project.
+     */
+    private ProjectController projectController;
+
+    private DataControllerV dataController;
 
     /**
      * To use when navigating left.
@@ -156,6 +166,8 @@ public final class SpreadsheetPanel extends JPanel
         scrollPane.setViewportView(mainView);
         scrollPane.setColumnHeaderView(headerView);
 
+        projectController = new ProjectController(this);
+
         // Default layout is ordinal.
         setLayoutType(SheetLayoutType.Ordinal);
 
@@ -195,7 +207,44 @@ public final class SpreadsheetPanel extends JPanel
         fileDropListeners = new CopyOnWriteArrayList<FileDropEventListener>();
 
         lastSelectedCell = null;
+
     }
+
+    /**
+     * Gets the single instance project associated with the currently running
+     * with Datavyu.
+     *
+     * @return The single project in use with this instance of Datavyu
+     */
+    public ProjectController getProjectController() {
+        return projectController;
+    }
+
+    /**
+     * Creates a new project controller.
+     */
+    public void newProjectController() {
+        projectController = new ProjectController(this);
+    }
+
+    public DataControllerV getDataController() {
+        return dataController;
+    }
+
+    public void setDataController(DataControllerV dataController) {
+        this.dataController = dataController;
+    }
+
+    /**
+     * Creates a new project controller, using the given project as the
+     * underlying project.
+     *
+     * @param project
+     */
+    public void newProjectController(final Project project) {
+        projectController = new ProjectController(project, this);
+    }
+
 
     /**
      * Registers this column data panel with everything that needs to notify

@@ -21,9 +21,9 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.datavyu.Datavyu;
+import org.datavyu.controllers.VocabEditorC;
 import org.datavyu.controllers.component.MixerController;
 import org.datavyu.controllers.id.IDController;
-import org.datavyu.controllers.VocabEditorC;
 import org.datavyu.models.component.TrackModel;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
@@ -37,6 +37,7 @@ import org.datavyu.plugins.Plugin;
 import org.datavyu.plugins.PluginManager;
 import org.datavyu.util.OFileUtils;
 import org.datavyu.views.DataControllerV;
+import org.datavyu.views.discrete.SpreadsheetPanel;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
@@ -52,6 +53,11 @@ import java.util.List;
  * This class is responsible for managing a project.
  */
 public final class ProjectController {
+
+    /**
+     * The spreadsheet panel that this controller is associated with
+     */
+    private SpreadsheetPanel spreadsheetPanel;
 
     /**
      * The current project we are working on.
@@ -99,8 +105,8 @@ public final class ProjectController {
     /**
      * Default constructor.
      */
-    public ProjectController() {
-
+    public ProjectController(final SpreadsheetPanel spreadsheetPanel) {
+        this.spreadsheetPanel = spreadsheetPanel;
         project = new Project();
         db = DatastoreFactory.newDatastore();
         db.setTitleNotifier(Datavyu.getApplication());
@@ -111,7 +117,8 @@ public final class ProjectController {
         lastCreatedVariable = null;
     }
 
-    public ProjectController(final Project project) {
+    public ProjectController(final Project project, final SpreadsheetPanel spreadsheetPanel) {
+        this.spreadsheetPanel = spreadsheetPanel;
         this.project = project;
         changed = false;
         newProject = false;
@@ -294,7 +301,7 @@ public final class ProjectController {
 
         // Use the plugin manager to load up the data viewers
         PluginManager pm = PluginManager.getInstance();
-        DataControllerV dataController = Datavyu.getDataController();
+        DataControllerV dataController = spreadsheetPanel.getDataController();
 
         // Load the plugins required for each media file
         boolean showController = false;
@@ -490,7 +497,7 @@ public final class ProjectController {
      */
     public void updateProject() {
 
-        DataControllerV dataController = Datavyu.getDataController();
+        DataControllerV dataController = spreadsheetPanel.getDataController();
 
         // Gather the data viewer settings
         List<ViewerSetting> viewerSettings = new LinkedList<ViewerSetting>();
