@@ -1,9 +1,12 @@
+
 #-------------------------------------------------------------------
-# Datavyu API v 1.05
+# Datavyu API v 1.07
 
 # Please read the function headers for information on how to use them.
 
 # CHANGE LOG
+# 1.07 3/20/14 - Fixed a situation where argument names in mutex could overlap, causing a failure
+#                 during argument rewrite
 # 1.06 2/4/14 - Updated to work with new DB, added function for deleting cells
 # 1.05 1/3/14 - Fixed the loadMacshapaDB function so it now works properly with CLOSED files
 # 1.041 12/11/13 - Updated function names to be consistent with new terminology 
@@ -1131,11 +1134,11 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
 
     # Create the new variable
     if var1_argprefix == nil
-        var1_argprefix = var1.name.gsub(/(\W)+/,"").downcase + "_"
+        var1_argprefix = var1.name.gsub(/(\W)+/,"").downcase + "___"
         var1_argprefix.gsub(".", "")
     end
     if var2_argprefix == nil
-        var2_argprefix = var2.name.gsub(/(\W)+/,"").downcase + "_"
+        var2_argprefix = var2.name.gsub(/(\W)+/,"").downcase + "___"
         var2_argprefix.gsub(".","")
     end
 
@@ -1187,7 +1190,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
     end
 
     time_changes = time_changes.to_a.sort
-    p time_changes
+    # p time_changes
 
 
     mutex_cell = nil
@@ -1210,11 +1213,11 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
       for j in v1idx..var1.cells.length-1
         c = var1.cells[j]
         v1cell = nil
-        p "---", "T1", t0, t1, c.onset, c.offset, "---"
+        # p "---", "T1", t0, t1, c.onset, c.offset, "---"
         if c.onset <= t0 and c.offset >= t1 or c.onset == t0 and c.offset >= t1
           v1cell = c
           v1idx = j
-          p t0, t1, "Found V1"
+          # p t0, t1, "Found V1"
           break
         # elsif c.onset > t1
         #   break
@@ -1226,11 +1229,11 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
       for j in v2idx..var2.cells.length-1
         c = var2.cells[j]
         v2cell = nil
-        p "---", "T2", t0, t1, c.onset, c.offset, "---"
+        # p "---", "T2", t0, t1, c.onset, c.offset, "---"
         if c.onset <= t0 and c.offset >= t1 or c.onset == t0 and c.offset >= t1
           v2cell = c
           v2idx = j
-          p t0, t1, "Found V2"
+          # p t0, t1, "Found V2"
           break
         # elsif c.onset > t1
         #   break
@@ -1253,6 +1256,9 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
     # Now that we have all of the necessary temporal information
     # go through each time in the list and create a cell
 
+    for arg in mutex.arglist
+      mutex.change_arg_name(arg, arg.gsub("___", "_"))
+    end
     for i in 0..mutex.cells.length-1
         c = mutex.cells[i]
         c.change_arg("ordinal", i+1)
@@ -1989,3 +1995,4 @@ end
 begin
     #$debug=true
 end
+
