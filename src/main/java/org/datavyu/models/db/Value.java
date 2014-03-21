@@ -48,9 +48,9 @@ public interface Value {
      * Sets the value, this method leaves the value unchanged if the supplied
      * input is invalid. Use isValid to test.
      *
-     * @param value The new content to use for this value.
+     * @param newValue The new content to use for this value.
      */
-    void set(final String value);
+    void set(final String newValue);
 
     Argument getArgument();
 
