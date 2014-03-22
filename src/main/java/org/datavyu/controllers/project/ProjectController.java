@@ -27,7 +27,6 @@ import org.datavyu.controllers.id.IDController;
 import org.datavyu.models.component.TrackModel;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.DatastoreFactory;
 import org.datavyu.models.db.Variable;
 import org.datavyu.models.project.Project;
 import org.datavyu.models.project.TrackSettings;
@@ -105,10 +104,12 @@ public final class ProjectController {
     /**
      * Default constructor.
      */
+
+
     public ProjectController(final SpreadsheetPanel spreadsheetPanel) {
         this.spreadsheetPanel = spreadsheetPanel;
         project = new Project();
-        db = DatastoreFactory.newDatastore();
+        db = spreadsheetPanel.getDatastore();
         db.setTitleNotifier(Datavyu.getApplication());
         changed = false;
         newProject = true;
@@ -559,6 +560,14 @@ public final class ProjectController {
      */
     public Project getProject() {
         return project;
+    }
+
+    public SpreadsheetPanel getSpreadsheetPanel() {
+        return spreadsheetPanel;
+    }
+
+    public void setSpreadsheetPanel(SpreadsheetPanel spreadsheetPanel) {
+        this.spreadsheetPanel = spreadsheetPanel;
     }
 
     private File genRelative(final String originalDir,

@@ -276,17 +276,33 @@ public final class DatavyuView extends FrameView
             @Override
             public void stateChanged(ChangeEvent e) {
                 JTabbedPane t = (JTabbedPane) e.getSource();
-                SpreadsheetPanel sp = (SpreadsheetPanel) t.getComponentAt(t.getSelectedIndex());
-                Datavyu.setProjectController(sp.getProjectController());
+                if (t.getComponentCount() > 0) {
+                    System.out.println(t.getSelectedIndex());
+
+                    SpreadsheetPanel sp = (SpreadsheetPanel) t.getSelectedComponent();
+                    if (Datavyu.getView() != null) {
+                        Datavyu.getView().panel = sp;
+                        sp.revalidate();
+                        Datavyu.getView().tabbedPane.revalidate();
+                    }
+                    System.out.println(sp);
+
+                    Datavyu.setProjectController(sp.getProjectController());
+                    System.out.println(sp.getDatastore().getName());
+
+
+                }
             }
         });
         setComponent(tabbedPane);
 
         panel = new SpreadsheetPanel(DatastoreFactory.newDatastore(), null);
+        Datavyu.setProjectController(panel.getProjectController());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
 
         tabbedPane.add(panel);
+        tabbedPane.setSelectedComponent(panel);
 
         System.out.println(getComponent());
 
@@ -329,6 +345,11 @@ public final class DatavyuView extends FrameView
         };
         this.getFrame().addWindowListener(exitListener);
 
+    }
+
+    @Override
+    public javax.swing.JComponent getComponent() {
+        return (javax.swing.JComponent) tabbedPane.getSelectedComponent();
     }
 
 
@@ -418,11 +439,11 @@ public final class DatavyuView extends FrameView
     @Action
     public void showNewProjectForm() {
 
-        if (Datavyu.getApplication().safeQuit()) {
-            new NewProjectC();
+//        if (Datavyu.getApplication().safeQuit()) {
+        new NewProjectC();
             // Reset the undo manager
-            resetUndoManager();
-        }
+//            resetUndoManager();
+//        }
     }
 
     /**
@@ -1101,6 +1122,24 @@ public final class DatavyuView extends FrameView
     @Action
     public void showSpreadsheet() {
         showSpreadsheet(null);
+    }
+
+    public void createNewSpreadsheet() {
+        ProjectController pc = new ProjectController(new SpreadsheetPanel(DatastoreFactory.newDatastore(), null));
+        panel = pc.getSpreadsheetPanel();
+        panel.registerListeners();
+        panel.addFileDropEventListener(this);
+        tabbedPane.add(panel);
+        tabbedPane.setSelectedComponent(panel);
+//        getComponent().revalidate();
+//        getComponent().repaint();
+//        getComponent().resetKeyboardActions();
+//        getComponent().requestFocus();
+
+        // The default is to create cells that are highlighted - ensure that
+        // they are deselected.
+        panel.clearCellSelection();
+        setSheetLayout();
     }
 
     @Action

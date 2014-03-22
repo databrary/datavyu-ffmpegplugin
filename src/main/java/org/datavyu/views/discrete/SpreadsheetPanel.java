@@ -166,7 +166,6 @@ public final class SpreadsheetPanel extends JPanel
         scrollPane.setViewportView(mainView);
         scrollPane.setColumnHeaderView(headerView);
 
-        projectController = new ProjectController(this);
 
         // Default layout is ordinal.
         setLayoutType(SheetLayoutType.Ordinal);
@@ -201,6 +200,8 @@ public final class SpreadsheetPanel extends JPanel
         // set the database and layout the columns
         setDatabase(db);
         buildColumns(progressBar);
+        projectController = new ProjectController(this);
+
 
         // Enable drag and drop support.
         setDropTarget(new DropTarget(this, new SSDropTarget()));
