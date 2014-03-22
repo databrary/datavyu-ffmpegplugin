@@ -276,6 +276,15 @@ public final class DatavyuView extends FrameView
             @Override
             public void stateChanged(ChangeEvent e) {
                 JTabbedPane t = (JTabbedPane) e.getSource();
+
+                for (Component tab : t.getComponents()) {
+                    DataControllerV dv = ((SpreadsheetPanel) tab).getDataController();
+                    for (DataViewer d : dv.getDataViewers()) {
+                        d.setDataViewerVisible(false);
+                    }
+                    dv.setVisible(false);
+                }
+
                 if (t.getComponentCount() > 0) {
                     System.out.println(t.getSelectedIndex());
 
@@ -284,12 +293,18 @@ public final class DatavyuView extends FrameView
                         Datavyu.getView().panel = sp;
                         sp.revalidate();
                         Datavyu.getView().tabbedPane.revalidate();
+
+                        Datavyu.getDataController().setVisible(false);
+                        Datavyu.setDataController(sp.getDataController());
+                        sp.getDataController().setVisible(true);
+                        for (DataViewer d : sp.getDataController().getDataViewers()) {
+                            d.setDataViewerVisible(true);
+                        }
                     }
                     System.out.println(sp);
 
                     Datavyu.setProjectController(sp.getProjectController());
                     System.out.println(sp.getDatastore().getName());
-
 
                 }
             }
@@ -297,6 +312,7 @@ public final class DatavyuView extends FrameView
         setComponent(tabbedPane);
 
         panel = new SpreadsheetPanel(DatastoreFactory.newDatastore(), null);
+        panel.setDataController(new DataControllerV(this.getFrame(), false));
         Datavyu.setProjectController(panel.getProjectController());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
@@ -1126,7 +1142,9 @@ public final class DatavyuView extends FrameView
 
     public void createNewSpreadsheet() {
         ProjectController pc = new ProjectController(new SpreadsheetPanel(DatastoreFactory.newDatastore(), null));
+
         panel = pc.getSpreadsheetPanel();
+        panel.setDataController(new DataControllerV(this.getFrame(), false));
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         tabbedPane.add(panel);

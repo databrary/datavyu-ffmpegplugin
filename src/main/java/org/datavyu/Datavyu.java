@@ -853,7 +853,7 @@ public final class Datavyu extends SingleFrameApplication
 
         // Create video controller.
         projectController = new ProjectController(VIEW.getSpreadsheetPanel());
-        dataController = new DataControllerV(getMainFrame(), false);
+        dataController = VIEW.getSpreadsheetPanel().getDataController();
 
         final Dimension screenSize = Toolkit.getDefaultToolkit()
                 .getScreenSize();
@@ -1019,8 +1019,8 @@ public final class Datavyu extends SingleFrameApplication
                 .getMainFrame(), false);
     }
 
-    public void setDataController(DataControllerV dataController) {
-        this.dataController = dataController;
+    public static void setDataController(DataControllerV dataController) {
+        dataController = dataController;
     }
 
     public void closeOpenedWindows() {
