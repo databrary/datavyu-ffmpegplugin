@@ -293,13 +293,15 @@ public final class DatavyuView extends FrameView
                         Datavyu.getView().panel = sp;
                         sp.revalidate();
                         Datavyu.getView().tabbedPane.revalidate();
-
                         Datavyu.getDataController().setVisible(false);
                         Datavyu.setDataController(sp.getDataController());
                         sp.getDataController().setVisible(true);
                         for (DataViewer d : sp.getDataController().getDataViewers()) {
                             d.setDataViewerVisible(true);
                         }
+                        System.out.println(Datavyu.getDataController());
+
+
                     }
                     System.out.println(sp);
 

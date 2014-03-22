@@ -1019,8 +1019,8 @@ public final class Datavyu extends SingleFrameApplication
                 .getMainFrame(), false);
     }
 
-    public static void setDataController(DataControllerV dataController) {
-        dataController = dataController;
+    public static void setDataController(DataControllerV dc) {
+        dataController = dc;
     }
 
     public void closeOpenedWindows() {
