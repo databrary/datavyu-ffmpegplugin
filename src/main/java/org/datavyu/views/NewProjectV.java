@@ -208,7 +208,7 @@ public final class NewProjectV extends DatavyuDialog {
         } else {
             // BugzID:2352 - Clean up spreadsheet resources before creating a
             // new spreadsheet.
-            s.clearSpreadsheet();
+//            s.clearSpreadsheet();
 
             Datastore ds = DatastoreFactory.newDatastore();
             ds.setName(getProjectName());

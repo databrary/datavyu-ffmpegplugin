@@ -135,6 +135,8 @@ public final class SpreadsheetPanel extends JPanel
      */
     private SheetLayoutType currentLayoutType;
 
+    private static int numNewSheets = 1;
+
     /**
      * List containing listeners interested in file drop events.
      */
@@ -146,7 +148,11 @@ public final class SpreadsheetPanel extends JPanel
      * @param db The model (i.e. database) that we are creating the view
      *           (i.e. Spreadsheet panel) for.
      */
-    public SpreadsheetPanel(final Datastore db, DVProgressBar progressBar) {
+//    public SpreadsheetPanel(final Datastore db, DVProgressBar progressBar) {
+//        ProjectController pc = new ProjectController(null, this);
+//        new SpreadsheetPanel(pc, progressBar);
+//    }
+    public SpreadsheetPanel(final ProjectController pc, DVProgressBar progressBar) {
         setName(this.getClass().getSimpleName());
         setLayout(new BorderLayout());
 
@@ -198,9 +204,13 @@ public final class SpreadsheetPanel extends JPanel
         headerView.add(newVar);
 
         // set the database and layout the columns
-        setDatabase(db);
+        setDatabase(pc.getDB());
         buildColumns(progressBar);
-        projectController = new ProjectController(this);
+        projectController = pc;
+        pc.setSpreadsheetPanel(this);
+
+        setName(datastore.getName());
+        numNewSheets++;
 
 
         // Enable drag and drop support.
@@ -225,7 +235,7 @@ public final class SpreadsheetPanel extends JPanel
      * Creates a new project controller.
      */
     public void newProjectController() {
-        projectController = new ProjectController(this);
+        projectController = new ProjectController();
     }
 
     public DataControllerV getDataController() {
@@ -243,7 +253,7 @@ public final class SpreadsheetPanel extends JPanel
      * @param project
      */
     public void newProjectController(final Project project) {
-        projectController = new ProjectController(project, this);
+//        projectController = new ProjectController(project);
     }
 
 
@@ -381,7 +391,8 @@ public final class SpreadsheetPanel extends JPanel
         datastore.addListener(this);
 
         // setName to remember screen locations
-        setName(this.getClass().getSimpleName() + db.getName());
+        setName(db.getName());
+
         db.deselectAll();
     }
 

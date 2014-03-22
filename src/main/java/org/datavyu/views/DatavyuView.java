@@ -49,6 +49,8 @@ import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -313,8 +315,11 @@ public final class DatavyuView extends FrameView
         });
         setComponent(tabbedPane);
 
-        panel = new SpreadsheetPanel(DatastoreFactory.newDatastore(), null);
+        panel = new SpreadsheetPanel(new ProjectController(), null);
+        panel.getProjectController().setSpreadsheetPanel(panel);
         panel.setDataController(new DataControllerV(this.getFrame(), false));
+//        panel.getProjectController().setDatastore(panel.getDatastore());
+
         Datavyu.setProjectController(panel.getProjectController());
         panel.registerListeners();
         panel.addFileDropEventListener(this);
@@ -849,60 +854,63 @@ public final class DatavyuView extends FrameView
         }
     }
 
-    class OpenTask extends SwingWorker<Void, Void> {
-        private DVProgressBar progressBar;
+    class OpenTask extends SwingWorker<ProjectController, Void> {
         private DatavyuFileChooser jd;
 
-        public OpenTask(DVProgressBar progressBar, final DatavyuFileChooser jd) {
+
+        public OpenTask(final DatavyuFileChooser jd) {
+
             this.jd = jd;
-            this.progressBar = progressBar;
         }
 
         @Override
-        public Void doInBackground() {
+        public ProjectController doInBackground() {
 
             if (!jd.getSelectedFile().exists()) {
-                progressBar.setError("ERROR: File not found");
+                setProgress(2);
                 return null;
             }
 
-            progressBar.setProgress(0, "Preparing spreadsheet");
-            FileFilter filter = jd.getFileFilter();
-            clearSpreadsheet();
 
-            progressBar.setProgress(10, "Opening project");
-            boolean open_success = false;
+            setProgress(0);
+            FileFilter filter = jd.getFileFilter();
+//            clearSpreadsheet();
+
+            setProgress(10);
+            OpenC openC = null;
+
+
+//            showSpreadsheet(pController, progressBar);
+
             if ((filter == SHAPAFilter.INSTANCE) || (filter == OPFFilter.INSTANCE)) {
                 // Opening a project or project archive file
-                open_success = openProject(jd.getSelectedFile());
+                openC = openProject(jd.getSelectedFile());
             } else {
                 // Opening a database file
-                open_success = openDatabase(jd.getSelectedFile());
+//                openC = openDatabase(jd.getSelectedFile());
             }
 
-            if (!open_success) {
-                progressBar.setError("Error opening project!");
+            if (openC == null) {
+                setProgress(1);
                 return null;
             }
 
-            progressBar.setProgress(40, "Project opened");
-
-            // BugzID:449 - Set filename in spreadsheet window and database if the database name is undefined.
-            ProjectController pController = Datavyu.getProjectController();
+            ProjectController pController = new ProjectController(openC.getProject(), openC.getDatastore());
             pController.setProjectName(jd.getSelectedFile().getName());
             pController.setLastSaveOption(filter);
 
+            setProgress(40);
+
+            // BugzID:449 - Set filename in spreadsheet window and database if the database name is undefined.
+
+
             // Display any changes to the database.
-            if (progressBar.setProgress(50, "Loading project into spreadsheet")) {
-                progressBar.close();
-                return null;
-            }
+            setProgress(50);
 
             /* updates the progressBar up to nearly 100% */
-            showSpreadsheet(progressBar);
 
             // Default is to highlight cells when created - clear selection on load.
-            panel.clearCellSelection();
+//            panel.clearCellSelection();
 
             // The project we just opened doesn't really contain any unsaved changes.
             pController.markProjectAsUnchanged();
@@ -911,13 +919,10 @@ public final class DatavyuView extends FrameView
             // Update the list of recently opened files.
             RecentFiles.rememberProject(jd.getSelectedFile());
 
-            if (progressBar.setProgress(100, "Completed!")) {
-                progressBar.close();
-                return null;
-            }
+            setProgress(100);
 
-            progressBar.close();
-            return null;
+//            progressBar.close();
+            return pController;
         }
     }
 
@@ -929,20 +934,59 @@ public final class DatavyuView extends FrameView
     private void open(final DatavyuFileChooser jd) {
         if (Datavyu.getApplication().safeQuit()) {
 
-            Datavyu.getApplication().resetApp();
+//            Datavyu.getApplication().resetApp();
 
             JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-            progressBar = new DVProgressBar(mainFrame, false);
-            Datavyu.getApplication().show(progressBar);
+            progressBar = new DVProgressBar(this.getFrame(), false);
+//            Datavyu.getApplication().show(progressBar);
 
-            task = new OpenTask(progressBar, jd);
+            task = new OpenTask(jd);
+//            progressBar.setProgress(0, "Starting file open");
+            task.addPropertyChangeListener(new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent evt) {
+                    String test = "";
+                    System.out.println("PROPERTY CHANGE");
+                    System.out.println(evt.getPropertyName());
+                    if ("progress".equals(evt.getPropertyName())) {
+                        int val = (Integer) evt.getNewValue();
+                        String msg;
+                        switch (val) {
+                            case 0:
+                                msg = "Preparing spreadsheet";
+                                break;
+                            case 10:
+                                msg = "Opening project";
+                                break;
+                            case 40:
+                                msg = "Project opened";
+                                break;
+                            case 50:
+                                msg = "Loading project into spreadsheet";
+                                break;
+                            case 100:
+                                msg = "Completed!";
+                                break;
+                            default:
+                                msg = "Error loading project!";
+                        }
+
+                        progressBar.setProgress(val, msg);
+                    }
+                }
+            });
             task.execute();
+            try {
+                createNewSpreadsheet(task.get());
+                progressBar.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void openExternalFile(final File f) {
-        Datavyu.getApplication().resetApp();
-        
+//        Datavyu.getApplication().resetApp();
+
         DatavyuFileChooser jd = new DatavyuFileChooser();
         jd.setSelectedFile(f);
         jd.setFileFilter(OPFFilter.INSTANCE);
@@ -958,7 +1002,7 @@ public final class DatavyuView extends FrameView
     public void openRecoveredFile(final File f) {
         // Clear the current spreadsheet before loading the new content - we
         // need to clean up resources.
-        clearSpreadsheet();
+//        clearSpreadsheet();
         String filename = FilenameUtils.getBaseName(f.getAbsolutePath());
         String ext = FilenameUtils.getExtension(f.getAbsolutePath());
         //ext = ext.substring(10);
@@ -972,7 +1016,7 @@ public final class DatavyuView extends FrameView
         }
 
         // Display any changes to the database.
-        showSpreadsheet();
+//        showSpreadsheet();
 
         // Default is to highlight cells when created - clear selection on load.
         panel.clearCellSelection();
@@ -996,28 +1040,29 @@ public final class DatavyuView extends FrameView
             projController.setDatabaseFileName(databaseFile.getName());
 
             // Reset the undo manager
-            resetUndoManager();
+//            resetUndoManager();
             return true;
         }
         return false;
     }
 
-    private boolean openProject(final File projectFile) {
+    private OpenC openProject(final File projectFile) {
         OpenC openC = new OpenC();
         openC.openProject(projectFile);
 
+
         if ((openC.getProject() != null) && (openC.getDatastore() != null)) {
 //            Datavyu.newProjectController(openC.getProject());
-            Datavyu.getProjectController().setDatastore(openC.getDatastore());
-            Datavyu.getProjectController().setProjectDirectory(projectFile.getParent());
-            Datavyu.getProjectController().loadProject();
+//            ProjectController pc = createNewSpreadsheet(openC.getDatastore());
+//            pc.setProjectDirectory(projectFile.getParent());
+//            pc.loadProject();
 
             // Reset the undo manager
-            resetUndoManager();
+//            resetUndoManager();
 
-            return true;
+            return openC;
         }
-        return false;
+        return null;
     }
 
     /**
@@ -1139,11 +1184,60 @@ public final class DatavyuView extends FrameView
      */
     @Action
     public void showSpreadsheet() {
-        showSpreadsheet(null);
+//        showSpreadsheet();
     }
 
-    public void createNewSpreadsheet() {
-        ProjectController pc = new ProjectController(new SpreadsheetPanel(DatastoreFactory.newDatastore(), null));
+    public ProjectController createNewSpreadsheet(ProjectController pc) {
+        pc.setSpreadsheetPanel(new SpreadsheetPanel(pc, null));
+        panel = pc.getSpreadsheetPanel();
+        panel.registerListeners();
+        panel.addFileDropEventListener(this);
+        tabbedPane.add(panel);
+        panel.setDataController(new DataControllerV(this.getFrame(), false));
+        tabbedPane.setSelectedComponent(panel);
+        panel.clearCellSelection();
+        setSheetLayout();
+//        getComponent().revalidate();
+//        getComponent().repaint();
+//        getComponent().resetKeyboardActions();
+//        getComponent().requestFocus();
+
+        // The default is to create cells that are highlighted - ensure that
+        // they are deselected.
+
+
+        return pc;
+    }
+
+    public ProjectController createNewSpreadsheet(Datastore ds) {
+        ProjectController pc = new ProjectController();
+        pc.setDatastore(ds);
+        pc.setSpreadsheetPanel(new SpreadsheetPanel(pc, null));
+        panel = pc.getSpreadsheetPanel();
+        panel.registerListeners();
+        panel.addFileDropEventListener(this);
+        tabbedPane.add(panel);
+        panel.setDataController(new DataControllerV(this.getFrame(), false));
+        tabbedPane.setSelectedComponent(panel);
+        panel.clearCellSelection();
+        setSheetLayout();
+//        getComponent().revalidate();
+//        getComponent().repaint();
+//        getComponent().resetKeyboardActions();
+//        getComponent().requestFocus();
+
+        // The default is to create cells that are highlighted - ensure that
+        // they are deselected.
+
+
+        return pc;
+    }
+
+    public ProjectController createNewSpreadsheet() {
+        ProjectController pc = new ProjectController();
+        pc.setDatastore(new DatavyuDatastore());
+        pc.setSpreadsheetPanel(new SpreadsheetPanel(pc, null));
+
 
         panel = pc.getSpreadsheetPanel();
         panel.setDataController(new DataControllerV(this.getFrame(), false));
@@ -1160,20 +1254,22 @@ public final class DatavyuView extends FrameView
         // they are deselected.
         panel.clearCellSelection();
         setSheetLayout();
+
+        return pc;
     }
 
     @Action
-    public void showSpreadsheet(DVProgressBar progressBar) {
+    public void showSpreadsheet(ProjectController pc, DVProgressBar progressBar) {
         //weakTemporalAlignmentMenuItem.setSelected(false);
 
         // need to add changes to maintain spreadsheet view after change
         // Create a fresh spreadsheet component and redraw the component.
         if (panel != null) {
-            this.clearSpreadsheet();
+//            this.clearSpreadsheet();
         }
 
 
-        panel = new SpreadsheetPanel(Datavyu.getProjectController().getDB(), progressBar);
+        panel = new SpreadsheetPanel(pc, progressBar);
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         tabbedPane.add(panel);

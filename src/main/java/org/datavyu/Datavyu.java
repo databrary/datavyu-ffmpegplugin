@@ -852,7 +852,7 @@ public final class Datavyu extends SingleFrameApplication
         addExitListener(new ExitListenerImpl());
 
         // Create video controller.
-        projectController = new ProjectController(VIEW.getSpreadsheetPanel());
+//        projectController = new ProjectController();
         dataController = VIEW.getSpreadsheetPanel().getDataController();
 
         final Dimension screenSize = Toolkit.getDefaultToolkit()
