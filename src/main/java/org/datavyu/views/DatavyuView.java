@@ -885,6 +885,7 @@ public final class DatavyuView extends FrameView
             if ((filter == SHAPAFilter.INSTANCE) || (filter == OPFFilter.INSTANCE)) {
                 // Opening a project or project archive file
                 openC = openProject(jd.getSelectedFile());
+
             } else {
                 // Opening a database file
 //                openC = openDatabase(jd.getSelectedFile());
@@ -898,6 +899,7 @@ public final class DatavyuView extends FrameView
             ProjectController pController = new ProjectController(openC.getProject(), openC.getDatastore());
             pController.setProjectName(jd.getSelectedFile().getName());
             pController.setLastSaveOption(filter);
+            pController.setProjectDirectory(jd.getSelectedFile().getParent());
 
             setProgress(40);
 
@@ -906,6 +908,7 @@ public final class DatavyuView extends FrameView
 
             // Display any changes to the database.
             setProgress(50);
+
 
             /* updates the progressBar up to nearly 100% */
 
@@ -977,6 +980,7 @@ public final class DatavyuView extends FrameView
             task.execute();
             try {
                 createNewSpreadsheet(task.get());
+
                 progressBar.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1197,6 +1201,8 @@ public final class DatavyuView extends FrameView
         tabbedPane.setSelectedComponent(panel);
         panel.clearCellSelection();
         setSheetLayout();
+        pc.loadProject();
+
 //        getComponent().revalidate();
 //        getComponent().repaint();
 //        getComponent().resetKeyboardActions();
