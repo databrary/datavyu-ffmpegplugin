@@ -790,10 +790,12 @@ public final class DatavyuView extends FrameView
                         .getParent());
 
                 projController.updateProject();
+
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
                         archiveName),
                         projController.getProject(),
                         projController.getDB());
+                projController.getDB().setName(fc.getSelectedFile().getName());
                 projController.setProjectDirectory(fc.getSelectedFile().getParent());
 
             }
@@ -801,6 +803,7 @@ public final class DatavyuView extends FrameView
             projController.setLastSaveOption(filter);
             projController.markProjectAsUnchanged();
             projController.getDB().markAsUnchanged();
+            this.tabbedPane.setTitleAt(this.tabbedPane.getSelectedIndex(), projController.getDB().getName());
 
         } catch (UserWarningException e) {
             Datavyu.getApplication().showWarningDialog(e);
