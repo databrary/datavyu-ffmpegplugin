@@ -320,18 +320,15 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         for (int i = 0; i < numCells; i++) {
 
             if (components[i].isFocusOwner()
-                    && components[i].getClass().equals(JButton.class)) {
+                    && components[i].getClass().equals(JButton.class)) { //what is this about? eliminate? haven't found a way to make this happen
 
                 if ((e.getKeyCode() == KeyEvent.VK_UP) && (i > 0)) {
                     SpreadsheetCell sc = (SpreadsheetCell) components[i - 1];
                     EditorTracker et = sc.getDataView().getEdTracker();
                     EditorComponent ec = et.getCurrentEditor();
 
-                    // Get the caret position within the active editor
-                    // component.
-                    int relativePos = et.getCurrentEditor().getCaretPosition();
-                    int absolutePos = sc.getDataView().getCaretPosition();
-
+                    
+// /*
                     try {
 
                         // Determine if we are at the top of a multi-lined cell,
@@ -339,27 +336,12 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                         // select the line above.
                         JTextArea a = (JTextArea) ec.getParentComponent();
 
+                        //if we are in top line of this editor then go up a cell
                         if (a.getLineOfOffset(a.getCaretPosition()) == 0) {
-                            sc = (SpreadsheetCell) components[i - 1];
-                            et = sc.getDataView().getEdTracker();
-                            ec = et.findEditor(absolutePos);
+         
                             et.setEditor(ec);
 
-                            a = (JTextArea) ec.getParentComponent();
 
-                            // Determine the line start and end points.
-                            int lastLine = (a.getLineCount() - 1);
-                            int lineEnd = a.getLineEndOffset(lastLine);
-                            int lineStart = a.getLineStartOffset(lastLine);
-
-                            // We take either the position or the last element
-                            // in the line
-                            int newPos = Math.min(relativePos + lineStart,
-                                    lineEnd);
-
-                            // Set the caret position in the newly focused
-                            // editor.
-                            ec.setCaretPosition(newPos);
                             sc.requestFocus();
                             sc.getCell().setHighlighted(true);
                             cellSelectionL.setHighlightedCell(sc);
@@ -371,6 +353,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                     } catch (BadLocationException be) {
                         LOGGER.error("BadLocation on arrow up", be);
                     }
+// */
                 }
 
                 return false;
@@ -383,13 +366,14 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
 
                 // Get the current editor tracker and component for the cell
                 // that has focus.
-                SpreadsheetCell sc = (SpreadsheetCell) components[i];
-                EditorTracker et = sc.getDataView().getEdTracker();
-                EditorComponent ec = et.getCurrentEditor();
+                SpreadsheetCell scCur = (SpreadsheetCell) components[i];
+                EditorTracker etCur = scCur.getDataView().getEdTracker();
+                EditorComponent ecCur = etCur.getCurrentEditor();
 
                 // Get the caret position within the active editor component.
-                int relativePos = et.getCurrentEditor().getCaretPosition();
-                int absolutePos = sc.getDataView().getCaretPosition();
+                int relativePos = etCur.getCurrentEditor().getCaretPosition();
+                int absolutePos = scCur.getDataView().getCaretPosition();
+                JTextArea a = (JTextArea) ecCur.getParentComponent();
 
                 // The key stroke is up - select the editor component in the
                 // cell above, setting the caret position to what we just found
@@ -403,33 +387,16 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                         // Determine if we are at the top of a multi-lined cell,
                         // if we are not on the top line - pressing up should
                         // select the line above.
-                        JTextArea a = (JTextArea) ec.getParentComponent();
 
                         if (a.getLineOfOffset(a.getCaretPosition()) == 0 && components[i - 1] instanceof SpreadsheetCell) {
-                            sc = (SpreadsheetCell) components[i - 1];
-                            et = sc.getDataView().getEdTracker();
-                            ec = et.findEditor(absolutePos);
-                            et.setEditor(ec);
-
-                            a = (JTextArea) ec.getParentComponent();
-
-                            // Determine the line start and end points.
-                            int lastLine = (a.getLineCount() - 1);
-                            int lineEnd = a.getLineEndOffset(lastLine);
-                            int lineStart = a.getLineStartOffset(lastLine);
-
-                            // We take either the position or the last element
-                            // in the line
-                            int newPos = Math.min(relativePos + lineStart,
-                                    lineEnd);
-
-                            // Set the caret position in the newly focused
-                            // editor.
-                            ec.setCaretPosition(newPos);
-                            sc.requestFocus();
-                            sc.getCell().setHighlighted(true);
-                            cellSelectionL.clearCellSelection();
-                            cellSelectionL.setHighlightedCell(sc);
+                            SpreadsheetCell scNew = (SpreadsheetCell) components[i - 1];
+                            EditorTracker etNew = scNew.getDataView().getEdTracker();
+                            EditorComponent ecNew = etNew.getEditorAtIndex(etCur.indexOfCurrentEditor());
+                            etNew.setEditor(ecNew);
+                            
+                            scNew.requestFocus();
+                            scNew.getCell().setHighlighted(true);
+                            cellSelectionL.setHighlightedCell(scNew);
 
                             e.consume();
 
@@ -442,12 +409,21 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 }
                 if ((e.getKeyCode() == KeyEvent.VK_UP) && (i == 0))
                 {
-                    //if we are in the first cell, skip to its first arg
-                    et = sc.getDataView().getEdTracker();
-                    et.setEditor(et.firstEditor());
-                    
-                    //System.out.println("CEILING!");
-                    return true;
+                    try{                       
+                        if(a.getLineOfOffset(a.getCaretPosition()) == 0)
+                        {
+                            //skip to first arg of current cell
+                            etCur = scCur.getDataView().getEdTracker();
+                            etCur.setEditor(etCur.firstEditor());
+
+                            //System.out.println("CEILING!");
+                            return true;
+                        }
+                    }
+                    catch (BadLocationException be){
+                        be.printStackTrace();
+                        LOGGER.error("BadLocation on arrow up", be);        
+                    }
                 }
 
                 // The key stroke is down - select the editor component in the
@@ -461,24 +437,21 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                         // Determine if we are at the bottom of a multi-lined
                         // cell, if we are not on the bottom line - pressing
                         // down should select the line below.
-                        JTextArea a = (JTextArea) ec.getParentComponent();
-
                         if ((a.getLineOfOffset(a.getCaretPosition()) + 1)
                                 >= a.getLineCount()) {
                             components[i + 1].requestFocus();
 
                             if (components[i + 1] instanceof SpreadsheetCell) {
-                                sc = (SpreadsheetCell) components[i + 1];
-
-                                et = sc.getDataView().getEdTracker();
-                                ec = et.findEditor(absolutePos);
-                                et.setEditor(ec);
-                                ec.setCaretPosition(relativePos);
-                                sc.getCell().setHighlighted(true);
-                                cellSelectionL.setHighlightedCell(sc);
+                                SpreadsheetCell scNew = (SpreadsheetCell) components[i + 1];
+                                EditorTracker etNew = scNew.getDataView().getEdTracker();
+                                EditorComponent ecNew = etNew.getEditorAtIndex(etCur.indexOfCurrentEditor());
+                                etNew.setEditor(ecNew);
+                                
+                                scNew.requestFocus();
+                                scNew.getCell().setHighlighted(true);
+                                cellSelectionL.setHighlightedCell(scNew);
                             } else {
-                                sc = (SpreadsheetCell) components[i];
-                                sc.getCell().setHighlighted(false);
+                                scCur.getCell().setHighlighted(false);
                                 cellSelectionL.clearCellSelection();
                             }
 
@@ -492,12 +465,21 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 }
                 if ((e.getKeyCode() == KeyEvent.VK_DOWN) && ((i + 1) == numCells)) 
                 {
-                    //if we are in the last cell, skip to its last arg
-                    et = sc.getDataView().getEdTracker();
-                    et.setEditor(et.lastEditor());
-                    
-                    //System.out.println("FLOOR!");
-                    return true;
+                    try{                       
+                        if ((a.getLineOfOffset(a.getCaretPosition()) + 1)
+                                >= a.getLineCount()){
+                            //skip to first arg of current cell
+                            etCur = scCur.getDataView().getEdTracker();
+                            etCur.setEditor(etCur.lastEditor());
+
+                            //System.out.println("FLOOR!");
+                            return true;
+                        }
+                    }
+                    catch (BadLocationException be){
+                        be.printStackTrace();
+                        LOGGER.error("BadLocation on arrow down", be);        
+                    }
                 }
                 return false;
             }
