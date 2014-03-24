@@ -151,6 +151,17 @@ public final class EditorTracker
             calculatePrePostCounts();
         }
     }
+    
+    public int indexOfCurrentEditor()
+    {
+        int i = 0;
+        for (EditorComponent ed : editors) {
+            if (ed.equals(currentEditor)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     /**
      * Find an editor given a character position of a mouse click.
@@ -178,6 +189,10 @@ public final class EditorTracker
         }
         return foundEd;
     }
+    
+    public EditorComponent getEditorAtIndex (int i) {
+       return editors.get(i);
+    }
 
     /**
      * @return the first editor if found or NO_EDITOR
@@ -197,17 +212,17 @@ public final class EditorTracker
      * @return the next editor to the currentEditor if found or NO_EDITOR.
      */
     public EditorComponent nextEditor() {
-        EditorComponent foundEd = NO_EDITOR;
+        EditorComponent nextEd = NO_EDITOR;
         boolean currFound = false;
         for (EditorComponent ed : editors) {
             if (ed.equals(currentEditor)) {
                 currFound = true;
             } else if (currFound && ed.isEditable()) {
-                foundEd = ed;
+                nextEd = ed;
                 break;
             }
         }
-        return foundEd;
+        return nextEd;
     }
 
     /**
@@ -230,13 +245,13 @@ public final class EditorTracker
      * @return the last editor if found or NO_EDITOR.
      */
     public EditorComponent lastEditor() {
-        EditorComponent prevEd = NO_EDITOR;
+        EditorComponent lastEd = NO_EDITOR;
         for (EditorComponent ed : editors) {
             if (ed.isEditable()) {
-                prevEd = ed;
+                lastEd = ed;
             }
         }
-        return prevEd;
+        return lastEd;
     }
 
     /**
