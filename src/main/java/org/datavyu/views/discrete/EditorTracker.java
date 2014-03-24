@@ -382,7 +382,7 @@ public final class EditorTracker
                 break;
 
             case KeyEvent.VK_ENTER:
-                if (!currentEditor.isReturnKeyAccepted()) {
+                if (!currentEditor.isReturnKeyAccepted() || !currentEditor.canSubSelect()) {
                     // help out the editors that don't want the return key
                     if (e.getKeyLocation() == KeyEvent.KEY_LOCATION_STANDARD) {
                         e.consume();

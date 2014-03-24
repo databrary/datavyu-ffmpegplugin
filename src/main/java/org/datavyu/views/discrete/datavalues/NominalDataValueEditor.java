@@ -82,12 +82,9 @@ public final class NominalDataValueEditor extends DataValueEditor {
         if (!e.isConsumed() && !e.isMetaDown() && !e.isControlDown()
                 && !isReserved(e.getKeyChar())) {
             
-            // BugID: 26057841 - if the model is empty and we get a new line, correctly
-            // empty the contents. (Selection gets all altered by java when new line
-            // is mashed into the edtior).
+            // Avoids a nasty bug that occurs if carraige return goes to editor. 'New cell' numpad enter still processed as always
             if (model.isEmpty() && e.getKeyChar() == '\n') {
-                getParentComponent().setText(getText());
-                this.selectAll();
+                return;
             }
             
             this.removeSelectedText();
