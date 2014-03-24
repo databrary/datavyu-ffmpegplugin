@@ -159,6 +159,7 @@ public final class EditorTracker
             if (ed.equals(currentEditor)) {
                 return i;
             }
+            i++;
         }
         return -1;
     }
