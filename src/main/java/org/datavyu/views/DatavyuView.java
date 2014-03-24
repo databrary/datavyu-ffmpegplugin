@@ -326,6 +326,7 @@ public final class DatavyuView extends FrameView
 
         tabbedPane.add(panel);
         tabbedPane.setSelectedComponent(panel);
+        tabbedPane.setTabComponentAt(0, new TabWithCloseButton(tabbedPane));
 
         System.out.println(getComponent());
 
