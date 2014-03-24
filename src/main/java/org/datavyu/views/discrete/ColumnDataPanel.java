@@ -442,7 +442,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 }
                 if ((e.getKeyCode() == KeyEvent.VK_UP) && (i == 0))
                 {
-                    //TODO: skip to first arg of cell
+                    //if we are in the first cell, skip to its first arg
+                    et = sc.getDataView().getEdTracker();
+                    et.setEditor(et.firstEditor());
                     
                     //System.out.println("CEILING!");
                     return true;
@@ -490,7 +492,9 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
                 }
                 if ((e.getKeyCode() == KeyEvent.VK_DOWN) && ((i + 1) == numCells)) 
                 {
-                    //TODO: skip to last arg of cell
+                    //if we are in the last cell, skip to its last arg
+                    et = sc.getDataView().getEdTracker();
+                    et.setEditor(et.lastEditor());
                     
                     //System.out.println("FLOOR!");
                     return true;
