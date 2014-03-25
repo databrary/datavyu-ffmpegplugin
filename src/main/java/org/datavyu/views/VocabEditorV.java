@@ -475,7 +475,7 @@ public final class VocabEditorV extends DatavyuDialog {
         LOGGER.event("vocEd - ok");
         if (applyChanges() == 0) {
             try {
-                disposeAll();
+                dispose();
             } catch (Throwable e) {
                 LOGGER.error("Unable to destroy vocab editor view.", e);
             }
@@ -489,7 +489,7 @@ public final class VocabEditorV extends DatavyuDialog {
     public void closeWindow() {
         LOGGER.event("vocEd - close");
         try {
-            disposeAll();
+            dispose();
         } catch (Throwable e) {
             LOGGER.error("Unable to destroy vocab editor view.", e);
         }
