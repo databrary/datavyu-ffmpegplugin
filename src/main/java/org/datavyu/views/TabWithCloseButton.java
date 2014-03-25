@@ -31,6 +31,8 @@ package org.datavyu.views;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.datavyu.Datavyu;
+
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
@@ -98,7 +100,9 @@ public class TabWithCloseButton extends JPanel {
         public void actionPerformed(ActionEvent e) {
             int i = pane.indexOfTabComponent(TabWithCloseButton.this);
             if (i != -1) {
-                pane.remove(i);
+                if (Datavyu.getApplication().safeQuit()) {
+                    pane.remove(i);
+                }
             }
         }
 

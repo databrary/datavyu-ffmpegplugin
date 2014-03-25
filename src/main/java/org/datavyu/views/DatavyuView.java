@@ -280,14 +280,18 @@ public final class DatavyuView extends FrameView
                 JTabbedPane t = (JTabbedPane) e.getSource();
 
                 for (Component tab : t.getComponents()) {
-                    DataControllerV dv = ((SpreadsheetPanel) tab).getDataController();
-                    for (DataViewer d : dv.getDataViewers()) {
-                        d.setDataViewerVisible(false);
+                    if (tab instanceof SpreadsheetPanel) {
+                        DataControllerV dv = ((SpreadsheetPanel) tab).getDataController();
+                        System.out.println(tab.getName());
+                        System.out.println(dv);
+                        for (DataViewer d : dv.getDataViewers()) {
+                            d.setDataViewerVisible(false);
+                        }
+                        dv.setVisible(false);
                     }
-                    dv.setVisible(false);
                 }
 
-                if (t.getComponentCount() > 0) {
+                if (t.getComponentCount() > 0 && t.getSelectedIndex() >= 0) {
                     System.out.println(t.getSelectedIndex());
 
                     SpreadsheetPanel sp = (SpreadsheetPanel) t.getSelectedComponent();
@@ -317,7 +321,7 @@ public final class DatavyuView extends FrameView
 
         panel = new SpreadsheetPanel(new ProjectController(), null);
         panel.getProjectController().setSpreadsheetPanel(panel);
-        panel.setDataController(new DataControllerV(this.getFrame(), false));
+        panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
 //        panel.getProjectController().setDatastore(panel.getDatastore());
 
         Datavyu.setProjectController(panel.getProjectController());
@@ -1200,8 +1204,10 @@ public final class DatavyuView extends FrameView
         panel = pc.getSpreadsheetPanel();
         panel.registerListeners();
         panel.addFileDropEventListener(this);
+        panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
+
         tabbedPane.add(panel);
-        panel.setDataController(new DataControllerV(this.getFrame(), false));
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));
         tabbedPane.setSelectedComponent(panel);
         panel.clearCellSelection();
         setSheetLayout();
@@ -1226,8 +1232,11 @@ public final class DatavyuView extends FrameView
         panel = pc.getSpreadsheetPanel();
         panel.registerListeners();
         panel.addFileDropEventListener(this);
+        panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
+
         tabbedPane.add(panel);
-        panel.setDataController(new DataControllerV(this.getFrame(), false));
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));
+
         tabbedPane.setSelectedComponent(panel);
         panel.clearCellSelection();
         setSheetLayout();
@@ -1250,10 +1259,13 @@ public final class DatavyuView extends FrameView
 
 
         panel = pc.getSpreadsheetPanel();
-        panel.setDataController(new DataControllerV(this.getFrame(), false));
+        panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
         panel.registerListeners();
         panel.addFileDropEventListener(this);
+
         tabbedPane.add(panel);
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));
+
         tabbedPane.setSelectedComponent(panel);
 //        getComponent().revalidate();
 //        getComponent().repaint();
@@ -1280,9 +1292,14 @@ public final class DatavyuView extends FrameView
 
 
         panel = new SpreadsheetPanel(pc, progressBar);
+        panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
+
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         tabbedPane.add(panel);
+        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));
+
+        tabbedPane.setSelectedComponent(panel);
 //        setComponent(panel);
         getComponent().revalidate();
         getComponent().repaint();

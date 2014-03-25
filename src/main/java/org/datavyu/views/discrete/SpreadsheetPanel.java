@@ -22,10 +22,7 @@ import org.datavyu.controllers.NewVariableC;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.event.component.FileDropEvent;
 import org.datavyu.event.component.FileDropEventListener;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.DatastoreListener;
-import org.datavyu.models.db.Variable;
+import org.datavyu.models.db.*;
 import org.datavyu.models.project.Project;
 import org.datavyu.util.ArrayDirection;
 import org.datavyu.util.Constants;
@@ -204,6 +201,9 @@ public final class SpreadsheetPanel extends JPanel
         headerView.add(newVar);
 
         // set the database and layout the columns
+        if (pc.getDB() == null) {
+            pc.setDatastore(new DatavyuDatastore());
+        }
         setDatabase(pc.getDB());
         buildColumns(progressBar);
         projectController = pc;
