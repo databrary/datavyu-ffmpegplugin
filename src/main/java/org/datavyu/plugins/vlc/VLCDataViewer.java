@@ -248,6 +248,7 @@ public class VLCDataViewer implements DataViewer {
 
     @Override
     public void setDataFeed(final File dataFeed) {
+        data = dataFeed;
         vlcDialog.setVisible(true);
         vlcDialog.setName(vlcDialog.getName() + "-" + dataFeed.getName());
         mediaPlayer.startMedia(dataFeed.getAbsolutePath());
