@@ -302,8 +302,10 @@ public final class DatavyuView extends FrameView
                             baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
                         }
                         System.out.println(baseDir + File.separator + path);
-                        open(new File(baseDir + File.separator + path));
-
+                        File f = new File(baseDir + File.separator + path);
+                        if (f.isFile() && f.getName().endsWith(".opf")) {
+                            open(f);
+                        }
                     }
                 }
             }
