@@ -33,6 +33,7 @@ import org.datavyu.undoableedits.RunScriptEdit;
 import org.datavyu.undoableedits.SpreadsheetUndoManager;
 import org.datavyu.util.ArrayDirection;
 import org.datavyu.util.FileFilters.*;
+import org.datavyu.util.FileSystemTreeModel;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.SpreadsheetPanel;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
@@ -45,6 +46,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 import java.awt.*;
@@ -86,6 +89,7 @@ public final class DatavyuView extends FrameView
      * The spreadsheet panel for this view.
      */
     private SpreadsheetPanel panel;
+    private JSplitPane splitPane;
 
     private static boolean redraw = true;
 
@@ -173,6 +177,9 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenu zoomMenu;
     private javax.swing.JMenuItem zoomOutMenuItem;
     private JTabbedPane tabbedPane;
+    private JScrollPane fileScrollPane;
+    private JTree fileDrawer;
+    private TreeModel fileTree;
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -274,6 +281,64 @@ public final class DatavyuView extends FrameView
         }
 
         tabbedPane = new JTabbedPane();
+
+
+        fileTree = new FileSystemTreeModel(new File("."));
+        fileDrawer = new JTree(fileTree);
+        fileDrawer.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selRow = fileDrawer.getRowForLocation(e.getX(), e.getY());
+                TreePath selPath = fileDrawer.getPathForLocation(e.getX(), e.getY());
+                if (selRow != -1) {
+                    if (e.getClickCount() == 1) {
+                        System.out.println(selPath.getPath());
+                    } else if (e.getClickCount() == 2) {
+                        String path = selPath.toString().replaceAll("\\]| |\\[|", "").replaceAll(",", File.separator);
+                        String baseDir;
+                        if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
+                            baseDir = ".";
+                        } else {
+                            baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
+                        }
+                        System.out.println(baseDir + File.separator + path);
+                        open(new File(baseDir + File.separator + path));
+
+                    }
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+
+
+        fileScrollPane = new JScrollPane(fileDrawer);
+
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, fileScrollPane, tabbedPane);
+        splitPane.setDividerLocation(150);
+        Dimension minimumSize = new Dimension(100, 50);
+
+        fileScrollPane.setMinimumSize(minimumSize);
+        fileScrollPane.setMaximumSize(minimumSize);
+        tabbedPane.setMinimumSize(minimumSize);
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -284,6 +349,7 @@ public final class DatavyuView extends FrameView
                         DataControllerV dv = ((SpreadsheetPanel) tab).getDataController();
                         System.out.println(tab.getName());
                         System.out.println(dv);
+                        dv.stopAction();
                         for (DataViewer d : dv.getDataViewers()) {
                             d.setDataViewerVisible(false);
                         }
@@ -312,12 +378,22 @@ public final class DatavyuView extends FrameView
                     System.out.println(sp);
 
                     Datavyu.setProjectController(sp.getProjectController());
+                    String dir = sp.getProjectController().getProject().getProjectDirectory();
+                    if (dir == null) {
+                        dir = ".";
+                    }
+                    System.out.println(dir);
+                    fileTree = new FileSystemTreeModel(new File(dir));
+                    fileDrawer.setModel(fileTree);
+//                    fileScrollPane = new JScrollPane(fileDrawer);
+
                     System.out.println(sp.getDatastore().getName());
 
                 }
             }
         });
-        setComponent(tabbedPane);
+
+        setComponent(splitPane);
 
         panel = new SpreadsheetPanel(new ProjectController(), null);
         panel.getProjectController().setSpreadsheetPanel(panel);
