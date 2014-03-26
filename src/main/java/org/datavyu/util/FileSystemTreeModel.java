@@ -81,7 +81,7 @@ public class FileSystemTreeModel implements TreeModel {
 
             TreeSet sorted = new TreeSet();
             for (int i = 0; i < nChildren; i++) {
-                if (children[i].getName().toLowerCase().endsWith(".opf") || children[i].isDirectory()) {
+                if (children[i].getName().toLowerCase().endsWith(".opf") || children[i].getName().toLowerCase().endsWith(".rb") || children[i].isDirectory()) {
                     sorted.add(new FileTreeNode(children[i]));
                     opfCount++;
                 }
@@ -98,7 +98,6 @@ public class FileSystemTreeModel implements TreeModel {
 
         return opfCount;
     }
-
 
     private Object[] getTreePath(File file) {
         List path = new ArrayList();

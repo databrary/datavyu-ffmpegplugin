@@ -46,6 +46,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.UndoableEdit;
@@ -180,6 +181,8 @@ public final class DatavyuView extends FrameView
     private JScrollPane fileScrollPane;
     private JTree fileDrawer;
     private TreeModel fileTree;
+    private final Icon rubyIcon = new ImageIcon(getClass().getResource("/icons/ruby.png"));
+    private final Icon opfIcon = new ImageIcon(getClass().getResource("/icons/datavyu.png"));
     // End of variables declaration//GEN-END:variables
 
     /**
@@ -285,6 +288,28 @@ public final class DatavyuView extends FrameView
 
         fileTree = new FileSystemTreeModel(new File("."));
         fileDrawer = new JTree(fileTree);
+
+
+        fileDrawer.setCellRenderer(new DefaultTreeCellRenderer() {
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree,
+                                                          Object value, boolean selected, boolean expanded,
+                                                          boolean isLeaf, int row, boolean focused) {
+                Component c = super.getTreeCellRendererComponent(tree, value,
+                        selected, expanded, isLeaf, row, focused);
+                if (tree.getPathForRow(row) != null) {
+                    if (convertTreePathToString(tree.getPathForRow(row)).endsWith(".rb")) {
+                        setIcon(rubyIcon);
+                    } else if (convertTreePathToString(tree.getPathForRow(row)).endsWith(".opf")) {
+                        System.out.println("SETTING OPF");
+                        setIcon(opfIcon);
+                    }
+                }
+                return c;
+            }
+
+        });
+
         fileDrawer.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -294,7 +319,7 @@ public final class DatavyuView extends FrameView
                     if (e.getClickCount() == 1) {
                         System.out.println(selPath.getPath());
                     } else if (e.getClickCount() == 2) {
-                        String path = selPath.toString().replaceAll("\\]| |\\[|", "").replaceAll(",", File.separator);
+                        String path = convertTreePathToString(selPath);
                         String baseDir;
                         if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
                             baseDir = ".";
@@ -303,8 +328,13 @@ public final class DatavyuView extends FrameView
                         }
                         System.out.println(baseDir + File.separator + path);
                         File f = new File(baseDir + File.separator + path);
-                        if (f.isFile() && f.getName().endsWith(".opf")) {
-                            open(f);
+                        if (f.isFile()) {
+                            if (f.getName().toLowerCase().endsWith(".rb")) {
+                                runScript(f);
+                            }
+                            if (f.getName().toLowerCase().endsWith(".opf")) {
+                                open(f);
+                            }
                         }
                     }
                 }
@@ -893,6 +923,10 @@ public final class DatavyuView extends FrameView
         }
     }
 
+    public String convertTreePathToString(TreePath tp) {
+        return tp.toString().replaceAll("\\]| |\\[|", "").replaceAll(",", File.separator);
+    }
+
     /**
      * Action for loading a Datavyu project from disk.
      */
@@ -1397,6 +1431,19 @@ public final class DatavyuView extends FrameView
     public void runScript() {
         try {
             RunScriptC scriptC = new RunScriptC();
+            // record the effect
+            UndoableEdit edit = new RunScriptEdit(scriptC.getScriptFilePath());
+            // notify the listeners
+            Datavyu.getView().getUndoSupport().postEdit(edit);
+            scriptC.execute();
+        } catch (IOException e) {
+            LOGGER.error("Unable run script", e);
+        }
+    }
+
+    public void runScript(File scriptFile) {
+        try {
+            RunScriptC scriptC = new RunScriptC(scriptFile);
             // record the effect
             UndoableEdit edit = new RunScriptEdit(scriptC.getScriptFilePath());
             // notify the listeners
