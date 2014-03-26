@@ -314,6 +314,8 @@ public final class DataControllerV extends DatavyuDialog
     private org.jdesktop.application.ResourceMap resourceMap;
     
     private javax.swing.ActionMap actionMap;
+    
+    private String osModifier;
 
     // -------------------------------------------------------------------------
     // [initialization]
@@ -342,10 +344,11 @@ public final class DataControllerV extends DatavyuDialog
                 .getActionMap(DataControllerV.class, this);        
         
         if (Datavyu.getPlatform() == Platform.MAC) {
-            initComponents("osx");
+            osModifier = "osx";
         } else {
-            initComponents("win");
+            osModifier = "win";
         }
+        initComponents();
 
         setResizable(false);
         setName(this.getClass().getSimpleName());
@@ -956,7 +959,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Initialize the view for OS other than Macs.
      */
-    private void initComponents(String osModifier) {      
+    private void initComponents() {      
         gridButtonPanel = new javax.swing.JPanel();
         goBackTextField = new javax.swing.JTextField();
         onsetTextField = new javax.swing.JTextField();
@@ -1042,7 +1045,7 @@ public final class DataControllerV extends DatavyuDialog
         showTracksSmallButton = new JButton();      
         showTracksSmallButton.setIcon(resourceMap.getIcon(
                 "showTracksSmallButton.hide.icon."+osModifier));
-        showTracksSmallButton.setName(osModifier + "showTracksSmallButton");
+        showTracksSmallButton.setName("showTracksSmallButton");
         showTracksSmallButton.getAccessibleContext().setAccessibleName(
                 "Show Tracks");
         showTracksSmallButton.addActionListener(new ActionListener() {
@@ -1282,13 +1285,15 @@ public final class DataControllerV extends DatavyuDialog
             LOGGER.event("Show tracks (" + button.getName() + ")");
 
             // Panel is being displayed, hide it
-            button.setIcon(resourceMap.getIcon(button.getName() + ".show.icon"));
+            button.setIcon(resourceMap.getIcon(button.getName() + ".show.icon." + osModifier));
+            button.setPressedIcon(resourceMap.getIcon(button.getName() + "Selected.show.icon." + osModifier));
             
         } else {
             LOGGER.event("Hide tracks (" + button.getName() + ")");
 
             // Panel is hidden, show it
-            button.setIcon(resourceMap.getIcon(button.getName() + ".hide.icon"));
+            button.setIcon(resourceMap.getIcon(button.getName() + ".hide.icon." + osModifier));
+            button.setPressedIcon(resourceMap.getIcon(button.getName() + "Selected.hide.icon." + osModifier));
         }
 
         tracksPanelEnabled = !tracksPanelEnabled;
