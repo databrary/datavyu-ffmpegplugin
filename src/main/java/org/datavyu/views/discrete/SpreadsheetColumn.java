@@ -344,6 +344,19 @@ implements VariableListener,
     }
 
     /**
+     * Set the selected state for the DataColumn this displays and clear all other cells and columns.
+     *
+     * @param isSelected Selected state.
+     */
+    public void setExclusiveSelected(final boolean isSelected) {
+        LOGGER.event("select column");
+        cellSelList.clearCellSelection();
+        columnSelList.clearColumnSelection();
+        setSelected(isSelected);
+    }
+    
+    
+    /**
      * @return selection status of underlying variable
      */
     public boolean isSelected() {
