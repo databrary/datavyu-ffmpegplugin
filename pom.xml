@@ -639,9 +639,9 @@
 
             <!-- BugzID:305 - Windows Application Bundle -->
             <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.5.2</version>
+                <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+                <artifactId>launch4j-plugin</artifactId>
+                <version>1.0.0.3</version>
                 <executions>
                     <execution>
                         <id>launch4j</id>
