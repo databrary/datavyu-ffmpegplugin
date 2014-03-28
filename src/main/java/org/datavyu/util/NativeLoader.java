@@ -18,9 +18,14 @@ import com.google.common.collect.Iterables;
 import org.apache.commons.io.FileUtils;
 import org.datavyu.Datavyu;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.UUID;
 import java.util.jar.JarEntry;
@@ -69,7 +74,42 @@ public class NativeLoader {
         File outfile;
         while (resources.hasMoreElements()) {
             outfile = copyFileToTmp((libName + extension), resources.nextElement());
+            setLibraryPath(outfile.getParent());
         }
+    }
+
+    public static void setLibraryPath(String path) throws Exception {
+        System.setProperty("java.library.path", System.getProperty("java.library.path") + ";" + path);
+
+        //set sys_paths to null
+        final Field sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
+        sysPathsField.setAccessible(true);
+        sysPathsField.set(null, null);
+    }
+    /**
+     * Adds the specified path to the java library path
+     *
+     * @param pathToAdd the path to add
+     * @throws Exception
+     */
+    public static void addLibraryPath(String pathToAdd) throws Exception{
+        final Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
+        usrPathsField.setAccessible(true);
+
+        //get array of paths
+        final String[] paths = (String[])usrPathsField.get(null);
+
+        //check if the path to add is already present
+        for(String path : paths) {
+            if(path.equals(pathToAdd)) {
+                return;
+            }
+        }
+
+        //add the new path
+        final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
+        newPaths[newPaths.length-1] = pathToAdd;
+        usrPathsField.set(null, newPaths);
     }
 
     private static File copyFileToTmp(final String destName, final URL u) throws Exception {

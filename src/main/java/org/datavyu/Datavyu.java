@@ -57,6 +57,16 @@ public final class Datavyu extends SingleFrameApplication
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            case WINDOWS:
+                try {
+                    NativeLoader.LoadNativeLib("QTJNative");
+                    NativeLoader.LoadNativeLib("QTJavaNative");
+                    System.out.println(System.getProperty("java.library.path"));
+                    System.loadLibrary("QTJNative");
+                    System.loadLibrary("QTJavaNative");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
 //                break;
         }
