@@ -84,6 +84,9 @@ public final class SpreadsheetPanel extends JPanel
      * View showing the Column titles.
      */
     private JPanel headerView;
+    
+    //WR WANT TO RIGHT JUSTIFY THIS
+    //private final SpringLayout.Constraints HIDDEN_VARS_CONSTRAINTS = SpringLayout.Constraints(Spring(SpringLayout.WEST),SpringLayout.VERTICAL_CENTER);
 
     /**
      * The Database being viewed.
@@ -109,6 +112,11 @@ public final class SpreadsheetPanel extends JPanel
      * New variable button to be added to the column header panel.
      */
     private JButton newVar = new JButton();
+    
+    /**
+     * Hidden variables button to be added to the column header panel.
+     */
+    private JButton hiddenVars;
 
     /**
      * The currently highlighted cell.
@@ -139,6 +147,7 @@ public final class SpreadsheetPanel extends JPanel
     public SpreadsheetPanel(final Datastore db, DVProgressBar progressBar) {
         setName(this.getClass().getSimpleName());
         setLayout(new BorderLayout());
+        setDatabase(db);
 
         mainView = new SpreadsheetView();
         mainView.setLayout(new BoxLayout(mainView, BoxLayout.X_AXIS));
@@ -173,11 +182,12 @@ public final class SpreadsheetPanel extends JPanel
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
                 .getResourceMap(SpreadsheetPanel.class);
 
+        
         // Set up the add new variable button
         newVar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, Color.black));
         newVar.setName("newVarPlusButton");
         newVar.setToolTipText(rMap.getString("add.tooltip"));
-
+        
         ActionMap aMap = Application.getInstance(Datavyu.class).getContext()
                 .getActionMap(SpreadsheetPanel.class, this);
         newVar.setAction(aMap.get("openNewVarMenu"));
@@ -185,9 +195,11 @@ public final class SpreadsheetPanel extends JPanel
         newVar.setSize(SpreadsheetColumn.DEFAULT_COLUMN_WIDTH,
                 SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
         headerView.add(newVar);
+        
+        hiddenVars = makeHiddenVarsButton();
+        headerView.add(hiddenVars);
 
-        // set the database and layout the columns
-        setDatabase(db);
+        //layout the columns
         buildColumns(progressBar);
 
         // Enable drag and drop support.
@@ -195,6 +207,29 @@ public final class SpreadsheetPanel extends JPanel
         fileDropListeners = new CopyOnWriteArrayList<FileDropEventListener>();
 
         lastSelectedCell = null;
+    }
+    
+    private JButton makeHiddenVarsButton()
+    {
+        JButton res = new JButton();
+        res.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Constants.BORDER_SIZE, Color.black));
+        res.setName("hiddenVarsButton");
+        
+        List<Variable> allVars = datastore.getAllVariables();
+        List<Variable> hiddensOnly = new ArrayList<Variable>();
+        for(Variable v: allVars)
+        {
+            if(v.isHidden()) hiddensOnly.add(v);
+        }
+        
+        
+        res.setText("" +  hiddensOnly.size() + " Hidden Columns");
+        res.setSize(SpreadsheetColumn.DEFAULT_COLUMN_WIDTH,
+                SpreadsheetColumn.DEFAULT_HEADER_HEIGHT);
+        
+        res.setEnabled(hiddensOnly.size() != 0);
+        
+        return res;
     }
 
     /**
@@ -244,6 +279,7 @@ public final class SpreadsheetPanel extends JPanel
     private void addColumn(final Datastore db, final Variable var) {
         // Remove previous instance of newVar from the header.
         headerView.remove(newVar);
+        headerView.remove(hiddenVars);
 
         // Create the spreadsheet column and register it.
         SpreadsheetColumn col = new SpreadsheetColumn(db, var, this, this);
@@ -257,6 +293,8 @@ public final class SpreadsheetPanel extends JPanel
 
         // add the new variable '+' button to the header.
         headerView.add(newVar);
+        hiddenVars = makeHiddenVarsButton();
+        headerView.add(hiddenVars);
 
         // and add it to our maintained ref collection
         columns.add(col);
@@ -297,6 +335,9 @@ public final class SpreadsheetPanel extends JPanel
                 break;
             }
         }
+        headerView.remove(hiddenVars);
+        hiddenVars = makeHiddenVarsButton();
+        headerView.add(hiddenVars);
     }
 
     /**
@@ -345,6 +386,7 @@ public final class SpreadsheetPanel extends JPanel
     @Override
     public void variableAdded(final Variable newVariable) {
         addColumn(datastore, newVariable);
+        variableVisible(newVariable);
     }
 
     @Override
@@ -352,7 +394,7 @@ public final class SpreadsheetPanel extends JPanel
         deselectAll();
         removeColumn(deletedVariable);
         revalidate();
-
+        variableHidden(deletedVariable);
     }
 
     @Override
@@ -362,12 +404,16 @@ public final class SpreadsheetPanel extends JPanel
 
     @Override
     public void variableHidden(final Variable hiddenVariable) {
-        // Do nothing.
+        headerView.remove(hiddenVars);
+        hiddenVars = makeHiddenVarsButton();
+        headerView.add(hiddenVars);
     }
 
     @Override
     public void variableVisible(final Variable visibleVariable) {
-        // Do nothing.
+        headerView.remove(hiddenVars);
+        hiddenVars = makeHiddenVarsButton();
+        headerView.add(hiddenVars);
     }
 
     @Override
