@@ -59,11 +59,14 @@ public final class Datavyu extends SingleFrameApplication
                 }
             case WINDOWS:
                 try {
-                    NativeLoader.LoadNativeLib("QTJNative");
-                    NativeLoader.LoadNativeLib("QTJavaNative");
-                    System.out.println(System.getProperty("java.library.path"));
-                    System.loadLibrary("QTJNative");
-                    System.loadLibrary("QTJavaNative");
+                    if(System.getProperty("sun.arch.data.model").equals("32") && !Datavyu.quicktimeLibrariesFound())
+                    {
+                        NativeLoader.LoadNativeLib("QTJNative");
+                        NativeLoader.LoadNativeLib("QTJavaNative");
+                        System.out.println(System.getProperty("java.library.path"));
+                        System.loadLibrary("QTJNative");
+                        System.loadLibrary("QTJavaNative");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -72,6 +75,28 @@ public final class Datavyu extends SingleFrameApplication
         }
     }
 
+    public static boolean quicktimeLibrariesFound()
+    {
+        boolean ans = false;
+        try
+        {
+            Class.forName("quicktime.QTSession");
+            ans = true;
+        }
+        catch(ClassNotFoundException ce)
+        {
+            System.out.println("Class not found: " + ce.getMessage());
+        }
+        catch(Exception e)
+        {
+            System.out.println("Non-specific exception! " + e.getMessage());
+        }
+        finally{
+            return ans;
+        }
+
+    }
+    
     /**
      * The desired minimum initial width.
      */
