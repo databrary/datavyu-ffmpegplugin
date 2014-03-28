@@ -655,6 +655,7 @@
                     <headerType>gui</headerType>
                     <outfile>${basedir}/target/${project.build.finalName}.exe</outfile>
                     <jar>${basedir}/target/${project.build.finalName}.jar</jar>
+                    <errTitle>32bit JVM not found. Please get it. 64bit will not do.</errTitle>
                     <icon>${basedir}/src/main/resources/icons/Datavyu.ico</icon>
                     <splash>
                         <file>${basedir}/src/main/resources/icons/splash.bmp</file>
