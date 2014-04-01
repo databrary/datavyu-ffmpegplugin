@@ -53,6 +53,8 @@ public final class FormalArgEditor extends EditorComponent {
      * The parent editor window that this argument belongs too.
      */
     private VocabElementV parentView;
+    
+    private boolean defaultVal;
 
     /**
      * @param ta    The JTextComponent that this virtual editor floats ontop.
@@ -70,6 +72,7 @@ public final class FormalArgEditor extends EditorComponent {
         argIndex = index;
         parentView = pv;
         parentVariable = var;
+        defaultVal = true;
         resetValue();
     }
 
@@ -103,6 +106,7 @@ public final class FormalArgEditor extends EditorComponent {
         Argument current_arg = parentVariable.getVariableType();
         current_arg.childArguments.get(argIndex).name = newValue;
         parentVariable.setVariableType(current_arg);
+        defaultVal = false;
     }
 
     /**
@@ -188,5 +192,11 @@ public final class FormalArgEditor extends EditorComponent {
      */
     @Override
     public void keyReleased(final KeyEvent e) {
+    }
+    
+    @Override
+    public boolean canSubSelect()
+    {
+        return !defaultVal;
     }
 }
