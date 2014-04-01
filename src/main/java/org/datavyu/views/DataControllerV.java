@@ -934,28 +934,6 @@ public final class DataControllerV extends DatavyuDialog
         return makePlaceholderButton(true);
     }
     
-    private boolean quicktimeLibrariesFound()
-    {
-        boolean ans = false;
-        try
-        {
-            Class.forName("quicktime.QTSession");
-            ans = true;
-        }
-        catch(ClassNotFoundException ce)
-        {
-            System.out.println("Class not found: " + ce.getMessage());
-        }
-        catch(Exception e)
-        {
-            System.out.println("Non-specific exception! " + e.getMessage());
-        }
-        finally{
-            return ans;
-        }
-
-    }
-
     /**
      * Initialize the view for OS other than Macs.
      */
@@ -994,7 +972,7 @@ public final class DataControllerV extends DatavyuDialog
         addDataButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent evt) {
 
-              if(!qtWarningShown && !quicktimeLibrariesFound())
+              if(!qtWarningShown && !Datavyu.quicktimeLibrariesFound())
               {
 
                 JOptionPane.showMessageDialog(null, makeEditorPaneWithLinks(QT_WARNING_MSG), "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
