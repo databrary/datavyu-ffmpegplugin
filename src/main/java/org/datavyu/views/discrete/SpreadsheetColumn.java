@@ -80,6 +80,9 @@ implements VariableListener,
 
     /** column selection listener to notify of column selection changes. */
     private ColumnSelectionListener columnSelList;
+    
+    /** column visibility listener to notify of column visibility changes. */
+    private ColumnVisibilityListener columnVisList;
 
     /** Layout state: The ordinal we are working on for this column. */
     private int workingOrd = 0;
@@ -104,11 +107,13 @@ implements VariableListener,
     public SpreadsheetColumn(final Datastore db,
                              final Variable var,
                              final CellSelectionListener cellSelL,
-                             final ColumnSelectionListener colSelL) {
+                             final ColumnSelectionListener colSelL,
+                             final ColumnVisibilityListener colVisL) {
         this.datastore = db;
         this.variable = var;
         this.cellSelList = cellSelL;
         this.columnSelList = colSelL;
+        this.columnVisList = colVisL;
 
         setOpaque(true);
         setHorizontalAlignment(JLabel.CENTER);
@@ -466,6 +471,8 @@ implements VariableListener,
     public void visibilityChanged(final boolean isHidden) {
         setVisible(!isHidden);
         this.datapanel.setVisible(!isHidden);
+        this.setSelected(false);
+        columnVisList.columnVisibilityChanged();
     }
 
     @Override
