@@ -203,6 +203,7 @@ public final class VocabEditorV extends DatavyuDialog {
         holdPanel.setLayout(new BorderLayout());
         holdPanel.add(verticalFrame, BorderLayout.NORTH);
         currentVocabList.setViewportView(holdPanel);
+        refreshNameWarnings(true);
         updateDialogState();
     }
 
@@ -825,8 +826,12 @@ public final class VocabEditorV extends DatavyuDialog {
         return max + 1;
     }
     
-        
     public void refreshNameWarnings()
+    {
+        refreshNameWarnings(false);
+    }
+        
+    public void refreshNameWarnings(boolean first)
     {
         String s = "";
         for(VocabElementV i : veViews)
@@ -842,9 +847,14 @@ public final class VocabEditorV extends DatavyuDialog {
                 
         }
         
-        if (s.isEmpty()) 
+        if (s.isEmpty() && first != true) 
         {
             nameWarningsLabel.setText("All changes applied.");
+            nameWarningsLabel.setForeground(Color.BLACK);
+        }
+        else if (s.isEmpty() && first == true)
+        {
+            nameWarningsLabel.setText("");
             nameWarningsLabel.setForeground(Color.BLACK);
         }
         else
