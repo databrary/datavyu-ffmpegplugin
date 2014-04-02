@@ -24,6 +24,8 @@ import org.datavyu.views.discrete.EditorTracker;
 import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,6 +70,30 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
 
         addFocusListener(this);
         addFocusListener(edTracker);
+        //for funny behaviors with the return key
+        addKeyListener(new KeyListener() {
+                   public void keyPressed(KeyEvent e) {
+                       if (e.getKeyCode() == KeyEvent.VK_ENTER){ //&& getSelectedText() != null) {
+                           e.consume();
+                       }
+                    }
+                   public void keyTyped(KeyEvent e) {}
+                   public void keyReleased(KeyEvent e)
+                   {
+                        if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                        {
+                            //the below should happen rarely if ever, so verbose debug output is ok
+                            if (!generateText().equals(getText())) {
+                                
+                                System.out.println("MatrixRootview rebuilt due to funny return key");
+                                System.out.println("\tGenerated contents" + generateText().length() + ": " + generateText() + "\n\tTextbox contents " + getText().length() + " : " + getText());
+                                rebuildText();
+                            }
+                        }
+                   }
+                   
+                });
+        //regular editor tracker
         addKeyListener(edTracker);
         addMouseListener(edTracker);
     }
@@ -108,12 +134,16 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      * Recalculates and sets the text to display.
      */
     public void rebuildText() {
+        setText(generateText());
+    }
+    
+    public String generateText() {
         String ans = "";
         for (EditorComponent item : allEditors) {
             ans += item.getText();
         }
         ans = ans.replaceAll("\\\\[\\\\]*\\\\", "\\\\");
-        setText(ans);
+        return ans;
     }
 
     /**
