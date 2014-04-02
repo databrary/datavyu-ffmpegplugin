@@ -73,16 +73,16 @@ public final class NewVariableV extends DatavyuDialog {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/datavyu/views/resources/NewVariableV"); 
-        setTitle(bundle.getString("title.text")); 
-        setName("Form"); 
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/datavyu/views/resources/NewVariableV");
+        setTitle(bundle.getString("title.text"));
+        setName("Form");
         setResizable(false);
 
-        nameField.setName("nameField"); 
+        nameField.setName("nameField");
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(NewVariableV.class);
-        okButton.setText(resourceMap.getString("okButton.text")); 
-        okButton.setName("okButton"); 
+        okButton.setText(resourceMap.getString("okButton.text"));
+        okButton.setName("okButton");
         okButton.setPreferredSize(new java.awt.Dimension(65, 23));
         okButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -90,16 +90,16 @@ public final class NewVariableV extends DatavyuDialog {
             }
         });
 
-        cancelButton.setLabel(bundle.getString("cancelButton.text")); 
-        cancelButton.setName("cancelButton"); 
+        cancelButton.setLabel(bundle.getString("cancelButton.text"));
+        cancelButton.setName("cancelButton");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
             }
         });
 
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); 
-        jLabel1.setName("jLabel1"); 
+        jLabel1.setText(resourceMap.getString("jLabel1.text"));
+        jLabel1.setName("jLabel1");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

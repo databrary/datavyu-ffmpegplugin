@@ -564,7 +564,7 @@ public final class DatavyuView extends FrameView
 
 //        if (Datavyu.getApplication().safeQuit()) {
         new NewProjectC();
-            // Reset the undo manager
+        // Reset the undo manager
 //            resetUndoManager();
 //        }
     }
