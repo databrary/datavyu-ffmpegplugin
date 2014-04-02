@@ -22,7 +22,6 @@ import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.models.db.TitleNotifier;
 import org.datavyu.models.db.UserWarningException;
-import org.datavyu.models.project.Project;
 import org.datavyu.plugins.PluginManager;
 import org.datavyu.undoableedits.SpreadsheetUndoManager;
 import org.datavyu.util.MacHandler;
@@ -173,7 +172,9 @@ public final class Datavyu extends SingleFrameApplication
     /**
      * The view to use for the quick time video controller.
      */
-    private DataControllerV dataController;
+    private static DataControllerV dataController;
+
+    private static ProjectController projectController;
 
     /**
      * The view to use when displaying information about Datavyu.
@@ -189,11 +190,6 @@ public final class Datavyu extends SingleFrameApplication
      * Tracks if a NumPad key has been pressed.
      */
     private boolean numKeyDown = false;
-
-    /**
-     * The current project.
-     */
-    private ProjectController projectController;
 
     /**
      * Opened windows.
@@ -556,6 +552,18 @@ public final class Datavyu extends SingleFrameApplication
         return result;
     }
 
+
+    /**
+     * Gets the single instance of the data controller that is currently used
+     * with Datavyu.
+     *
+     * @return The single data controller in use with this instance of
+     * Datavyu.
+     */
+    public static DataControllerV getDataController() {
+        return dataController;
+    }
+
     /**
      * Action for showing the quicktime video controller.
      */
@@ -837,13 +845,9 @@ public final class Datavyu extends SingleFrameApplication
 
         // Init scripting engine
         m2 = new ScriptEngineManager();
-//        rubyEngine = m2.getEngineByName("jruby");
 
         // Initialize plugin manager
         PluginManager.getInstance();
-
-        // Make a new project
-        projectController = new ProjectController();
 
         // Check for updates on startup
         JFrame mainFrame = Datavyu.getApplication().getMainFrame();
@@ -883,7 +887,8 @@ public final class Datavyu extends SingleFrameApplication
         addExitListener(new ExitListenerImpl());
 
         // Create video controller.
-        dataController = new DataControllerV(getMainFrame(), false);
+//        projectController = new ProjectController();
+        dataController = VIEW.getSpreadsheetPanel().getDataController();
 
         final Dimension screenSize = Toolkit.getDefaultToolkit()
                 .getScreenSize();
@@ -976,45 +981,6 @@ public final class Datavyu extends SingleFrameApplication
     }
 
     /**
-     * Gets the single instance project associated with the currently running
-     * with Datavyu.
-     *
-     * @return The single project in use with this instance of Datavyu
-     */
-    public static ProjectController getProjectController() {
-        return Datavyu.getApplication().projectController;
-    }
-
-    /**
-     * Creates a new project controller.
-     */
-    public static void newProjectController() {
-        Datavyu.getApplication().projectController = new ProjectController();
-    }
-
-    /**
-     * Creates a new project controller, using the given project as the
-     * underlying project.
-     *
-     * @param project
-     */
-    public static void newProjectController(final Project project) {
-        Datavyu.getApplication().projectController = new ProjectController(
-                project);
-    }
-
-    /**
-     * Gets the single instance of the data controller that is currently used
-     * with Datavyu.
-     *
-     * @return The single data controller in use with this instance of
-     * Datavyu.
-     */
-    public static DataControllerV getDataController() {
-        return Datavyu.getApplication().dataController;
-    }
-
-    /**
      * @return The platform that Datavyu is running on.
      */
     public static Platform getPlatform() {
@@ -1088,6 +1054,10 @@ public final class Datavyu extends SingleFrameApplication
                 .getMainFrame(), false);
     }
 
+    public static void setDataController(DataControllerV dc) {
+        dataController = dc;
+    }
+
     public void closeOpenedWindows() {
 
         if (windows == null) {
@@ -1099,6 +1069,14 @@ public final class Datavyu extends SingleFrameApplication
             window.setVisible(false);
             window.dispose();
         }
+    }
+
+    public static void setProjectController(ProjectController p) {
+        projectController = p;
+    }
+
+    public static ProjectController getProjectController() {
+        return projectController;
     }
 
     public static DatavyuView getView() {

@@ -19,15 +19,15 @@ import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.Datavyu;
 import org.datavyu.Datavyu.Platform;
 import org.datavyu.controllers.NewVariableC;
+import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.event.component.FileDropEvent;
 import org.datavyu.event.component.FileDropEventListener;
-import org.datavyu.models.db.Cell;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.DatastoreListener;
-import org.datavyu.models.db.Variable;
+import org.datavyu.models.db.*;
+import org.datavyu.models.project.Project;
 import org.datavyu.util.ArrayDirection;
 import org.datavyu.util.Constants;
 import org.datavyu.views.DVProgressBar;
+import org.datavyu.views.DataControllerV;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import org.jdesktop.application.Action;
@@ -44,11 +44,7 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,6 +64,13 @@ public final class SpreadsheetPanel extends JPanel
         ColumnSelectionListener,
         ColumnVisibilityListener,
         KeyEventDispatcher {
+
+    /**
+     * The current project.
+     */
+    private ProjectController projectController;
+
+    private DataControllerV dataController;
 
     /**
      * To use when navigating left.
@@ -137,21 +140,20 @@ public final class SpreadsheetPanel extends JPanel
      */
     private SheetLayoutType currentLayoutType;
 
+    private static int numNewSheets = 1;
+
     /**
      * List containing listeners interested in file drop events.
      */
     private final transient CopyOnWriteArrayList<FileDropEventListener> fileDropListeners;
 
-    /**
-     * Constructor.
-     *
-     * @param db The model (i.e. database) that we are creating the view
-     *           (i.e. Spreadsheet panel) for.
-     */
-    public SpreadsheetPanel(final Datastore db, DVProgressBar progressBar) {
+    //    public SpreadsheetPanel(final Datastore db, DVProgressBar progressBar) {
+//        ProjectController pc = new ProjectController(null, this);
+//        new SpreadsheetPanel(pc, progressBar);
+//    }
+    public SpreadsheetPanel(final ProjectController pc, DVProgressBar progressBar) {
         setName(this.getClass().getSimpleName());
         setLayout(new BorderLayout());
-        setDatabase(db);
 
         mainView = new SpreadsheetView();
         mainView.setLayout(new BoxLayout(mainView, BoxLayout.X_AXIS));
@@ -168,6 +170,7 @@ public final class SpreadsheetPanel extends JPanel
         add(scrollPane);
         scrollPane.setViewportView(mainView);
         scrollPane.setColumnHeaderView(headerView);
+
 
         // Default layout is ordinal.
         setLayoutType(SheetLayoutType.Ordinal);
@@ -197,19 +200,31 @@ public final class SpreadsheetPanel extends JPanel
         newVar.setAction(aMap.get("openNewVarMenu"));
         newVar.setText(" + ");
         headerView.add(newVar);
-        
-        hiddenVars = makeHiddenVarsButton();
-        updateHiddenVars();
-        headerView.add(hiddenVars);
 
-        //layout the columns
+
+        // set the database and layout the columns
+        if (pc.getDB() == null) {
+            pc.setDatastore(new DatavyuDatastore());
+        }
+        setDatabase(pc.getDB());
         buildColumns(progressBar);
+        projectController = pc;
+        pc.setSpreadsheetPanel(this);
+
+        setName(datastore.getName());
+        numNewSheets++;
+
 
         // Enable drag and drop support.
         setDropTarget(new DropTarget(this, new SSDropTarget()));
         fileDropListeners = new CopyOnWriteArrayList<FileDropEventListener>();
 
         lastSelectedCell = null;
+
+        hiddenVars = makeHiddenVarsButton();
+        updateHiddenVars();
+        headerView.add(hiddenVars);
+
     }
     
     private JButton makeHiddenVarsButton()
@@ -251,6 +266,42 @@ public final class SpreadsheetPanel extends JPanel
             }
         });
     }
+
+    /**
+     * Gets the single instance project associated with the currently running
+     * with Datavyu.
+     *
+     * @return The single project in use with this instance of Datavyu
+     */
+    public ProjectController getProjectController() {
+        return projectController;
+    }
+
+    /**
+     * Creates a new project controller.
+     */
+    public void newProjectController() {
+        projectController = new ProjectController();
+    }
+
+    public DataControllerV getDataController() {
+        return dataController;
+    }
+
+    public void setDataController(DataControllerV dataController) {
+        this.dataController = dataController;
+    }
+
+    /**
+     * Creates a new project controller, using the given project as the
+     * underlying project.
+     *
+     * @param project
+     */
+    public void newProjectController(final Project project) {
+//        projectController = new ProjectController(project);
+    }
+
 
     /**
      * Registers this column data panel with everything that needs to notify
@@ -389,7 +440,8 @@ public final class SpreadsheetPanel extends JPanel
         datastore.addListener(this);
 
         // setName to remember screen locations
-        setName(this.getClass().getSimpleName() + db.getName());
+        setName(db.getName());
+
         db.deselectAll();
     }
 

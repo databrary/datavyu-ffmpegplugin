@@ -94,6 +94,11 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         }
     }
 
+    public RunScriptC(File scriptFile) throws IOException {
+        this.scriptFile = scriptFile;
+        init();
+    }
+
     /**
      * Constructs and invokes the runscript controller.
      *

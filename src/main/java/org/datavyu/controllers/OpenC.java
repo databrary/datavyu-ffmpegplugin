@@ -91,6 +91,7 @@ public final class OpenC {
                         project.getDatabaseFileName()));
             }
         }
+        database.setName(projectFile.getName());
 
         database.deselectAll();
     }

@@ -173,6 +173,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                 }
             }
         } catch (QTException e) {
+            e.printStackTrace();
             LOGGER.error("Unable to calculate FPS, assuming 30", e);
             String response = JOptionPane.showInputDialog(null,
                     "Datavyu was unable to detect the framerate of this video.\n"

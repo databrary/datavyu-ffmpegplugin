@@ -208,7 +208,7 @@ public final class NewProjectV extends DatavyuDialog {
         } else {
             // BugzID:2352 - Clean up spreadsheet resources before creating a
             // new spreadsheet.
-            s.clearSpreadsheet();
+//            s.clearSpreadsheet();
 
             Datastore ds = DatastoreFactory.newDatastore();
             ds.setName(getProjectName());
@@ -217,7 +217,7 @@ public final class NewProjectV extends DatavyuDialog {
             Datavyu.getProjectController().createNewProject(getProjectName());
             Datavyu.getProjectController().setDatastore(ds);
 
-            s.showSpreadsheet();
+            s.createNewSpreadsheet();
 
             // The DB we justed created doesn't really have any unsaved changes.
             Datavyu.getProjectController().getDB().markAsUnchanged();
@@ -225,10 +225,10 @@ public final class NewProjectV extends DatavyuDialog {
             dispose();
         }
 
-        Datavyu.getApplication().resetApp();
+//        Datavyu.getApplication().resetApp();
 
         // BugzID:2411 - Show data controller after creating a new project.
-        Datavyu.getApplication().show(Datavyu.getDataController());
+//        Datavyu.getApplication().show(Datavyu.getDataController());
     } // GEN-LAST:event_okButtonActionPerformed
 
     private boolean isValidProjectName(final String name) {
