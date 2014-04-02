@@ -207,6 +207,8 @@ public final class SpreadsheetPanel extends JPanel
             pc.setDatastore(new DatavyuDatastore());
         }
         setDatabase(pc.getDB());
+        hiddenVars = makeHiddenVarsButton();
+
         buildColumns(progressBar);
         projectController = pc;
         pc.setSpreadsheetPanel(this);
@@ -221,7 +223,6 @@ public final class SpreadsheetPanel extends JPanel
 
         lastSelectedCell = null;
 
-        hiddenVars = makeHiddenVarsButton();
         updateHiddenVars();
         headerView.add(hiddenVars);
 
