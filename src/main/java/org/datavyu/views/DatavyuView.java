@@ -285,10 +285,8 @@ public final class DatavyuView extends FrameView
 
         tabbedPane = new JTabbedPane();
 
-
         fileTree = new FileSystemTreeModel(new File("."));
         fileDrawer = new JTree(fileTree);
-
 
         fileDrawer.setCellRenderer(new DefaultTreeCellRenderer() {
             @Override
@@ -301,7 +299,6 @@ public final class DatavyuView extends FrameView
                     if (convertTreePathToString(tree.getPathForRow(row)).endsWith(".rb")) {
                         setIcon(rubyIcon);
                     } else if (convertTreePathToString(tree.getPathForRow(row)).endsWith(".opf")) {
-                        System.out.println("SETTING OPF");
                         setIcon(opfIcon);
                     }
                 }
@@ -317,7 +314,6 @@ public final class DatavyuView extends FrameView
                 TreePath selPath = fileDrawer.getPathForLocation(e.getX(), e.getY());
                 if (selRow != -1) {
                     if (e.getClickCount() == 1) {
-                        System.out.println(selPath.getPath());
                     } else if (e.getClickCount() == 2) {
                         String path = convertTreePathToString(selPath);
                         String baseDir;
@@ -326,7 +322,6 @@ public final class DatavyuView extends FrameView
                         } else {
                             baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
                         }
-                        System.out.println(baseDir + File.separator + path);
                         File f = new File(baseDir + File.separator + path);
                         if (f.isFile()) {
                             if (f.getName().toLowerCase().endsWith(".rb")) {
@@ -379,8 +374,7 @@ public final class DatavyuView extends FrameView
                 for (Component tab : t.getComponents()) {
                     if (tab instanceof SpreadsheetPanel) {
                         DataControllerV dv = ((SpreadsheetPanel) tab).getDataController();
-                        System.out.println(tab.getName());
-                        System.out.println(dv);
+
                         dv.stopAction();
                         for (DataViewer d : dv.getDataViewers()) {
                             d.setDataViewerVisible(false);
@@ -390,7 +384,6 @@ public final class DatavyuView extends FrameView
                 }
 
                 if (t.getComponentCount() > 0 && t.getSelectedIndex() >= 0) {
-                    System.out.println(t.getSelectedIndex());
 
                     SpreadsheetPanel sp = (SpreadsheetPanel) t.getSelectedComponent();
                     if (Datavyu.getView() != null) {
@@ -403,23 +396,19 @@ public final class DatavyuView extends FrameView
                         for (DataViewer d : sp.getDataController().getDataViewers()) {
                             d.setDataViewerVisible(true);
                         }
-                        System.out.println(Datavyu.getDataController());
 
 
                     }
-                    System.out.println(sp);
 
                     Datavyu.setProjectController(sp.getProjectController());
                     String dir = sp.getProjectController().getProject().getProjectDirectory();
                     if (dir == null) {
                         dir = ".";
                     }
-                    System.out.println(dir);
                     fileTree = new FileSystemTreeModel(new File(dir));
                     fileDrawer.setModel(fileTree);
 //                    fileScrollPane = new JScrollPane(fileDrawer);
 
-                    System.out.println(sp.getDatastore().getName());
 
                 }
             }
@@ -439,8 +428,6 @@ public final class DatavyuView extends FrameView
         tabbedPane.add(panel);
         tabbedPane.setSelectedComponent(panel);
         tabbedPane.setTabComponentAt(0, new TabWithCloseButton(tabbedPane));
-
-        System.out.println(getComponent());
 
         // initialize the undo/redo system
         spreadsheetUndoManager = new SpreadsheetUndoManager();
@@ -1068,8 +1055,6 @@ public final class DatavyuView extends FrameView
             task.addPropertyChangeListener(new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent evt) {
                     String test = "";
-                    System.out.println("PROPERTY CHANGE");
-                    System.out.println(evt.getPropertyName());
                     if ("progress".equals(evt.getPropertyName())) {
                         int val = (Integer) evt.getNewValue();
                         String msg;
