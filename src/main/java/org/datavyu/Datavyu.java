@@ -578,7 +578,7 @@ public final class Datavyu extends SingleFrameApplication
      */
     public void showVariableList() {
         JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-        listVarView = new VariableListV(mainFrame, false, projectController.getDB());
+        listVarView = new VariableListV(mainFrame, true, projectController.getDB());
         listVarView.registerListeners();
 
         Datavyu.getApplication().show(listVarView);
