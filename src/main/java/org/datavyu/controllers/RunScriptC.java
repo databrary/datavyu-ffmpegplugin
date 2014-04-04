@@ -349,8 +349,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         String str_var;
         for (Variable v : db.getAllVariables()) {
             str_var = "ordinal,onset,offset";
-            if (v.getVariableType().type == Argument.Type.MATRIX) {
-                for (Argument a : v.getVariableType().childArguments) {
+            if (v.getRootNode().type == Argument.Type.MATRIX) {
+                for (Argument a : v.getRootNode().childArguments) {
                     str_var += "," + a.name;
                 }
             } else {
@@ -361,7 +361,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 Cell c = v.getCellsTemporally().get(i);
 
                 String row = String.format("%d,%d,%d", i + 1, c.getOnset(), c.getOffset());
-                if (v.getVariableType().type == Argument.Type.MATRIX) {
+                if (v.getRootNode().type == Argument.Type.MATRIX) {
                     for (Value val : ((MatrixValue) c.getValue()).getArguments()) {
                         row += ",";
                         if (!val.isEmpty())

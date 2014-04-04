@@ -80,7 +80,7 @@ public final class FormalArgEditor extends EditorComponent {
      * Resets the text value of this editor.
      */
     public void resetValue() {
-        Argument model = parentVariable.getVariableType().childArguments.get(argIndex);
+        Argument model = parentVariable.getRootNode().childArguments.get(argIndex);
         String argName = "";
         if (model != null) {
             argName = model.name;
@@ -92,7 +92,7 @@ public final class FormalArgEditor extends EditorComponent {
      * @return the model.
      */
     public Argument getModel() {
-        return parentVariable.getVariableType().childArguments.get(argIndex);
+        return parentVariable.getRootNode().childArguments.get(argIndex);
     }
 
     /**
@@ -103,9 +103,9 @@ public final class FormalArgEditor extends EditorComponent {
     }
 
     public void updateArgName(String newValue) {
-        Argument current_arg = parentVariable.getVariableType();
+        Argument current_arg = parentVariable.getRootNode();
         current_arg.childArguments.get(argIndex).name = newValue;
-        parentVariable.setVariableType(current_arg);
+        parentVariable.setRootNode(current_arg);
         defaultVal = false;
     }
 

@@ -189,7 +189,7 @@ public final class VocabEditorV extends DatavyuDialog {
         verticalFrame.setLayout(new BoxLayout(verticalFrame, BoxLayout.Y_AXIS));
 
         for (Variable var : ds.getAllVariables()) {
-            Argument argument = var.getVariableType();
+            Argument argument = var.getRootNode();
             if (argument.type.equals(Argument.Type.MATRIX)) {
                 VocabElementV matrixV = new VocabElementV(argument, var, this);
                 verticalFrame.add(matrixV);
@@ -236,7 +236,7 @@ public final class VocabEditorV extends DatavyuDialog {
             //Matrix m = v.getValue();
             //m.createArgument(Argument.type.NOMINAL);
 
-            VocabElementV matrixV = new VocabElementV(v.getVariableType(), v, this);
+            VocabElementV matrixV = new VocabElementV(v.getRootNode(), v, this);
             verticalFrame.add(matrixV);
             veViews.add(matrixV);
 
@@ -309,7 +309,7 @@ public final class VocabEditorV extends DatavyuDialog {
     public void addCode() {
         Variable var = selectedVocabElement.getVariable();
         Argument fa = var.addArgument(Argument.Type.NOMINAL);
-        selectedVocabElement.setModel(var.getVariableType());
+        selectedVocabElement.setModel(var.getRootNode());
 
         String type = "Nominal"; //Hardcoded. Was previously (String) argTypeComboBox.getSelectedItem() but this form element is now removed
         LOGGER.event("vocEd - add argument:" + type);

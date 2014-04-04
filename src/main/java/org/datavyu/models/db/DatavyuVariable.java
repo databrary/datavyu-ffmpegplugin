@@ -93,7 +93,7 @@ public final class DatavyuVariable implements Variable {
      */
     public DatavyuVariable(String name, Argument type, boolean grandfathered) throws UserWarningException {
         this.setName(name, grandfathered);
-        this.setVariableType(type);
+        this.setRootNode(type);
         this.setHidden(false);
         this.setSelected(true);
 
@@ -102,7 +102,7 @@ public final class DatavyuVariable implements Variable {
     
     
     public void addCell(Cell cell) {
-        if (cell.getValue().getArgument() == this.getVariableType()) {
+        if (cell.getValue().getArgument() == this.getRootNode()) {
             cells.add(cell);
         }
     }
@@ -118,7 +118,7 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public Cell createCell() {
-        Cell c = new DatavyuCell(this, this.getVariableType());
+        Cell c = new DatavyuCell(this, this.getRootNode());
 
         cells.add(c);
 
@@ -154,12 +154,12 @@ public final class DatavyuVariable implements Variable {
     }
 
     @Override
-    public Argument getVariableType() {
+    public Argument getRootNode() {
         return rootNodeArgument;
     }
 
     @Override
-    public void setVariableType(final Argument a) {
+    public void setRootNode(final Argument a) {
         DatavyuDatastore.markDBAsChanged();
         rootNodeArgument = a;
     }
@@ -249,20 +249,20 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public Argument addArgument(final Argument.Type type) {
-        Argument arg = getVariableType();
+        Argument arg = getRootNode();
         Argument child = arg.addChildArgument(type);
 
         for(Cell cell : getCells()) {
             cell.addMatrixValue(child);
         }
 
-        this.setVariableType(arg);
+        this.setRootNode(arg);
         return arg.childArguments.get(arg.childArguments.size()-1);
     }
 
     @Override
     public void moveArgument(final int old_index, final int new_index) {
-        Argument arg = getVariableType();
+        Argument arg = getRootNode();
 
         // Test to see if this is out of bounds
         if(new_index > arg.childArguments.size() - 1 || new_index < 0) {
@@ -277,7 +277,7 @@ public final class DatavyuVariable implements Variable {
         for(Cell cell : getCells()) {
             cell.moveMatrixValue(old_index, new_index);
         }
-        this.setVariableType(arg);
+        this.setRootNode(arg);
     }
 
     @Override
@@ -288,7 +288,7 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public void removeArgument(final String name) {
-        Argument arg = getVariableType();
+        Argument arg = getRootNode();
         int arg_index = getArgumentIndex(name);
         arg.childArguments.remove(arg_index);
 
@@ -297,12 +297,12 @@ public final class DatavyuVariable implements Variable {
             cell.removeMatrixValue(arg_index);
         }
 
-        this.setVariableType(arg);
+        this.setRootNode(arg);
     }
 
     @Override
     public int getArgumentIndex(final String name) {
-        Argument arg = getVariableType();
+        Argument arg = getRootNode();
         for(int i = 0; i < arg.childArguments.size(); i++) {
             if(arg.childArguments.get(i).name.equals(name)) {
                 return i;

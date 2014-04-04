@@ -51,7 +51,7 @@ public final class VariableTO implements Comparable<VariableTO> {
      */
     public VariableTO(final Variable var, final int varPosition) {
         name = var.getName();
-        type = var.getVariableType();
+        type = var.getRootNode();
         cellTOs = new ArrayList<CellTO>();
         variablePosition = varPosition;
 

@@ -106,8 +106,8 @@ public final class ExportDatabaseFileC {
 
                 // Test if the variable is a matrix. If it is, then
                 // we have to print out all of its arguments.
-                if (v.getVariableType().type == Argument.Type.MATRIX) {
-                    for (Argument a : v.getVariableType().childArguments) {
+                if (v.getRootNode().type == Argument.Type.MATRIX) {
+                    for (Argument a : v.getRootNode().childArguments) {
                         header += "," + v.getName() + "." + a.name;
                     }
                 } else {
@@ -232,11 +232,11 @@ public final class ExportDatabaseFileC {
 
                 // Test if the variable is a matrix. If it is, then
                 // we have to print out all of its arguments.
-                if (v.getVariableType().type == Argument.Type.MATRIX) {
-                    for (Argument a : v.getVariableType().childArguments) {
+                if (v.getRootNode().type == Argument.Type.MATRIX) {
+                    for (Argument a : v.getRootNode().childArguments) {
                         header += v.getName() + "." + a.name + ",";
                     }
-                    arglengths.add(v.getVariableType().childArguments.size() + 3);
+                    arglengths.add(v.getRootNode().childArguments.size() + 3);
                 } else {
                     header += v.getName() + ".value,";
                     arglengths.add(4);
@@ -264,8 +264,8 @@ public final class ExportDatabaseFileC {
                         row.append(",");
                         row.append(c.getOffset());
                         row.append(",");
-                        if (v.getVariableType().type == Argument.Type.MATRIX) {
-                            for (int k = 0; k < v.getVariableType().childArguments.size(); k++) {
+                        if (v.getRootNode().type == Argument.Type.MATRIX) {
+                            for (int k = 0; k < v.getRootNode().childArguments.size(); k++) {
                                 row.append(c.getMatrixValue(k).toString());
                                 row.append(",");
                             }
@@ -312,20 +312,20 @@ public final class ExportDatabaseFileC {
         for (Variable variable : ds.getAllVariables()) {
             ps.printf("%s (%s,%s,%s)",
                     StringUtils.escapeCSV(variable.getName()),
-                    variable.getVariableType().type,
+                    variable.getRootNode().type,
                     !variable.isHidden(),
                     "");
 
-            if (variable.getVariableType().type == Argument.Type.MATRIX) {
+            if (variable.getRootNode().type == Argument.Type.MATRIX) {
                 ps.print('-');
 
                 int numArgs = 0;
-                for (Argument arg : variable.getVariableType().childArguments) {
+                for (Argument arg : variable.getRootNode().childArguments) {
                     ps.printf("%s|%s",
                             StringUtils.escapeCSV(arg.name),
                             arg.type);
 
-                    if (numArgs < (variable.getVariableType().childArguments.size() - 1)) {
+                    if (numArgs < (variable.getRootNode().childArguments.size() - 1)) {
                         ps.print(',');
                     }
                     numArgs++;

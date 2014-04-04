@@ -103,7 +103,7 @@ public class VariableTest {
 
     @Test
     public void testGetVariableType() {
-        assertEquals(model.getVariableType().type, Argument.Type.TEXT);
+        assertEquals(model.getRootNode().type, Argument.Type.TEXT);
     }
 
     @Test

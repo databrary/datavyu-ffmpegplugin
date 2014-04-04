@@ -96,7 +96,7 @@ public final class VocabElementRootView extends JTextArea {
     public void setVocabElement(final Variable var, VocabElementV pv) {
         editors.clear();
         if (editors.isEmpty()) {
-            editors.addAll(VocabElementEditorFactory.buildVocabElement(this, var, var.getVariableType(), pv));
+            editors.addAll(VocabElementEditorFactory.buildVocabElement(this, var, var.getRootNode(), pv));
         }
 
         rebuildText();

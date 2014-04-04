@@ -350,7 +350,7 @@ public final class OpenDatabaseFileC {
             int end = tokens.length - 1;
             tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
             
-            parseFormalArgs(tokens, DATA_INDEX, var.getVariableType(), (MatrixValue) newCell.getValue());
+            parseFormalArgs(tokens, DATA_INDEX, var.getRootNode(), (MatrixValue) newCell.getValue());
             // Get the next line in the file for reading.
             line = csvFile.readLine();
         }
@@ -596,7 +596,7 @@ public final class OpenDatabaseFileC {
 
             // Get the vocab element for the matrix and clean it up to be
             // populated with arguments from the CSV file.
-            Argument newArg = newVar.getVariableType();
+            Argument newArg = newVar.getRootNode();
             newArg.clearChildArguments();
 
             // For each of the formal arguments in the file - parse it and
@@ -604,7 +604,7 @@ public final class OpenDatabaseFileC {
             for (String arg : vocabString[1].split(",")) {
                 newArg.childArguments.add(parseFormalArgument(arg));
             }
-            newVar.setVariableType(newArg);
+            newVar.setRootNode(newArg);
 
             return parseMatrixVariable(csvFile, newVar, newArg);
 

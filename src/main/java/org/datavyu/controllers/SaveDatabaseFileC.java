@@ -98,20 +98,20 @@ public final class SaveDatabaseFileC {
         for (Variable variable : ds.getAllVariables()) {
             ps.printf("%s (%s,%s,%s)",
                     StringUtils.escapeCSV(variable.getName()),
-                    variable.getVariableType().type,
+                    variable.getRootNode().type,
                     !variable.isHidden(),
                     "");
 
-            if (variable.getVariableType().type == Argument.Type.MATRIX) {
+            if (variable.getRootNode().type == Argument.Type.MATRIX) {
                 ps.print('-');
 
                 int numArgs = 0;
-                for (Argument arg : variable.getVariableType().childArguments) {
+                for (Argument arg : variable.getRootNode().childArguments) {
                     ps.printf("%s|%s",
                             StringUtils.escapeCSV(arg.name),
                             arg.type);
 
-                    if (numArgs < (variable.getVariableType().childArguments.size() - 1)) {
+                    if (numArgs < (variable.getRootNode().childArguments.size() - 1)) {
                         ps.print(',');
                     }
                     numArgs++;

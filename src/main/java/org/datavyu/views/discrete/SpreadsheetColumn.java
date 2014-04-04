@@ -124,7 +124,7 @@ implements VariableListener,
         setMaximumSize(this.getHeaderSize());
         
         String typeString = "";
-        if (var.getVariableType().type != Argument.Type.MATRIX) typeString = "  (" + var.getVariableType().type + ")";
+        if (var.getRootNode().type != Argument.Type.MATRIX) typeString = "  (" + var.getRootNode().type + ")";
         setText(var.getName() + typeString); //typeString for matrices is empty. Only displayed for non-matrix types (Text, Nominal)
 
         datapanel = new ColumnDataPanel(db, width, var, cellSelL);
@@ -463,7 +463,7 @@ implements VariableListener,
     @Override
     public void nameChanged(final String newName) {
         String headerText = newName;
-        if (variable.getVariableType().type != Argument.Type.MATRIX) headerText += variable.getVariableType().type;
+        if (variable.getRootNode().type != Argument.Type.MATRIX) headerText += variable.getRootNode().type;
         this.setText(headerText);
     }
 
