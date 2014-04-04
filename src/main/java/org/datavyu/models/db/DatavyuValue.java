@@ -26,6 +26,7 @@ package org.datavyu.models.db;
 import java.io.Serializable;
 import java.util.UUID;
 import org.datavyu.Datavyu;
+import org.datavyu.util.StringUtils;
 
 
 public abstract class DatavyuValue implements Value, Serializable, Comparable<DatavyuValue> {
@@ -104,6 +105,6 @@ public abstract class DatavyuValue implements Value, Serializable, Comparable<Da
     
     public String serialize() {
         if(value == null) return "";
-        return value;
+        return StringUtils.escapeCSVArgument(value);
     }
 }

@@ -21,6 +21,7 @@ import org.datavyu.models.db.*;
 
 import javax.swing.*;
 import java.io.*;
+import static java.lang.Math.min;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -258,25 +259,30 @@ public final class OpenDatabaseFileC {
         // Fill in missing info with a missing value.
 
         List<Value> args = destValue.getArguments();
+        
+        int endIndex = tokens.length;
         if (args.size() != tokens.length - startI) {
             // We have a problem. Arguments are of different length.
             // Get as much from the string as we can.
 
-            parse_error = true;
+            parse_error = true; //do something with this: warning, more informative exception?
+            endIndex = min(tokens.length,destValue.getArguments().size() + startI);
         }
 
-        for (int i = 0; i < destValue.getArguments().size(); i++) {
-            Argument fa = destPattern.childArguments.get(i);
+        for (int tokenIndex = startI; tokenIndex < endIndex; tokenIndex++) {
+            int argIndex = tokenIndex - startI;
+            Argument fa = destPattern.childArguments.get(argIndex);
             boolean emptyArg = false;
 
             // If the field doesn't contain anything or matches the FargName
-            // we consider the argument to be 'empty'.
-            if ((tokens[startI + i].length() == 0) || tokens[startI + i].equals(fa.name)) {
+            // we consider the argument to be 'empty'. 
+            if ((tokens[tokenIndex].length() == 0) || tokens[tokenIndex].equals("<"+fa.name+">")) {
                 emptyArg = true;
+                tokens[tokenIndex] = ""; //set <placeholder> to empty string. 
             }
 
-            tokens[startI + i] = tokens[startI + i].trim();
-            destValue.getArguments().get(i).set(tokens[startI + i]);
+            tokens[tokenIndex] = tokens[tokenIndex].trim(); //is this desirable?
+            destValue.getArguments().get(argIndex).set(tokens[tokenIndex]);
         }
     }
 
@@ -339,11 +345,11 @@ public final class OpenDatabaseFileC {
             newCell.setOnset(tokens[DATA_ONSET]);
             newCell.setOffset(tokens[DATA_OFFSET]);
 
-            // Strip the brackets from the first and last argument.
+            // Strip the first and last chars - presumably parens
             tokens[DATA_INDEX] = tokens[DATA_INDEX].substring(1, tokens[DATA_INDEX].length());
-
             int end = tokens.length - 1;
             tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
+            
             parseFormalArgs(tokens, DATA_INDEX, var.getVariableType(), (MatrixValue) newCell.getValue());
             // Get the next line in the file for reading.
             line = csvFile.readLine();

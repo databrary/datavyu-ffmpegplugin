@@ -124,7 +124,7 @@ public final class SaveDatabaseFileC {
                 ps.printf("%s,%s,%s",
                         cell.getOnsetString(),
                         cell.getOffsetString(),
-                        StringUtils.escapeCSVArgument(cell.getValue().serialize()));
+                        cell.getValue().serialize());
                 ps.println();
             }
         }
