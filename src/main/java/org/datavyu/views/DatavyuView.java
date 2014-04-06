@@ -407,6 +407,7 @@ public final class DatavyuView extends FrameView
                     }
                     fileTree = new FileSystemTreeModel(new File(dir));
                     fileDrawer.setModel(fileTree);
+                    updateTitle();
 //                    fileScrollPane = new JScrollPane(fileDrawer);
 
 
@@ -522,8 +523,8 @@ public final class DatavyuView extends FrameView
         JFrame mainFrame = Datavyu.getApplication().getMainFrame();
         ResourceMap rMap = Datavyu.getApplication().getContext()
                 .getResourceMap(Datavyu.class);
-        String postFix = "";
-        ProjectController projectController = Datavyu.getProjectController();
+        String postFix = "  ";
+        ProjectController projectController = getSpreadsheetPanel().getProjectController();
 
         if (projectController.isChanged()) {
             postFix = "*";
@@ -544,12 +545,15 @@ public final class DatavyuView extends FrameView
 
         String projectName = projectController.getProjectName();
         if (projectName == null) {
-            projectName = "Project1";
+            projectName = "untitled";
         }
 
         String title = rMap.getString("Application.title") + " - " + projectName + extension + postFix;
+        String tabTitle = projectName + postFix;
 
         mainFrame.setTitle(title);
+        this.getSpreadsheetPanel().setName(tabTitle);
+        tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), tabTitle);
 //        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.getFrame().setTitle(title);

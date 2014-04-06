@@ -23,10 +23,11 @@
 
 package org.datavyu.models.db;
 
-import java.util.*;
-import javax.swing.JOptionPane;
 import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
+
+import javax.swing.*;
+import java.util.*;
 
 /**
  * Maps a variable object to a datastore.
@@ -97,7 +98,7 @@ public final class DatavyuVariable implements Variable {
         this.setHidden(false);
         this.setSelected(true);
 
-        DatavyuDatastore.markDBAsChanged();
+        Datavyu.getProjectController().getDB().markDBAsChanged();
     }
     
     
@@ -126,7 +127,7 @@ public final class DatavyuVariable implements Variable {
             vl.cellInserted(c);
         }
 
-        DatavyuDatastore.markDBAsChanged();
+        Datavyu.getProjectController().getDB().markDBAsChanged();
         return c;
     }
 
@@ -134,7 +135,7 @@ public final class DatavyuVariable implements Variable {
     public void removeCell(final Cell cell) {
         cells.remove(cell);
 
-        DatavyuDatastore.markDBAsChanged();
+        Datavyu.getProjectController().getDB().markDBAsChanged();
 
         for(VariableListener vl : getListeners(getID()) ) {
             vl.cellRemoved(cell);
@@ -160,7 +161,7 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public void setVariableType(final Argument a) {
-        DatavyuDatastore.markDBAsChanged();
+        Datavyu.getProjectController().getDB().markDBAsChanged();
         rootNodeArgument = a;
     }
 

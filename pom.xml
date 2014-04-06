@@ -666,10 +666,10 @@
                     <jre>
                         <minVersion>1.6.0</minVersion>
                     </jre>
-                    <singleInstance>
-                        <mutexName>Datavyu</mutexName>
-                        <!--<windowTitle>Datavyu</windowTitle>-->
-                    </singleInstance>
+                    <!--<singleInstance>-->
+                    <!--<mutexName>Datavyu</mutexName>-->
+                    <!--&lt;!&ndash;<windowTitle>Datavyu</windowTitle>&ndash;&gt;-->
+                    <!--</singleInstance>-->
                     <classPath>
                         <mainClass>org.datavyu.Datavyu</mainClass>
                         <preCp>jna-3.4.1.jar</preCp>

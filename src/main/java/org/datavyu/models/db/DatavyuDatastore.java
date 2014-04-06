@@ -42,7 +42,7 @@ public class DatavyuDatastore implements Datastore {
     private static TitleNotifier titleNotifier = null;
 
     // Has tbhe datastore changed since it has last been marked as unchanged?
-    private static boolean changed;
+    private boolean changed;
     //
     private List<DatastoreListener> dbListeners = new ArrayList<DatastoreListener>();
     private Map<String, Variable> variables;
@@ -57,12 +57,13 @@ public class DatavyuDatastore implements Datastore {
 
         // Clear variable listeners.
         DatavyuVariable.clearListeners();
-        DatavyuDatastore.changed = false;
+        changed = false;
     }
 
-    public static void markDBAsChanged() {
-        if (!DatavyuDatastore.changed) {
-            DatavyuDatastore.changed = true;
+    @Override
+    public void markDBAsChanged() {
+        if (!changed) {
+            changed = true;
 
             if (DatavyuDatastore.titleNotifier != null) {
                 DatavyuDatastore.titleNotifier.updateTitle();
@@ -196,8 +197,8 @@ public class DatavyuDatastore implements Datastore {
 
     @Override
     public void markAsUnchanged() {
-        if (DatavyuDatastore.changed) {
-            DatavyuDatastore.changed = false;
+        if (changed) {
+            changed = false;
 
             if (DatavyuDatastore.titleNotifier != null) {
                 DatavyuDatastore.titleNotifier.updateTitle();
@@ -214,7 +215,7 @@ public class DatavyuDatastore implements Datastore {
 
     @Override
     public boolean isChanged() {
-        return DatavyuDatastore.changed;
+        return changed;
     }
 
     @Override

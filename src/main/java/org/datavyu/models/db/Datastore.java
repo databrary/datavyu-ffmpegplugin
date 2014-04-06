@@ -135,6 +135,8 @@ public interface Datastore {
      */
     void markAsUnchanged();
 
+    void markDBAsChanged();
+
     /**
      * @return True if the datastore has changed since it was last saved, false
      * otherwise.

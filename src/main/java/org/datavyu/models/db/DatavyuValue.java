@@ -23,9 +23,10 @@
 
 package org.datavyu.models.db;
 
+import org.datavyu.Datavyu;
+
 import java.io.Serializable;
 import java.util.UUID;
-import org.datavyu.Datavyu;
 
 
 public abstract class DatavyuValue implements Value, Serializable, Comparable<DatavyuValue> {
@@ -81,7 +82,7 @@ public abstract class DatavyuValue implements Value, Serializable, Comparable<Da
         if(!newValue.equals(toString()) && !newValue.equals(this.value))
         {
             this.value = newValue;
-            DatavyuDatastore.markDBAsChanged();   
+            Datavyu.getProjectController().getDB().markDBAsChanged();
         }
         else
         {

@@ -14,6 +14,8 @@
  */
 package org.datavyu.models.db;
 
+import org.datavyu.Datavyu;
+
 import java.util.*;
 
 
@@ -110,7 +112,7 @@ public class DatavyuCell implements Cell {
 
     @Override
     public void setOffset(final long newOffset) {
-        if (newOffset != offset) DatavyuDatastore.markDBAsChanged();
+        if (newOffset != offset) Datavyu.getProjectController().getDB().markDBAsChanged();
         offset = newOffset;
         for (CellListener cl : getListeners(getID())) {
             cl.offsetChanged(offset);
@@ -140,7 +142,7 @@ public class DatavyuCell implements Cell {
 
     @Override
     public void setOnset(final long newOnset) {
-        if (newOnset != onset) DatavyuDatastore.markDBAsChanged();
+        if (newOnset != onset) Datavyu.getProjectController().getDB().markDBAsChanged();
         onset = newOnset;
         for (CellListener cl : getListeners(getID())) {
             cl.onsetChanged(onset);
