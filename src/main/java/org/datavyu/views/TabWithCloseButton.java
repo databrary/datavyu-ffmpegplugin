@@ -100,7 +100,7 @@ public class TabWithCloseButton extends JPanel {
         public void actionPerformed(ActionEvent e) {
             int i = pane.indexOfTabComponent(TabWithCloseButton.this);
             if (i != -1) {
-                if (Datavyu.getApplication().safeQuit()) {
+                if (Datavyu.getApplication().safeQuit(pane.getComponentAt(i))) {
                     pane.remove(i);
                 }
             }

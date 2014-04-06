@@ -29,6 +29,7 @@ import org.datavyu.util.NativeLoader;
 import org.datavyu.util.WindowsFileAssociations;
 import org.datavyu.util.WindowsKeyChar;
 import org.datavyu.views.*;
+import org.datavyu.views.discrete.SpreadsheetPanel;
 import org.jdesktop.application.*;
 
 import javax.script.ScriptEngine;
@@ -696,13 +697,86 @@ public final class Datavyu extends SingleFrameApplication
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
                 .getResourceMap(Datavyu.class);
 
-        if (projectController.isChanged()) {
+        if (getView().checkAllTabsForChanges()) {
+            for (Component tab : getView().getTabbedPane().getComponents()) {
+                if (tab instanceof SpreadsheetPanel) {
+                    SpreadsheetPanel sp = (SpreadsheetPanel) tab;
+                    getView().getTabbedPane().setSelectedComponent(sp);
+
+                    // Ask to save if this spreadsheet has been changed
+                    if (sp.getProjectController().isChanged()) {
+                        String cancel = "Cancel";
+                        String no = "Don't save";
+                        String yes = "Save";
+                        int noIndex;
+                        int yesIndex;
+                        int cancelIndex;
+
+                        String[] options = new String[3];
+                        //Mac and Windows typically order these buttons differently
+                        if (getPlatform() == Platform.MAC) {
+                            options[0] = yes;
+                            options[1] = cancel;
+                            options[2] = no;
+                            noIndex = 2;
+                            yesIndex = 0;
+                            cancelIndex = 1;
+
+                        } else {
+                            options[0] = yes;
+                            options[1] = no;
+                            options[2] = cancel;
+                            yesIndex = 0;
+                            noIndex = 1;
+                            cancelIndex = 2;
+
+                        }
+
+                        int selection = JOptionPane.showOptionDialog(mainFrame,
+                                rMap.getString("UnsavedDialog.message"),
+                                rMap.getString("UnsavedDialog.title"),
+                                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                                null, options, yes);
+
+                        if (selection == yesIndex) getView().save();
+
+                        // If the user cancels, break and return that it isnt safe to quit
+                        if (selection == cancelIndex) {
+                            return false;
+                        }
+                    }
+                }
+
+
+            }
+
+            // User has been asked whether or not to save each file, we can return now
+            return true;
+
+        } else {
+
+            // Project hasn't been changed.
+            return true;
+        }
+    }
+
+    /**
+     * Function to check whether or not it is OK to close this tab
+     */
+    public boolean safeQuit(Component tab) {
+        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
+                .getResourceMap(Datavyu.class);
+        SpreadsheetPanel sp = (SpreadsheetPanel) tab;
+        if (sp.getProjectController().isChanged()) {
+            getView().getTabbedPane().setSelectedComponent(sp);
 
             String cancel = "Cancel";
             String no = "Don't save";
             String yes = "Save";
             int noIndex;
             int yesIndex;
+            int cancelIndex;
 
             String[] options = new String[3];
             //Mac and Windows typically order these buttons differently
@@ -712,6 +786,7 @@ public final class Datavyu extends SingleFrameApplication
                 options[2] = no;
                 noIndex = 2;
                 yesIndex = 0;
+                cancelIndex = 1;
 
             } else {
                 options[0] = yes;
@@ -719,21 +794,25 @@ public final class Datavyu extends SingleFrameApplication
                 options[2] = cancel;
                 yesIndex = 0;
                 noIndex = 1;
+                cancelIndex = 2;
+
             }
 
             int selection = JOptionPane.showOptionDialog(mainFrame,
-                    rMap.getString("UnsavedDialog.message"),
+                    rMap.getString("UnsavedDialog.tabmessage"),
                     rMap.getString("UnsavedDialog.title"),
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, options, yes);
 
             if (selection == yesIndex) getView().save();
-            return (selection == yesIndex && !projectController.isChanged() //'yes' selected and save successful
-                    || selection == noIndex); //'no' selected
 
+            // If the user cancels, break and return that it isnt safe to quit
+            if (selection == cancelIndex) {
+                return false;
+            } else {
+                return true;
+            }
         } else {
-
-            // Project hasn't been changed.
             return true;
         }
     }

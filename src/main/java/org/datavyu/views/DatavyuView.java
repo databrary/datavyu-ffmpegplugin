@@ -924,19 +924,17 @@ public final class DatavyuView extends FrameView
     @Action
     public void open() {
 
-        if (Datavyu.getApplication().safeQuit()) {
-            DatavyuFileChooser jd = new DatavyuFileChooser();
+        DatavyuFileChooser jd = new DatavyuFileChooser();
 
-            jd.addChoosableFileFilter(CSVFilter.INSTANCE);
-            jd.addChoosableFileFilter(SHAPAFilter.INSTANCE);
-            jd.addChoosableFileFilter(OPFFilter.INSTANCE);
+        jd.addChoosableFileFilter(CSVFilter.INSTANCE);
+        jd.addChoosableFileFilter(SHAPAFilter.INSTANCE);
+        jd.addChoosableFileFilter(OPFFilter.INSTANCE);
 
-            jd.setFileFilter(OPFFilter.INSTANCE);
-            int result = jd.showOpenDialog(getComponent());
+        jd.setFileFilter(OPFFilter.INSTANCE);
+        int result = jd.showOpenDialog(getComponent());
 
-            if (result == JFileChooser.APPROVE_OPTION) {
-                open(jd.getSelectedFile());
-            }
+        if (result == JFileChooser.APPROVE_OPTION) {
+            open(jd.getSelectedFile());
         }
     }
 
@@ -1046,54 +1044,48 @@ public final class DatavyuView extends FrameView
      * @param jd The file chooser to use.
      */
     private void open(final DatavyuFileChooser jd) {
-        if (Datavyu.getApplication().safeQuit()) {
 
-//            Datavyu.getApplication().resetApp();
+        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        progressBar = new DVProgressBar(this.getFrame(), false);
 
-            JFrame mainFrame = Datavyu.getApplication().getMainFrame();
-            progressBar = new DVProgressBar(this.getFrame(), false);
-//            Datavyu.getApplication().show(progressBar);
-
-            task = new OpenTask(jd);
-//            progressBar.setProgress(0, "Starting file open");
-            task.addPropertyChangeListener(new PropertyChangeListener() {
-                public void propertyChange(PropertyChangeEvent evt) {
-                    String test = "";
-                    if ("progress".equals(evt.getPropertyName())) {
-                        int val = (Integer) evt.getNewValue();
-                        String msg;
-                        switch (val) {
-                            case 0:
-                                msg = "Preparing spreadsheet";
-                                break;
-                            case 10:
-                                msg = "Opening project";
-                                break;
-                            case 40:
-                                msg = "Project opened";
-                                break;
-                            case 50:
-                                msg = "Loading project into spreadsheet";
-                                break;
-                            case 100:
-                                msg = "Completed!";
-                                break;
-                            default:
-                                msg = "Error loading project!";
-                        }
-
-                        progressBar.setProgress(val, msg);
+        task = new OpenTask(jd);
+        task.addPropertyChangeListener(new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt) {
+                String test = "";
+                if ("progress".equals(evt.getPropertyName())) {
+                    int val = (Integer) evt.getNewValue();
+                    String msg;
+                    switch (val) {
+                        case 0:
+                            msg = "Preparing spreadsheet";
+                            break;
+                        case 10:
+                            msg = "Opening project";
+                            break;
+                        case 40:
+                            msg = "Project opened";
+                            break;
+                        case 50:
+                            msg = "Loading project into spreadsheet";
+                            break;
+                        case 100:
+                            msg = "Completed!";
+                            break;
+                        default:
+                            msg = "Error loading project!";
                     }
-                }
-            });
-            task.execute();
-            try {
-                createNewSpreadsheet(task.get());
 
-                progressBar.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+                    progressBar.setProgress(val, msg);
+                }
             }
+        });
+        task.execute();
+        try {
+            createNewSpreadsheet(task.get());
+
+            progressBar.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -1556,6 +1548,19 @@ public final class DatavyuView extends FrameView
     public void safeQuit() {
         Datavyu.getApplication().exit();
         System.exit(0);
+    }
+
+    public boolean checkAllTabsForChanges() {
+        boolean changes = false;
+        for (Component tab : tabbedPane.getComponents()) {
+            if (tab instanceof SpreadsheetPanel) {
+                SpreadsheetPanel sp = (SpreadsheetPanel) tab;
+                if (sp.getProjectController().isChanged()) {
+                    changes = true;
+                }
+            }
+        }
+        return changes;
     }
 
     /**
@@ -2440,6 +2445,9 @@ public final class DatavyuView extends FrameView
 
     }
 
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
+    }
 
     /**
      * An undo/redo adapter. The adapter is notified when
