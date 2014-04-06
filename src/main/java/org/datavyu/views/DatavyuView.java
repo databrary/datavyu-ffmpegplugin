@@ -911,7 +911,7 @@ public final class DatavyuView extends FrameView
     }
 
     public String convertTreePathToString(TreePath tp) {
-        return tp.toString().replaceAll("\\]| |\\[|", "").replace(",", File.separator);
+        return tp.toString().replaceAll("\\]| |\\[|", "").replaceAll(",", File.separator);
     }
 
     /**
@@ -1288,14 +1288,6 @@ public final class DatavyuView extends FrameView
         panel.removeFileDropEventListener(this);
     }
 
-    /**
-     * Action for showing the spreadsheet.
-     */
-    @Action
-    public void showSpreadsheet() {
-//        showSpreadsheet();
-    }
-
     public ProjectController createNewSpreadsheet(ProjectController pc) {
         pc.setSpreadsheetPanel(new SpreadsheetPanel(pc, null));
         panel = pc.getSpreadsheetPanel();
@@ -1377,6 +1369,14 @@ public final class DatavyuView extends FrameView
         return pc;
     }
 
+    /**
+     * Action for showing the spreadsheet.
+     */
+    @Action
+    public void showSpreadsheet() {
+        showSpreadsheet(this.getSpreadsheetPanel().getProjectController(), null);
+    }
+
     @Action
     public void showSpreadsheet(ProjectController pc, DVProgressBar progressBar) {
         //weakTemporalAlignmentMenuItem.setSelected(false);
@@ -1384,7 +1384,7 @@ public final class DatavyuView extends FrameView
         // need to add changes to maintain spreadsheet view after change
         // Create a fresh spreadsheet component and redraw the component.
         if (panel != null) {
-//            this.clearSpreadsheet();
+            this.clearSpreadsheet();
         }
 
 
@@ -1393,7 +1393,7 @@ public final class DatavyuView extends FrameView
 
         panel.registerListeners();
         panel.addFileDropEventListener(this);
-        tabbedPane.add(panel);
+        tabbedPane.setComponentAt(tabbedPane.getSelectedIndex(), panel);
         tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));
 
         tabbedPane.setSelectedComponent(panel);
