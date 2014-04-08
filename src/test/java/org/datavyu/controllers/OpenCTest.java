@@ -116,7 +116,7 @@ public class OpenCTest {
         assertEquals(vars.get(2).isHidden(), false);
         cells = vars.get(2).getCells();
         assertEquals(cells.size(), 1);
-        assertEquals(cells.get(0).getValueAsString(), "cellC");
+        assertEquals(cells.get(0).getValueAsString(), "(cellC)");
 
         assertEquals(vars.get(3).getName(), "hiddenColumn");
         assertEquals(vars.get(3).getRootNode().type, Argument.Type.TEXT);
