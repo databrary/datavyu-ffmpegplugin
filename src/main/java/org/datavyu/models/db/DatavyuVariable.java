@@ -338,4 +338,19 @@ public final class DatavyuVariable implements Variable {
     public int getOrderIndex() {
         return orderIndex;
     }
+    
+    //would like to change the above calls to DatavyuDatastore.markDBAsChanged to this,
+    //but am holding off for now to avoid merge complications
+    private void markDB(){
+        if (owningDatastore != null){
+            owningDatastore.markDBAsChanged();
+        }
+        else if (Datavyu.getProjectController() != null){
+            //uncomment the below when markDBAsChanged is non-static
+            //Datavyu.getProjectController().getDB().markDBAsChanged();
+        }
+        else{
+            System.out.println("FAILED TO MARK DATASTORE");
+        }
+    }
 }
