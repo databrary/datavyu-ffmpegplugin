@@ -240,7 +240,7 @@ public final class DatavyuVariable implements Variable {
             }
         }        
         
-        if (name != null) 
+        if (name != null && owningDatastore != null) 
         {
             owningDatastore.updateVariableName(name, newName, this);
         }
