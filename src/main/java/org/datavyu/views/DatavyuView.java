@@ -915,7 +915,7 @@ public final class DatavyuView extends FrameView
     }
 
     public String convertTreePathToString(TreePath tp) {
-        return tp.toString().replaceAll("\\]| |\\[|", "").replaceAll(",", File.separator);
+        return tp.toString().replaceAll("\\]| |\\[|", "").replace(",", File.separator);
     }
 
     /**
