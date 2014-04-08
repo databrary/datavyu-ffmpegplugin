@@ -79,7 +79,7 @@ public class SaveCTest {
         Project p = new Project();
         p.setProjectName("simple2");
         p.setDatabaseFileName("simple1.csv");
-        p.setOriginalProjectDirectory("/Users/cfreeman/Projects/Datavyu/code/datavyu/src/test/resources/IO");
+        p.setOriginalProjectDirectory("Z:\\datavyu\\src\\test\\resources\\IO");
         Datastore ds = DatastoreFactory.newDatastore();
         Variable var = ds.createVariable("TestColumn", Argument.Type.TEXT);
         Cell c = var.createCell();
@@ -102,7 +102,7 @@ public class SaveCTest {
 
         Project p = new Project();
         p.setProjectName("simple3");
-        p.setOriginalProjectDirectory("/Users/cfreeman/Projects/Datavyu/code/datavyu/src/test/resources/IO");
+        p.setOriginalProjectDirectory("Z:\\datavyu\\src\\test\\resources\\IO");
 
         Datastore ds = DatastoreFactory.newDatastore();
         Variable var = ds.createVariable("testColumn", Argument.Type.TEXT);
