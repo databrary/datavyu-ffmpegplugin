@@ -89,7 +89,7 @@ public final class DatavyuVariable implements Variable {
      *
      * @param name The name to use for the variable being constructed.
      * @param type The type to use for the variable being constructed.
-     * @param grandfatehred Flag to exempt variable from naming rules.
+     * @param grandfathered Flag to exempt variable from naming rules.
      */
     public DatavyuVariable(String name, Argument type, boolean grandfathered) throws UserWarningException {
         this.setName(name, grandfathered);
