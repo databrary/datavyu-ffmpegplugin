@@ -205,7 +205,6 @@ public final class VariableListV extends DatavyuDialog
                 }
             }
 
-            DatavyuDatastore.markDBAsChanged();
             Datavyu.getView().getComponent().revalidate();
         }
     }

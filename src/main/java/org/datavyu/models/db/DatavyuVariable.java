@@ -186,11 +186,14 @@ public final class DatavyuVariable implements Variable {
     }
 
     @Override
-    public void setHidden(final boolean hidden) {
-        this.hidden = hidden;
+    public void setHidden(final boolean hiddenParm) {
+        if (hidden == null || hiddenParm != hidden){
+            DatavyuDatastore.markDBAsChanged();
+            hidden = hiddenParm;
 
-        for(VariableListener vl : getListeners(getID()) ) {
-            vl.visibilityChanged(hidden);
+            for(VariableListener vl : getListeners(getID()) ) {
+                vl.visibilityChanged(hidden);
+            }
         }
     }
 
