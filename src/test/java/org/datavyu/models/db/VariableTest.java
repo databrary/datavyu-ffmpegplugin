@@ -66,6 +66,8 @@ public class VariableTest {
         model.setName("test2");
         assertTrue(ds.isChanged());
         assertEquals(model.getName(), "test2");
+        assertEquals(ds.getVariable("test"), null);
+        assertEquals(ds.getVariable("test2"), model);
         verify(modelListener).nameChanged("test2");
         verify(modelListener, times(0)).visibilityChanged(true);
         verify(modelListener, times(0)).cellInserted(null);

@@ -43,6 +43,8 @@ public final class DatavyuVariable implements Variable {
     private Boolean hidden;
     private String name;
     private int orderIndex = -1;
+    
+    private DatavyuDatastore owningDatastore;
 
     private static CellComparator CellComparator = new CellComparator();
 
@@ -81,7 +83,7 @@ public final class DatavyuVariable implements Variable {
      * @param type The type to use for the variable being constructed.
      */
     public DatavyuVariable(String name, Argument type) throws UserWarningException {
-        this(name, type, false);
+        this(name, type, false, null);
     }
 
     /**
@@ -90,12 +92,15 @@ public final class DatavyuVariable implements Variable {
      * @param name The name to use for the variable being constructed.
      * @param type The type to use for the variable being constructed.
      * @param grandfathered Flag to exempt variable from naming rules.
+     * @param dds The datastore to which this variable belongs
      */
-    public DatavyuVariable(String name, Argument type, boolean grandfathered) throws UserWarningException {
+    public DatavyuVariable(String name, Argument type, boolean grandfathered, DatavyuDatastore dds) throws UserWarningException {
         this.setName(name, grandfathered);
         this.setRootNode(type);
         this.setHidden(false);
         this.setSelected(true);
+        
+        owningDatastore = dds;
 
         DatavyuDatastore.markDBAsChanged();
     }
@@ -237,7 +242,7 @@ public final class DatavyuVariable implements Variable {
         
         if (name != null) 
         {
-            Datavyu.getProjectController().getDB().updateVariableName(name, newName, this);
+            owningDatastore.updateVariableName(name, newName, this);
         }
         this.name = newName;
         for(VariableListener vl : getListeners(getID()) ) {
