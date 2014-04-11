@@ -1031,6 +1031,7 @@ public final class DataControllerV extends DatavyuDialog
                 showTracksButtonActionPerformed(evt);
             }
         });
+        showTracksSmallButton.setFocusPainted(false);
         gridButtonPanel.add(showTracksSmallButton, NUMPAD_KEY_SIZE);
         
         //MAC and WINDOWS DIFFER HERE (1)
