@@ -1,3 +1,23 @@
+# Datavyu 1.1.3 Pre-Release Notes
+## 04/11/2014
+
+### Additions
+* New hidden column count on the spreadsheet 
+* Up and down arrow keys allow you to move up and down cells
+
+### Bug Fixes
+* Saving files works properly 
+* Right and left arrow keys allow you to move through codes when in a cell
+* Locking into a cell on a PC works
+* Stable name restrictions in code editor and spreadsheet
+
+
+### Known Issues
+* You can drag a code name within a cell but it does not influence the code itself and it does not save. Please save your file and reopen it. 
+* Scripting output sometimes does not give you the proper output or any output at all. You can cross check your scripts in OpenSHAPA.
+* Occasionally, turning on temporal alignment makes the ordinal numbers disappear but it corrects itself when you turn temporal alignment off and it does not influence exporting.
+
+
 # Datavyu 1.1 Release Notes
 ## 03/10/2014
 
