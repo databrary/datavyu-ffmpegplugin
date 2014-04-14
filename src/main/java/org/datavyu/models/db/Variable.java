@@ -66,14 +66,14 @@ public interface Variable {
     /**
      * @return The type of the variable.
      */
-    Argument getVariableType();
+    Argument getRootNode();
 
     /**
      * Sets the variable type.
      *
      * @param newType The new argument to use with this variable.
      */
-    void setVariableType(final Argument newType);
+    void setRootNode(final Argument newType);
 
     /**
      * @return All the cells stored in the variable using a temporal alignment.

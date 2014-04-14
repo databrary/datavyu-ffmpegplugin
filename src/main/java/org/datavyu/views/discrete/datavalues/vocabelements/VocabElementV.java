@@ -186,7 +186,7 @@ public class VocabElementV extends JPanel {
      * @param vocabArgument The new model to use with this view.
      */
     public final void setModel(final Argument vocabArgument) {
-        varModel.setVariableType(vocabArgument);
+        varModel.setRootNode(vocabArgument);
         this.rebuildContents();
     }
 
@@ -255,7 +255,7 @@ public class VocabElementV extends JPanel {
      * @return The model (VocabElement) that this view represents.
      */
     public final Argument getModel() {
-        return varModel.getVariableType();
+        return varModel.getRootNode();
     }
 
     public final Variable getVariable() {

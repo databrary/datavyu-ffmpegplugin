@@ -160,15 +160,13 @@ public final class ClockTimer {
      */
     public synchronized void stepTime(final long ms) {
 
-        if (isStopped) {
             time += ms;
             time = Math.max(time, 0);
             notifyStep();
-        } else {
-            stop();
-        }
     }
 
+    
+    
     /**
      * @return True if clock is stopped.
      */

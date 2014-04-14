@@ -58,7 +58,7 @@ public class OpenCTest {
         List<Variable> vars = ds.getAllVariables();
         assertEquals(vars.size(), 1);
         assertEquals(vars.get(0).getName(), "TestColumn");
-        assertEquals(vars.get(0).getVariableType().type, Argument.Type.TEXT);
+        assertEquals(vars.get(0).getRootNode().type, Argument.Type.TEXT);
         assertEquals(vars.get(0).isHidden(), false);
 
         List<Cell> cells = vars.get(0).getCells();
@@ -78,7 +78,7 @@ public class OpenCTest {
         List<Variable> vars = ds.getAllVariables();
         assertEquals(vars.size(), 1);
         assertEquals(vars.get(0).getName(), "TestColumn");
-        assertEquals(vars.get(0).getVariableType().type, Argument.Type.TEXT);
+        assertEquals(vars.get(0).getRootNode().type, Argument.Type.TEXT);
         assertEquals(vars.get(0).isHidden(), false);
 
         List<Cell> cells = vars.get(0).getCells();
@@ -98,28 +98,28 @@ public class OpenCTest {
         List<Variable> vars = ds.getAllVariables();
         assertEquals(vars.size(), 4);
         assertEquals(vars.get(0).getName(), "testColumn");
-        assertEquals(vars.get(0).getVariableType().type, Argument.Type.TEXT);
+        assertEquals(vars.get(0).getRootNode().type, Argument.Type.TEXT);
         assertEquals(vars.get(0).isHidden(), false);
         List<Cell> cells = vars.get(0).getCells();
         assertEquals(cells.size(), 1);
         assertEquals(cells.get(0).getValueAsString(), "cellA");
 
         assertEquals(vars.get(1).getName(), "testColumn2");
-        assertEquals(vars.get(1).getVariableType().type, Argument.Type.NOMINAL);
+        assertEquals(vars.get(1).getRootNode().type, Argument.Type.NOMINAL);
         assertEquals(vars.get(1).isHidden(), false);
         cells = vars.get(1).getCells();
         assertEquals(cells.size(), 1);
         assertEquals(cells.get(0).getValueAsString(), "cellB");
 
         assertEquals(vars.get(2).getName(), "testColumn3");
-        assertEquals(vars.get(2).getVariableType().type, Argument.Type.MATRIX);
+        assertEquals(vars.get(2).getRootNode().type, Argument.Type.MATRIX);
         assertEquals(vars.get(2).isHidden(), false);
         cells = vars.get(2).getCells();
         assertEquals(cells.size(), 1);
-        assertEquals(cells.get(0).getValueAsString(), "cellC");
+        assertEquals(cells.get(0).getValueAsString(), "(cellC)");
 
         assertEquals(vars.get(3).getName(), "hiddenColumn");
-        assertEquals(vars.get(3).getVariableType().type, Argument.Type.TEXT);
+        assertEquals(vars.get(3).getRootNode().type, Argument.Type.TEXT);
         assertEquals(vars.get(3).isHidden(), true);
         cells = vars.get(3).getCells();
         assertEquals(cells.size(), 0);

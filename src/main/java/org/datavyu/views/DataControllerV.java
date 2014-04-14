@@ -1031,6 +1031,7 @@ public final class DataControllerV extends DatavyuDialog
                 showTracksButtonActionPerformed(evt);
             }
         });
+        showTracksSmallButton.setFocusPainted(false);
         gridButtonPanel.add(showTracksSmallButton, NUMPAD_KEY_SIZE);
         
         //MAC and WINDOWS DIFFER HERE (1)
@@ -1859,9 +1860,11 @@ public final class DataControllerV extends DatavyuDialog
 
             long j = -CLOCK_FORMAT.parse(goBackTextField.getText()).getTime();
             jump(j);
+            System.out.println("JUMP BACK!");
 
+            //Bugzilla bug #179 - undoes the behavior from FogBugz BugzID:721
             // BugzID:721 - After going back - start playing again.
-            playAt(PLAY_RATE);
+            //playAt(PLAY_RATE);
 
         } catch (ParseException e) {
             LOGGER.error("unable to find within video", e);
@@ -1893,6 +1896,7 @@ public final class DataControllerV extends DatavyuDialog
 
         /* BugzID:1361 - Disallow jog to skip past the region boundaries. */
         if ((clock.getTime() + nextTime) > playbackModel.getWindowPlayStart()) {
+            stopAction();
             jump(nextTime);
         } else {
             jumpTo(playbackModel.getWindowPlayStart());
@@ -1928,6 +1932,7 @@ public final class DataControllerV extends DatavyuDialog
 
         /* BugzID:1361 - Disallow jog to skip past the region boundaries. */
         if ((clock.getTime() + nextTime) < playbackModel.getWindowPlayEnd()) {
+            stopAction();
             jump(nextTime);
         } else {
             jumpTo(playbackModel.getWindowPlayEnd());
@@ -1975,9 +1980,6 @@ public final class DataControllerV extends DatavyuDialog
      * @param step Milliseconds to jump.
      */
     private void jump(final long step) {
-        clock.stop();
-        playbackModel.setPauseRate(0);
-
         clock.stepTime(step);
     }
 

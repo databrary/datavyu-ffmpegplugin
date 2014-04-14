@@ -159,7 +159,7 @@ public class DatavyuDatastore implements Datastore {
         if (type == Argument.Type.MATRIX) rootNode = new Argument(name+name.hashCode(), type);
         else rootNode = new Argument("var", type);
                 
-        Variable v = new DatavyuVariable(name, rootNode, grandfathered);
+        Variable v = new DatavyuVariable(name, rootNode, grandfathered, this);
         variables.put(name, v);
 
         for (DatastoreListener dbl : this.dbListeners) {

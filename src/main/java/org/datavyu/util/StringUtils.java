@@ -17,61 +17,30 @@ package org.datavyu.util;
 public final class StringUtils {
 
     /**
-     * @param input The string to escape ',' and '\' characters.
+     * @param input The string to escape ',' '\' '-' and newline characters.
      *
-     * @return A copy of the input string - but with ',', '-' and '\'
+     * @return A copy of the input string - but with ',' '\' '-' and newline 
      * characters escaped with a leading '\'.
      */
     public static String escapeCSV(final String input) {
-        String result = "";
-
-        for (int n = 0; n < input.length(); n++) {
-            if (input.charAt(n) == '\\') {
-                char[] buff = {'\\', '\\'};
-                result = result.concat(new String(buff));
-            } else if (input.charAt(n) == ',') {
-                char[] buff = {'\\', ','};
-                result = result.concat(new String(buff));
-            } else if (input.charAt(n) == '\n') {
-                char[] buff = {'\\', '\n'};
-                result = result.concat(new String(buff));
-            } else if (input.charAt(n) == '\r') {
-                char[] buff = {'\\', '\n'};
-                result = result.concat(new String(buff));
-            } else if (input.charAt(n) == '-') {
-                char[] buff = {'\\', '-'};
-                result = result.concat(new String(buff));
-            } else {
-                result += input.charAt(n);
-            }
-        }
-
-        // Remove all control characters
-        return result.replaceAll("[\u0000-\u0001]", "");
+        return escapeString(input, "\\,-\n\r");
     }
     
     public static String escapeCSVArgument(final String input) {
-        String result = "";
+        return escapeString(input, "\\()\n\r-,|");
+    }
+    
+    private static String escapeString(final String input, final String charsToEscape) {
+        StringBuilder resultSB = new StringBuilder();
 
         for (int n = 0; n < input.length(); n++) {
-            if (input.charAt(n) == '\\') {
-                char[] buff = {'\\', '\\'};
-                result = result.concat(new String(buff));
-            } else if (input.charAt(n) == '\n') {
-                char[] buff = {'\\', '\n'};
-                result = result.concat(new String(buff));
-            } else if (input.charAt(n) == '\r') {
-                char[] buff = {'\\', '\n'};
-                result = result.concat(new String(buff));
-            } else if (input.charAt(n) == '-') {
-                char[] buff = {'\\', '-'};
-                result = result.concat(new String(buff));
-            } else {
-                result += input.charAt(n);
+            if (charsToEscape.indexOf(input.charAt(n)) != -1){
+                resultSB.append("\\");
             }
+            resultSB.append(input.charAt(n));
         }
 
         // Remove all control characters
-        return result.replaceAll("[\u0000-\u0001]", "");
+        return resultSB.toString().replaceAll("[\u0000-\u0001]", "");
     }
 }

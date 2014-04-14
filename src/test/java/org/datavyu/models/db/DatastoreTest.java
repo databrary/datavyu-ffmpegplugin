@@ -90,7 +90,7 @@ public class DatastoreTest {
         assertEquals(model.getSelectedVariables(), varList);
         assertEquals(model.getAllVariables(), varList);
         assertEquals(var.getName(), "foo");
-        assertEquals(var.getVariableType().type, Argument.Type.TEXT);
+        assertEquals(var.getRootNode().type, Argument.Type.TEXT);
         assertTrue(var.isSelected());
         assertTrue(!var.isHidden());
         assertEquals(var.getCells().size(), 0);

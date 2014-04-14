@@ -46,7 +46,7 @@ public class VariableTest {
     @BeforeMethod
     public void setUp() throws UserWarningException {
         ds = DatastoreFactory.newDatastore();
-        model = ds.createVariable("test", Argument.Type.TEXT);
+        model = (DatavyuVariable)ds.createVariable("test", Argument.Type.TEXT);
         modelListener = mock(VariableListener.class);
         model.addListener(modelListener);
         ds.markAsUnchanged();
@@ -66,6 +66,8 @@ public class VariableTest {
         model.setName("test2");
         assertTrue(ds.isChanged());
         assertEquals(model.getName(), "test2");
+        assertEquals(ds.getVariable("test"), null);
+        assertEquals(ds.getVariable("test2"), model);
         verify(modelListener).nameChanged("test2");
         verify(modelListener, times(0)).visibilityChanged(true);
         verify(modelListener, times(0)).cellInserted(null);
@@ -93,7 +95,6 @@ public class VariableTest {
         assertEquals(ds.getSelectedVariables(), vars);
         assertFalse(ds.isChanged());
         model.setSelected(false);
-        assertTrue(ds.isChanged());
         assertFalse(model.isSelected());
         verify(modelListener, times(0)).visibilityChanged(true);
         verify(modelListener, times(0)).nameChanged(null);
@@ -103,7 +104,7 @@ public class VariableTest {
 
     @Test
     public void testGetVariableType() {
-        assertEquals(model.getVariableType().type, Argument.Type.TEXT);
+        assertEquals(model.getRootNode().type, Argument.Type.TEXT);
     }
 
     @Test
@@ -187,11 +188,11 @@ public class VariableTest {
         ds.createVariable("", Argument.Type.TEXT);
     }
 
-    @Test
-    public void trimWhiteSpace() throws UserWarningException {
-        Variable var = ds.createVariable(" blah ", Argument.Type.TEXT);
-        assertEquals(var.getName(), "blah");
+    @Test(expectedExceptions = UserWarningException.class)
+    public void badCharacterSpace() throws UserWarningException {
+        ds.createVariable(" blah ", Argument.Type.TEXT);
     }
+    
 
     @Test(expectedExceptions = UserWarningException.class)
     public void badCharacter1() throws UserWarningException {
@@ -221,5 +222,10 @@ public class VariableTest {
     @Test(expectedExceptions = UserWarningException.class)
     public void badCharacter6() throws UserWarningException {
         ds.createVariable("ac\"dc", Argument.Type.TEXT);
+    }
+    
+    @Test(expectedExceptions = UserWarningException.class)
+    public void startsWithNumber() throws UserWarningException {
+        ds.createVariable("1acdc", Argument.Type.TEXT);
     }
 }

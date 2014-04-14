@@ -21,6 +21,10 @@ import org.datavyu.models.db.*;
 
 import javax.swing.*;
 import java.io.*;
+import static java.lang.Math.min;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -255,25 +259,30 @@ public final class OpenDatabaseFileC {
         // Fill in missing info with a missing value.
 
         List<Value> args = destValue.getArguments();
+        
+        int endIndex = tokens.length;
         if (args.size() != tokens.length - startI) {
             // We have a problem. Arguments are of different length.
             // Get as much from the string as we can.
 
-            parse_error = true;
+            parse_error = true; //do something with this: warning, more informative exception?
+            endIndex = min(tokens.length,destValue.getArguments().size() + startI);
         }
 
-        for (int i = 0; i < destValue.getArguments().size(); i++) {
-            Argument fa = destPattern.childArguments.get(i);
+        for (int tokenIndex = startI; tokenIndex < endIndex; tokenIndex++) {
+            int argIndex = tokenIndex - startI;
+            Argument fa = destPattern.childArguments.get(argIndex);
             boolean emptyArg = false;
 
             // If the field doesn't contain anything or matches the FargName
-            // we consider the argument to be 'empty'.
-            if ((tokens[startI + i].length() == 0) || tokens[startI + i].equals(fa.name)) {
+            // we consider the argument to be 'empty'. 
+            if ((tokens[tokenIndex].length() == 0) || tokens[tokenIndex].equals("<"+fa.name+">")) {
                 emptyArg = true;
+                tokens[tokenIndex] = ""; //set <placeholder> to empty string. 
             }
 
-            tokens[startI + i] = tokens[startI + i].trim();
-            destValue.getArguments().get(i).set(tokens[startI + i]);
+            tokens[tokenIndex] = tokens[tokenIndex].trim(); //is this desirable?
+            destValue.getArguments().get(argIndex).set(tokens[tokenIndex]);
         }
     }
 
@@ -296,31 +305,52 @@ public final class OpenDatabaseFileC {
 
         while ((line != null) && Character.isDigit(line.charAt(0))) {
 
-            // Remove backslashes if there are more than would be used for 
-            // newline escapes
-
-            if (line.contains("\\")) {
-                if (line.endsWith("\\\\n") || line.endsWith("\\\\r\\n")) {
-                    line = line.replace("\\", "") + "\\\\n";
-                } else {
-                    line = line.replace("\\", "");
+            ArrayList tokensList = new ArrayList<String>();
+            String[] onsetOffsetVals = line.split(",", 3);
+            tokensList.add(onsetOffsetVals[0]); //onset
+            tokensList.add(onsetOffsetVals[1]); //offset
+            
+            String valuesStr = onsetOffsetVals[2];
+            StringBuilder sb = new StringBuilder();
+                    
+            for(int i = 0; i < valuesStr.length(); i++)      
+            {
+                char cur = valuesStr.charAt(i);
+                if(cur == '\\')
+                {
+                    if (i+1 == valuesStr.length()) //newline
+                    {
+                        sb.append('\n');
+                        valuesStr += csvFile.readLine();
+                    }     
+                    else //stuff following escape backslash
+                    {
+                        i++;
+                        sb.append(valuesStr.charAt(i));
+                    }
                 }
+                else if(cur == ',') //structural comma
+                {
+                    tokensList.add(sb.toString());
+                    sb = new StringBuilder();
+                }
+                else sb.append(cur); //ordinary char
             }
-
-            // Split the line into tokens using a comma delimiter.
-            String[] tokens = line.split(",");
-
+            tokensList.add(sb.toString());
+            
+            String[] tokens = (String[]) tokensList.toArray(new String[tokensList.size()]);
+            
             Cell newCell = var.createCell();
             // Set the onset and offset from tokens in the line.
             newCell.setOnset(tokens[DATA_ONSET]);
             newCell.setOffset(tokens[DATA_OFFSET]);
 
-            // Strip the brackets from the first and last argument.
+            // Strip the first and last chars - presumably parens
             tokens[DATA_INDEX] = tokens[DATA_INDEX].substring(1, tokens[DATA_INDEX].length());
-
             int end = tokens.length - 1;
             tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
-            parseFormalArgs(tokens, DATA_INDEX, var.getVariableType(), (MatrixValue) newCell.getValue());
+            
+            parseFormalArgs(tokens, DATA_INDEX, var.getRootNode(), (MatrixValue) newCell.getValue());
             // Get the next line in the file for reading.
             line = csvFile.readLine();
         }
@@ -566,7 +596,7 @@ public final class OpenDatabaseFileC {
 
             // Get the vocab element for the matrix and clean it up to be
             // populated with arguments from the CSV file.
-            Argument newArg = newVar.getVariableType();
+            Argument newArg = newVar.getRootNode();
             newArg.clearChildArguments();
 
             // For each of the formal arguments in the file - parse it and
@@ -574,7 +604,7 @@ public final class OpenDatabaseFileC {
             for (String arg : vocabString[1].split(",")) {
                 newArg.childArguments.add(parseFormalArgument(arg));
             }
-            newVar.setVariableType(newArg);
+            newVar.setRootNode(newArg);
 
             return parseMatrixVariable(csvFile, newVar, newArg);
 

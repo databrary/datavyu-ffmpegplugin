@@ -44,6 +44,8 @@ public final class DatavyuVariable implements Variable {
     private Boolean hidden;
     private String name;
     private int orderIndex = -1;
+    
+    private DatavyuDatastore owningDatastore;
 
     private static CellComparator CellComparator = new CellComparator();
 
@@ -82,7 +84,7 @@ public final class DatavyuVariable implements Variable {
      * @param type The type to use for the variable being constructed.
      */
     public DatavyuVariable(String name, Argument type) throws UserWarningException {
-        this(name, type, false);
+        this(name, type, false, null);
     }
 
     /**
@@ -90,20 +92,23 @@ public final class DatavyuVariable implements Variable {
      *
      * @param name The name to use for the variable being constructed.
      * @param type The type to use for the variable being constructed.
-     * @param grandfatehred Flag to exempt variable from naming rules.
+     * @param grandfathered Flag to exempt variable from naming rules.
+     * @param dds The datastore to which this variable belongs
      */
-    public DatavyuVariable(String name, Argument type, boolean grandfathered) throws UserWarningException {
+    public DatavyuVariable(String name, Argument type, boolean grandfathered, DatavyuDatastore dds) throws UserWarningException {
         this.setName(name, grandfathered);
-        this.setVariableType(type);
+        this.setRootNode(type);
         this.setHidden(false);
         this.setSelected(true);
+        
+        owningDatastore = dds;
 
         Datavyu.getProjectController().getDB().markDBAsChanged();
     }
     
     
     public void addCell(Cell cell) {
-        if (cell.getValue().getArgument() == this.getVariableType()) {
+        if (cell.getValue().getArgument() == this.getRootNode()) {
             cells.add(cell);
         }
     }
@@ -119,7 +124,7 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public Cell createCell() {
-        Cell c = new DatavyuCell(this, this.getVariableType());
+        Cell c = new DatavyuCell(this, this.getRootNode());
 
         cells.add(c);
 
@@ -155,12 +160,12 @@ public final class DatavyuVariable implements Variable {
     }
 
     @Override
-    public Argument getVariableType() {
+    public Argument getRootNode() {
         return rootNodeArgument;
     }
 
     @Override
-    public void setVariableType(final Argument a) {
+    public void setRootNode(final Argument a) {
         Datavyu.getProjectController().getDB().markDBAsChanged();
         rootNodeArgument = a;
     }
@@ -187,11 +192,14 @@ public final class DatavyuVariable implements Variable {
     }
 
     @Override
-    public void setHidden(final boolean hidden) {
-        this.hidden = hidden;
+    public void setHidden(final boolean hiddenParm) {
+        if (hidden == null || hiddenParm != hidden){
+            DatavyuDatastore.markDBAsChanged();
+            hidden = hiddenParm;
 
-        for(VariableListener vl : getListeners(getID()) ) {
-            vl.visibilityChanged(hidden);
+            for(VariableListener vl : getListeners(getID()) ) {
+                vl.visibilityChanged(hidden);
+            }
         }
     }
 
@@ -233,9 +241,9 @@ public final class DatavyuVariable implements Variable {
             }
         }        
         
-        if (name != null) 
+        if (name != null && owningDatastore != null) 
         {
-            Datavyu.getProjectController().getDB().updateVariableName(name, newName, this);
+            owningDatastore.updateVariableName(name, newName, this);
         }
         this.name = newName;
         for(VariableListener vl : getListeners(getID()) ) {
@@ -250,20 +258,20 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public Argument addArgument(final Argument.Type type) {
-        Argument arg = getVariableType();
+        Argument arg = getRootNode();
         Argument child = arg.addChildArgument(type);
 
         for(Cell cell : getCells()) {
             cell.addMatrixValue(child);
         }
 
-        this.setVariableType(arg);
+        this.setRootNode(arg);
         return arg.childArguments.get(arg.childArguments.size()-1);
     }
 
     @Override
     public void moveArgument(final int old_index, final int new_index) {
-        Argument arg = getVariableType();
+        Argument arg = getRootNode();
 
         // Test to see if this is out of bounds
         if(new_index > arg.childArguments.size() - 1 || new_index < 0) {
@@ -278,7 +286,7 @@ public final class DatavyuVariable implements Variable {
         for(Cell cell : getCells()) {
             cell.moveMatrixValue(old_index, new_index);
         }
-        this.setVariableType(arg);
+        this.setRootNode(arg);
     }
 
     @Override
@@ -289,7 +297,7 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public void removeArgument(final String name) {
-        Argument arg = getVariableType();
+        Argument arg = getRootNode();
         int arg_index = getArgumentIndex(name);
         arg.childArguments.remove(arg_index);
 
@@ -298,12 +306,12 @@ public final class DatavyuVariable implements Variable {
             cell.removeMatrixValue(arg_index);
         }
 
-        this.setVariableType(arg);
+        this.setRootNode(arg);
     }
 
     @Override
     public int getArgumentIndex(final String name) {
-        Argument arg = getVariableType();
+        Argument arg = getRootNode();
         for(int i = 0; i < arg.childArguments.size(); i++) {
             if(arg.childArguments.get(i).name.equals(name)) {
                 return i;
@@ -330,5 +338,20 @@ public final class DatavyuVariable implements Variable {
     @Override
     public int getOrderIndex() {
         return orderIndex;
+    }
+    
+    //would like to change the above calls to DatavyuDatastore.markDBAsChanged to this,
+    //but am holding off for now to avoid merge complications
+    private void markDB(){
+        if (owningDatastore != null){
+            owningDatastore.markDBAsChanged();
+        }
+        else if (Datavyu.getProjectController() != null){
+            //uncomment the below when markDBAsChanged is non-static
+            //Datavyu.getProjectController().getDB().markDBAsChanged();
+        }
+        else{
+            System.out.println("FAILED TO MARK DATASTORE");
+        }
     }
 }
