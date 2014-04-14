@@ -53,7 +53,7 @@ public final class FormalArgEditor extends EditorComponent {
      * The parent editor window that this argument belongs too.
      */
     private VocabElementV parentView;
-    
+
     private boolean defaultVal;
 
     /**
@@ -193,10 +193,9 @@ public final class FormalArgEditor extends EditorComponent {
     @Override
     public void keyReleased(final KeyEvent e) {
     }
-    
+
     @Override
-    public boolean canSubSelect()
-    {
+    public boolean canSubSelect() {
         return !defaultVal;
     }
 }

@@ -46,7 +46,7 @@ public class VariableTest {
     @BeforeMethod
     public void setUp() throws UserWarningException {
         ds = DatastoreFactory.newDatastore();
-        model = (DatavyuVariable)ds.createVariable("test", Argument.Type.TEXT);
+        model = (DatavyuVariable) ds.createVariable("test", Argument.Type.TEXT);
         modelListener = mock(VariableListener.class);
         model.addListener(modelListener);
         ds.markAsUnchanged();
@@ -192,7 +192,7 @@ public class VariableTest {
     public void badCharacterSpace() throws UserWarningException {
         ds.createVariable(" blah ", Argument.Type.TEXT);
     }
-    
+
 
     @Test(expectedExceptions = UserWarningException.class)
     public void badCharacter1() throws UserWarningException {
@@ -223,7 +223,7 @@ public class VariableTest {
     public void badCharacter6() throws UserWarningException {
         ds.createVariable("ac\"dc", Argument.Type.TEXT);
     }
-    
+
     @Test(expectedExceptions = UserWarningException.class)
     public void startsWithNumber() throws UserWarningException {
         ds.createVariable("1acdc", Argument.Type.TEXT);

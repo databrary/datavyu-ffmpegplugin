@@ -145,20 +145,20 @@ public class DatavyuDatastore implements Datastore {
             throws UserWarningException {
         return createVariable(name, type, false);
     }
-    
+
     @Override
     public Variable createVariable(final String name, final Argument.Type type, boolean grandfathered)
             throws UserWarningException {
         // Check to make sure the variable name is not already in use:
         Variable varTest = getVariable(name);
         if (varTest != null) {
-            throw new UserWarningException("Unable to add column with name '"+name+"', one with the same name already exists.");
+            throw new UserWarningException("Unable to add column with name '" + name + "', one with the same name already exists.");
         }
 
         Argument rootNode;
-        if (type == Argument.Type.MATRIX) rootNode = new Argument(name+name.hashCode(), type);
+        if (type == Argument.Type.MATRIX) rootNode = new Argument(name + name.hashCode(), type);
         else rootNode = new Argument("var", type);
-                
+
         Variable v = new DatavyuVariable(name, rootNode, grandfathered, this);
         variables.put(name, v);
 
@@ -168,7 +168,7 @@ public class DatavyuDatastore implements Datastore {
 
         markDBAsChanged();
         return v;
-    }        
+    }
 
     @Override
     public void removeVariable(final Variable var) {
@@ -210,7 +210,7 @@ public class DatavyuDatastore implements Datastore {
     public void updateVariableName(String oldName, String newName, Variable variable) {
         this.variables.remove(oldName);
         this.variables.put(newName, variable);
-        if(!oldName.equals(newName)) markDBAsChanged();
+        if (!oldName.equals(newName)) markDBAsChanged();
     }
 
     @Override

@@ -24,11 +24,10 @@
 package org.datavyu.models.db;
 
 import org.datavyu.Datavyu;
+import org.datavyu.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.UUID;
-import org.datavyu.Datavyu;
-import org.datavyu.util.StringUtils;
 
 
 public abstract class DatavyuValue implements Value, Serializable, Comparable<DatavyuValue> {

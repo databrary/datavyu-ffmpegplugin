@@ -71,15 +71,15 @@ public class VocabElementV extends JPanel {
      * The icon to use for if this vocab element has changed or not.
      */
     private ImageIcon bangIcon;
-    
+
     private String bangIconText;
 
     /**
      * Is the name currently displayed for this column invalid
      */
     private boolean invalidState;
-    
-     /**
+
+    /**
      * Most recent valid name - the name currently stored in model
      */
     private String lastValidState;
@@ -126,7 +126,7 @@ public class VocabElementV extends JPanel {
 
         URL iconURL = getClass().getResource(rMap.getString("delta.icon"));
         bangIconText = rMap.getString("delta.tooltip");
-        
+
         bangIcon = new ImageIcon(iconURL);
         deleteVE = false;
         parentEditor = vev;
@@ -197,37 +197,31 @@ public class VocabElementV extends JPanel {
         veRootView.setVocabElement(varModel, this);
     }
 
-    
-    public final void setInvalid(final boolean invalid, final String lastValidName) {
-       invalidState = invalid;
-       lastValidState = lastValidName;
-       
-       if(invalid)
-       {
-           invalidBangIcon.setIcon(bangIcon);
-           invalidBangIcon.setToolTipText(bangIconText);
-        }
-       else 
-       {
-           invalidBangIcon.setIcon(null);
-           invalidBangIcon.setToolTipText(null);
-       }
 
-       parentEditor.refreshNameWarnings();
+    public final void setInvalid(final boolean invalid, final String lastValidName) {
+        invalidState = invalid;
+        lastValidState = lastValidName;
+
+        if (invalid) {
+            invalidBangIcon.setIcon(bangIcon);
+            invalidBangIcon.setToolTipText(bangIconText);
+        } else {
+            invalidBangIcon.setIcon(null);
+            invalidBangIcon.setToolTipText(null);
+        }
+
+        parentEditor.refreshNameWarnings();
     }
-    
-    public boolean getInvalid()
-    {
+
+    public boolean getInvalid() {
         return invalidState;
     }
-    
-    public String getLastValid()
-    {
+
+    public String getLastValid() {
         return lastValidState;
     }
-    
-    public String getCurrentNameDisplay()
-    {
+
+    public String getCurrentNameDisplay() {
         return getNameComponent().getText();
     }
 

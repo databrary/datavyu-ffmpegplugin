@@ -25,12 +25,13 @@ package org.datavyu.models.db;
 import java.util.List;
 
 /**
- *  Just a collection of cells, relates to a DataColumn.
+ * Just a collection of cells, relates to a DataColumn.
  */
 public interface Variable {
 
     /**
      * Adds a already formed cell to the variable
+     *
      * @param cell
      */
     void addCell(final Cell cell);
@@ -58,7 +59,6 @@ public interface Variable {
      * Gets the 'index' cell from the variable that has been sorted temporally.
      *
      * @param index The index (from first onset to last offset) of the cell.
-     *
      * @return The cell.
      */
     Cell getCellTemporally(final int index);
@@ -82,14 +82,13 @@ public interface Variable {
 
     /**
      * @param c The cell to check if it exists in this variable.
-     *
      * @return True if this variable contains the supplied cell, false otherwise.
      */
     boolean contains(final Cell c);
 
     /**
      * Selects the variable in the datastore.
-     * 
+     *
      * @param selected True if the variable is selected, false otherwise.
      */
     void setSelected(final boolean selected);
@@ -126,37 +125,37 @@ public interface Variable {
     /**
      * Sets the name of the variable.
      *
-     * @param newName the new name to set with this database.
+     * @param newName       the new name to set with this database.
      * @param grandfathered flag to exempt variable from naming rules
      */
     void setName(final String newName, final boolean grandfathered) throws UserWarningException;
 
     /**
      * Adds a new argument to a matrix variable.
-     * 
-     * @param Argument.Type type - the type of argument to add to the matrix 
+     *
+     * @param Argument.Type type - the type of argument to add to the matrix
      */
     Argument addArgument(final Argument.Type type);
-    
+
     /**
      * Moves an argument left
-     * 
-     * @param String name - the type of argument to move 
-     * @param index - index to move the argument to
+     *
+     * @param String name - the type of argument to move
+     * @param index  - index to move the argument to
      */
     void moveArgument(final int old_index, final int new_index);
-    
+
     void moveArgument(final String name, final int new_index);
 
     /**
      * Removes an argument from a matrix variable.
-     * 
-     * @param String name - the type of argument to remove from the matrix 
+     *
+     * @param String name - the type of argument to remove from the matrix
      */
     void removeArgument(final String name);
-    
+
     int getArgumentIndex(String name);
-    
+
     /**
      * Adds a listener that needs to be notified when the variable changes.
      */

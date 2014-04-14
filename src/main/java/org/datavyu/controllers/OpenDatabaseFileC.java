@@ -21,11 +21,10 @@ import org.datavyu.models.db.*;
 
 import javax.swing.*;
 import java.io.*;
-import static java.lang.Math.min;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+
+import static java.lang.Math.min;
 
 /**
  * Controller for opening a database from disk.
@@ -259,14 +258,14 @@ public final class OpenDatabaseFileC {
         // Fill in missing info with a missing value.
 
         List<Value> args = destValue.getArguments();
-        
+
         int endIndex = tokens.length;
         if (args.size() != tokens.length - startI) {
             // We have a problem. Arguments are of different length.
             // Get as much from the string as we can.
 
             parse_error = true; //do something with this: warning, more informative exception?
-            endIndex = min(tokens.length,destValue.getArguments().size() + startI);
+            endIndex = min(tokens.length, destValue.getArguments().size() + startI);
         }
 
         for (int tokenIndex = startI; tokenIndex < endIndex; tokenIndex++) {
@@ -276,7 +275,7 @@ public final class OpenDatabaseFileC {
 
             // If the field doesn't contain anything or matches the FargName
             // we consider the argument to be 'empty'. 
-            if ((tokens[tokenIndex].length() == 0) || tokens[tokenIndex].equals("<"+fa.name+">")) {
+            if ((tokens[tokenIndex].length() == 0) || tokens[tokenIndex].equals("<" + fa.name + ">")) {
                 emptyArg = true;
                 tokens[tokenIndex] = ""; //set <placeholder> to empty string. 
             }
@@ -309,37 +308,32 @@ public final class OpenDatabaseFileC {
             String[] onsetOffsetVals = line.split(",", 3);
             tokensList.add(onsetOffsetVals[0]); //onset
             tokensList.add(onsetOffsetVals[1]); //offset
-            
+
             String valuesStr = onsetOffsetVals[2];
             StringBuilder sb = new StringBuilder();
-                    
-            for(int i = 0; i < valuesStr.length(); i++)      
-            {
+
+            for (int i = 0; i < valuesStr.length(); i++) {
                 char cur = valuesStr.charAt(i);
-                if(cur == '\\')
-                {
-                    if (i+1 == valuesStr.length()) //newline
+                if (cur == '\\') {
+                    if (i + 1 == valuesStr.length()) //newline
                     {
                         sb.append('\n');
                         valuesStr += csvFile.readLine();
-                    }     
-                    else //stuff following escape backslash
+                    } else //stuff following escape backslash
                     {
                         i++;
                         sb.append(valuesStr.charAt(i));
                     }
-                }
-                else if(cur == ',') //structural comma
+                } else if (cur == ',') //structural comma
                 {
                     tokensList.add(sb.toString());
                     sb = new StringBuilder();
-                }
-                else sb.append(cur); //ordinary char
+                } else sb.append(cur); //ordinary char
             }
             tokensList.add(sb.toString());
-            
+
             String[] tokens = (String[]) tokensList.toArray(new String[tokensList.size()]);
-            
+
             Cell newCell = var.createCell();
             // Set the onset and offset from tokens in the line.
             newCell.setOnset(tokens[DATA_ONSET]);
@@ -349,7 +343,7 @@ public final class OpenDatabaseFileC {
             tokens[DATA_INDEX] = tokens[DATA_INDEX].substring(1, tokens[DATA_INDEX].length());
             int end = tokens.length - 1;
             tokens[end] = tokens[end].substring(0, tokens[end].length() - 1);
-            
+
             parseFormalArgs(tokens, DATA_INDEX, var.getRootNode(), (MatrixValue) newCell.getValue());
             // Get the next line in the file for reading.
             line = csvFile.readLine();
@@ -608,7 +602,7 @@ public final class OpenDatabaseFileC {
 
             return parseMatrixVariable(csvFile, newVar, newArg);
 
-        } 
+        }
         throw new IllegalStateException("Unknown variable type.");
     }
 

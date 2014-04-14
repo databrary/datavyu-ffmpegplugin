@@ -45,6 +45,8 @@ import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -57,9 +59,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import quicktime.QTSession;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 
 
 /**
@@ -129,28 +128,28 @@ public final class DataControllerV extends DatavyuDialog
 
     /**
      * The 45x45 size for numpad keys
-     */    
+     */
     private static final String NUMPAD_KEY_SIZE = "w 45!, h 45!";
 
     /**
      * The 45x95 size for tall numpad keys (enter, PC plus)
-     */    
+     */
     private static final String TALL_NUMPAD_KEY_SIZE = "span 1 2, w 45!, h 95!";
-    
+
     /**
      * The 80x40 size for the text fields to the right of numpad
      */
     private static final String WIDE_TEXT_FIELD_SIZE = "w 90!, h 45!";
-    
+
     private static final Font TEXT_FIELD_FONT = new Font("Arial", Font.PLAIN, 10);
     private static final Font TEXT_LABEL_FONT = new Font("Arial", Font.PLAIN, 10);
-    
+
     /**
      * Format for representing time.
      */
     private static final DateFormat CLOCK_FORMAT;
     private static final DateFormat CLOCK_FORMAT_HTML;
-    
+
     // initialize standard date format for clock display.
     static {
         CLOCK_FORMAT = new SimpleDateFormat("HH:mm:ss:SSS");
@@ -178,16 +177,16 @@ public final class DataControllerV extends DatavyuDialog
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(DataControllerV.class);
-    
+
     private static final String QT_URL = "http://www.datavyu.org/user-guide/guide/install.html";
     private static final String QT_IN_PAGE_HREF = "#software-requirements";
-    
-    private static final String QT_WARNING_MSG = 
+
+    private static final String QT_WARNING_MSG =
             "<html><body>Quicktime's Java libraries are not found.<br />"
-            + "You must install these libraries to load videos using Quicktime.<br />"
-            + "Note that for Quicktime versions 7.7.5 or later under Windows, you must manually include the Java libraries under Custom install<br />"
-            + "See the User Guide at <a href=\""+QT_URL+QT_IN_PAGE_HREF+"\">"+QT_URL+"</a> for details.</body></html>";
-    
+                    + "You must install these libraries to load videos using Quicktime.<br />"
+                    + "Note that for Quicktime versions 7.7.5 or later under Windows, you must manually include the Java libraries under Custom install<br />"
+                    + "See the User Guide at <a href=\"" + QT_URL + QT_IN_PAGE_HREF + "\">" + QT_URL + "</a> for details.</body></html>";
+
     /**
      * Determines whether or not Shift is being held.
      */
@@ -286,7 +285,7 @@ public final class DataControllerV extends DatavyuDialog
 
     /** */
     private javax.swing.JButton pointCellButton;
-    
+
     private javax.swing.JButton showTracksSmallButton;
 
     /** */
@@ -308,13 +307,13 @@ public final class DataControllerV extends DatavyuDialog
      * Model containing playback information.
      */
     private PlaybackModel playbackModel;
-    
+
     private boolean qtWarningShown = false;
-    
+
     private org.jdesktop.application.ResourceMap resourceMap;
-    
+
     private javax.swing.ActionMap actionMap;
-    
+
     private String osModifier;
 
     // -------------------------------------------------------------------------
@@ -338,11 +337,11 @@ public final class DataControllerV extends DatavyuDialog
                 org.jdesktop.application.Application.getInstance(
                         org.datavyu.Datavyu.class).getContext().getResourceMap(
                         DataControllerV.class);
-        
+
         actionMap = org.jdesktop.application.Application
                 .getInstance(org.datavyu.Datavyu.class).getContext()
-                .getActionMap(DataControllerV.class, this);        
-        
+                .getActionMap(DataControllerV.class, this);
+
         if (Datavyu.getPlatform() == Platform.MAC) {
             osModifier = "osx";
         } else {
@@ -888,9 +887,9 @@ public final class DataControllerV extends DatavyuDialog
     private JButton buildButton(final String name,
                                 final String modifier) {
         String dotModifier;
-        if(!(modifier == null) && !modifier.isEmpty()) dotModifier = "."+modifier;
+        if (!(modifier == null) && !modifier.isEmpty()) dotModifier = "." + modifier;
         else dotModifier = "";
-        
+
         JButton result = new JButton();
         result.setAction(actionMap.get(name + "Action"));
         result.setIcon(resourceMap.getIcon(name + "Button.icon" + dotModifier));
@@ -901,13 +900,11 @@ public final class DataControllerV extends DatavyuDialog
         return result;
     }
 
-    private JButton buildButton(final String name)
-    {
+    private JButton buildButton(final String name) {
         return buildButton(name, null);
     }
-       
-    private JPanel makeLabelAndTextfieldPanel(JLabel l, JTextField tf)
-    {
+
+    private JPanel makeLabelAndTextfieldPanel(JLabel l, JTextField tf) {
         JPanel jp = new JPanel();
         l.setFont(TEXT_LABEL_FONT);
         tf.setFont(TEXT_FIELD_FONT);
@@ -915,11 +912,11 @@ public final class DataControllerV extends DatavyuDialog
         jp.add(tf);
         return jp;
     }
-    
+
     /**
      * Helper method for creating placeholder buttons
      */
-    private JButton makePlaceholderButton(boolean vis){
+    private JButton makePlaceholderButton(boolean vis) {
         JButton jb = new JButton();
         jb.setEnabled(false);
         jb.setFocusPainted(false);
@@ -930,14 +927,14 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Helper method for creating placeholder buttons
      */
-    private JButton makePlaceholderButton(){
+    private JButton makePlaceholderButton() {
         return makePlaceholderButton(true);
     }
-    
+
     /**
      * Initialize the view for OS other than Macs.
      */
-    private void initComponents() {      
+    private void initComponents() {
         gridButtonPanel = new javax.swing.JPanel();
         goBackTextField = new javax.swing.JTextField();
         onsetTextField = new javax.swing.JTextField();
@@ -972,13 +969,12 @@ public final class DataControllerV extends DatavyuDialog
         addDataButton.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent evt) {
 
-              if(!qtWarningShown && !Datavyu.quicktimeLibrariesFound())
-              {
+                if (!qtWarningShown && !Datavyu.quicktimeLibrariesFound()) {
 
-                JOptionPane.showMessageDialog(null, makeEditorPaneWithLinks(QT_WARNING_MSG), "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
-                qtWarningShown = true;
-              }
-              openVideoButtonActionPerformed(evt);
+                    JOptionPane.showMessageDialog(null, makeEditorPaneWithLinks(QT_WARNING_MSG), "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
+                    qtWarningShown = true;
+                }
+                openVideoButtonActionPerformed(evt);
             }
         });
         gridButtonPanel.add(addDataButton, "span 2, w 90!, h 25!");
@@ -1020,9 +1016,9 @@ public final class DataControllerV extends DatavyuDialog
         gridButtonPanel.add(pointCellButton, NUMPAD_KEY_SIZE);
 
         //Show/hide: Mac forward flash, windows asterisk
-        showTracksSmallButton = new JButton();      
+        showTracksSmallButton = new JButton();
         showTracksSmallButton.setIcon(resourceMap.getIcon(
-                "showTracksSmallButton.hide.icon."+osModifier));
+                "showTracksSmallButton.hide.icon." + osModifier));
         showTracksSmallButton.setName("showTracksSmallButton");
         showTracksSmallButton.getAccessibleContext().setAccessibleName(
                 "Show Tracks");
@@ -1033,21 +1029,18 @@ public final class DataControllerV extends DatavyuDialog
         });
         showTracksSmallButton.setFocusPainted(false);
         gridButtonPanel.add(showTracksSmallButton, NUMPAD_KEY_SIZE);
-        
+
         //MAC and WINDOWS DIFFER HERE (1)
-        if(osModifier.equals("osx"))
-        {
+        if (osModifier.equals("osx")) {
             //Placeholder at asterisk location
             gridButtonPanel.add(makePlaceholderButton(), NUMPAD_KEY_SIZE);
 
             //Placeholder - perhaps eventually the sync video button
             gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
-        }
-        else
-        {
+        } else {
             addGoBackPair();
         }
-        
+
         // Set cell onset button with 7
         setCellOnsetButton = buildButton("setCellOnset");
         gridButtonPanel.add(setCellOnsetButton, NUMPAD_KEY_SIZE);
@@ -1062,12 +1055,9 @@ public final class DataControllerV extends DatavyuDialog
         gridButtonPanel.add(ninesetCellOffsetButton, NUMPAD_KEY_SIZE);
 
         //MAC and WINDOWS DIFFER HERE (2)
-        if(osModifier.equals("osx"))
-        {
+        if (osModifier.equals("osx")) {
             addGoBackPair();
-        }
-        else
-        {
+        } else {
             //Find button (big plus)
             findButton = buildButton("find", "win");
             gridButtonPanel.add(findButton, TALL_NUMPAD_KEY_SIZE);
@@ -1075,7 +1065,7 @@ public final class DataControllerV extends DatavyuDialog
             //Placeholder - perhaps eventually the sync video button
             gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
         }
-        
+
         // Shuttle back button with 4
         shuttleBackButton = buildButton("shuttleBack");
         gridButtonPanel.add(shuttleBackButton, NUMPAD_KEY_SIZE);
@@ -1087,18 +1077,16 @@ public final class DataControllerV extends DatavyuDialog
         // Shuttle forward button with 6
         shuttleForwardButton = buildButton("shuttleForward");
         gridButtonPanel.add(shuttleForwardButton, NUMPAD_KEY_SIZE);
-                
+
         //MAC and WINDOWS DIFFER HERE (3)
-        if(osModifier.equals("osx"))
-        {
+        if (osModifier.equals("osx")) {
             //Find button (small plus)
             findButton = buildButton("find", "osx");
             gridButtonPanel.add(findButton, NUMPAD_KEY_SIZE);
 
             gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
-        }
-        else gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
-            
+        } else gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
+
 
         // Jog back button with 1
         jogBackButton = buildButton("jogBack");
@@ -1117,7 +1105,7 @@ public final class DataControllerV extends DatavyuDialog
         createNewCell.setAlignmentY(0.0F);
         createNewCell.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         gridButtonPanel.add(createNewCell, TALL_NUMPAD_KEY_SIZE);
-        
+
         // Onset text field
         onsetTextField.setHorizontalAlignment(SwingConstants.CENTER);
         onsetTextField.setText("00:00:00:000");
@@ -1142,8 +1130,8 @@ public final class DataControllerV extends DatavyuDialog
         offsetTextField.setEnabled(false); //do we really want this? i don't see what makes it different from onset
         offsetTextField.setName("findOffsetLabel");
         gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Offset"), offsetTextField), WIDE_TEXT_FIELD_SIZE);
-        
-        
+
+
         getContentPane().setLayout(new MigLayout("ins 0, hidemode 3, fillx",
                 "[growprio 0]0[]", ""));
         getContentPane().add(gridButtonPanel, "");
@@ -1155,13 +1143,12 @@ public final class DataControllerV extends DatavyuDialog
 
         pack();
     }
-    
-    private void addGoBackPair()
-    {
+
+    private void addGoBackPair() {
         //Go back button - minus key
         goBackButton = buildButton("goBack", null);
         gridButtonPanel.add(goBackButton, NUMPAD_KEY_SIZE);
-        
+
         //Go back text field
         goBackTextField.setHorizontalAlignment(SwingConstants.CENTER);
         goBackTextField.setText("00:00:05:000");
@@ -1169,24 +1156,22 @@ public final class DataControllerV extends DatavyuDialog
         gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Jump back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);
 
     }
-    
+
     //Create a JEditorPane with working hyperlinks
-    private JEditorPane makeEditorPaneWithLinks(String s)
-    {
+    private JEditorPane makeEditorPaneWithLinks(String s) {
         JEditorPane out = new JEditorPane("text/html", s);
-        out.addHyperlinkListener(new HyperlinkListener()
-            {
-                @Override
-                public void hyperlinkUpdate(HyperlinkEvent e)
-                {
-                    if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
-                        try {
-                            System.out.println("Attempting hyperlink");
-                            java.awt.Desktop.getDesktop().browse(java.net.URI.create(e.getURL().toString()));
-                        }
-                        catch(Exception ex) {System.out.println("hyperlink failed");}
-                }
-            });
+        out.addHyperlinkListener(new HyperlinkListener() {
+            @Override
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
+                    try {
+                        System.out.println("Attempting hyperlink");
+                        java.awt.Desktop.getDesktop().browse(java.net.URI.create(e.getURL().toString()));
+                    } catch (Exception ex) {
+                        System.out.println("hyperlink failed");
+                    }
+            }
+        });
         out.setEditable(false);
         out.setBackground((new JLabel()).getBackground());
         return out;
@@ -1266,7 +1251,7 @@ public final class DataControllerV extends DatavyuDialog
             // Panel is being displayed, hide it
             button.setIcon(resourceMap.getIcon(button.getName() + ".show.icon." + osModifier));
             button.setPressedIcon(resourceMap.getIcon(button.getName() + "Selected.show.icon." + osModifier));
-            
+
         } else {
             LOGGER.event("Hide tracks (" + button.getName() + ")");
 
@@ -1552,7 +1537,7 @@ public final class DataControllerV extends DatavyuDialog
     public void pressPlay() {
         playButton.doClick();
     }
-    
+
     public void pressShowTracksSmall() {
         showTracksSmallButton.doClick();
     }

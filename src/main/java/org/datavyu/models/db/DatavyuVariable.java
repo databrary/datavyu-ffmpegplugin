@@ -44,7 +44,7 @@ public final class DatavyuVariable implements Variable {
     private Boolean hidden;
     private String name;
     private int orderIndex = -1;
-    
+
     private DatavyuDatastore owningDatastore;
 
     private static CellComparator CellComparator = new CellComparator();
@@ -95,12 +95,15 @@ public final class DatavyuVariable implements Variable {
      * @param grandfathered Flag to exempt variable from naming rules.
      * @param dds The datastore to which this variable belongs
      */
-    public DatavyuVariable(String name, Argument type, boolean grandfathered, DatavyuDatastore dds) throws UserWarningException {
+    public DatavyuVariable(String name,
+                           Argument type,
+                           boolean grandfathered,
+                           DatavyuDatastore dds) throws UserWarningException {
         this.setName(name, grandfathered);
         this.setRootNode(type);
         this.setHidden(false);
         this.setSelected(true);
-        
+
         owningDatastore = dds;
 
         Datavyu.getProjectController().getDB().markDBAsChanged();
@@ -193,11 +196,11 @@ public final class DatavyuVariable implements Variable {
 
     @Override
     public void setHidden(final boolean hiddenParm) {
-        if (hidden == null || hiddenParm != hidden){
-            DatavyuDatastore.markDBAsChanged();
+        if (hidden == null || hiddenParm != hidden) {
+            Datavyu.getProjectController().getDB().markDBAsChanged();
             hidden = hiddenParm;
 
-            for(VariableListener vl : getListeners(getID()) ) {
+            for (VariableListener vl : getListeners(getID())) {
                 vl.visibilityChanged(hidden);
             }
         }
@@ -239,10 +242,9 @@ public final class DatavyuVariable implements Variable {
                 if (JOptionPane.showConfirmDialog(null, newName + " is no longer a valid column name.\nColumn names should begin with letter, and underscore is the only permitted special character.\nIt is highly recommended you manually rename this column immediately or use the nifty script in favourites.\nContinue showing this warning?", "Warning!", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
                     config.setColumnNameWarning(false);
             }
-        }        
-        
-        if (name != null && owningDatastore != null) 
-        {
+        }
+
+        if (name != null && owningDatastore != null) {
             owningDatastore.updateVariableName(name, newName, this);
         }
         this.name = newName;
@@ -339,18 +341,16 @@ public final class DatavyuVariable implements Variable {
     public int getOrderIndex() {
         return orderIndex;
     }
-    
+
     //would like to change the above calls to DatavyuDatastore.markDBAsChanged to this,
     //but am holding off for now to avoid merge complications
-    private void markDB(){
-        if (owningDatastore != null){
+    private void markDB() {
+        if (owningDatastore != null) {
             owningDatastore.markDBAsChanged();
-        }
-        else if (Datavyu.getProjectController() != null){
+        } else if (Datavyu.getProjectController() != null) {
             //uncomment the below when markDBAsChanged is non-static
             //Datavyu.getProjectController().getDB().markDBAsChanged();
-        }
-        else{
+        } else {
             System.out.println("FAILED TO MARK DATASTORE");
         }
     }

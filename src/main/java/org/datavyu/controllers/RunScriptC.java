@@ -64,17 +64,17 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      */
     private PipedInputStream consoleOutputStream;
     private PipedInputStream consoleOutputStreamAfter;
-    
+
     /**
      * input stream for displaying messages from the scripting engine.
      */
     private OutputStreamWriter consoleWriter;
     private OutputStreamWriter consoleWriterAfter;
-    
+
     private OutputStream sIn;
     private OutputStream sIn2;
-    
-    private String outString ="";
+
+    private String outString = "";
 
     /**
      * Constructs and invokes the runscript controller.
@@ -152,7 +152,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
         // Close the output stream to kill our reader thread
         try {
-            consoleWriter.flush();	    
+            consoleWriter.flush();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,7 +164,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         outString = "";
         ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
 
-        try{
+        try {
             try {
                 consoleWriter.write("\n*************************");
                 consoleWriter.write("\nRunning Script: " + scriptFile.getName());
@@ -216,45 +216,40 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 consoleWriter.write("File not found. " + e.getMessage());
                 LOGGER.error("Unable to execute script: ", e);
             }
-        }
-        catch (IOException ioe)
-        {
+        } catch (IOException ioe) {
             System.out.println("IOEXCEPTION!!!! " + ioe.getMessage());
             ioe.printStackTrace();
         }
 
     }
-    
-    private String makeFriendlyRubyErrorMsg(String out, ScriptException e)
-    {
-        try{                                    
+
+    private String makeFriendlyRubyErrorMsg(String out, ScriptException e) {
+        try {
             String s = "";
             //s should begin with ruby-relevant error portion, NOT full java stack
             //which would be of little interest to the user and only obscures what matters
             int endIndex = out.indexOf("org.jruby.embed.EvalFailedException:");
-            if (endIndex == -1) s = out.substring(out.lastIndexOf('*')+1);
-            else s = out.substring(out.lastIndexOf('*')+1, endIndex);
-            
+            if (endIndex == -1) s = out.substring(out.lastIndexOf('*') + 1);
+            else s = out.substring(out.lastIndexOf('*') + 1, endIndex);
+
             //for each script error print the relevant line number. these are listed
             //in OPPOSITE of stack order so that the top of the stack (most likely to be
             //where the actual error lies), is the last thing shown and most apparent to user
             String linesOut = "";
             StringTokenizer outputTokenizer = new StringTokenizer(out, "\n");
-            while(outputTokenizer.hasMoreTokens())
-            {
+            while (outputTokenizer.hasMoreTokens()) {
                 String curLine = outputTokenizer.nextToken();
                 int scriptTagIndex = curLine.lastIndexOf("<script>:");
-                if (scriptTagIndex != -1)
-                {
-                    int errorLine = Integer.parseInt(curLine.substring(scriptTagIndex).replaceAll("[^0-9]",""));
+                if (scriptTagIndex != -1) {
+                    int errorLine = Integer.parseInt(curLine.substring(scriptTagIndex).replaceAll("[^0-9]", ""));
                     LineNumberReader scriptLNR = new LineNumberReader(new FileReader(scriptFile));
-                    while(scriptLNR.getLineNumber() < errorLine-1) scriptLNR.readLine(); //advance to errorLine
-                    linesOut = "\nSee line " + errorLine + " of "+scriptFile+":" + "\n" + scriptLNR.readLine() + linesOut;
-                }                    
+                    while (scriptLNR.getLineNumber() < errorLine - 1) scriptLNR.readLine(); //advance to errorLine
+                    linesOut = "\nSee line " + errorLine + " of " + scriptFile + ":" + "\n" + scriptLNR.readLine() + linesOut;
+                }
             }
             s += linesOut;
             return s;
-        } catch(Exception e2) //if <script>: is not found in previous output, or other error occurs, default to exception's message
+        } catch (Exception e2) //if <script>: is not found in previous output, or other error occurs, default to exception's message
         {
             return e.getMessage();
         }
@@ -422,7 +417,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     /**
      * Separate thread for polling the incoming data from the scripting engine.
      * The data from the scripting engine gets placed directly into the
-     * consoleOutput and also kept in outString for revisiting during 
+     * consoleOutput and also kept in outString for revisiting during
      * error reporting
      */
     class ReaderThread extends Thread {
@@ -453,7 +448,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
                     // Allow other threads to do stuff.
                     Thread.yield();
-                    
+
                 }
                 consoleOutputStream.close();
                 //System.out.println("while switch");
@@ -468,8 +463,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
                     // Allow other threads to do stuff.
                     Thread.yield();
-                    
-                    
+
+
                 }
                 consoleOutputStreamAfter.close();
             } catch (IOException e) {

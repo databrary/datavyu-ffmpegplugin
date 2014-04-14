@@ -30,38 +30,56 @@ public final class ClockTimer {
     //
     //
 
-    /** Clock clockTick period. */
+    /**
+     * Clock clockTick period.
+     */
     private static final long CLOCK_TICK = 31L;
 
-    /** Clock initial delay. */
+    /**
+     * Clock initial delay.
+     */
     private static final long CLOCK_DELAY = 0L;
 
-    /** Used to convert between nanoseconds and milliseconds. */
+    /**
+     * Used to convert between nanoseconds and milliseconds.
+     */
     private static final long NANO_IN_MILLI = 1000000L;
 
     //--------------------------------------------------------------------------
     //
     //
 
-    /** Current time of the clock. */
+    /**
+     * Current time of the clock.
+     */
     private double time;
 
-    /** Used to calculate elapsed time. */
+    /**
+     * Used to calculate elapsed time.
+     */
     private long nanoTime;
 
     /** */
     private Timer clock;
 
-    /** Is the clock currently stopped? */
+    /**
+     * Is the clock currently stopped?
+     */
     private boolean isStopped;
 
-    /** What was the state of the clock in the previous tick? */
+    /**
+     * What was the state of the clock in the previous tick?
+     */
     private boolean oldIsStopped;
 
-    /** Update multiplier. */
+    /**
+     * Update multiplier.
+     */
     private float rate = 1F;
 
-    /** The set of objects that listen to this clock. */
+    /**
+     * The set of objects that listen to this clock.
+     */
     private Set<ClockListener> clockListeners = new HashSet<ClockListener>();
 
 
@@ -87,10 +105,11 @@ public final class ClockTimer {
         oldIsStopped = true;
         clock = new Timer();
         clock.scheduleAtFixedRate(new TimerTask() {
-                @Override public void run() {
-                    tick();
-                }
-            }, CLOCK_DELAY, CLOCK_TICK);
+            @Override
+            public void run() {
+                tick();
+            }
+        }, CLOCK_DELAY, CLOCK_TICK);
     }
 
     //--------------------------------------------------------------------------
@@ -160,13 +179,12 @@ public final class ClockTimer {
      */
     public synchronized void stepTime(final long ms) {
 
-            time += ms;
-            time = Math.max(time, 0);
-            notifyStep();
+        time += ms;
+        time = Math.max(time, 0);
+        notifyStep();
     }
 
-    
-    
+
     /**
      * @return True if clock is stopped.
      */

@@ -120,12 +120,13 @@ public final class SpreadsheetPanel extends JPanel
      */
     private JButton newVar = new JButton();
     private JLabel newVarSpacer = new JLabel();
-    
+
     /**
      * Hidden variables button to be added to the column header panel.
      */
     private JButton hiddenVars;
-    private JLabel hiddenVarsSpacer = new JLabel();;
+    private JLabel hiddenVarsSpacer = new JLabel();
+    ;
 
     /**
      * The currently highlighted cell.
@@ -212,14 +213,14 @@ public final class SpreadsheetPanel extends JPanel
         newVarSpacer.setText(" + ");
         newVarSpacer.setForeground(newVarSpacer.getBackground());
         mainView.add(newVarSpacer);
-        
+
         hiddenVars = makeHiddenVarsButton();
         updateHiddenVars();
         headerView.add(hiddenVars);
         hiddenVarsSpacer.setForeground(hiddenVarsSpacer.getBackground());
         mainView.add(hiddenVarsSpacer);
 
-        
+
         //layout the columns
         buildColumns(progressBar);
         projectController = pc;
@@ -229,7 +230,6 @@ public final class SpreadsheetPanel extends JPanel
         numNewSheets++;
 
 
-        
         // Enable drag and drop support.
         setDropTarget(new DropTarget(this, new SSDropTarget()));
         fileDropListeners = new CopyOnWriteArrayList<FileDropEventListener>();
@@ -383,7 +383,7 @@ public final class SpreadsheetPanel extends JPanel
         headerView.add(newVar);
         updateHiddenVars();
         headerView.add(hiddenVars);
-        mainView.add(newVarSpacer);        
+        mainView.add(newVarSpacer);
         mainView.add(hiddenVarsSpacer);
 
         // and add it to our maintained ref collection

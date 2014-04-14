@@ -18,23 +18,22 @@ public final class StringUtils {
 
     /**
      * @param input The string to escape ',' '\' '-' and newline characters.
-     *
-     * @return A copy of the input string - but with ',' '\' '-' and newline 
+     * @return A copy of the input string - but with ',' '\' '-' and newline
      * characters escaped with a leading '\'.
      */
     public static String escapeCSV(final String input) {
         return escapeString(input, "\\,-\n\r");
     }
-    
+
     public static String escapeCSVArgument(final String input) {
         return escapeString(input, "\\()\n\r-,|");
     }
-    
+
     private static String escapeString(final String input, final String charsToEscape) {
         StringBuilder resultSB = new StringBuilder();
 
         for (int n = 0; n < input.length(); n++) {
-            if (charsToEscape.indexOf(input.charAt(n)) != -1){
+            if (charsToEscape.indexOf(input.charAt(n)) != -1) {
                 resultSB.append("\\");
             }
             resultSB.append(input.charAt(n));

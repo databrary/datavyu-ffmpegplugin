@@ -126,6 +126,6 @@ public final class VocabElementRootView extends JTextArea {
     public List<EditorComponent> getEditors() {
         return editors;
     }
-    
+
 }
 
