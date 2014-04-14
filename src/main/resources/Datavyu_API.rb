@@ -323,7 +323,7 @@ class RVariable
             c.db_cell = cell
             c.parent = @name
             vals = Array.new
-            if cell.getVariable.getVariableType.type == Argument::Type::MATRIX
+            if cell.getVariable.getRootNode.type == Argument::Type::MATRIX
                 for val in cell.getValue().getArguments
                     vals << val.toString
                 end
@@ -466,11 +466,11 @@ def getVariable(name)
    # Now get the arguments for each of the cells
 
    # For matrix vars only
-   type = var.getVariableType.type
+   type = var.getRootNode.type
    if type == Argument::Type::MATRIX
        # Matrix var
        arg_names = Array.new
-       for arg in var.getVariableType.childArguments
+       for arg in var.getRootNode.childArguments
            arg_names << arg.name
        end
    else
@@ -536,12 +536,12 @@ def setVariable(*args)
        for arg in var.arglist
            new_arg = v.addArgument(Argument::Type::NOMINAL)
            new_arg.name = arg
-           main_arg = var.db_var.getVariableType()
+           main_arg = var.db_var.getRootNode()
            child_args = main_arg.childArguments
 
            child_args.get(child_args.length-1).name = arg
 
-           var.db_var.setVariableType(main_arg)
+           var.db_var.setRootNode(main_arg)
        end
        var.db_var = v
    end
@@ -554,8 +554,8 @@ def setVariable(*args)
        # what is different.
 
        #p var.db_var
-       if var.db_var.getVariableType.type == Argument::Type::MATRIX
-           values = var.db_var.getVariableType.childArguments
+       if var.db_var.getRootNode.type == Argument::Type::MATRIX
+           values = var.db_var.getRootNode.childArguments
            #p values
            for arg in var.old_args
             #p var.old_args
@@ -576,7 +576,7 @@ def setVariable(*args)
                    # Change the argument's name by getting the variable back,
                    # and then setting it. This hoop jumping is annoying.
                    new_arg.name = arg
-                   main_arg = var.db_var.getVariableType()
+                   main_arg = var.db_var.getRootNode()
                    child_args = main_arg.childArguments
 
                    child_args.get(child_args.length-1).name = arg
@@ -626,7 +626,7 @@ def setVariable(*args)
       end
 
       # Matrix cell
-      if cell.db_cell.getVariable.getVariableType.type == Argument::Type::MATRIX
+      if cell.db_cell.getVariable.getRootNode.type == Argument::Type::MATRIX
           values = cell.db_cell.getValue().getArguments()
           for arg in var.old_args
               # Find the arg in the db's arglist that we are looking for
