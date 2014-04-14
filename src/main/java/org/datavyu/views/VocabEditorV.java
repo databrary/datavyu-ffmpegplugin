@@ -95,6 +95,9 @@ public final class VocabEditorV extends DatavyuDialog {
     private JLabel statusBar;
     private JSeparator statusSeperator;
     private JLabel nameWarningsLabel;
+    
+    private java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/datavyu/views/resources/VocabEditorV"); 
+
 
     /**
      * Constructor.
@@ -205,6 +208,12 @@ public final class VocabEditorV extends DatavyuDialog {
         currentVocabList.setViewportView(holdPanel);
         refreshNameWarnings(true);
         updateDialogState();
+        
+        String titleName;
+        if (Datavyu.getProjectController().getProjectName() == null)
+            titleName = "untitled";
+        else titleName = Datavyu.getProjectController().getProjectName();
+        setTitle(bundle.getString("window.title") + " - " + titleName); 
     }
 
     private boolean isCurrent()
@@ -613,7 +622,6 @@ public final class VocabEditorV extends DatavyuDialog {
         jScrollPane1.setViewportView(jTextArea1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("org/datavyu/views/resources/VocabEditorV"); 
         setTitle(bundle.getString("window.title")); 
         setName("Form"); 
         getContentPane().setLayout(new java.awt.GridBagLayout());

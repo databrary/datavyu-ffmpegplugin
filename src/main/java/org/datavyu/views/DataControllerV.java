@@ -948,8 +948,8 @@ public final class DataControllerV extends DatavyuDialog
         tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
-
-        setTitle(resourceMap.getString("title"));
+        setCurrentTitle(); 
+        
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(
@@ -1142,6 +1142,14 @@ public final class DataControllerV extends DatavyuDialog
         getContentPane().add(tracksPanel, "growx");
 
         pack();
+    }
+
+    private void setCurrentTitle() {
+        String titleName;
+        //if (Datavyu.getProjectController() == null || Datavyu.getProjectController().getProjectName() == null)
+        //    titleName = "untitled";
+        //else titleName = Datavyu.getProjectController().getProjectName();
+        setTitle(resourceMap.getString("title"));// + " - " + titleName);
     }
 
     private void addGoBackPair() {
