@@ -25,22 +25,21 @@ import org.datavyu.models.db.Variable;
 import org.datavyu.undoableedits.AddVariableEdit;
 import org.datavyu.undoableedits.RemoveVariableEdit;
 import org.datavyu.views.discrete.datavalues.vocabelements.FormalArgEditor;
-import org.datavyu.views.discrete.datavalues.vocabelements.VENameEditor;
 import org.datavyu.views.discrete.datavalues.vocabelements.VocabElementV;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 import javax.swing.*;
 import javax.swing.undo.UndoableEdit;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
 /**
  * A view for editing the database vocab.
@@ -183,6 +182,7 @@ public final class VocabEditorV extends DatavyuDialog {
 
     private void makeElements() {
         // Populate current vocab list with vocab data from the database.
+        ds = Datavyu.getProjectController().getDB();
         veViews = new ArrayList<VocabElementV>();
         verticalFrame = new JPanel();
         verticalFrame.setName("verticalFrame");
@@ -214,8 +214,12 @@ public final class VocabEditorV extends DatavyuDialog {
         for(VocabElementV v : veViews) //wish i could map...
         {
             String curVocab = v.getNameComponent().getText();
-            String curDatastore = varIt.next().getName();
-            if (!curVocab.equals(curDatastore)) return false;
+            if (varIt.hasNext()) {
+                String curDatastore = varIt.next().getName();
+                if (!curVocab.equals(curDatastore)) return false;
+            } else {
+                return false;
+            }
         }
         
         return !varIt.hasNext(); //return true iff both lists are exhausted
@@ -443,8 +447,7 @@ public final class VocabEditorV extends DatavyuDialog {
 //                }
         }
         updateDialogState();
-        ((DatavyuView) Datavyu.getView())
-                .showSpreadsheet();
+        ((DatavyuView) Datavyu.getView()).showSpreadsheet();
 
 
         for (int i = veViews.size() - 1; i >= 0; i--) {
@@ -516,8 +519,8 @@ public final class VocabEditorV extends DatavyuDialog {
                 .getResourceMap(VocabEditorV.class);
 
         //boolean containsC = false;
-        selectedVocabElement = null;
-        selectedArgument = null;
+//        selectedVocabElement = null;
+//        selectedArgument = null;
 
         for (VocabElementV vev : veViews) {
             // A vocab element has focus - enable certain things.

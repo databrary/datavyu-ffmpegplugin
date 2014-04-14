@@ -393,6 +393,7 @@ public final class DatavyuView extends FrameView
                         Datavyu.getDataController().setVisible(false);
                         Datavyu.setDataController(sp.getDataController());
                         sp.getDataController().setVisible(true);
+
                         for (DataViewer d : sp.getDataController().getDataViewers()) {
                             d.setDataViewerVisible(true);
                         }
@@ -408,6 +409,9 @@ public final class DatavyuView extends FrameView
                     fileTree = new FileSystemTreeModel(new File(dir));
                     fileDrawer.setModel(fileTree);
                     updateTitle();
+//                    if(spread)
+                    vec.updateView();
+
 //                    fileScrollPane = new JScrollPane(fileDrawer);
 
 

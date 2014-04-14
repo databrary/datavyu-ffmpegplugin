@@ -48,7 +48,16 @@ public final class VocabEditorC {
         }
         Datavyu.getApplication().show(view); //Display view
     }
-    
+
+    public void updateView() {
+        JFrame mainFrame = Datavyu.getApplication().getMainFrame();
+        view = new VocabEditorV(mainFrame, false);
+        if (view.isShowing()) {
+            view.closeWindow();
+            Datavyu.getApplication().show(view);
+        }
+    }
+
     public void killView()
     {
         view = null;
