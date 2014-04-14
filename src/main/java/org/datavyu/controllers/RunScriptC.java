@@ -152,9 +152,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
         // Close the output stream to kill our reader thread
         try {
-            consoleWriter.flush();
+            consoleWriterAfter.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         return null;
@@ -183,7 +183,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 rubyEngine.getContext().setWriter(consoleWriter);
                 rubyEngine.getContext().setErrorWriter(consoleWriter);
                 rubyEngine.eval(reader);
-                System.out.println("SCRIPT OVER");
+                //System.out.println("SCRIPT OVER");
                 consoleWriter.close();
 
                 reader = null;
