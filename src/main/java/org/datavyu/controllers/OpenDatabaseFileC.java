@@ -302,7 +302,7 @@ public final class OpenDatabaseFileC {
                                        final Argument arg) throws IOException {
         String line = csvFile.readLine();
 
-        while ((line != null) && Character.isDigit(line.charAt(0))) {
+        while ((line != null) && isCell(line)) {
 
             ArrayList tokensList = new ArrayList<String>();
             String[] onsetOffsetVals = line.split(",", 3);
@@ -350,6 +350,14 @@ public final class OpenDatabaseFileC {
         }
 
         return line;
+    }
+    
+    private boolean isCell(String s)
+    {
+        if (Character.isDigit(s.charAt(0))) {
+            return (Character.isDigit(s.charAt(1)) && (s.charAt(2) == ':'));
+        }
+        return false;
     }
 
     /**
