@@ -48,6 +48,8 @@ public class DatavyuDatastore implements Datastore {
     private Map<String, Variable> variables;
 
     private VariableComparator VariableComparator = new VariableComparator();
+    
+    private String exemptionVariables = "";
 
 
     public DatavyuDatastore() {
@@ -238,5 +240,17 @@ public class DatavyuDatastore implements Datastore {
         if (dbListeners.contains(listener)) {
             dbListeners.remove(listener);
         }
+    }
+    
+    @Override
+    public void addExemptionVariable(String name)
+    {
+        exemptionVariables += name + "\n";
+    }
+    
+    @Override
+    public String getExemptionVariables()
+    {
+        return exemptionVariables;
     }
 }

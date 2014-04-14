@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.min;
+import org.datavyu.Configuration;
 
 /**
  * Controller for opening a database from disk.
@@ -152,6 +153,11 @@ public final class OpenDatabaseFileC {
                 while (line != null) {
                     line = parseVariable(csvFile, line, db, "#4");
                 }
+                if(!db.getExemptionVariables().isEmpty())
+                {
+                    System.out.println("WE HAVE EXEMPTION VARIABLES");
+                    SwingUtilities.invokeLater(new NameWarning(db.getExemptionVariables()));
+                }
             } else if ("#3".equalsIgnoreCase(line)) {
 
                 //Version 3 includes column visible status after the column type
@@ -174,6 +180,8 @@ public final class OpenDatabaseFileC {
                     line = parseVariable(csvFile, line, db);
                 }
             }
+            
+            
 
             csvFile.close();
             isr.close();
@@ -575,6 +583,7 @@ public final class OpenDatabaseFileC {
         // Create variable to put cells within.
         Argument.Type variableType = getVarType(varType);
         Variable newVar = ds.createVariable(varName, variableType, true);
+        
         newVar.setHidden(!varVisible);
 
         newVar.setOrderIndex(numVarsRead);
@@ -708,6 +717,28 @@ public final class OpenDatabaseFileC {
 
                 destValue.set(stripEscChars(text));
             }
+        }
+    }
+    
+    private class NameWarning implements Runnable
+    {
+        private String names;
+        
+        public NameWarning(String names)
+        {
+            this.names = names;
+        }
+        
+        public void run()
+        {
+            Configuration config = Configuration.getInstance();
+            if(true || config.getColumnNameWarning())
+            {
+             if (JOptionPane.showConfirmDialog(null, "The following: \n" + names + " is/are no longer a valid column name(s).\nColumn names should begin with letter, and underscore is the only permitted special character.\nIt is highly recommended you manually rename this column immediately or use the nifty script in favourites.\nContinue showing this warning in the future?", "Warning!", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION){
+                 config.setColumnNameWarning(false);
+             }
+            }
+
         }
     }
 }

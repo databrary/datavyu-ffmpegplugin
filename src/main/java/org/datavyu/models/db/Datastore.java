@@ -174,4 +174,7 @@ public interface Datastore {
      * the datastore changes.
      */
     void removeListener(final DatastoreListener listener);
+    
+    void addExemptionVariable(String s);
+    String getExemptionVariables();
 }
