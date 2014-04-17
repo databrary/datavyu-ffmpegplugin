@@ -11,6 +11,7 @@ import org.datavyu.plugins.Plugin;
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileFilter;
+import java.net.URL;
 import java.util.List;
 
 
@@ -66,7 +67,10 @@ public class VLCPlugin implements Plugin {
 
     @Override
     public ImageIcon getTypeIcon() {
-        return null;
+        URL typeIconURL = getClass().getResource(
+                "/icons/vlc_cone.png");
+
+        return new ImageIcon(typeIconURL);
     }
 
     @Override
