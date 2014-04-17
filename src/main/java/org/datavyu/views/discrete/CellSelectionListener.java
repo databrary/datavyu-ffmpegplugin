@@ -30,7 +30,7 @@ public interface CellSelectionListener {
      * Adds the cell and everything in between to the selected
      * cells.
      *
-     * @param cell The end point cell to use for the continous selection.
+     * @param cell The end point cell to use for the continuous selection.
      */
     void addCellToContinousSelection(SpreadsheetCell cell);
 

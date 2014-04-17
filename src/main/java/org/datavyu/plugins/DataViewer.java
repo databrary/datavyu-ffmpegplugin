@@ -117,12 +117,12 @@ public interface DataViewer {
     long getCurrentTime() throws Exception;
 
     /**
-     * Plays the continous data stream at a regular 1x normal speed.
+     * Plays the continuous data stream at a regular 1x normal speed.
      */
     void play();
 
     /**
-     * Stops the playback of the continous data stream.
+     * Stops the playback of the continuous data stream.
      */
     void stop();
 

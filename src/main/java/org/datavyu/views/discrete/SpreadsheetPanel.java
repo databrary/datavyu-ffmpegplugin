@@ -134,7 +134,7 @@ public final class SpreadsheetPanel extends JPanel
     private SpreadsheetCell highlightedCell;
 
     /**
-     * Last selected cell - used as an end point for continous selections.
+     * Last selected cell - used as an end point for continuous selections.
      */
     private SpreadsheetCell lastSelectedCell;
 
@@ -794,7 +794,7 @@ public final class SpreadsheetPanel extends JPanel
             Cell c2 = cell.getCell();
             Variable v2 = datastore.getVariable(c2);
 
-            // We can only do continous selections in a single column at
+            // We can only do continuous selections in a single column at
             // at the moment.
             if (v1.equals(v2)) {
 
@@ -809,7 +809,7 @@ public final class SpreadsheetPanel extends JPanel
 
                     if (v1.equals(col.getVariable())) {
 
-                        // Perform continous selection.
+                        // Perform continuous selection.
                         boolean addToSelection = false;
 
                         for (SpreadsheetCell c : getOrderedCells(col)) {
