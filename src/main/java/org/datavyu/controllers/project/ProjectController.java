@@ -256,6 +256,20 @@ public final class ProjectController {
     public String getProjectName() {
         return project.getProjectName();
     }
+    
+   /**
+     * @return the project name for purposes for display. returns "(untitled)" instead of null
+     */
+    public String getProjectNamePretty() {
+        if (project.getProjectName() != null)
+        {
+            return project.getProjectName();
+        }
+        else
+        {
+            return "(untitled)";
+        }
+    }
 
     /**
      * Set the database file name, directory not included.

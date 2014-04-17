@@ -209,10 +209,7 @@ public final class VocabEditorV extends DatavyuDialog {
         refreshNameWarnings(true);
         updateDialogState();
         
-        String titleName;
-        if (Datavyu.getProjectController().getProjectName() == null)
-            titleName = "untitled";
-        else titleName = Datavyu.getProjectController().getProjectName();
+        String titleName = Datavyu.getProjectController().getProjectNamePretty();
         setTitle(bundle.getString("window.title") + " - " + titleName); 
     }
 

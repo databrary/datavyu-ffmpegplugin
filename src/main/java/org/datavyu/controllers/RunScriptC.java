@@ -167,7 +167,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         try {
             try {
                 consoleWriter.write("\n*************************");
-                consoleWriter.write("\nRunning Script: " + scriptFile.getName());
+                consoleWriter.write("\nRunning Script: " + scriptFile.getName() + " on project: " +  Datavyu.getProjectController().getProjectNamePretty());
                 consoleWriter.write("\n*************************\n");
 
                 consoleWriter.flush();
@@ -202,7 +202,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 consoleWriter.close();
 
                 String msg = makeFriendlyRubyErrorMsg(outString, e);
-                consoleWriterAfter.write("\n***** SCRIPT ERROR *****\n");
+                consoleWriterAfter.write("\n\n***** SCRIPT ERROR *****\n");
                 consoleWriterAfter.write(msg);
                 consoleWriterAfter.write("\n*************************\n");
                 consoleWriterAfter.flush();
