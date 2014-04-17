@@ -44,6 +44,7 @@ import org.jdesktop.application.ResourceMap;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -270,6 +271,18 @@ public final class ProjectController {
      */
     public String getDatabaseFileName() {
         return project.getDatabaseFileName();
+    }
+
+    /**
+     * @return the database file name, directory not included.
+     */
+    public String getFullPath() {
+        try {
+            return new File(project.getProjectDirectory() + File.separator + project.getDatabaseFileName()).getCanonicalPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

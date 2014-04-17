@@ -951,6 +951,15 @@ public final class DatavyuView extends FrameView
         fc.setVisible(false);
         fc.setSelectedFile(file);
 
+        try {
+            if (checkIfFileAlreadyOpen(file.getCanonicalPath())) {
+                Datavyu.getApplication().showWarningDialog("Error: File already open.");
+                return;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         String ext = FilenameUtils.getExtension(file.getAbsolutePath());
         if ("shapa".equalsIgnoreCase(ext)) {
             fc.setFileFilter(SHAPAFilter.INSTANCE);
@@ -1001,7 +1010,7 @@ public final class DatavyuView extends FrameView
 
             } else {
                 // Opening a database file
-//                openC = openDatabase(jd.getSelectedFile());
+                openC = openDatabase(jd.getSelectedFile());
             }
 
             if (openC == null) {
@@ -1011,8 +1020,10 @@ public final class DatavyuView extends FrameView
 
             ProjectController pController = new ProjectController(openC.getProject(), openC.getDatastore());
             pController.setProjectName(jd.getSelectedFile().getName());
+
             pController.setLastSaveOption(filter);
             pController.setProjectDirectory(jd.getSelectedFile().getParent());
+            pController.setDatabaseFileName(jd.getSelectedFile().getName());
 
             setProgress(40);
 
@@ -1132,7 +1143,7 @@ public final class DatavyuView extends FrameView
     }
 
 
-    private boolean openDatabase(final File databaseFile) {
+    private OpenC openDatabase(final File databaseFile) {
 
         // Set the database to the freshly loaded database.
         OpenC openC = new OpenC();
@@ -1142,29 +1153,19 @@ public final class DatavyuView extends FrameView
         if (openC.getDatastore() != null) {
 //            Datavyu.newProjectController();
 
-            ProjectController projController = Datavyu.getProjectController();
-
-            projController.setDatastore(openC.getDatastore());
-            projController.setProjectDirectory(databaseFile.getParent());
-            projController.setDatabaseFileName(databaseFile.getName());
-
-            // Reset the undo manager
-//            resetUndoManager();
-            return true;
+            return openC;
         }
-        return false;
+        return null;
     }
 
     private OpenC openProject(final File projectFile) {
+        // Check to make sure that this project file isn't already open
+
         OpenC openC = new OpenC();
         openC.openProject(projectFile);
 
 
         if ((openC.getProject() != null) && (openC.getDatastore() != null)) {
-//            Datavyu.newProjectController(openC.getProject());
-//            ProjectController pc = createNewSpreadsheet(openC.getDatastore());
-//            pc.setProjectDirectory(projectFile.getParent());
-//            pc.loadProject();
 
             // Reset the undo manager
 //            resetUndoManager();
@@ -1565,6 +1566,19 @@ public final class DatavyuView extends FrameView
             }
         }
         return changes;
+    }
+
+    public boolean checkIfFileAlreadyOpen(String filepath) {
+        for (Component tab : tabbedPane.getComponents()) {
+            if (tab instanceof SpreadsheetPanel) {
+                SpreadsheetPanel sp = (SpreadsheetPanel) tab;
+                if (sp.getProjectController().getDatabaseFileName() != null &&
+                        sp.getProjectController().getFullPath().equals(filepath)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
