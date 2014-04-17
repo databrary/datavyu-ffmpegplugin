@@ -23,6 +23,7 @@
 
 package org.datavyu.models.db;
 
+import java.awt.Component;
 import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
 
@@ -99,12 +100,13 @@ public final class DatavyuVariable implements Variable {
                            Argument type,
                            boolean grandfathered,
                            DatavyuDatastore dds) throws UserWarningException {
+        owningDatastore = dds;
         this.setName(name, grandfathered);
         this.setRootNode(type);
         this.setHidden(false);
         this.setSelected(true);
 
-        owningDatastore = dds;
+
 
         Datavyu.getProjectController().getDB().markDBAsChanged();
     }
@@ -235,13 +237,7 @@ public final class DatavyuVariable implements Variable {
         }
         
         if (grandfathered && !isNameValid(newName)) {
-            Configuration config = Configuration.getInstance();
-            //TODO: Perhaps I should abstract this out or deal with it through exception
-            if (config.getColumnNameWarning())
-            {
-                if (JOptionPane.showConfirmDialog(null, newName + " is no longer a valid column name.\nColumn names should begin with letter, and underscore is the only permitted special character.\nIt is highly recommended you manually rename this column immediately or use the nifty script in favourites.\nContinue showing this warning?", "Warning!", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
-                    config.setColumnNameWarning(false);
-            }
+            owningDatastore.addExemptionVariable(newName);
         }
 
         if (name != null && owningDatastore != null) {
@@ -252,6 +248,7 @@ public final class DatavyuVariable implements Variable {
             vl.nameChanged(newName);
         }
     }
+    
     
     private boolean isNameValid(String nameCandidate)
     {

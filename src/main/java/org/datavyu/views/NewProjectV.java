@@ -39,10 +39,7 @@ public final class NewProjectV extends DatavyuDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    private javax.swing.JTextArea descriptionField;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField nameField;
     private javax.swing.JButton okButton;
     // End of variables declaration//GEN-END:variables
@@ -75,109 +72,72 @@ public final class NewProjectV extends DatavyuDialog {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         nameField = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        descriptionField = new javax.swing.JTextArea();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        org.jdesktop.application.ResourceMap resourceMap =
-                org.jdesktop.application.Application.getInstance(
-                        org.datavyu.Datavyu.class).getContext().getResourceMap(
-                        NewProjectV.class);
-        setTitle(resourceMap.getString("Form.title")); 
-        setName("Form"); 
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(NewProjectV.class);
+        setTitle(resourceMap.getString("Form.title")); // NOI18N
+        setName("Form"); // NOI18N
         setResizable(false);
 
-        jLabel1.setText(resourceMap.getString("jLabel1.text")); 
-        jLabel1.setToolTipText(resourceMap.getString("jLabel1.toolTipText")); 
-        jLabel1.setName("jLabel1"); 
+        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setToolTipText(resourceMap.getString("jLabel1.toolTipText")); // NOI18N
+        jLabel1.setName("jLabel1"); // NOI18N
 
-        jLabel2.setText(resourceMap.getString("jLabel2.text")); 
-        jLabel2.setToolTipText(resourceMap.getString("jLabel2.toolTipText")); 
-        jLabel2.setName("jLabel2"); 
+        nameField.setName("nameField"); // NOI18N
 
-        nameField.setName("nameField"); 
-
-        jScrollPane1.setName("jScrollPane1"); 
-
-        descriptionField.setColumns(20);
-        descriptionField.setFont(resourceMap.getFont("descriptionField.font")); 
-        descriptionField.setRows(5);
-        descriptionField.setName("descriptionField"); 
-        jScrollPane1.setViewportView(descriptionField);
-
-        cancelButton.setText(resourceMap.getString("cancelButton.text")); 
-        cancelButton.setName("cancelButton"); 
+        cancelButton.setText(resourceMap.getString("cancelButton.text")); // NOI18N
+        cancelButton.setName("cancelButton"); // NOI18N
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(
-                    final java.awt.event.ActionEvent evt) {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
             }
         });
 
-        okButton.setText(resourceMap.getString("okButton.text")); 
-        okButton.setName("okButton"); 
+        okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
+        okButton.setName("okButton"); // NOI18N
         okButton.setPreferredSize(new java.awt.Dimension(65, 23));
         okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(
-                    final java.awt.event.ActionEvent evt) {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
             }
         });
 
-        GroupLayout layout = new GroupLayout(getContentPane());
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(
-                GroupLayout.Alignment.LEADING).addGroup(
-                layout.createSequentialGroup().addContainerGap().addGroup(
-                        layout.createParallelGroup(
-                                GroupLayout.Alignment.LEADING).addGroup(
-                                layout.createSequentialGroup().addGroup(
-                                        layout.createParallelGroup(
-                                                GroupLayout.Alignment.LEADING).addComponent(
-                                                jLabel2).addComponent(jLabel1)).addPreferredGap(
-                                        LayoutStyle.ComponentPlacement.RELATED).addGroup(
-                                        layout.createParallelGroup(
-                                                GroupLayout.Alignment.TRAILING).addComponent(
-                                                nameField, GroupLayout.DEFAULT_SIZE, 274,
-                                                Short.MAX_VALUE).addComponent(jScrollPane1,
-                                                GroupLayout.Alignment.TRAILING,
-                                                GroupLayout.DEFAULT_SIZE, 274,
-                                                Short.MAX_VALUE))).addGroup(
-                                GroupLayout.Alignment.TRAILING,
-                                layout.createSequentialGroup().addComponent(okButton,
-                                        GroupLayout.PREFERRED_SIZE,
-                                        GroupLayout.DEFAULT_SIZE,
-                                        GroupLayout.PREFERRED_SIZE).addPreferredGap(
-                                        LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cancelButton))).addContainerGap()));
-        layout.setVerticalGroup(layout.createParallelGroup(
-                GroupLayout.Alignment.LEADING).addGroup(
-                layout.createSequentialGroup().addContainerGap().addGroup(
-                        layout.createParallelGroup(
-                                GroupLayout.Alignment.BASELINE).addComponent(
-                                jLabel1).addComponent(nameField,
-                                GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                GroupLayout.PREFERRED_SIZE)).addPreferredGap(
-                        LayoutStyle.ComponentPlacement.RELATED).addGroup(
-                        layout.createParallelGroup(
-                                GroupLayout.Alignment.LEADING).addComponent(jLabel2)
-                                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE,
-                                        111, GroupLayout.PREFERRED_SIZE)).addPreferredGap(
-                        LayoutStyle.ComponentPlacement.UNRELATED).addGroup(
-                        layout.createParallelGroup(
-                                GroupLayout.Alignment.BASELINE).addComponent(
-                                cancelButton).addComponent(okButton,
-                                GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                GroupLayout.PREFERRED_SIZE)).addContainerGap(
-                        GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .addContainerGap()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(layout.createSequentialGroup()
+                        .add(jLabel1)
+                        .add(30, 30, 30)
+                        .add(nameField, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE))
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                        .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(cancelButton)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .addContainerGap()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel1)
+                    .add(nameField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .add(27, 27, 27)
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(cancelButton)
+                    .add(okButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         pack();
-    } // </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>//GEN-END:initComponents
 
     /**
      * The action to invoke when a user clicks on the CANCEL button.
@@ -250,10 +210,4 @@ public final class NewProjectV extends DatavyuDialog {
         return nameField.getText();
     }
 
-    /**
-     * @return The new description of the database as specified by the user.
-     */
-    public String getProjectDescription() {
-        return descriptionField.getText();
-    }
 }
