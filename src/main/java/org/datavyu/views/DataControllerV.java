@@ -51,6 +51,10 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -245,6 +249,9 @@ public final class DataControllerV extends DatavyuDialog
 
     /** */
     private javax.swing.JTextField goBackTextField;
+    
+    /** */
+    private javax.swing.JTextField stepSizeTextField;
 
     /** */
     private javax.swing.JPanel gridButtonPanel;
@@ -952,6 +959,7 @@ public final class DataControllerV extends DatavyuDialog
     private void initComponents() {
         gridButtonPanel = new javax.swing.JPanel();
         goBackTextField = new javax.swing.JTextField();
+        stepSizeTextField = new javax.swing.JTextField();
         onsetTextField = new javax.swing.JTextField();
         addDataButton = new javax.swing.JButton();
         timestampLabel = new javax.swing.JLabel();
@@ -1055,7 +1063,8 @@ public final class DataControllerV extends DatavyuDialog
         } else {
             addGoBackPair();
         }
-
+        
+        
         // Set cell onset button with 7
         setCellOnsetButton = buildButton("setCellOnset");
         gridButtonPanel.add(setCellOnsetButton, NUMPAD_KEY_SIZE);
@@ -1092,6 +1101,8 @@ public final class DataControllerV extends DatavyuDialog
         // Shuttle forward button with 6
         shuttleForwardButton = buildButton("shuttleForward");
         gridButtonPanel.add(shuttleForwardButton, NUMPAD_KEY_SIZE);
+        
+        
 
         //MAC and WINDOWS DIFFER HERE (3)
         if (osModifier.equals("osx")) {
@@ -1099,9 +1110,11 @@ public final class DataControllerV extends DatavyuDialog
             findButton = buildButton("find", "osx");
             gridButtonPanel.add(findButton, NUMPAD_KEY_SIZE);
 
-            gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
-        } else gridButtonPanel.add(makePlaceholderButton(false), WIDE_TEXT_FIELD_SIZE);
-
+            
+        } 
+        
+        
+        addStepSizePanel();
 
         // Jog back button with 1
         jogBackButton = buildButton("jogBack");
@@ -1170,6 +1183,50 @@ public final class DataControllerV extends DatavyuDialog
         goBackTextField.setName("goBackTextField");
         gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Jump back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);
 
+    }
+    
+    private void addStepSizePanel() {
+        //Go back text field
+        stepSizeTextField.setHorizontalAlignment(SwingConstants.CENTER);
+        stepSizeTextField.setName("stepSizeTextField");
+        
+        stepSizeTextField.addMouseListener(new MouseListener() {
+        @Override
+        public void mouseClicked(MouseEvent e) {stepSizeTextField.setEnabled(true);}
+        public void mouseEntered(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {}
+        public void mousePressed(MouseEvent e) {}
+        public void mouseReleased(MouseEvent e) {}
+         });
+        
+        stepSizeTextField.addKeyListener(new KeyListener() {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_ENTER)
+            {
+                playbackModel.setCurrentFPS(Float.parseFloat(stepSizeTextField.getText()));
+                stepSizeTextField.setEnabled(false); 
+            }
+        }
+        public void keyTyped(KeyEvent e) {}
+        public void keyReleased(KeyEvent e) {}
+         });
+        updateStepSizeTextField();
+        
+        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Steps per second"), stepSizeTextField), WIDE_TEXT_FIELD_SIZE);
+
+    }
+    
+    private void updateStepSizeTextField()
+    {
+         if(playbackModel == null)
+         {
+             stepSizeTextField.setEnabled(false);
+         }
+         else{
+            stepSizeTextField.setText(Float.toString(playbackModel.getCurrentFPS()));
+            //stepSizeTextField.setEnabled(true);
+         }
     }
 
     //Create a JEditorPane with working hyperlinks
@@ -1351,6 +1408,7 @@ public final class DataControllerV extends DatavyuDialog
 
         if (fps > playbackModel.getCurrentFPS()) {
             playbackModel.setCurrentFPS(fps);
+            updateStepSizeTextField();
         }
 
         // Update track viewer.
