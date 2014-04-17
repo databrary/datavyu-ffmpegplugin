@@ -8,7 +8,7 @@ begin
    allColumns = getColumnList()
    for cName in allColumns
       cur = getColumn(cName)
-      if cur.db_var.getVariableType.type != Argument::Type::MATRIX
+      if cur.db_var.getRootNode.type != Argument::Type::MATRIX
         puts cur.name + " is of type " + cur.type.to_s
         newCol = createNewColumn(cur.name, "var")
         for cell in cur.cells

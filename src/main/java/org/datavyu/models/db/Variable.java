@@ -67,6 +67,9 @@ public interface Variable {
      * @return The type of the variable.
      */
     Argument getRootNode();
+    
+    @Deprecated
+    Argument getVariableType();
 
     /**
      * Sets the variable type.
@@ -74,6 +77,9 @@ public interface Variable {
      * @param newType The new argument to use with this variable.
      */
     void setRootNode(final Argument newType);
+    
+    @Deprecated
+    void setVariableType(final Argument newType);
 
     /**
      * @return All the cells stored in the variable using a temporal alignment.

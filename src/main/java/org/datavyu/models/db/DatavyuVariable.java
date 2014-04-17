@@ -168,11 +168,23 @@ public final class DatavyuVariable implements Variable {
     public Argument getRootNode() {
         return rootNodeArgument;
     }
+    
+    @Override
+    @Deprecated
+    public Argument getVariableType() {
+        return getRootNode();
+    }
 
     @Override
     public void setRootNode(final Argument a) {
         Datavyu.getProjectController().getDB().markDBAsChanged();
         rootNodeArgument = a;
+    }
+    
+    @Override
+    @Deprecated
+    public void setVariableType(final Argument a) {
+        setRootNode(a);
     }
 
     @Override
