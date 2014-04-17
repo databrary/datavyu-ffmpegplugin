@@ -570,6 +570,7 @@ public final class Datavyu extends SingleFrameApplication
      */
     public void showDataController() {
         Datavyu.getApplication().show(dataController);
+        dataController.setShouldBeVisible(true);
     }
 
     /**

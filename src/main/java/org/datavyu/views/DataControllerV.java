@@ -105,6 +105,8 @@ public final class DataControllerV extends DatavyuDialog
      */
     private static final long SYNC_PULSE = 500;
 
+    private boolean visible = false;
+
     // Initialize SHUTTLE_RATES
     static {
         SHUTTLE_RATES = new float[]{
@@ -376,6 +378,8 @@ public final class DataControllerV extends DatavyuDialog
         tracksPanelEnabled = true;
         showTracksPanel(tracksPanelEnabled);
         updateCurrentTimeLabel();
+
+        visible = true;
     }
 
     public static String formatTime(final long time) {
@@ -473,6 +477,17 @@ public final class DataControllerV extends DatavyuDialog
      */
     private void resetSync() {
         playbackModel.setLastSync(0);
+    }
+
+    /**
+     * Keep track of whether this should be visible or not
+     */
+    public boolean shouldBeVisible() {
+        return visible;
+    }
+
+    public void setShouldBeVisible(boolean v) {
+        visible = v;
     }
 
     /**
@@ -948,8 +963,8 @@ public final class DataControllerV extends DatavyuDialog
         tracksPanel = new javax.swing.JPanel(new MigLayout("fill"));
 
         final int fontSize = 11;
-        setCurrentTitle(); 
-        
+
+        setTitle(resourceMap.getString("title"));
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(
@@ -1144,14 +1159,6 @@ public final class DataControllerV extends DatavyuDialog
         pack();
     }
 
-    private void setCurrentTitle() {
-        String titleName;
-        //if (Datavyu.getProjectController() == null || Datavyu.getProjectController().getProjectName() == null)
-        //    titleName = "untitled";
-        //else titleName = Datavyu.getProjectController().getProjectName();
-        setTitle(resourceMap.getString("title"));// + " - " + titleName);
-    }
-
     private void addGoBackPair() {
         //Go back button - minus key
         goBackButton = buildButton("goBack", null);
@@ -1192,6 +1199,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     private void formWindowClosing(final java.awt.event.WindowEvent evt) {
         setVisible(false);
+        visible = false;
     }
 
     /**
@@ -1205,7 +1213,6 @@ public final class DataControllerV extends DatavyuDialog
 
         PluginChooser chooser = null;
 
-        // TODO finish this
         switch (Datavyu.getPlatform()) {
 
             case WINDOWS:
