@@ -135,17 +135,25 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * The 45x45 size for numpad keys
      */
-    private static final String NUMPAD_KEY_SIZE = "w 45!, h 45!";
+    private static final int NUMPAD_KEY_HEIGHT = 45;
+    private static final int NUMPAD_KEY_WIDTH = 45;
+    private static final String NUMPAD_KEY_SIZE = "w "+NUMPAD_KEY_HEIGHT
+            +"!, h "+NUMPAD_KEY_WIDTH+"!";
 
     /**
      * The 45x95 size for tall numpad keys (enter, PC plus)
      */
-    private static final String TALL_NUMPAD_KEY_SIZE = "span 1 2, w 45!, h 95!";
+    private static final int TALL_NUMPAD_KEY_HEIGHT = 95;
+    private static final String TALL_NUMPAD_KEY_SIZE = "span 1 2, w "+NUMPAD_KEY_WIDTH
+            +"!, h "+TALL_NUMPAD_KEY_HEIGHT+"!";
 
     /**
      * The 80x40 size for the text fields to the right of numpad
      */
-    private static final String WIDE_TEXT_FIELD_SIZE = "w 90!, h 45!";
+    private static final int WIDE_TEXT_FIELD_WIDTH = 90;
+    private static final int WIDE_TEXT_FIELD_HEIGHT = 45;
+    private static final String WIDE_TEXT_FIELD_SIZE = "w "+WIDE_TEXT_FIELD_WIDTH+"!, h "
+            +WIDE_TEXT_FIELD_HEIGHT+"!";
 
     private static final Font TEXT_FIELD_FONT = new Font("Arial", Font.PLAIN, 10);
     private static final Font TEXT_LABEL_FONT = new Font("Arial", Font.PLAIN, 10);
@@ -1189,10 +1197,17 @@ public final class DataControllerV extends DatavyuDialog
         //Go back text field
         stepSizeTextField.setHorizontalAlignment(SwingConstants.CENTER);
         stepSizeTextField.setName("stepSizeTextField");
-        
+        stepSizeTextField.setToolTipText("Double click to change");
+        stepSizeTextField.setPreferredSize(new Dimension(WIDE_TEXT_FIELD_WIDTH-10, 18));
         stepSizeTextField.addMouseListener(new MouseListener() {
         @Override
-        public void mouseClicked(MouseEvent e) {stepSizeTextField.setEnabled(true);}
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() >= 2 && !viewers.isEmpty())
+            {
+                stepSizeTextField.setEnabled(true);
+                pressStop();
+            }
+        }
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
         public void mousePressed(MouseEvent e) {}
@@ -1211,8 +1226,8 @@ public final class DataControllerV extends DatavyuDialog
         public void keyTyped(KeyEvent e) {}
         public void keyReleased(KeyEvent e) {}
          });
-        updateStepSizeTextField();
         
+        updateStepSizeTextField();
         gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Steps per second"), stepSizeTextField), WIDE_TEXT_FIELD_SIZE);
 
     }
