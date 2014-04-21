@@ -437,6 +437,10 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     protected abstract Dimension getQTVideoSize();
 
     protected abstract float getQTFPS();
+    
+    public float getDetectedFrameRate(){
+        return getQTFPS();
+    }
 
     /**
      * @return The file used to display this data feed.

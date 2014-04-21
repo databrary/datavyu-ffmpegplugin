@@ -217,6 +217,11 @@ public class VLCDataViewer implements DataViewer {
     }
 
     @Override
+    public float getDetectedFrameRate() {
+        return mediaPlayer.getFps();
+    }
+    
+    @Override
     public void setIdentifier(final Identifier id) {
         this.id = id;
     }

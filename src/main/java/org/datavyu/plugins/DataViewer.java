@@ -106,9 +106,14 @@ public interface DataViewer {
     void setParentController(final DataController dataController);
 
     /**
-     * @return Frames per second.
+     * @return Currently stored frames per second.
      */
     float getFrameRate();
+    
+    /**
+     * @return Detected frames per second.
+     */
+    float getDetectedFrameRate();
 
     /**
      * @return The current position within the data feed in milliseconds.

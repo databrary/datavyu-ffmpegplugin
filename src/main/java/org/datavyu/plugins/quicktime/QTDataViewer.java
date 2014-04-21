@@ -61,6 +61,8 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(QTDataViewer.class);
+    
+    private static float FALLBACK_FRAME_RATE = 24.0f;
 
     public QTDataViewer(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
@@ -157,31 +159,23 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
         try {
             if (visualMedia != null) {
-                // BugzID:928 - FPS calculations will fail when using H264.
-                // Apparently the Quicktime for Java API does not support a whole
-                // bunch of methods with H264.
+
                 fps = (float) visualMedia.getSampleCount()
                         / visualMedia.getDuration() * visualMedia.getTimeScale();
-
                 if ((visualMedia.getSampleCount() == 1.0)
                         || (visualMedia.getSampleCount() == 1)) {
                     fps = correctFPS();
                 }
-
-                if (fps == 1) {
+                
+                if (fps == 1 || fps < 1.0f) {
                     throw new QTException(0);
                 }
             }
-        } catch (QTException e) {
-            e.printStackTrace();
-            LOGGER.error("Unable to calculate FPS, assuming 30", e);
-            String response = JOptionPane.showInputDialog(null,
-                    "Datavyu was unable to detect the framerate of this video.\n"
-                            + "Please enter the framerate below (ex. 25, 29.97, 30)",
-                    "Could not detect framerate",
-
-                    JOptionPane.QUESTION_MESSAGE);
-            fps = Float.valueOf(response);
+        }
+        catch(QTException e2)
+        {
+            LOGGER.error("Unable to calculate FPS, assuming " + FALLBACK_FRAME_RATE, e2);
+            fps = FALLBACK_FRAME_RATE;
         }
 
         return fps;
