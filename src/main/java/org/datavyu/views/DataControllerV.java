@@ -807,7 +807,14 @@ public final class DataControllerV extends DatavyuDialog
         if (viewDialog != null) {
             viewDialog.dispose();
         }
-
+        
+        //DO SOMETHING CONCERNING STEP_SIZE
+        if (viewers.isEmpty())
+        {
+            playbackModel.setCurrentFPS(0f);
+            updateStepSizeTextField();
+        }
+        
         // BugzID:2000
         viewer.removeViewerStateListener(
                 mixerController.getTracksEditorController().getViewerStateListener(
@@ -1237,6 +1244,11 @@ public final class DataControllerV extends DatavyuDialog
          if(playbackModel == null)
          {
              stepSizeTextField.setEnabled(false);
+         }
+         else if(playbackModel.getCurrentFPS() == 0f)
+         {
+             stepSizeTextField.setEnabled(false);
+             stepSizeTextField.setText("");
          }
          else{
             stepSizeTextField.setText(Float.toString(playbackModel.getCurrentFPS()));
