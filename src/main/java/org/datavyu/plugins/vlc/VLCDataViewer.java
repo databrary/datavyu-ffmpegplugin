@@ -311,7 +311,7 @@ public class VLCDataViewer implements DataViewer {
                             + "This video may not behave properly. "
                             + "Please try converting to H.264.\n\n"
                             + "This can be done under Controller->Convert Videos.\n"
-                            + "Setting framerate to 29.97.");
+                            + "Setting framerate to " + FALLBACK_FRAME_RATE);
                     */
         }
     }
