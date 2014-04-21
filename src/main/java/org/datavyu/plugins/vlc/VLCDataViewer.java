@@ -99,6 +99,8 @@ public class VLCDataViewer implements DataViewer {
     private long last_position;
 
     private Thread vlcThread;
+    
+    private static final float FALLBACK_FRAME_RATE = 24.0f;
 
     static {
         // Try to load VLC libraries.
@@ -301,14 +303,16 @@ public class VLCDataViewer implements DataViewer {
         // may not work right.
         if (fps < 1.0) {
             // VLC can't read the framerate for this video for some reason.
-            // Set it to 29.97fps so it is still usable for coding.
-            fps = 29.97f;
+            // Set it to the fallback rate so it is still usable for coding.
+            fps = FALLBACK_FRAME_RATE;
+            /*
             JOptionPane.showMessageDialog(vlcDialog,
                     "Warning: Unable to detect framerate in video.\n"
                             + "This video may not behave properly. "
                             + "Please try converting to H.264.\n\n"
                             + "This can be done under Controller->Convert Videos.\n"
                             + "Setting framerate to 29.97.");
+                    */
         }
     }
 
