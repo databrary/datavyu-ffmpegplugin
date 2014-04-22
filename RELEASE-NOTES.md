@@ -43,10 +43,10 @@
     * Previously created columns that do not adhere to these restrictions will continue to work, but new column names (or name changes) will be restricted. 
     * We have provided a script in favorites folder that will turn periods into underscores in existing columns to aid the transition. 
 * Datavyu is no longer uses Mongo DB. Eliminating this outside dependency means:
-  * Datavyu is less memory intensive.
-  * The Datavyu application is smaller.
-  * Startup and file loading are faster.
-  * Errors when closing Datavyu on Windows machines have been fixed.
+    * Datavyu is less memory intensive.
+    * The Datavyu application is smaller.
+    * Startup and file loading are faster.
+    * Errors when closing Datavyu on Windows machines have been fixed.
 
 ### Bug Fixes
 * Fixed issues causing cells to overlap when temporal alignment is turned on.
