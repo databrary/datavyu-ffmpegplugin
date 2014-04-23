@@ -16,9 +16,10 @@
       <outputDirectory>favourites</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${basedir}</directory>
+      <directory>${basedir}/packaged_docs/</directory>
       <includes>
-        <include>*.md</include>
+        <include>*.txt</include>
+	<include>*.html</include>
       </includes>
       <outputDirectory>/</outputDirectory>
     </fileSet>
