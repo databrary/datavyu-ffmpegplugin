@@ -453,6 +453,12 @@
 					<include>favourites/*.rb</include>
 				</includes>
 			</fileSet>
+			<fileSet>
+				<directory>${basedir}/</directory>
+				<includes>
+					<include>*.md</include>
+				</includes>
+			</fileSet>
                     </additionalResources>
                     <iconFile>${basedir}/src/main/resources/icons/datavyu.icns</iconFile>
                     <javaApplicationStub>${basedir}/src/main/mac-resources/JavaApplicationStub</javaApplicationStub>
