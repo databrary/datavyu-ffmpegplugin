@@ -932,7 +932,6 @@ public final class DatavyuView extends FrameView
 
         DatavyuFileChooser jd = new DatavyuFileChooser();
 
-        jd.addChoosableFileFilter(CSVFilter.INSTANCE);
         jd.addChoosableFileFilter(SHAPAFilter.INSTANCE);
         jd.addChoosableFileFilter(OPFFilter.INSTANCE);
 
