@@ -32,6 +32,7 @@ import javax.script.ScriptException;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import org.datavyu.Datavyu.Platform;
 
 
 /**
@@ -177,6 +178,15 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 rubyEngine.put("pj", Datavyu.getProjectController().getProject());
                 rubyEngine.put("mixer", Datavyu.getDataController().getMixerController());
                 rubyEngine.put("viewers", Datavyu.getDataController());
+                String path = System.getProperty("user.dir");
+                if (Datavyu.getPlatform() == Platform.WINDOWS){
+                    path += "\\";
+                }
+                else {
+                    path += "/";
+                }
+                
+                rubyEngine.put("path", path);
 
                 FileReader reader = new FileReader(scriptFile);
 
