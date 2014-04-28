@@ -106,12 +106,21 @@ public final class VariableListV extends DatavyuDialog
         // Set the names of the columns.
         tableModel.addColumn(rMap.getString("Table.visibleColumn"));
         tableModel.addColumn(rMap.getString("Table.nameColumn"));
-
+        
+        
+        variableList.getColumnModel().getColumn(VCOLUMN).setPreferredWidth(10);
         //Use JTextfield to edit variable name cells
         variableList.getColumnModel().getColumn(NCOLUMN)
-                .setCellEditor(new DefaultCellEditor(new JTextField()));
-
+                .setCellEditor(new DefaultCellEditor(makeTextFieldWithHoverMessage()));
+        
         populateTable();
+    }
+    
+    private JTextField makeTextFieldWithHoverMessage()
+    {
+        JTextField ans = new JTextField();
+        ans.setToolTipText("Click to edit");
+        return ans;
     }
 
     @SuppressWarnings("unchecked")
