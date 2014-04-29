@@ -46,12 +46,17 @@ public final class VariableListV extends DatavyuDialog
     /**
      * The column for if a variable is visible or not.
      */
-    private static final int VCOLUMN = 0;
+    private static final int VCOLUMN = 1;
 
     /**
      * The column for a variables name.
      */
-    private static final int NCOLUMN = 1;
+    private static final int NCOLUMN = 2;
+    
+    /**
+     * The column for order index of variable
+     */
+    private static final int OCOLUMN = 0;
 
     /**
      * The total number of columns in the variables list.
@@ -105,13 +110,16 @@ public final class VariableListV extends DatavyuDialog
         datastore = ds;
 
         // Set the names of the columns.
+        tableModel.addColumn(rMap.getString("Table.orderColumn"));
         tableModel.addColumn(rMap.getString("Table.visibleColumn"));
         tableModel.addColumn(rMap.getString("Table.nameColumn"));
         
-        
+        //fix visible and ordering columns to exact size, let last one grow with table
         variableList.getColumnModel().getColumn(VCOLUMN).setMinWidth(60);
-        variableList.getColumnModel().getColumn(VCOLUMN).setMaxWidth(60);
-        //variableList.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        variableList.getColumnModel().getColumn(VCOLUMN).setMaxWidth(60);    
+        variableList.getColumnModel().getColumn(OCOLUMN).setMinWidth(40);
+        variableList.getColumnModel().getColumn(OCOLUMN).setMaxWidth(40);
+        variableList.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         
         //Use JTextfield to edit variable name cells
         variableList.getColumnModel().getColumn(NCOLUMN)
@@ -253,12 +261,15 @@ public final class VariableListV extends DatavyuDialog
 
         vals[VCOLUMN] = !variable.isHidden();
         vals[NCOLUMN] = variable.getName();
+        //vals[OCOLUMN] = variable.getOrderIndex() +1;
+            //sometimes getOrderIndex doesn't begin at 0, or there are dupes, etc. is this a big concern?
 
         // Add new row to table model.
         int rowId = tableModel.getRowCount();
         if ((position >= 0) && (position <= tableModel.getRowCount())) {
             rowId = position;
         }
+        vals[OCOLUMN] = rowId + 1;
 
         tableModel.insertRow(rowId, vals);
         dbToTableMap.put(variable, rowId);
