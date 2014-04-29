@@ -73,6 +73,7 @@ public final class VariableListV extends DatavyuDialog
      */
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable variableList;
+    private javax.swing.JLabel changeInstructions;
 
     /**
      * Mapping between database column id - to the table model.
@@ -108,7 +109,10 @@ public final class VariableListV extends DatavyuDialog
         tableModel.addColumn(rMap.getString("Table.nameColumn"));
         
         
-        variableList.getColumnModel().getColumn(VCOLUMN).setPreferredWidth(10);
+        variableList.getColumnModel().getColumn(VCOLUMN).setMinWidth(60);
+        variableList.getColumnModel().getColumn(VCOLUMN).setMaxWidth(60);
+        //variableList.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        
         //Use JTextfield to edit variable name cells
         variableList.getColumnModel().getColumn(NCOLUMN)
                 .setCellEditor(new DefaultCellEditor(makeTextFieldWithHoverMessage()));
@@ -127,10 +131,13 @@ public final class VariableListV extends DatavyuDialog
     private void initComponents() {
         jScrollPane1 = new javax.swing.JScrollPane();
         variableList = new javax.swing.JTable();
+        changeInstructions = new JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(rMap.getString("variableListDialog.title"));
         setName("variableListDialog"); 
+        
+        changeInstructions.setText(rMap.getString("changeInstructions.text"));
 
         jScrollPane1.setName("jScrollPane1"); 
 
@@ -139,10 +146,14 @@ public final class VariableListV extends DatavyuDialog
         variableList.setName("variableList");
         variableList.setAutoCreateRowSorter(true);
         jScrollPane1.setViewportView(variableList);
+        
 
-        MigLayout layout = new MigLayout("nogrid");
+       
+
+        MigLayout layout = new MigLayout("wrap");
         getContentPane().setLayout(layout);
         getContentPane().add(jScrollPane1);
+        getContentPane().add(changeInstructions);
 
         pack();
     }
