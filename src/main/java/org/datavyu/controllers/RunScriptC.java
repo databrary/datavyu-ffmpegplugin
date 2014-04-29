@@ -189,10 +189,12 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 rubyEngine.put("path", path);
 
                 FileReader reader = new FileReader(scriptFile);
+                String wholeScript = fileReaderIntoString(reader);
+                //System.out.println(wholeScript);
 
                 rubyEngine.getContext().setWriter(consoleWriter);
                 rubyEngine.getContext().setErrorWriter(consoleWriter);
-                rubyEngine.eval(reader);
+                rubyEngine.eval(wholeScript);
                 //System.out.println("SCRIPT OVER");
                 consoleWriter.close();
 
@@ -231,6 +233,21 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             ioe.printStackTrace();
         }
 
+    }
+    
+    private String fileReaderIntoString(FileReader fr) throws IOException
+    {
+        BufferedReader br = new BufferedReader(fr);
+        StringBuilder sb = new StringBuilder("");
+        
+        String cur = br.readLine();
+        while(cur != null)
+        {
+            sb.append(cur);
+            sb.append('\n'); //newlines in string are always '\n', never '\r'. Bug 193
+            cur = br.readLine();
+        }
+        return sb.toString();
     }
 
     private String makeFriendlyRubyErrorMsg(String out, ScriptException e) {
