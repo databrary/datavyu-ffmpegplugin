@@ -84,6 +84,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
         int maxHeight = 0;
         int selectedHeight = -1;
         int colID = 0;
+        SpreadsheetCell selectedCell = null;
         for (SpreadsheetColumn col : mainView.getColumns()) {
 
             // Only layout 'visible' columns.
@@ -99,8 +100,9 @@ public class SheetLayoutOrdinal extends SheetLayout {
                         continue;
                     }
                     Dimension d = cell.getPreferredSize();
-                    if (cell.getCell().isSelected() && currentHeight != cell.getBounds().y) {
+                    if (cell.getCell().isSelected()) {
                         selectedHeight = currentHeight;
+                        selectedCell = cell;
                     }
 
                     cell.setBounds(0,
@@ -151,21 +153,27 @@ public class SheetLayoutOrdinal extends SheetLayout {
                     (maxHeight - colHeight));
         }
 
-        if (selectedHeight != -1) {
-            // Determine the cell position relative to the entire column.
-            double cellPos = 0;
-            if (maxHeight > 0) {
-                cellPos = (selectedHeight / (double) maxHeight);
-            }
-
-            // Determine the new scroll position to ensure the focused cell is highlighted.
-            int newPos = (int) (cellPos * (pane.getVerticalScrollBar().getMaximum() - pane.getVerticalScrollBar().getVisibleAmount()));
-            // Make sure the position is within a valid bound.
-            newPos = Math.max(0, newPos);
-            newPos = Math.min(newPos, pane.getVerticalScrollBar().getMaximum());
+        if (selectedCell != null) {
 
             // Set the new position of the scroll window.
-            pane.getVerticalScrollBar().setValue(newPos);
+
+            double viewMax = pane.getViewport().getViewRect().getY() + pane.getViewport().getViewRect().getHeight();
+            double viewMin = pane.getViewport().getViewRect().getY();
+            int cellMax = selectedCell.getY() + selectedCell.getHeight();
+            int cellMin = selectedCell.getY();
+
+            if (viewMax < cellMax) {
+                pane.getViewport().setViewPosition(
+                        new Point((int) pane.getViewport().getViewRect().getX(),
+                                cellMax - pane.getViewport().getHeight()));
+//                pane.getVerticalScrollBar().setValue(cellMax);
+            } else if (viewMin > cellMin) {
+                pane.getViewport().setViewPosition(
+                        new Point((int) pane.getViewport().getViewRect().getX(),
+                                cellMin));
+            }
+
+
         }
     }
 }

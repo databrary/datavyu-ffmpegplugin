@@ -181,6 +181,9 @@ public final class DatavyuView extends FrameView
     private JScrollPane fileScrollPane;
     private JTree fileDrawer;
     private TreeModel fileTree;
+    private JScrollPane favScrollPane;
+    private JTree favDrawer;
+    private TreeModel favTree;
     private final Icon rubyIcon = new ImageIcon(getClass().getResource("/icons/ruby.png"));
     private final Icon opfIcon = new ImageIcon(getClass().getResource("/icons/datavyu.png"));
     // End of variables declaration//GEN-END:variables

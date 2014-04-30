@@ -42,6 +42,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     // Hash of placements by offset
     HashMap<Long, List<SpreadsheetCell>> offsetToLoc;
 
+
     /**
      * Information on each element in the row we are currently processing.
      */
@@ -73,6 +74,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     @Override
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
+        JScrollPane pane = (JScrollPane) parent;
+
 
         long overallTime = System.currentTimeMillis();
 
@@ -80,7 +83,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         offsetToLoc = new HashMap();
 
         // This layout must be applied to a Spreadsheet panel.
-        JScrollPane pane = (JScrollPane) parent;
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
                 .getView();
 
@@ -190,6 +192,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         HashMap<Long, List<SpreadsheetCell>> cellsByOnset = new HashMap<Long, List<SpreadsheetCell>>();
         HashMap<Long, List<SpreadsheetCell>> cellsByOffset = new HashMap<Long, List<SpreadsheetCell>>();
 
+        SpreadsheetCell selectedCell = null;
+
         for (int key : cellCache.keySet()) {
             for (SpreadsheetCell cell : cellCache.get(key)) {
                 long onset = cell.getOnsetTicks();
@@ -215,6 +219,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 times.add(offset);
 
                 cell.setOverlapBorder(false);
+                if (cell.getCell().isSelected()) {
+                    selectedCell = cell;
+                }
             }
         }
 
@@ -324,6 +331,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
         // Now go through each of the columns and shorten cells that overlap
         // with the one ahead of them to guarantee all cells can be seen
+
         for (int key : cellCache.keySet()) {
             for (int i = 0; i < cellCache.get(key).size() - 1; i++) {
                 SpreadsheetCell curCell = cellCache.get(key).get(i);
@@ -346,6 +354,25 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         }
 
         padColumns(mainView, parent);
+
+
+        if (selectedCell != null) {
+            double viewMax = pane.getViewport().getViewRect().getY() + pane.getViewport().getViewRect().getHeight();
+            double viewMin = pane.getViewport().getViewRect().getY();
+            int cellMax = selectedCell.getY() + selectedCell.getHeight();
+            int cellMin = selectedCell.getY();
+
+            if (viewMax < cellMax) {
+                pane.getViewport().setViewPosition(
+                        new Point((int) pane.getViewport().getViewRect().getX(),
+                                cellMax - pane.getViewport().getHeight()));
+                //                pane.getVerticalScrollBar().setValue(cellMax);
+            } else if (viewMin > cellMin) {
+                pane.getViewport().setViewPosition(
+                        new Point((int) pane.getViewport().getViewRect().getX(),
+                                cellMin));
+            }
+        }
     }
 
     /**
