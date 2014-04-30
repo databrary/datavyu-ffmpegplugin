@@ -58,8 +58,11 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Level;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * The main FrameView, representing the interface for Datavyu the user will
@@ -322,12 +325,14 @@ public final class DatavyuView extends FrameView
 
                 if (selRow != -1) {
                     String path = convertTreePathToString(selPath);
+                    //System.out.println("Path: "+path);
                     String baseDir;
                     if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
                         baseDir = ".";
                     } else {
                         baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
                     }
+                    //System.out.println("Basedir: "+baseDir);
                     final File f = new File(baseDir + File.separator + path);
 
                     if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
@@ -1017,7 +1022,20 @@ public final class DatavyuView extends FrameView
     }
 
     public String convertTreePathToString(TreePath tp) {
-        return tp.toString().replaceAll("\\]| |\\[|", "").replace(",", File.separator);
+         
+        return StringUtils.join(tp.getPath(), File.separator);
+        
+        /* Should we decide we don't want to use apache commons                
+        List<Object> l = Arrays.asList(tp.getPath());
+        String ans = "";
+        for(ListIterator<Object> i = l.listIterator(); i.hasNext();)
+        {
+            ans += i.next().toString();
+            if(i.hasNext()) ans += File.separator;
+        }
+        
+        return ans;
+        */
     }
 
     /**
