@@ -188,6 +188,10 @@ public final class DatavyuView extends FrameView
     private final Icon opfIcon = new ImageIcon(getClass().getResource("/icons/datavyu.png"));
     // End of variables declaration//GEN-END:variables
 
+    JPopupMenu popupMenu = new JPopupMenu();
+    JMenuItem openInTextEditor = new JMenuItem("Open in text editor");
+    JMenuItem openInDatavyu = new JMenuItem("Open in Datavyu");
+
     /**
      * Constructor.
      *
@@ -314,18 +318,21 @@ public final class DatavyuView extends FrameView
             @Override
             public void mouseClicked(MouseEvent e) {
                 int selRow = fileDrawer.getRowForLocation(e.getX(), e.getY());
-                TreePath selPath = fileDrawer.getPathForLocation(e.getX(), e.getY());
+                final TreePath selPath = fileDrawer.getPathForLocation(e.getX(), e.getY());
+
                 if (selRow != -1) {
-                    if (e.getClickCount() == 1) {
-                    } else if (e.getClickCount() == 2) {
-                        String path = convertTreePathToString(selPath);
-                        String baseDir;
-                        if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
-                            baseDir = ".";
-                        } else {
-                            baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
-                        }
-                        File f = new File(baseDir + File.separator + path);
+                    String path = convertTreePathToString(selPath);
+                    String baseDir;
+                    if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
+                        baseDir = ".";
+                    } else {
+                        baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
+                    }
+                    final File f = new File(baseDir + File.separator + path);
+
+                    if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
+                    } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+
                         if (f.isFile()) {
                             if (f.getName().toLowerCase().endsWith(".rb")) {
                                 runScript(f);
@@ -334,6 +341,92 @@ public final class DatavyuView extends FrameView
                                 open(f);
                             }
                         }
+                    } else if (SwingUtilities.isRightMouseButton(e)) {
+                        int row = fileDrawer.getClosestRowForLocation(e.getX(), e.getY());
+                        fileDrawer.setSelectionRow(row);
+                        popupMenu.removeAll();
+                        if (f.getName().toLowerCase().endsWith(".rb")) {
+                            popupMenu.add(openInTextEditor);
+                            for (MouseListener ml : openInTextEditor.getMouseListeners()) {
+                                openInTextEditor.removeMouseListener(ml);
+                            }
+                            openInTextEditor.addMouseListener(new MouseListener() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+
+                                    try {
+                                        java.awt.Desktop.getDesktop().edit(f);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                    popupMenu.setVisible(false);
+                                }
+
+                                @Override
+                                public void mousePressed(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseReleased(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseEntered(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseExited(MouseEvent e) {
+
+                                }
+
+                            });
+                            popupMenu.show(e.getComponent(), e.getX(), e.getY());
+
+                        } else if (f.getName().toLowerCase().endsWith(".opf")) {
+                            popupMenu.add(openInDatavyu);
+                            for (MouseListener ml : openInDatavyu.getMouseListeners()) {
+                                openInDatavyu.removeMouseListener(ml);
+                            }
+                            openInDatavyu.addMouseListener(new MouseListener() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+
+                                    try {
+                                        open(f);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                    popupMenu.setVisible(false);
+                                }
+
+                                @Override
+                                public void mousePressed(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseReleased(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseEntered(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseExited(MouseEvent e) {
+
+                                }
+                            });
+                            popupMenu.show(e.getComponent(), e.getX(), e.getY());
+
+                        }
+
+
                     }
                 }
             }
