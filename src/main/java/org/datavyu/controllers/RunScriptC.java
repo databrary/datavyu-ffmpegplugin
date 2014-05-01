@@ -224,8 +224,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 LOGGER.error("Unable to execute script: ", e);
             } catch (FileNotFoundException e) {
                 consoleWriter.close();
-                consoleWriter = new OutputStreamWriter(sIn2);
-                consoleWriter.write("File not found. " + e.getMessage());
+                consoleWriterAfter.write("File not found: " + e.getMessage());;
+                
+                consoleWriterAfter.flush();
                 LOGGER.error("Unable to execute script: ", e);
             }
         } catch (IOException ioe) {
