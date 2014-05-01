@@ -139,7 +139,6 @@ public final class DatavyuView extends FrameView
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator10;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -1780,7 +1779,6 @@ public final class DatavyuView extends FrameView
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         spreadsheetMenu = new javax.swing.JMenu();
         showSpreadsheetMenuItem = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JSeparator();
         jMenuItem1 = new javax.swing.JMenuItem();
         newVariableMenuItem = new javax.swing.JMenuItem();
         vocabEditorMenuItem = new javax.swing.JMenuItem();
@@ -1931,9 +1929,6 @@ public final class DatavyuView extends FrameView
         showSpreadsheetMenuItem.setAction(actionMap.get("showSpreadsheet"));
         showSpreadsheetMenuItem.setName("showSpreadsheetMenuItem");
         //spreadsheetMenu.add(showSpreadsheetMenuItem);
-
-        jSeparator1.setName("jSeparator1");
-        spreadsheetMenu.add(jSeparator1);
 
         jMenuItem1.setAction(actionMap.get("showNewVariableForm"));
         jMenuItem1.setName("jMenuItem1");
