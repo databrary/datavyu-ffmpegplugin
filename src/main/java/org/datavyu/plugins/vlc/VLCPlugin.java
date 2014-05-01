@@ -22,7 +22,7 @@ public class VLCPlugin implements Plugin {
         final List<String> ext;
 
         {
-            ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mp4", ".mkv");
+            ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mp4", ".mkv", ".m4v");
             ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
         }
 

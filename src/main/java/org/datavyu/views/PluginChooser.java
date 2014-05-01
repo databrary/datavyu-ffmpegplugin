@@ -40,7 +40,7 @@ public abstract class PluginChooser extends JFileChooser {
     public int showOpenDialog(final Component parent) {
         this.setCurrentDirectory(Configuration.getInstance().getLCDirectory());
 
-        setFileFilter(getAcceptAllFileFilter());
+        //setFileFilter(getAcceptAllFileFilter());
 
         int result = super.showOpenDialog(parent);
         Configuration.getInstance().setLCDirectory(this.getCurrentDirectory());
