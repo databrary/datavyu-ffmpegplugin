@@ -84,8 +84,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      */
     public RunScriptC() throws IOException {
         DatavyuFileChooser jd = new DatavyuFileChooser();
-        jd.addChoosableFileFilter(RFilter.INSTANCE);
+        //jd.addChoosableFileFilter(RFilter.INSTANCE);
         jd.addChoosableFileFilter(RBFilter.INSTANCE);
+        jd.setFileFilter(RBFilter.INSTANCE);
 
         int result = jd.showOpenDialog(Datavyu.getApplication()
                 .getMainFrame());
