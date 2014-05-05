@@ -1323,6 +1323,7 @@ public final class DataControllerV extends DatavyuDialog
 
         for (FileFilter ff : pm.getFileFilters()) {
             chooser.addChoosableFileFilter(ff);
+            chooser.setFileFilter(ff);
         }
 
         if (JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(this)) {

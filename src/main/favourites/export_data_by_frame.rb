@@ -6,8 +6,7 @@ begin
     # =================================
     # MODIFY THIS FILE PATH TO CHANGE DUMP LOCATION
     # =================================
-    output_filename = $path+"framebyframe_export.csv"
-    puts "Writing to: " + output_filename
+    output_filename = "~/Desktop/framebyframe_export.csv"
 
     column_list = getColumnList()
     columns = Array.new
@@ -69,7 +68,7 @@ begin
     end
 
     puts "Completed building data.  Writing to file " + output_filename
-    fo = File.new(File.expand_path(output_filename), 'w')
+    fo = File.new(File.expand_path(output_filename), 'a')
     fo.write(output)
     fo.flush()
     fo.close()

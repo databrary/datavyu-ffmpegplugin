@@ -84,8 +84,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      */
     public RunScriptC() throws IOException {
         DatavyuFileChooser jd = new DatavyuFileChooser();
-        jd.addChoosableFileFilter(RFilter.INSTANCE);
+        //jd.addChoosableFileFilter(RFilter.INSTANCE);
         jd.addChoosableFileFilter(RBFilter.INSTANCE);
+        jd.setFileFilter(RBFilter.INSTANCE);
 
         int result = jd.showOpenDialog(Datavyu.getApplication()
                 .getMainFrame());
@@ -178,13 +179,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 rubyEngine.put("pj", Datavyu.getProjectController().getProject());
                 rubyEngine.put("mixer", Datavyu.getDataController().getMixerController());
                 rubyEngine.put("viewers", Datavyu.getDataController());
-                String path = System.getProperty("user.dir");
-                if (Datavyu.getPlatform() == Platform.WINDOWS){
-                    path += "\\";
-                }
-                else {
-                    path += "/";
-                }
+                String path = System.getProperty("user.dir") + File.separator;
                 
                 rubyEngine.put("path", path);
 
@@ -224,8 +219,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 LOGGER.error("Unable to execute script: ", e);
             } catch (FileNotFoundException e) {
                 consoleWriter.close();
-                consoleWriter = new OutputStreamWriter(sIn2);
-                consoleWriter.write("File not found. " + e.getMessage());
+                consoleWriterAfter.write("File not found: " + e.getMessage());;
+                
+                consoleWriterAfter.flush();
                 LOGGER.error("Unable to execute script: ", e);
             }
         } catch (IOException ioe) {
