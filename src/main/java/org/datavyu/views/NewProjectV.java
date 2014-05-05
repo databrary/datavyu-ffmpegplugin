@@ -18,12 +18,9 @@ import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.NewProjectC;
-import org.datavyu.models.db.Datastore;
-import org.datavyu.models.db.DatastoreFactory;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-import javax.swing.*;
 import java.awt.*;
 
 
@@ -166,22 +163,11 @@ public final class NewProjectV extends DatavyuDialog {
             dispose();
             new NewProjectC();
         } else {
-            // BugzID:2352 - Clean up spreadsheet resources before creating a
-            // new spreadsheet.
-//            s.clearSpreadsheet();
-
-            Datastore ds = DatastoreFactory.newDatastore();
-            ds.setName(getProjectName());
-            ds.setTitleNotifier(Datavyu.getApplication());
-
-            Datavyu.getProjectController().createNewProject(getProjectName());
-            Datavyu.getProjectController().setDatastore(ds);
 
             s.createNewSpreadsheet();
 
-            // The DB we justed created doesn't really have any unsaved changes.
+            // The DB we just created doesn't really have any unsaved changes.
             Datavyu.getProjectController().getDB().markAsUnchanged();
-
             dispose();
         }
 

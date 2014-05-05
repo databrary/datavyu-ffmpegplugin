@@ -645,11 +645,14 @@ public final class DatavyuView extends FrameView
 
                     SpreadsheetPanel sp = (SpreadsheetPanel) t.getSelectedComponent();
                     if (Datavyu.getView() != null) {
+                        Datavyu.setProjectController(sp.getProjectController());
+
+                        Datavyu.getDataController().setVisible(false);
+                        Datavyu.setDataController(sp.getDataController());
                         Datavyu.getView().panel = sp;
                         sp.revalidate();
                         Datavyu.getView().tabbedPane.revalidate();
-                        Datavyu.getDataController().setVisible(false);
-                        Datavyu.setDataController(sp.getDataController());
+
                         if (sp.getDataController().shouldBeVisible()) {
                             sp.getDataController().setVisible(true);
 
@@ -657,11 +660,8 @@ public final class DatavyuView extends FrameView
                                 d.setDataViewerVisible(true);
                             }
                         }
-
-
                     }
 
-                    Datavyu.setProjectController(sp.getProjectController());
                     String dir = sp.getProjectController().getProject().getProjectDirectory();
                     if (dir == null) {
                         dir = ".";
@@ -1555,7 +1555,7 @@ public final class DatavyuView extends FrameView
 
     public ProjectController createNewSpreadsheet(ProjectController pc) {
         pc.setSpreadsheetPanel(new SpreadsheetPanel(pc, null));
-        panel = pc.getSpreadsheetPanel();
+        SpreadsheetPanel panel = pc.getSpreadsheetPanel();
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
@@ -1567,71 +1567,21 @@ public final class DatavyuView extends FrameView
         setSheetLayout();
         pc.loadProject();
 
-//        getComponent().revalidate();
-//        getComponent().repaint();
-//        getComponent().resetKeyboardActions();
-//        getComponent().requestFocus();
-
-        // The default is to create cells that are highlighted - ensure that
-        // they are deselected.
-
-
         return pc;
     }
 
     public ProjectController createNewSpreadsheet(Datastore ds) {
         ProjectController pc = new ProjectController();
         pc.setDatastore(ds);
-        pc.setSpreadsheetPanel(new SpreadsheetPanel(pc, null));
-        panel = pc.getSpreadsheetPanel();
-        panel.registerListeners();
-        panel.addFileDropEventListener(this);
-        panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
 
-        tabbedPane.add(panel);
-        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));
-
-        tabbedPane.setSelectedComponent(panel);
-        panel.clearCellSelection();
-        setSheetLayout();
-//        getComponent().revalidate();
-//        getComponent().repaint();
-//        getComponent().resetKeyboardActions();
-//        getComponent().requestFocus();
-
-        // The default is to create cells that are highlighted - ensure that
-        // they are deselected.
-
-
-        return pc;
+        return createNewSpreadsheet(pc);
     }
 
     public ProjectController createNewSpreadsheet() {
         ProjectController pc = new ProjectController();
-        pc.setDatastore(new DatavyuDatastore());
-        pc.setSpreadsheetPanel(new SpreadsheetPanel(pc, null));
+        pc.setDatastore(DatastoreFactory.newDatastore());
 
-
-        panel = pc.getSpreadsheetPanel();
-        panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
-        panel.registerListeners();
-        panel.addFileDropEventListener(this);
-
-        tabbedPane.add(panel);
-        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));
-
-        tabbedPane.setSelectedComponent(panel);
-//        getComponent().revalidate();
-//        getComponent().repaint();
-//        getComponent().resetKeyboardActions();
-//        getComponent().requestFocus();
-
-        // The default is to create cells that are highlighted - ensure that
-        // they are deselected.
-        panel.clearCellSelection();
-        setSheetLayout();
-
-        return pc;
+        return createNewSpreadsheet(pc);
     }
 
     /**
@@ -1653,7 +1603,7 @@ public final class DatavyuView extends FrameView
         }
 
 
-        panel = new SpreadsheetPanel(pc, progressBar);
+        SpreadsheetPanel panel = new SpreadsheetPanel(pc, progressBar);
         panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
 
         panel.registerListeners();

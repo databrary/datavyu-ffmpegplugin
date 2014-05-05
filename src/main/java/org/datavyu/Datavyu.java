@@ -1157,6 +1157,9 @@ public final class Datavyu extends SingleFrameApplication
     }
 
     public static ProjectController getProjectController() {
+        if (VIEW != null && VIEW.getSpreadsheetPanel().getProjectController() != null) {
+            return VIEW.getSpreadsheetPanel().getProjectController();
+        }
         return projectController;
     }
 
