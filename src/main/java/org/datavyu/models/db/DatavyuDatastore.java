@@ -58,7 +58,7 @@ public class DatavyuDatastore implements Datastore {
         variables = new HashMap<String, Variable>();
 
         // Clear variable listeners.
-        DatavyuVariable.clearListeners();
+//        DatavyuVariable.clearListeners();
         changed = false;
     }
 

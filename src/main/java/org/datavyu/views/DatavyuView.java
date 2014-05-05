@@ -1546,10 +1546,10 @@ public final class DatavyuView extends FrameView
      * Clears the contents of the spreadsheet.
      */
     public void clearSpreadsheet() {
-        panel.removeAll();
+//        panel.removeAll();
 
         // Create a freash spreadsheet component and redraw the component.
-        panel.deregisterListeners();
+//        panel.deregisterListeners();
         panel.removeFileDropEventListener(this);
     }
 
@@ -1559,6 +1559,7 @@ public final class DatavyuView extends FrameView
         panel.registerListeners();
         panel.addFileDropEventListener(this);
         panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
+        Datavyu.setProjectController(panel.getProjectController());
 
         tabbedPane.add(panel);
         tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));
@@ -1599,7 +1600,7 @@ public final class DatavyuView extends FrameView
         // need to add changes to maintain spreadsheet view after change
         // Create a fresh spreadsheet component and redraw the component.
         if (panel != null) {
-            this.clearSpreadsheet();
+//            this.clearSpreadsheet();
         }
 
 
