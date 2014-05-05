@@ -75,7 +75,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     private OutputStream sIn;
     private OutputStream sIn2;
 
-    private String outString = "";
+    private StringBuilder outString = new StringBuilder("");
 
     /**
      * Constructs and invokes the runscript controller.
@@ -156,14 +156,14 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         try {
             consoleWriterAfter.close();
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
 
         return null;
     }
 
     private void runRubyScript(File scriptFile) {
-        outString = "";
+        outString = new StringBuilder("");
         ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
 
         try {
@@ -183,40 +183,43 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 
                 rubyEngine.put("path", path);
 
-                FileReader reader = new FileReader(scriptFile);
-                String wholeScript = fileReaderIntoString(reader);
+                LineNumberReader lineReader = new LineNumberReader(
+                        fileReaderIntoStringReader(new FileReader(scriptFile)));
                 //System.out.println(wholeScript);
 
                 rubyEngine.getContext().setWriter(consoleWriter);
                 rubyEngine.getContext().setErrorWriter(consoleWriter);
-                rubyEngine.eval(wholeScript);
-                //System.out.println("SCRIPT OVER");
-                consoleWriter.close();
+                try{
+                    rubyEngine.eval(lineReader);
+                    //System.out.println("SCRIPT OVER");
+                    consoleWriter.close();
+                    
+                    // Remove references.
+                    rubyEngine.put("db", null);
+                    rubyEngine.put("pj", null);
+                    rubyEngine.put("mixer", null);
+                    rubyEngine.put("viewers", null);
 
-                reader = null;
+                    consoleWriterAfter.write("\nScript completed successfully.");
+                    consoleWriterAfter.flush();
+                    consoleWriterAfter.close();
+                }
+                catch (ScriptException e) {
+                    System.out.println("LINE: " + lineReader.getLineNumber());
+                    String msg = makeFriendlyRubyErrorMsg(outString.toString(), e);
+                    consoleWriter.close();
+                    consoleWriterAfter.write("\n\n***** SCRIPT ERROR *****\n");
+                    consoleWriterAfter.write(msg);
+                    consoleWriterAfter.write("\n*************************\n");
+                    consoleWriterAfter.flush();
 
-                // Remove references.
-                rubyEngine.put("db", null);
-                rubyEngine.put("pj", null);
-                rubyEngine.put("mixer", null);
-                rubyEngine.put("viewers", null);
+                    System.out.println("Script Error");
 
-                consoleWriterAfter.write("\nScript completed successfully.");
-                consoleWriterAfter.flush();
-                consoleWriterAfter.close();
-
-            } catch (ScriptException e) {
-                consoleWriter.close();
-
-                String msg = makeFriendlyRubyErrorMsg(outString, e);
-                consoleWriterAfter.write("\n\n***** SCRIPT ERROR *****\n");
-                consoleWriterAfter.write(msg);
-                consoleWriterAfter.write("\n*************************\n");
-                consoleWriterAfter.flush();
-
-                System.out.println("Script Error");
-
-                LOGGER.error("Unable to execute script: ", e);
+                    LOGGER.error("Unable to execute script: ", e);
+                }
+                finally {
+                    lineReader = null;
+                }
             } catch (FileNotFoundException e) {
                 consoleWriter.close();
                 consoleWriterAfter.write("File not found: " + e.getMessage());;
@@ -231,7 +234,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
     }
     
-    private String fileReaderIntoString(FileReader fr) throws IOException
+    private StringReader fileReaderIntoStringReader(FileReader fr) throws IOException
     {
         BufferedReader br = new BufferedReader(fr);
         StringBuilder sb = new StringBuilder("");
@@ -243,11 +246,12 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             sb.append('\n'); //newlines in string are always '\n', never '\r'. Bug 193
             cur = br.readLine();
         }
-        return sb.toString();
+        return new StringReader(sb.toString());
     }
 
     private String makeFriendlyRubyErrorMsg(String out, ScriptException e) {
         try {
+            if (out.lastIndexOf("<script>") == -1) return e.getMessage();
             String s = "";
             //s should begin with ruby-relevant error portion, NOT full java stack
             //which would be of little interest to the user and only obscures what matters
@@ -464,7 +468,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     if (len > 0) {
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
-                        outString += s;
+                        outString.append(s);
                         //System.out.println(s);
                         publish(s);
                     }
@@ -479,7 +483,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     if (len > 0) {
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
-                        outString += s;
+                        outString.append(s);
                         //System.out.println(s);
                         publish(s);
                     }
