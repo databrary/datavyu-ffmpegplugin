@@ -58,11 +58,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.logging.Level;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * The main FrameView, representing the interface for Datavyu the user will
@@ -139,6 +136,7 @@ public final class DatavyuView extends FrameView
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator10;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -181,6 +179,7 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem zoomOutMenuItem;
     private JTabbedPane tabbedPane;
     private JScrollPane fileScrollPane;
+    private JSplitPane fileSplitPane;
     private JTree fileDrawer;
     private TreeModel fileTree;
     private JScrollPane favScrollPane;
@@ -297,7 +296,29 @@ public final class DatavyuView extends FrameView
         fileTree = new FileSystemTreeModel(new File("."));
         fileDrawer = new JTree(fileTree);
 
+        favTree = new FileSystemTreeModel(new File(DatavyuView.FAV_DIR));
+        favDrawer = new JTree(favTree);
+
         fileDrawer.setCellRenderer(new DefaultTreeCellRenderer() {
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree,
+                                                          Object value, boolean selected, boolean expanded,
+                                                          boolean isLeaf, int row, boolean focused) {
+                Component c = super.getTreeCellRendererComponent(tree, value,
+                        selected, expanded, isLeaf, row, focused);
+                if (tree.getPathForRow(row) != null) {
+                    if (convertTreePathToString(tree.getPathForRow(row)).endsWith(".rb")) {
+                        setIcon(rubyIcon);
+                    } else if (convertTreePathToString(tree.getPathForRow(row)).endsWith(".opf")) {
+                        setIcon(opfIcon);
+                    }
+                }
+                return c;
+            }
+
+        });
+
+        favDrawer.setCellRenderer(new DefaultTreeCellRenderer() {
             @Override
             public Component getTreeCellRendererComponent(JTree tree,
                                                           Object value, boolean selected, boolean expanded,
@@ -324,14 +345,12 @@ public final class DatavyuView extends FrameView
 
                 if (selRow != -1) {
                     String path = convertTreePathToString(selPath);
-                    //System.out.println("Path: "+path);
                     String baseDir;
                     if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
                         baseDir = ".";
                     } else {
                         baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
                     }
-                    //System.out.println("Basedir: "+baseDir);
                     final File f = new File(baseDir + File.separator + path);
 
                     if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
@@ -456,10 +475,149 @@ public final class DatavyuView extends FrameView
             }
         });
 
+        favDrawer.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selRow = favDrawer.getRowForLocation(e.getX(), e.getY());
+                final TreePath selPath = favDrawer.getPathForLocation(e.getX(), e.getY());
+
+                if (selRow != -1) {
+                    String path = convertTreePathToString(selPath);
+                    String baseDir;
+                    if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
+                        baseDir = ".";
+                    } else {
+                        baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
+                    }
+                    final File f = new File(baseDir + File.separator + path);
+
+                    if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
+                    } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+
+                        if (f.isFile()) {
+                            if (f.getName().toLowerCase().endsWith(".rb")) {
+                                runScript(f);
+                            }
+                            if (f.getName().toLowerCase().endsWith(".opf")) {
+                                open(f);
+                            }
+                        }
+                    } else if (SwingUtilities.isRightMouseButton(e)) {
+                        int row = favDrawer.getClosestRowForLocation(e.getX(), e.getY());
+                        favDrawer.setSelectionRow(row);
+                        popupMenu.removeAll();
+                        if (f.getName().toLowerCase().endsWith(".rb")) {
+                            popupMenu.add(openInTextEditor);
+                            for (MouseListener ml : openInTextEditor.getMouseListeners()) {
+                                openInTextEditor.removeMouseListener(ml);
+                            }
+                            openInTextEditor.addMouseListener(new MouseListener() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+
+                                    try {
+                                        java.awt.Desktop.getDesktop().edit(f);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                    popupMenu.setVisible(false);
+                                }
+
+                                @Override
+                                public void mousePressed(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseReleased(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseEntered(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseExited(MouseEvent e) {
+
+                                }
+
+                            });
+                            popupMenu.show(e.getComponent(), e.getX(), e.getY());
+
+                        } else if (f.getName().toLowerCase().endsWith(".opf")) {
+                            popupMenu.add(openInDatavyu);
+                            for (MouseListener ml : openInDatavyu.getMouseListeners()) {
+                                openInDatavyu.removeMouseListener(ml);
+                            }
+                            openInDatavyu.addMouseListener(new MouseListener() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+
+                                    try {
+                                        open(f);
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                    popupMenu.setVisible(false);
+                                }
+
+                                @Override
+                                public void mousePressed(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseReleased(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseEntered(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseExited(MouseEvent e) {
+
+                                }
+                            });
+                            popupMenu.show(e.getComponent(), e.getX(), e.getY());
+
+                        }
+
+
+                    }
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
 
         fileScrollPane = new JScrollPane(fileDrawer);
+        favScrollPane = new JScrollPane(favDrawer);
 
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, fileScrollPane, tabbedPane);
+        fileSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, fileScrollPane, favScrollPane);
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, fileSplitPane, tabbedPane);
         splitPane.setDividerLocation(150);
         Dimension minimumSize = new Dimension(100, 50);
 
@@ -574,7 +732,6 @@ public final class DatavyuView extends FrameView
             }
         };
         this.getFrame().addWindowListener(exitListener);
-
     }
 
     @Override
@@ -761,6 +918,12 @@ public final class DatavyuView extends FrameView
             save(jd);
         }
     }
+
+
+    public JSplitPane getFileSplitPane() {
+        return fileSplitPane;
+    }
+
 
     /**
      * Action for exporting the current project as a particular file.
@@ -1021,20 +1184,7 @@ public final class DatavyuView extends FrameView
     }
 
     public String convertTreePathToString(TreePath tp) {
-         
-        return StringUtils.join(tp.getPath(), File.separator);
-        
-        /* Should we decide we don't want to use apache commons                
-        List<Object> l = Arrays.asList(tp.getPath());
-        String ans = "";
-        for(ListIterator<Object> i = l.listIterator(); i.hasNext();)
-        {
-            ans += i.next().toString();
-            if(i.hasNext()) ans += File.separator;
-        }
-        
-        return ans;
-        */
+        return tp.toString().replaceAll("\\]| |\\[|", "").replace(",", File.separator);
     }
 
     /**
@@ -1779,6 +1929,7 @@ public final class DatavyuView extends FrameView
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         spreadsheetMenu = new javax.swing.JMenu();
         showSpreadsheetMenuItem = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JSeparator();
         jMenuItem1 = new javax.swing.JMenuItem();
         newVariableMenuItem = new javax.swing.JMenuItem();
         vocabEditorMenuItem = new javax.swing.JMenuItem();
@@ -1929,6 +2080,9 @@ public final class DatavyuView extends FrameView
         showSpreadsheetMenuItem.setAction(actionMap.get("showSpreadsheet"));
         showSpreadsheetMenuItem.setName("showSpreadsheetMenuItem");
         //spreadsheetMenu.add(showSpreadsheetMenuItem);
+
+        jSeparator1.setName("jSeparator1");
+        spreadsheetMenu.add(jSeparator1);
 
         jMenuItem1.setAction(actionMap.get("showNewVariableForm"));
         jMenuItem1.setName("jMenuItem1");

@@ -946,6 +946,7 @@ public final class Datavyu extends SingleFrameApplication
         // Make view the new view so we can keep track of it for hotkeys.
         VIEW = new DatavyuView(this);
         show(VIEW);
+        VIEW.getFileSplitPane().setDividerLocation(0.75);
 
         // Now that datavyu is up - we may need to ask the user if can send
         // gather logs.
