@@ -1568,9 +1568,10 @@ public final class DatavyuView extends FrameView
         setSheetLayout();
         pc.loadProject();
 
-        return pc;
+        return pc; //return value not used
     }
-
+    
+    //no usages as of 5/5/2014
     public ProjectController createNewSpreadsheet(Datastore ds) {
         ProjectController pc = new ProjectController();
         pc.setDatastore(ds);
@@ -1578,11 +1579,13 @@ public final class DatavyuView extends FrameView
         return createNewSpreadsheet(pc);
     }
 
-    public ProjectController createNewSpreadsheet() {
+    public ProjectController createNewSpreadsheet(String name) {
         ProjectController pc = new ProjectController();
         pc.setDatastore(DatastoreFactory.newDatastore());
+        pc.setProjectName(name);
+        pc = createNewSpreadsheet(pc);
 
-        return createNewSpreadsheet(pc);
+        return pc; //return value not used
     }
 
     /**
