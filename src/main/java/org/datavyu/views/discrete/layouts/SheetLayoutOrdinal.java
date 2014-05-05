@@ -31,6 +31,7 @@ import java.util.List;
 public class SheetLayoutOrdinal extends SheetLayout {
     // The of the right hand margin.
     private int marginSize;
+    private JScrollPane pane;
 
     /**
      * Helper class for tracking what we are ordering.
@@ -56,8 +57,6 @@ public class SheetLayoutOrdinal extends SheetLayout {
 
     /**
      * SheetLayoutOrdinal constructor.
-     *
-     * @param cols Reference to the SpreadsheetColumns in the spreadsheet.
      */
     public SheetLayoutOrdinal(final int margin) {
         marginSize = margin;
@@ -75,7 +74,7 @@ public class SheetLayoutOrdinal extends SheetLayout {
         Datavyu.getView().setRedraw(false);
 
         // This layout must be applied to a Spreadsheet panel.
-        JScrollPane pane = (JScrollPane) parent;
+        pane = (JScrollPane) parent;
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
                 .getView();
 
@@ -155,25 +154,29 @@ public class SheetLayoutOrdinal extends SheetLayout {
 
         if (selectedCell != null) {
 
-            // Set the new position of the scroll window.
-
-            double viewMax = pane.getViewport().getViewRect().getY() + pane.getViewport().getViewRect().getHeight();
-            double viewMin = pane.getViewport().getViewRect().getY();
-            int cellMax = selectedCell.getY() + selectedCell.getHeight();
-            int cellMin = selectedCell.getY();
-
-            if (viewMax < cellMax) {
-                pane.getViewport().setViewPosition(
-                        new Point((int) pane.getViewport().getViewRect().getX(),
-                                cellMax - pane.getViewport().getHeight()));
-//                pane.getVerticalScrollBar().setValue(cellMax);
-            } else if (viewMin > cellMin) {
-                pane.getViewport().setViewPosition(
-                        new Point((int) pane.getViewport().getViewRect().getX(),
-                                cellMin));
-            }
-
 
         }
+    }
+
+    public void reorientView(SpreadsheetCell cell) {
+        // Set the new position of the scroll window.
+
+        double viewMax = pane.getViewport().getViewRect().getY() + pane.getViewport().getViewRect().getHeight();
+        double viewMin = pane.getViewport().getViewRect().getY();
+        int cellMax = cell.getY() + cell.getHeight();
+        int cellMin = cell.getY();
+
+        if (viewMax < cellMax) {
+            pane.getViewport().setViewPosition(
+                    new Point((int) pane.getViewport().getViewRect().getX(),
+                            cellMax - pane.getViewport().getHeight()));
+//                pane.getVerticalScrollBar().setValue(cellMax);
+        } else if (viewMin > cellMin) {
+            pane.getViewport().setViewPosition(
+                    new Point((int) pane.getViewport().getViewRect().getX(),
+                            cellMin));
+        }
+
+
     }
 }

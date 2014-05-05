@@ -41,6 +41,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     HashMap<Long, List<SpreadsheetCell>> onsetToLoc;
     // Hash of placements by offset
     HashMap<Long, List<SpreadsheetCell>> offsetToLoc;
+    private JScrollPane pane;
 
 
     /**
@@ -74,7 +75,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     @Override
     public void layoutContainer(Container parent) {
         super.layoutContainer(parent);
-        JScrollPane pane = (JScrollPane) parent;
+        pane = (JScrollPane) parent;
 
 
         long overallTime = System.currentTimeMillis();
@@ -354,24 +355,23 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         }
 
         padColumns(mainView, parent);
+    }
 
+    public void reorientView(SpreadsheetCell cell) {
+        double viewMax = pane.getViewport().getViewRect().getY() + pane.getViewport().getViewRect().getHeight();
+        double viewMin = pane.getViewport().getViewRect().getY();
+        int cellMax = cell.getY() + cell.getHeight();
+        int cellMin = cell.getY();
 
-        if (selectedCell != null) {
-            double viewMax = pane.getViewport().getViewRect().getY() + pane.getViewport().getViewRect().getHeight();
-            double viewMin = pane.getViewport().getViewRect().getY();
-            int cellMax = selectedCell.getY() + selectedCell.getHeight();
-            int cellMin = selectedCell.getY();
-
-            if (viewMax < cellMax) {
-                pane.getViewport().setViewPosition(
-                        new Point((int) pane.getViewport().getViewRect().getX(),
-                                cellMax - pane.getViewport().getHeight()));
-                //                pane.getVerticalScrollBar().setValue(cellMax);
-            } else if (viewMin > cellMin) {
-                pane.getViewport().setViewPosition(
-                        new Point((int) pane.getViewport().getViewRect().getX(),
-                                cellMin));
-            }
+        if (viewMax < cellMax) {
+            pane.getViewport().setViewPosition(
+                    new Point((int) pane.getViewport().getViewRect().getX(),
+                            cellMax - pane.getViewport().getHeight()));
+            //                pane.getVerticalScrollBar().setValue(cellMax);
+        } else if (viewMin > cellMin) {
+            pane.getViewport().setViewPosition(
+                    new Point((int) pane.getViewport().getViewRect().getX(),
+                            cellMin));
         }
     }
 

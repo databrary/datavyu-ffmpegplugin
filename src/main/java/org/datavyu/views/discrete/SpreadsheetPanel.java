@@ -28,6 +28,7 @@ import org.datavyu.util.ArrayDirection;
 import org.datavyu.util.Constants;
 import org.datavyu.views.DVProgressBar;
 import org.datavyu.views.DataControllerV;
+import org.datavyu.views.discrete.layouts.SheetLayout;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory;
 import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 import org.jdesktop.application.Action;
@@ -930,6 +931,10 @@ public final class SpreadsheetPanel extends JPanel
         }
 
         return false;
+    }
+
+    public void reorientView(SpreadsheetCell cell) {
+        ((SheetLayout) scrollPane.getLayout()).reorientView(cell);
     }
 
     /**

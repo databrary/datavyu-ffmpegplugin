@@ -622,6 +622,9 @@ public class SpreadsheetCell extends JPanel
                 || cellPanel.getBorder().equals(OVERLAP_BORDER))) {
             model.setSelected(true);
         }
+
+        Datavyu.getView().getSpreadsheetPanel().reorientView(this);
+
     }
 
     @Override
