@@ -205,8 +205,10 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     consoleWriterAfter.close();
                 }
                 catch (ScriptException e) {
-                    System.out.println("LINE: " + lineReader.getLineNumber());
+                    //System.out.println("LINE: " + lineReader.getLineNumber()); 
+                    //unfortunately the bove seems to always be final line not line of error. still, no noticeable performance difference, so im leaving the LineNumberReader wrap
                     String msg = makeFriendlyRubyErrorMsg(outString.toString(), e);
+                    consoleWriter.flush();
                     consoleWriter.close();
                     consoleWriterAfter.write("\n\n***** SCRIPT ERROR *****\n");
                     consoleWriterAfter.write(msg);
@@ -275,6 +277,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 }
             }
             s += linesOut;
+            assert(!s.trim().isEmpty()); //this should ensure we never get a blank message - e.getMessage at the very least
             return s;
         } catch (Exception e2) //if <script>: is not found in previous output, or other error occurs, default to exception's message
         {
