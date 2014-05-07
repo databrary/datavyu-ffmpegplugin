@@ -31,7 +31,6 @@
   
   <dependencySets>
     <dependencySet>
-        <outputDirectory>jar</outputDirectory>
         <includes/>
     </dependencySet>
   </dependencySets>

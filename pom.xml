@@ -680,7 +680,22 @@
                     <!--</singleInstance>-->
                     <classPath>
                         <mainClass>org.datavyu.Datavyu</mainClass>
-                        <postCp>jar\*</postCp>
+                        <preCp>jna-3.4.1.jar</preCp>
+                        <preCp>jruby-engine-1.1.6.jar</preCp>
+                        <preCp>jruby-complete-1.6.5.jar</preCp>
+                        <preCp>appframework-1.0.3.jar</preCp>
+                        <preCp>snakeyaml-1.7.jar</preCp>
+                        <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
+                        <preCp>miglayout-3.7.3.1-swing.jar</preCp>
+                        <preCp>commons-io-2.0.jar</preCp>
+                        <preCp>fest-reflect-1.2.jar</preCp>
+                        <preCp>google-collections-1.0.jar</preCp>
+                        <preCp>commons-lang-2.5.jar</preCp>
+                        <preCp>QTJava-7.jar</preCp>
+                        <preCp>trove-2.1.0.jar</preCp>
+                        <preCp>jregistrykey-1.4.5.jar</preCp>
+                        <preCp>vlcj-2.2.0-SNAPSHOT.jar</preCp>
+                        <preCp>libvlc-win32-2.0.1.jar</preCp>
                     </classPath>
                 </configuration>
             </plugin>
