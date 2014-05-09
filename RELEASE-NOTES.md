@@ -1,3 +1,20 @@
+# Datavyu 1.1.7 Pre-Release Notes
+## 05/9/2014
+
+### Additions
+* You can now open multiple spreadsheets in datavyu! Each spreadsheet has its own corresponding controller. Tabs at the top of the spreadsheet are used to navigate between open spreadsheets. 
+* We have added our user guide, release notes, and developer notes to the application folder. 
+* You can manually set the jog rate of a video on the Controller. Please double click on “Steps per second”, type in your new frame rate and then click “Enter”. 
+
+### Changes
+* When you “Add Data” with the controller, it defaults to finding “Video Files”. If you cannot find your desired file, you can simply change the format to “All Files”. 
+
+
+### Known Issues
+* The scripting output on PCs does not give as detailed error messages as it does on Macs
+* Double clicking on the file directory on the left does not always work. If it fails to do so, use the file and script menus to open spreadsheets and run scripts. 
+* Opening the code editor breaks temporal alignment
+
 # Datavyu 1.1.3 Pre-Release Notes
 ## 04/11/2014
 
