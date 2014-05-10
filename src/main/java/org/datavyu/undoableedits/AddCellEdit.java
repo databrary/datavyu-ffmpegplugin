@@ -51,7 +51,6 @@ public class AddCellEdit extends SpreadsheetEdit {
         if ((var.getCells() != null) && (var.getCells().size() > 0)) {
             Cell cell = var.getCells().get(var.getCells().size() - 1);
         }
-        view.showSpreadsheet();
     }
 
     @Override

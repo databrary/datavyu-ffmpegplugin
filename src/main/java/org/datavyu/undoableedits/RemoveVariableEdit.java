@@ -16,7 +16,6 @@ package org.datavyu.undoableedits;
 
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
-import org.datavyu.Datavyu;
 import org.datavyu.controllers.DeleteColumnC;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.UserWarningException;
@@ -87,7 +86,6 @@ public class RemoveVariableEdit extends VocabEditorEdit {
                 LOGGER.error("Unable to undo.", e);
             }
         }
-        Datavyu.getView().showSpreadsheet();
     }
 
     @Override

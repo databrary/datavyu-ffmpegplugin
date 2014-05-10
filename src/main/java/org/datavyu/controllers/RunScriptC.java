@@ -20,10 +20,8 @@ import org.datavyu.Datavyu;
 import org.datavyu.RecentFiles;
 import org.datavyu.models.db.*;
 import org.datavyu.util.FileFilters.RBFilter;
-import org.datavyu.util.FileFilters.RFilter;
 import org.datavyu.views.ConsoleV;
 import org.datavyu.views.DatavyuFileChooser;
-import org.datavyu.views.DatavyuView;
 import rcaller.RCaller;
 import rcaller.RCode;
 
@@ -32,7 +30,6 @@ import javax.script.ScriptException;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
-import org.datavyu.Datavyu.Platform;
 
 
 /**
@@ -230,9 +227,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         }
 
     }
-    
-    private String fileReaderIntoString(FileReader fr) throws IOException
-    {
+
+    private String fileReaderIntoString(FileReader fr) throws IOException {
         BufferedReader br = new BufferedReader(fr);
         StringBuilder sb = new StringBuilder("");
         
@@ -421,9 +417,6 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     @Override
     protected void done() {
 
-        // Display any changes.
-        DatavyuView view = (DatavyuView) Datavyu.getView();
-        view.showSpreadsheet();
     }
 
     @Override

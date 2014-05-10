@@ -56,7 +56,7 @@ public class UndoHistoryWindow extends DatavyuDialog {
         setTitle("Undo History");
         setBounds(new java.awt.Rectangle(4, 22, 400, 800));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setName("undoHistoryWindow"); 
+        setName("undoHistoryWindow");
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
                 formWindowGainedFocus(evt);
@@ -109,7 +109,6 @@ public class UndoHistoryWindow extends DatavyuDialog {
         this.undoHistoryList.setCursor(new Cursor(Cursor.WAIT_CURSOR));
         undomanager.goTo((SpreadsheetEdit) undoHistoryList.getSelectedValue());
         Datavyu.getView().refreshUndoRedo();
-        Datavyu.getView().showSpreadsheet();
         this.rootPane.revalidate();
         this.rootPane.repaint();
         this.undoHistoryList.requestFocus();

@@ -1585,44 +1585,12 @@ public final class DatavyuView extends FrameView
         return createNewSpreadsheet(pc);
     }
 
-    /**
-     * Action for showing the spreadsheet.
-     */
-    @Action
-    public void showSpreadsheet() {
-        showSpreadsheet(this.getSpreadsheetPanel().getProjectController(), null);
-    }
+    public ProjectController createNewSpreadsheet(String projectName) {
+        ProjectController pc = new ProjectController();
+        pc.setProjectName(projectName);
+        pc.setDatastore(DatastoreFactory.newDatastore());
 
-    @Action
-    public void showSpreadsheet(ProjectController pc, DVProgressBar progressBar) {
-        //weakTemporalAlignmentMenuItem.setSelected(false);
-
-        // need to add changes to maintain spreadsheet view after change
-        // Create a fresh spreadsheet component and redraw the component.
-        if (panel != null) {
-//            this.clearSpreadsheet();
-        }
-
-
-        SpreadsheetPanel panel = new SpreadsheetPanel(pc, progressBar);
-        panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
-
-        panel.registerListeners();
-        panel.addFileDropEventListener(this);
-        tabbedPane.setComponentAt(tabbedPane.getSelectedIndex(), panel);
-        tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));
-
-        tabbedPane.setSelectedComponent(panel);
-//        setComponent(panel);
-        getComponent().revalidate();
-        getComponent().repaint();
-        getComponent().resetKeyboardActions();
-        getComponent().requestFocus();
-
-        // The default is to create cells that are highlighted - ensure that
-        // they are deselected.
-        panel.clearCellSelection();
-        setSheetLayout();
+        return createNewSpreadsheet(pc);
     }
 
     /**
