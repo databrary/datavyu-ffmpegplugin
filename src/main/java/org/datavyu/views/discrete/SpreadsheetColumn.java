@@ -38,71 +38,107 @@ import java.util.List;
  * Spreadsheet window.
  */
 public final class SpreadsheetColumn extends JLabel
-implements VariableListener,
-           MouseListener,
-           MouseMotionListener {
+        implements VariableListener,
+        MouseListener,
+        MouseMotionListener {
 
-    /** Default column width. */
+    /**
+     * Default column width.
+     */
     public static final int DEFAULT_COLUMN_WIDTH = 230;
 
-    /** Default column height. */
+    /**
+     * Default column height.
+     */
     public static final int DEFAULT_HEADER_HEIGHT = 16;
 
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetColumn.class);
 
-    /** Database reference. */
+    /**
+     * Database reference.
+     */
     private Datastore datastore;
 
-    /** Reference to the variable. */
+    /**
+     * Reference to the variable.
+     */
     private Variable variable;
 
-    /** ColumnDataPanel this column manages. */
+    /**
+     * ColumnDataPanel this column manages.
+     */
     private ColumnDataPanel datapanel;
 
-    /** Width of the column in pixels. */
+    /**
+     * Width of the column in pixels.
+     */
     private int width = DEFAULT_COLUMN_WIDTH;
 
-    /** Selected state. */
+    /**
+     * Selected state.
+     */
     private boolean selected = false;
 
-    /** Background color of the header when unselected. */
+    /**
+     * Background color of the header when unselected.
+     */
     private Color backColor;
 
-    /** Can the column be dragged? */
+    /**
+     * Can the column be dragged?
+     */
     private boolean draggable;
 
-    /** Can the column be moved? */
+    /**
+     * Can the column be moved?
+     */
     private boolean moveable;
 
-    /** cell selection listener to notify of cell selection changes. */
+    /**
+     * cell selection listener to notify of cell selection changes.
+     */
     private CellSelectionListener cellSelList;
 
-    /** column selection listener to notify of column selection changes. */
+    /**
+     * column selection listener to notify of column selection changes.
+     */
     private ColumnSelectionListener columnSelList;
-    
-    /** column visibility listener to notify of column visibility changes. */
+
+    /**
+     * column visibility listener to notify of column visibility changes.
+     */
     private ColumnVisibilityListener columnVisList;
 
-    /** Layout state: The ordinal we are working on for this column. */
+    /**
+     * Layout state: The ordinal we are working on for this column.
+     */
     private int workingOrd = 0;
 
-    /** Layout state: The height of the column data area in pixels. */
+    /**
+     * Layout state: The height of the column data area in pixels.
+     */
     private int dataHeight = 0;
 
-    /** Layout state: The padding to apply to the onset of the current working cell. */
+    /**
+     * Layout state: The padding to apply to the onset of the current working cell.
+     */
     private int onsetPadding = 0;
 
-    /** Layout state: The padding to apply to the offset of the current working cell. */
+    /**
+     * Layout state: The padding to apply to the offset of the current working cell.
+     */
     private int offsetPadding = 0;
 
     /**
      * Creates new SpreadsheetColumn.
      *
-     * @param db Database reference.
-     * @param colID the variable this column displays.
+     * @param db       Database reference.
+     * @param colID    the variable this column displays.
      * @param cellSelL Spreadsheet cell selection listener to notify
-     * @param colSelL Column selection listener to notify.
+     * @param colSelL  Column selection listener to notify.
      */
     public SpreadsheetColumn(final Datastore db,
                              final Variable var,
@@ -122,7 +158,7 @@ implements VariableListener,
         setMinimumSize(this.getHeaderSize());
         setPreferredSize(this.getHeaderSize());
         setMaximumSize(this.getHeaderSize());
-        
+
         String typeString = "";
         if (var.getRootNode().type != Argument.Type.MATRIX) typeString = "  (" + var.getRootNode().type + ")";
         setText(var.getName() + typeString); //typeString for matrices is empty. Only displayed for non-matrix types (Text, Nominal)
@@ -172,7 +208,7 @@ implements VariableListener,
 
     /**
      * @param newHeight The height in pixels of the cells that have been laid
-     * in this column.
+     *                  in this column.
      */
     public void setWorkingHeight(final int newHeight) {
         dataHeight = newHeight;
@@ -188,7 +224,7 @@ implements VariableListener,
 
     /**
      * @param newOrd Set the ordinal value of the current cell that we are about
-     * to lay.
+     *               to lay.
      */
     public void setWorkingOrd(final int newOrd) {
         workingOrd = newOrd;
@@ -217,13 +253,13 @@ implements VariableListener,
 
         return workingList;
     }
-    
+
     public Variable getVariable() {
         return variable;
     }
-    
+
     public void setAllCellsProcessed(boolean p) {
-        for(SpreadsheetCell c : getCells()) {
+        for (SpreadsheetCell c : getCells()) {
             c.setBeingProcessed(p);
         }
     }
@@ -252,6 +288,7 @@ implements VariableListener,
 
     /**
      * Opens an input dialog to change a variable name.
+     *
      * @throws HeadlessException
      */
     public void showChangeVarNameDialog() throws HeadlessException {
@@ -261,7 +298,7 @@ implements VariableListener,
         boolean exitFlag = false;
         while (!exitFlag) {
             newName = (String) JOptionPane.showInputDialog(null, null, "New column name",
-                                                           JOptionPane.PLAIN_MESSAGE, null, null, getColumnName());
+                    JOptionPane.PLAIN_MESSAGE, null, null, getColumnName());
 
             if (newName != null) {
                 try {
@@ -311,7 +348,8 @@ implements VariableListener,
     /**
      * @return Column Width in pixels.
      */
-    @Override public int getWidth() {
+    @Override
+    public int getWidth() {
         return width;
     }
 
@@ -359,8 +397,8 @@ implements VariableListener,
         columnSelList.clearColumnSelection();
         setSelected(isSelected);
     }
-    
-    
+
+
     /**
      * @return selection status of underlying variable
      */
@@ -370,6 +408,7 @@ implements VariableListener,
 
     /**
      * Set the preferred size of the column.
+     *
      * @param bottom Number of pixels to set.
      */
     public void setBottomBound(final int bottom) {
@@ -392,7 +431,6 @@ implements VariableListener,
      * Gets a specific spreadsheet cell temporally.
      *
      * @param index The index of the spreadsheet cell you wish to retrieve.
-     *
      * @return The nth spreadsheet cell temporally.
      */
     public SpreadsheetCell getCellTemporally(final int index) {
@@ -436,7 +474,6 @@ implements VariableListener,
             throw new UserWarningException();
         }
 
-        Datavyu.getView().showSpreadsheet();
     }
 
     // *************************************************************************
@@ -514,7 +551,7 @@ implements VariableListener,
             int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
             boolean groupSel = (((me.getModifiers() & ActionEvent.SHIFT_MASK)
-                        != 0) || ((me.getModifiers() & keyMask) != 0));
+                    != 0) || ((me.getModifiers() & keyMask) != 0));
             boolean curSelected = this.isSelected();
 
             if (!groupSel) {

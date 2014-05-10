@@ -20,10 +20,8 @@ import org.datavyu.Datavyu;
 import org.datavyu.RecentFiles;
 import org.datavyu.models.db.*;
 import org.datavyu.util.FileFilters.RBFilter;
-import org.datavyu.util.FileFilters.RFilter;
 import org.datavyu.views.ConsoleV;
 import org.datavyu.views.DatavyuFileChooser;
-import org.datavyu.views.DatavyuView;
 import rcaller.RCaller;
 import rcaller.RCode;
 
@@ -32,7 +30,6 @@ import javax.script.ScriptException;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
-import org.datavyu.Datavyu.Platform;
 
 
 /**
@@ -75,7 +72,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     private OutputStream sIn;
     private OutputStream sIn2;
 
-    private StringBuilder outString = new StringBuilder("");
+    private String outString = "";
 
     /**
      * Constructs and invokes the runscript controller.
@@ -156,14 +153,14 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         try {
             consoleWriterAfter.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         return null;
     }
 
     private void runRubyScript(File scriptFile) {
-        outString = new StringBuilder("");
+        outString = "";
         ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
 
         try {
@@ -183,45 +180,40 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 
                 rubyEngine.put("path", path);
 
-                LineNumberReader lineReader = new LineNumberReader(
-                        fileReaderIntoStringReader(new FileReader(scriptFile)));
+                FileReader reader = new FileReader(scriptFile);
+                String wholeScript = fileReaderIntoString(reader);
                 //System.out.println(wholeScript);
 
                 rubyEngine.getContext().setWriter(consoleWriter);
                 rubyEngine.getContext().setErrorWriter(consoleWriter);
-                try{
-                    rubyEngine.eval(lineReader);
-                    //System.out.println("SCRIPT OVER");
-                    consoleWriter.close();
-                    
-                    // Remove references.
-                    rubyEngine.put("db", null);
-                    rubyEngine.put("pj", null);
-                    rubyEngine.put("mixer", null);
-                    rubyEngine.put("viewers", null);
+                rubyEngine.eval(wholeScript);
+                //System.out.println("SCRIPT OVER");
+                consoleWriter.close();
 
-                    consoleWriterAfter.write("\nScript completed successfully.");
-                    consoleWriterAfter.flush();
-                    consoleWriterAfter.close();
-                }
-                catch (ScriptException e) {
-                    //System.out.println("LINE: " + lineReader.getLineNumber()); 
-                    //unfortunately the bove seems to always be final line not line of error. still, no noticeable performance difference, so im leaving the LineNumberReader wrap
-                    String msg = makeFriendlyRubyErrorMsg(outString.toString(), e);
-                    consoleWriter.flush();
-                    consoleWriter.close();
-                    consoleWriterAfter.write("\n\n***** SCRIPT ERROR *****\n");
-                    consoleWriterAfter.write(msg);
-                    consoleWriterAfter.write("\n*************************\n");
-                    consoleWriterAfter.flush();
+                reader = null;
 
-                    System.out.println("Script Error");
+                // Remove references.
+                rubyEngine.put("db", null);
+                rubyEngine.put("pj", null);
+                rubyEngine.put("mixer", null);
+                rubyEngine.put("viewers", null);
 
-                    LOGGER.error("Unable to execute script: ", e);
-                }
-                finally {
-                    lineReader = null;
-                }
+                consoleWriterAfter.write("\nScript completed successfully.");
+                consoleWriterAfter.flush();
+                consoleWriterAfter.close();
+
+            } catch (ScriptException e) {
+                consoleWriter.close();
+
+                String msg = makeFriendlyRubyErrorMsg(outString, e);
+                consoleWriterAfter.write("\n\n***** SCRIPT ERROR *****\n");
+                consoleWriterAfter.write(msg);
+                consoleWriterAfter.write("\n*************************\n");
+                consoleWriterAfter.flush();
+
+                System.out.println("Script Error");
+
+                LOGGER.error("Unable to execute script: ", e);
             } catch (FileNotFoundException e) {
                 consoleWriter.close();
                 consoleWriterAfter.write("File not found: " + e.getMessage());;
@@ -235,9 +227,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         }
 
     }
-    
-    private StringReader fileReaderIntoStringReader(FileReader fr) throws IOException
-    {
+
+    private String fileReaderIntoString(FileReader fr) throws IOException {
         BufferedReader br = new BufferedReader(fr);
         StringBuilder sb = new StringBuilder("");
         
@@ -248,12 +239,11 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             sb.append('\n'); //newlines in string are always '\n', never '\r'. Bug 193
             cur = br.readLine();
         }
-        return new StringReader(sb.toString());
+        return sb.toString();
     }
 
     private String makeFriendlyRubyErrorMsg(String out, ScriptException e) {
         try {
-            if (out.lastIndexOf("<script>") == -1) return e.getMessage();
             String s = "";
             //s should begin with ruby-relevant error portion, NOT full java stack
             //which would be of little interest to the user and only obscures what matters
@@ -277,7 +267,6 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 }
             }
             s += linesOut;
-            assert(!s.trim().isEmpty()); //this should ensure we never get a blank message - e.getMessage at the very least
             return s;
         } catch (Exception e2) //if <script>: is not found in previous output, or other error occurs, default to exception's message
         {
@@ -428,9 +417,6 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     @Override
     protected void done() {
 
-        // Display any changes.
-        DatavyuView view = (DatavyuView) Datavyu.getView();
-        view.showSpreadsheet();
     }
 
     @Override
@@ -471,7 +457,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     if (len > 0) {
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
-                        outString.append(s);
+                        outString += s;
                         //System.out.println(s);
                         publish(s);
                     }
@@ -486,7 +472,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     if (len > 0) {
                         // Publish output from script in the console.
                         String s = new String(buf, 0, len);
-                        outString.append(s);
+                        outString += s;
                         //System.out.println(s);
                         publish(s);
                     }

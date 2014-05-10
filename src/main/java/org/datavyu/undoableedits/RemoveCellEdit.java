@@ -29,22 +29,24 @@ import java.util.List;
  * Undoable edit for removing cells.
  */
 public class RemoveCellEdit extends SpreadsheetEdit {
-    /** The logger for this class. */
+    /**
+     * The logger for this class.
+     */
     private static final Logger LOGGER = UserMetrix.getLogger(RemoveCellEdit.class);
 
     private List<CellTO> cellTOV;
-    
+
     /**
      * Constructor.
      *
      * @param cells The cells that are being removed.
      */
     public RemoveCellEdit(List<Cell> cells) {
-      super();
-      cellTOV = new ArrayList<CellTO>();
-      for (Cell cell : cells) {
-          cellTOV.add(new CellTO(cell, model.getVariable(cell)));
-      }
+        super();
+        cellTOV = new ArrayList<CellTO>();
+        for (Cell cell : cells) {
+            cellTOV.add(new CellTO(cell, model.getVariable(cell)));
+        }
     }
 
     @Override
@@ -72,24 +74,23 @@ public class RemoveCellEdit extends SpreadsheetEdit {
 
             for (Cell cell : var.getCells()) {
                 if (cell.getOnset() == cellTO.getOnset() &&
-                    cell.getOffset() == cellTO.getOffset() &&
-                    cell.getValueAsString().equals(cellTO.getValue())) {
+                        cell.getOffset() == cellTO.getOffset() &&
+                        cell.getValueAsString().equals(cellTO.getValue())) {
                     cellsToDelete.add(cell);
                     break;
                 }
             }
         }
-        new DeleteCellC(cellsToDelete);      
+        new DeleteCellC(cellsToDelete);
     }
 
     @Override
-    public void undo() throws CannotUndoException {  
+    public void undo() throws CannotUndoException {
         super.undo();
         LOGGER.event("Undoing remove cells");
         for (CellTO cellTO : cellTOV) {
             Variable var = model.getVariable(cellTO.getParentVariableName());
             var.addCell(cellTO.getCell());
         }
-        view.showSpreadsheet();
     }
 }
