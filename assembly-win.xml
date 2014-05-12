@@ -8,10 +8,6 @@
   <!-- Include the samples directory. -->
   <fileSets>
     <fileSet>
-      <directory>src/main/samples/</directory>
-      <outputDirectory>samples</outputDirectory>
-    </fileSet>
-    <fileSet>
       <directory>src/main/favourites/</directory>
       <outputDirectory>favourites</outputDirectory>
     </fileSet>
@@ -20,6 +16,7 @@
       <includes>
         <include>*.txt</include>
 	<include>*.html</include>
+	<include>*.url</include>
       </includes>
       <outputDirectory>/</outputDirectory>
     </fileSet>

@@ -458,6 +458,7 @@
 				<includes>
 					<include>*.txt</include>
 					<include>*.html</include>
+					<include>*.webloc</include>
 				</includes>
 			</fileSet>
                     </additionalResources>
