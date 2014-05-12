@@ -1588,14 +1588,6 @@ public final class DatavyuView extends FrameView
         return pc; //return value not used
     }
 
-    public ProjectController createNewSpreadsheet(String projectName) {
-        ProjectController pc = new ProjectController();
-        pc.setProjectName(projectName);
-        pc.setDatastore(DatastoreFactory.newDatastore());
-
-        return createNewSpreadsheet(pc);
-    }
-
     /**
      * Action for invoking a script.
      */
