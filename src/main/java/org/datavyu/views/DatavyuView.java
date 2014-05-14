@@ -352,11 +352,13 @@ public final class DatavyuView extends FrameView
                         baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
                     }
                     final File f = new File(baseDir + File.separator + path);
+                    System.out.println(baseDir + File.separator + path);
 
                     if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
                     } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
 
                         if (f.isFile()) {
+                            System.out.println(f.getAbsolutePath());
                             if (f.getName().toLowerCase().endsWith(".rb")) {
                                 runScript(f);
                             }
@@ -1184,7 +1186,13 @@ public final class DatavyuView extends FrameView
     }
 
     public String convertTreePathToString(TreePath tp) {
-        return tp.toString().replaceAll("\\]| |\\[|", "").replace(",", File.separator);
+        System.out.println(tp.toString());
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tp.getPath().length; i++) {
+            sb.append(File.separatorChar).append(tp.getPath()[i].toString());
+        }
+        String path = sb.toString();
+        return path;
     }
 
     /**
