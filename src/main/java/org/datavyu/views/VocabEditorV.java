@@ -393,64 +393,8 @@ public final class VocabEditorV extends DatavyuDialog {
         LOGGER.event("vocEd - apply");
 
         int errors = 0;
-        for (int index = 0; index < veViews.size(); index++) {
-            VocabElementV vev = veViews.get(index);
-//                if (vev.hasChanged()) {
-//                    VocabElement ve = vev.getModel();
-//                    // identify if any of the arguments have the same name
-//                    if (vev.getModel().hasDuplicateArgNames()){
-//                        errors = 2;
-//                    } else if (ve.getID() == DBIndex.INVALID_ID) {
-//                        if ((getLegacyDB().colNameInUse(ve.getName()) ||
-//                            (getLegacyDB().predNameInUse(ve.getName())))) {
-//                            errors = 1;
-//                        }else
-//                        // If the new vocab element is a matrix vocab element,
-//                        // we actually need to create a column.
-//                        if (ve.getClass() == MatrixVocabElement.class) {
-//                            Column.isValidColumnName(Datavyu.getProjectController().getLegacyDB().getDatabase(),
-//                                                     ve.getName());
-//                            DataColumn dc = new DataColumn(getLegacyDB(),
-//                                                           ve.getName(),
-//                                                           MatrixVocabElement.MatrixType.MATRIX);
-//                            DeprecatedVariable newVar = new DeprecatedVariable(dc, Argument.Type.MATRIX);
-//                            ds.addVariable(newVar);
-//
-//                            //long colID = db.addColumn(dc);
-//                            //dc = db.getDataColumn(colID);
-//                            long mveID = newVar.getLegacyVariable().getItsMveID();
-//                            MatrixVocabElement mve = getLegacyDB().getMatrixVE(mveID);
-//                            // Delete default formal argument.
-//                            mve.deleteFormalArg(0);
-//
-//                            // Add the formal arguments from the editor into
-//                            // the database vocab element.
-//                            for (int i = 0; i < ve.getNumFormalArgs(); i++) {
-//                                mve.appendFormalArg(ve.getFormalArgCopy(i));
-//                            }
-//                            mve.setVarLen(ve.getVarLen());
-//                            getLegacyDB().replaceVocabElement(mve);
-//                            mve = getLegacyDB().getMatrixVE(mve.getID());
-//                            vev.setModel(mve);
-//                            vev.setHasChanged(false);
-//                            // Otherwise just a predicate - add the new vocab
-//                            // element to the database.
-//                        } else {
-//                            //long id = getLegacyDB().addVocabElement(ve);
-//                            //vev.setModel(getLegacyDB().getVocabElement(id));
-//                            //vev.setHasChanged(false);
-//                        }
-//
-//                    } else {
-//                        //getLegacyDB().replaceVocabElement(ve);
-//                        //ve = getLegacyDB().getVocabElement(ve.getID());
-//                        //vev.setModel(ve);
-//                        //vev.setHasChanged(false);
-//                    }
-//                }
-        }
         updateDialogState();
-
+        Datavyu.getView().getSpreadsheetPanel().redrawCells();
 
         for (int i = veViews.size() - 1; i >= 0; i--) {
             VocabElementV vev = veViews.get(i);

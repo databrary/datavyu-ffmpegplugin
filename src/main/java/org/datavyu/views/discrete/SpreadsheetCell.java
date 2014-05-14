@@ -532,8 +532,8 @@ public class SpreadsheetCell extends JPanel
 
     @Override
     public void valueChange(final Value newValue) {
-        //dataPanel.setMatrix(newValue);
-        //revalidate();
+        dataPanel.setMatrix(newValue);
+        revalidate();
     }
 
     // *************************************************************************

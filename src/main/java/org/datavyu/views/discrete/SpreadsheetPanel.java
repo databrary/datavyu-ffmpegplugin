@@ -283,6 +283,14 @@ public final class SpreadsheetPanel extends JPanel
         hiddenVarsSpacer.setText(hiddenVars.getText());
     }
 
+    public void redrawCells() {
+        for (SpreadsheetColumn col : getColumns()) {
+            for (SpreadsheetCell cell : col.getCells()) {
+                cell.valueChange(cell.getCell().getValue());
+            }
+        }
+    }
+
     /**
      * Gets the single instance project associated with the currently running
      * with Datavyu.
