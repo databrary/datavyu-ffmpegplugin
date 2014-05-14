@@ -352,13 +352,11 @@ public final class DatavyuView extends FrameView
                         baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
                     }
                     final File f = new File(baseDir + File.separator + path);
-                    System.out.println(baseDir + File.separator + path);
 
                     if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
                     } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
 
                         if (f.isFile()) {
-                            System.out.println(f.getAbsolutePath());
                             if (f.getName().toLowerCase().endsWith(".rb")) {
                                 runScript(f);
                             }
@@ -874,9 +872,10 @@ public final class DatavyuView extends FrameView
                     projController.setLastSaveOption(OPFFilter.INSTANCE);
 
                     saveController.saveProject(new File(projController.getProjectDirectory(),
-                            projController.getProjectName() + ".opf"),
+                                    projController.getProjectName() + ".opf"),
                             projController.getProject(),
-                            projController.getDB());
+                            projController.getDB()
+                    );
 
                     projController.markProjectAsUnchanged();
                     projController.getDB().markAsUnchanged();
@@ -1067,9 +1066,10 @@ public final class DatavyuView extends FrameView
 
                 projController.updateProject();
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
-                        archiveName),
+                                archiveName),
                         projController.getProject(),
-                        projController.getDB());
+                        projController.getDB()
+                );
                 projController.setProjectDirectory(fc.getSelectedFile().getParent());
 
             }
@@ -1167,9 +1167,10 @@ public final class DatavyuView extends FrameView
                 projController.updateProject();
 
                 saveC.saveProject(new File(fc.getSelectedFile().getParent(),
-                        archiveName),
+                                archiveName),
                         projController.getProject(),
-                        projController.getDB());
+                        projController.getDB()
+                );
                 projController.getDB().setName(fc.getSelectedFile().getName());
                 projController.setProjectDirectory(fc.getSelectedFile().getParent());
 
@@ -1186,7 +1187,6 @@ public final class DatavyuView extends FrameView
     }
 
     public String convertTreePathToString(TreePath tp) {
-        System.out.println(tp.toString());
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < tp.getPath().length; i++) {
             sb.append(File.separatorChar).append(tp.getPath()[i].toString());
@@ -1578,7 +1578,7 @@ public final class DatavyuView extends FrameView
 
         return pc; //return value not used
     }
-    
+
     //no usages as of 5/5/2014
     public ProjectController createNewSpreadsheet(Datastore ds) {
         ProjectController pc = new ProjectController();
