@@ -16,7 +16,6 @@ package org.datavyu;
 
 import ca.beq.util.win32.registry.Win32Exception;
 import ch.randelshofer.quaqua.QuaquaManager;
-import com.sun.script.jruby.JRubyScriptEngineManager;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.controllers.project.ProjectController;
@@ -106,6 +105,8 @@ public final class Datavyu extends SingleFrameApplication
      * The desired minimum initial height.
      */
     private static final int INITMINY = 700;
+    
+    public static boolean scriptRunning = false;
 
     /**
      * Constant variable for the Datavyu main panel. This is so we can send
@@ -149,11 +150,6 @@ public final class Datavyu extends SingleFrameApplication
      * The scripting engine manager that we use with Datavyu.
      */
     private static ScriptEngineManager m2;
-
-    /**
-     * The JRuby scripting engine manager that we use with Datavyu.
-     */
-    private JRubyScriptEngineManager m;
 
     /**
      * The logger for this class.

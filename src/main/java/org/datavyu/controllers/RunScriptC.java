@@ -30,6 +30,8 @@ import javax.script.ScriptException;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import javax.script.ScriptContext;
+import org.jruby.embed.AttributeName;
 
 
 /**
@@ -160,6 +162,12 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     }
 
     private void runRubyScript(File scriptFile) {
+        if (Datavyu.scriptRunning)
+        {
+            JOptionPane.showMessageDialog(null, "Hey! One script at a time!");
+            return;
+        }
+        Datavyu.scriptRunning = true;
         outString = new StringBuilder("");
         ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
 
@@ -186,16 +194,18 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
                 rubyEngine.getContext().setWriter(consoleWriter);
                 rubyEngine.getContext().setErrorWriter(consoleWriter);
+                rubyEngine.getContext().setAttribute(AttributeName.TERMINATION.toString(), new Boolean(true),
+                        ScriptContext.ENGINE_SCOPE);
                 try{
                     rubyEngine.eval(lineReader);
                     //System.out.println("SCRIPT OVER");
                     consoleWriter.close();
                     
                     // Remove references.
-                    rubyEngine.put("db", null);
-                    rubyEngine.put("pj", null);
-                    rubyEngine.put("mixer", null);
-                    rubyEngine.put("viewers", null);
+                    //rubyEngine.put("db", null);
+                    //rubyEngine.put("pj", null);
+                    //rubyEngine.put("mixer", null);
+                    //rubyEngine.put("viewers", null);
 
                     consoleWriterAfter.write("\nScript completed successfully.");
                     consoleWriterAfter.flush();
@@ -230,7 +240,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             System.out.println("IOEXCEPTION!!!! " + ioe.getMessage());
             ioe.printStackTrace();
         }
-
+        Datavyu.scriptRunning = false;
     }
     
     private StringReader fileReaderIntoStringReader(FileReader fr) throws IOException

@@ -681,8 +681,6 @@
                     <classPath>
                         <mainClass>org.datavyu.Datavyu</mainClass>
                         <preCp>jna-3.4.1.jar</preCp>
-                        <preCp>jruby-engine-1.1.6.jar</preCp>
-                        <preCp>jruby-complete-1.6.5.jar</preCp>
                         <preCp>appframework-1.0.3.jar</preCp>
                         <preCp>snakeyaml-1.7.jar</preCp>
                         <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
@@ -720,12 +718,6 @@
             <groupId>net.java.dev</groupId>
             <artifactId>jna</artifactId>
             <version>3.4.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jruby</groupId>
-            <artifactId>jruby-engine</artifactId>
-            <version>1.1.6</version>
         </dependency>
 
         <dependency>
