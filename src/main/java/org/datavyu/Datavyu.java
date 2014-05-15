@@ -40,6 +40,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.EventObject;
 import java.util.Stack;
+import javax.script.ScriptEngineFactory;
 
 /**
  * The main class of the application.
@@ -150,6 +151,11 @@ public final class Datavyu extends SingleFrameApplication
      * The scripting engine manager that we use with Datavyu.
      */
     private static ScriptEngineManager m2;
+    
+    /**
+     * The scripting engine factory that we use with Datavyu
+     */
+    private static ScriptEngineFactory sef;
 
     /**
      * The logger for this class.
@@ -921,6 +927,9 @@ public final class Datavyu extends SingleFrameApplication
 
         // Init scripting engine
         m2 = new ScriptEngineManager();
+        
+        // Init ruby factory
+        sef = m2.getEngineByName("jruby").getFactory();
 
         // Initialize plugin manager
         PluginManager.getInstance();
@@ -1054,7 +1063,8 @@ public final class Datavyu extends SingleFrameApplication
      * Datavyu.
      */
     public static ScriptEngine getScriptingEngine() {
-        return m2.getEngineByName("jruby");
+        System.out.println("Returning: " + sef.getEngineName() + " " + sef.getEngineVersion());
+        return sef.getScriptEngine();
     }
 
     /**
