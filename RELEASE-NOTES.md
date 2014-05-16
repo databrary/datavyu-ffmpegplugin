@@ -14,6 +14,7 @@
 * The scripting output on PCs does not give as detailed error messages as it does on Macs
 * Double clicking on the file directory on the left does not always work. If it fails to do so, use the file and script menus to open spreadsheets and run scripts. 
 * Opening the code editor breaks temporal alignment
+* PC's with CPU's of less than 2.67 GHz have choppy video playback when playing at full speed
 
 # Datavyu 1.1.3 Pre-Release Notes
 ## 04/11/2014
