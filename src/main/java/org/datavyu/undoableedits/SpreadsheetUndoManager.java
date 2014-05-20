@@ -14,6 +14,7 @@
  */
 package org.datavyu.undoableedits;
 
+import org.datavyu.Datavyu;
 import org.datavyu.undoableedits.ChangeCellEdit.Granularity;
 
 import javax.swing.*;
@@ -39,6 +40,7 @@ public class SpreadsheetUndoManager extends UndoManager implements ListModel {
     @Override
     public synchronized void undo() throws CannotUndoException {
         super.undo();
+        Datavyu.getView().getSpreadsheetPanel().redrawCells();
     }
 
     @Override

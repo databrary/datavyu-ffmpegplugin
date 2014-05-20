@@ -23,11 +23,8 @@
 
 package org.datavyu.models.db;
 
-import java.awt.Component;
-import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
 
-import javax.swing.*;
 import java.util.*;
 
 /**
@@ -115,6 +112,10 @@ public final class DatavyuVariable implements Variable {
     public void addCell(Cell cell) {
         if (cell.getValue().getArgument() == this.getRootNode()) {
             cells.add(cell);
+            for(VariableListener vl : getListeners(getID()) ) {
+                vl.cellInserted(cell);
+            }
+            Datavyu.getProjectController().getDB().markDBAsChanged();
         }
     }
 
