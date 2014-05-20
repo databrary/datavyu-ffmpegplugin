@@ -98,10 +98,14 @@ public abstract class DatavyuValue implements Value, Serializable, Comparable<Da
     @Override
     public String toString() {
         if (this.isEmpty()) {
-            return "<" + arg.name + ">";
+            return "";
         } else {
             return value;
         }
+    }
+
+    public String getPlaceholderString() {
+        return "<" + arg.name + ">";
     }
     
     public String serialize() {

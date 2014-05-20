@@ -62,4 +62,6 @@ public interface Value {
     String toString();
     
     String serialize();
+
+    String getPlaceholderString();
 }

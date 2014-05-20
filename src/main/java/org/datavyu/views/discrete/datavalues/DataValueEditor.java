@@ -75,7 +75,11 @@ public abstract class DataValueEditor extends EditorComponent {
             modelType = MatrixValue.class;
         }
 
-        resetText(model.toString());
+        if(!model.isEmpty()) {
+            resetText(model.toString());
+        } else {
+            resetText(model.getPlaceholderString());
+        }
     }
 
     private void updateModelText() {
@@ -218,7 +222,7 @@ public abstract class DataValueEditor extends EditorComponent {
     @Override
     public void keyReleased(final KeyEvent e) {
         if (getText().length() == 0) {
-            setText(model.toString());
+            setText(model.getPlaceholderString());
             selectAll();
         }
         if (!canSubSelect() && hasFocus()) {
