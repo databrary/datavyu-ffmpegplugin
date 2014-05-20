@@ -22,16 +22,16 @@ import org.datavyu.models.db.*;
 import org.datavyu.util.FileFilters.RBFilter;
 import org.datavyu.views.ConsoleV;
 import org.datavyu.views.DatavyuFileChooser;
+import org.jruby.embed.AttributeName;
 import rcaller.RCaller;
 import rcaller.RCode;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
-import javax.script.ScriptContext;
-import org.jruby.embed.AttributeName;
 
 
 /**
@@ -188,8 +188,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 
                 rubyEngine.put("path", path);
 
+                FileReader scriptReader = new FileReader(scriptFile);
                 LineNumberReader lineReader = new LineNumberReader(
-                        fileReaderIntoStringReader(new FileReader(scriptFile)));
+                        fileReaderIntoStringReader(scriptReader));
                 //System.out.println(wholeScript);
 
                 rubyEngine.getContext().setWriter(consoleWriter);
@@ -210,6 +211,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     consoleWriterAfter.write("\nScript completed successfully.");
                     consoleWriterAfter.flush();
                     consoleWriterAfter.close();
+                    lineReader.close();
                 }
                 catch (ScriptException e) {
                     //System.out.println("LINE: " + lineReader.getLineNumber()); 
@@ -225,8 +227,10 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     System.out.println("Script Error");
 
                     LOGGER.error("Unable to execute script: ", e);
+
                 }
                 finally {
+                    lineReader.close();
                     lineReader = null;
                 }
             } catch (FileNotFoundException e) {
@@ -241,6 +245,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             ioe.printStackTrace();
         }
         Datavyu.scriptRunning = false;
+        Datavyu.getView().getSpreadsheetPanel().redrawCells();
     }
     
     private StringReader fileReaderIntoStringReader(FileReader fr) throws IOException
@@ -255,6 +260,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
             sb.append('\n'); //newlines in string are always '\n', never '\r'. Bug 193
             cur = br.readLine();
         }
+        br.close();
+        fr.close();
         return new StringReader(sb.toString());
     }
 
