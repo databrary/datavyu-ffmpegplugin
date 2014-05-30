@@ -732,7 +732,7 @@ public final class OpenDatabaseFileC {
         public void run()
         {
             Configuration config = Configuration.getInstance();
-            if(true || config.getColumnNameWarning())
+            if(config.getColumnNameWarning())
             {
              if (JOptionPane.showConfirmDialog(null, "The following: \n" + names + " is/are no longer a valid column name(s).\nColumn names should begin with letter, and underscore is the only permitted special character.\nIt is highly recommended you manually rename this column immediately or use the nifty script in favourites.\nContinue showing this warning in the future?", "Warning!", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION){
                  config.setColumnNameWarning(false);
