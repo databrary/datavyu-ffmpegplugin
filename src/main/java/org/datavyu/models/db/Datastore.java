@@ -34,6 +34,11 @@ public interface Datastore {
      * @return All the variables held in the datastore.
      */
     List<Variable> getAllVariables();
+    
+    /**
+     * @return All the variables held in the datastore that are visible and not hidden
+     */    
+    List<Variable> getVisibleVariables();
 
     /**
      * @return The variables selected in the datastore.

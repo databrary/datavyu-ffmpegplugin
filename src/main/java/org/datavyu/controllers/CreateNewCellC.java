@@ -144,15 +144,15 @@ public final class CreateNewCellC {
             //long sourceColumn = sourceCell.getItsColID();
             //Vector<Long> columnOrder = modelAsLegacyDB().getColOrderVector();
 
-            for (int i = 0; i < model.getAllVariables().size(); i++) {
+            for (int i = 0; i < model.getVisibleVariables().size(); i++) {
 
                 // Found the source column in the order column.
-                if (model.getAllVariables().get(i).equals(sourceColumn)) {
+                if (model.getVisibleVariables().get(i).equals(sourceColumn)) {
                     i = i + direction.getModifier();
 
                     // Only create the cell if a valid column exists.
-                    if ((i >= 0) && (i < model.getAllVariables().size())) {
-                        Variable var = model.getAllVariables().get(i);
+                    if ((i >= 0) && (i < model.getVisibleVariables().size())) {
+                        Variable var = model.getVisibleVariables().get(i);
                         newCell = var.createCell();
                         newCell.setOnset(sourceCell.getOnset());
                         newCell.setOffset(sourceCell.getOffset());

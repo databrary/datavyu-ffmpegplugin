@@ -82,6 +82,19 @@ public class DatavyuDatastore implements Datastore {
         Collections.sort(varList, VariableComparator);
         return varList;
     }
+    
+    public List<Variable> getVisibleVariables() {
+        //org.apache.commons.collections.CollectionUtils.filter? needs Predicate.
+        List<Variable> all = getAllVariables();
+        List<Variable> ans = new ArrayList<Variable>();
+        for(Variable v : all)
+        {
+            if(!v.isHidden()) {
+                ans.add(v);
+            }
+        }
+        return ans;
+    }
 
     @Override
     public List<Variable> getSelectedVariables() {

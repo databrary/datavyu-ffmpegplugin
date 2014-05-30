@@ -610,10 +610,10 @@ public final class SpreadsheetPanel extends JPanel
 
         for (Cell cell : datastore.getSelectedCells()) {
             for (int i = 0; i < datastore.getAllVariables().size(); i++) {
-                if (datastore.getAllVariables().get(i).equals(datastore.getVariable(cell))) {
+                if (datastore.getVisibleVariables().get(i).equals(datastore.getVariable(cell))) {
                     // We have at least one column to the left of the cells.
                     if (((i + dir.getModifier()) >= 0) && ((i + dir.getModifier())
-                            < datastore.getAllVariables().size())) {
+                            < datastore.getVisibleVariables().size())) {
                         result++;
                     }
 
