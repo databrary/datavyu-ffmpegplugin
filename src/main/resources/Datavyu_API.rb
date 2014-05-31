@@ -982,10 +982,11 @@ end
 
 def combine_columns(name, varnames)
     stationary_var = varnames[0]
-    for i in 1..varnames.length
+    for i in 1...varnames.length
         next_var = varnames[i]
-        create_mutually_exclusive(name, stationary_var, next_var, "")
+        var = create_mutually_exclusive(name, stationary_var, next_var)
     end
+	return var
 end
 
 def scan_for_bad_cells(col)
@@ -1059,7 +1060,7 @@ def fix_one_off_cells(col1, col2)
   end
 end
 def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2_argprefix=nil)
-    createMutuallyExclusive(name, var1name, var2name, var1_argprefix, var2_argprefix)
+    return createMutuallyExclusive(name, var1name, var2name, var1_argprefix, var2_argprefix)
 end
 def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_argprefix=nil)
     if var1name.class == "".class
