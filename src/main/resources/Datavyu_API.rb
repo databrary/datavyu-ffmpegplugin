@@ -1189,7 +1189,11 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
       time_changes.add(cell.offset)
     end
 
+
     time_changes = time_changes.to_a.sort
+	if $debug
+		p time_changes
+	end
     # p time_changes
 
 
@@ -1213,8 +1217,10 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
       for j in v1idx..var1.cells.length-1
         c = var1.cells[j]
         v1cell = nil
-        # p "---", "T1", t0, t1, c.onset, c.offset, "---"
-        if c.onset <= t0 and c.offset >= t1 or c.onset == t0 and c.offset >= t1
+        if $debug 
+			p "---", "T1", t0, t1, c.onset, c.offset, "---" 
+		end
+        if c.onset <= t0 and c.offset >= t1 and ( t1-t0 > 1 or c.onset==t0 and c.offset==t1 )
           v1cell = c
           v1idx = j
           # p t0, t1, "Found V1"
@@ -1230,7 +1236,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
         c = var2.cells[j]
         v2cell = nil
         # p "---", "T2", t0, t1, c.onset, c.offset, "---"
-        if c.onset <= t0 and c.offset >= t1 or c.onset == t0 and c.offset >= t1
+        if c.onset <= t0 and c.offset >= t1 and ( t1-t0 > 1 or c.onset==t0 and c.offset==t1 )
           v2cell = c
           v2idx = j
           # p t0, t1, "Found V2"
@@ -1244,7 +1250,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
 
       if v1cell != nil or v2cell != nil 
         mutex_cell = mutex.create_cell
-
+		
         mutex_cell.change_arg("onset", t0)
         mutex_cell.change_arg("offset", t1)
         fillMutexCell(v1cell, v2cell, mutex_cell, mutex, var1_argprefix, var2_argprefix)
