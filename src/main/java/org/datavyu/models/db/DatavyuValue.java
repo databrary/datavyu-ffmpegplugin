@@ -97,6 +97,7 @@ public abstract class DatavyuValue implements Value, Serializable, Comparable<Da
 
     @Override
     public String toString() {
+        System.out.println(value);
         if (this.isEmpty()) {
             return "";
         } else {

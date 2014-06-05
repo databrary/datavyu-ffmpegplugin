@@ -18,10 +18,13 @@ import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Value;
 import org.datavyu.models.db.Variable;
+import org.datavyu.undoableedits.ChangeCellEdit;
+import org.datavyu.undoableedits.ChangeValCellEdit;
 import org.datavyu.views.discrete.EditorComponent;
 import org.datavyu.views.discrete.EditorTracker;
 
 import javax.swing.*;
+import javax.swing.undo.UndoableEdit;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -38,6 +41,8 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
      * The parent cell for this JPanel.
      */
     private Cell parentCell = null;
+
+    private String oldValue = "";
 
     /**
      * All the editors that make up the representation of the data.
@@ -163,6 +168,7 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         // We need to remember which cell should be duplicated if the user
         // presses the enter key or selects New Cell from the menu.
         if (parentCell != null) {
+            oldValue = parentCell.getValueAsString();
             // method names don't reflect usage - we didn't really create
             // this column just now.
             Variable v = Datavyu.getProjectController().getDB().getVariable(parentCell);
@@ -174,6 +180,10 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
     @Override
     public void focusLost(final FocusEvent fe) {
         // do nothing
+        if(!parentCell.getValueAsString().equals(oldValue)) {
+            UndoableEdit edit = new ChangeValCellEdit(parentCell, oldValue, ChangeCellEdit.Granularity.COARSEGRAINED);
+            Datavyu.getView().getUndoSupport().postEdit(edit);
+        }
     }
 
     // *************************************************************************

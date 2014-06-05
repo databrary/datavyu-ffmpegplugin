@@ -132,4 +132,17 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
             ((DatavyuNominalValue) v).setIndex(i);
         }
     }
+
+    @Override
+    public void set(String value) {
+        System.out.println(value);
+        String[] args = value.substring(1, value.length()-1).split(",");
+        List<Value> values = getArguments();
+        if(args.length != values.size()) {
+            System.err.println("Error: Arg list and value list are different sizes, cannot undo.");
+        }
+        for(int i = 0; i < args.length; i++) {
+            values.get(i).set(args[i]);
+        }
+    }
 }
