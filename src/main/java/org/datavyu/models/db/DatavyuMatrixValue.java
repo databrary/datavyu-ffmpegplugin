@@ -135,7 +135,6 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
 
     @Override
     public void set(String value) {
-        System.out.println(value);
         String[] args = value.substring(1, value.length()-1).split(",");
         List<Value> values = getArguments();
         if(args.length != values.size()) {
