@@ -42,4 +42,8 @@ public final class StringUtils {
         // Remove all control characters
         return resultSB.toString().replaceAll("[\u0000-\u0001]", "");
     }
+    
+    public static String escapeCSVQuotes(String s){ //for actual CSV export, not our misnomer "CSV"s
+        return "\"" + s.replaceAll("\"", "\"\"") + "\"";
+    }
 }

@@ -266,7 +266,7 @@ public final class ExportDatabaseFileC {
                         row.append(",");
                         if (v.getRootNode().type == Argument.Type.MATRIX) {
                             for (int k = 0; k < v.getRootNode().childArguments.size(); k++) {
-                                row.append(c.getMatrixValue(k).toString());
+                                row.append(StringUtils.escapeCSVQuotes(c.getMatrixValue(k).toString()));
                                 row.append(",");
                             }
                         }
