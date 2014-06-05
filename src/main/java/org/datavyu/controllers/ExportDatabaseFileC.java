@@ -270,6 +270,10 @@ public final class ExportDatabaseFileC {
                                 row.append(",");
                             }
                         }
+                        else{
+                            row.append(StringUtils.escapeCSVQuotes(c.getValue().toString()));
+                            row.append(",");
+                        }
                     } else {
                         // Print a placeholder: we are out of cells
                         for (int k = 0; k < arglengths.get(j); k++) {
