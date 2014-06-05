@@ -936,6 +936,7 @@ public final class DatavyuView extends FrameView
 //	jd.addChoosableFileFilter(FrameCSVFilter.INSTANCE);
 
         jd.addChoosableFileFilter(CellCSVFilter.INSTANCE);
+        jd.setFileFilter(CellCSVFilter.INSTANCE);
 
         int result = jd.showSaveDialog(getComponent());
 
