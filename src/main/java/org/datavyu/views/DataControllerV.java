@@ -2135,4 +2135,8 @@ public final class DataControllerV extends DatavyuDialog
             handleRegionChanged(e);
         }
     }
+    
+    public float getCurrentFPS(){
+        return playbackModel.getCurrentFPS();
+    }
 }

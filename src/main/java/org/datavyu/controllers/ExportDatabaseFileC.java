@@ -57,7 +57,6 @@ public final class ExportDatabaseFileC {
             PrintStream ps = new PrintStream(fos);
 
             List<Variable> variables = ds.getAllVariables();
-            Collections.sort(variables, new org.datavyu.util.VariableSort());
 
             ArrayList<List<Cell>> cellCache = new ArrayList<List<Cell>>();
             int[] currentIndex = new int[variables.size()];
@@ -92,8 +91,15 @@ public final class ExportDatabaseFileC {
             }
 
             // Now that we have the first and last time, we loop over it using
-            // an assumed 30fps framerate. TODO: Make this support other FRs
+            // playback model's framerate as step size. Fallback is 30.0
             double framerate = 30.0;
+            try{
+                float fromDVC = Datavyu.getDataController().getCurrentFPS();
+                if (fromDVC > 1.0) framerate = Datavyu.getDataController().getCurrentFPS();
+            }
+            catch(Exception e) {
+                framerate = 30.0;
+            }
             long current_time = first_time;
 
             // Print header
@@ -113,6 +119,7 @@ public final class ExportDatabaseFileC {
                 } else {
                     header += "," + v.getName() + ".value";
                 }
+                header += ',';
             }
             header = header.trim();
 
@@ -125,8 +132,10 @@ public final class ExportDatabaseFileC {
                 for (int i = 0; i < variables.size(); i++) {
                     Cell c = cellCache.get(i).get(currentIndex[i]);
                     if (current_time > c.getOffset()) {
+                        
                         for (int j = currentIndex[i]; j < cellCache.get(i).size(); j++) {
-                            if (current_time <= c.getOnset()) {
+                            Cell nextCell = cellCache.get(i).get(j);
+                            if (current_time >= nextCell.getOnset()) {
                                 currentIndex[i] = j;
                             }
                         }
@@ -140,12 +149,12 @@ public final class ExportDatabaseFileC {
                 for (int i = 0; i < variables.size(); i++) {
                     Cell cell = cellCache.get(i).get(currentIndex[i]);
 
-                    if (cell.getOnset() >= current_time && cell.getOffset() <= current_time) {
+                    if (cell.getOnset() <= current_time && cell.getOffset() >= current_time) {
 
                         Value value = cell.getValue();
 
                         // Print ordinal, onset, offset
-                        row = Integer.toString(i) + "," +
+                        row += Integer.toString(currentIndex[i]+1) + "," +
                                 Long.toString(cell.getOnset()) + "," +
                                 Long.toString(cell.getOffset());
 
@@ -156,12 +165,14 @@ public final class ExportDatabaseFileC {
                             for (Value v : mv.getArguments()) {
                                 // Loop over each value and print it with a comma
                                 // seperator
-                                row += "," + v.toString();
+                                row += "," + StringUtils.escapeCSVQuotes(v.toString());
                             }
                         } else {
                             // Otherwise just print the single argument
-                            row += "," + cell.getValue().toString();
+                            row += "," + StringUtils.escapeCSVQuotes(cell.getValue().toString());
                         }
+                        row += ",";
+                        
                     } else {
                         // Figure out what to print if we don't have a cell here
                         Value value = cell.getValue();
@@ -182,10 +193,11 @@ public final class ExportDatabaseFileC {
                             // Otherwise just print the single argument
                             row += ",";
                         }
+                        row += ",";
                     }
                 }
                 ps.println(row);
-                current_time += framenum * framerate;
+                current_time += 1000.0 / framerate;
                 ++framenum;
             }
 

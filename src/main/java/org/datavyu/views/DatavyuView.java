@@ -165,6 +165,7 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem runScriptMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem exportMenuItem;
+    private javax.swing.JMenuItem exportByFrameMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenu scriptMenu;
     private ArrayList scriptMenuPermanentsList;
@@ -932,9 +933,6 @@ public final class DatavyuView extends FrameView
     public void exportFile() {
         DatavyuFileChooser jd = new DatavyuFileChooser();
 
-        // Not fully implemented
-//	jd.addChoosableFileFilter(FrameCSVFilter.INSTANCE);
-
         jd.addChoosableFileFilter(CellCSVFilter.INSTANCE);
         jd.setFileFilter(CellCSVFilter.INSTANCE);
 
@@ -965,16 +963,56 @@ public final class DatavyuView extends FrameView
             }
             File f = new File(fc.getSelectedFile().getParent(), dbFileName);
 
-            if (filter instanceof FrameCSVFilter) {
-                exportC.exportByFrame(dbFileName, projController.getDB());
-            } else if (filter instanceof CellCSVFilter) {
-                exportC.exportAsCells(dbFileName, projController.getDB());
-            }
+            exportC.exportAsCells(dbFileName, projController.getDB());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Action for exporting the current project as a particular file.
+     */
+    @Action
+    public void exportFileByFrame() {
+        DatavyuFileChooser jd = new DatavyuFileChooser();
+
+        jd.addChoosableFileFilter(FrameCSVFilter.INSTANCE);
+        jd.setFileFilter(FrameCSVFilter.INSTANCE);
+
+        int result = jd.showSaveDialog(getComponent());
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            exportToCSVByFrame(jd);
+        }
+    }
+    
+    private void exportToCSVByFrame(final DatavyuFileChooser fc) {
+        ProjectController projController = Datavyu.getProjectController();
+        projController.updateProject();
+
+        try {
+            ExportDatabaseFileC exportC = new ExportDatabaseFileC();
+
+            FileFilter filter = fc.getFileFilter();
+            String dbFileName = fc.getSelectedFile().getPath();
+            if (!dbFileName.endsWith(".csv")) {
+                dbFileName = dbFileName.concat(".csv");
+            }
+
+            // Only save if the project file does not exists or if the user
+            // confirms a file overwrite in the case that the file exists.
+            if (!canSave(fc.getSelectedFile().getParent(), dbFileName)) {
+                return;
+            }
+            File f = new File(fc.getSelectedFile().getParent(), dbFileName);
+
+            exportC.exportByFrame(dbFileName, projController.getDB());
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }    
+    
     private boolean canSave(final String directory, final String file) {
         File newFile = new File(directory, file);
 
@@ -1847,6 +1885,7 @@ public final class DatavyuView extends FrameView
         saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
         exportMenuItem = new javax.swing.JMenuItem();
+        exportByFrameMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator fileMenuSeparator = new javax.swing.JSeparator();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         spreadsheetMenu = new javax.swing.JMenu();
@@ -1971,6 +2010,10 @@ public final class DatavyuView extends FrameView
         exportMenuItem.setName("exportMenuItem");
         fileMenu.add(exportMenuItem);
 
+        exportByFrameMenuItem.setAction(actionMap.get("exportFileByFrame"));
+        exportByFrameMenuItem.setName("exportByFrameMenuItem");
+        fileMenu.add(exportByFrameMenuItem); //uncomment this once it works right!
+        
         fileMenuSeparator.setName("fileMenuSeparator");
         if (Datavyu.getPlatform() != Platform.MAC) {
             fileMenu.add(fileMenuSeparator);
