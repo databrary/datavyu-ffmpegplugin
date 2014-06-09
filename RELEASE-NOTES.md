@@ -1,4 +1,4 @@
-# Datavyu 1.1.7 Pre-Release Notes
+# Datavyu 1.1.8 Pre-Release Notes
 ## 06/9/2014
 
 ### Additions
