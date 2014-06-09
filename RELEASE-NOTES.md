@@ -1,4 +1,25 @@
 # Datavyu 1.1.7 Pre-Release Notes
+## 06/9/2014
+
+### Additions
+* Undo is fully implemented to the value level
+* Frame-by-frame export is now available in the drop down menu
+
+
+### Bug Fixes
+* Exporting from the drop down menu works with text columns and cells that contain commas
+* The warning message for columns with special characters will either continue showing or not show again when you open a spreadsheet, depending on your preference
+* Double clicking on the file directory is fixed
+* Scripting and the code editor no longer break temporal alignment
+* Script mutex works
+* Scripting with single characters no longer causes an exception
+* Codes left uncoded are evaluated as empty strings
+
+
+### Known Issues
+* Dragging the application to the desktop upon download causes the favorites folder to lose its contents. To use the scripts in this folder, go to your downloads.
+
+# Datavyu 1.1.7 Pre-Release Notes
 ## 05/9/2014
 
 ### Additions
