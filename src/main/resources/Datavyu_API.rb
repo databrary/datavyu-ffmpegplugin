@@ -444,7 +444,7 @@ end
 # Arguments:
 # => name (required): The Datavyu name of the variable being retrieved
 # Returns:
-# => A Ruby object representation of the variable inside Datavyu.
+# => A Ruby object representation of the variable inside Datavyu or nil if the named column does not exist.
 # Usage:
 #       trial = getVariable("trial")
 #-------------------------------------------------------------------
@@ -457,6 +457,7 @@ def getVariable(name)
    var = $db.getVariable(name)
    if (var == nil) 
     printNoColumnFoundWarning(name.to_s)
+    return nil
    end
 
    # Convert each cell into an array and store in an array of arrays
