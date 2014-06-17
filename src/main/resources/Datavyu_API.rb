@@ -1690,16 +1690,17 @@ def transfer_columns(db1, db2, remove, *varnames)
     transferVariable(db1, db2, remove, *varnames)
 end
 def transferVariable(db1, db2, remove, *varnames)
-# If varnames was specified as a hash, flatten it to an array
+  # Save the current $db and $proj global variables
+  saved_db,saved_proj = $db,$proj
+
+  # If varnames was specified as a hash, flatten it to an array
   varnames.flatten!
 
   # Display args when debugging
-  if $debug
-    puts "="*20
-    puts "#{__method__} called with following args:"
-    puts db1,db2,delete,varnames
-    puts "="*20
-  end
+  print_debug("="*20)
+  print_debug("#{__method__} called with following args:")
+  print_debug(db1,db2,delete,varnames)
+  print_debug("="*20)
 
   # Handle degenerate case of same source and destination
   if db1==db2
@@ -1716,7 +1717,7 @@ def transferVariable(db1, db2, remove, *varnames)
       if !File.readable?(db1path)
         raise "Error! File not readable : #{db1}"
       end
-      puts "Loading source database from file : #{db1path}" if $debug
+      print_debug("Loading source database from file : #{db1path}")
       from_db,from_proj = loadDB(db1path)
     else
       from_db,from_proj = $db,$proj
@@ -1736,7 +1737,7 @@ def transferVariable(db1, db2, remove, *varnames)
       if !File.writable?(db2path)
         raise "Error! File not writable : #{db2}"
       end
-      puts "Loading destination database from file : #{db2path}" if $debug
+      print_debug("Loading destination database from file : #{db2path}")
       to_db,to_proj = loadDB(db2path)
       #$db,$proj = loadDB(db2path)
     else
@@ -1752,7 +1753,7 @@ def transferVariable(db1, db2, remove, *varnames)
   $db,$pj = from_db,from_proj
 
   # Construct a hash to store columns and cells we are transferring
-  puts "Fetching columns..." if $debug
+  print_debug("Fetching columns...")
   begin
     col_map = Hash.new
     cell_map = Hash.new
@@ -1764,7 +1765,7 @@ def transferVariable(db1, db2, remove, *varnames)
       end
       col_map[col] = c
       cell_map[col] = c.cells
-      puts "Read column : #{col.to_s}" if $debug
+      print_debug("Read column : #{col.to_s}")
     end
   end
 
@@ -1784,7 +1785,7 @@ def transferVariable(db1, db2, remove, *varnames)
         newvar.make_new_cell2(c)
       end
       setVariable(key.to_s,newvar)
-      puts "Wrote column : #{key.to_s} with #{newvar.cells.length} cells" if $debug
+      print_debug("Wrote column : #{key.to_s} with #{newvar.cells.length} cells")
     end
   rescue StandardError => e
     puts "Failed trying to write column #{col}"
@@ -1807,6 +1808,9 @@ def transferVariable(db1, db2, remove, *varnames)
 
     saveDB(db1path) if db1path!=""
   end
+
+  # Restore the saved database and project globals
+  $db,$proj = saved_db,saved_proj
 
   puts "Transfer completed successfully!"
 end
