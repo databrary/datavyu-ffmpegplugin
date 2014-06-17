@@ -1770,6 +1770,9 @@ def transferVariable(db1, db2, remove, *varnames)
         cell.arglist.each{ |x|
           c.change_arg(x,cell.get_arg(x))
         }
+        c.ordinal = cell.ordinal
+        c.onset = cell.onset
+        c.offset = cell.offset
       end
       setVariable(key.to_s,newvar)
       print_debug("Wrote column : #{key.to_s} with #{newvar.cells.length} cells")
