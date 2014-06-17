@@ -364,23 +364,6 @@ class RVariable
    def create_cell()
      make_new_cell()
    end
-  #--------------------------------------------------------------------
-  # Method name : make_new_cell2 
-  # Function: Add a new cell to the column by cloning a given cell.
-  # Arguments:
-  # => cell : the cell whose argument values will be inserted into the new cell.
-  # WARNING: Not for general purpose use as vocabulary can become corrupt if used improperly.
-  #--------------------------------------------------------------------
-  def make_new_cell2(cell)
-    c = RCell.new
-    c.onset = cell.onset
-    c.offset = cell.offset
-    c.ordinal = cell.ordinal
-    c.set_args(cell.argvals,@arglist)
-    c.parent = @name
-    @cells << c
-    return c
-  end
 
   def sort_cells()
     cells.sort! { |a,b| a.onset <=> b.onset }
@@ -1781,8 +1764,12 @@ def transferVariable(db1, db2, remove, *varnames)
 
       # Construct a new variable and add all associated cells
       newvar = createVariable(key.to_s,arglist)
-      for c in cells
-        newvar.make_new_cell2(c)
+      for cell in cells
+        c = newvar.make_new_cell()
+        # Clone the existing cell arguments to the new cell.
+        cell.arglist.each{ |x|
+          c.change_arg(x,cell.cell.get_arg(x))
+        }
       end
       setVariable(key.to_s,newvar)
       print_debug("Wrote column : #{key.to_s} with #{newvar.cells.length} cells")
