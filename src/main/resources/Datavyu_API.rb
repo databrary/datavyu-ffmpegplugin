@@ -1768,7 +1768,7 @@ def transferVariable(db1, db2, remove, *varnames)
         c = newvar.make_new_cell()
         # Clone the existing cell arguments to the new cell.
         cell.arglist.each{ |x|
-          c.change_arg(x,cell.cell.get_arg(x))
+          c.change_arg(x,cell.get_arg(x))
         }
       end
       setVariable(key.to_s,newvar)
