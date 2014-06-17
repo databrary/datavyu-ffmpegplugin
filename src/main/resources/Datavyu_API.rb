@@ -365,9 +365,9 @@ class RVariable
      make_new_cell()
    end
 
-   def sort_cells()
-      cells.sort! { |a,b| a.onset <=> b.onset }
-   end
+  def sort_cells()
+    cells.sort! { |a,b| a.onset <=> b.onset }
+  end
 
 
    #-------------------------------------------------------------------
@@ -1673,60 +1673,136 @@ def transfer_columns(db1, db2, remove, *varnames)
     transferVariable(db1, db2, remove, *varnames)
 end
 def transferVariable(db1, db2, remove, *varnames)
-   print_debug "Transfering the following columns from " + db1 + " to " + db2 + ":"
-   print_debug varnames
+  # Save the current $db and $proj global variables
+  saved_db,saved_proj = $db,$proj
 
-   if remove
-      print_debug "WARNING: These columns will be deleted from " + db1
-   end
+  # If varnames was specified as a hash, flatten it to an array
+  varnames.flatten!
 
-   if db1 == ""
-      from_db = $db
-      from_pj = $pj
-   else
-      from_db, from_pj = load_db(db1)
-   end
+  # Display args when debugging
+  print_debug("="*20)
+  print_debug("#{__method__} called with following args:")
+  print_debug(db1,db2,remove,varnames)
+  print_debug("="*20)
 
-   if db2 == ""
-      to_db = $db
-      to_pj = $pj
-   else
-      to_db, to_pj = load_db(db2)
-   end
+  # Handle degenerate case of same source and destination
+  if db1==db2
+    puts "Warning: source and destination are identical.  No changes made."
+    return nil
+  end
 
-   # Get from DB1
-   $db, $pj = from_db, from_pj
-   vars_to_trans = Array.new
-   for v in varnames
-      vars_to_trans << getVariable(v)
-   end
-
-   # Transfer to DB2
-   $db, $pj = to_db, to_pj
-   for i in 0...vars_to_trans.length
-      setVariable(varnames[i],vars_to_trans[i])
-   end
-   if db2 != ""
-      print_debug "Saving " + db2
-      save_db(db2)
-   end
-
-   # Removing columns should be the last thing we do in case anything goes wrong
-   # We don't want to lose a column for any reason.
-   if remove
-      $db, $pj = from_db, from_pj
-      if remove
-         for v in varnames
-            delete_column(v)
-         end
+  # Set the source database, loading from file if necessary.
+  # Raises file not found error and returns nil if source database does not exist.
+  db1path = ""
+  begin
+    if db1!=""
+      db1path = File.expand_path(db1)
+      if !File.readable?(db1path)
+        raise "Error! File not readable : #{db1}"
       end
-      if db1 != ""
-         print_debug "Saving " + db1
-         save_db(db1)
-      end
-   end
+      print_debug("Loading source database from file : #{db1path}")
+      from_db,from_proj = loadDB(db1path)
+    else
+      from_db,from_proj = $db,$proj
+    end
+  rescue StandardError => e
+    puts e.message
+    puts e.backtrace
+    return nil
+  end
 
-   print_debug "Columns transferred successfully."
+  # Set the destination database, loading from file if necessary.
+  # Raises file not found error and returns nil if destination database does not exist.
+  db2path = ""
+  begin
+    if db2!=""
+      db2path = File.expand_path(db2)
+      if !File.writable?(db2path)
+        raise "Error! File not writable : #{db2}"
+      end
+      print_debug("Loading destination database from file : #{db2path}")
+      to_db,to_proj = loadDB(db2path)
+      #$db,$proj = loadDB(db2path)
+    else
+      to_db,to_proj = $db,$proj
+    end
+  rescue StandardError => e
+    puts e.message
+    puts e.backtrace
+    return nil
+  end
+
+  # Set working database to source database to prepare for reading
+  $db,$pj = from_db,from_proj
+
+  # Construct a hash to store columns and cells we are transferring
+  print_debug("Fetching columns...")
+  begin
+    col_map = Hash.new
+    cell_map = Hash.new
+    for col in varnames
+      c = getColumn(col.to_s)
+      if c.nil?
+        puts "Warning: column #{c} not found! Skipping..."
+        next
+      end
+      col_map[col] = c
+      cell_map[col] = c.cells
+      print_debug("Read column : #{col.to_s}")
+    end
+  end
+
+  # Set working database to destination database to prepare for writing
+  $db,$pj = to_db,to_proj
+
+  # Go through the hashmaps and reconstruct the columns
+  begin
+    for key in col_map.keys
+      col = col_map[key]
+      cells = cell_map[key]
+      arglist = col.arglist
+
+      # Construct a new variable and add all associated cells
+      newvar = createVariable(key.to_s,arglist)
+      for cell in cells
+        c = newvar.make_new_cell()
+        # Clone the existing cell arguments to the new cell.
+        cell.arglist.each{ |x|
+          c.change_arg(x,cell.get_arg(x))
+        }
+        c.ordinal = cell.ordinal
+        c.onset = cell.onset
+        c.offset = cell.offset
+      end
+      setVariable(key.to_s,newvar)
+      print_debug("Wrote column : #{key.to_s} with #{newvar.cells.length} cells")
+    end
+  rescue StandardError => e
+    puts "Failed trying to write column #{col}"
+    puts e.message
+    puts e.backtrace
+    return nil
+  end
+
+  # Save the database to file if applicable
+  saveDB(db2path) if db2path!=""
+
+  # Final step: take care of deleting columns from source database if option is set.
+  if remove
+    $db,$pj = from_db,from_proj
+
+    # Use our hashmap since it takes care of improper column names (returned nil from getColumn())
+    col_map.keys.each{ |x|
+      delete_column(x.to_s)
+    }
+
+    saveDB(db1path) if db1path!=""
+  end
+
+  # Restore the saved database and project globals
+  $db,$proj = saved_db,saved_proj
+
+  puts "Transfer completed successfully!"
 end
 
 
