@@ -1682,7 +1682,7 @@ def transferVariable(db1, db2, remove, *varnames)
   # Display args when debugging
   print_debug("="*20)
   print_debug("#{__method__} called with following args:")
-  print_debug(db1,db2,delete,varnames)
+  print_debug(db1,db2,remove,varnames)
   print_debug("="*20)
 
   # Handle degenerate case of same source and destination
