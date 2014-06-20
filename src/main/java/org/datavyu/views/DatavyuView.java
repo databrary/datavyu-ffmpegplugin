@@ -72,6 +72,7 @@ public final class DatavyuView extends FrameView
      * The directory holding a users favourite scripts.
      */
     static final String FAV_DIR = "favourites";
+    String fav_dir_config = Configuration.getInstance().getFavouritesFolder();
 
     // Variable for the amount to raise the font size by when zooming.
     public static final int ZOOM_INTERVAL = 2;
@@ -296,7 +297,7 @@ public final class DatavyuView extends FrameView
         fileTree = new FileSystemTreeModel(new File("."));
         fileDrawer = new JTree(fileTree);
 
-        favTree = new FileSystemTreeModel(new File(DatavyuView.FAV_DIR));
+        favTree = new FileSystemTreeModel(new File(fav_dir_config));
         favDrawer = new JTree(favTree);
 
         fileDrawer.setCellRenderer(new DefaultTreeCellRenderer() {
@@ -2385,13 +2386,13 @@ public final class DatavyuView extends FrameView
         }
 
         // Get list of favourite scripts from the favourites folder.
-        File favouritesDir = new File(FAV_DIR);
+        File favouritesDir = new File(fav_dir_config);
         String[] children = favouritesDir.list();
 
         if (children != null) {
 
             for (String s : children) {
-                File f = new File(FAV_DIR + File.separatorChar + s);
+                File f = new File(fav_dir_config + File.separatorChar + s);
                 scriptMenu.add(createScriptMenuItemFromFile(f));
             }
         }

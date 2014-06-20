@@ -113,6 +113,8 @@ public final class ConfigProperties implements Serializable {
      * true if prereleases are preferred
      */
     private boolean prereleasePreference;
+    
+    private String favouritesFolder = "favourites";
 
     /**
      * Default constructor.
@@ -378,5 +380,13 @@ public final class ConfigProperties implements Serializable {
      */
     public void setPrereleasePreference(boolean preference) {
         prereleasePreference = preference;
+    }
+    
+    public String getFavouritesFolder(){
+        return favouritesFolder;
+    }
+    
+    public void setFavouritesFolder(String path){
+        favouritesFolder = path;
     }
 }

@@ -470,6 +470,18 @@ public final class Configuration {
         properties.setColumnNameWarning(b);
         save();
     }
+    
+    public void setFavouritesFolder(final String path)
+    {
+        System.out.println(path);
+        properties.setFavouritesFolder(path);
+        save();
+    }
+    
+    public String getFavouritesFolder()
+    {
+        return properties.getFavouritesFolder();
+    }
 
     /**
      * @return the prerelease preference
