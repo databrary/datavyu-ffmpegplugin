@@ -347,7 +347,7 @@ public final class DatavyuView extends FrameView
                     String path = convertTreePathToString(selPath);
                     String baseDir;
                     if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
-                        baseDir = ".";
+                        baseDir = new File(System.getProperty("user.home")).getParent();
                     } else {
                         baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
                     }
@@ -355,12 +355,12 @@ public final class DatavyuView extends FrameView
 
                     if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
                     } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
-
                         if (f.isFile()) {
                             if (f.getName().toLowerCase().endsWith(".rb")) {
                                 runScript(f);
                             }
                             if (f.getName().toLowerCase().endsWith(".opf")) {
+                                System.out.println(f.getAbsolutePath());
                                 open(f);
                             }
                         }
@@ -664,7 +664,7 @@ public final class DatavyuView extends FrameView
 
                     String dir = sp.getProjectController().getProject().getProjectDirectory();
                     if (dir == null) {
-                        dir = ".";
+                        dir = System.getProperty("user.home");
                     }
                     fileTree = new FileSystemTreeModel(new File(dir));
                     fileDrawer.setModel(fileTree);
