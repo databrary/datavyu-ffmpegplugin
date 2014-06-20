@@ -164,6 +164,7 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem resetZoomMenuItem;
     private javax.swing.JMenu runRecentScriptMenu;
     private javax.swing.JMenuItem runScriptMenuItem;
+    private javax.swing.JMenuItem setFavouritesMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem exportMenuItem;
     private javax.swing.JMenuItem exportByFrameMenuItem;
@@ -1664,6 +1665,29 @@ public final class DatavyuView extends FrameView
             LOGGER.error("Unable run script", e);
         }
     }
+    
+    /**
+     * Action for setting the favourites folder
+     */
+    @Action
+    public void setFavouritesFolder() {
+        try {
+            Configuration config = Configuration.getInstance();
+            String val = JOptionPane.showInputDialog("Current favourites folder is: " + config.getFavouritesFolder()
+                + "\n\n" + "Enter new path:");
+            if(!(val == null))
+            {
+                System.out.println("SET THAT FOLDER to " + val);
+                config.setFavouritesFolder(val);
+                fav_dir_config = val;
+                populateFavourites(null);
+                favTree = new FileSystemTreeModel(new File(fav_dir_config));
+                favDrawer.setModel(favTree);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Unable set folder", e);
+        }
+    }    
 
     /**
      * Action for removing columns from the database.
@@ -1924,6 +1948,7 @@ public final class DatavyuView extends FrameView
         videoConverterMenuItem = new javax.swing.JMenuItem();
         scriptMenu = new javax.swing.JMenu();
         runScriptMenuItem = new javax.swing.JMenuItem();
+        setFavouritesMenuItem = new javax.swing.JMenuItem();
         runRecentScriptMenu = new javax.swing.JMenu();
         recentScriptsHeader = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JSeparator();
@@ -2243,6 +2268,11 @@ public final class DatavyuView extends FrameView
         scriptMenu.add(runRecentScriptMenu);
         scriptMenuPermanentsList.add("runRecentScriptMenu");
 
+        setFavouritesMenuItem.setName("setFavouritesMenuItem");
+        setFavouritesMenuItem.setAction(actionMap.get("setFavouritesFolder"));
+        scriptMenu.add(setFavouritesMenuItem);
+        scriptMenuPermanentsList.add("setFavouritesMenuItem");
+        
         jSeparator4.setName("jSeparator4");
         scriptMenu.add(jSeparator4);
         scriptMenuPermanentsList.add("jSeparator4");
@@ -2253,8 +2283,7 @@ public final class DatavyuView extends FrameView
         scriptMenuPermanentsList.add("favScripts");
 
         menuBar.add(scriptMenu);
-
-
+        
         helpMenu.setAction(actionMap.get("showVariableList"));
         helpMenu.setName("helpMenu");
 
