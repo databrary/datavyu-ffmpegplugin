@@ -917,6 +917,7 @@ public final class DatavyuView extends FrameView
         if (result == JFileChooser.APPROVE_OPTION) {
             save(jd);
         }
+        updateTitle();
     }
 
 
