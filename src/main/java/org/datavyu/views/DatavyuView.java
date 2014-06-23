@@ -56,6 +56,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -485,12 +486,8 @@ public final class DatavyuView extends FrameView
 
                 if (selRow != -1) {
                     String path = convertTreePathToString(selPath);
-                    String baseDir;
-                    if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
-                        baseDir = ".";
-                    } else {
-                        baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
-                    }
+                    String baseDir = Configuration.getInstance().getFavouritesFolder();
+                    baseDir = baseDir.substring(0, baseDir.lastIndexOf(File.separator));
                     final File f = new File(baseDir + File.separator + path);
 
                     if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 1) {
@@ -1673,8 +1670,24 @@ public final class DatavyuView extends FrameView
     public void setFavouritesFolder() {
         try {
             Configuration config = Configuration.getInstance();
-            String val = JOptionPane.showInputDialog("Current favourites folder is: " + config.getFavouritesFolder()
-                + "\n\n" + "Enter new path:");
+            JFileChooser jd = new JFileChooser();
+            FileFilter directoryFilter = new FileFilter() {
+			public boolean accept(File file) {
+				return file.isDirectory();
+			}
+                        public String getDescription() {return "Select folder for favourite scripts";}
+		};
+            
+            jd.addChoosableFileFilter(directoryFilter);
+            jd.setAcceptAllFileFilterUsed(false);
+            jd.setFileFilter(directoryFilter);
+            jd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            
+            int result = jd.showOpenDialog(getComponent());
+            String val = null;
+            if (result == JFileChooser.APPROVE_OPTION) {
+                val = jd.getSelectedFile().toString();
+            }
             if(!(val == null))
             {
                 System.out.println("SET THAT FOLDER to " + val);
@@ -2416,7 +2429,12 @@ public final class DatavyuView extends FrameView
 
         // Get list of favourite scripts from the favourites folder.
         File favouritesDir = new File(fav_dir_config);
-        String[] children = favouritesDir.list();
+        FilenameFilter rubies = new FilenameFilter() {
+            public boolean accept(File file, String s){
+                return s.endsWith(".rb");
+            };
+        };
+        String[] children = favouritesDir.list(rubies);
 
         if (children != null) {
 
