@@ -2,7 +2,7 @@
 ## 06/9/2014
 
 ### Additions
-* Undo is fully implemented to the value level
+* Undo is implemented to the value level
 * Frame-by-frame export is now available in the drop down menu
 
 
@@ -18,6 +18,7 @@
 
 ### Known Issues
 * Dragging the application to the desktop upon download causes the favorites folder to lose its contents. To use the scripts in this folder, go to your downloads.
+* Deleting a column and then clicking "Undo" does not bring back all of the cells, their values, and onset/offset times.
 
 # Datavyu 1.1.7 Pre-Release Notes
 ## 05/9/2014
