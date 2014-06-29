@@ -82,7 +82,7 @@ public class DatavyuDatastore implements Datastore {
         Collections.sort(varList, VariableComparator);
         return varList;
     }
-    
+
     public List<Variable> getVisibleVariables() {
         //org.apache.commons.collections.CollectionUtils.filter? needs Predicate.
         List<Variable> all = getAllVariables();
@@ -192,6 +192,16 @@ public class DatavyuDatastore implements Datastore {
         }
 
         variables.remove(var.getName());
+        markDBAsChanged();
+    }
+
+    @Override
+    public void addVariable(final Variable var) {
+        for (DatastoreListener dbl : this.dbListeners) {
+            dbl.variableAdded(var);
+        }
+
+        variables.put(var.getName(), var);
         markDBAsChanged();
     }
 

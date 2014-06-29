@@ -34,10 +34,10 @@ public interface Datastore {
      * @return All the variables held in the datastore.
      */
     List<Variable> getAllVariables();
-    
+
     /**
      * @return All the variables held in the datastore that are visible and not hidden
-     */    
+     */
     List<Variable> getVisibleVariables();
 
     /**
@@ -113,6 +113,13 @@ public interface Datastore {
      * @param var The variable to remove from the datastore.
      */
     void removeVariable(final Variable var);
+
+    /**
+     * Adds an already created variable to the datastore (for undo).
+     *
+     * @param var The variable to remove from the datastore.
+     */
+    void addVariable(final Variable var);
 
     /**
      * Removes a variable from the datastore.
