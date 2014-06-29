@@ -87,10 +87,10 @@ public final class CreateNewCellC {
      */
     public void createDefaultCell(final Variable v) {
         model.deselectAll();
-        createCell(v);
+        Cell c = createCell(v);
 
         // record the effect
-        UndoableEdit edit = new AddCellEdit(v.getName());
+        UndoableEdit edit = new AddCellEdit(v.getName(), c);
 
         // Display any changes.
         Datavyu.getView().getComponent().revalidate();
@@ -108,7 +108,7 @@ public final class CreateNewCellC {
             newCell = createCell(v);
 
             // record the effect
-            UndoableEdit edit = new AddCellEdit(v.getName());
+            UndoableEdit edit = new AddCellEdit(v.getName(), newCell);
             Datavyu.getView().getComponent().revalidate();
             Datavyu.getView().getUndoSupport().postEdit(edit);
         }
@@ -159,7 +159,7 @@ public final class CreateNewCellC {
                         Datavyu.getProjectController().setLastCreatedCell(newCell);
 
                         // Add the undoable action
-                        UndoableEdit edit = new AddCellEdit(var.getName());
+                        UndoableEdit edit = new AddCellEdit(var.getName(), newCell);
 
                         // notify the listeners
                         Datavyu.getView().getUndoSupport().postEdit(edit);
@@ -265,7 +265,7 @@ public final class CreateNewCellC {
             Datavyu.getProjectController().setLastCreatedVariable(var);
 
             // Add the undoable action
-            UndoableEdit edit = new AddCellEdit(var.getName());
+            UndoableEdit edit = new AddCellEdit(var.getName(), newCell);
             Datavyu.getView().getUndoSupport().postEdit(edit);
 
             newcelladded = true;
@@ -290,7 +290,7 @@ public final class CreateNewCellC {
                 Datavyu.getProjectController().setLastCreatedVariable(var);
 
                 // Add the undoable action
-                UndoableEdit edit = new AddCellEdit(var.getName());
+                UndoableEdit edit = new AddCellEdit(var.getName(), newCell);
                 Datavyu.getView().getUndoSupport().postEdit(edit);
 
                 newcelladded = true;
@@ -314,7 +314,7 @@ public final class CreateNewCellC {
                     Datavyu.getProjectController().setLastCreatedVariable(var);
 
                     // Add the undoable action
-                    UndoableEdit edit = new AddCellEdit(var.getName());
+                    UndoableEdit edit = new AddCellEdit(var.getName(), newCell);
                     Datavyu.getView().getUndoSupport().postEdit(edit);
 
                     newcelladded = true;
@@ -341,7 +341,7 @@ public final class CreateNewCellC {
             Datavyu.getProjectController().setLastCreatedCell(newCell);
 
             // Add the undoable action
-            UndoableEdit edit = new AddCellEdit(Datavyu.getProjectController().getLastCreatedVariable().getName());
+            UndoableEdit edit = new AddCellEdit(Datavyu.getProjectController().getLastCreatedVariable().getName(), newCell);
             Datavyu.getView().getUndoSupport().postEdit(edit);
         }
 

@@ -132,6 +132,7 @@ public class DatavyuDatastore implements Datastore {
         for (Variable v : variables.values()) {
             for (Cell c : v.getCells()) {
                 if (c.isSelected()) c.setSelected(false);
+                if (c.isHighlighted()) c.setHighlighted(false);
             }
         }
     }

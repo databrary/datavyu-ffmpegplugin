@@ -14,8 +14,6 @@
  */
 package org.datavyu.undoableedits;
 
-import org.datavyu.Datavyu;
-import org.datavyu.controllers.CreateNewCellC;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Variable;
 
@@ -30,10 +28,12 @@ public class AddCellEdit extends SpreadsheetEdit {
      * Variable name *
      */
     private String varName;
+    private Cell addedCell;
 
-    public AddCellEdit(String varName) {
+    public AddCellEdit(String varName, Cell c) {
         super();
         this.varName = varName;
+        this.addedCell = c;
     }
 
     @Override
@@ -44,20 +44,15 @@ public class AddCellEdit extends SpreadsheetEdit {
     @Override
     public void redo() throws CannotRedoException {
         super.redo();
-        CreateNewCellC newCellController = new CreateNewCellC();
         Variable var = model.getVariable(varName);
-        newCellController.createCell(var);
+        var.addCell(addedCell);
         unselectAll();
-        if ((var.getCells() != null) && (var.getCells().size() > 0)) {
-            Cell cell = var.getCells().get(var.getCells().size() - 1);
-        }
     }
 
     @Override
     public void undo() throws CannotUndoException {
         super.undo();
         Variable var = model.getVariable(varName);
-        Cell cellToRemove = var.getCells().get(var.getCells().size() - 1);
-        Datavyu.getProjectController().getDB().removeCell(cellToRemove);
+        var.removeCell(addedCell);
     }
 }
