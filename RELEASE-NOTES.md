@@ -1,5 +1,20 @@
+# Datavyu 1.2 Release Notes
+## 06/30/2014
+
+### Additions
+* Undo is fully implemented to the value level
+* Choose your own favourites folder: will determine contents of bottom-left file panel, script dropdown menu
+
+### Bug Fixes
+* Undo works correctly for column deletions
+* Application title bar now always reflects the name of the current project
+* Fixes to scripting API
+
+### Known Issues
+* After performing "Save as" rename and trying to open the original file, the file load sometimes fails with a wrongful "This file is already open" error.
+
 # Datavyu 1.1.8 Pre-Release Notes
-## 06/9/2014
+## 06/09/2014
 
 ### Additions
 * Undo is implemented to the value level
@@ -21,7 +36,7 @@
 * Deleting a column and then clicking "Undo" does not bring back all of the cells, their values, and onset/offset times.
 
 # Datavyu 1.1.7 Pre-Release Notes
-## 05/9/2014
+## 05/09/2014
 
 ### Additions
 * You can now open multiple spreadsheets in datavyu! Each spreadsheet has its own corresponding controller. Tabs at the top of the spreadsheet are used to navigate between open spreadsheets. 
