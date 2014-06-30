@@ -2,7 +2,6 @@
 ## 06/30/2014
 
 ### Additions
-* Undo is fully implemented to the value level
 * Choose your own favourites folder: will determine contents of bottom-left file panel, script dropdown menu
 
 ### Bug Fixes
@@ -12,6 +11,7 @@
 
 ### Known Issues
 * After performing "Save as" rename and trying to open the original file, the file load sometimes fails with a wrongful "This file is already open" error.
+* Undo for cell creation unreliable
 
 # Datavyu 1.1.8 Pre-Release Notes
 ## 06/09/2014
