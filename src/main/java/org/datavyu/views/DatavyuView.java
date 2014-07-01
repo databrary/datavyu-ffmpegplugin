@@ -614,6 +614,7 @@ public final class DatavyuView extends FrameView
 
         fileScrollPane = new JScrollPane(fileDrawer);
         favScrollPane = new JScrollPane(favDrawer);
+        updateFavDrawerLabel();
 
         fileSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, fileScrollPane, favScrollPane);
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, fileSplitPane, tabbedPane);
@@ -1697,11 +1698,17 @@ public final class DatavyuView extends FrameView
                 populateFavourites(null);
                 favTree = new FileSystemTreeModel(new File(fav_dir_config));
                 favDrawer.setModel(favTree);
+                updateFavDrawerLabel();
             }
         } catch (Exception e) {
             LOGGER.error("Unable set folder", e);
         }
     }    
+    
+    private void updateFavDrawerLabel()
+    {
+          favScrollPane.setColumnHeaderView(new JLabel(fav_dir_config));
+    }
 
     /**
      * Action for removing columns from the database.
