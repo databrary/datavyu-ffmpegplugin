@@ -7,11 +7,11 @@
 ### Bug Fixes
 * Undo works correctly for column deletions
 * Application title bar now always reflects the name of the current project
-* Fixes to scripting API
+* Fixes to scripting API: mutex, transfer columns
 
 ### Known Issues
-* After performing "Save as" rename and trying to open the original file, the file load sometimes fails with a wrongful "This file is already open" error.
-* Undo for cell creation unreliable
+* When renaming a file with "Save as" and trying to open the original file, loading sometimes fails with a wrongful "This file is already open" error.
+* Undo for cell creation is not reliable
 
 # Datavyu 1.1.8 Pre-Release Notes
 ## 06/09/2014
