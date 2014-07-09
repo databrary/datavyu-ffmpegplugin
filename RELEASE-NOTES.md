@@ -22,6 +22,7 @@
 
 ### Known Issues
 * When renaming a file with "Save as" and trying to open the original file, loading sometimes fails with a wrongful "This file is already open" error.
+* VLC is not fully implemented. Please try playing your videos in QuickTime. 
 * Undo for cell creation is not reliable
 * PC's with CPU's of less than 2.67 GHz have choppy video playback when playing at full speed
 * You can drag a code name within a cell but it does not influence the code itself and it does not save. Please save your file and reopen it. 
