@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.*;
+import org.datavyu.Datavyu;
+import org.datavyu.controllers.project.ProjectController;
+import org.datavyu.models.project.Project;
 import static org.mockito.Mockito.*;
 
 /**
@@ -46,6 +49,7 @@ public class VariableTest {
     @BeforeMethod
     public void setUp() throws UserWarningException {
         ds = DatastoreFactory.newDatastore();
+        Datavyu.setProjectController(new ProjectController(new Project(), ds));        
         model = (DatavyuVariable) ds.createVariable("test", Argument.Type.TEXT);
         modelListener = mock(VariableListener.class);
         model.addListener(modelListener);
