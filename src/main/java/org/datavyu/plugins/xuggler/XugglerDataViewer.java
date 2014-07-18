@@ -295,5 +295,14 @@ public class XugglerDataViewer implements DataViewer {
             final DataController dataController) {
         // TODO Auto-generated method stub
     }
+    
+    public boolean usingAssumedFPS(){
+        return false;
+    }
+
+    @Override
+    public void setFrameRate(float fpsIn) {
+        fps = fpsIn;
+    }
 
 }
