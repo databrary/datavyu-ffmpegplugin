@@ -1226,7 +1226,11 @@ public final class DataControllerV extends DatavyuDialog
         public void keyPressed(KeyEvent e) {
             if(e.getKeyCode() == KeyEvent.VK_ENTER)
             {
-                playbackModel.setCurrentFPS(Float.parseFloat(stepSizeTextField.getText()));
+                float newfps = Float.parseFloat(stepSizeTextField.getText());
+                playbackModel.setCurrentFPS(newfps);
+                for(DataViewer dv : viewers){
+                    dv.setFrameRate(newfps);
+                }
                 stepSizeTextField.setEnabled(false); 
             }
         }

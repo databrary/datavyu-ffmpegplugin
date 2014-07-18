@@ -217,6 +217,11 @@ public class VLCDataViewer implements DataViewer {
     public float getFrameRate() {
         return fps;
     }
+    
+    public void setFrameRate(float fpsIn) {
+        fps = fpsIn;
+    }
+
 
     @Override
     public float getDetectedFrameRate() {

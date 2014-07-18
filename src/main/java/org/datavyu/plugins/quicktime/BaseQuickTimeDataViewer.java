@@ -464,6 +464,10 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     public float getFrameRate() {
         return fps;
     }
+    
+    public void setFrameRate(float fpsIn) {
+        fps = fpsIn;
+    }
 
     /**
      * {@inheritDoc}

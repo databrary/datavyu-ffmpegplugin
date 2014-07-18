@@ -111,6 +111,11 @@ public interface DataViewer {
     float getFrameRate();
     
     /**
+     * @param fpsIn framerate to assign
+     */
+    void setFrameRate(float fpsIn);
+    
+    /**
      * @return Detected frames per second.
      */
     float getDetectedFrameRate();
