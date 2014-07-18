@@ -47,6 +47,8 @@ public class SpreadsheetCell extends JPanel
      * Width of spacer between onset and offset timestamps.
      */
     private static final int TIME_SPACER = 5;
+    
+    private boolean brandNew;
 
     /**
      * Border to use when a cell is highlighted.
@@ -279,6 +281,8 @@ public class SpreadsheetCell extends JPanel
         Dimension d = new Dimension(229, 0);
         stretcher = new Filler(d, d, d);
         cellPanel.add(stretcher, BorderLayout.SOUTH);
+        
+        brandNew = true;
     }
 
     /**
@@ -629,7 +633,8 @@ public class SpreadsheetCell extends JPanel
 
     @Override
     public void focusLost(final FocusEvent e) {
-//        model.setSelected(false);
+        if (brandNew) model.setSelected(false);
+        brandNew = false;
     }
 
     @Override

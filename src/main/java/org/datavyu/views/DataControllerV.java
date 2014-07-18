@@ -260,6 +260,10 @@ public final class DataControllerV extends DatavyuDialog
     
     /** */
     private javax.swing.JTextField stepSizeTextField;
+    
+    private javax.swing.JLabel stepSizeLabel = new JLabel("Steps per second");
+    
+    private javax.swing.JPanel stepSizePanel;
 
     /** */
     private javax.swing.JPanel gridButtonPanel;
@@ -1226,16 +1230,24 @@ public final class DataControllerV extends DatavyuDialog
         public void keyPressed(KeyEvent e) {
             if(e.getKeyCode() == KeyEvent.VK_ENTER)
             {
-                playbackModel.setCurrentFPS(Float.parseFloat(stepSizeTextField.getText()));
+                float newfps = Float.parseFloat(stepSizeTextField.getText());
+                playbackModel.setCurrentFPS(newfps);
+                for(DataViewer dv : viewers){
+                    dv.setFrameRate(newfps);
+                }
                 stepSizeTextField.setEnabled(false); 
+                updateStepSizePanelColor();
+                
             }
         }
         public void keyTyped(KeyEvent e) {}
         public void keyReleased(KeyEvent e) {}
          });
         
+ 
+        stepSizePanel = makeLabelAndTextfieldPanel(stepSizeLabel, stepSizeTextField);
+        gridButtonPanel.add(stepSizePanel, WIDE_TEXT_FIELD_SIZE);
         updateStepSizeTextField();
-        gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Steps per second"), stepSizeTextField), WIDE_TEXT_FIELD_SIZE);
 
     }
     
@@ -1252,9 +1264,23 @@ public final class DataControllerV extends DatavyuDialog
          }
          else{
             stepSizeTextField.setText(Float.toString(playbackModel.getCurrentFPS()));
-            //stepSizeTextField.setEnabled(true);
          }
+         
     }
+    
+    private void updateStepSizePanelColor(){
+         boolean assumed = false;
+         if(viewers != null){
+            for(DataViewer dv : viewers){
+                if(dv.usingAssumedFPS()){
+                    assumed = true;
+                }
+            }
+         }
+         if (assumed) stepSizePanel.setBackground(Color.RED);
+         else stepSizePanel.setBackground(Color.LIGHT_GRAY);
+    }
+    
 
     //Create a JEditorPane with working hyperlinks
     private JEditorPane makeEditorPaneWithLinks(String s) {
@@ -1436,9 +1462,10 @@ public final class DataControllerV extends DatavyuDialog
 
         if (fps > playbackModel.getCurrentFPS()) {
             playbackModel.setCurrentFPS(fps);
-            updateStepSizeTextField();
         }
-
+        updateStepSizeTextField();
+        updateStepSizePanelColor();
+        
         // Update track viewer.
         long maxDuration = playbackModel.getMaxDuration();
 
