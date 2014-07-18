@@ -117,6 +117,8 @@ public class VLCDataViewer implements DataViewer {
             return sampleButton;
         }
     };
+    
+    private boolean assumedFPS = false;
 
     public VLCDataViewer(final Frame parent, final boolean modal) {
 
@@ -220,6 +222,7 @@ public class VLCDataViewer implements DataViewer {
     
     public void setFrameRate(float fpsIn) {
         fps = fpsIn;
+        assumedFPS = false;
     }
 
 
@@ -473,6 +476,10 @@ public class VLCDataViewer implements DataViewer {
     public void setParentController(
             final DataController dataController) {
         // TODO Auto-generated method stub
+    }
+    
+    public boolean usingAssumedFPS() {
+        return assumedFPS;
     }
 
 }

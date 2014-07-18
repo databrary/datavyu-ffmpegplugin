@@ -210,5 +210,7 @@ public interface DataViewer {
      * state.
      */
     void clearDataFeed();
+    
+    public boolean usingAssumedFPS();
 
 }
