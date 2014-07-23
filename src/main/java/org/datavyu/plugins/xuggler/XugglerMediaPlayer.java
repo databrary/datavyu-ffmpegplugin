@@ -44,6 +44,10 @@ public class XugglerMediaPlayer {
         container = IContainer.make();
     }
 
+    public void run() {
+
+    }
+
     private IVideoPicture readVideoFrame() {
         IVideoPicture picture = IVideoPicture.make(videoCoder.getPixelType(),
                 videoCoder.getWidth(), videoCoder.getHeight());
@@ -85,12 +89,12 @@ public class XugglerMediaPlayer {
         long delay = millisecondsUntilTimeToDisplay(frame);
         // if there is no audio stream; go ahead and hold up the main thread.  We'll end
         // up caching fewer video pictures in memory that way.
-        try {
-            if (delay > 0)
-                Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            return;
-        }
+//        try {
+//            if (delay > 0)
+//                Thread.sleep(delay);
+//        } catch (InterruptedException e) {
+//            return;
+//        }
 
         launchEdtTaskLater(new Runnable() {
             public void run() {
@@ -151,7 +155,6 @@ public class XugglerMediaPlayer {
 
         if (packet.getStreamIndex() == videoStreamId) {
             IVideoPicture vp = readVideoFrame();
-            System.out.println("COMPLETE?: " + vp.isComplete());
             lastFrameTime = vp.getTimeStamp() / 1000;
             if (vp.isComplete() && display) {
                 displayVideoFrame(vp);
@@ -160,7 +163,7 @@ public class XugglerMediaPlayer {
             return vp.getTimeStamp() / 1000;
         } else if (packet.getStreamIndex() == audioStreamId) {
             IAudioSamples ap = readAudioFrame();
-            lastFrameTime = ap.getTimeStamp() / 1000;
+//            lastFrameTime = ap.getTimeStamp() / 1000;
 
             if (ap.isComplete() && display) {
                 // note: this call will block if Java's sound buffers fill up, and we're
@@ -341,22 +344,29 @@ public class XugglerMediaPlayer {
         boolean wasPlaying = playing;
         stop();
 
-        System.out.println(videoCoder.getTimeBase());
-
-        final double timebase = videoCoder.getTimeBase().getDouble();
-        position = (long) (position / timebase);
-        final long min = Math.max(0, position - 100);
-        final long max = position;
+        System.out.println("original position:" + position);
+//        final double timebase = videoCoder.getTimeBase().getDouble();
+        final double timebase = 1.0 / getFps();
+        long newPosition = (long) (position / timebase);
+        final long min = Math.max(0, newPosition - 100);
+        final long max = newPosition;
 
         final double frameTime = 1000.0 / getFps();
 
-        container.seekKeyFrame(videoStreamId, min, position, max, IContainer.SEEK_FLAG_ANY);
+        // TODO move this call inside of the play loop so then we access nothing from outside
+        // of the thread.
+//        container.seekKeyFrame(videoStreamId, min, newPosition, max, IContainer.SEEK_FLAG_ANY);
+//        container.seekKeyFrame(audioStreamId, min, position, max, IContainer.SEEK_FLAG_ANY);
 
-        while (lastFrameTime * 1000 <= position - frameTime) {
-            System.out.println(position);
-            System.out.println(lastFrameTime);
-            readFrame(false);
-        }
+        System.out.println("New Position:" + newPosition);
+
+//        readFrame();
+        System.out.println("Video time:" + lastFrameTime);
+//        while (lastFrameTime <= position - frameTime) {
+//            System.out.println("Position:" + position);
+//            System.out.println("Last Frame:" + lastFrameTime);
+//            readFrame(false);
+//        }
 
         if (wasPlaying) {
             play();

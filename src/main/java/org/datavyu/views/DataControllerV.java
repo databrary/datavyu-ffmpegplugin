@@ -49,13 +49,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -108,45 +102,27 @@ public final class DataControllerV extends DatavyuDialog
      * How often to synchronise the viewers with the master clock.
      */
     private static final long SYNC_PULSE = 500;
-
-    private boolean visible = false;
-
-    // Initialize SHUTTLE_RATES
-    static {
-        SHUTTLE_RATES = new float[]{
-                -32F, -16F, -8F, -4F, -2F, -1F,
-                -1 / 2F, -1 / 4F, -1 / 8F, -1 / 16F, -1 / 32F,
-                0F,
-                1 / 32F, 1 / 16F, 1 / 8F, 1 / 4F, 1 / 2F,
-                1F, 2F, 4F, 8F, 16F, 32F
-        };
-    }
-
     /**
      * The jump multiplier for shift-jogging.
      */
     private static final int SHIFTJOG = 5;
-
     /**
      * The jump multiplier for ctrl-jogging.
      */
     private static final int CTRLJOG = 10;
-
     /**
      * The 45x45 size for numpad keys
      */
     private static final int NUMPAD_KEY_HEIGHT = 45;
     private static final int NUMPAD_KEY_WIDTH = 45;
-    private static final String NUMPAD_KEY_SIZE = "w "+NUMPAD_KEY_HEIGHT
-            +"!, h "+NUMPAD_KEY_WIDTH+"!";
-
+    private static final String NUMPAD_KEY_SIZE = "w " + NUMPAD_KEY_HEIGHT
+            + "!, h " + NUMPAD_KEY_WIDTH + "!";
     /**
      * The 45x95 size for tall numpad keys (enter, PC plus)
      */
     private static final int TALL_NUMPAD_KEY_HEIGHT = 95;
-    private static final String TALL_NUMPAD_KEY_SIZE = "span 1 2, w "+NUMPAD_KEY_WIDTH
-            +"!, h "+TALL_NUMPAD_KEY_HEIGHT+"!";
-
+    private static final String TALL_NUMPAD_KEY_SIZE = "span 1 2, w " + NUMPAD_KEY_WIDTH
+            + "!, h " + TALL_NUMPAD_KEY_HEIGHT + "!";
     /**
      * The 80x40 size for the text fields to the right of numpad
      */
@@ -154,10 +130,8 @@ public final class DataControllerV extends DatavyuDialog
     private static final int WIDE_TEXT_FIELD_HEIGHT = 45;
     private static final String WIDE_TEXT_FIELD_SIZE = "w "+WIDE_TEXT_FIELD_WIDTH+"!, h "
             +WIDE_TEXT_FIELD_HEIGHT+"!";
-
     private static final Font TEXT_FIELD_FONT = new Font("Arial", Font.PLAIN, 10);
     private static final Font TEXT_LABEL_FONT = new Font("Arial", Font.PLAIN, 10);
-
     /**
      * Format for representing time.
      */
@@ -184,23 +158,33 @@ public final class DataControllerV extends DatavyuDialog
         CLOCK_FORMAT_HTML.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
-    // -------------------------------------------------------------------------
-    // [static]
-    //
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(DataControllerV.class);
-
     private static final String QT_URL = "http://www.datavyu.org/user-guide/guide/install.html";
     private static final String QT_IN_PAGE_HREF = "#software-requirements";
 
+    // -------------------------------------------------------------------------
+    // [static]
+    //
     private static final String QT_WARNING_MSG =
             "<html><body>Quicktime's Java libraries are not found.<br />"
                     + "You must install these libraries to load videos using Quicktime.<br />"
                     + "Note that for Quicktime versions 7.7.5 or later under Windows, you must manually include the Java libraries under Custom install<br />"
                     + "See the User Guide at <a href=\"" + QT_URL + QT_IN_PAGE_HREF + "\">" + QT_URL + "</a> for details.</body></html>";
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = UserMetrix.getLogger(DataControllerV.class);
+    private boolean visible = false;
 
+    // Initialize SHUTTLE_RATES
+    static {
+        SHUTTLE_RATES = new float[]{
+                -32F, -16F, -8F, -4F, -2F, -1F,
+                -1 / 2F, -1 / 4F, -1 / 8F, -1 / 16F, -1 / 32F,
+                0F,
+                1 / 32F, 1 / 16F, 1 / 8F, 1 / 4F, 1 / 2F,
+                1F, 2F, 4F, 8F, 16F, 32F
+        };
+    }
     /**
      * Determines whether or not Shift is being held.
      */
@@ -569,6 +553,8 @@ public final class DataControllerV extends DatavyuDialog
                          * Only synchronise the data viewers if we have a
                          * noticable drift.
                          */
+                        System.out.println(v.getCurrentTime());
+                        System.out.println(time);
                         if (v.isPlaying()
                                 && (Math.abs(
                                 v.getCurrentTime()
@@ -682,6 +668,7 @@ public final class DataControllerV extends DatavyuDialog
 
         for (DataViewer viewer : viewers) {
 
+            System.out.println(time);
             if (isWithinPlayRange(time, viewer)) {
                 viewer.seekTo(time - viewer.getOffset());
             }
@@ -693,18 +680,6 @@ public final class DataControllerV extends DatavyuDialog
      */
     public MixerController getMixerController() {
         return mixerController;
-    }
-
-    /**
-     * Set time location for data streams.
-     *
-     * @param milliseconds The millisecond time.
-     */
-    public void setCurrentTime(final long milliseconds) {
-        resetSync();
-        updateCurrentTimeLabel();
-        mixerController.getMixerModel().getNeedleModel().setCurrentTime(
-                milliseconds);
     }
 
     private void updateCurrentTimeLabel() {
@@ -720,6 +695,18 @@ public final class DataControllerV extends DatavyuDialog
      */
     public long getCurrentTime() {
         return clock.getTime();
+    }
+
+    /**
+     * Set time location for data streams.
+     *
+     * @param milliseconds The millisecond time.
+     */
+    public void setCurrentTime(final long milliseconds) {
+        resetSync();
+        updateCurrentTimeLabel();
+        mixerController.getMixerModel().getNeedleModel().setCurrentTime(
+                milliseconds);
     }
 
     /**
