@@ -1819,9 +1819,6 @@ public final class DatavyuView extends FrameView
         return redraw;
     }
 
-    /**
-     * Checks if changes should be discarded, if so (or no changes) then quits.
-     */
     @Action
     public void safeQuit() {
         Datavyu.getApplication().exit();
