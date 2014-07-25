@@ -2115,7 +2115,7 @@ public final class DataControllerV extends DatavyuDialog
     public void createNewCellAction() {
         LOGGER.event("New cell");
         CreateNewCellC controller = new CreateNewCellC();
-        controller.createDefaultCell();
+        controller.createDefaultCell(true);
     }
 
     /**
