@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by jmlin_000 on 7/5/2014.
@@ -34,8 +34,8 @@ public class XugglerMediaPlayer implements Runnable {
     private File data;
     private boolean playing = false;
 
-    private SynchronousQueue<IPacket> videoQueue;
-    private SynchronousQueue<IPacket> audioQueue;
+    private ConcurrentLinkedQueue<IPacket> videoQueue;
+    private ConcurrentLinkedQueue<IPacket> audioQueue;
 
     private long lastFrameTime = 0;
 
@@ -49,12 +49,13 @@ public class XugglerMediaPlayer implements Runnable {
         // Create a Xuggler container object
         container = IContainer.make();
 
-        videoQueue = new SynchronousQueue<IPacket>();
-        audioQueue = new SynchronousQueue<IPacket>();
+        videoQueue = new ConcurrentLinkedQueue<IPacket>();
+        audioQueue = new ConcurrentLinkedQueue<IPacket>();
     }
 
     public static void main(String[] argv) {
-
+        XugglerMediaPlayer mp = new XugglerMediaPlayer();
+        mp.setDataFeed(new File("C:/Users/jmlin_000/Desktop/h264_720p_mp_3.1_3mbps_aac_shrinkage.mp4"));
     }
 
     public void run() {
@@ -66,13 +67,18 @@ public class XugglerMediaPlayer implements Runnable {
     }
 
     private long readFrame(boolean display) {
+//        System.out.println("READING NEXT PACKET");
         if (container.readNextPacket(packet) < 0) {
-            System.err.println("Error reading packet");
+//            System.err.println("Error reading packet");
+            return -1L;
         }
+//        System.out.println("READ");
 
         if (packet.getStreamIndex() == videoStreamId) {
             try {
-                videoQueue.put(packet.copyReference());
+//                System.out.println("PUTTING");
+                videoQueue.add(IPacket.make(packet, true));
+//                System.out.println("PUT");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -84,7 +90,7 @@ public class XugglerMediaPlayer implements Runnable {
 //            return vp.getTimeStamp() / 1000;
         } else if (packet.getStreamIndex() == audioStreamId) {
             try {
-                audioQueue.put(packet.copyReference());
+                audioQueue.add(IPacket.make(packet, true));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -418,7 +424,7 @@ public class XugglerMediaPlayer implements Runnable {
         IVideoPicture picture = null;
 
         public VideoPlayer(IStreamCoder videoCoder) {
-            this.videoCoder = videoCoder;
+            this.videoCoder = videoCoder.copyReference();
         }
 
         private IVideoPicture readVideoFrame(IPacket packet) {
@@ -440,21 +446,20 @@ public class XugglerMediaPlayer implements Runnable {
      */
             if (picture.isComplete()) {
                 IVideoPicture newPic = picture.copyReference();
-                picture = null;
-//                    final IVideoPicture newPic = IVideoPicture.make(resampler.getOutputPixelFormat(), picture.getWidth(), picture.getHeight());
       /*
        * If the resampler is not null, that means we didn't get the video in BGR24 format and
        * need to convert it into BGR24 format.
        */
                 if (resampler != null) {
                     // we must resample
-//                picture = IVideoPicture.make(resampler.getOutputPixelFormat(), picture.getWidth(), picture.getHeight());
-//                if (resampler.resample(newPic, picture) < 0)
-//                    throw new RuntimeException("could not resample video ");
+                    newPic = IVideoPicture.make(resampler.getOutputPixelFormat(), picture.getWidth(), picture.getHeight());
+                    if (resampler.resample(newPic, picture) < 0)
+                        throw new RuntimeException("could not resample video ");
                 }
-//            if (newPic.getPixelType() != IPixelFormat.Type.BGR24)
-//                    throw new RuntimeException("could not decode video as BGR 24 bit data ");
+////            if (newPic.getPixelType() != IPixelFormat.Type.BGR24)
+////                    throw new RuntimeException("could not decode video as BGR 24 bit data ");
 
+                picture = null;
                 return newPic;
             } else {
                 return picture;
@@ -467,27 +472,32 @@ public class XugglerMediaPlayer implements Runnable {
             long delay = millisecondsUntilTimeToDisplay(frame);
             // if there is no audio stream; go ahead and hold up the main thread.  We'll end
             // up caching fewer video pictures in memory that way.
-//        try {
-//            if (delay > 0)
-//                Thread.sleep(delay);
-//        } catch (InterruptedException e) {
-//            return;
-//        }
-
-            launchEdtTaskLater(new Runnable() {
-                public void run() {
-                    mScreen.setImage(bi);
+            try {
+                if (delay > 0) {
+//                    System.out.println("DELAYING");
+                    Thread.sleep(delay);
                 }
-            });
+            } catch (InterruptedException e) {
+                return;
+            }
+
+//            launchEdtTaskLater(new Runnable() {
+//                public void run() {
+                    mScreen.setImage(bi);
+//                }
+//            });
         }
 
         @Override
         public void run() {
             while (true) {
                 try {
-                    IPacket packet = videoQueue.take();
-                    IVideoPicture picture = readVideoFrame(packet);
-                    if (picture.isComplete()) displayVideoFrame(picture);
+                    IPacket packet = videoQueue.poll();
+                    System.out.println(videoQueue.size());
+                    if (packet != null) {
+                        IVideoPicture picture = readVideoFrame(packet);
+                        if (picture.isComplete()) displayVideoFrame(picture);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -570,9 +580,11 @@ public class XugglerMediaPlayer implements Runnable {
         public void run() {
             while (true) {
                 try {
-                    IPacket packet = audioQueue.take();
-                    IAudioSamples audio = readAudioFrame(packet);
-                    if (audio.isComplete()) playJavaSound(audio);
+                    IPacket packet = audioQueue.poll();
+                    if (packet != null) {
+                        IAudioSamples audio = readAudioFrame(packet);
+                        if (audio.isComplete()) playJavaSound(audio);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
