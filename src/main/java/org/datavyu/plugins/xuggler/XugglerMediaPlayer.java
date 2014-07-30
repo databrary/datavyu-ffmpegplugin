@@ -35,6 +35,9 @@ public class XugglerMediaPlayer implements Runnable {
     private boolean playing = false;
 
     private float fps;
+    private double timebase;
+    private IVideoPicture picture = null;
+
 
     private ConcurrentLinkedQueue<IPacket> videoQueue;
     private ConcurrentLinkedQueue<IPacket> audioQueue;
@@ -81,7 +84,7 @@ public class XugglerMediaPlayer implements Runnable {
         }
 
         if (container.readNextPacket(packet) < 0) {
-//            System.err.println("Error reading packet");
+            System.err.println("Error reading packet");
             return -1L;
         }
 //        System.out.println("READ");
@@ -90,6 +93,7 @@ public class XugglerMediaPlayer implements Runnable {
         if (packet.getStreamIndex() == videoStreamId) {
             try {
 //                System.out.println("PUTTING");
+                // TODO to solve memory issues here make a circular buffer of packets
                 videoQueue.add(IPacket.make(packet, true));
 //                System.out.println("PUT");
             } catch (Exception e) {
@@ -153,24 +157,45 @@ public class XugglerMediaPlayer implements Runnable {
         stop();
 
         System.out.println("original position:" + position);
-//        final double timebase = videoCoder.getTimeBase().getDouble();
-        final double timebase = 1.0 / getFps();
-        long newPosition = (long) (position / timebase);
-        final long min = Math.max(0, newPosition - 100);
+//        for(int i = 0; i < container.getNumStreams(); i++) {
+        //        final double timebase = videoCoder.getTimeBase().getDouble();
+//        final double timebase = 1.0 / getFps();
+//        System.out.println(container.getStream(videoStreamId).getTimeBase());
+        int i = videoStreamId;
+        long newPosition = (long) (position / 1000.0 / container.getStream(i).getTimeBase().getDouble());
+        final long min = Math.max(0, newPosition - 1000);
         final long max = newPosition;
+        picture = null;
 
         System.out.println("new position: " + newPosition);
 
-        final double frameTime = 1000.0 / getFps();
-
         // TODO move this call inside of the play loop so then we access nothing from outside
         // of the thread.
-        container.seekKeyFrame(videoStreamId, min, newPosition, max, IContainer.SEEK_FLAG_ANY);
+//        if(position < lastFrameTime) {
+//            container.seekKeyFrame(videoStreamId, min, newPosition, max, IContainer.SEEK_FLAG_BACKWARDS);
+//        } else {
+//            container.seekKeyFrame(i, -1, 0);
+        container.seekKeyFrame(i, -1, -1, -1, IContainer.SEEK_FLAG_BACKWARDS);
+
+        if (position < lastFrameTime) {
+        } else {
+            container.seekKeyFrame(i, min, newPosition, max, IContainer.SEEK_FLAG_ANY);
+        }
+//        }
+
+
+        // TODO Send seek notification events to our threads so they can throw away whatever they have
+
+
+        lastFrameTime = position;
+//        container.seekKeyFrame(audioStreamId, -1, 0);
+//        container.seekKeyFrame(audioStreamId, min, newPosition, max, IContainer.SEEK_FLAG_ANY);
+//        }
 //        container.seekKeyFrame(audioStreamId, min, position, max, IContainer.SEEK_FLAG_ANY);
 
         videoQueue.clear();
         audioQueue.clear();
-        System.out.println("New Position:" + newPosition);
+//        System.out.println("New Position:" + newPosition);
 
 //        readFrame();
         System.out.println("Video time:" + lastFrameTime);
@@ -384,6 +409,7 @@ public class XugglerMediaPlayer implements Runnable {
 
         fps = (float) videoCoder.getFrameRate().getValue();
         long length = container.getDuration();
+        timebase = videoCoder.getTimeBase().getDouble();
 
         System.out.println(String.format("FPS: %f", fps));
         System.out.println(String.format("Length: %d", length));
@@ -441,7 +467,6 @@ public class XugglerMediaPlayer implements Runnable {
 
         IStreamCoder videoCoder = null;
 
-        IVideoPicture picture = null;
 
         public VideoPlayer(IStreamCoder videoCoder) {
             this.videoCoder = videoCoder.copyReference();
@@ -464,6 +489,7 @@ public class XugglerMediaPlayer implements Runnable {
      * a full video picture yet.  Therefore you should always check if you
      * got a complete picture from the decoder
      */
+            System.out.println(picture.isComplete());
             if (picture.isComplete()) {
                 IVideoPicture newPic = picture.copyReference();
       /*
