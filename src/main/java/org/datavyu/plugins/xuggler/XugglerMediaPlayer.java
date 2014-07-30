@@ -34,6 +34,8 @@ public class XugglerMediaPlayer implements Runnable {
     private File data;
     private boolean playing = false;
 
+    private float fps;
+
     private ConcurrentLinkedQueue<IPacket> videoQueue;
     private ConcurrentLinkedQueue<IPacket> audioQueue;
 
@@ -68,11 +70,22 @@ public class XugglerMediaPlayer implements Runnable {
 
     private long readFrame(boolean display) {
 //        System.out.println("READING NEXT PACKET");
+        // We don't want decoding to get too far ahead
+        if (videoQueue.size() > 50 || audioQueue.size() > 50) {
+            try {
+                Thread.sleep(50);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return -1L;
+        }
+
         if (container.readNextPacket(packet) < 0) {
 //            System.err.println("Error reading packet");
             return -1L;
         }
 //        System.out.println("READ");
+
 
         if (packet.getStreamIndex() == videoStreamId) {
             try {
@@ -136,36 +149,40 @@ public class XugglerMediaPlayer implements Runnable {
     }
 
     public void seekTo(long position) {
-//        boolean wasPlaying = playing;
-//        stop();
-//
-//        System.out.println("original position:" + position);
-////        final double timebase = videoCoder.getTimeBase().getDouble();
-//        final double timebase = 1.0 / getFps();
-//        long newPosition = (long) (position / timebase);
-//        final long min = Math.max(0, newPosition - 100);
-//        final long max = newPosition;
-//
-//        final double frameTime = 1000.0 / getFps();
-//
-//        // TODO move this call inside of the play loop so then we access nothing from outside
-//        // of the thread.
-////        container.seekKeyFrame(videoStreamId, min, newPosition, max, IContainer.SEEK_FLAG_ANY);
-////        container.seekKeyFrame(audioStreamId, min, position, max, IContainer.SEEK_FLAG_ANY);
-//
-//        System.out.println("New Position:" + newPosition);
-//
-////        readFrame();
-//        System.out.println("Video time:" + lastFrameTime);
-////        while (lastFrameTime <= position - frameTime) {
-////            System.out.println("Position:" + position);
-////            System.out.println("Last Frame:" + lastFrameTime);
-////            readFrame(false);
-////        }
-//
-//        if (wasPlaying) {
-//            play();
+        boolean wasPlaying = playing;
+        stop();
+
+        System.out.println("original position:" + position);
+//        final double timebase = videoCoder.getTimeBase().getDouble();
+        final double timebase = 1.0 / getFps();
+        long newPosition = (long) (position / timebase);
+        final long min = Math.max(0, newPosition - 100);
+        final long max = newPosition;
+
+        System.out.println("new position: " + newPosition);
+
+        final double frameTime = 1000.0 / getFps();
+
+        // TODO move this call inside of the play loop so then we access nothing from outside
+        // of the thread.
+        container.seekKeyFrame(videoStreamId, min, newPosition, max, IContainer.SEEK_FLAG_ANY);
+//        container.seekKeyFrame(audioStreamId, min, position, max, IContainer.SEEK_FLAG_ANY);
+
+        videoQueue.clear();
+        audioQueue.clear();
+        System.out.println("New Position:" + newPosition);
+
+//        readFrame();
+        System.out.println("Video time:" + lastFrameTime);
+//        while (lastFrameTime <= position - frameTime) {
+//            System.out.println("Position:" + position);
+//            System.out.println("Last Frame:" + lastFrameTime);
+//            readFrame(false);
 //        }
+
+        if (wasPlaying) {
+            play();
+        }
     }
 
     public void setVisible(boolean visible) {
@@ -239,6 +256,9 @@ public class XugglerMediaPlayer implements Runnable {
                 true, /* xuggler defaults to signed 16 bit samples */
                 false);
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+
+        // TODO add in switch here for if there is no audio
+
         mLine = (SourceDataLine) AudioSystem.getLine(info);
         /**
          * if that succeeded, try opening the line.
@@ -362,7 +382,7 @@ public class XugglerMediaPlayer implements Runnable {
         // Grab FPS and length
 
 
-        float fps = (float) videoCoder.getFrameRate().getValue();
+        fps = (float) videoCoder.getFrameRate().getValue();
         long length = container.getDuration();
 
         System.out.println(String.format("FPS: %f", fps));
@@ -390,7 +410,7 @@ public class XugglerMediaPlayer implements Runnable {
                     */
         }
 
-        playing = true;
+        playing = false;
 
         new Thread(new VideoPlayer(videoCoder)).start();
         new Thread(new AudioPlayer(audioCoder)).start();
@@ -405,7 +425,7 @@ public class XugglerMediaPlayer implements Runnable {
     }
 
     public float getFps() {
-        return (float) 0;
+        return (float) fps;
     }
 
     public long getLength() {
@@ -491,15 +511,26 @@ public class XugglerMediaPlayer implements Runnable {
         @Override
         public void run() {
             while (true) {
-                try {
-                    IPacket packet = videoQueue.poll();
-                    System.out.println(videoQueue.size());
-                    if (packet != null) {
-                        IVideoPicture picture = readVideoFrame(packet);
-                        if (picture.isComplete()) displayVideoFrame(picture);
+                if (playing) {
+                    try {
+                        IPacket packet = videoQueue.poll();
+                        System.out.println(videoQueue.size());
+                        if (packet != null) {
+                            IVideoPicture picture = readVideoFrame(packet);
+                            if (picture.isComplete()) {
+                                displayVideoFrame(picture);
+                                lastFrameTime = picture.getTimeStamp() / 1000;
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    try {
+                        Thread.sleep(20);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -579,14 +610,24 @@ public class XugglerMediaPlayer implements Runnable {
         @Override
         public void run() {
             while (true) {
-                try {
-                    IPacket packet = audioQueue.poll();
-                    if (packet != null) {
-                        IAudioSamples audio = readAudioFrame(packet);
-                        if (audio.isComplete()) playJavaSound(audio);
+                if (playing) {
+                    try {
+                        IPacket packet = audioQueue.poll();
+                        if (packet != null) {
+                            IAudioSamples audio = readAudioFrame(packet);
+                            if (audio.isComplete()) {
+                                playJavaSound(audio);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    try {
+                        Thread.sleep(20);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
