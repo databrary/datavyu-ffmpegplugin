@@ -668,7 +668,7 @@ public final class DataControllerV extends DatavyuDialog
 
         for (DataViewer viewer : viewers) {
 
-            System.out.println(time);
+//            System.out.println(time);
             if (isWithinPlayRange(time, viewer)) {
                 viewer.seekTo(time - viewer.getOffset());
             }
