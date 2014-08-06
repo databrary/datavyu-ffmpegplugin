@@ -5,6 +5,7 @@ import com.xuggle.mediatool.IMediaViewer;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.*;
 import com.xuggle.xuggler.demos.VideoImage;
+import org.datavyu.Datavyu;
 
 import javax.sound.sampled.*;
 import javax.swing.*;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -41,6 +43,9 @@ public class XugglerMediaPlayer implements Runnable {
 
     private ConcurrentLinkedQueue<IPacket> videoQueue;
     private ConcurrentLinkedQueue<IPacket> audioQueue;
+
+    private ArrayList<Long> keyFrameOffsets;
+    private ArrayList<Long> keyFrameNumbers;
 
     private long lastFrameTime = 0;
 
@@ -76,7 +81,7 @@ public class XugglerMediaPlayer implements Runnable {
     private long readFrame(boolean display) {
 //        System.out.println("READING NEXT PACKET");
         // We don't want decoding to get too far ahead
-        if (videoQueue.size() > 50 || audioQueue.size() > 50) {
+        if (videoQueue.size() > 10 || audioQueue.size() > 10) {
             try {
                 Thread.sleep(50);
             } catch (Exception e) {
@@ -89,9 +94,9 @@ public class XugglerMediaPlayer implements Runnable {
             System.err.println("Error reading packet");
             return -1L;
         }
-//        System.out.println("READ");
+        System.out.println("READ: " + getTimeInMilliseconds(packet));
 
-        System.out.println(packet.getStreamIndex());
+//        System.out.println(packet.getStreamIndex());
 
         if (packet.getStreamIndex() == videoStreamId) {
             try {
@@ -102,12 +107,6 @@ public class XugglerMediaPlayer implements Runnable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//            lastFrameTime = vp.getTimeStamp() / 1000;
-//            if (vp.isComplete() && display) {
-//                displayVideoFrame(vp);
-//
-//            }
-//            return vp.getTimeStamp() / 1000;
         } else if (packet.getStreamIndex() == audioStreamId) {
             try {
                 audioQueue.add(IPacket.make(packet, true));
@@ -124,7 +123,7 @@ public class XugglerMediaPlayer implements Runnable {
 
     private void playLoop() {
         while (true) {
-//            if (playing) {
+            if (playing) {
             try {
                 long timeStamp = readFrame();
                 if (timeStamp != -1) {
@@ -133,13 +132,13 @@ public class XugglerMediaPlayer implements Runnable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//            } else {
-//                try {
-//                    Thread.sleep(100);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+            } else {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -156,10 +155,12 @@ public class XugglerMediaPlayer implements Runnable {
     }
 
     public void seekTo(long position) {
+        // TODO implement key frame indexing on video load as in https://code.google.com/p/xuggle/source/browse/trunk/java/xuggle-xuggler/test/src/com/xuggle/xuggler/ContainerSeekExhaustiveTest.java?r=1018
+
         boolean wasPlaying = playing;
         stop();
 
-//        System.out.println("original position:" + position);
+        System.out.println("original position:" + position);
 //        for(int i = 0; i < container.getNumStreams(); i++) {
         //        final double timebase = videoCoder.getTimeBase().getDouble();
 //        final double timebase = 1.0 / getFps();
@@ -172,8 +173,10 @@ public class XugglerMediaPlayer implements Runnable {
         final long totalFrames = Math.round(getLength() / 1000.0 * getFps());
         final long frame = Math.round((1.0 * position / getLength()) * totalFrames);
 
-        System.out.println("FRAME: " + frame);
+//        System.out.println("FRAME: " + frame);
         destroyPicture = true;
+        videoQueue.clear();
+        audioQueue.clear();
 
 //        System.out.println("new position: " + newPosition);
 
@@ -182,31 +185,60 @@ public class XugglerMediaPlayer implements Runnable {
 //        if(position < lastFrameTime) {
 //            container.seekKeyFrame(videoStreamId, min, newPosition, max, IContainer.SEEK_FLAG_BACKWARDS);
 //        } else {
-//        container.seekKeyFrame(i, 0, IContainer.SEEK_FLAG_BACKWARDS);
+        mFirstVideoTimestampInStream = Global.NO_PTS;
+//        container.seekKeyFrame(videoStreamId, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 //        container.seekKeyFrame(i, -1, -1, -1, IContainer.SEEK_FLAG_BACKWARDS);
+        long seekByte = getNearestKeyframePosition(position);
+        System.out.println("SEEKING TO BYTE: " + seekByte);
 
-        if (position < lastFrameTime) {
-            container.seekKeyFrame(i, min, newPosition, max, IContainer.SEEK_FLAG_BACKWARDS);
+        if (position <= lastFrameTime) {
+//            container.seekKeyFrame(i, min, newPosition, max, IContainer.SEEK_FLAG_BACKWARDS);
+            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 
+            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
+
+            if (retval < 0) {
+//                throw new RuntimeException("Error seeking");
+            }
 //            container.seekKeyFrame(i, frame, frame, frame, IContainer.SEEK_FLAG_FRAME);
         } else {
-            container.seekKeyFrame(i, min, newPosition, max, IContainer.SEEK_FLAG_ANY);
-//            container.seekKeyFrame(i, frame, frame, frame, IContainer.SEEK_FLAG_FRAME);
+            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
+
+            if (retval < 0) {
+//                throw new RuntimeException("Error seeking");
+            }
         }
+
+
+        while (container.readNextPacket(packet) >= 0) {
+            if (packet.getStreamIndex() == videoStreamId) {
+                videoQueue.add(IPacket.make(packet, true));
+                lastFrameTime = getTimeInMilliseconds(packet);
+                System.out.println("POSITION: " + position + " PACKET TIME: " + getTimeInMilliseconds(packet));
+                if (getTimeInMilliseconds(packet) + packet.getDuration() >= position) {
+                    System.out.println("NEAREST TIME: " + lastFrameTime);
+                    break;
+                }
+            } else if (packet.getStreamIndex() == audioStreamId) {
+//                audioQueue.add(packet);
+            }
+        }
+//        container.seekKeyFrame(i, min, newPosition, max, IContainer.SEEK_FLAG_FRAME);
+//            container.seekKeyFrame(i, frame, frame, frame, IContainer.SEEK_FLAG_FRAME);
+//        }
 //        }
 
 
         // TODO Send seek notification events to our threads so they can throw away whatever they have
 
 
-        lastFrameTime = position;
+//        lastFrameTime = position;
 //        container.seekKeyFrame(audioStreamId, -1, 0);
 //        container.seekKeyFrame(audioStreamId, min, newPosition, max, IContainer.SEEK_FLAG_ANY);
 //        }
 //        container.seekKeyFrame(audioStreamId, min, position, max, IContainer.SEEK_FLAG_ANY);
 
-        videoQueue.clear();
-        audioQueue.clear();
+
 //        System.out.println("New Position:" + newPosition);
 
 //        readFrame();
@@ -259,7 +291,7 @@ public class XugglerMediaPlayer implements Runnable {
             // remember that IVideoPicture and IAudioSamples timestamps are always in MICROSECONDS,
             // so we divide by 1000 to get milliseconds.
             long millisecondsStreamTimeSinceStartOfVideo = (picture.getTimeStamp() - mFirstVideoTimestampInStream) / 1000;
-            final long millisecondsTolerance = 50; // and we give ourselfs 50 ms of tolerance
+            final long millisecondsTolerance = 10; // and we give ourselfs 10 ms of tolerance
             millisecondsToSleep = (millisecondsStreamTimeSinceStartOfVideo -
                     (millisecondsClockTimeSinceStartofVideo + millisecondsTolerance));
         }
@@ -333,6 +365,16 @@ public class XugglerMediaPlayer implements Runnable {
         }
     }
 
+    private long getTimeInMilliseconds(IPacket packet) {
+        IRational timeBase = packet.getTimeBase();
+        if (timeBase == null)
+            timeBase = IRational.make(1, (int) Global.DEFAULT_PTS_PER_SECOND);
+        long timeInMs =
+                (long) (packet.getPts() * timeBase.getDouble() * 1000);
+        timeBase.delete();
+        return timeInMs;
+    }
+
     public void setDataFeed(final File dataFeed) {
 //        String filename = "F:\\Movies\\Ascenseur pour l'échafaud (1958) Louis Malle\\Ascenseur pour lechafaud (1958) Louis Malle.avi";
 
@@ -343,6 +385,9 @@ public class XugglerMediaPlayer implements Runnable {
         reader = ToolFactory.makeReader(data.getAbsolutePath());
 
         viewer = com.xuggle.mediatool.ToolFactory.makeViewer();
+
+        keyFrameNumbers = new ArrayList<Long>();
+        keyFrameOffsets = new ArrayList<Long>();
 
 
         IStreamCoder videoCoder = null;
@@ -448,6 +493,22 @@ public class XugglerMediaPlayer implements Runnable {
                     */
         }
 
+        // Loop over the frames in the video and obtain the key frames
+        long numPackets = 0;
+        while (container.readNextPacket(packet) >= 0) {
+            if (packet.isComplete()) {
+                if (packet.getStreamIndex() != videoStreamId) continue;
+                if (!packet.isKey()) continue;
+                System.out.println(packet.getFormattedTimeStamp());
+                System.out.println(packet.getTimeStamp());
+                System.out.println(getTimeInMilliseconds(packet));
+                keyFrameNumbers.add(packet.getPosition());
+                keyFrameOffsets.add(getTimeInMilliseconds(packet));
+                System.out.println(packet.getDts());
+            }
+        }
+        container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
+
         playing = false;
 
         new Thread(new VideoPlayer(videoCoder)).start();
@@ -460,6 +521,16 @@ public class XugglerMediaPlayer implements Runnable {
                 playLoop();
             }
         }).start();
+    }
+
+    private long getNearestKeyframePosition(long timestamp) {
+        // Just do a stupid thing for now. TODO make this a BST
+        for (int i = 0; i < keyFrameOffsets.size(); i++) {
+            if (keyFrameOffsets.get(i) > timestamp) {
+                return keyFrameNumbers.get(i - 1);
+            }
+        }
+        return -1;
     }
 
     public float getFps() {
@@ -488,13 +559,15 @@ public class XugglerMediaPlayer implements Runnable {
             if (destroyPicture) {
                 picture = IVideoPicture.make(videoCoder.getPixelType(),
                         videoCoder.getWidth(), videoCoder.getHeight());
+                destroyPicture = false;
             }
 
 //            System.out.println(packet.isComplete());
 
             int bytesDecoded = videoCoder.decodeVideo(picture, packet, 0);
-            if (bytesDecoded < 0)
+            if (bytesDecoded < 0) {
                 throw new RuntimeException("got error decoding video ");
+            }
 
     /*
      * Some decoders will consume data in a packet, but will not be able to construct
@@ -502,7 +575,7 @@ public class XugglerMediaPlayer implements Runnable {
      * got a complete picture from the decoder
      */
 //            System.out.println(picture.isComplete());
-            if (picture != null && picture.isComplete()) {
+            if (!destroyPicture && picture.isComplete()) {
                 IVideoPicture newPic = picture.copyReference();
       /*
        * If the resampler is not null, that means we didn't get the video in BGR24 format and
@@ -517,7 +590,7 @@ public class XugglerMediaPlayer implements Runnable {
 ////            if (newPic.getPixelType() != IPixelFormat.Type.BGR24)
 ////                    throw new RuntimeException("could not decode video as BGR 24 bit data ");
 
-                picture = null;
+                destroyPicture = true;
                 return newPic;
             } else {
                 return picture;
@@ -527,7 +600,15 @@ public class XugglerMediaPlayer implements Runnable {
         private void displayVideoFrame(IVideoPicture frame) {
             final BufferedImage bi = Utils.videoPictureToImage(frame);
 
-            long delay = millisecondsUntilTimeToDisplay(frame);
+            long controllerTime = Datavyu.getDataController().getCurrentTime();
+            long frameTime = frame.getTimeStamp() / 1000;
+//            long delay = millisecondsUntilTimeToDisplay(frame);
+            long delay = frameTime - controllerTime;
+            System.out.println("FRAMETIME: " + frameTime + " CONTROLLER TIME: " + controllerTime);
+            if (delay > 1000) {
+                destroyPicture = true;
+                return;
+            }
             // if there is no audio stream; go ahead and hold up the main thread.  We'll end
             // up caching fewer video pictures in memory that way.
             try {
@@ -539,11 +620,11 @@ public class XugglerMediaPlayer implements Runnable {
                 return;
             }
 
-            launchEdtTaskLater(new Runnable() {
-                public void run() {
+//            launchEdtTaskLater(new Runnable() {
+//                public void run() {
                     mScreen.setImage(bi);
-                }
-            });
+//                }
+//            });
         }
 
         @Override
@@ -552,20 +633,25 @@ public class XugglerMediaPlayer implements Runnable {
                 if (playing) {
                     try {
                         IPacket packet = videoQueue.poll();
-                        System.out.println(videoQueue.size());
-                        System.out.println("PACKET NULL: " + (packet == null));
+//                        System.out.println(videoQueue.size());
+//                        System.out.println("PACKET NULL: " + (packet == null));
                         if (packet != null) {
+//                            if(getTimeInMilliseconds(packet) > lastFrameTime) {
+                            lastFrameTime = getTimeInMilliseconds(packet);
+//                            }
+
                             IVideoPicture picture = readVideoFrame(packet);
+//                            lastFrameTime = picture.getTimeStamp() / 1000;
 //                            System.out.println("DEBUG COMPLETE: " + picture.isComplete());
                             if (picture.isComplete()) {
                                 displayVideoFrame(picture);
                                 System.out.println("DISPLAYING: " + picture.getTimeStamp());
-                                lastFrameTime = picture.getTimeStamp() / 1000;
+
                             }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        System.exit(1);
+//                        System.exit(1);
                     }
                 } else {
                     try {
