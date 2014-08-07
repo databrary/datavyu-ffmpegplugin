@@ -115,7 +115,7 @@ public class SaveCTest {
 
         var = ds.createVariable("testColumn3", Argument.Type.MATRIX);
         c = var.createCell();
-        c.getValue().set("cellC");
+        c.getValue().set("(cellC)");
 
         var = ds.createVariable("hiddenColumn", Argument.Type.TEXT);
         var.setHidden(true);

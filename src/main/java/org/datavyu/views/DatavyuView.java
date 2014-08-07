@@ -907,7 +907,6 @@ public final class DatavyuView extends FrameView
         DatavyuFileChooser jd = new DatavyuFileChooser();
 
         jd.addChoosableFileFilter(MODBFilter.INSTANCE);
-        jd.addChoosableFileFilter(CSVFilter.INSTANCE);
         jd.addChoosableFileFilter(OPFFilter.INSTANCE);
 
         jd.setAcceptAllFileFilterUsed(false);
@@ -1262,7 +1261,11 @@ public final class DatavyuView extends FrameView
         fc.setVisible(false);
         fc.setSelectedFile(file);
 
+
         try {
+            System.out.println(file.getCanonicalPath());
+
+
             if (checkIfFileAlreadyOpen(file.getCanonicalPath())) {
                 Datavyu.getApplication().showWarningDialog("Error: File already open.");
                 return;
@@ -1816,9 +1819,6 @@ public final class DatavyuView extends FrameView
         return redraw;
     }
 
-    /**
-     * Checks if changes should be discarded, if so (or no changes) then quits.
-     */
     @Action
     public void safeQuit() {
         Datavyu.getApplication().exit();

@@ -103,6 +103,10 @@ public class TabWithCloseButton extends JPanel {
                 if (Datavyu.getApplication().safeQuit(pane.getComponentAt(i))) {
                     pane.remove(i);
                 }
+                if(pane.getTabCount() == 0) 
+                {
+                     Datavyu.getView().safeQuit();
+                }
             }
         }
 

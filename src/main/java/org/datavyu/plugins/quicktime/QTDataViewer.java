@@ -172,9 +172,10 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                 }
             }
         }
-        catch(QTException e2)
+        catch(QTException e)
         {
-            LOGGER.error("Unable to calculate FPS, assuming " + FALLBACK_FRAME_RATE, e2);
+            LOGGER.error("Unable to calculate FPS, assuming " + FALLBACK_FRAME_RATE, e);
+            assumedFPS = true;
             fps = FALLBACK_FRAME_RATE;
         }
 

@@ -195,6 +195,8 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     /**Tooltip text for resize icon */
     public static final String RESIZE_TOOLTIP = "Resize video";
     
+    protected boolean assumedFPS = false;
+    
     // ------------------------------------------------------------------------
     // [initialization]
     //
@@ -464,6 +466,11 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     public float getFrameRate() {
         return fps;
     }
+    
+    public void setFrameRate(float fpsIn) {
+        fps = fpsIn;
+        assumedFPS = false;
+    }
 
     /**
      * {@inheritDoc}
@@ -687,7 +694,10 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         setVolume();
     }
 
+    public boolean usingAssumedFPS() {
+        return assumedFPS;
+    }    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-
 }

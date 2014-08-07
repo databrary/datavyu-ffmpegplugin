@@ -99,11 +99,19 @@ public final class CreateNewCellC {
     }
 
     /**
-     * Create a default cell - at the end of the selected variables.
+     * Create a default cell
+     * @param preferFirstSelected prefer the first selected variable
      */
-    public void createDefaultCell() {
+    public void createDefaultCell(boolean preferFirstSelected) {
         Cell newCell = null;
-        Variable v = Datavyu.getProjectController().getLastCreatedVariable();
+        Variable v =  Datavyu.getProjectController().getLastCreatedVariable();
+        if (preferFirstSelected){
+            List<Variable> vlist = Datavyu.getProjectController().getDB().getSelectedVariables();
+            if (!vlist.isEmpty()){
+                v = vlist.get(0);
+            }
+        }
+        
         if (v != null) {
             newCell = createCell(v);
 
@@ -119,6 +127,13 @@ public final class CreateNewCellC {
         }
     }
 
+    /**
+     * Create a default cell
+     */
+    public void createDefaultCell() {
+        createDefaultCell(false);
+    }
+    
     /**
      * Create New Cell Controller - creates new cells in columns adjacent to the
      * supplied cells. If no column is adjacent in the specified direction, no
