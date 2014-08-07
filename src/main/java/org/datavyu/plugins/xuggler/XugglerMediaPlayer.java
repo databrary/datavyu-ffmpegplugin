@@ -53,6 +53,8 @@ public class XugglerMediaPlayer implements Runnable {
 
     private boolean destroyPicture = false;
 
+    private ArrayList<IPacket> packets;
+
     public XugglerMediaPlayer() {
         // Let's make sure that we can actually convert video pixel formats.
         if (!IVideoResampler.isSupported(IVideoResampler.Feature.FEATURE_COLORSPACECONVERSION))
@@ -124,14 +126,14 @@ public class XugglerMediaPlayer implements Runnable {
     private void playLoop() {
         while (true) {
             if (playing) {
-            try {
-                long timeStamp = readFrame();
-                if (timeStamp != -1) {
+                try {
+                    long timeStamp = readFrame();
+                    if (timeStamp != -1) {
 
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             } else {
                 try {
                     Thread.sleep(100);
@@ -198,20 +200,21 @@ public class XugglerMediaPlayer implements Runnable {
             int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
 
             if (retval < 0) {
-//                throw new RuntimeException("Error seeking");
+                throw new RuntimeException("Error seeking");
             }
 //            container.seekKeyFrame(i, frame, frame, frame, IContainer.SEEK_FLAG_FRAME);
         } else {
             int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
 
             if (retval < 0) {
-//                throw new RuntimeException("Error seeking");
+                throw new RuntimeException("Error seeking");
             }
         }
 
 
+        long nearestOffset = getNearestKeyframeOffset(position);
         while (container.readNextPacket(packet) >= 0) {
-            if (packet.getStreamIndex() == videoStreamId) {
+            if (packet.getStreamIndex() == videoStreamId && getTimeInMilliseconds(packet) >= nearestOffset) {
                 videoQueue.add(IPacket.make(packet, true));
                 lastFrameTime = getTimeInMilliseconds(packet);
                 System.out.println("POSITION: " + position + " PACKET TIME: " + getTimeInMilliseconds(packet));
@@ -389,6 +392,8 @@ public class XugglerMediaPlayer implements Runnable {
         keyFrameNumbers = new ArrayList<Long>();
         keyFrameOffsets = new ArrayList<Long>();
 
+        packets = new ArrayList<IPacket>();
+
 
         IStreamCoder videoCoder = null;
         IStreamCoder audioCoder = null;
@@ -533,6 +538,16 @@ public class XugglerMediaPlayer implements Runnable {
         return -1;
     }
 
+    private long getNearestKeyframeOffset(long timestamp) {
+        // Just do a stupid thing for now. TODO make this a BST
+        for (int i = 0; i < keyFrameOffsets.size(); i++) {
+            if (keyFrameOffsets.get(i) > timestamp) {
+                return keyFrameOffsets.get(i - 1);
+            }
+        }
+        return -1;
+    }
+
     public float getFps() {
         return (float) fps;
     }
@@ -605,6 +620,8 @@ public class XugglerMediaPlayer implements Runnable {
 //            long delay = millisecondsUntilTimeToDisplay(frame);
             long delay = frameTime - controllerTime;
             System.out.println("FRAMETIME: " + frameTime + " CONTROLLER TIME: " + controllerTime);
+
+            // TODO fix this hack. Figure out why I am still getting incorrect frames in here.
             if (delay > 1000) {
                 destroyPicture = true;
                 return;
@@ -630,7 +647,7 @@ public class XugglerMediaPlayer implements Runnable {
         @Override
         public void run() {
             while (true) {
-                if (playing) {
+                if (videoQueue.size() > 0) {
                     try {
                         IPacket packet = videoQueue.poll();
 //                        System.out.println(videoQueue.size());
