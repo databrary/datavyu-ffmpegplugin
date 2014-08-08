@@ -45,4 +45,6 @@ public interface CellSelectionListener {
      * Notifiers the listeners to clear all the currently selected cells.
      */
     void clearCellSelection();
+    
+    void clearColumnSelection();
 }

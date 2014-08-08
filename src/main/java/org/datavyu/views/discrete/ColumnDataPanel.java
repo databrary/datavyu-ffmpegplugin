@@ -207,6 +207,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         SpreadsheetCell nCell = new SpreadsheetCell(ds, cell, cellSelL);
         nCell.setWidth(this.getWidth());
         cell.addListener(nCell);
+        cellSelectionL.clearColumnSelection();
 
         nCell.setAlignmentX(Component.RIGHT_ALIGNMENT);
         this.add(nCell);
