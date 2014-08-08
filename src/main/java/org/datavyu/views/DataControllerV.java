@@ -1022,7 +1022,7 @@ public final class DataControllerV extends DatavyuDialog
         jLabel1.setText("@");
         timestampPanel.add(jLabel1);
 
-        lblSpeed.setFont(new Font("Tahoma", Font.BOLD, fontSize));
+        lblSpeed.setFont(new Font("Tahoma", Font.BOLD, timeStampFontSize));
         lblSpeed.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1,
                 2));
         lblSpeed.setName("lblSpeed");
