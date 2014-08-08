@@ -61,6 +61,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  * The main FrameView, representing the interface for Datavyu the user will
@@ -127,6 +129,7 @@ public final class DatavyuView extends FrameView
     private javax.swing.JMenuItem supportMenuItem;
     private javax.swing.JMenuItem guideMenuItem;
     private javax.swing.JMenuItem citationMenuItem;
+    private javax.swing.JMenuItem hotkeysMenuItem;
     private javax.swing.JMenuItem changeVarNameMenuItem;
     private javax.swing.JMenu controllerMenu;
     private javax.swing.JMenuItem deleteCellMenuItem;
@@ -1592,6 +1595,53 @@ public final class DatavyuView extends FrameView
         JOptionPane.showMessageDialog(null, rMap.getString("citationText.text"), "How to Cite Datavyu", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    private class NoEditTableModel extends DefaultTableModel{
+        @Override
+        public boolean isCellEditable(int r, int c) {return false;}
+    };
+    
+    /**
+     * Action for showing the list of hotkeys
+     */
+    @Action
+    public void showHotkeysDialog() {
+        ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
+                .getResourceMap(DatavyuView.class);
+        boolean isMac = Datavyu.getPlatform() == Platform.MAC;
+
+        DefaultTableModel tm = new NoEditTableModel();
+        tm.addColumn("Action"); tm.addColumn("Explanation"); tm.addColumn("Combo");
+
+        String[] row = new String[3];
+        String[] actionArr = rMap.getString("hotkeys.action").split(",");
+        String[] explanationArr = rMap.getString("hotkeys.explanation").split(",");
+        String[] comboArr;
+        if (isMac){
+            comboArr = rMap.getString("hotkeys.combo.mac").split(",");
+        }
+        else{
+            comboArr = rMap.getString("hotkeys.combo.pc").split(",");
+        }
+        for(int i = 0; i < actionArr.length; i++){
+            row[0] = actionArr[i]; 
+            if (i < explanationArr.length) row[1] = explanationArr[i]; 
+            else row[1] = "";
+            if (i < comboArr.length) row[2] = comboArr[i];
+            else row[2] = "";
+            tm.insertRow(i, row);
+        }
+        
+        JTable t = new JTable(tm);
+        t.getColumnModel().getColumn(0).setPreferredWidth(40);
+        t.getColumnModel().getColumn(2).setPreferredWidth(20);
+        JScrollPane jp = new JScrollPane(t);
+        JPanel p = new JPanel();
+        p.setSize(new java.awt.Dimension(700,600));
+        p.add(jp);
+        JOptionPane.showMessageDialog(null, p, "Keyboard Shortcuts", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    
     /**
      * Clears the contents of the spreadsheet.
      */
@@ -1980,6 +2030,7 @@ public final class DatavyuView extends FrameView
         supportMenuItem = new javax.swing.JMenuItem();
         guideMenuItem = new javax.swing.JMenuItem();
         citationMenuItem = new javax.swing.JMenuItem();
+        hotkeysMenuItem = new javax.swing.JMenuItem();
 
         scriptMenuPermanentsList = new ArrayList();
 
@@ -2305,7 +2356,6 @@ public final class DatavyuView extends FrameView
 
         menuBar.add(scriptMenu);
         
-        helpMenu.setAction(actionMap.get("showVariableList"));
         helpMenu.setName("helpMenu");
 
         aboutMenuItem.setAction(actionMap.get("showAboutWindow"));
@@ -2339,6 +2389,10 @@ public final class DatavyuView extends FrameView
         citationMenuItem.setName("citationMenuItem");
         helpMenu.add(citationMenuItem);
 
+        hotkeysMenuItem.setAction(actionMap.get("showHotkeysDialog"));
+        hotkeysMenuItem.setName("hotkeysMenuItem");
+        helpMenu.add(hotkeysMenuItem);
+        
         menuBar.add(helpMenu);
         resourceMap.injectComponents(menuBar);
 
