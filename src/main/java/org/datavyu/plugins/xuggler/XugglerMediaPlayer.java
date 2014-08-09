@@ -217,8 +217,9 @@ public class XugglerMediaPlayer implements Runnable {
             if (packet.getStreamIndex() == videoStreamId && getTimeInMilliseconds(packet) >= nearestOffset) {
                 videoQueue.add(IPacket.make(packet, true));
                 lastFrameTime = getTimeInMilliseconds(packet);
-                System.out.println("POSITION: " + position + " PACKET TIME: " + getTimeInMilliseconds(packet));
-                if (getTimeInMilliseconds(packet) + packet.getDuration() >= position) {
+
+                System.out.println("POSITION: " + position + " PACKET TIME: " + getTimeInMilliseconds(packet) + " DURATION: " + packet.getDuration() + " COMPLETE: " + packet.isComplete() + " KEY: " + packet.isKeyPacket());
+                if (getTimeInMilliseconds(packet) + getTimeInMilliseconds(packet.getDuration(), packet.getTimeBase()) >= position) {
                     System.out.println("NEAREST TIME: " + lastFrameTime);
                     break;
                 }
@@ -374,6 +375,15 @@ public class XugglerMediaPlayer implements Runnable {
             timeBase = IRational.make(1, (int) Global.DEFAULT_PTS_PER_SECOND);
         long timeInMs =
                 (long) (packet.getPts() * timeBase.getDouble() * 1000);
+        timeBase.delete();
+        return timeInMs;
+    }
+
+    private long getTimeInMilliseconds(long time, IRational timeBase) {
+        if (timeBase == null)
+            timeBase = IRational.make(1, (int) Global.DEFAULT_PTS_PER_SECOND);
+        long timeInMs =
+                (long) (time * timeBase.getDouble() * 1000);
         timeBase.delete();
         return timeInMs;
     }
@@ -624,6 +634,10 @@ public class XugglerMediaPlayer implements Runnable {
             // TODO fix this hack. Figure out why I am still getting incorrect frames in here.
             if (delay > 1000) {
                 destroyPicture = true;
+                return;
+            }
+
+            if (frameTime > controllerTime && !playing) {
                 return;
             }
             // if there is no audio stream; go ahead and hold up the main thread.  We'll end

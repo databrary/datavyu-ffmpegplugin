@@ -132,12 +132,17 @@ public class XugglerDataViewer implements DataViewer {
 
     @Override
     public float getFrameRate() {
-        return fps;
+        return mediaPlayer.getFps();
+    }
+
+    @Override
+    public void setFrameRate(float fpsIn) {
+        fps = fpsIn;
     }
 
     @Override
     public float getDetectedFrameRate() {
-        return fps;
+        return mediaPlayer.getFps();
     }
 
     @Override
@@ -295,14 +300,9 @@ public class XugglerDataViewer implements DataViewer {
             final DataController dataController) {
         // TODO Auto-generated method stub
     }
-    
-    public boolean usingAssumedFPS(){
-        return false;
-    }
 
-    @Override
-    public void setFrameRate(float fpsIn) {
-        fps = fpsIn;
+    public boolean usingAssumedFPS() {
+        return false;
     }
 
 }
