@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -214,6 +215,7 @@ public class XugglerMediaPlayer implements Runnable {
 
         long nearestOffset = getNearestKeyframeOffset(position);
         while (container.readNextPacket(packet) >= 0) {
+            System.out.println(packet.getTimeStamp());
             if (packet.getStreamIndex() == videoStreamId && getTimeInMilliseconds(packet) >= nearestOffset) {
                 videoQueue.add(IPacket.make(packet, true));
                 lastFrameTime = getTimeInMilliseconds(packet);
@@ -694,6 +696,89 @@ public class XugglerMediaPlayer implements Runnable {
             }
         }
 
+    }
+
+    class ImageBuffer implements Runnable {
+
+        int bufferSize;
+        List<IVideoPicture> buffer;
+
+        public ImageBuffer(int size) {
+            // Keep "size" images in the buffer
+            bufferSize = size;
+            buffer = new ArrayList<IVideoPicture>();
+        }
+
+        public IVideoPicture getImage(long timeStamp) {
+            IVideoPicture image = null;
+
+            // Return the frame that is closest to the frame in the buffer
+            // TODO This should probably be a tree
+            for (int i = 0; i < buffer.size(); i++) {
+                if (buffer.get(i).getTimeStamp() / 1000 > timeStamp) {
+                    image = buffer.get(i - 1); // Get the frame from before this timestamp
+                }
+            }
+            return image;
+        }
+
+        public void clearBuffer() {
+            buffer.clear();
+        }
+
+        public long minTimestamp() {
+            if (buffer.size() > 0) {
+                return buffer.get(0).getTimeStamp();
+            } else {
+                return 0L;
+            }
+        }
+
+        public long maxTimestamp() {
+            if (buffer.size() > 0) {
+                return buffer.get(buffer.size() - 1).getTimeStamp();
+            } else {
+                return 0L;
+            }
+        }
+
+        private IVideoPicture popTail() {
+            IVideoPicture image = buffer.get(0);
+            buffer.remove(0);
+            return image;
+        }
+
+        public void bufferFrame(IVideoPicture frame) {
+            if (buffer.size() + 1 > bufferSize) {
+                popTail();
+            }
+            buffer.add(frame);
+        }
+
+        @Override
+        public void run() {
+
+        }
+    }
+
+    class DisplayFrame implements Runnable {
+
+        // This class will look at the timer and then display the proper frame from the buffer
+
+        @Override
+        public void run() {
+
+        }
+    }
+
+    class SoundBuffer implements Runnable {
+
+        // Buffer for audio samples
+
+        @Override
+        public void run() {
+
+        }
     }
 
     class AudioPlayer implements Runnable {
