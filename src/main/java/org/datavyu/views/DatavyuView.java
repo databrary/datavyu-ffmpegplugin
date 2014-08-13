@@ -1304,6 +1304,12 @@ public final class DatavyuView extends FrameView
 
         @Override
         public ProjectController doInBackground() {
+            
+            if(tabbedPane.getTabCount() == 1 && 
+                    Datavyu.getProjectController().getProjectName() == null &&
+                    !Datavyu.getProjectController().isChanged()){
+                        tabbedPane.remove(0);
+            }
 
             if (!jd.getSelectedFile().exists()) {
                 setProgress(2);
