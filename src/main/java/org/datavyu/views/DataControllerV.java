@@ -1017,6 +1017,18 @@ public final class DataControllerV extends DatavyuDialog
         timestampLabel.setText("00:00:00:000");
         timestampLabel.setHorizontalTextPosition(SwingConstants.CENTER);
         timestampLabel.setName("timestampLabel");
+        timestampLabel.addMouseListener(new MouseAdapter() {  
+            public void mouseClicked(MouseEvent e) {  
+               // you can open a new frame here as
+               // i have assumed you have declared "frame" as instance variable
+               if(e.getClickCount() >= 3){
+                    int newTime = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter new time in ms", getCurrentTime()));
+                    setCurrentTime(newTime);
+                    clock.setTime(newTime);
+               }
+            }
+        }); 
+        
         timestampPanel.add(timestampLabel);
 
         jLabel1.setText("@");
