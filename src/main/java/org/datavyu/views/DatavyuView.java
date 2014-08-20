@@ -70,6 +70,12 @@ import java.util.logging.Level;
 public final class DatavyuView extends FrameView
         implements FileDropEventListener {
 
+    /**
+     * The directory holding a users favourite scripts.
+     */
+    static final String FAV_DIR = "favourites";
+    String fav_dir_config = Configuration.getInstance().getFavouritesFolder();
+
     // Variable for the amount to raise the font size by when zooming.
     public static final int ZOOM_INTERVAL = 2;
     public static final int ZOOM_DEFAULT_SIZE = 14;
@@ -1279,6 +1285,89 @@ public final class DatavyuView extends FrameView
         } else if ("opf".equalsIgnoreCase(ext)) {
             fc.setFileFilter(OPFFilter.INSTANCE);
             open(fc);
+        }
+    }
+
+    class OpenTask extends SwingWorker<ProjectController, Void> {
+        private DatavyuFileChooser jd;
+
+
+        public OpenTask(final DatavyuFileChooser jd) {
+
+            this.jd = jd;
+        }
+
+        @Override
+        public ProjectController doInBackground() {
+            
+            if(tabbedPane.getTabCount() == 1 && 
+                    Datavyu.getProjectController().getProjectName() == null &&
+                    !Datavyu.getProjectController().isChanged()){
+                        tabbedPane.remove(0);
+            }
+
+            if (!jd.getSelectedFile().exists()) {
+                setProgress(2);
+                return null;
+            }
+
+
+            setProgress(0);
+            FileFilter filter = jd.getFileFilter();
+//            clearSpreadsheet();
+
+            setProgress(10);
+            OpenC openC = null;
+
+
+//            showSpreadsheet(pController, progressBar);
+
+            if ((filter == SHAPAFilter.INSTANCE) || (filter == OPFFilter.INSTANCE)) {
+                // Opening a project or project archive file
+                openC = openProject(jd.getSelectedFile());
+
+            } else {
+                // Opening a database file
+                openC = openDatabase(jd.getSelectedFile());
+            }
+
+            if (openC == null) {
+                setProgress(1);
+                return null;
+            }
+
+            ProjectController pController = new ProjectController(openC.getProject(), openC.getDatastore());
+            pController.setProjectName(jd.getSelectedFile().getName());
+
+            pController.setLastSaveOption(filter);
+            pController.setProjectDirectory(jd.getSelectedFile().getParent());
+            pController.setDatabaseFileName(jd.getSelectedFile().getName());
+
+            setProgress(40);
+
+            // BugzID:449 - Set filename in spreadsheet window and database if the database name is undefined.
+
+
+            // Display any changes to the database.
+            setProgress(50);
+
+
+            /* updates the progressBar up to nearly 100% */
+
+            // Default is to highlight cells when created - clear selection on load.
+//            panel.clearCellSelection();
+
+            // The project we just opened doesn't really contain any unsaved changes.
+            pController.markProjectAsUnchanged();
+            pController.getDB().markAsUnchanged();
+
+            // Update the list of recently opened files.
+            RecentFiles.rememberProject(jd.getSelectedFile());
+
+            setProgress(100);
+
+//            progressBar.close();
+            return pController;
         }
     }
 

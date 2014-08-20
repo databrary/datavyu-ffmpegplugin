@@ -26,6 +26,8 @@ import org.datavyu.views.discrete.SpreadsheetPanel;
 
 import javax.swing.undo.UndoableEdit;
 import java.util.List;
+import org.datavyu.undoableedits.ChangeCellEdit;
+import org.datavyu.undoableedits.ChangeOffsetCellEdit;
 
 
 /**
@@ -205,11 +207,15 @@ public final class CreateNewCellC {
         // But only if it is not 0.
         Cell lastCreatedCell = Datavyu.getProjectController().getLastCreatedCell();
 
+        //To set the previous offset -- NOTE THAT THIS IS NOT UNDOABLE
         if (lastCreatedCell != null) {
             // BugzID:1285 - Only update the last created cell if it is in
             // the same column as the newly created cell.
             for (Variable var : model.getSelectedVariables()) {
                 if (var.contains(lastCreatedCell)) {
+                    UndoableEdit edit = new ChangeOffsetCellEdit(lastCreatedCell, lastCreatedCell.getOffset(),
+                        milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
+                    Datavyu.getView().getUndoSupport().postEdit(edit);
                     lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
                 }
             }
@@ -217,9 +223,48 @@ public final class CreateNewCellC {
             Variable lastCreated = Datavyu.getProjectController().getLastCreatedVariable();
             if (model.getSelectedVariables().isEmpty() && lastCreated != null) {
                 if (lastCreated.contains(lastCreatedCell)) {
+                    UndoableEdit edit = new ChangeOffsetCellEdit(lastCreatedCell, lastCreatedCell.getOffset(),
+                        milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
+                    Datavyu.getView().getUndoSupport().postEdit(edit);
                     lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
                 }
             }
+        }
+        
+        //If there is no last created cell, use time to determine appopriate cell in 
+        //FIRST selected variable or the variable belonging to the FIRST selected cell
+        if (lastCreatedCell == null){
+              Variable v = null;
+              if(!Datavyu.getProjectController().getDB().getSelectedVariables().isEmpty()){
+                  Datavyu.getProjectController().getDB().getSelectedVariables().get(0);
+              }
+              else{
+                  if(!Datavyu.getProjectController().getDB().getSelectedCells().isEmpty()){
+                          Cell selectedC = Datavyu.getProjectController().getDB().getSelectedCells().get(0);
+                          for(Variable v1 : Datavyu.getProjectController().getDB().getVisibleVariables()){
+                                  if(v1.contains(selectedC)){
+                                      v = v1;
+                                      break;
+                                  }
+                          }
+                  }
+              }
+              
+              if(v != null){
+                    Cell oneBefore = null;
+                    for(Cell c : v.getCellsTemporally()){
+                          if(c.getOnset() > milliseconds){
+                              break;
+                          }
+                          oneBefore = c;
+                    }
+                    if (oneBefore != null){
+                        UndoableEdit edit = new ChangeOffsetCellEdit(oneBefore, oneBefore.getOffset(),
+                            milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
+                        Datavyu.getView().getUndoSupport().postEdit(edit);
+                        oneBefore.setOffset(Math.max(0, (milliseconds - 1)));
+                    }
+              }
         }
 
         // Create the new cell.

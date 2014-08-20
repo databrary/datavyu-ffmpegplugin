@@ -302,7 +302,7 @@ public final class SpreadsheetPanel extends JPanel
     }
 
     /**
-     * Creates a new project controller.
+     * Creates a new project controller. No usages as of 8/13/2014
      */
     public void newProjectController() {
         projectController = new ProjectController();

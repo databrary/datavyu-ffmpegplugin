@@ -3,7 +3,6 @@
 
 ### Additions
 * Choose your own favourites folder: will determine contents of bottom-left file panel, script dropdown menu
-* Undo is implemented to the value level
 * Frame-by-frame export is now available in the drop down menu
 * You can now open multiple spreadsheets in datavyu! Each spreadsheet has its own corresponding controller. Tabs at the top of the spreadsheet are used to navigate between open spreadsheets. 
 * We have added our user guide, release notes, and developer notes to the application folder. 
