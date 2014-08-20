@@ -26,6 +26,8 @@ import org.datavyu.views.discrete.SpreadsheetPanel;
 
 import javax.swing.undo.UndoableEdit;
 import java.util.List;
+import org.datavyu.undoableedits.ChangeCellEdit;
+import org.datavyu.undoableedits.ChangeOffsetCellEdit;
 
 
 /**
@@ -211,6 +213,9 @@ public final class CreateNewCellC {
             // the same column as the newly created cell.
             for (Variable var : model.getSelectedVariables()) {
                 if (var.contains(lastCreatedCell)) {
+                    UndoableEdit edit = new ChangeOffsetCellEdit(lastCreatedCell, lastCreatedCell.getOffset(),
+                        milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
+                    Datavyu.getView().getUndoSupport().postEdit(edit);
                     lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
                 }
             }
@@ -218,6 +223,9 @@ public final class CreateNewCellC {
             Variable lastCreated = Datavyu.getProjectController().getLastCreatedVariable();
             if (model.getSelectedVariables().isEmpty() && lastCreated != null) {
                 if (lastCreated.contains(lastCreatedCell)) {
+                    UndoableEdit edit = new ChangeOffsetCellEdit(lastCreatedCell, lastCreatedCell.getOffset(),
+                        milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
+                    Datavyu.getView().getUndoSupport().postEdit(edit);
                     lastCreatedCell.setOffset(Math.max(0, (milliseconds - 1)));
                 }
             }
@@ -251,6 +259,9 @@ public final class CreateNewCellC {
                           oneBefore = c;
                     }
                     if (oneBefore != null){
+                        UndoableEdit edit = new ChangeOffsetCellEdit(oneBefore, oneBefore.getOffset(),
+                            milliseconds - 1, ChangeCellEdit.Granularity.FINEGRAINED);
+                        Datavyu.getView().getUndoSupport().postEdit(edit);
                         oneBefore.setOffset(Math.max(0, (milliseconds - 1)));
                     }
               }
