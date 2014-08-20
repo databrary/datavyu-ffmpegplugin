@@ -46,6 +46,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -61,8 +62,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 /**
  * The main FrameView, representing the interface for Datavyu the user will
@@ -71,57 +70,43 @@ import javax.swing.table.TableModel;
 public final class DatavyuView extends FrameView
         implements FileDropEventListener {
 
+    // Variable for the amount to raise the font size by when zooming.
+    public static final int ZOOM_INTERVAL = 2;
+    public static final int ZOOM_DEFAULT_SIZE = 14;
+    // Variables to set the maximum zoom and minimum zoom.
+    public static final int ZOOM_MAX_SIZE = 42;
+    public static final int ZOOM_MIN_SIZE = 8;
     /**
      * The directory holding a users favourite scripts.
      */
     static final String FAV_DIR = "favourites";
-    String fav_dir_config = Configuration.getInstance().getFavouritesFolder();
-
-    // Variable for the amount to raise the font size by when zooming.
-    public static final int ZOOM_INTERVAL = 2;
-    public static final int ZOOM_DEFAULT_SIZE = 14;
-
-    // Variables to set the maximum zoom and minimum zoom.
-    public static final int ZOOM_MAX_SIZE = 42;
-    public static final int ZOOM_MIN_SIZE = 8;
-
     /**
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(DatavyuView.class);
-
+    private static boolean redraw = true;
+    private final Icon rubyIcon = new ImageIcon(getClass().getResource("/icons/ruby.png"));
+    private final Icon opfIcon = new ImageIcon(getClass().getResource("/icons/datavyu.png"));
+    String fav_dir_config = Configuration.getInstance().getFavouritesFolder();
+    /**
+     * undo system elements
+     */
+    SpreadsheetUndoManager spreadsheetUndoManager; // history list
+    UndoableEditSupport undoSupport; // event support
+    JPopupMenu popupMenu = new JPopupMenu();
+    JMenuItem openInTextEditor = new JMenuItem("Open in text editor");
+    JMenuItem openInDatavyu = new JMenuItem("Open in Datavyu");
     /**
      * The spreadsheet panel for this view.
      */
     private SpreadsheetPanel panel;
     private JSplitPane splitPane;
-
-    private static boolean redraw = true;
-
     private DVProgressBar progressBar;
     private OpenTask task;
-
-    /**
-     * undo system elements
-     */
-    SpreadsheetUndoManager spreadsheetUndoManager; // history list
-
-    public SpreadsheetUndoManager getSpreadsheetUndoManager() {
-        return spreadsheetUndoManager;
-    }
-
     /**
      * the code editor's controller
      */
     private VocabEditorC vec = VocabEditorC.getController();
-
-    UndoableEditSupport undoSupport; // event support
-
-    public UndoableEditSupport getUndoSupport() {
-        return undoSupport;
-    }
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem ShowAllVariablesMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
@@ -190,14 +175,8 @@ public final class DatavyuView extends FrameView
     private TreeModel fileTree;
     private JScrollPane favScrollPane;
     private JTree favDrawer;
-    private TreeModel favTree;
-    private final Icon rubyIcon = new ImageIcon(getClass().getResource("/icons/ruby.png"));
-    private final Icon opfIcon = new ImageIcon(getClass().getResource("/icons/datavyu.png"));
     // End of variables declaration//GEN-END:variables
-
-    JPopupMenu popupMenu = new JPopupMenu();
-    JMenuItem openInTextEditor = new JMenuItem("Open in text editor");
-    JMenuItem openInDatavyu = new JMenuItem("Open in Datavyu");
+    private TreeModel favTree;
 
     /**
      * Constructor.
@@ -737,6 +716,14 @@ public final class DatavyuView extends FrameView
         this.getFrame().addWindowListener(exitListener);
     }
 
+    public SpreadsheetUndoManager getSpreadsheetUndoManager() {
+        return spreadsheetUndoManager;
+    }
+
+    public UndoableEditSupport getUndoSupport() {
+        return undoSupport;
+    }
+
     @Override
     public javax.swing.JComponent getComponent() {
         return (javax.swing.JComponent) tabbedPane.getSelectedComponent();
@@ -1177,6 +1164,7 @@ public final class DatavyuView extends FrameView
                 }
 
                 projController.getDB().setName(dbFileName);
+                projController.setProjectName(dbFileName);
                 projController.setProjectDirectory(fc.getSelectedFile()
                         .getParent());
                 projController.setDatabaseFileName(dbFileName);
@@ -1214,6 +1202,7 @@ public final class DatavyuView extends FrameView
                 );
                 projController.getDB().setName(fc.getSelectedFile().getName());
                 projController.setProjectDirectory(fc.getSelectedFile().getParent());
+                projController.setDatabaseFileName(archiveName);
 
             }
 
@@ -1290,83 +1279,6 @@ public final class DatavyuView extends FrameView
         } else if ("opf".equalsIgnoreCase(ext)) {
             fc.setFileFilter(OPFFilter.INSTANCE);
             open(fc);
-        }
-    }
-
-    class OpenTask extends SwingWorker<ProjectController, Void> {
-        private DatavyuFileChooser jd;
-
-
-        public OpenTask(final DatavyuFileChooser jd) {
-
-            this.jd = jd;
-        }
-
-        @Override
-        public ProjectController doInBackground() {
-
-            if (!jd.getSelectedFile().exists()) {
-                setProgress(2);
-                return null;
-            }
-
-
-            setProgress(0);
-            FileFilter filter = jd.getFileFilter();
-//            clearSpreadsheet();
-
-            setProgress(10);
-            OpenC openC = null;
-
-
-//            showSpreadsheet(pController, progressBar);
-
-            if ((filter == SHAPAFilter.INSTANCE) || (filter == OPFFilter.INSTANCE)) {
-                // Opening a project or project archive file
-                openC = openProject(jd.getSelectedFile());
-
-            } else {
-                // Opening a database file
-                openC = openDatabase(jd.getSelectedFile());
-            }
-
-            if (openC == null) {
-                setProgress(1);
-                return null;
-            }
-
-            ProjectController pController = new ProjectController(openC.getProject(), openC.getDatastore());
-            pController.setProjectName(jd.getSelectedFile().getName());
-
-            pController.setLastSaveOption(filter);
-            pController.setProjectDirectory(jd.getSelectedFile().getParent());
-            pController.setDatabaseFileName(jd.getSelectedFile().getName());
-
-            setProgress(40);
-
-            // BugzID:449 - Set filename in spreadsheet window and database if the database name is undefined.
-
-
-            // Display any changes to the database.
-            setProgress(50);
-
-
-            /* updates the progressBar up to nearly 100% */
-
-            // Default is to highlight cells when created - clear selection on load.
-//            panel.clearCellSelection();
-
-            // The project we just opened doesn't really contain any unsaved changes.
-            pController.markProjectAsUnchanged();
-            pController.getDB().markAsUnchanged();
-
-            // Update the list of recently opened files.
-            RecentFiles.rememberProject(jd.getSelectedFile());
-
-            setProgress(100);
-
-//            progressBar.close();
-            return pController;
         }
     }
 
@@ -1458,7 +1370,6 @@ public final class DatavyuView extends FrameView
         // Default is to highlight cells when created - clear selection on load.
         panel.clearCellSelection();
     }
-
 
     private OpenC openDatabase(final File databaseFile) {
 
@@ -1595,11 +1506,6 @@ public final class DatavyuView extends FrameView
         JOptionPane.showMessageDialog(null, rMap.getString("citationText.text"), "How to Cite Datavyu", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private class NoEditTableModel extends DefaultTableModel{
-        @Override
-        public boolean isCellEditable(int r, int c) {return false;}
-    };
-    
     /**
      * Action for showing the list of hotkeys
      */
@@ -1610,38 +1516,38 @@ public final class DatavyuView extends FrameView
         boolean isMac = Datavyu.getPlatform() == Platform.MAC;
 
         DefaultTableModel tm = new NoEditTableModel();
-        tm.addColumn("Action"); tm.addColumn("Explanation"); tm.addColumn("Combo");
+        tm.addColumn("Action");
+        tm.addColumn("Explanation");
+        tm.addColumn("Combo");
 
         String[] row = new String[3];
         String[] actionArr = rMap.getString("hotkeys.action").split(",");
         String[] explanationArr = rMap.getString("hotkeys.explanation").split(",");
         String[] comboArr;
-        if (isMac){
+        if (isMac) {
             comboArr = rMap.getString("hotkeys.combo.mac").split(",");
-        }
-        else{
+        } else {
             comboArr = rMap.getString("hotkeys.combo.pc").split(",");
         }
-        for(int i = 0; i < actionArr.length; i++){
-            row[0] = actionArr[i]; 
-            if (i < explanationArr.length) row[1] = explanationArr[i]; 
+        for (int i = 0; i < actionArr.length; i++) {
+            row[0] = actionArr[i];
+            if (i < explanationArr.length) row[1] = explanationArr[i];
             else row[1] = "";
             if (i < comboArr.length) row[2] = comboArr[i];
             else row[2] = "";
             tm.insertRow(i, row);
         }
-        
+
         JTable t = new JTable(tm);
         t.getColumnModel().getColumn(0).setPreferredWidth(40);
         t.getColumnModel().getColumn(2).setPreferredWidth(20);
         JScrollPane jp = new JScrollPane(t);
         JPanel p = new JPanel();
-        p.setSize(new java.awt.Dimension(700,600));
+        p.setSize(new java.awt.Dimension(700, 600));
         p.add(jp);
         JOptionPane.showMessageDialog(null, p, "Keyboard Shortcuts", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    
     /**
      * Clears the contents of the spreadsheet.
      */
@@ -1652,6 +1558,8 @@ public final class DatavyuView extends FrameView
 //        panel.deregisterListeners();
         panel.removeFileDropEventListener(this);
     }
+
+    ;
 
     public ProjectController createNewSpreadsheet(ProjectController pc) {
         pc.setSpreadsheetPanel(new SpreadsheetPanel(pc, null));
@@ -1717,7 +1625,7 @@ public final class DatavyuView extends FrameView
             LOGGER.error("Unable run script", e);
         }
     }
-    
+
     /**
      * Action for setting the favourites folder
      */
@@ -1727,25 +1635,26 @@ public final class DatavyuView extends FrameView
             Configuration config = Configuration.getInstance();
             JFileChooser jd = new JFileChooser();
             FileFilter directoryFilter = new FileFilter() {
-			public boolean accept(File file) {
-				return file.isDirectory();
-			}
-                        public String getDescription() {return "Select folder for favourite scripts";}
-		};
-            
+                public boolean accept(File file) {
+                    return file.isDirectory();
+                }
+
+                public String getDescription() {
+                    return "Select folder for favourite scripts";
+                }
+            };
+
             jd.addChoosableFileFilter(directoryFilter);
             jd.setAcceptAllFileFilterUsed(false);
             jd.setFileFilter(directoryFilter);
             jd.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            
+
             int result = jd.showOpenDialog(getComponent());
             String val = null;
             if (result == JFileChooser.APPROVE_OPTION) {
                 val = jd.getSelectedFile().toString();
             }
-            if(!(val == null))
-            {
-                System.out.println("SET THAT FOLDER to " + val);
+            if (!(val == null)) {
                 config.setFavouritesFolder(val);
                 fav_dir_config = val;
                 populateFavourites(null);
@@ -1756,11 +1665,10 @@ public final class DatavyuView extends FrameView
         } catch (Exception e) {
             LOGGER.error("Unable set folder", e);
         }
-    }    
-    
-    private void updateFavDrawerLabel()
-    {
-          favScrollPane.setColumnHeaderView(new JLabel(fav_dir_config));
+    }
+
+    private void updateFavDrawerLabel() {
+        favScrollPane.setColumnHeaderView(new JLabel(fav_dir_config));
     }
 
     /**
@@ -1861,12 +1769,12 @@ public final class DatavyuView extends FrameView
         panel.setLayoutType(type);
     }
 
-    public void setRedraw(boolean b) {
-        redraw = b;
-    }
-
     public boolean getRedraw() {
         return redraw;
+    }
+
+    public void setRedraw(boolean b) {
+        redraw = b;
     }
 
     @Action
@@ -1892,7 +1800,7 @@ public final class DatavyuView extends FrameView
         for (Component tab : tabbedPane.getComponents()) {
             if (tab instanceof SpreadsheetPanel) {
                 SpreadsheetPanel sp = (SpreadsheetPanel) tab;
-                if (sp.getProjectController().getDatabaseFileName() != null &&
+                if (sp.getProjectController().getFullPath() != null &&
                         sp.getProjectController().getFullPath().equals(filepath)) {
                     return true;
                 }
@@ -1956,7 +1864,6 @@ public final class DatavyuView extends FrameView
         spreadsheetUndoManager.discardAllEdits();
         refreshUndoRedo();
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -2111,7 +2018,7 @@ public final class DatavyuView extends FrameView
         exportByFrameMenuItem.setAction(actionMap.get("exportFileByFrame"));
         exportByFrameMenuItem.setName("exportByFrameMenuItem");
         fileMenu.add(exportByFrameMenuItem); //uncomment this once it works right!
-        
+
         fileMenuSeparator.setName("fileMenuSeparator");
         if (Datavyu.getPlatform() != Platform.MAC) {
             fileMenu.add(fileMenuSeparator);
@@ -2344,7 +2251,7 @@ public final class DatavyuView extends FrameView
         setFavouritesMenuItem.setAction(actionMap.get("setFavouritesFolder"));
         scriptMenu.add(setFavouritesMenuItem);
         scriptMenuPermanentsList.add("setFavouritesMenuItem");
-        
+
         jSeparator4.setName("jSeparator4");
         scriptMenu.add(jSeparator4);
         scriptMenuPermanentsList.add("jSeparator4");
@@ -2355,7 +2262,7 @@ public final class DatavyuView extends FrameView
         scriptMenuPermanentsList.add("favScripts");
 
         menuBar.add(scriptMenu);
-        
+
         helpMenu.setName("helpMenu");
 
         aboutMenuItem.setAction(actionMap.get("showAboutWindow"));
@@ -2392,7 +2299,7 @@ public final class DatavyuView extends FrameView
         hotkeysMenuItem.setAction(actionMap.get("showHotkeysDialog"));
         hotkeysMenuItem.setName("hotkeysMenuItem");
         helpMenu.add(hotkeysMenuItem);
-        
+
         menuBar.add(helpMenu);
         resourceMap.injectComponents(menuBar);
 
@@ -2492,9 +2399,11 @@ public final class DatavyuView extends FrameView
         // Get list of favourite scripts from the favourites folder.
         File favouritesDir = new File(fav_dir_config);
         FilenameFilter rubies = new FilenameFilter() {
-            public boolean accept(File file, String s){
+            public boolean accept(File file, String s) {
                 return s.endsWith(".rb");
-            };
+            }
+
+            ;
         };
         String[] children = favouritesDir.list(rubies);
 
@@ -2800,6 +2709,88 @@ public final class DatavyuView extends FrameView
 
     public JTabbedPane getTabbedPane() {
         return tabbedPane;
+    }
+
+    class OpenTask extends SwingWorker<ProjectController, Void> {
+        private DatavyuFileChooser jd;
+
+
+        public OpenTask(final DatavyuFileChooser jd) {
+
+            this.jd = jd;
+        }
+
+        @Override
+        public ProjectController doInBackground() {
+
+            if (!jd.getSelectedFile().exists()) {
+                setProgress(2);
+                return null;
+            }
+
+
+            setProgress(0);
+            FileFilter filter = jd.getFileFilter();
+//            clearSpreadsheet();
+
+            setProgress(10);
+            OpenC openC = null;
+
+
+//            showSpreadsheet(pController, progressBar);
+
+            if ((filter == SHAPAFilter.INSTANCE) || (filter == OPFFilter.INSTANCE)) {
+                // Opening a project or project archive file
+                openC = openProject(jd.getSelectedFile());
+
+            } else {
+                // Opening a database file
+                openC = openDatabase(jd.getSelectedFile());
+            }
+
+            if (openC == null) {
+                setProgress(1);
+                return null;
+            }
+
+            ProjectController pController = new ProjectController(openC.getProject(), openC.getDatastore());
+            pController.setProjectName(jd.getSelectedFile().getName());
+
+            pController.setLastSaveOption(filter);
+            pController.setProjectDirectory(jd.getSelectedFile().getParent());
+            pController.setDatabaseFileName(jd.getSelectedFile().getName());
+
+            setProgress(40);
+
+            // BugzID:449 - Set filename in spreadsheet window and database if the database name is undefined.
+
+
+            // Display any changes to the database.
+            setProgress(50);
+
+
+            /* updates the progressBar up to nearly 100% */
+
+            // Default is to highlight cells when created - clear selection on load.
+//            panel.clearCellSelection();
+
+            // The project we just opened doesn't really contain any unsaved changes.
+            pController.markProjectAsUnchanged();
+            pController.getDB().markAsUnchanged();
+
+            // Update the list of recently opened files.
+            RecentFiles.rememberProject(jd.getSelectedFile());
+
+            setProgress(100);
+
+//            progressBar.close();
+            return pController;
+        }
+    }
+
+    private class NoEditTableModel extends DefaultTableModel{
+        @Override
+        public boolean isCellEditable(int r, int c) {return false;}
     }
 
     /**
