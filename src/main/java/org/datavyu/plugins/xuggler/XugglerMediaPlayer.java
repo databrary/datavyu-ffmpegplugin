@@ -36,6 +36,7 @@ public class XugglerMediaPlayer implements Runnable {
     private long mFirstVideoTimestampInStream;
     private File data;
     private boolean playing = false;
+    private boolean display = true;
 
     private float fps;
     private double timebase;
@@ -95,7 +96,7 @@ public class XugglerMediaPlayer implements Runnable {
         }
 
         if (container.readNextPacket(packet) < 0) {
-//            System.err.println("Error reading packet");
+            System.err.println("Error reading packet");
             return -1L;
         }
         System.out.println("READ: " + getTimeInMilliseconds(packet));
@@ -127,8 +128,9 @@ public class XugglerMediaPlayer implements Runnable {
 
     private void playLoop() {
         while (true) {
-            if (!buffer.isFull()) {
+            if (!buffer.isFull() && display) {
                 try {
+                    System.out.println("BUFFERING FRAME");
                     long timeStamp = readFrame();
                     if (timeStamp != -1) {
 
@@ -137,6 +139,7 @@ public class XugglerMediaPlayer implements Runnable {
                     e.printStackTrace();
                 }
             } else {
+                System.out.println("MIN BUFFER: " + buffer.minTimestamp() + " CURRENT TIME: " + Datavyu.getDataController().getCurrentTime() + " MAX BUFFER: " + buffer.maxTimestamp() + " BUFFER SIZE: " + buffer.buffer.size());
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -181,13 +184,11 @@ public class XugglerMediaPlayer implements Runnable {
             buffer.clearBuffer();
         }
 
+        // If we're already in the buffer, don't bother seeking the video
         if (position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
             return;
         }
-
-//        if(position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
-//            return;
-//        }
+        display = false;
 
 //        System.out.println("new position: " + newPosition);
 
@@ -213,12 +214,19 @@ public class XugglerMediaPlayer implements Runnable {
             }
 //            container.seekKeyFrame(i, frame, frame, frame, IContainer.SEEK_FLAG_FRAME);
         } else {
+
+            // Rewind the container. This helps make sure we get the correct key frame for some reason.
+            // This is an issue with Xuggler.
+            container.seekKeyFrame(i, -1, 0);
+
             int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
 
             if (retval < 0) {
                 throw new RuntimeException("Error seeking");
             }
         }
+
+        display = true;
 
 
 //        long nearestOffset = getNearestKeyframeOffset(position);
@@ -510,9 +518,9 @@ public class XugglerMediaPlayer implements Runnable {
 
         playing = false;
 
-        buffer = new ImageBuffer(1000);
+        buffer = new ImageBuffer(100);
         new Thread(new VideoPlayer(videoCoder, buffer)).start();
-        new Thread(new AudioPlayer(audioCoder)).start();
+//        new Thread(new AudioPlayer(audioCoder)).start();
         new Thread(new DisplayFrame(buffer)).start();
 
         new Thread(new Runnable() {
@@ -627,8 +635,8 @@ public class XugglerMediaPlayer implements Runnable {
 //                            lastFrameTime = picture.getTimeStamp() / 1000;
 //                            System.out.println("DEBUG COMPLETE: " + picture.isComplete());
                             if (picture.isComplete() && (
-                                    picture.getTimeStamp() < buffer.minTimestamp() ||
-                                            picture.getTimeStamp() > buffer.maxTimestamp())
+                                    picture.getTimeStamp() / 1000 < buffer.minTimestamp() ||
+                                            picture.getTimeStamp() / 1000 > buffer.maxTimestamp())
                                     ) {
 
                                 buffer.addImage(picture);
@@ -668,14 +676,23 @@ public class XugglerMediaPlayer implements Runnable {
 
             // Return the frame that is closest to the frame in the buffer
             // TODO This should probably be a tree
-            for (int i = 1; i < buffer.size(); i++) {
-                if (buffer.get(i).getTimeStamp() / 1000 > timeStamp) {
-                    image = buffer.get(i - 1); // Get the frame from before this timestamp
-                    break;
+            try {
+                for (int i = 1; i < buffer.size(); i++) {
+                    if (buffer.get(i).getTimeStamp() / 1000 > timeStamp) {
+                        image = buffer.get(i - 1); // Get the frame from before this timestamp
+                        break;
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            if (image != null)
-                System.out.println("GETTING IMAGE: " + image.getTimeStamp() / 1000 + " FOR " + timeStamp + " BUFFER SIZE: " + buffer.size());
+
+            if (image == null) {
+                clearBuffer();
+            }
+
+//            if (image != null)
+//                System.out.println("GETTING IMAGE: " + image.getTimeStamp() / 1000 + " FOR " + timeStamp + " BUFFER SIZE: " + buffer.size());
 
             return image;
         }
@@ -686,26 +703,31 @@ public class XugglerMediaPlayer implements Runnable {
 
         public long minTimestamp() {
             if (buffer.size() > 0) {
+                System.out.println(buffer.get(0).getTimeStamp());
+                if (buffer.size() > 1) System.out.println(buffer.get(1).getTimeStamp());
                 return buffer.get(0).getTimeStamp() / 1000;
             } else {
-                return 0L;
+                return Long.MAX_VALUE;
             }
         }
 
         public void addImage(IVideoPicture frame) {
+            if (frame.getTimeStamp() / 1000 < lastFrameTime - 1000) {
+                return;
+            }
             if (frame.getTimeStamp() > maxTimestamp()) {
                 buffer.add(frame);
             } else if (frame.getTimeStamp() < minTimestamp()) {
                 buffer.add(0, frame);
             }
-            System.out.println("ADDING IMAGE: " + buffer.size());
+            System.out.println("ADDING IMAGE: " + buffer.size() + " with timestamp " + frame.getTimeStamp() / 1000);
         }
 
         public long maxTimestamp() {
             if (buffer.size() > 0) {
                 return buffer.get(buffer.size() - 1).getTimeStamp() / 1000;
             } else {
-                return 0L;
+                return -1L;
             }
         }
 
@@ -762,7 +784,7 @@ public class XugglerMediaPlayer implements Runnable {
             if (frame == null) {
                 return;
             }
-            System.out.println("Displaying frame: " + frame.getTimeStamp());
+//            System.out.println("Displaying frame: " + frame.getTimeStamp());
 
 
             final BufferedImage bi = Utils.videoPictureToImage(frame);
@@ -804,12 +826,16 @@ public class XugglerMediaPlayer implements Runnable {
         @Override
         public void run() {
             while (true) {
-                System.out.println("MIN BUFFER: " + buffer.minTimestamp() + " CURRENT TIME: " + Datavyu.getDataController().getCurrentTime() + " MAX BUFFER: " + buffer.maxTimestamp() + " BUFFER SIZE: " + buffer.buffer.size());
-                displayFrame(getFrame());
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if (display) {
+//                    System.out.println("MIN BUFFER: " + buffer.minTimestamp() + " CURRENT TIME: " + Datavyu.getDataController().getCurrentTime() + " MAX BUFFER: " + buffer.maxTimestamp() + " BUFFER SIZE: " + buffer.buffer.size());
+                    displayFrame(getFrame());
+                }
+                if (!playing) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
