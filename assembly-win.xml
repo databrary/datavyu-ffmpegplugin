@@ -17,6 +17,7 @@
         <include>*.txt</include>
 	<include>*.html</include>
 	<include>*.url</include>
+	<include>*.pdf</include>
       </includes>
       <outputDirectory>/</outputDirectory>
     </fileSet>
