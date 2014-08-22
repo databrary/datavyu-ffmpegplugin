@@ -1159,7 +1159,7 @@ public final class DataControllerV extends DatavyuDialog
         gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Onset"), onsetTextField), WIDE_TEXT_FIELD_SIZE);
 
         // Create new cell setting offset button with zero
-        createNewCellSettingOffset = buildButton("createNewCellAndSetOnset");
+        createNewCellSettingOffset = buildButton("createNewCellAndSetOffset");
         gridButtonPanel.add(createNewCellSettingOffset, "span 2, w 95!, h 45!");
 
         // Set cell offset button
@@ -2119,9 +2119,9 @@ public final class DataControllerV extends DatavyuDialog
      * Action to invoke when the user clicks on the new cell button.
      */
     @Action
-    public void createNewCellAndSetOnsetAction() {
-        LOGGER.event("New cell set onset");
-        new CreateNewCellC(getCurrentTime());
+    public void createNewCellAndSetOffsetAction() {
+        LOGGER.event("New cell set offset");
+        new CreateNewCellC(getCurrentTime(), true);
     }
 
     /**
@@ -2132,7 +2132,7 @@ public final class DataControllerV extends DatavyuDialog
         LOGGER.event("Set new cell offset");
 
         long time = getCurrentTime();
-        new CreateNewCellC(time);
+        new CreateNewCellC(time, false);
         new SetNewCellStopTimeC(time);
         setOffsetField(time);
     }

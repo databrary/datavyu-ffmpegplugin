@@ -196,8 +196,9 @@ public final class CreateNewCellC {
      * Constructor - creates new controller.
      *
      * @param milliseconds The milliseconds to use for the onset for the new cell.
+     * @param setPrevOffset Determine whether or not to set previous offset to milliseconds-1
      */
-    public CreateNewCellC(final long milliseconds) {
+    public CreateNewCellC(final long milliseconds, boolean setPrevOffset) {
         // The spreadsheet is the view for this controller.
         view = (SpreadsheetPanel) Datavyu.getView().getComponent();
         model = Datavyu.getProjectController().getDB();
@@ -208,7 +209,7 @@ public final class CreateNewCellC {
         Cell lastCreatedCell = Datavyu.getProjectController().getLastCreatedCell();
 
         //To set the previous offset -- NOTE THAT THIS IS NOT UNDOABLE
-        if (lastCreatedCell != null) {
+        if (setPrevOffset && lastCreatedCell != null) {
             // BugzID:1285 - Only update the last created cell if it is in
             // the same column as the newly created cell.
             for (Variable var : model.getSelectedVariables()) {
@@ -233,7 +234,7 @@ public final class CreateNewCellC {
         
         //If there is no last created cell, use time to determine appopriate cell in 
         //FIRST selected variable or the variable belonging to the FIRST selected cell
-        if (lastCreatedCell == null){
+        if (setPrevOffset && lastCreatedCell == null){
               Variable v = null;
               if(!Datavyu.getProjectController().getDB().getSelectedVariables().isEmpty()){
                   Datavyu.getProjectController().getDB().getSelectedVariables().get(0);
