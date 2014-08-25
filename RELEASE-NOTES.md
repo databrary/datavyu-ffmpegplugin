@@ -1,5 +1,5 @@
 # Datavyu Pre-release Notes
-## 9/22/14
+## 9/25/14
 
 ### Additions
 * We added a sample video and spreadsheet to our download page so users can practice coding
