@@ -1,3 +1,26 @@
+# Datavyu Pre-release Notes
+## 9/22/14
+
+### Additions
+* We added a sample video and spreadsheet to our download page so users can practice coding
+* The user guide is now in PDF form
+* Opening a spreadsheet replaces the original blank spreadsheet on windows and soon on mac
+* Keyboard shortcuts list is available in the help drop down menu of datavyu
+
+### Bug Fixes
+* You can have a file, save it as a different name and open both files in datavyu
+* Point cell no longer changes the previous cell’s offset
+* Undo history works when adding a cell
+* Point cell no longer changes the previous cell's offset
+* You can no longer open two of the same spreadsheets at once 
+
+### Known Issues
+* Locking into a cell sometime doesn’t work
+* Adding and closing multiple spreadsheets in datavyu sometimes makes you save an extra time 
+* Temporal alignment sometimes aligns cells that are a few milliseconds off 
+
+
+
 # Datavyu 1.2 Release Notes
 ## 06/30/2014
 
