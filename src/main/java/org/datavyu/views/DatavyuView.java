@@ -2726,6 +2726,7 @@ public final class DatavyuView extends FrameView
 
             if (tabbedPane.getTabCount() == 1 &&
                     Datavyu.getProjectController().getProjectName() == null &&
+                    Datavyu.getPlatform() != Platform.MAC &&
                     !Datavyu.getProjectController().isChanged()) {
                 tabbedPane.remove(0);
             }
