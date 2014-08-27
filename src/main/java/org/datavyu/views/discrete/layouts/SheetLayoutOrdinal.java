@@ -121,6 +121,11 @@ public class SheetLayoutOrdinal extends SheetLayout {
                             prevCell.setOverlapBorder(false);
                         }
                     }
+                    
+                    // Determine if this cell's onset is later than its (non-zero) offset
+                    if (cell.isUpsideDown()){
+                        cell.setOverlapBorder(true);
+                    }
 
                     prevCell = cell;
                 }

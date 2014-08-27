@@ -374,6 +374,10 @@ public class SpreadsheetCell extends JPanel
         }
         return model.getOffset();
     }
+    
+    public boolean isUpsideDown() {
+        return model.getOffset() < model.getOnset() && model.getOffset() != 0;  
+    }
 
     /**
      * Set the width of the SpreadsheetCell.
