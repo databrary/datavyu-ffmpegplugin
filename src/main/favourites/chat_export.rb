@@ -48,5 +48,6 @@ begin
 		output << current_str
 	end
 	output << "@End"
+	puts "@End"
 	output.close
 end
