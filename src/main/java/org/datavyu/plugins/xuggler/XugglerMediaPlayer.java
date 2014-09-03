@@ -697,6 +697,30 @@ public class XugglerMediaPlayer implements Runnable {
 
         }
 
+        private long getCurrentTime() {
+            return Datavyu.getDataController().getCurrentTime();
+        }
+
+        private void updateBuffer() {
+            long min = buffer.minTimestamp();
+            long max = buffer.maxTimestamp();
+            long dur = max - min;
+            long cur = getCurrentTime();
+
+            float prop = cur - min / (float) max;
+
+            int index = Math.round(buffer.buffer.size() * prop);
+
+            if (prop > 0.7) {
+                dropFramesBefore(Math.round(dur * prop));
+            }
+        }
+
+        private IVideoPicture getCurrentFrame() {
+            return buffer.getImage(getCurrentTime());
+        }
+
+
         @Override
         public void run() {
 
