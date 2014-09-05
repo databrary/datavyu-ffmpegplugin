@@ -8,52 +8,61 @@ require 'Datavyu_API.rb'
 begin
 	#USER CAN CHANGE VALUES BETWEEN HERE...
 	metadata_col = "CHILDES_HEADER"
-	source_col = "SPEECH"
+	speech_col = "SPEECH"
 	speaker_code = "speaker"
 	content_code = "content"
-	combined_code = "code01" #if this is empty string use speaker/content separately. otherwise this represents both
-	input_file = "Z:\\datavyu\\target\\datavyu-childes-template.cha"
+	combined_code = "" #if this is empty string use speaker/content separately. otherwise this represents both
+	input_file = $path+"favourites"+File::SEPARATOR+"datavyu-childes-template.cha"
+	skip_fields_before_begin = true
 	#... AND HERE
+	begin_happened = false
+
 
 	puts "--reading from '" + input_file + "'--"
-
 	#create necessary columns
+	#header
 	header = createNewColumn(metadata_col)
-	header.make_new_cell()
 	header_count = 0
+	header_hash = Hash.new
+	#speech
 	if combined_code != ""
-		source = createNewColumn(source_col, combined_code)
+		speech = createNewColumn(speech_col, combined_code)
 	elsif
-		source = createNewColumn(source, speaker_code, content_code)
+		speech = createNewColumn(speech_col, speaker_code, content_code)
 	end
 
 	nak = 21.chr
 	#scan file and populate
 	File.readlines(input_file).each do |cur_line|
 		#header lines start with @
-		if cur_line[0] == "@"
+		if cur_line.index("@") == 0 && (!skip_fields_before_begin || begin_happened) && cur_line != "@End"
 			header_count += 1
-			add_codes_to_column(header, "code"+header_count)
-			#header.cells[0].instance_variable_set("code"+header_count, cur_line)
-			header.cells[0].
-			
+			header.add_code("code"+header_count.to_s)
+			header_hash["code"+header_count.to_s] = cur_line.strip
 		#content lines start with *
-		elsif cur_line[0] == "*"
+		elsif cur_line.index("*") == 0
 			times = cur_line.partition(nak)[2]
+			content = cur_line.partition(nak)[0]
 			t_onset = times.partition("_")[0]
 			t_offset = times.partition("_")[2].partition(nak)[0]
-			source.make_new_cell()
-			source.cells.last.onset = t_onset
-			source.cells.last.offset = t_offset	
+			speech.make_new_cell()
+			speech.cells.last.onset = t_onset
+			speech.cells.last.offset = t_offset	
 			if combined_code != ""
-				source.cells.last.instance_variable_set(combined_code, cur_line.partition(nak)[0])
+				speech.cells.last.change_arg(combined_code, content.sub("\t", " "))
 			else
-				source.cells.last.instance_variable_set(speaker_code, cur_line.partition("\t")[0])
-				source.cells.last.instance_variable_set(content_code, cur_line.partition(nak)[0].partition("\t")[2])
+				speech.cells.last.change_arg(speaker_code, content.partition(":\t")[0])
+				speech.cells.last.change_arg(content_code, content.partition(":\t")[2])
 			end
+		elsif cur_line.index("@Begin") == 0
+			begin_happened = true
 		end
 		#lines beginning with anything other than @ and * will be ignored
 	end
-	setVariable(metadata_col, header)
-	setVariable(source_col, source) 
+	header.make_new_cell()
+	Hash[header_hash.sort].each_pair do |k, v|
+		header.cells[0].change_arg(k,v)
+	end
+	setVariable(header)
+	setVariable(speech) 
 end 

@@ -451,6 +451,8 @@
 				<directory>src/main/</directory>
 				<includes>
 					<include>favourites/*.rb</include>
+					<include>favourites/*.opf</include>
+					<include>favourites/*.cha</include>
 				</includes>
 			</fileSet>
 			<fileSet>

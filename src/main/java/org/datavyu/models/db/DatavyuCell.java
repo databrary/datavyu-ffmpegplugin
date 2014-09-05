@@ -86,6 +86,9 @@ public class DatavyuCell implements Cell {
     private long convertTimestampToMS(String timestamp) {
 
         String[] s = timestamp.split(":");
+        if(s.length == 1){
+            return Long.valueOf(timestamp);
+        }
         long hours = Long.valueOf(s[0]) * 60 * 60 * 1000;
         long minutes = Long.valueOf(s[1]) * 60 * 1000;
         long seconds = Long.valueOf(s[2]) * 1000;
