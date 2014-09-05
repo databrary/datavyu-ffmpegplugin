@@ -11,7 +11,7 @@ begin
 	speaker_code = "speaker"
 	content_code = "content"
 	combined_code = "code01" #if this is empty string use speaker/content separately. otherwise this represents both
-	output_file = $pj.getProjectName()+".cha"
+	output_file = $pj.getProjectDirectory() + File::SEPARATOR + $pj.getProjectName()+".cha"
 	top_lines = ["@UTF8", "@Begin"] #go at the top of every file. not dependent on spreadsheet
 	#... AND HERE
 
