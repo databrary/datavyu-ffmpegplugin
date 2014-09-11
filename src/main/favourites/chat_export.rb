@@ -35,7 +35,7 @@ begin
 	nak = 21.chr
 	col = getColumn(source_col)
 	for cur in col.cells
-		if combined_code != ""
+		if combined_code != "" && (cur.methods.include? combined_code)
 			full_line = cur.send(combined_code.to_sym)
 			speaker_tok = full_line.partition(" ")[0]
 			content_tok = full_line.partition(" ")[2]
