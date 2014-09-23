@@ -803,7 +803,8 @@ public final class DatavyuView extends FrameView
 
         String title = rMap.getString("Application.title") + " - " + projectName + extension + postFix;
         String tabTitle = projectName + postFix;
-
+        
+        Datavyu.getProjectController().getProject().setDatabaseFileName(projectName + extension);
         mainFrame.setTitle(title);
         this.getSpreadsheetPanel().setName(tabTitle);
         tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), tabTitle);
@@ -2725,6 +2726,7 @@ public final class DatavyuView extends FrameView
 
             if (tabbedPane.getTabCount() == 1 &&
                     Datavyu.getProjectController().getProjectName() == null &&
+                    Datavyu.getPlatform() != Platform.MAC &&
                     !Datavyu.getProjectController().isChanged()) {
                 tabbedPane.remove(0);
             }

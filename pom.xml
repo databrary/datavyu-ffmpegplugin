@@ -462,6 +462,8 @@
 				<directory>src/main/</directory>
 				<includes>
 					<include>favourites/*.rb</include>
+					<include>favourites/*.opf</include>
+					<include>favourites/*.cha</include>
 				</includes>
 			</fileSet>
 			<fileSet>
@@ -470,6 +472,7 @@
 					<include>*.txt</include>
 					<include>*.html</include>
 					<include>*.webloc</include>
+					<include>*.pdf</include>
 				</includes>
 			</fileSet>
                     </additionalResources>

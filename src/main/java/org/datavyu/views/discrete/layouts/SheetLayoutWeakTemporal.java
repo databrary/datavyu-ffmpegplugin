@@ -343,6 +343,10 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     curCell.setBounds(0, curCell.getY(), width, nextCell.getY() - curCell.getY());
                     curCell.setOverlapBorder(true);
                 }
+                
+                if (nextCell.isUpsideDown()){
+                        nextCell.setOverlapBorder(true);
+                }
 
                 if (curCell.getOnsetTicks() == nextCell.getOnsetTicks()) {
                     curCell.setBounds(0, curCell.getY(), width, curCell.getPreferredSize().height);
