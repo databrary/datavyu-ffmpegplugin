@@ -193,7 +193,9 @@ public class XugglerMediaPlayer implements Runnable {
         display = false;
 
         // If we're already in the buffer, don't bother seeking the video
-        if (position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
+        long seekByte = getNearestKeyframePosition(position);
+        long seekFrame = getNearestKeyframeFrameNum(position);
+        if (currentSeekTime == seekByte && position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
             display = true;
             return;
         }
@@ -211,12 +213,7 @@ public class XugglerMediaPlayer implements Runnable {
 //        } else {
 //        container.seekKeyFrame(videoStreamId, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 //        container.seekKeyFrame(i, -1, -1, -1, IContainer.SEEK_FLAG_BACKWARDS);
-        long seekByte = getNearestKeyframePosition(position);
-        long seekFrame = getNearestKeyframeFrameNum(position);
-        if (currentSeekTime == seekByte) {
-            display = true;
-            return;
-        }
+
 //        mFirstVideoTimestampInStream = Global.NO_PTS;
         currentSeekTime = seekByte;
         buffer.clearBuffer();
@@ -235,11 +232,11 @@ public class XugglerMediaPlayer implements Runnable {
 
 
 //            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
-            int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
-
-            if (retval < 0) {
-                throw new RuntimeException("Error seeking");
-            }
+//            int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
+//
+//            if (retval < 0) {
+//                throw new RuntimeException("Error seeking");
+//            }
 //            container.seekKeyFrame(i, frame, frame, frame, IContainer.SEEK_FLAG_FRAME);
         } else {
 
@@ -248,11 +245,11 @@ public class XugglerMediaPlayer implements Runnable {
             container.seekKeyFrame(i, -1, 0);
 //            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 //            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
-            int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
-
-            if (retval < 0) {
-                throw new RuntimeException("Error seeking");
-            }
+//            int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
+//
+//            if (retval < 0) {
+//                throw new RuntimeException("Error seeking");
+//            }
         }
 
         display = true;
