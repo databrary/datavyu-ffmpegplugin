@@ -708,7 +708,7 @@
                         <preCp>jregistrykey-1.4.5.jar</preCp>
                         <preCp>vlcj-2.2.0-SNAPSHOT.jar</preCp>
                         <preCp>libvlc-win32-2.0.1.jar</preCp>
-                        <!--<preCp>xuggle-xuggler-5.2.jar</preCp>-->
+                        <preCp>xuggle-xuggler-5.4.jar</preCp>
                     </classPath>
                 </configuration>
             </plugin>
