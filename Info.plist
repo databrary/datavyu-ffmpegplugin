@@ -89,7 +89,7 @@
         <string>$JAVAROOT/repo/org/slf4j/slf4j-api/1.5.8/slf4j-api-1.5.8.jar</string>
         <string>$JAVAROOT/repo/org/slf4j/slf4j-jdk14/1.5.8/slf4j-jdk14-1.5.8.jar</string>
         <string>$JAVAROOT/repo/asm/asm/3.1/asm-3.1.jar</string>
-        <string>$JAVAROOT/repo/xuggle/xuggle-xuggler/5.4/xuggle-xuggler-5.4.jar
+        <string>$JAVAROOT/repo/xuggle/xuggle-xuggler/5.4/xuggle-xuggler-5.4.jar</string>
       </array>
     </dict>
   </dict>
