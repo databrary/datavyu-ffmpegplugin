@@ -60,6 +60,9 @@ public class XugglerMediaPlayer implements Runnable {
 
     private long currentSeekTime = -1;
 
+    private int videoHeight;
+    private int videoWidth;
+
     public XugglerMediaPlayer() {
         // Let's make sure that we can actually convert video pixel formats.
         if (!IVideoResampler.isSupported(IVideoResampler.Feature.FEATURE_COLORSPACECONVERSION))
@@ -198,14 +201,13 @@ public class XugglerMediaPlayer implements Runnable {
         display = false;
 
         // If we're already in the buffer, don't bother seeking the video
-        long seekByte = getNearestKeyframePosition(position);
-        long seekFrame = getNearestKeyframeFrameNum(position);
-        long seekTime = convertMillisecondsToTimebase(getNearestKeyframeTime(position));
+//        long seekTime = convertMillisecondsToTimebase(getNearestKeyframeTime(position));
+        long seekTime = convertMillisecondsToTimebase(position);
         if (position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
             display = true;
             return;
         }
-        if (currentSeekTime == seekByte && position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
+        if (position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
             display = true;
             return;
         }
@@ -225,12 +227,12 @@ public class XugglerMediaPlayer implements Runnable {
 //        container.seekKeyFrame(i, -1, -1, -1, IContainer.SEEK_FLAG_BACKWARDS);
 
 //        mFirstVideoTimestampInStream = Global.NO_PTS;
-        currentSeekTime = seekByte;
+//        currentSeekTime = seekByte;
         buffer.clearBuffer();
         videoQueue.clear();
         audioQueue.clear();
         destroyPicture = true;
-        System.out.println("SEEKING TO FRAME: " + seekFrame + " AND POSITION " + position);
+//        System.out.println("SEEKING TO FRAME: " + seekFrame + " AND POSITION " + position);
 
 
         // Rewind the container. This helps make sure we get the correct key frame for some reason.
@@ -238,6 +240,7 @@ public class XugglerMediaPlayer implements Runnable {
         container.seekKeyFrame(-1, -1, 0);
 //            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 //            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
+        seekTime = seekTime < 5000 ? 0 : seekTime - 5000;
         long minPos = seekTime < 5000 ? 0 : seekTime - 5000;
         int retval = container.seekKeyFrame(i, minPos, seekTime, seekTime, IContainer.SEEK_FLAG_FRAME);
 //        int retval = container.seekKeyFrame(i, newPosition, newPosition, newPosition, IContainer.SEEK_FLAG_ANY);
@@ -255,7 +258,7 @@ public class XugglerMediaPlayer implements Runnable {
         if (wasPlaying) {
             play();
         }
-        System.out.println("FINISHED SEEKING TO BYTE " + seekByte);
+        System.out.println("FINISHED SEEKING TO BYTE " + seekTime);
 //        currentSeekTime = -1;
     }
 
@@ -311,6 +314,7 @@ public class XugglerMediaPlayer implements Runnable {
             @Override
             public void run() {
                 mScreen = new VideoImage();
+                mScreen.setSize(videoWidth, videoHeight);
             }
         });
     }
@@ -440,6 +444,8 @@ public class XugglerMediaPlayer implements Runnable {
         if (videoStreamId == -1 && audioStreamId == -1)
             throw new RuntimeException("could not find audio or video stream in container: " + filename);
 
+        videoHeight = videoCoder.getHeight();
+        videoWidth = videoCoder.getWidth();
 
         /*
      * Check if we have a video stream in this file.  If so let's open up our decoder so it can
@@ -512,23 +518,23 @@ public class XugglerMediaPlayer implements Runnable {
 
         // Loop over the frames in the video and obtain the key frames
         long numPackets = 0;
-        while (container.readNextPacket(packet) >= 0) {
-            if (packet.isComplete()) {
-                if (packet.getStreamIndex() != videoStreamId) continue;
-                if (!packet.isKey()) continue;
-//                System.out.println(packet.getFormattedTimeStamp());
-//                System.out.println(packet.getTimeStamp());
-//                System.out.println(getTimeInMilliseconds(packet));
-                keyFrameNumbers.add(packet.getPosition());
-                keyFrameOffsets.add(getTimeInMilliseconds(packet));
-//                System.out.println(packet.getDts());
-            }
-        }
+//        while (container.readNextPacket(packet) >= 0) {
+//            if (packet.isComplete()) {
+//                if (packet.getStreamIndex() != videoStreamId) continue;
+//                if (!packet.isKey()) continue;
+////                System.out.println(packet.getFormattedTimeStamp());
+////                System.out.println(packet.getTimeStamp());
+////                System.out.println(getTimeInMilliseconds(packet));
+//                keyFrameNumbers.add(packet.getPosition());
+//                keyFrameOffsets.add(getTimeInMilliseconds(packet));
+////                System.out.println(packet.getDts());
+//            }
+//        }
         container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 
         playing = false;
 
-        buffer = new ImageBuffer(100);
+        buffer = new ImageBuffer(20);
         new Thread(new VideoPlayer(videoCoder, buffer)).start();
 //        new Thread(new AudioPlayer(audioCoder)).start();
         new Thread(new DisplayFrame(buffer)).start();
@@ -630,7 +636,11 @@ public class XugglerMediaPlayer implements Runnable {
        */
                 if (resampler != null) {
                     // we must resample
-                    newPic = IVideoPicture.make(resampler.getOutputPixelFormat(), picture.getWidth(), picture.getHeight());
+                    if (resampler.getOutputHeight() != mScreen.getHeight() || resampler.getOutputWidth() != mScreen.getWidth()) {
+                        resampler = IVideoResampler.make(mScreen.getWidth(), mScreen.getHeight(), IPixelFormat.Type.BGR24,
+                                videoCoder.getWidth(), videoCoder.getHeight(), videoCoder.getPixelType());
+                    }
+                    newPic = IVideoPicture.make(resampler.getOutputPixelFormat(), mScreen.getWidth(), mScreen.getHeight());
                     if (resampler.resample(newPic, picture) < 0)
                         throw new RuntimeException("could not resample video ");
                 }
