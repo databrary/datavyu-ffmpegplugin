@@ -58,6 +58,8 @@ public class XugglerMediaPlayer implements Runnable {
 
     private ArrayList<IPacket> packets;
 
+    private long currentSeekTime = -1;
+
     public XugglerMediaPlayer() {
         // Let's make sure that we can actually convert video pixel formats.
         if (!IVideoResampler.isSupported(IVideoResampler.Feature.FEATURE_COLORSPACECONVERSION))
@@ -83,10 +85,10 @@ public class XugglerMediaPlayer implements Runnable {
         return readFrame(true);
     }
 
-    private long readFrame(boolean display) {
+    private long readFrame(boolean showFrame) {
 //        System.out.println("READING NEXT PACKET");
         // We don't want decoding to get too far ahead
-        if (videoQueue.size() > 10) {
+        if (videoQueue.size() > 10 || !display) {
             try {
                 Thread.sleep(50);
             } catch (Exception e) {
@@ -99,14 +101,12 @@ public class XugglerMediaPlayer implements Runnable {
             System.err.println("Error reading packet");
             return -1L;
         }
-//        System.out.println("READ: " + getTimeInMilliseconds(packet));
+//        System.out.println("QUEUING: " + getTimeInMilliseconds(packet));
 
 //        System.out.println(packet.getStreamIndex());
-
         if (packet.getStreamIndex() == videoStreamId) {
             try {
 //                System.out.println("PUTTING");
-                // TODO to solve memory issues here make a circular buffer of packets
                 videoQueue.add(IPacket.make(packet, true));
 //                System.out.println("PUT");
             } catch (Exception e) {
@@ -122,6 +122,7 @@ public class XugglerMediaPlayer implements Runnable {
             // Frame isn't part of video, it is something else
             return lastFrameTime;
         }
+
 
         return 0L;
     }
@@ -152,7 +153,7 @@ public class XugglerMediaPlayer implements Runnable {
 
     public void play() {
         // Reset display synchronization
-        mFirstVideoTimestampInStream = Global.NO_PTS;
+//        mFirstVideoTimestampInStream = Global.NO_PTS;
 
         // Set the playLoop to continue doing its thing
         playing = true;
@@ -177,7 +178,6 @@ public class XugglerMediaPlayer implements Runnable {
         final long frame = Math.round((1.0 * position / getLength()) * totalFrames);
 
 //        System.out.println("FRAME: " + frame);
-        destroyPicture = true;
 
 
         display = false;
@@ -189,9 +189,6 @@ public class XugglerMediaPlayer implements Runnable {
         }
 
 //        if (position > buffer.maxTimestamp() || position < buffer.minTimestamp()) {
-        videoQueue.clear();
-        audioQueue.clear();
-            buffer.clearBuffer();
 //        }
 
 
@@ -202,17 +199,33 @@ public class XugglerMediaPlayer implements Runnable {
 //        if(position < lastFrameTime) {
 //            container.seekKeyFrame(videoStreamId, min, newPosition, max, IContainer.SEEK_FLAG_BACKWARDS);
 //        } else {
-        mFirstVideoTimestampInStream = Global.NO_PTS;
 //        container.seekKeyFrame(videoStreamId, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 //        container.seekKeyFrame(i, -1, -1, -1, IContainer.SEEK_FLAG_BACKWARDS);
         long seekByte = getNearestKeyframePosition(position);
-        System.out.println("SEEKING TO BYTE: " + seekByte);
+        long seekFrame = getNearestKeyframeFrameNum(position);
+        if (currentSeekTime == seekByte) {
+            display = true;
+            return;
+        }
+//        mFirstVideoTimestampInStream = Global.NO_PTS;
+        currentSeekTime = seekByte;
+        buffer.clearBuffer();
+        videoQueue.clear();
+        audioQueue.clear();
+        destroyPicture = true;
+        buffer.clearBuffer();
+        videoQueue.clear();
+        audioQueue.clear();
+        System.out.println("SEEKING TO FRAME: " + seekFrame + " AND POSITION " + position);
 
         if (position <= lastFrameTime) {
 //            container.seekKeyFrame(i, min, newPosition, max, IContainer.SEEK_FLAG_BACKWARDS);
-            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
+//            container.seekKeyFrame(i, -1, 0);
+//            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 
-            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
+
+//            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
+            int retval = container.seekKeyFrame(i, seekFrame, seekFrame, seekFrame, IContainer.SEEK_FLAG_FRAME);
 
             if (retval < 0) {
                 throw new RuntimeException("Error seeking");
@@ -222,9 +235,9 @@ public class XugglerMediaPlayer implements Runnable {
 
             // Rewind the container. This helps make sure we get the correct key frame for some reason.
             // This is an issue with Xuggler.
-            container.seekKeyFrame(i, -1, 0);
-
-            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
+//            container.seekKeyFrame(i, -1, 0);
+//            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
+            int retval = container.seekKeyFrame(i, seekFrame, seekFrame, seekFrame, IContainer.SEEK_FLAG_FRAME);
 
             if (retval < 0) {
                 throw new RuntimeException("Error seeking");
@@ -253,6 +266,8 @@ public class XugglerMediaPlayer implements Runnable {
         if (wasPlaying) {
             play();
         }
+        System.out.println("FINISHED SEEKING TO BYTE " + seekByte);
+//        currentSeekTime = -1;
     }
 
     public void setVisible(boolean visible) {
@@ -484,7 +499,7 @@ public class XugglerMediaPlayer implements Runnable {
 //        System.out.println(String.format("Length: %d", length));
 
         packet = IPacket.make();
-        mFirstVideoTimestampInStream = Global.NO_PTS;
+//        mFirstVideoTimestampInStream = Global.NO_PTS;
         mSystemVideoClockStartTime = 0;
 
 
@@ -523,7 +538,7 @@ public class XugglerMediaPlayer implements Runnable {
 
         playing = false;
 
-        buffer = new ImageBuffer(100);
+        buffer = new ImageBuffer(10);
         new Thread(new VideoPlayer(videoCoder, buffer)).start();
 //        new Thread(new AudioPlayer(audioCoder)).start();
         new Thread(new DisplayFrame(buffer)).start();
@@ -547,11 +562,13 @@ public class XugglerMediaPlayer implements Runnable {
         return -1;
     }
 
-    private long getNearestKeyframeOffset(long timestamp) {
+    private long getNearestKeyframeFrameNum(long timestamp) {
+        // Returns the frame number of the nearest keyframe
         // Just do a stupid thing for now. TODO make this a BST
         for (int i = 0; i < keyFrameOffsets.size(); i++) {
             if (keyFrameOffsets.get(i) > timestamp) {
-                return keyFrameOffsets.get(i - 1);
+                long targetFrame = Math.round(keyFrameOffsets.get(i - 1) / (1000.0d / fps));
+                return targetFrame;
             }
         }
         return -1;
@@ -583,6 +600,7 @@ public class XugglerMediaPlayer implements Runnable {
 
         private IVideoPicture readVideoFrame(IPacket packet) {
             if (destroyPicture) {
+                System.out.println("DESTROYING PICTURE");
                 picture = IVideoPicture.make(videoCoder.getPixelType(),
                         videoCoder.getWidth(), videoCoder.getHeight());
                 destroyPicture = false;
@@ -626,29 +644,35 @@ public class XugglerMediaPlayer implements Runnable {
         @Override
         public void run() {
             while (true) {
-                if (videoQueue.size() > 0) {
+                if (videoQueue.size() > 0 && display) {
                     try {
                         IPacket packet = videoQueue.poll();
-//                        System.out.println(videoQueue.size());
+                        System.out.println(videoQueue.size());
 //                        System.out.println("PACKET NULL: " + (packet == null));
                         if (packet != null) {
 //                            if(getTimeInMilliseconds(packet) > lastFrameTime) {
                             lastFrameTime = getTimeInMilliseconds(packet);
 //                            }
 
+//                            System.out.println("PACKET TIME: " + getTimeInMilliseconds(packet));
+                            long packetTime = getTimeInMilliseconds(packet);
                             IVideoPicture picture = readVideoFrame(packet);
+//                            picture.setTimeStamp(getTimeInMilliseconds(packet) * 1000);
 //                            lastFrameTime = picture.getTimeStamp() / 1000;
 //                            System.out.println("DEBUG COMPLETE: " + picture.isComplete());
+                            long pictureTime = picture.getTimeStamp() / 1000;
+//                            System.out.println("READING: " + picture.getTimeStamp() / 1000);
                             if (picture.isComplete() && (
                                     picture.getTimeStamp() / 1000 < buffer.minTimestamp() ||
-                                            picture.getTimeStamp() / 1000 > buffer.maxTimestamp())
+                                            picture.getTimeStamp() / 1000 > buffer.maxTimestamp()) &&
+                                    (Math.abs(pictureTime - packetTime) < 5)
                                     ) {
 
                                 buffer.addImage(picture);
-//                                System.out.println("DISPLAYING: " + picture.getTimeStamp());
 
                             }
                         }
+                        Thread.sleep(10);
                     } catch (Exception e) {
                         e.printStackTrace();
 //                        System.exit(1);
@@ -760,6 +784,10 @@ public class XugglerMediaPlayer implements Runnable {
                 clearBuffer();
             }
 
+            if (isFull() && (minTimestamp() + maxTimestamp()) / 2.0 < timeStamp) {
+                buffer.remove(0);
+            }
+
 //            if (image != null)
 //                System.out.println("GETTING IMAGE: " + image.getTimeStamp() / 1000 + " FOR " + timeStamp + " BUFFER SIZE: " + buffer.size());
 
@@ -767,7 +795,7 @@ public class XugglerMediaPlayer implements Runnable {
         }
 
         public void clearBuffer() {
-            System.out.println("CLEARING");
+//            System.out.println("CLEARING");
             buffer.clear();
         }
 
@@ -780,7 +808,7 @@ public class XugglerMediaPlayer implements Runnable {
         public long minTimestamp() {
             if (buffer.size() > 0) {
 //                System.out.println(buffer.get(0).getTimeStamp());
-                if (buffer.size() > 1) System.out.println(buffer.get(1).getTimeStamp());
+//                if (buffer.size() > 1) System.out.println(buffer.get(1).getTimeStamp());
                 return buffer.get(0).getTimeStamp() / 1000;
             } else {
                 return Long.MAX_VALUE;
@@ -894,12 +922,15 @@ public class XugglerMediaPlayer implements Runnable {
         @Override
         public void run() {
             while (true) {
+                System.out.println("DISPLAY: " + display + " MIN BUFFER: " + buffer.minTimestamp() + " CURRENT TIME: " + Datavyu.getDataController().getCurrentTime() + " MAX BUFFER: " + buffer.maxTimestamp() + " BUFFER SIZE: " + buffer.buffer.size());
                 if (display) {
-//                    System.out.println("MIN BUFFER: " + buffer.minTimestamp() + " CURRENT TIME: " + Datavyu.getDataController().getCurrentTime() + " MAX BUFFER: " + buffer.maxTimestamp() + " BUFFER SIZE: " + buffer.buffer.size());
                     displayFrame(getFrame());
-                    if (buffer.isFull()) {
-//                        buffer.buffer.remove(0);
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+
                 }
                 if (!playing) {
                     try {
