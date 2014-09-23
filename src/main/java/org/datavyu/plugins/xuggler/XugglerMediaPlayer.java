@@ -97,8 +97,19 @@ public class XugglerMediaPlayer implements Runnable {
             return -1L;
         }
 
-        if (container.readNextPacket(packet) < 0) {
+        int ret;
+        while ((ret = container.readNextPacket(packet)) >= 0) {
+            System.out.println("SEEKING: " + (Datavyu.getDataController().getCurrentTime() - getTimeInMilliseconds(packet)));
+            if (Datavyu.getDataController().getCurrentTime() - getTimeInMilliseconds(packet) < 1000) {
+                break;
+            }
+            destroyPicture = true;
+        }
+        System.out.println("RETURN VALUE: " + ret);
+
+        if (ret < 0) {
             System.err.println("Error reading packet");
+            display = false;
             return -1L;
         }
 //        System.out.println("QUEUING: " + getTimeInMilliseconds(packet));
@@ -122,7 +133,6 @@ public class XugglerMediaPlayer implements Runnable {
             // Frame isn't part of video, it is something else
             return lastFrameTime;
         }
-
 
         return 0L;
     }
@@ -220,12 +230,12 @@ public class XugglerMediaPlayer implements Runnable {
 
         if (position <= lastFrameTime) {
 //            container.seekKeyFrame(i, min, newPosition, max, IContainer.SEEK_FLAG_BACKWARDS);
-//            container.seekKeyFrame(i, -1, 0);
+            container.seekKeyFrame(i, -1, 0);
 //            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 
 
 //            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
-            int retval = container.seekKeyFrame(i, seekFrame, seekFrame, seekFrame, IContainer.SEEK_FLAG_FRAME);
+            int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
 
             if (retval < 0) {
                 throw new RuntimeException("Error seeking");
@@ -235,9 +245,10 @@ public class XugglerMediaPlayer implements Runnable {
 
             // Rewind the container. This helps make sure we get the correct key frame for some reason.
             // This is an issue with Xuggler.
-//            container.seekKeyFrame(i, -1, 0);
+            container.seekKeyFrame(i, -1, 0);
 //            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
-            int retval = container.seekKeyFrame(i, seekFrame, seekFrame, seekFrame, IContainer.SEEK_FLAG_FRAME);
+//            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
+            int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
 
             if (retval < 0) {
                 throw new RuntimeException("Error seeking");
@@ -248,20 +259,7 @@ public class XugglerMediaPlayer implements Runnable {
 
 
 //        long nearestOffset = getNearestKeyframeOffset(position);
-//        while (container.readNextPacket(packet) >= 0) {
-//            if (packet.getStreamIndex() == videoStreamId && getTimeInMilliseconds(packet) >= nearestOffset) {
-//                videoQueue.add(IPacket.make(packet, true));
-//                lastFrameTime = getTimeInMilliseconds(packet);
-//
-//                System.out.println("POSITION: " + position + " PACKET TIME: " + getTimeInMilliseconds(packet) + " DURATION: " + packet.getDuration() + " COMPLETE: " + packet.isComplete() + " KEY: " + packet.isKeyPacket());
-//                if (getTimeInMilliseconds(packet) + getTimeInMilliseconds(packet.getDuration(), packet.getTimeBase()) >= position) {
-//                    System.out.println("NEAREST TIME: " + lastFrameTime);
-//                    break;
-//                }
-//            } else if (packet.getStreamIndex() == audioStreamId) {
-////                audioQueue.add(packet);
-//            }
-//        }
+
 
         if (wasPlaying) {
             play();
@@ -414,6 +412,7 @@ public class XugglerMediaPlayer implements Runnable {
         keyFrameNumbers = new ArrayList<Long>();
         keyFrameOffsets = new ArrayList<Long>();
 
+
         packets = new ArrayList<IPacket>();
 
 
@@ -555,7 +554,9 @@ public class XugglerMediaPlayer implements Runnable {
     private long getNearestKeyframePosition(long timestamp) {
         // Just do a stupid thing for now. TODO make this a BST
         for (int i = 0; i < keyFrameOffsets.size(); i++) {
+            System.out.println(keyFrameOffsets.get(i));
             if (keyFrameOffsets.get(i) > timestamp) {
+                System.out.println("Returning byte: " + keyFrameNumbers.get(i - 1) + " for " + keyFrameOffsets.get(i - 1) + " for " + timestamp);
                 return keyFrameNumbers.get(i - 1);
             }
         }
