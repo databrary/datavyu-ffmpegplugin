@@ -553,6 +553,8 @@ public final class DataControllerV extends DatavyuDialog
                          * Only synchronise the data viewers if we have a
                          * noticable drift.
                          */
+                        System.out.println(v.getCurrentTime());
+                        System.out.println(time);
                         if (v.isPlaying()
                                 && (Math.abs(
                                 v.getCurrentTime()
@@ -666,6 +668,7 @@ public final class DataControllerV extends DatavyuDialog
 
         for (DataViewer viewer : viewers) {
 
+//            System.out.println(time);
             if (isWithinPlayRange(time, viewer)) {
                 viewer.seekTo(time - viewer.getOffset());
             }

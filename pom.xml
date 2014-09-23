@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.datavyu</groupId>
@@ -270,6 +270,17 @@
             <url>http://maven.hello2morrow.com/repository</url>
             <layout>default</layout>
         </repository>
+
+        <repository>
+            <id>xuggle repo</id>
+            <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
+        </repository>
+
+        <repository>
+            <id>xuggle repo for 5.5</id>
+            <url>http://m2.funambol.com/repositories/artifacts</url>
+        </repository>
+
     </repositories>
 
     <!-- External plugin repositories - where to find third-part dependencies. -->
@@ -694,6 +705,7 @@
                         <preCp>jregistrykey-1.4.5.jar</preCp>
                         <preCp>vlcj-2.2.0-SNAPSHOT.jar</preCp>
                         <preCp>libvlc-win32-2.0.1.jar</preCp>
+                        <!--<preCp>xuggle-xuggler-5.2.jar</preCp>-->
                     </classPath>
                 </configuration>
             </plugin>
@@ -844,6 +856,19 @@
             <artifactId>vlcj</artifactId>
             <version>2.2.0-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>xuggle</groupId>
+            <artifactId>xuggle-xuggler</artifactId>
+            <version>5.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>nu.pattern</groupId>
+            <artifactId>opencv</artifactId>
+            <version>2.4.9-4</version>
+        </dependency>
+
 
         <!-- temporary add of QTJava and deps -->
 
