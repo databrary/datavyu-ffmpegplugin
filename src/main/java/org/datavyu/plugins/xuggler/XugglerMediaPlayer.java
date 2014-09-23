@@ -195,6 +195,10 @@ public class XugglerMediaPlayer implements Runnable {
         // If we're already in the buffer, don't bother seeking the video
         long seekByte = getNearestKeyframePosition(position);
         long seekFrame = getNearestKeyframeFrameNum(position);
+        if (position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
+            display = true;
+            return;
+        }
         if (currentSeekTime == seekByte && position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
             display = true;
             return;
@@ -225,31 +229,16 @@ public class XugglerMediaPlayer implements Runnable {
         audioQueue.clear();
         System.out.println("SEEKING TO FRAME: " + seekFrame + " AND POSITION " + position);
 
-        if (position <= lastFrameTime) {
-//            container.seekKeyFrame(i, min, newPosition, max, IContainer.SEEK_FLAG_BACKWARDS);
-            container.seekKeyFrame(i, -1, 0);
-//            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 
-
-//            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
-//            int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
-//
-//            if (retval < 0) {
-//                throw new RuntimeException("Error seeking");
-//            }
-//            container.seekKeyFrame(i, frame, frame, frame, IContainer.SEEK_FLAG_FRAME);
-        } else {
-
-            // Rewind the container. This helps make sure we get the correct key frame for some reason.
-            // This is an issue with Xuggler.
-            container.seekKeyFrame(i, -1, 0);
+        // Rewind the container. This helps make sure we get the correct key frame for some reason.
+        // This is an issue with Xuggler.
+//        container.seekKeyFrame(i, -1, 0);
 //            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 //            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
-//            int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
-//
-//            if (retval < 0) {
-//                throw new RuntimeException("Error seeking");
-//            }
+        int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
+
+        if (retval < 0) {
+            throw new RuntimeException("Error seeking");
         }
 
         display = true;
@@ -534,7 +523,7 @@ public class XugglerMediaPlayer implements Runnable {
 
         playing = false;
 
-        buffer = new ImageBuffer(10);
+        buffer = new ImageBuffer(100);
         new Thread(new VideoPlayer(videoCoder, buffer)).start();
 //        new Thread(new AudioPlayer(audioCoder)).start();
         new Thread(new DisplayFrame(buffer)).start();
@@ -550,7 +539,7 @@ public class XugglerMediaPlayer implements Runnable {
 
     private long getNearestKeyframePosition(long timestamp) {
         // Just do a stupid thing for now. TODO make this a BST
-        for (int i = 0; i < keyFrameOffsets.size(); i++) {
+        for (int i = 1; i < keyFrameOffsets.size(); i++) {
             System.out.println(keyFrameOffsets.get(i));
             if (keyFrameOffsets.get(i) > timestamp) {
                 System.out.println("Returning byte: " + keyFrameNumbers.get(i - 1) + " for " + keyFrameOffsets.get(i - 1) + " for " + timestamp);
@@ -563,7 +552,7 @@ public class XugglerMediaPlayer implements Runnable {
     private long getNearestKeyframeFrameNum(long timestamp) {
         // Returns the frame number of the nearest keyframe
         // Just do a stupid thing for now. TODO make this a BST
-        for (int i = 0; i < keyFrameOffsets.size(); i++) {
+        for (int i = 1; i < keyFrameOffsets.size(); i++) {
             if (keyFrameOffsets.get(i) > timestamp) {
                 long targetFrame = Math.round(keyFrameOffsets.get(i - 1) / (1000.0d / fps));
                 return targetFrame;
