@@ -609,7 +609,7 @@ public class XugglerMediaPlayer implements Runnable {
 
         private IVideoPicture readVideoFrame(IPacket packet) {
             if (destroyPicture) {
-                System.out.println("DESTROYING PICTURE");
+//                System.out.println("DESTROYING PICTURE");
                 picture = IVideoPicture.make(videoCoder.getPixelType(),
                         videoCoder.getWidth(), videoCoder.getHeight());
                 destroyPicture = false;
@@ -660,7 +660,7 @@ public class XugglerMediaPlayer implements Runnable {
                 if (videoQueue.size() > 0 && display) {
                     try {
                         IPacket packet = videoQueue.poll();
-                        System.out.println(videoQueue.size());
+//                        System.out.println(videoQueue.size());
 //                        System.out.println("PACKET NULL: " + (packet == null));
                         if (packet != null) {
 //                            if(getTimeInMilliseconds(packet) > lastFrameTime) {
@@ -936,7 +936,7 @@ public class XugglerMediaPlayer implements Runnable {
         @Override
         public void run() {
             while (true) {
-                System.out.println("DISPLAY: " + display + " MIN BUFFER: " + buffer.minTimestamp() + " CURRENT TIME: " + Datavyu.getDataController().getCurrentTime() + " MAX BUFFER: " + buffer.maxTimestamp() + " BUFFER SIZE: " + buffer.buffer.size());
+//                System.out.println("DISPLAY: " + display + " MIN BUFFER: " + buffer.minTimestamp() + " CURRENT TIME: " + Datavyu.getDataController().getCurrentTime() + " MAX BUFFER: " + buffer.maxTimestamp() + " BUFFER SIZE: " + buffer.buffer.size());
                 if (display) {
                     displayFrame(getFrame());
                     try {
