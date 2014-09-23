@@ -238,7 +238,8 @@ public class XugglerMediaPlayer implements Runnable {
         container.seekKeyFrame(-1, -1, 0);
 //            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 //            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
-        int retval = container.seekKeyFrame(i, seekTime, seekTime, seekTime, IContainer.SEEK_FLAG_ANY);
+        long minPos = seekTime < 5000 ? 0 : seekTime - 5000;
+        int retval = container.seekKeyFrame(i, minPos, seekTime, seekTime, IContainer.SEEK_FLAG_FRAME);
 //        int retval = container.seekKeyFrame(i, newPosition, newPosition, newPosition, IContainer.SEEK_FLAG_ANY);
 
         if (retval < 0) {
