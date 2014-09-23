@@ -97,17 +97,18 @@ public class XugglerMediaPlayer implements Runnable {
             return -1L;
         }
 
-        int ret;
-        while ((ret = container.readNextPacket(packet)) >= 0) {
-            System.out.println("SEEKING: " + (Datavyu.getDataController().getCurrentTime() - getTimeInMilliseconds(packet)));
-            if (Datavyu.getDataController().getCurrentTime() - getTimeInMilliseconds(packet) < 1000) {
-                break;
-            }
-            destroyPicture = true;
-        }
-        System.out.println("RETURN VALUE: " + ret);
+//        int ret;
+//        while ((ret = container.readNextPacket(packet)) >= 0) {
+//            System.out.println("SEEKING: " + (Datavyu.getDataController().getCurrentTime() - getTimeInMilliseconds(packet)));
+//            if (Datavyu.getDataController().getCurrentTime() - getTimeInMilliseconds(packet) < 1000) {
+//                break;
+//            }
+//            destroyPicture = true;
+//        }
+//        System.out.println("RETURN VALUE: " + ret);
 
-        if (ret < 0) {
+//        if (ret < 0) {
+        if (container.readNextPacket(packet) < 0) {
             System.err.println("Error reading packet");
             display = false;
             return -1L;
@@ -173,6 +174,10 @@ public class XugglerMediaPlayer implements Runnable {
         playing = false;
     }
 
+    public long convertMillisecondsToTimebase(long position) {
+        return (long) (position / 1000.0 / container.getStream(videoStreamId).getTimeBase().getDouble());
+    }
+
     public void seekTo(long position) {
         // TODO implement key frame indexing on video load as in https://code.google.com/p/xuggle/source/browse/trunk/java/xuggle-xuggler/test/src/com/xuggle/xuggler/ContainerSeekExhaustiveTest.java?r=1018
 
@@ -195,7 +200,7 @@ public class XugglerMediaPlayer implements Runnable {
         // If we're already in the buffer, don't bother seeking the video
         long seekByte = getNearestKeyframePosition(position);
         long seekFrame = getNearestKeyframeFrameNum(position);
-        long seekTime = getNearestKeyframeTime(position);
+        long seekTime = convertMillisecondsToTimebase(getNearestKeyframeTime(position));
         if (position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
             display = true;
             return;
@@ -225,18 +230,16 @@ public class XugglerMediaPlayer implements Runnable {
         videoQueue.clear();
         audioQueue.clear();
         destroyPicture = true;
-        buffer.clearBuffer();
-        videoQueue.clear();
-        audioQueue.clear();
         System.out.println("SEEKING TO FRAME: " + seekFrame + " AND POSITION " + position);
 
 
         // Rewind the container. This helps make sure we get the correct key frame for some reason.
         // This is an issue with Xuggler.
-        container.seekKeyFrame(i, -1, 0);
+        container.seekKeyFrame(-1, -1, 0);
 //            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 //            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
         int retval = container.seekKeyFrame(i, seekTime, seekTime, seekTime, IContainer.SEEK_FLAG_ANY);
+//        int retval = container.seekKeyFrame(i, newPosition, newPosition, newPosition, IContainer.SEEK_FLAG_ANY);
 
         if (retval < 0) {
             throw new RuntimeException("Error seeking");
@@ -555,7 +558,7 @@ public class XugglerMediaPlayer implements Runnable {
         for (int i = 1; i < keyFrameOffsets.size(); i++) {
             System.out.println(keyFrameOffsets.get(i));
             if (keyFrameOffsets.get(i) > timestamp) {
-                return keyFrameOffsets.get(i - 1) * 1000;
+                return keyFrameOffsets.get(i - 1);
             }
         }
         return -1;
@@ -780,7 +783,8 @@ public class XugglerMediaPlayer implements Runnable {
             }
 
             if (buffer.size() > 0 && image == null) {
-                clearBuffer();
+                System.out.println("CLEARING BUFFER DUE TO NULL IMAGE");
+//                clearBuffer();
             }
 
             if (isFull() && (minTimestamp() + maxTimestamp()) / 2.0 < timeStamp) {
