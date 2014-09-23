@@ -709,7 +709,8 @@
                         <preCp>vlcj-2.2.0-SNAPSHOT.jar</preCp>
                         <preCp>libvlc-win32-2.0.1.jar</preCp>
                         <preCp>xuggle-xuggler-5.4.jar</preCp>
-                        <preCp>slf4j-log4j12.jar</preCp>
+                        <preCp>slf4j-api-1.7.7.jar</preCp>
+                        <preCp>slf4j-simple-1.7.7.jar</preCp>
                     </classPath>
                 </configuration>
             </plugin>
@@ -875,7 +876,13 @@
 
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
             <version>1.7.7</version>
         </dependency>
 
