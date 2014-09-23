@@ -195,6 +195,7 @@ public class XugglerMediaPlayer implements Runnable {
         // If we're already in the buffer, don't bother seeking the video
         long seekByte = getNearestKeyframePosition(position);
         long seekFrame = getNearestKeyframeFrameNum(position);
+        long seekTime = getNearestKeyframeTime(position);
         if (position < buffer.maxTimestamp() && position > buffer.minTimestamp()) {
             display = true;
             return;
@@ -232,10 +233,10 @@ public class XugglerMediaPlayer implements Runnable {
 
         // Rewind the container. This helps make sure we get the correct key frame for some reason.
         // This is an issue with Xuggler.
-//        container.seekKeyFrame(i, -1, 0);
+        container.seekKeyFrame(i, -1, 0);
 //            container.seekKeyFrame(-1, Long.MIN_VALUE, 0, Long.MAX_VALUE, IContainer.SEEK_FLAG_BACKWARDS);
 //            int retval = container.seekKeyFrame(i, seekByte, seekByte, seekByte, IContainer.SEEK_FLAG_BYTE);
-        int retval = container.seekKeyFrame(i, 0, seekFrame, container.getDuration(), IContainer.SEEK_FLAG_FRAME);
+        int retval = container.seekKeyFrame(i, seekTime, seekTime, seekTime, IContainer.SEEK_FLAG_ANY);
 
         if (retval < 0) {
             throw new RuntimeException("Error seeking");
@@ -544,6 +545,17 @@ public class XugglerMediaPlayer implements Runnable {
             if (keyFrameOffsets.get(i) > timestamp) {
                 System.out.println("Returning byte: " + keyFrameNumbers.get(i - 1) + " for " + keyFrameOffsets.get(i - 1) + " for " + timestamp);
                 return keyFrameNumbers.get(i - 1);
+            }
+        }
+        return -1;
+    }
+
+    private long getNearestKeyframeTime(long timestamp) {
+        // Just do a stupid thing for now. TODO make this a BST
+        for (int i = 1; i < keyFrameOffsets.size(); i++) {
+            System.out.println(keyFrameOffsets.get(i));
+            if (keyFrameOffsets.get(i) > timestamp) {
+                return keyFrameOffsets.get(i - 1) * 1000;
             }
         }
         return -1;
