@@ -78,14 +78,14 @@ public class XugglerDataViewer implements DataViewer {
     /**
      * The window we'll draw the video on.
      */
-    private XugglerMediaPlayer mediaPlayer;
+    private XugglerMediaPlayerBaseLine mediaPlayer;
 
 
     public XugglerDataViewer(final Frame parent, final boolean modal) {
 
 //        Runnable r = new Runnable() {
 //            public void run() {
-        mediaPlayer = new XugglerMediaPlayer();
+        mediaPlayer = new XugglerMediaPlayerBaseLine();
 //            }
 //        };
 
