@@ -79,6 +79,7 @@ public class JavaFXDataViewer implements DataViewer {
      * Length of the video, calculated on launch
      */
     private long length;
+
     /**
      * The last jog position, making sure we are only calling jog once
      * VLC has issues when trying to go to the same spot multiple times
@@ -150,7 +151,7 @@ public class JavaFXDataViewer implements DataViewer {
 
     @Override
     public JDialog getParentJDialog() {
-        return new JDialog();
+        return dialog;
     }
 
     @Override
@@ -195,7 +196,7 @@ public class JavaFXDataViewer implements DataViewer {
 
     @Override
     public void setDataViewerVisible(final boolean isVisible) {
-        vlcDialog.setVisible(isVisible);
+        javafxapp.setVisible(isVisible);
     }
 
     @Override
@@ -224,27 +225,15 @@ public class JavaFXDataViewer implements DataViewer {
         while (!javafxapp.isInit()) {
         }
 
+        // Hide our fake dialog box
+        dialog.setVisible(false);
 
-        // Test to make sure we got the framerate.
-        // If we didn't, alert the user that this
-        // may not work right.
-        if (fps < 1.0) {
-            // VLC can't read the framerate for this video for some reason.
-            // Set it to the fallback rate so it is still usable for coding.
-            fps = FALLBACK_FRAME_RATE;
-            /*
-            JOptionPane.showMessageDialog(vlcDialog,
-                    "Warning: Unable to detect framerate in video.\n"
-                            + "This video may not behave properly. "
-                            + "Please try converting to H.264.\n\n"
-                            + "This can be done under Controller->Convert Videos.\n"
-                            + "Setting framerate to " + FALLBACK_FRAME_RATE);
-                    */
-        }
+        // TODO Add in function to guess framerate
     }
 
     @Override
     public long getDuration() {
+        System.out.println("DURATION: " + javafxapp.getDuration());
         return javafxapp.getDuration();
     }
 
@@ -284,7 +273,7 @@ public class JavaFXDataViewer implements DataViewer {
 
     @Override
     public void setPlaybackSpeed(final float rate) {
-
+//        javafxapp.setRate(rate);
     }
 
     @Override
@@ -344,8 +333,8 @@ public class JavaFXDataViewer implements DataViewer {
     @Override
     public void clearDataFeed() {
         stop();
-        videoSurface.setVisible(false);
-        vlcDialog.setVisible(false);
+        javafxapp.setVisible(false);
+        javafxapp.closeAndDestroy();
     }
 
     @Override

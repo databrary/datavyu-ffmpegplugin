@@ -841,7 +841,7 @@ public final class DataControllerV extends DatavyuDialog
             }
         }
 
-        if (viewer != null) {
+        if (viewer != null && viewer.getParentJDialog() != null) {
             viewer.getParentJDialog().addWindowListener(wl);
         }
     }
@@ -1454,11 +1454,15 @@ public final class DataControllerV extends DatavyuDialog
         viewer.setParentController(this);
         viewer.setOffset(offset);
 
-        boolean visible = viewer.getParentJDialog().isVisible();
-        Datavyu.getApplication().show(viewer.getParentJDialog());
+        // It is possible that the viewer will be handling its own window. In that case
+        // dont worry about it.
+        if (viewer.getParentJDialog() != null) {
+            boolean visible = viewer.getParentJDialog().isVisible();
+            Datavyu.getApplication().show(viewer.getParentJDialog());
 
-        if (!visible) {
-            viewer.getParentJDialog().setVisible(false);
+            if (!visible) {
+                viewer.getParentJDialog().setVisible(false);
+            }
         }
 
         // adjust the overall frame rate.

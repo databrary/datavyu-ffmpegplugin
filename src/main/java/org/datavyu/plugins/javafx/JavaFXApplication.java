@@ -1,6 +1,7 @@
 package org.datavyu.plugins.javafx;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Scene;
@@ -22,6 +23,8 @@ public class JavaFXApplication extends Application {
     File dataFile;
     boolean init = false;
     MediaPlayer mp;
+    MediaView mv;
+    Stage stage;
 
     public JavaFXApplication(File file) {
         dataFile = file;
@@ -59,16 +62,57 @@ public class JavaFXApplication extends Application {
         return (long) mp.getTotalDuration().toMillis();
     }
 
+    public float getRate() {
+        return (float) mp.getRate();
+    }
+
+    public void setRate(float rate) {
+        mp.setRate((double) rate);
+    }
+
+    public void setVisible(final boolean visible) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mv.setVisible(visible);
+                if (!visible) {
+                    mp.setMute(true);
+                    stage.hide();
+                } else {
+                    mp.setMute(false);
+                    stage.show();
+                }
+            }
+        });
+
+    }
+
+    public void setVolume(double volume) {
+        mp.setVolume(volume);
+    }
+
     public boolean isInit() {
         return init;
     }
 
+    public void closeAndDestroy() {
+        mp.stop();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                stage.close();
+                mp.dispose();
+            }
+        });
+
+    }
+
     public void start(Stage primaryStage) {
-        String workingDir = System.getProperty("user.dir");
+        stage = primaryStage;
 
         final Media m = new Media(dataFile.toURI().toString());
         mp = new MediaPlayer(m);
-        final MediaView mv = new MediaView(mp);
+        mv = new MediaView(mp);
 
         final DoubleProperty width = mv.fitWidthProperty();
         final DoubleProperty height = mv.fitHeightProperty();
@@ -85,12 +129,14 @@ public class JavaFXApplication extends Application {
         scene.setFill(Color.BLACK);
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Full Screen Video Player");
+        primaryStage.setTitle(dataFile.getName());
 //        primaryStage.setFullScreen(true);
         primaryStage.show();
 
 
         System.out.println("Setting init to true");
+        System.out.println(mp.getTotalDuration().toMillis());
+
         init = true;
         System.out.println(init);
 
