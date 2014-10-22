@@ -78,10 +78,10 @@
         <string>$JAVAROOT/repo/gnu/trove/2.1.0/trove-2.1.0.jar</string>
         <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-filechooser-only/7.0.1/quaqua-filechooser-only-7.0.1.jar</string>
         <string>$JAVAROOT/repo/ca/beq/jregistrykey/1.4.5/jregistrykey-1.4.5.jar</string>
-        <string>$JAVAROOT/repo/uk/co/caprica/vlcj/2.2.0-SNAPSHOT/vlcj-2.2.0-SNAPSHOT.jar</string>
+        <string>$JAVAROOT/repo/uk/co/caprica/vlcj/3.0.0/vlcj-3.0.0-SNAPSHOT.jar</string>
         <!--<string>$JAVAROOT/repo/org/vlc/libvlc-osx/2.0.1/libvlc-osx-2.0.1.jar</string>-->
         <string>$JAVAROOT/repo/rcaller/RCaller/2.1.1-SNAPSHOT/RCaller-2.1.1-SNAPSHOT.jar</string>
-        <string>$JAVAROOT/repo/net/java/dev/jna/3.4.1/jna-3.4.1.jar</string>
+        <string>$JAVAROOT/repo/net/java/dev/jna/4.1.0/jna-4.1.0.jar</string>
 
         <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x3/rococoa-cocoa-0.5.1x3.jar</string>
         <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x3/rococoa-core-0.5.1x3.jar</string>

@@ -694,7 +694,7 @@
                     <!--</singleInstance>-->
                     <classPath>
                         <mainClass>org.datavyu.Datavyu</mainClass>
-                        <preCp>jna-3.4.1.jar</preCp>
+                        <preCp>jna-4.1.0.jar</preCp>
                         <preCp>appframework-1.0.3.jar</preCp>
                         <preCp>snakeyaml-1.7.jar</preCp>
                         <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
@@ -734,7 +734,7 @@
         <dependency>
             <groupId>net.java.dev</groupId>
             <artifactId>jna</artifactId>
-            <version>3.4.1</version>
+            <version>4.1.0</version>
         </dependency>
 
         <dependency>
@@ -859,7 +859,7 @@
         <dependency>
             <groupId>uk.co.caprica</groupId>
             <artifactId>vlcj</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>3.0.0</version>
         </dependency>
 
         <dependency>
