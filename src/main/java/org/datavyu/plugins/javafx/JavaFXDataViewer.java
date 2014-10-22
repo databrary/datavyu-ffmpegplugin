@@ -3,7 +3,6 @@ package org.datavyu.plugins.javafx;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.stage.Stage;
-import org.datavyu.Datavyu;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.id.Identifier;
 import org.datavyu.plugins.CustomActions;
@@ -256,13 +255,10 @@ public class JavaFXDataViewer implements DataViewer {
 
     @Override
     public void seekTo(final long position) {
-        System.out.println("CURRENT TIME IN MILLIS:" + javafxapp.getCurrentTime());
-        System.out.println("CURRENT CONT TIME:" + Datavyu.getDataController().getCurrentTime());
 
 //        Platform.runLater(new Runnable() {
 //            @Override
 //            public void run() {
-        javafxapp.pause();
         javafxapp.seek(position);
 //            }
 //        });
@@ -276,11 +272,11 @@ public class JavaFXDataViewer implements DataViewer {
 
     @Override
     public void stop() {
+        playing = false;
+
 //        Platform.runLater(new Runnable() {
 //            @Override
 //            public void run() {
-        System.out.println("CURRENT TIME IN MILLIS:" + javafxapp.getCurrentTime());
-        playing = false;
         javafxapp.pause();
 //            }
 //        });
@@ -293,10 +289,14 @@ public class JavaFXDataViewer implements DataViewer {
 
     @Override
     public void play() {
-        System.out.println("CURRENT TIME IN MILLIS:" + javafxapp.getCurrentTime());
-
         playing = true;
+
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
         javafxapp.play();
+//            }
+//        });
     }
 
     @Override
