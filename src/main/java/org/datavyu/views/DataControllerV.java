@@ -128,8 +128,8 @@ public final class DataControllerV extends DatavyuDialog
      */
     private static final int WIDE_TEXT_FIELD_WIDTH = 90;
     private static final int WIDE_TEXT_FIELD_HEIGHT = 45;
-    private static final String WIDE_TEXT_FIELD_SIZE = "w "+WIDE_TEXT_FIELD_WIDTH+"!, h "
-            +WIDE_TEXT_FIELD_HEIGHT+"!";
+    private static final String WIDE_TEXT_FIELD_SIZE = "w " + WIDE_TEXT_FIELD_WIDTH + "!, h "
+            + WIDE_TEXT_FIELD_HEIGHT + "!";
     private static final Font TEXT_FIELD_FONT = new Font("Arial", Font.PLAIN, 10);
     private static final Font TEXT_LABEL_FONT = new Font("Arial", Font.PLAIN, 10);
     /**
@@ -185,6 +185,7 @@ public final class DataControllerV extends DatavyuDialog
                 1F, 2F, 4F, 8F, 16F, 32F
         };
     }
+
     /**
      * Determines whether or not Shift is being held.
      */
@@ -241,12 +242,12 @@ public final class DataControllerV extends DatavyuDialog
 
     /** */
     private javax.swing.JTextField goBackTextField;
-    
+
     /** */
     private javax.swing.JTextField stepSizeTextField;
-    
+
     private javax.swing.JLabel stepSizeLabel = new JLabel("Steps per second");
-    
+
     private javax.swing.JPanel stepSizePanel;
 
     /** */
@@ -798,14 +799,13 @@ public final class DataControllerV extends DatavyuDialog
         if (viewDialog != null) {
             viewDialog.dispose();
         }
-        
+
         //DO SOMETHING CONCERNING STEP_SIZE
-        if (viewers.isEmpty())
-        {
+        if (viewers.isEmpty()) {
             playbackModel.setCurrentFPS(0f);
             updateStepSizeTextField();
         }
-        
+
         // BugzID:2000
         viewer.removeViewerStateListener(
                 mixerController.getTracksEditorController().getViewerStateListener(
@@ -1020,18 +1020,18 @@ public final class DataControllerV extends DatavyuDialog
         timestampLabel.setText("00:00:00:000");
         timestampLabel.setHorizontalTextPosition(SwingConstants.CENTER);
         timestampLabel.setName("timestampLabel");
-        timestampLabel.addMouseListener(new MouseAdapter() {  
-            public void mouseClicked(MouseEvent e) {  
-               // you can open a new frame here as
-               // i have assumed you have declared "frame" as instance variable
-               if(e.getClickCount() >= 3){
+        timestampLabel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                // you can open a new frame here as
+                // i have assumed you have declared "frame" as instance variable
+                if (e.getClickCount() >= 3) {
                     int newTime = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter new time in ms", getCurrentTime()));
                     setCurrentTime(newTime);
                     clock.setTime(newTime);
-               }
+                }
             }
-        }); 
-        
+        });
+
         timestampPanel.add(timestampLabel);
 
         jLabel1.setText("@");
@@ -1082,8 +1082,8 @@ public final class DataControllerV extends DatavyuDialog
         } else {
             addGoBackPair();
         }
-        
-        
+
+
         // Set cell onset button with 7
         setCellOnsetButton = buildButton("setCellOnset");
         gridButtonPanel.add(setCellOnsetButton, NUMPAD_KEY_SIZE);
@@ -1120,8 +1120,7 @@ public final class DataControllerV extends DatavyuDialog
         // Shuttle forward button with 6
         shuttleForwardButton = buildButton("shuttleForward");
         gridButtonPanel.add(shuttleForwardButton, NUMPAD_KEY_SIZE);
-        
-        
+
 
         //MAC and WINDOWS DIFFER HERE (3)
         if (osModifier.equals("osx")) {
@@ -1129,10 +1128,10 @@ public final class DataControllerV extends DatavyuDialog
             findButton = buildButton("find", "osx");
             gridButtonPanel.add(findButton, NUMPAD_KEY_SIZE);
 
-            
-        } 
-        
-        
+
+        }
+
+
         addStepSizePanel();
 
         // Jog back button with 1
@@ -1203,84 +1202,89 @@ public final class DataControllerV extends DatavyuDialog
         gridButtonPanel.add(makeLabelAndTextfieldPanel(new JLabel("Jump back by"), goBackTextField), WIDE_TEXT_FIELD_SIZE);
 
     }
-    
+
     private void addStepSizePanel() {
         //Go back text field
         stepSizeTextField.setHorizontalAlignment(SwingConstants.CENTER);
         stepSizeTextField.setName("stepSizeTextField");
         stepSizeTextField.setToolTipText("Double click to change");
-        stepSizeTextField.setPreferredSize(new Dimension(WIDE_TEXT_FIELD_WIDTH-10, 18));
+        stepSizeTextField.setPreferredSize(new Dimension(WIDE_TEXT_FIELD_WIDTH - 10, 18));
         stepSizeTextField.addMouseListener(new MouseListener() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() >= 2 && !viewers.isEmpty())
-            {
-                stepSizeTextField.setEnabled(true);
-                pressStop();
-            }
-        }
-        public void mouseEntered(MouseEvent e) {}
-        public void mouseExited(MouseEvent e) {}
-        public void mousePressed(MouseEvent e) {}
-        public void mouseReleased(MouseEvent e) {}
-         });
-        
-        stepSizeTextField.addKeyListener(new KeyListener() {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if(e.getKeyCode() == KeyEvent.VK_ENTER)
-            {
-                float newfps = Float.parseFloat(stepSizeTextField.getText());
-                playbackModel.setCurrentFPS(newfps);
-                for(DataViewer dv : viewers){
-                    dv.setFrameRate(newfps);
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() >= 2 && !viewers.isEmpty()) {
+                    stepSizeTextField.setEnabled(true);
+                    pressStop();
                 }
-                stepSizeTextField.setEnabled(false); 
-                updateStepSizePanelColor();
-                
             }
-        }
-        public void keyTyped(KeyEvent e) {}
-        public void keyReleased(KeyEvent e) {}
-         });
-        
- 
+
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            public void mouseExited(MouseEvent e) {
+            }
+
+            public void mousePressed(MouseEvent e) {
+            }
+
+            public void mouseReleased(MouseEvent e) {
+            }
+        });
+
+        stepSizeTextField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    float newfps = Float.parseFloat(stepSizeTextField.getText());
+                    playbackModel.setCurrentFPS(newfps);
+                    for (DataViewer dv : viewers) {
+                        dv.setFrameRate(newfps);
+                    }
+                    stepSizeTextField.setEnabled(false);
+                    updateStepSizePanelColor();
+
+                }
+            }
+
+            public void keyTyped(KeyEvent e) {
+            }
+
+            public void keyReleased(KeyEvent e) {
+            }
+        });
+
+
         stepSizePanel = makeLabelAndTextfieldPanel(stepSizeLabel, stepSizeTextField);
         gridButtonPanel.add(stepSizePanel, WIDE_TEXT_FIELD_SIZE);
         updateStepSizeTextField();
 
     }
-    
-    private void updateStepSizeTextField()
-    {
-         if(playbackModel == null)
-         {
-             stepSizeTextField.setEnabled(false);
-         }
-         else if(playbackModel.getCurrentFPS() == 0f)
-         {
-             stepSizeTextField.setEnabled(false);
-             stepSizeTextField.setText("");
-         }
-         else{
+
+    private void updateStepSizeTextField() {
+        if (playbackModel == null) {
+            stepSizeTextField.setEnabled(false);
+        } else if (playbackModel.getCurrentFPS() == 0f) {
+            stepSizeTextField.setEnabled(false);
+            stepSizeTextField.setText("");
+        } else {
             stepSizeTextField.setText(Float.toString(playbackModel.getCurrentFPS()));
-         }
-         
+        }
+
     }
-    
-    private void updateStepSizePanelColor(){
-         boolean assumed = false;
-         if(viewers != null){
-            for(DataViewer dv : viewers){
-                if(dv.usingAssumedFPS()){
+
+    private void updateStepSizePanelColor() {
+        boolean assumed = false;
+        if (viewers != null) {
+            for (DataViewer dv : viewers) {
+                if (dv.usingAssumedFPS()) {
                     assumed = true;
                 }
             }
-         }
-         if (assumed) stepSizePanel.setBackground(Color.RED);
-         else stepSizePanel.setBackground(Color.LIGHT_GRAY);
+        }
+        if (assumed) stepSizePanel.setBackground(Color.RED);
+        else stepSizePanel.setBackground(Color.LIGHT_GRAY);
     }
-    
+
 
     //Create a JEditorPane with working hyperlinks
     private JEditorPane makeEditorPaneWithLinks(String s) {
@@ -1465,7 +1469,7 @@ public final class DataControllerV extends DatavyuDialog
         }
         updateStepSizeTextField();
         updateStepSizePanelColor();
-        
+
         // Update track viewer.
         long maxDuration = playbackModel.getMaxDuration();
 
@@ -1779,7 +1783,6 @@ public final class DataControllerV extends DatavyuDialog
     public void playAction() {
         LOGGER.event("Play");
         System.out.println("Play button...");
-        System.out.println(System.currentTimeMillis());
 
         // BugzID:464 - When stopped at the end of the region of interest.
         // pressing play jumps the stream back to the start of the video before
@@ -2162,8 +2165,8 @@ public final class DataControllerV extends DatavyuDialog
             handleRegionChanged(e);
         }
     }
-    
-    public float getCurrentFPS(){
+
+    public float getCurrentFPS() {
         return playbackModel.getCurrentFPS();
     }
 }
