@@ -157,15 +157,15 @@
             <timezone>-5</timezone>
         </developer>
 
-	<developer>
-	    <id>jon</id>
-	    <name>Jon Coe</name>
-	    <email>jonmcoe@_no_spam_gmail.com</email>
-	    <roles>
-		<role>Developer</role>
-	    </roles>
-	    <timezone>-5</timezone>
-	</developer>
+        <developer>
+            <id>jon</id>
+            <name>Jon Coe</name>
+            <email>jonmcoe@_no_spam_gmail.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
     </developers>
 
     <contributors>
@@ -197,13 +197,13 @@
             <name>Kasey Soska</name>
             <email>kasey.soska@_no_spam_nyu.edu</email>
             <timezone>-5</timezone>
-    	</contributor>
+        </contributor>
 
-	<contributor>
-	    <name>Vicky Foo</name>
-	    <email>vjf210@_no_spam_nyu.edu</email>
-	    <timezone>-5</timezone>
-	</contributor>
+        <contributor>
+            <name>Vicky Foo</name>
+            <email>vjf210@_no_spam_nyu.edu</email>
+            <timezone>-5</timezone>
+        </contributor>
     </contributors>
 
     <!--  <reporting>
@@ -279,6 +279,11 @@
         <repository>
             <id>xuggle repo for 5.5</id>
             <url>http://m2.funambol.com/repositories/artifacts</url>
+        </repository>
+
+        <repository>
+            <id>sonatype snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
 
     </repositories>
@@ -458,23 +463,23 @@
                         </fileSet>
                     </resources>
                     <additionalResources>
-			<fileSet>
-				<directory>src/main/</directory>
-				<includes>
-					<include>favourites/*.rb</include>
-					<include>favourites/*.opf</include>
-					<include>favourites/*.cha</include>
-				</includes>
-			</fileSet>
-			<fileSet>
-				<directory>${basedir}/packaged_docs/</directory>
-				<includes>
-					<include>*.txt</include>
-					<include>*.html</include>
-					<include>*.webloc</include>
-					<include>*.pdf</include>
-				</includes>
-			</fileSet>
+                        <fileSet>
+                            <directory>src/main/</directory>
+                            <includes>
+                                <include>favourites/*.rb</include>
+                                <include>favourites/*.opf</include>
+                                <include>favourites/*.cha</include>
+                            </includes>
+                        </fileSet>
+                        <fileSet>
+                            <directory>${basedir}/packaged_docs/</directory>
+                            <includes>
+                                <include>*.txt</include>
+                                <include>*.html</include>
+                                <include>*.webloc</include>
+                                <include>*.pdf</include>
+                            </includes>
+                        </fileSet>
                     </additionalResources>
                     <iconFile>${basedir}/src/main/resources/icons/datavyu.icns</iconFile>
                     <javaApplicationStub>${basedir}/src/main/mac-resources/JavaApplicationStub</javaApplicationStub>
@@ -484,6 +489,7 @@
                         ${project.build.directory}/site/snapshots/${project.build.finalName}-OSX-${buildNumber}.dmg
                     </diskImageFile>
                 </configuration>
+
             </plugin>
 
             <plugin>
@@ -517,6 +523,25 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <!--<includeProjectDependencies>false</includeProjectDependencies>-->
+                    <includePluginDependencies>true</includePluginDependencies>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.oracle</groupId>
+                        <artifactId>javafx</artifactId>
+                        <version>2.2</version>
+                        <scope>system</scope>
+                        <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>
@@ -732,7 +757,7 @@
         <!-- We must specifiy this JNA version first so that all our dependencies
              are happy. -->
         <dependency>
-            <groupId>net.java.dev</groupId>
+            <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>4.1.0</version>
         </dependency>
@@ -884,6 +909,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv</artifactId>
+            <version>0.9.1-SNAPSHOT</version>
         </dependency>
 
 
