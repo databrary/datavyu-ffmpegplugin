@@ -1001,7 +1001,7 @@ public final class DataControllerV extends DatavyuDialog
 
                 if (!qtWarningShown && !Datavyu.quicktimeLibrariesFound()) {
 
-                    JOptionPane.showMessageDialog(null, makeEditorPaneWithLinks(QT_WARNING_MSG), "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
+//                    JOptionPane.showMessageDialog(null, makeEditorPaneWithLinks(QT_WARNING_MSG), "Quicktime Warning", JOptionPane.WARNING_MESSAGE);
                     qtWarningShown = true;
                 }
                 openVideoButtonActionPerformed(evt);

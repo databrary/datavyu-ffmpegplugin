@@ -22,7 +22,7 @@ public class JavaFxPlugin implements Plugin {
         final List<String> ext;
 
         {
-            ext = Lists.newArrayList(".avi", ".mov", ".mpg", ".mp4", ".mkv", ".m4v");
+            ext = Lists.newArrayList(".mp4", ".m4v");
             ff = new SuffixFileFilter(ext, IOCase.INSENSITIVE);
         }
 
@@ -33,7 +33,7 @@ public class JavaFxPlugin implements Plugin {
 
         @Override
         public String getName() {
-            return FilterNames.VIDEO.getFilterName();
+            return FilterNames.MP4.getFilterName();
         }
 
         @Override

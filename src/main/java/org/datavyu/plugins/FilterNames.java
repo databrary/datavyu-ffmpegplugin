@@ -27,7 +27,7 @@ package org.datavyu.plugins;
  */
 public enum FilterNames {
 
-    VIDEO("Video files"), AUDIO("Audio files");
+    VIDEO("Video files"), AUDIO("Audio files"), MP4("MP4 Video files");
 
     private String name;
 

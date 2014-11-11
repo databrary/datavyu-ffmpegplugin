@@ -24,6 +24,7 @@ import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -31,7 +32,6 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.lang.reflect.Modifier;
 
 
 /**
@@ -50,11 +50,10 @@ public final class PluginManager {
     static {
         PLUGIN_CLASS = Plugin.class;
     }
-
     /**
-     * The logger for this class.
+     * The single instance of the PluginManager for Datavyu.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(PluginManager.class);
+    private static final PluginManager INSTANCE = new PluginManager();
 
     //
     //
@@ -62,10 +61,9 @@ public final class PluginManager {
     // 
     //
     /**
-     * The single instance of the PluginManager for Datavyu.
+     * The logger for this class.
      */
-    private static final PluginManager INSTANCE = new PluginManager();
-
+    private static Logger LOGGER = UserMetrix.getLogger(PluginManager.class);
     /**
      * Set of plugins.
      */
@@ -399,12 +397,12 @@ public final class PluginManager {
             @Override
             public int compare(final Plugin o1, final Plugin o2) {
 
-                // Want the QuickTime video plugin to always be first.
-                if ("QuickTime Video".equals(o1.getPluginName())) {
+                // Want the JavaFX video plugin to always be first.
+                if ("JavaFX Video".equals(o1.getPluginName())) {
                     return -1;
                 }
 
-                if ("QuickTime Video".equals(o2.getPluginName())) {
+                if ("JavaFX Video".equals(o2.getPluginName())) {
                     return 1;
                 }
 
