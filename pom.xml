@@ -785,7 +785,7 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
-            <version>4.0.0</version>
+            <version>3.5.2</version>
         </dependency>
 
         <dependency>
@@ -910,7 +910,7 @@
         <dependency>
             <groupId>uk.co.caprica</groupId>
             <artifactId>vlcj</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </dependency>
 
         <dependency>

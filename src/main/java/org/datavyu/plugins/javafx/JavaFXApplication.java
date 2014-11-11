@@ -96,7 +96,6 @@ public class JavaFXApplication extends Application {
     }
 
     public void closeAndDestroy() {
-        mp.stop();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {

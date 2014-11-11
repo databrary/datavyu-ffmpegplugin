@@ -90,7 +90,7 @@ public class VideoConverter extends Application {
 
     public void ConvertVideo(File infile, File outfile, final JProgressBar progressBar) {
 //        :sout=#transcode{vcodec=mp4v,vb=1024,acodec=mp4a,ab=192}:standard{mux=mp4,access=file{no-overwrite},dst=/Users/jesse/Desktop/test.mp4}
-        String[] libvlcArgs = {":sout-ffmpeg-strict=-2", ":sout=#transcode{venc=x264{profile=baseline}," +
+        String[] libvlcArgs = {"-vvvvv", "--no-plugins-cache", ":sout=#transcode{venc=x264{profile=baseline}," +
                 "vcodec=mp4v,vfilter=canvas{padd=true},aenc=ffmpeg{strict=-2},acodec=mp4a,ab=192,channels=2"
                 + "}:standard{access=file,mux=mp4,dst="
                 + outfile.getAbsolutePath() + "}"};
