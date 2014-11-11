@@ -14,12 +14,13 @@ import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import uk.co.caprica.vlcj.component.DirectMediaPlayerComponent;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
+import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
 
 import javax.swing.*;
@@ -44,11 +45,7 @@ public class VideoConverter extends Application {
      * video, otherwise it will use {@link #WIDTH} and {@link #HEIGHT}.
      */
     private static final boolean useSourceSize = true;
-    static {
-        // Try to load VLC libraries.
-        // This discovery function is platform independent
-        new NativeDiscovery().discover();
-    }
+
 
     /**
      * Pixel writer to update the canvas.
@@ -65,7 +62,7 @@ public class VideoConverter extends Application {
     /**
      * The vlcj direct rendering media player component.
      */
-    private final DirectMediaPlayerComponent mediaPlayerComponent;
+    private DirectMediaPlayer mediaPlayerComponent = null;
     /**
      *
      */
@@ -88,19 +85,30 @@ public class VideoConverter extends Application {
         borderPane = new BorderPane();
         borderPane.setCenter(canvas);
 
-        mediaPlayerComponent = new TestMediaPlayerComponent();
+//        mediaPlayerComponent = new TestMediaPlayerComponent();
     }
 
     public void ConvertVideo(File infile, File outfile, final JProgressBar progressBar) {
-        String[] libvlcArgs = {":sout=#transcode{vcodec=h264,acodec=mp4"
-                + "}:standard{mux=mp4,dst="
-                + outfile.getAbsolutePath() + ",access=file}"};
+//        :sout=#transcode{vcodec=mp4v,vb=1024,acodec=mp4a,ab=192}:standard{mux=mp4,access=file{no-overwrite},dst=/Users/jesse/Desktop/test.mp4}
+        String[] libvlcArgs = {":sout-ffmpeg-strict=-2", ":sout=#transcode{venc=x264{profile=baseline}," +
+                "vcodec=mp4v,vfilter=canvas{padd=true},aenc=ffmpeg{strict=-2},acodec=mp4a,ab=192,channels=2"
+                + "}:standard{access=file,mux=mp4,dst="
+                + outfile.getAbsolutePath() + "}"};
+
+        mediaPlayerComponent = new MediaPlayerFactory(libvlcArgs).newDirectMediaPlayer(new TestBufferFormatCallback(), new RenderCallback() {
+            @Override
+            public void display(DirectMediaPlayer mediaPlayer, Memory[] nativeBuffers, BufferFormat bufferFormat) {
+                Memory nativeBuffer = nativeBuffers[0];
+                ByteBuffer byteBuffer = nativeBuffer.getByteBuffer(0, nativeBuffer.size());
+                pixelWriter.setPixels(0, 0, bufferFormat.getWidth(), bufferFormat.getHeight(), pixelFormat, byteBuffer, bufferFormat.getPitches()[0]);
+            }
+        });
 
         canvas = new Canvas();
 //        canvas.setBackground(Color.black);
 
 
-        mediaPlayerComponent.getMediaPlayer().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+        mediaPlayerComponent.addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
 
             @Override
             public void positionChanged(MediaPlayer mediaPlayer, final float newPosition) {
@@ -133,13 +141,13 @@ public class VideoConverter extends Application {
             }
         });
 
-        mediaPlayerComponent.getMediaPlayer().playMedia(infile.getAbsolutePath(), libvlcArgs);
+        mediaPlayerComponent.playMedia(infile.getAbsolutePath(), libvlcArgs);
 
 
     }
 
     public void StopConversion() {
-        mediaPlayerComponent.getMediaPlayer().stop();
+        mediaPlayerComponent.stop();
     }
 
     public void DetectIfNeedsConvert(File infile) {

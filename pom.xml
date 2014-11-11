@@ -6,7 +6,7 @@
     <artifactId>datavyu</artifactId>
     <packaging>jar</packaging>
     <version>1.2</version>
-    <name>datavyu</name>
+    <name>Datavyu</name>
     <url>http://datavyu.org</url>
 
 
@@ -391,6 +391,23 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>all</id>
+            <properties>
+                <exclude.markers>none</exclude.markers>
+                <exclude.calibration>none</exclude.calibration>
+                <exclude.ffmpeg>none</exclude.ffmpeg>
+                <exclude.dc1394>none</exclude.dc1394>
+                <exclude.flycapture>none</exclude.flycapture>
+                <exclude.openkinect>none</exclude.openkinect>
+                <exclude.ps3eye>none</exclude.ps3eye>
+                <exclude.videoinput>none</exclude.videoinput>
+                <exclude.opengl>none</exclude.opengl>
+                <exclude.opencl>none</exclude.opencl>
+            </properties>
+        </profile>
+
     </profiles>
 
     <!-- Build properties. -->
@@ -423,6 +440,15 @@
               </configuration>
             </plugin>
             -->
+
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>2.0</version>
+                <configuration>
+                    <mainClass>org.datavyu.Datavyu</mainClass>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -719,7 +745,7 @@
                     <!--</singleInstance>-->
                     <classPath>
                         <mainClass>org.datavyu.Datavyu</mainClass>
-                        <preCp>jna-4.1.0.jar</preCp>
+                        <preCp>jna-4.0.0.jar</preCp>
                         <preCp>appframework-1.0.3.jar</preCp>
                         <preCp>snakeyaml-1.7.jar</preCp>
                         <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
@@ -731,7 +757,7 @@
                         <preCp>QTJava-7.jar</preCp>
                         <preCp>trove-2.1.0.jar</preCp>
                         <preCp>jregistrykey-1.4.5.jar</preCp>
-                        <preCp>vlcj-2.2.0-SNAPSHOT.jar</preCp>
+                        <preCp>vlcj-3.0.0.jar</preCp>
                         <preCp>libvlc-win32-2.0.1.jar</preCp>
                         <preCp>xuggle-xuggler-5.4.jar</preCp>
                         <preCp>slf4j-api-1.7.7.jar</preCp>
@@ -759,7 +785,7 @@
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
-            <version>4.1.0</version>
+            <version>4.0.0</version>
         </dependency>
 
         <dependency>
@@ -914,8 +940,49 @@
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv</artifactId>
-            <version>0.9.1-SNAPSHOT</version>
+            <version>0.9</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>javafx-runtime</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>javafx-macosx</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt-main</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all-main</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jocl</groupId>
+            <artifactId>jocl-main</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.joal</groupId>
+            <artifactId>joal-main</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>com.oracle</groupId>-->
+        <!--<artifactId>javafx</artifactId>-->
+        <!--<version>2.2</version>-->
+        <!--<systemPath>${java.home}/lib/jfxrt.jar</systemPath>-->
+        <!--<scope>system</scope>-->
+        <!--</dependency>-->
 
 
         <!-- temporary add of QTJava and deps -->

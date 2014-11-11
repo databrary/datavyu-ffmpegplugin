@@ -24,40 +24,25 @@ import java.util.EventObject;
 public final class PlaybackEvent extends EventObject {
 
     /**
-     * Enumeration of playback types.
-     */
-    public enum PlaybackType {
-        ADD_DATA, SET_CELL_ONSET, SET_CELL_OFFSET, GO_BACK,
-        REWIND, PLAY, FORWARD, SHUTTLE_BACK, STOP, SHUTTLE_FORWARD, FIND,
-        JOG_BACK, PAUSE, JOG_FORWARD, NEW_CELL_SET_ONSET, NEW_CELL_OFFSET,
-        NEW_CELL, SHOW_TRACKS
-    }
-
-    /**
      * Modifiers associated with this event.
      */
     private final int modifiers;
-
     /**
      * Type of playback control.
      */
     private final PlaybackType type;
-
     /**
      * The go time.
      */
     private final long goTime;
-
     /**
      * Onset time.
      */
     private final long onsetTime;
-
     /**
      * Offset time.
      */
     private final long offsetTime;
-
 
     /**
      * Constructs a new playback event.
@@ -114,6 +99,16 @@ public final class PlaybackEvent extends EventObject {
      */
     public int getModifiers() {
         return modifiers;
+    }
+
+    /**
+     * Enumeration of playback types.
+     */
+    public enum PlaybackType {
+        ADD_DATA, SET_CELL_ONSET, SET_CELL_OFFSET, GO_BACK,
+        REWIND, PLAY, FORWARD, SHUTTLE_BACK, STOP, SHUTTLE_FORWARD, FIND,
+        JOG_BACK, PAUSE, JOG_FORWARD, NEW_CELL_SET_ONSET, NEW_CELL_OFFSET,
+        NEW_CELL, SHOW_TRACKS, SEEK
     }
 
 }

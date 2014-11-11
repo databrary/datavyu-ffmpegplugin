@@ -10,7 +10,6 @@ import org.datavyu.util.DataViewerUtils;
 import org.datavyu.views.DataController;
 import org.datavyu.views.component.DefaultTrackPainter;
 import org.datavyu.views.component.TrackPainter;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.FullScreenStrategy;
@@ -27,87 +26,35 @@ import java.util.List;
 
 public class VLCDataViewer implements DataViewer {
 
+    private static final float FALLBACK_FRAME_RATE = 24.0f;
     /**
      * Data viewer ID.
      */
     private Identifier id;
-
     /**
      * Dialog for showing our visualizations.
      */
     private JDialog vlcDialog;
-
     /**
      * Data viewer offset.
      */
     private long offset;
-
     /**
      * Data to visualize.
      */
     private File data;
-
     /**
      * Boolean to keep track of whether or not we are playing
      */
     private boolean playing;
-
     /**
      * Data viewer state listeners.
      */
     private List<ViewerStateListener> stateListeners;
-
     /**
      * Action button for demo purposes.
      */
     private JButton sampleButton;
-
-    /**
-     * Surface on which we will display video
-     */
-    private Canvas videoSurface;
-
-    /**
-     * Factory for building our mediaPlayer
-     */
-    private MediaPlayerFactory mediaPlayerFactory;
-
-    /**
-     * The VLC mediaPlayer
-     */
-    private EmbeddedMediaPlayer mediaPlayer;
-
-    /**
-     * How we will handle fullscreen (i.e., not)
-     */
-    private FullScreenStrategy fullScreenStrategy;
-
-    /**
-     * FPS of the video, calculated on launch
-     */
-    private float fps;
-
-    /**
-     * Length of the video, calculated on launch
-     */
-    private long length;
-
-    /**
-     * The last jog position, making sure we are only calling jog once
-     * VLC has issues when trying to go to the same spot multiple times
-     */
-    private long last_position;
-
-    private Thread vlcThread;
-    
-    private static final float FALLBACK_FRAME_RATE = 24.0f;
-
-    static {
-        // Try to load VLC libraries.
-        // This discovery function is platform independent
-        new NativeDiscovery().discover();
-    }
-
     /**
      * Supported custom actions.
      */
@@ -117,7 +64,36 @@ public class VLCDataViewer implements DataViewer {
             return sampleButton;
         }
     };
-    
+    /**
+     * Surface on which we will display video
+     */
+    private Canvas videoSurface;
+    /**
+     * Factory for building our mediaPlayer
+     */
+    private MediaPlayerFactory mediaPlayerFactory;
+    /**
+     * The VLC mediaPlayer
+     */
+    private EmbeddedMediaPlayer mediaPlayer;
+    /**
+     * How we will handle fullscreen (i.e., not)
+     */
+    private FullScreenStrategy fullScreenStrategy;
+    /**
+     * FPS of the video, calculated on launch
+     */
+    private float fps;
+    /**
+     * Length of the video, calculated on launch
+     */
+    private long length;
+    /**
+     * The last jog position, making sure we are only calling jog once
+     * VLC has issues when trying to go to the same spot multiple times
+     */
+    private long last_position;
+    private Thread vlcThread;
     private boolean assumedFPS = false;
 
     public VLCDataViewer(final Frame parent, final boolean modal) {
@@ -232,23 +208,23 @@ public class VLCDataViewer implements DataViewer {
     }
     
     @Override
-    public void setIdentifier(final Identifier id) {
-        this.id = id;
-    }
-
-    @Override
     public Identifier getIdentifier() {
         return id;
     }
 
     @Override
-    public void setOffset(final long offset) {
-        this.offset = offset;
+    public void setIdentifier(final Identifier id) {
+        this.id = id;
     }
 
     @Override
     public long getOffset() {
         return offset;
+    }
+
+    @Override
+    public void setOffset(final long offset) {
+        this.offset = offset;
     }
 
     @Override
@@ -259,6 +235,11 @@ public class VLCDataViewer implements DataViewer {
     @Override
     public void setDataViewerVisible(final boolean isVisible) {
         vlcDialog.setVisible(isVisible);
+    }
+
+    @Override
+    public File getDataFeed() {
+        return data;
     }
 
     @Override
@@ -322,11 +303,6 @@ public class VLCDataViewer implements DataViewer {
                             + "Setting framerate to " + FALLBACK_FRAME_RATE);
                     */
         }
-    }
-
-    @Override
-    public File getDataFeed() {
-        return data;
     }
 
     @Override

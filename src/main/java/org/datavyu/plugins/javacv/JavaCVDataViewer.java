@@ -2,7 +2,10 @@ package org.datavyu.plugins.javacv;
 
 
 import org.bytedeco.javacv.CanvasFrame;
+import org.bytedeco.javacv.FrameGrabber;
+import org.bytedeco.javacv.GLCanvasFrame;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
+import org.datavyu.event.PlaybackEvent;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.id.Identifier;
 import org.datavyu.plugins.CustomActions;
@@ -23,11 +26,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 public class JavaCVDataViewer implements DataViewer {
 
     private static final float FALLBACK_FRAME_RATE = 24.0f;
+    private final LinkedBlockingQueue<PlaybackEvent> eventQueue;
     /**
      * Data viewer ID.
      */
@@ -77,7 +83,7 @@ public class JavaCVDataViewer implements DataViewer {
      * Length of the video, calculated on launch
      */
     private long length;
-    private OpenCVFrameGrabber player;
+    private FrameGrabber player;
     private CanvasFrame canvasFrame;
     private boolean assumedFPS = false;
 
@@ -85,6 +91,7 @@ public class JavaCVDataViewer implements DataViewer {
 
         playing = false;
 
+        eventQueue = new LinkedBlockingQueue<PlaybackEvent>(1);
 
         stateListeners = new ArrayList<ViewerStateListener>();
 
@@ -174,32 +181,54 @@ public class JavaCVDataViewer implements DataViewer {
     public void setDataFeed(final File dataFeed) {
         data = dataFeed;
 
-
-        System.out.println(String.format("FPS: %f", fps));
-        System.out.println(String.format("Length: %d", length));
-
         // Test to see if we should prompt user to convert the video to
         // the ideal format
         playing = false;
 
+        canvasFrame = new GLCanvasFrame("Extracted Frame", 1.0);
+//        {
+//            protected void initCanvas(boolean fullScreen, DisplayMode displayMode, double gamma) {
+//                try {
+//                    super.initCanvas(fullScreen, displayMode, gamma);
+//                }
+//                catch (RuntimeException ex) {
+//                    // will fail at the end of the function
+//                }
+//                if (!fullScreen) {
+//                    canvas.setSize(10, 10);
+//                    canvas.createBufferStrategy(2);
+//                    // canvas.setIgnoreRepaint(true); // you may be able to do this on the mac because of how quartz works
+//                }
+//            }
+//        };
+
         player = new OpenCVFrameGrabber(dataFeed);
+//        player.setVideoBitrate(500);
+
+
         try {
             player.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        canvasFrame = new CanvasFrame("Extracted Frame", 1);
+        System.out.println(player.getImageWidth());
+        canvasFrame.setCanvasSize(player.getImageWidth(), player.getImageHeight());
 
         // Read frame by frame, stop early if the display window is closed
-        for (int i = 0; i < player.getLengthInFrames(); i++) {
-            try {
-                player.setFrameNumber(i);
-                canvasFrame.showImage(player.grab());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+
+//        for (int i = 0; i < player.getLengthInFrames(); i++) {
+//            try {
+////                player.setFrameNumber(i);
+//                canvasFrame.showImage(player.grab());
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+        length = player.getLengthInTime() / 1000;
+        fps = (float) player.getFrameRate();
+        System.out.println("VIDEO LENGTH IN MS: " + length / 1000);
+        new Thread(new JavaCVPlayer(eventQueue)).start();
+
 
     }
 
@@ -210,12 +239,26 @@ public class JavaCVDataViewer implements DataViewer {
 
     @Override
     public long getCurrentTime() throws Exception {
-        return 0;
+        return player.getTimestamp() / 1000;
     }
 
     @Override
     public void seekTo(final long position) {
+        try {
+            System.out.println("BEFORE TIMESTAMP: " + player.getTimestamp() / 1000);
+            if (player.getTimestamp() / 1000 != position) {
+                PlaybackEvent e = new PlaybackEvent(this, PlaybackEvent.PlaybackType.SEEK,
+                        position * 1000, player.getTimestamp() / 1000, position, 0);
 
+//                eventQueue.put(e);
+                player.setTimestamp(position * 1000);
+                canvasFrame.showImage(player.grab());
+            }
+            System.out.println("AFTER TIMESTAMP: " + player.getTimestamp() / 1000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -225,7 +268,7 @@ public class JavaCVDataViewer implements DataViewer {
 
     @Override
     public void stop() {
-
+        playing = false;
     }
 
     @Override
@@ -235,7 +278,7 @@ public class JavaCVDataViewer implements DataViewer {
 
     @Override
     public void play() {
-
+        playing = true;
     }
 
     @Override
@@ -299,5 +342,178 @@ public class JavaCVDataViewer implements DataViewer {
     public boolean usingAssumedFPS() {
         return assumedFPS;
     }
+
+    class JavaCVPlayer implements Runnable {
+        private final BlockingQueue<PlaybackEvent> queue;
+        private long lastSeekStamp = -1;
+
+        public JavaCVPlayer(BlockingQueue<PlaybackEvent> q) {
+            queue = q;
+        }
+
+        @Override
+        public void run() {
+            // Read frame by frame, stop early if the display window is closed
+            while (true) {
+                while (playing && player.getFrameNumber() < player.getLengthInFrames() && queue.size() == 0) {
+                    try {
+//                    player.setFrameNumber(i);
+//                        player.setTimestamp(Datavyu.getDataController().getCurrentTime() * 1000);
+                        canvasFrame.showImage(player.grab());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (queue.size() > 0) {
+                    try {
+
+                        PlaybackEvent e = queue.take();
+                        if (e.getType() == PlaybackEvent.PlaybackType.SEEK && e.getGoTime() != lastSeekStamp) {
+                            player.setTimestamp(e.getGoTime());
+                            canvasFrame.showImage(player.grab());
+                            lastSeekStamp = e.getGoTime();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                if (!playing) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        }
+    }
+
+//    public static void main(String[] args) {
+//        String data;
+//        data = "/Users/jesse/Desktop/IULong_L10_01.mpg";
+//        FrameGrabber player;
+//        CanvasFrame canvasFrame;
+//
+//
+//        canvasFrame = new CanvasFrame("Extracted Frame") {
+//            protected void initCanvas(boolean fullScreen, DisplayMode displayMode, double gamma) {
+//                try {
+//                    super.initCanvas(fullScreen, displayMode, gamma);
+//                }
+//                catch (RuntimeException ex) {
+//                    // will fail at the end of the function
+//                }
+//                if (!fullScreen) {
+//                    canvas.setSize(10, 10);
+//                    canvas.createBufferStrategy(2);
+//                    // canvas.setIgnoreRepaint(true); // you may be able to do this on the mac because of how quartz works
+//                }
+//            }
+//        };
+//
+//        class FFmpegFrameGrabberFix extends FFmpegFrameGrabber {
+//
+//            private String          filename;
+//            private avformat.AVFormatContext oc;
+//            private avformat.AVStream video_st, audio_st;
+//            private avcodec.AVCodecContext video_c, audio_c;
+//            private avutil.AVFrame picture, picture_rgb;
+//            private BytePointer buffer_rgb;
+//            private avutil.AVFrame samples_frame;
+//            private BytePointer[]   samples_ptr;
+//            private Buffer[]        samples_buf;
+//            private avcodec.AVPacket pkt, pkt2;
+//            private int             sizeof_pkt;
+//            private int[]           got_frame;
+//            private swscale.SwsContext img_convert_ctx;
+//            private opencv_core.IplImage return_image;
+//            private boolean         frameGrabbed;
+//            private org.bytedeco.javacv.Frame frame;
+//
+//            public FFmpegFrameGrabberFix(String data) {
+//                super(data);
+//            }
+//
+//
+//
+//            @Override public void setTimestamp(long timestamp) throws Exception {
+//                int ret;
+//                if (oc == null) {
+//                    super.setTimestamp(timestamp);
+//                } else {
+//                    timestamp = timestamp * AV_TIME_BASE / 1000000L;
+//            /* add the stream start time */
+//                    if (oc.start_time() != AV_NOPTS_VALUE) {
+//                        timestamp += oc.start_time();
+//                    }
+//                    if ((ret = avformat_seek_file(oc, -1, Long.MIN_VALUE, timestamp, Long.MAX_VALUE, AVSEEK_FLAG_BACKWARD)) < 0) {
+//                        throw new Exception("avformat_seek_file() error " + ret + ": Could not seek file to timestamp " + timestamp + ".");
+//                    }
+//                    if (video_c != null) {
+//                        avcodec_flush_buffers(video_c);
+//                    }
+//                    if (audio_c != null) {
+//                        avcodec_flush_buffers(audio_c);
+//                    }
+//                    if (pkt2.size() > 0) {
+//                        pkt2.size(0);
+//                        av_free_packet(pkt);
+//                    }
+//            /* comparing to timestamp +/- 1 avoids rouding issues for framerates
+//               which are no proper divisors of 1000000, e.g. where
+//               av_frame_get_best_effort_timestamp in grabFrame sets this.timestamp
+//               to ...666 and the given timestamp has been rounded to ...667
+//               (or vice versa)
+//            */
+//                    while (this.timestamp > timestamp + 1 && grabFrame(false) != null) {
+//                        // flush frames if seeking backwards
+//                        System.out.println(this.timestamp);
+//                    }
+//                    while (this.timestamp < timestamp - 1 && grabFrame(false) != null) {
+//                        // decode up to the desired frame
+//                        System.out.println(this.timestamp);
+//                    }
+//                    if (video_c != null) {
+//                        frameGrabbed = true;
+//                    }
+//                }
+//            }
+//        }
+//
+//        player = new FFmpegFrameGrabberFix(data);
+//
+//        try {
+//            player.start();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(player.getImageWidth());
+//        canvasFrame.setCanvasSize(player.getImageWidth(), player.getImageHeight());
+//
+//        // Read frame by frame, stop early if the display window is closed
+//
+////        for (int i = 0; i < player.getLengthInFrames(); i++) {
+////            try {
+//////                player.setFrameNumber(i);
+////                canvasFrame.showImage(player.grab());
+////            } catch (Exception e) {
+////                e.printStackTrace();
+////            }
+////        }
+//        int i = 0;
+//        while(player.getFrameNumber() < player.getLengthInFrames()) {
+//            try {
+//                    player.setFrameNumber(i);
+////                        player.setTimestamp(Datavyu.getDataController().getCurrentTime() * 1000);
+//                canvasFrame.showImage(player.grab());
+//                i++;
+//                System.out.println(i);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//    }
 
 }

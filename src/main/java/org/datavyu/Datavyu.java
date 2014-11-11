@@ -30,8 +30,10 @@ import org.datavyu.util.WindowsKeyChar;
 import org.datavyu.views.*;
 import org.datavyu.views.discrete.SpreadsheetPanel;
 import org.jdesktop.application.*;
+import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +42,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.EventObject;
 import java.util.Stack;
-import javax.script.ScriptEngineFactory;
 
 /**
  * The main class of the application.
@@ -50,10 +51,19 @@ public final class Datavyu extends SingleFrameApplication
 
     /** Load required native libraries (JNI). */
     static {
+
         switch (getPlatform()) {
             case MAC:
                 try {
                     NativeLoader.LoadNativeLib("quaqua64");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    NativeLoader.LoadNativeLib("libglass");
+                    NativeLoader.LoadNativeLib("libavutil.52");
+                    System.out.println(System.getProperty("java.library.path"));
+//                    System.loadLibrary("glass");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -73,140 +83,194 @@ public final class Datavyu extends SingleFrameApplication
 
 //                break;
         }
+        new NativeDiscovery().discover();
+        System.setProperty("jna.library.path", "/Applications/VLC.app/Contents/MacOS/lib:/Applications/VLC.app/Contents/MacOS/plugins");
+        System.setProperty("VLC_PLUGIN_PATH", "/Applications/VLC.app/Contents/MacOS/plugins");
     }
-
-    public static boolean quicktimeLibrariesFound()
-    {
-        boolean ans = false;
-        try
-        {
-            Class.forName("quicktime.QTSession");
-            ans = true;
-        }
-        catch(ClassNotFoundException ce)
-        {
-            System.out.println("Class not found: " + ce.getMessage());
-        }
-        catch(Exception e)
-        {
-            System.out.println("Non-specific exception! " + e.getMessage());
-        }
-        finally{
-            return ans;
-        }
-
-    }
-    
     /**
      * The desired minimum initial width.
      */
     private static final int INITMINX = 600;
-
     /**
      * The desired minimum initial height.
      */
     private static final int INITMINY = 700;
-    
     public static boolean scriptRunning = false;
-
     /**
      * Constant variable for the Datavyu main panel. This is so we can send
      * keyboard shortcuts to it while the QTController is in focus. It actually
      * get initialized in startup().
      */
     private static DatavyuView VIEW;
-
-    /**
-     * All the supported platforms that Datavyu runs on.
-     */
-    public enum Platform {
-
-        /**
-         * Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard.
-         */
-        MAC,
-
-        /**
-         * Generic windows platform. I.e. XP, vista, etc.
-         */
-        WINDOWS,
-
-        /**
-         * Generic Linux platform.
-         */
-        LINUX,
-
-        /**
-         * Unknown platform.
-         */
-        UNKNOWN
-    }
-
-    /**
-     * The scripting engine that we use with Datavyu.
-     */
-    private ScriptEngine rubyEngine;
-
     /**
      * The scripting engine manager that we use with Datavyu.
      */
     private static ScriptEngineManager m2;
-    
     /**
      * The scripting engine factory that we use with Datavyu
      */
     private static ScriptEngineFactory sef;
-
     /**
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(Datavyu.class);
-
-    /**
-     * The view to use when listing all variables in the database.
-     */
-    private VariableListV listVarView;
-
-    /**
-     * The view to use when listing all the undoable actions.
-     */
-    private UndoHistoryWindow history;
-
     /**
      * The view to use for the quick time video controller.
      */
     private static DataControllerV dataController;
-
     private static ProjectController projectController;
-
+    public boolean ready = false;
+    /**
+     * The scripting engine that we use with Datavyu.
+     */
+    private ScriptEngine rubyEngine;
+    /**
+     * The view to use when listing all variables in the database.
+     */
+    private VariableListV listVarView;
+    /**
+     * The view to use when listing all the undoable actions.
+     */
+    private UndoHistoryWindow history;
     /**
      * The view to use when displaying information about Datavyu.
      */
     private AboutV aboutWindow;
-
     /**
      * The view to use when displaying information about Datavyu updates.
      */
     private UpdateV updateWindow;
-
     /**
      * Tracks if a NumPad key has been pressed.
      */
     private boolean numKeyDown = false;
-
     /**
      * Opened windows.
      */
     private Stack<Window> windows;
-
     /**
      * File path from the command line.
      */
     private String commandLineFile;
-
     private VideoConverterV videoConverter;
 
-    public boolean ready = false;
+    public static boolean quicktimeLibrariesFound() {
+        boolean ans = false;
+        try {
+            Class.forName("quicktime.QTSession");
+            ans = true;
+        } catch (ClassNotFoundException ce) {
+            System.out.println("Class not found: " + ce.getMessage());
+        } catch (Exception e) {
+            System.out.println("Non-specific exception! " + e.getMessage());
+        } finally {
+            return ans;
+        }
+
+    }
+
+    /**
+     * Gets the single instance of the data controller that is currently used
+     * with Datavyu.
+     *
+     * @return The single data controller in use with this instance of
+     * Datavyu.
+     */
+    public static DataControllerV getDataController() {
+        return dataController;
+    }
+
+    public static void setDataController(DataControllerV dc) {
+        dataController = dc;
+    }
+
+    /**
+     * A convenient static getter for the application instance.
+     *
+     * @return The instance of the Datavyu application.
+     */
+    public static Datavyu getApplication() {
+        return Application.getInstance(Datavyu.class);
+    }
+
+    /**
+     * A convenient static getter for the application session storage.
+     *
+     * @return The SessionStorage for the Datavyu application.
+     */
+    public static SessionStorage getSessionStorage() {
+        return Datavyu.getApplication().getContext().getSessionStorage();
+    }
+
+    /**
+     * @return The single instance of the scripting engine we use with
+     * Datavyu.
+     */
+    public static ScriptEngine getScriptingEngine() {
+        System.out.println("Returning: " + sef.getEngineName() + " " + sef.getEngineVersion());
+        return sef.getScriptEngine();
+    }
+
+    /**
+     * @return The platform that Datavyu is running on.
+     */
+    public static Platform getPlatform() {
+        String os = System.getProperty("os.name");
+
+        if (os.contains("Mac")) {
+            return Platform.MAC;
+        }
+
+        if (os.contains("Win")) {
+            return Platform.WINDOWS;
+        }
+
+        if (os.contains("Linux")) {
+            return Platform.LINUX;
+        }
+
+        return Platform.UNKNOWN;
+    }
+
+    /**
+     * Main method launching the application.
+     *
+     * @param args The command line arguments passed to Datavyu.
+     */
+    public static void main(final String[] args) {
+
+        // If we are running on a MAC set some additional properties:
+        if (Datavyu.getPlatform() == Platform.MAC) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Datavyu");
+            System.setProperty("Quaqua.jniIsPreloaded", "true");
+        }
+
+        launch(Datavyu.class, args);
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+//			System.err.println("ERROR: Force shutdown command caught. Initiating shutdown.");
+//			Datavyu.getApplication().shutdown();
+            }
+        });
+    }
+
+    public static ProjectController getProjectController() {
+        if (VIEW != null && VIEW.getSpreadsheetPanel() != null
+                && VIEW.getSpreadsheetPanel().getProjectController() != null) {
+            return VIEW.getSpreadsheetPanel().getProjectController();
+        }
+        return projectController;
+    }
+
+    public static void setProjectController(ProjectController p) {
+        projectController = p;
+    }
+
+    public static DatavyuView getView() {
+        return VIEW;
+    }
 
     public void setCommandLineFile(String s) {
         commandLineFile = s;
@@ -428,10 +492,10 @@ public final class Datavyu extends SingleFrameApplication
                     dataController.pressShowTracksSmall();
                 }
                 //Win - point cell
-                else{
+                else {
                     dataController.pressPointCell();
                 }
-                
+
                 break;
 
             case KeyEvent.VK_EQUALS:
@@ -443,7 +507,7 @@ public final class Datavyu extends SingleFrameApplication
                 break;
 
             case KeyEvent.VK_ASTERISK:
-                
+
                 break;
             case KeyEvent.VK_MULTIPLY:
                 //Win - Show/hide
@@ -555,18 +619,6 @@ public final class Datavyu extends SingleFrameApplication
         return result;
     }
 
-
-    /**
-     * Gets the single instance of the data controller that is currently used
-     * with Datavyu.
-     *
-     * @return The single data controller in use with this instance of
-     * Datavyu.
-     */
-    public static DataControllerV getDataController() {
-        return dataController;
-    }
-
     /**
      * Action for showing the quicktime video controller.
      */
@@ -584,7 +636,6 @@ public final class Datavyu extends SingleFrameApplication
         Datavyu.getApplication().show(videoConverter);
     }
 
-
     /**
      * Action for showing the variable list.
      */
@@ -596,7 +647,6 @@ public final class Datavyu extends SingleFrameApplication
         Datavyu.getApplication().show(listVarView);
     }
 
-
     /**
      * Action for showing the Undo History.
      */
@@ -606,7 +656,6 @@ public final class Datavyu extends SingleFrameApplication
         history = new UndoHistoryWindow(mainFrame, false, undomanager);
         Datavyu.getApplication().show(history);
     }
-
 
     /**
      * Action for showing the about window.
@@ -927,7 +976,7 @@ public final class Datavyu extends SingleFrameApplication
 
         // Init scripting engine
         m2 = new ScriptEngineManager();
-        
+
         // Init ruby factory
         sef = m2.getEngineByName("jruby").getFactory();
 
@@ -1040,78 +1089,6 @@ public final class Datavyu extends SingleFrameApplication
         });
     }
 
-    /**
-     * A convenient static getter for the application instance.
-     *
-     * @return The instance of the Datavyu application.
-     */
-    public static Datavyu getApplication() {
-        return Application.getInstance(Datavyu.class);
-    }
-
-    /**
-     * A convenient static getter for the application session storage.
-     *
-     * @return The SessionStorage for the Datavyu application.
-     */
-    public static SessionStorage getSessionStorage() {
-        return Datavyu.getApplication().getContext().getSessionStorage();
-    }
-
-    /**
-     * @return The single instance of the scripting engine we use with
-     * Datavyu.
-     */
-    public static ScriptEngine getScriptingEngine() {
-        System.out.println("Returning: " + sef.getEngineName() + " " + sef.getEngineVersion());
-        return sef.getScriptEngine();
-    }
-
-    /**
-     * @return The platform that Datavyu is running on.
-     */
-    public static Platform getPlatform() {
-        String os = System.getProperty("os.name");
-
-        if (os.contains("Mac")) {
-            return Platform.MAC;
-        }
-
-        if (os.contains("Win")) {
-            return Platform.WINDOWS;
-        }
-
-        if (os.contains("Linux")) {
-            return Platform.LINUX;
-        }
-
-        return Platform.UNKNOWN;
-    }
-
-    /**
-     * Main method launching the application.
-     *
-     * @param args The command line arguments passed to Datavyu.
-     */
-    public static void main(final String[] args) {
-
-        // If we are running on a MAC set some additional properties:
-        if (Datavyu.getPlatform() == Platform.MAC) {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Datavyu");
-            System.setProperty("Quaqua.jniIsPreloaded", "true");
-        }
-
-        launch(Datavyu.class, args);
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-//			System.err.println("ERROR: Force shutdown command caught. Initiating shutdown.");
-//			Datavyu.getApplication().shutdown();
-            }
-        });
-    }
-
     @Override
     public void show(final JDialog dialog) {
 
@@ -1141,10 +1118,6 @@ public final class Datavyu extends SingleFrameApplication
                 .getMainFrame(), false);
     }
 
-    public static void setDataController(DataControllerV dc) {
-        dataController = dc;
-    }
-
     public void closeOpenedWindows() {
 
         if (windows == null) {
@@ -1158,20 +1131,30 @@ public final class Datavyu extends SingleFrameApplication
         }
     }
 
-    public static void setProjectController(ProjectController p) {
-        projectController = p;
-    }
+    /**
+     * All the supported platforms that Datavyu runs on.
+     */
+    public enum Platform {
 
-    public static ProjectController getProjectController() {
-        if (VIEW != null && VIEW.getSpreadsheetPanel() != null
-               && VIEW.getSpreadsheetPanel().getProjectController() != null) {
-            return VIEW.getSpreadsheetPanel().getProjectController();
-        }
-        return projectController;
-    }
+        /**
+         * Generic Mac platform. I.e. Tiger, Leopard, Snow Leopard.
+         */
+        MAC,
 
-    public static DatavyuView getView() {
-        return VIEW;
+        /**
+         * Generic windows platform. I.e. XP, vista, etc.
+         */
+        WINDOWS,
+
+        /**
+         * Generic Linux platform.
+         */
+        LINUX,
+
+        /**
+         * Unknown platform.
+         */
+        UNKNOWN
     }
 
     /**
