@@ -4,40 +4,25 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.stage.Stage;
 import org.datavyu.models.db.Datastore;
-import org.datavyu.models.id.Identifier;
 import org.datavyu.plugins.CustomActions;
 import org.datavyu.plugins.CustomActionsAdapter;
-import org.datavyu.plugins.DataViewer;
 import org.datavyu.plugins.ViewerStateListener;
-import org.datavyu.util.DataViewerUtils;
+import org.datavyu.plugins.quicktime.BaseQuickTimeDataViewer;
 import org.datavyu.views.DataController;
-import org.datavyu.views.component.DefaultTrackPainter;
-import org.datavyu.views.component.TrackPainter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 
-public class JavaFXDataViewer implements DataViewer {
+public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
 
     private static final float FALLBACK_FRAME_RATE = 24.0f;
     private static final String VIDEO =
             "file:///Users/jesse/Desktop/country_life_butter.mp4";
-    /**
-     * Data viewer ID.
-     */
-    private Identifier id;
-    /**
-     * Dialog for showing our visualizations.
-     */
-    private JDialog vlcDialog;
+
     /**
      * Data viewer offset.
      */
@@ -84,14 +69,14 @@ public class JavaFXDataViewer implements DataViewer {
      * The last jog position, making sure we are only calling jog once
      * VLC has issues when trying to go to the same spot multiple times
      */
-    private long last_position;
-    private Thread vlcThread;
     private JDialog dialog = new JDialog();
     private JavaFXApplication javafxapp;
     private boolean assumedFPS = false;
 
+
     public JavaFXDataViewer(final Frame parent, final boolean modal) {
-        stateListeners = new ArrayList<ViewerStateListener>();
+        super(parent, modal);
+//        stateListeners = new ArrayList<ViewerStateListener>();
 
     }
 
@@ -123,6 +108,11 @@ public class JavaFXDataViewer implements DataViewer {
         } catch (InterruptedException e) {
             // ignore exception
         }
+    }
+
+    @Override
+    protected void setQTVolume(float volume) {
+        javafxapp.setVolume(volume);
     }
 
     private void launchEdtTaskNow(Runnable edtTask) {
@@ -166,17 +156,7 @@ public class JavaFXDataViewer implements DataViewer {
 
     @Override
     public float getDetectedFrameRate() {
-        return 30;
-    }
-
-    @Override
-    public Identifier getIdentifier() {
-        return id;
-    }
-
-    @Override
-    public void setIdentifier(final Identifier id) {
-        this.id = id;
+        return getFrameRate();
     }
 
     @Override
@@ -190,13 +170,9 @@ public class JavaFXDataViewer implements DataViewer {
     }
 
     @Override
-    public TrackPainter getTrackPainter() {
-        return new DefaultTrackPainter();
-    }
-
-    @Override
     public void setDataViewerVisible(final boolean isVisible) {
         javafxapp.setVisible(isVisible);
+        this.isVisible = isVisible;
     }
 
     @Override
@@ -231,6 +207,33 @@ public class JavaFXDataViewer implements DataViewer {
         // TODO Add in function to guess framerate
     }
 
+    /**
+     * Scales the video to the desired ratio.
+     *
+     * @param scale The new ratio to scale to, where 1.0 = original size, 2.0 = 200% zoom, etc.
+     */
+    @Override
+    protected void scaleVideo(final float scale) {
+        javafxapp.setScale(scale);
+
+        notifyChange();
+    }
+
+    @Override
+    protected void setQTDataFeed(File videoFile) {
+
+    }
+
+    @Override
+    protected Dimension getQTVideoSize() {
+        return null;
+    }
+
+    @Override
+    protected float getQTFPS() {
+        return getFrameRate();
+    }
+
     @Override
     public long getDuration() {
         System.out.println("DURATION: " + javafxapp.getDuration());
@@ -238,7 +241,7 @@ public class JavaFXDataViewer implements DataViewer {
     }
 
     @Override
-    public long getCurrentTime() throws Exception {
+    public long getCurrentTime() {
         return javafxapp.getCurrentTime();
     }
 
@@ -289,45 +292,8 @@ public class JavaFXDataViewer implements DataViewer {
     }
 
     @Override
-    public void storeSettings(final OutputStream os) {
-        try {
-            DataViewerUtils.storeDefaults(this, os);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
+    protected void cleanUp() {
 
-    @Override
-    public void loadSettings(final InputStream is) {
-
-        try {
-            DataViewerUtils.loadDefaults(this, is);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
-    public void addViewerStateListener(
-            final ViewerStateListener vsl) {
-
-        if (vsl != null) {
-            stateListeners.add(vsl);
-        }
-    }
-
-    @Override
-    public void removeViewerStateListener(
-            final ViewerStateListener vsl) {
-
-        if (vsl != null) {
-            stateListeners.remove(vsl);
-        }
-    }
-
-    @Override
-    public CustomActions getCustomActions() {
-        return actions;
     }
 
     @Override

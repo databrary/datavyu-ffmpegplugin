@@ -46,129 +46,86 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         implements DataViewer {
 
     /**
+     * Tooltip text for volume icon
+     */
+    public static final String VOLUME_TOOLTIP = "Change volume";
+    /**
+     * Tooltip text for resize icon
+     */
+    public static final String RESIZE_TOOLTIP = "Resize video";
+    /**
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(BaseQuickTimeDataViewer.class);
-
-    /**
-     * Rate for playback.
-     */
-    private float playRate;
-
-    /**
-     * Frames per second.
-     */
-    private float fps = -1;
-
-    /**
-     * parent controller.
-     */
-    private DataController parent;
-
-    /**
-     * The playback offset of the movie in milliseconds.
-     */
-    private long offset;
-
-    /**
-     * Is the movie currently playing?
-     */
-    private boolean playing;
-
-    /**
-     * The current video file that this viewer is representing.
-     */
-    private File mediaFile;
-
-    /**
-     * Volume slider.
-     */
-    private JSlider volumeSlider;
-
-    /**
-     * Dialog containing volume slider.
-     */
-    private JDialog volumeDialog;
-
-    /**
-     * Volume button.
-     */
-    private JButton volumeButton;
-
-    /**
-     * Resize button.
-     */
-    private JButton resizeButton;
-
-    /**
-     * Stores the desired volume the plugin should play at.
-     */
-    private float volume = 1f;
-
-    /**
-     * Is the plugin visible?
-     */
-    private boolean isVisible = true;
-
-    /**
-     * The original size of the movie when first loaded.
-     */
-    private Dimension nativeVideoSize;
-
-    /**
-     * A context menu for resizing the video.
-     */
-    private JPopupMenu menuContext = new JPopupMenu();
-
-    /**
-     * Menu item for quarter size.
-     */
-    private JMenuItem menuItemQuarter;
-
-    /**
-     * Menu item for half size.
-     */
-    private JMenuItem menuItemHalf;
-
-    /**
-     * Menu item for three quarters size.
-     */
-    private JMenuItem menuItemThreeQuarters;
-
-    /**
-     * Menu item for full size.
-     */
-    private JMenuItem menuItemFull;
-
     /**
      * Icon for displaying volume slider.
      */
     private final ImageIcon volumeIcon = new ImageIcon(getClass().getResource(
-                "/icons/volume.png"));
-
+            "/icons/volume.png"));
     /**
      * Volume slider icon for when the video is hidden (volume is muted).
      */
     private final ImageIcon mutedIcon = new ImageIcon(getClass().getResource(
-                "/icons/volume-muted.png"));
-
+            "/icons/volume-muted.png"));
     /**
      * Icon for resizing the video.
      */
     private final ImageIcon resizeIcon = new ImageIcon(getClass().getResource(
-                "/icons/resize.png"));
-
+            "/icons/resize.png"));
     /**
      * The list of listeners interested in changes made to the project.
      */
     private final List<ViewerStateListener> viewerListeners =
             new LinkedList<ViewerStateListener>();
-
     /**
-     * ID of this data viewer.
+     * Stores the desired volume the plugin should play at.
      */
-    private Identifier id;
-
+    protected float volume = 1f;
+    /**
+     * Is the plugin visible?
+     */
+    protected boolean isVisible = true;
+    protected boolean assumedFPS = false;
+    /**
+     * Rate for playback.
+     */
+    private float playRate;
+    /**
+     * Frames per second.
+     */
+    private float fps = -1;
+    /**
+     * parent controller.
+     */
+    private DataController parent;
+    /**
+     * The playback offset of the movie in milliseconds.
+     */
+    private long offset;
+    /**
+     * Is the movie currently playing?
+     */
+    private boolean playing;
+    /**
+     * The current video file that this viewer is representing.
+     */
+    private File mediaFile;
+    /**
+     * Volume slider.
+     */
+    private JSlider volumeSlider;
+    /**
+     * Dialog containing volume slider.
+     */
+    private JDialog volumeDialog;
+    /**
+     * Volume button.
+     */
+    private JButton volumeButton;
+    /**
+     * Resize button.
+     */
+    private JButton resizeButton;
     /**
      * Custom actions handler.
      */
@@ -188,14 +145,38 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
             return null;
         }
     };
+    /**
+     * The original size of the movie when first loaded.
+     */
+    private Dimension nativeVideoSize;
+    /**
+     * A context menu for resizing the video.
+     */
+    private JPopupMenu menuContext = new JPopupMenu();
+    /**
+     * Menu item for quarter size.
+     */
+    private JMenuItem menuItemQuarter;
+    /**
+     * Menu item for half size.
+     */
+    private JMenuItem menuItemHalf;
+    /**
+     * Menu item for three quarters size.
+     */
+    private JMenuItem menuItemThreeQuarters;
+    /**
+     * Menu item for full size.
+     */
+    private JMenuItem menuItemFull;
 
     //TODO: These may be better suited for a resoure bundle and properties file
-    /**Tooltip text for volume icon */
-    public static final String VOLUME_TOOLTIP = "Change volume";
-    /**Tooltip text for resize icon */
-    public static final String RESIZE_TOOLTIP = "Resize video";
-    
-    protected boolean assumedFPS = false;
+    private JMenuItem menuItemOneAndHalf;
+    private JMenuItem menuItemDouble;
+    /**
+     * ID of this data viewer.
+     */
+    private Identifier id;
     
     // ------------------------------------------------------------------------
     // [initialization]
@@ -290,10 +271,24 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
                 scaleVideo(1);
             }
         });
+        menuItemOneAndHalf = new JMenuItem("150% size");
+        menuItemOneAndHalf.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                scaleVideo(1.5f);
+            }
+        });
+        menuItemDouble = new JMenuItem("200% size");
+        menuItemDouble.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                scaleVideo(2);
+            }
+        });
         menuContext.add(menuItemQuarter);
         menuContext.add(menuItemHalf);
         menuContext.add(menuItemThreeQuarters);
         menuContext.add(menuItemFull);
+        menuContext.add(menuItemOneAndHalf);
+        menuContext.add(menuItemDouble);
         menuContext.setName("menuContext");
 
         initComponents();
@@ -349,7 +344,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
      *
      * @param scale The new ratio to scale to, where 1.0 = original size, 2.0 = 200% zoom, etc.
      */
-    private void scaleVideo(final float scale) {
+    protected void scaleVideo(final float scale) {
         int scaleHeight = (int) (nativeVideoSize.getHeight() * scale);
 
         // lock the aspect ratio
@@ -369,10 +364,6 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         return getHeight() - getInsets().bottom - getInsets().top;
     }
 
-    public int getVideoWidth() {
-        return getWidth() - getInsets().left - getInsets().right;
-    }
-
     private void setVideoHeight(final int height) {
 
         if (!(getAspectRatio() > 0)) {
@@ -385,6 +376,10 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
 
         setSize(newWidth, newHeight);
         validate();
+    }
+
+    public int getVideoWidth() {
+        return getWidth() - getInsets().left - getInsets().right;
     }
 
     /**
@@ -406,6 +401,23 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
      */
     public JDialog getParentJDialog() {
         return this;
+    }
+
+    protected abstract void setQTDataFeed(final File videoFile);
+
+    protected abstract Dimension getQTVideoSize();
+
+    protected abstract float getQTFPS();
+
+    public float getDetectedFrameRate() {
+        return getQTFPS();
+    }
+
+    /**
+     * @return The file used to display this data feed.
+     */
+    public File getDataFeed() {
+        return mediaFile;
     }
 
     @Override
@@ -434,23 +446,6 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         System.out.println(fps);
     }
 
-    protected abstract void setQTDataFeed(final File videoFile);
-
-    protected abstract Dimension getQTVideoSize();
-
-    protected abstract float getQTFPS();
-    
-    public float getDetectedFrameRate(){
-        return getQTFPS();
-    }
-
-    /**
-     * @return The file used to display this data feed.
-     */
-    public File getDataFeed() {
-        return mediaFile;
-    }
-
     /**
      * Sets parent data controller.
      *
@@ -472,15 +467,15 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         assumedFPS = false;
     }
 
+    public float getPlaybackSpeed() {
+        return playRate;
+    }
+
     /**
      * {@inheritDoc}
      */
     public void setPlaybackSpeed(final float rate) {
         playRate = rate;
-    }
-
-    public float getPlaybackSpeed() {
-        return playRate;
     }
 
     /**
@@ -548,7 +543,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     /**
      * Notifies listeners that a change to the project has occurred.
      */
-    private void notifyChange() {
+    protected void notifyChange() {
 
         for (ViewerStateListener listener : viewerListeners) {
             listener.notifyStateChanged(null, null);
@@ -668,13 +663,13 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     }
 
     @Override
-    public void setIdentifier(final Identifier id) {
-        this.id = id;
+    public Identifier getIdentifier() {
+        return id;
     }
 
     @Override
-    public Identifier getIdentifier() {
-        return id;
+    public void setIdentifier(final Identifier id) {
+        this.id = id;
     }
 
     @Override

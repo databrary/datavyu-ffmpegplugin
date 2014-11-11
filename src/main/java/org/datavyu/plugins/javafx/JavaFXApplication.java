@@ -70,6 +70,22 @@ public class JavaFXApplication extends Application {
         mp.setRate((double) rate);
     }
 
+    public double getHeight() {
+        return mp.getMedia().getHeight();
+    }
+
+    public double getAspectRatio() {
+        return mp.getMedia().getWidth() / mp.getMedia().getHeight();
+    }
+
+    public void setScale(double scale) {
+//        mv.setScaleX(scale);
+//        mv.setScaleY(scale);
+
+        stage.setHeight(mp.getMedia().getHeight() * scale);
+        stage.setWidth(mp.getMedia().getWidth() * scale);
+    }
+
     public void setVisible(final boolean visible) {
         Platform.runLater(new Runnable() {
             @Override
