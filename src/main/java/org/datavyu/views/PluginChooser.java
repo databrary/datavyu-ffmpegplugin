@@ -40,6 +40,9 @@ public abstract class PluginChooser extends JFileChooser {
     public int showOpenDialog(final Component parent) {
         this.setCurrentDirectory(Configuration.getInstance().getLCDirectory());
 
+        // Work around for new OSX not showing /Volumes anymore
+        this.setFileHidingEnabled(false);
+
         //setFileFilter(getAcceptAllFileFilter());
 
         int result = super.showOpenDialog(parent);

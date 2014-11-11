@@ -40,6 +40,8 @@ public final class DatavyuFileChooser extends JFileChooser {
     public int showOpenDialog(final Component parent) {
         this.setCurrentDirectory(Configuration.getInstance().getLCDirectory());
 
+        this.setFileHidingEnabled(false);
+
         int result = super.showOpenDialog(parent);
         Configuration.getInstance().setLCDirectory(this.getCurrentDirectory());
 
