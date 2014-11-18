@@ -315,7 +315,7 @@ public class VLCFXDataViewer extends BaseQuickTimeDataViewer {
     }
 
     public boolean usingAssumedFPS() {
-        return assumedFPS;
+        return vlcFxApp.isAssumedFps();
     }
 
 }

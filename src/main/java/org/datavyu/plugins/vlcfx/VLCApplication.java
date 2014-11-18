@@ -78,6 +78,9 @@ public class VLCApplication extends Application {
     private float fps;
 
 
+    private boolean assumedFps = false;
+
+
     public VLCApplication(File file) {
         dataFile = file;
         canvas = new Canvas();
@@ -167,6 +170,10 @@ public class VLCApplication extends Application {
 
     }
 
+    public boolean isAssumedFps() {
+        return assumedFps;
+    }
+
     public void setVolume(double volume) {
         mp.setVolume((int) (volume * 200));
     }
@@ -198,11 +205,17 @@ public class VLCApplication extends Application {
 
         mp.play();
 
+        // Wait for it to spin up so we can grab metadata
+        while (!mp.isPlaying()) {
+        }
 
         primaryStage.setScene(scene);
         primaryStage.show();
 
         fps = mp.getFps();
+        if (fps == 0) {
+            assumedFps = true;
+        }
 
         pause();
 

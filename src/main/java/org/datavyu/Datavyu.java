@@ -60,10 +60,8 @@ public final class Datavyu extends SingleFrameApplication
                     e.printStackTrace();
                 }
                 try {
-                    NativeLoader.LoadNativeLib("libglass");
-                    NativeLoader.LoadNativeLib("libavutil.52");
+//                    new NativeLibraryMan
                     System.out.println(System.getProperty("java.library.path"));
-//                    System.loadLibrary("glass");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
