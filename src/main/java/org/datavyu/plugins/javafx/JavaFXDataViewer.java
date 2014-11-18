@@ -236,7 +236,6 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
 
     @Override
     public long getDuration() {
-        System.out.println("DURATION: " + javafxapp.getDuration());
         return javafxapp.getDuration();
     }
 

@@ -559,15 +559,15 @@
                     <!--<includeProjectDependencies>false</includeProjectDependencies>-->
                     <includePluginDependencies>true</includePluginDependencies>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.oracle</groupId>
-                        <artifactId>javafx</artifactId>
-                        <version>2.2</version>
-                        <scope>system</scope>
-                        <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
-                    </dependency>
-                </dependencies>
+                <!--<dependencies>-->
+                <!--<dependency>-->
+                <!--<groupId>com.oracle</groupId>-->
+                <!--<artifactId>javafx</artifactId>-->
+                <!--<version>2.2</version>-->
+                <!--<scope>system</scope>-->
+                <!--<systemPath>${java.home}/lib/jfxrt.jar</systemPath>-->
+                <!--</dependency>-->
+                <!--</dependencies>-->
             </plugin>
 
             <plugin>
@@ -943,17 +943,17 @@
             <version>0.9</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>javafx-runtime</artifactId>
-            <version>2.2</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.oracle</groupId>-->
+        <!--<artifactId>javafx-runtime</artifactId>-->
+        <!--<version>2.2</version>-->
+        <!--</dependency>-->
 
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>javafx-macosx</artifactId>
-            <version>2.2</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>com.oracle</groupId>-->
+        <!--<artifactId>javafx-macosx</artifactId>-->
+        <!--<version>2.2</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.jogamp.gluegen</groupId>

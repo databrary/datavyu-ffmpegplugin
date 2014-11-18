@@ -25,6 +25,8 @@ public class JavaFXApplication extends Application {
     MediaPlayer mp;
     MediaView mv;
     Stage stage;
+    long duration = -1;
+    long lastSeekTime = -1;
 
     public JavaFXApplication(File file) {
         dataFile = file;
@@ -35,7 +37,14 @@ public class JavaFXApplication extends Application {
     }
 
     public void seek(long time) {
-        mp.seek(Duration.millis(time));
+        if (lastSeekTime == time) {
+
+        } else {
+            System.out.println("SEEKING TO: " + time);
+
+            mp.seek(Duration.millis(time));
+            lastSeekTime = time;
+        }
     }
 
     public void pause() {
@@ -59,7 +68,10 @@ public class JavaFXApplication extends Application {
     }
 
     public long getDuration() {
-        return (long) mp.getTotalDuration().toMillis();
+        if (duration == -1) {
+            duration = (long) mp.getTotalDuration().toMillis();
+        }
+        return duration;
     }
 
     public float getRate() {
@@ -116,7 +128,7 @@ public class JavaFXApplication extends Application {
             @Override
             public void run() {
                 stage.close();
-                mp.dispose();
+//                mp.dispose();
             }
         });
 
@@ -129,11 +141,13 @@ public class JavaFXApplication extends Application {
         mp = new MediaPlayer(m);
         mv = new MediaView(mp);
 
+
         final DoubleProperty width = mv.fitWidthProperty();
         final DoubleProperty height = mv.fitHeightProperty();
 
         width.bind(Bindings.selectDouble(mv.sceneProperty(), "width"));
         height.bind(Bindings.selectDouble(mv.sceneProperty(), "height"));
+
 
         mv.setPreserveRatio(true);
 
