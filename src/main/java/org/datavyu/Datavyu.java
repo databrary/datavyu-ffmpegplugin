@@ -84,8 +84,9 @@ public final class Datavyu extends SingleFrameApplication
 //                break;
         }
         new NativeDiscovery().discover();
-        System.setProperty("jna.library.path", "/Applications/VLC.app/Contents/MacOS/lib/vlc/lib");
-        System.setProperty("VLC_PLUGIN_PATH", "/Applications/VLC.app/Contents/MacOS/plugins");
+
+//        System.setProperty("jna.library.path", "/Applications/VLC.app/Contents/MacOS/lib/vlc/lib");
+//        System.setProperty("VLC_PLUGIN_PATH", "/Applications/VLC.app/Contents/MacOS/plugins");
     }
     /**
      * The desired minimum initial width.

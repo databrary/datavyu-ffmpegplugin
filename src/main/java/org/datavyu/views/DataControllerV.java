@@ -554,13 +554,13 @@ public final class DataControllerV extends DatavyuDialog
                          * Only synchronise the data viewers if we have a
                          * noticable drift.
                          */
-                        System.out.println(v.getCurrentTime());
-                        System.out.println(time);
+//                        System.out.println(v.getCurrentTime());
+//                        System.out.println(time);
                         if (v.isPlaying()
                                 && (Math.abs(
                                 v.getCurrentTime()
                                         - (time - v.getOffset())) > thresh)) {
-                            v.seekTo(time - v.getOffset());
+//                            v.seekTo(time - v.getOffset());
                         }
                     }
                 }

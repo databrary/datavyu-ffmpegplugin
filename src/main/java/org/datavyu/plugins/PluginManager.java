@@ -398,11 +398,11 @@ public final class PluginManager {
             public int compare(final Plugin o1, final Plugin o2) {
 
                 // Want the JavaFX video plugin to always be first.
-                if ("JavaFX Video".equals(o1.getPluginName())) {
+                if ("VLCFX Video".equals(o1.getPluginName())) {
                     return -1;
                 }
 
-                if ("JavaFX Video".equals(o2.getPluginName())) {
+                if ("VLCFX Video".equals(o2.getPluginName())) {
                     return 1;
                 }
 

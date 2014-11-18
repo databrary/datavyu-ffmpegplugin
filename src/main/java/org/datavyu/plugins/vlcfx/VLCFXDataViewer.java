@@ -3,29 +3,22 @@ package org.datavyu.plugins.vlcfx;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.stage.Stage;
-import org.datavyu.models.db.Datastore;
 import org.datavyu.models.id.Identifier;
 import org.datavyu.plugins.CustomActions;
 import org.datavyu.plugins.CustomActionsAdapter;
-import org.datavyu.plugins.DataViewer;
 import org.datavyu.plugins.ViewerStateListener;
-import org.datavyu.util.DataViewerUtils;
-import org.datavyu.views.DataController;
+import org.datavyu.plugins.quicktime.BaseQuickTimeDataViewer;
 import org.datavyu.views.component.DefaultTrackPainter;
 import org.datavyu.views.component.TrackPainter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 
-public class VLCFXDataViewer implements DataViewer {
+public class VLCFXDataViewer extends BaseQuickTimeDataViewer {
 
     private static final float FALLBACK_FRAME_RATE = 24.0f;
     private static final String VIDEO =
@@ -91,7 +84,8 @@ public class VLCFXDataViewer implements DataViewer {
     private boolean assumedFPS = false;
 
     public VLCFXDataViewer(final Frame parent, final boolean modal) {
-        stateListeners = new ArrayList<ViewerStateListener>();
+        super(parent, modal);
+//        stateListeners = new ArrayList<ViewerStateListener>();
 
     }
 
@@ -125,6 +119,10 @@ public class VLCFXDataViewer implements DataViewer {
         }
     }
 
+    protected void setQTVolume(float volume) {
+        vlcFxApp.setVolume(volume);
+    }
+
     private void launchEdtTaskNow(Runnable edtTask) {
         if (SwingUtilities.isEventDispatchThread()) {
             edtTask.run();
@@ -152,6 +150,21 @@ public class VLCFXDataViewer implements DataViewer {
     @Override
     public JDialog getParentJDialog() {
         return dialog;
+    }
+
+    @Override
+    protected void setQTDataFeed(File videoFile) {
+
+    }
+
+    @Override
+    protected Dimension getQTVideoSize() {
+        return null;
+    }
+
+    @Override
+    protected float getQTFPS() {
+        return getFrameRate();
     }
 
     @Override
@@ -233,30 +246,31 @@ public class VLCFXDataViewer implements DataViewer {
 
     @Override
     public long getDuration() {
-        System.out.println("DURATION: " + vlcFxApp.getDuration());
+//        System.out.println("DURATION: " + vlcFxApp.getDuration());
         return vlcFxApp.getDuration();
     }
 
     @Override
-    public long getCurrentTime() throws Exception {
+    public long getCurrentTime() {
         return vlcFxApp.getCurrentTime();
     }
 
     @Override
     public void seekTo(final long position) {
+//        System.out.println("SEEKING TO " + position);
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
+//        Platform.runLater(new Runnable() {
+//            @Override
+//            public void run() {
                 vlcFxApp.seek(position);
-            }
-        });
+//            }
+//        });
 
     }
 
     @Override
     public boolean isPlaying() {
-        return playing;
+        return vlcFxApp.isPlaying();
     }
 
     @Override
@@ -273,7 +287,7 @@ public class VLCFXDataViewer implements DataViewer {
 
     @Override
     public void setPlaybackSpeed(final float rate) {
-//        vlcFxApp.setRate(rate);
+        vlcFxApp.setRate(rate);
     }
 
     @Override
@@ -289,45 +303,8 @@ public class VLCFXDataViewer implements DataViewer {
     }
 
     @Override
-    public void storeSettings(final OutputStream os) {
-        try {
-            DataViewerUtils.storeDefaults(this, os);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
+    protected void cleanUp() {
 
-    @Override
-    public void loadSettings(final InputStream is) {
-
-        try {
-            DataViewerUtils.loadDefaults(this, is);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
-    public void addViewerStateListener(
-            final ViewerStateListener vsl) {
-
-        if (vsl != null) {
-            stateListeners.add(vsl);
-        }
-    }
-
-    @Override
-    public void removeViewerStateListener(
-            final ViewerStateListener vsl) {
-
-        if (vsl != null) {
-            stateListeners.remove(vsl);
-        }
-    }
-
-    @Override
-    public CustomActions getCustomActions() {
-        return actions;
     }
 
     @Override
@@ -335,17 +312,6 @@ public class VLCFXDataViewer implements DataViewer {
         stop();
         vlcFxApp.setVisible(false);
         vlcFxApp.closeAndDestroy();
-    }
-
-    @Override
-    public void setDatastore(final Datastore sDB) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void setParentController(
-            final DataController dataController) {
-        // TODO Auto-generated method stub
     }
 
     public boolean usingAssumedFPS() {
