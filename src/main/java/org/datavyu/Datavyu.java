@@ -16,12 +16,14 @@ package org.datavyu;
 
 import ca.beq.util.win32.registry.Win32Exception;
 import ch.randelshofer.quaqua.QuaquaManager;
+import com.sun.jna.NativeLibrary;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.models.db.TitleNotifier;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.plugins.PluginManager;
+import org.datavyu.plugins.vlcfx.NativeLibraryManager;
 import org.datavyu.undoableedits.SpreadsheetUndoManager;
 import org.datavyu.util.MacHandler;
 import org.datavyu.util.NativeLoader;
@@ -30,7 +32,7 @@ import org.datavyu.util.WindowsKeyChar;
 import org.datavyu.views.*;
 import org.datavyu.views.discrete.SpreadsheetPanel;
 import org.jdesktop.application.*;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -51,6 +53,20 @@ public final class Datavyu extends SingleFrameApplication
 
     /** Load required native libraries (JNI). */
     static {
+
+        String tempDir = System.getProperty("java.io.tmpdir") + "/vlc/";
+        System.setProperty("jna.library.path", tempDir);
+
+        System.out.println("WORKING DIR:" + System.getProperty("user.dir"));
+        System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + tempDir);
+        System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparator + tempDir);
+        NativeLibraryManager nlm = new NativeLibraryManager(tempDir);
+        System.out.println(System.getProperty("jna.library.path"));
+
+        nlm.unpackNativePackage();
+        NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), tempDir + "/vlc/lib");
+//        System.load(tempDir + "vlc/lib/libvlc.dylib");
+//        new NativeDiscovery().discover();
 
         switch (getPlatform()) {
             case MAC:
@@ -81,7 +97,7 @@ public final class Datavyu extends SingleFrameApplication
 
 //                break;
         }
-        new NativeDiscovery().discover();
+
 
 //        System.setProperty("jna.library.path", "/Applications/VLC.app/Contents/MacOS/lib/vlc/lib");
 //        System.setProperty("VLC_PLUGIN_PATH", "/Applications/VLC.app/Contents/MacOS/plugins");

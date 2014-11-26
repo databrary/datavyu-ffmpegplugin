@@ -43,22 +43,18 @@ public final class RunScriptC extends SwingWorker<Object, String> {
      * the maximum size of the recently ran script list.
      */
     private static final int MAX_RECENT_SCRIPT_SIZE = 5;
-
-    /**
-     * The path to the script file we are executing.
-     */
-    private final File scriptFile;
-
-    /**
-     * The View that the results of the scripting engine are displayed too.
-     */
-    private JTextArea console = null;
-
     /**
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(RunScriptC.class);
-
+    /**
+     * The path to the script file we are executing.
+     */
+    private final File scriptFile;
+    /**
+     * The View that the results of the scripting engine are displayed too.
+     */
+    private JTextArea console = null;
     /**
      * output stream for messages coming from the scripting engine.
      */
@@ -208,7 +204,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     //rubyEngine.put("mixer", null);
                     //rubyEngine.put("viewers", null);
 
-                    consoleWriterAfter.write("\nScript completed successfully.");
+                    consoleWriterAfter.write("\nScript has finished running.");
                     consoleWriterAfter.flush();
                     consoleWriterAfter.close();
                     lineReader.close();

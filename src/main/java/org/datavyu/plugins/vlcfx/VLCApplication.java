@@ -80,6 +80,12 @@ public class VLCApplication extends Application {
 
     private boolean assumedFps = false;
 
+    static {
+//        String tempDir = System.getProperty("java.io.tmpdir");
+//        new NativeLibraryManager(tempDir);
+//        NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), tempDir);
+//        new NativeDiscovery().discover();
+    }
 
     public VLCApplication(File file) {
         dataFile = file;

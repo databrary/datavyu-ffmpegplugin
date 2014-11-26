@@ -680,6 +680,7 @@
                 </configuration>
             </plugin>
 
+
             <!--      <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
@@ -765,6 +766,39 @@
                     </classPath>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.datavyu</groupId>
+                                    <artifactId>vlcLibs-macosx</artifactId>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.outputDirectory}/lib/vlc-${os.name}-${os.arch}
+                                    </outputDirectory>
+                                    <destFileName>vlc-${os.name}-${os.arch}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.outputDirectory}/lib/vlc-${os.name}-${os.arch}
+                            </outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
@@ -943,11 +977,11 @@
             <version>0.9</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.datavyu</groupId>-->
-        <!--<artifactId>vlcLibs-macosx</artifactId>-->
-        <!--<version>2.1.8</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.datavyu</groupId>
+            <artifactId>vlcLibs-macosx</artifactId>
+            <version>2.2.1</version>
+        </dependency>
 
 
         <!--<dependency>-->

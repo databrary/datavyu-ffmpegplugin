@@ -85,7 +85,7 @@ public class NativeLoader {
     }
 
     public static void setLibraryPath(String path) throws Exception {
-        System.setProperty("java.library.path", System.getProperty("java.library.path") + ";" + path);
+        System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + path);
 
         //set sys_paths to null
         final Field sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
