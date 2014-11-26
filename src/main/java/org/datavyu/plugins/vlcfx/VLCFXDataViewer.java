@@ -304,6 +304,7 @@ public class VLCFXDataViewer extends BaseQuickTimeDataViewer {
 
     @Override
     protected void cleanUp() {
+        clearDataFeed();
 
     }
 

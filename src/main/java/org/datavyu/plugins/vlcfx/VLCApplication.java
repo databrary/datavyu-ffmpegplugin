@@ -115,7 +115,7 @@ public class VLCApplication extends Application {
     }
 
     public void stop() {
-        mp.pause();
+        mp.stop();
     }
 
     public long getCurrentTime() {
@@ -183,6 +183,9 @@ public class VLCApplication extends Application {
     }
 
     public void closeAndDestroy() {
+
+        mp.release();
+        mediaPlayerComponent.release();
 
     }
 
