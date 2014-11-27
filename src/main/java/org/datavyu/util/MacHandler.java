@@ -126,8 +126,7 @@ public class MacHandler {
                     if (shouldQuit) {
                         Datavyu.getApplication().getMainFrame().setVisible(
                                 false);
-                        NativeLoader.cleanAllTmpFiles();
-                        UserMetrix.shutdown();
+                        Datavyu.getApplication().shutdown();
                     }
 
                     Method setHandled = ae.getMethod("setHandled",

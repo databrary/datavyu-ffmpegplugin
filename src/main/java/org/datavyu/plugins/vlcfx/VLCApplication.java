@@ -3,6 +3,8 @@ package org.datavyu.plugins.vlcfx;
 import com.sun.jna.Memory;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.PixelFormat;
@@ -10,6 +12,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.datavyu.Datavyu;
 import uk.co.caprica.vlcj.component.DirectMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
@@ -18,25 +21,13 @@ import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by jesse on 10/21/14.
  */
 public class VLCApplication extends Application {
-
-    /**
-     * Target width, unless {@link #useSourceSize} is set.
-     */
-    private static final int WIDTH = 1920;
-    /**
-     * Target height, unless {@link #useSourceSize} is set.
-     */
-    private static final int HEIGHT = 1080;
-    /**
-     * Set this to <code>true</code> to resize the display to the dimensions of the
-     * video, otherwise it will use {@link #WIDTH} and {@link #HEIGHT}.
-     */
-    private static final boolean useSourceSize = true;
 
     /**
      * Pixel format.
@@ -53,9 +44,22 @@ public class VLCApplication extends Application {
     File dataFile;
     boolean init = false;
     /**
+     * Target width, unless {@link #useSourceSize} is set.
+     */
+    private int WIDTH = 1920;
+    /**
+     * Target height, unless {@link #useSourceSize} is set.
+     */
+    private int HEIGHT = 1080;
+    /**
+     * Set this to <code>true</code> to resize the display to the dimensions of the
+     * video, otherwise it will use {@link #WIDTH} and {@link #HEIGHT}.
+     */
+    private boolean useSourceSize = true;
+    /**
      * The vlcj direct rendering media player component.
      */
-    private DirectMediaPlayerComponent mediaPlayerComponent;
+    private TestMediaPlayerComponent mediaPlayerComponent;
     private DirectMediaPlayer mp;
     /**
      *
@@ -76,6 +80,8 @@ public class VLCApplication extends Application {
     private long lastTimeSinceVlcUpdate = -1;
 
     private float fps;
+
+    private double aspect;
 
 
     private boolean assumedFps = false;
@@ -199,7 +205,7 @@ public class VLCApplication extends Application {
         return mp.isPlaying();
     }
 
-    public void start(Stage primaryStage) {
+    public void start(final Stage primaryStage) {
 
         this.stage = primaryStage;
 
@@ -220,6 +226,49 @@ public class VLCApplication extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        final ChangeListener<Number> listener = new ChangeListener<Number>() {
+            final Timer timer = new Timer(); // uses a timer to call your resize method
+            final long delayTime = 200; // delay that has to pass in order to consider an operation done
+            TimerTask task = null; // task to execute after defined delay
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue) {
+                if (task != null) { // there was already a task scheduled from the previous operation ...
+                    task.cancel(); // cancel it, we have a new size to consider
+                }
+
+                task = new TimerTask() // create new task that calls your resize operation
+                {
+                    @Override
+                    public void run() {
+                        // here you can place your resize code
+                        useSourceSize = false;
+                        System.out.println("resize to " + primaryStage.getWidth() + " " + primaryStage.getHeight());
+
+                        if (primaryStage.getWidth() > primaryStage.getHeight()) {
+                            WIDTH = (int) primaryStage.getWidth();
+                            HEIGHT = (int) (primaryStage.getWidth() / aspect);
+                        } else {
+                            WIDTH = (int) (primaryStage.getHeight() * aspect);
+                            HEIGHT = (int) (primaryStage.getHeight());
+                        }
+
+
+                        mediaPlayerComponent.resizePlayer();
+                    }
+                };
+                // schedule new task
+                timer.schedule(task, delayTime);
+            }
+        };
+
+        aspect = primaryStage.getWidth() / primaryStage.getHeight();
+
+        primaryStage.widthProperty().addListener(listener);
+        primaryStage.heightProperty().addListener(listener);
+
+
 
         fps = mp.getFps();
         if (fps == 0) {
@@ -248,6 +297,23 @@ public class VLCApplication extends Application {
 
             ByteBuffer byteBuffer = nativeBuffer.getByteBuffer(0, nativeBuffer.size());
             pixelWriter.setPixels(0, 0, WIDTH, HEIGHT, pixelFormat, byteBuffer, bufferFormat.getPitches()[0]);
+        }
+
+        public void resizePlayer() {
+            long timeStamp = Datavyu.getDataController().getCurrentTime();
+            boolean isPlaying = mp.isPlaying();
+            mp.stop();
+            mp.play();
+            mp.setTime(timeStamp);
+            while (!mp.isPlaying()) {
+            }
+
+            System.out.println("Was playing: " + isPlaying);
+            if (!isPlaying) {
+
+                mp.pause();
+            }
+
         }
     }
 

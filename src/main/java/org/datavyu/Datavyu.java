@@ -51,6 +51,8 @@ import java.util.Stack;
 public final class Datavyu extends SingleFrameApplication
         implements KeyEventDispatcher, TitleNotifier {
 
+    private static final NativeLibraryManager nlm;
+
     /** Load required native libraries (JNI). */
     static {
 
@@ -60,7 +62,7 @@ public final class Datavyu extends SingleFrameApplication
         System.out.println("WORKING DIR:" + System.getProperty("user.dir"));
         System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + tempDir);
         System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparator + tempDir);
-        NativeLibraryManager nlm = new NativeLibraryManager(tempDir);
+        nlm = new NativeLibraryManager(tempDir);
         System.out.println(System.getProperty("jna.library.path"));
 
         nlm.unpackNativePackage();
@@ -110,6 +112,7 @@ public final class Datavyu extends SingleFrameApplication
      * The desired minimum initial height.
      */
     private static final int INITMINY = 700;
+
     public static boolean scriptRunning = false;
     /**
      * Constant variable for the Datavyu main panel. This is so we can send
@@ -1073,8 +1076,9 @@ public final class Datavyu extends SingleFrameApplication
      * Clean up after ourselves.
      */
     @Override
-    protected void shutdown() {
+    public void shutdown() {
         NativeLoader.cleanAllTmpFiles();
+        nlm.purge();
         super.shutdown();
     }
 
