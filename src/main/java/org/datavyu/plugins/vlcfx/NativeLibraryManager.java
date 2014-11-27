@@ -242,7 +242,9 @@ public class NativeLibraryManager {
         String osArch = System.getProperty("os.arch");
         Logger.debug("osArch={}", osArch);
 
-        String platformResources = String.format("%svlc-%s-%s/vlc-%s-%s.jar", PACKAGE_RESOURCE_DIRECTORY, osName, osArch, osName, osArch).toLowerCase();
+        String platformResources = String.format("../%svlc-%s-%s/vlc-%s-%s.jar", PACKAGE_RESOURCE_DIRECTORY, osName, osArch, osName, osArch);
+//        String platformResources = String.format("../lib/vlcLibs-macosx-2.2.1.jar", PACKAGE_RESOURCE_DIRECTORY, osName, osArch, osName, osArch);
+
         System.out.println(platformResources);
         Logger.debug("platformResources={}", platformResources);
         JarFile jarFile = getNativePackageJarFile(platformResources);
@@ -310,7 +312,11 @@ public class NativeLibraryManager {
         Logger.debug("getNativePackageJarFile()");
         // Try and locate the package for this operating system
         System.out.println(resourcePath);
-        URL vlcPluginsUrl = NativeLibraryManager.class.getClassLoader().getResource(resourcePath);
+        URL vlcPluginsUrl = getClass().getClassLoader().getResource(resourcePath);
+        if (vlcPluginsUrl == null) {
+            vlcPluginsUrl = getClass().getClassLoader().getResource(resourcePath.replace("../", ""));
+        }
+
         Logger.debug("vlcPluginsUrl={}", vlcPluginsUrl);
         if (vlcPluginsUrl == null) {
             throw new RuntimeException("Failed to find a native library resource on the class-path");

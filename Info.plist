@@ -97,6 +97,8 @@
 
         <string>$JAVAROOT/repo/com/oracle/javafx-runtime/2.2/javafx-runtime-2.2.jar</string>
         <string>$JAVAROOT/repo/com/oracle/javafx-macosx/2.2/javafx-macosx-2.2.jar</string>
+
+        <string>$JAVAROOT/repo/com/oracle/javafx-macosx/2.2/vlcLibs-macosx-2.2.1.jar</string>
       </array>
     </dict>
   </dict>
