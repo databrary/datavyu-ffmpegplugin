@@ -803,7 +803,7 @@ public final class DatavyuView extends FrameView
 
         String title = rMap.getString("Application.title") + " - " + projectName + extension + postFix;
         String tabTitle = projectName + postFix;
-        
+
         Datavyu.getProjectController().getProject().setDatabaseFileName(projectName + extension);
         mainFrame.setTitle(title);
         this.getSpreadsheetPanel().setName(tabTitle);
@@ -976,7 +976,7 @@ public final class DatavyuView extends FrameView
             exportToCSVByFrame(jd);
         }
     }
-    
+
     private void exportToCSVByFrame(final DatavyuFileChooser fc) {
         ProjectController projController = Datavyu.getProjectController();
         projController.updateProject();
@@ -998,12 +998,12 @@ public final class DatavyuView extends FrameView
             File f = new File(fc.getSelectedFile().getParent(), dbFileName);
 
             exportC.exportByFrame(dbFileName, projController.getDB());
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }    
-    
+    }
+
     private boolean canSave(final String directory, final String file) {
         File newFile = new File(directory, file);
 
@@ -2726,7 +2726,6 @@ public final class DatavyuView extends FrameView
 
             if (tabbedPane.getTabCount() == 1 &&
                     Datavyu.getProjectController().getProjectName() == null &&
-                    Datavyu.getPlatform() != Platform.MAC &&
                     !Datavyu.getProjectController().isChanged()) {
                 tabbedPane.remove(0);
             }
@@ -2796,9 +2795,11 @@ public final class DatavyuView extends FrameView
         }
     }
 
-    private class NoEditTableModel extends DefaultTableModel{
+    private class NoEditTableModel extends DefaultTableModel {
         @Override
-        public boolean isCellEditable(int r, int c) {return false;}
+        public boolean isCellEditable(int r, int c) {
+            return false;
+        }
     }
 
     /**
