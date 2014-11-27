@@ -31,19 +31,17 @@ import java.util.zip.ZipFile;
 public final class OpenC {
 
     /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = UserMetrix.getLogger(OpenC.class);
+    /**
      * A reference to the database that this controller opened.
      */
     private Datastore database = null;
-
     /**
      * A reference to the projec that this controller opened.
      */
     private Project project = null;
-
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(OpenC.class);
 
     /**
      * Opens a file as a Datavyu database.
@@ -94,6 +92,9 @@ public final class OpenC {
         database.setName(projectFile.getName());
 
         database.deselectAll();
+
+        // Mark as unchanged after loading spreadsheet
+        database.markAsUnchanged();
     }
 
     /**

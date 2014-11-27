@@ -34,6 +34,7 @@ public final class DatavyuVariable implements Variable {
     // All the listeners for variables in teh datastore.
     static Map<UUID, List<VariableListener>> allListeners =
             new HashMap<UUID, List<VariableListener>>();
+    private static CellComparator CellComparator = new CellComparator();
     final private UUID variableId = UUID.randomUUID();
     private List<Cell> cells = new ArrayList<Cell>();
     private Argument rootNodeArgument = null;
@@ -42,32 +43,7 @@ public final class DatavyuVariable implements Variable {
     private Boolean hidden;
     private String name;
     private int orderIndex = -1;
-
     private DatavyuDatastore owningDatastore;
-
-    private static CellComparator CellComparator = new CellComparator();
-
-    /**
-     * @param variableId The ID of the variable we want the listeners for.
-     *
-     * @return The list of listeners for the specified variableId.
-     */
-    private static List<VariableListener> getListeners(UUID variableId) {
-        List<VariableListener> result = allListeners.get(variableId);
-        if (result == null) {
-            result = new ArrayList<VariableListener>();
-            allListeners.put(variableId, result);
-        }
-
-        return result;
-    }
-
-    /**
-     * Removes all the listeners for all the variables.
-     */
-    public static void clearListeners() {
-        allListeners.clear();
-    }
 
     /**
      * Default constructor.
@@ -88,10 +64,10 @@ public final class DatavyuVariable implements Variable {
     /**
      * Constructor.
      *
-     * @param name The name to use for the variable being constructed.
-     * @param type The type to use for the variable being constructed.
+     * @param name          The name to use for the variable being constructed.
+     * @param type          The type to use for the variable being constructed.
      * @param grandfathered Flag to exempt variable from naming rules.
-     * @param dds The datastore to which this variable belongs
+     * @param dds           The datastore to which this variable belongs
      */
     public DatavyuVariable(String name,
                            Argument type,
@@ -104,21 +80,43 @@ public final class DatavyuVariable implements Variable {
         this.setSelected(true);
 
 
-
-        Datavyu.getProjectController().getDB().markDBAsChanged();
+        owningDatastore.markDBAsChanged();
     }
-    
-    
+
+    /**
+     * @param variableId The ID of the variable we want the listeners for.
+     * @return The list of listeners for the specified variableId.
+     */
+    private static List<VariableListener> getListeners(UUID variableId) {
+        List<VariableListener> result = allListeners.get(variableId);
+        if (result == null) {
+            result = new ArrayList<VariableListener>();
+            allListeners.put(variableId, result);
+        }
+
+        return result;
+    }
+
+    /**
+     * Removes all the listeners for all the variables.
+     */
+    public static void clearListeners() {
+        allListeners.clear();
+    }
+
     public void addCell(Cell cell) {
         if (cell.getValue().getArgument() == this.getRootNode()) {
             cells.add(cell);
-            for(VariableListener vl : getListeners(getID()) ) {
+            for (VariableListener vl : getListeners(getID())) {
                 vl.cellInserted(cell);
             }
-            Datavyu.getProjectController().getDB().markDBAsChanged();
+            owningDatastore.markDBAsChanged();
         }
     }
 
+    public Datastore getOwningDatastore() {
+        return owningDatastore;
+    }
 
 
     /**
@@ -134,11 +132,11 @@ public final class DatavyuVariable implements Variable {
 
         cells.add(c);
 
-        for(VariableListener vl : getListeners(getID()) ) {
+        for (VariableListener vl : getListeners(getID())) {
             vl.cellInserted(c);
         }
 
-        Datavyu.getProjectController().getDB().markDBAsChanged();
+        owningDatastore.markDBAsChanged();
         return c;
     }
 
@@ -146,9 +144,9 @@ public final class DatavyuVariable implements Variable {
     public void removeCell(final Cell cell) {
         cells.remove(cell);
 
-        Datavyu.getProjectController().getDB().markDBAsChanged();
+        owningDatastore.markDBAsChanged();
 
-        for(VariableListener vl : getListeners(getID()) ) {
+        for (VariableListener vl : getListeners(getID())) {
             vl.cellRemoved(cell);
         }
 
@@ -169,19 +167,19 @@ public final class DatavyuVariable implements Variable {
     public Argument getRootNode() {
         return rootNodeArgument;
     }
-    
+
+    @Override
+    public void setRootNode(final Argument a) {
+        owningDatastore.markDBAsChanged();
+        rootNodeArgument = a;
+    }
+
     @Override
     @Deprecated
     public Argument getVariableType() {
         return getRootNode();
     }
 
-    @Override
-    public void setRootNode(final Argument a) {
-        Datavyu.getProjectController().getDB().markDBAsChanged();
-        rootNodeArgument = a;
-    }
-    
     @Override
     @Deprecated
     public void setVariableType(final Argument a) {
@@ -200,19 +198,24 @@ public final class DatavyuVariable implements Variable {
     }
 
     @Override
-    public void setSelected(final boolean selected) {
-        this.selected = selected;
-    }
-
-    @Override
     public boolean isSelected() {
         return selected;
     }
 
     @Override
+    public void setSelected(final boolean selected) {
+        this.selected = selected;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    @Override
     public void setHidden(final boolean hiddenParm) {
         if (hidden == null || hiddenParm != hidden) {
-            Datavyu.getProjectController().getDB().markDBAsChanged();
+            owningDatastore.markDBAsChanged();
             hidden = hiddenParm;
 
             for (VariableListener vl : getListeners(getID())) {
@@ -222,22 +225,16 @@ public final class DatavyuVariable implements Variable {
     }
 
     @Override
-    public boolean isHidden() {
-        return hidden;
-    }
-
-    @Override
     public String getName() {
         return name;
     }
-    
+
     @Override
-    public void setName(final String newName) throws UserWarningException
-    {
+    public void setName(final String newName) throws UserWarningException {
         this.setName(newName, false);
     }
-    
-    
+
+
     public void setName(final String newName, boolean grandfathered) throws UserWarningException {
         // Pre-conditions, the newName must have at least one character.
         if (newName.length() < 1) {
@@ -248,7 +245,7 @@ public final class DatavyuVariable implements Variable {
         if (!grandfathered && !isNameValid(newName)) {
             throw new UserWarningException("Unable to add column:\n\tOnly alphanumeric characters and underscore are permitted.\n\tName must begin with a letter\n\tMust contain fewer than 255 characters");
         }
-        
+
         if (grandfathered && !isNameValid(newName)) {
             owningDatastore.addExemptionVariable(newName);
         }
@@ -257,14 +254,13 @@ public final class DatavyuVariable implements Variable {
             owningDatastore.updateVariableName(name, newName, this);
         }
         this.name = newName;
-        for(VariableListener vl : getListeners(getID()) ) {
+        for (VariableListener vl : getListeners(getID())) {
             vl.nameChanged(newName);
         }
     }
-    
-    
-    private boolean isNameValid(String nameCandidate)
-    {
+
+
+    private boolean isNameValid(String nameCandidate) {
         return nameCandidate != null && nameCandidate.matches("[a-zA-Z][a-zA-Z0-9_]*") && nameCandidate.length() < 255;
     }
 
@@ -273,12 +269,12 @@ public final class DatavyuVariable implements Variable {
         Argument arg = getRootNode();
         Argument child = arg.addChildArgument(type);
 
-        for(Cell cell : getCells()) {
+        for (Cell cell : getCells()) {
             cell.addMatrixValue(child);
         }
 
         this.setRootNode(arg);
-        return arg.childArguments.get(arg.childArguments.size()-1);
+        return arg.childArguments.get(arg.childArguments.size() - 1);
     }
 
     @Override
@@ -286,7 +282,7 @@ public final class DatavyuVariable implements Variable {
         Argument arg = getRootNode();
 
         // Test to see if this is out of bounds
-        if(new_index > arg.childArguments.size() - 1 || new_index < 0) {
+        if (new_index > arg.childArguments.size() - 1 || new_index < 0) {
             return;
         }
 
@@ -295,7 +291,7 @@ public final class DatavyuVariable implements Variable {
         arg.childArguments.add(new_index, moved_arg);
 
         // Move in all cells
-        for(Cell cell : getCells()) {
+        for (Cell cell : getCells()) {
             cell.moveMatrixValue(old_index, new_index);
         }
         this.setRootNode(arg);
@@ -314,7 +310,7 @@ public final class DatavyuVariable implements Variable {
         arg.childArguments.remove(arg_index);
 
         // Now send this change to the cells
-        for(Cell cell : getCells()) {
+        for (Cell cell : getCells()) {
             cell.removeMatrixValue(arg_index);
         }
 
@@ -324,8 +320,8 @@ public final class DatavyuVariable implements Variable {
     @Override
     public int getArgumentIndex(final String name) {
         Argument arg = getRootNode();
-        for(int i = 0; i < arg.childArguments.size(); i++) {
-            if(arg.childArguments.get(i).name.equals(name)) {
+        for (int i = 0; i < arg.childArguments.size(); i++) {
+            if (arg.childArguments.get(i).name.equals(name)) {
                 return i;
             }
         }
@@ -343,13 +339,13 @@ public final class DatavyuVariable implements Variable {
     }
 
     @Override
-    public void setOrderIndex(final int newIndex) {
-        orderIndex = newIndex;
+    public int getOrderIndex() {
+        return orderIndex;
     }
 
     @Override
-    public int getOrderIndex() {
-        return orderIndex;
+    public void setOrderIndex(final int newIndex) {
+        orderIndex = newIndex;
     }
 
     //would like to change the above calls to DatavyuDatastore.markDBAsChanged to this,
@@ -359,7 +355,7 @@ public final class DatavyuVariable implements Variable {
             owningDatastore.markDBAsChanged();
         } else if (Datavyu.getProjectController() != null) {
             //uncomment the below when markDBAsChanged is non-static
-            //Datavyu.getProjectController().getDB().markDBAsChanged();
+            //owningDatastore.markDBAsChanged();
         } else {
             System.out.println("FAILED TO MARK DATASTORE");
         }

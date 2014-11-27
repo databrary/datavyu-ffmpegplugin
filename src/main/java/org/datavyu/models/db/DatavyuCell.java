@@ -14,14 +14,13 @@
  */
 package org.datavyu.models.db;
 
-import org.datavyu.Datavyu;
-
 import java.util.*;
 
 
 public class DatavyuCell implements Cell {
 
     static Map<UUID, List<CellListener>> allListeners = new HashMap<UUID, List<CellListener>>();
+    final private UUID id = UUID.randomUUID();
     private long onset = 0L;
     private long offset = 0L;
     private Argument type;
@@ -30,22 +29,6 @@ public class DatavyuCell implements Cell {
     private Variable parent;
     private Map<String, Value> arguments = new HashMap<String, Value>();
     private Value value;
-    final private UUID id = UUID.randomUUID();
-
-    /**
-     * @param cellId The ID of the variable we want the listeners for.
-     * @return The list of listeners for the specified cellId.
-     */
-    private static List<CellListener> getListeners(UUID cellId) {
-        List<CellListener> result = allListeners.get(cellId);
-
-        if (result == null) {
-            result = new ArrayList<CellListener>();
-            allListeners.put(cellId, result);
-        }
-
-        return result;
-    }
 
     public DatavyuCell() {
     }
@@ -62,12 +45,27 @@ public class DatavyuCell implements Cell {
         // Build argument list from the argument given
 
         if (type.type == Argument.Type.NOMINAL) {
-            this.value = new DatavyuNominalValue(getID(), type);
+            this.value = new DatavyuNominalValue(getID(), type, this);
         } else if (type.type == Argument.Type.TEXT) {
-            this.value = new DatavyuTextValue(getID(), type);
+            this.value = new DatavyuTextValue(getID(), type, this);
         } else {
-            this.value = new DatavyuMatrixValue(getID(), type);
+            this.value = new DatavyuMatrixValue(getID(), type, this);
         }
+    }
+
+    /**
+     * @param cellId The ID of the variable we want the listeners for.
+     * @return The list of listeners for the specified cellId.
+     */
+    private static List<CellListener> getListeners(UUID cellId) {
+        List<CellListener> result = allListeners.get(cellId);
+
+        if (result == null) {
+            result = new ArrayList<CellListener>();
+            allListeners.put(cellId, result);
+        }
+
+        return result;
     }
 
     public Variable getVariable() {
@@ -109,13 +107,18 @@ public class DatavyuCell implements Cell {
     }
 
     @Override
+    public void setOffset(final String newOffset) {
+        setOffset(convertTimestampToMS(newOffset));
+    }
+
+    @Override
     public Cell getFreshCell() {
         return this;
     }
 
     @Override
     public void setOffset(final long newOffset) {
-        if (newOffset != offset) Datavyu.getProjectController().getDB().markDBAsChanged();
+        if (newOffset != offset) parent.getOwningDatastore().markDBAsChanged();
         offset = newOffset;
         for (CellListener cl : getListeners(getID())) {
             cl.offsetChanged(offset);
@@ -123,13 +126,17 @@ public class DatavyuCell implements Cell {
     }
 
     @Override
-    public void setOffset(final String newOffset) {
-        setOffset(convertTimestampToMS(newOffset));
+    public long getOnset() {
+        return onset;
     }
 
     @Override
-    public long getOnset() {
-        return onset;
+    public void setOnset(final long newOnset) {
+        if (newOnset != onset) parent.getOwningDatastore().markDBAsChanged();
+        onset = newOnset;
+        for (CellListener cl : getListeners(getID())) {
+            cl.onsetChanged(onset);
+        }
     }
 
     @Override
@@ -141,15 +148,6 @@ public class DatavyuCell implements Cell {
     @Override
     public void setOnset(final String newOnset) {
         setOnset(convertTimestampToMS(newOnset));
-    }
-
-    @Override
-    public void setOnset(final long newOnset) {
-        if (newOnset != onset) Datavyu.getProjectController().getDB().markDBAsChanged();
-        onset = newOnset;
-        for (CellListener cl : getListeners(getID())) {
-            cl.onsetChanged(onset);
-        }
     }
 
     @Override

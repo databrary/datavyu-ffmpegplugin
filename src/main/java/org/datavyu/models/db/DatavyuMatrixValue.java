@@ -36,8 +36,9 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
     public DatavyuMatrixValue() {
     }
 
-    public DatavyuMatrixValue(UUID parent_id, Argument type) {
+    public DatavyuMatrixValue(UUID parent_id, Argument type, Cell parent) {
         this.parentId = parent_id;
+        this.parent = parent;
         values = new ArrayList<Value>();
         for (Argument arg : type.childArguments) {
             createArgument(arg);
@@ -46,6 +47,25 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
         value = "MATRIX";
     }
 
+    // Method to order the values coming out of the DB.
+    private static void order(List<Value> values) {
+
+        Collections.sort(values, new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+
+                int x1 = ((DatavyuValue) o1).getIndex();
+                int x2 = ((DatavyuValue) o2).getIndex();
+
+                if (x1 != x2) {
+                    return x1 - x2;
+                } else {
+                    return 0;
+                }
+            }
+        });
+    }
+    
     @Override
     public String toString() {
         String result = "";
@@ -67,15 +87,15 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
 
         return result;
     }
-    
+
     public String serialize() {
         List<Value> values = getArguments();
 
         StringBuilder result = new StringBuilder("(");
-        for (Iterator<Value> i = values.iterator(); i.hasNext();) {
+        for (Iterator<Value> i = values.iterator(); i.hasNext(); ) {
             Value v = i.next();
             result.append(v.serialize());
-            if (i.hasNext()) 
+            if (i.hasNext())
                 result.append(',');
         }
         result.append(')');
@@ -83,30 +103,10 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
         return result.toString();
     }
 
-
     @Override
     public List<Value> getArguments() {
         order(values);
         return values;
-    }
-
-    // Method to order the values coming out of the DB.
-    private static void order(List<Value> values) {
-
-        Collections.sort(values, new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-
-                int x1 = ((DatavyuValue) o1).getIndex();
-                int x2 = ((DatavyuValue) o2).getIndex();
-
-                if (x1 != x2) {
-                    return x1 - x2;
-                } else {
-                    return 0;
-                }
-            }
-        });
     }
 
     @Override
@@ -114,9 +114,9 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
         Value val = null;
         String name = String.format("code%02d", getArguments().size() + 1);
         if (arg.type == Argument.Type.NOMINAL) {
-            val = new DatavyuNominalValue(this.id, name, getArguments().size(), arg);
+            val = new DatavyuNominalValue(this.id, name, getArguments().size(), arg, parent);
         } else if (arg.type == Argument.Type.TEXT) {
-            val = new DatavyuTextValue(this.id, name, getArguments().size(), arg);
+            val = new DatavyuTextValue(this.id, name, getArguments().size(), arg, parent);
         }
         this.getArguments().add(val);
         return val;

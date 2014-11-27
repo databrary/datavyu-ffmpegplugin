@@ -67,9 +67,6 @@ public interface Variable {
      * @return The type of the variable.
      */
     Argument getRootNode();
-    
-    @Deprecated
-    Argument getVariableType();
 
     /**
      * Sets the variable type.
@@ -77,6 +74,9 @@ public interface Variable {
      * @param newType The new argument to use with this variable.
      */
     void setRootNode(final Argument newType);
+
+    @Deprecated
+    Argument getVariableType();
     
     @Deprecated
     void setVariableType(final Argument newType);
@@ -93,6 +93,11 @@ public interface Variable {
     boolean contains(final Cell c);
 
     /**
+     * @return True if the variable is currently selected or not.
+     */
+    boolean isSelected();
+
+    /**
      * Selects the variable in the datastore.
      *
      * @param selected True if the variable is selected, false otherwise.
@@ -100,9 +105,9 @@ public interface Variable {
     void setSelected(final boolean selected);
 
     /**
-     * @return True if the variable is currently selected or not.
+     * @return True if the variable is currently hidden or not.
      */
-    boolean isSelected();
+    boolean isHidden();
 
     /**
      * Hides the variable in the datastore.
@@ -110,11 +115,6 @@ public interface Variable {
      * @param hidden True if the variable is hidden, false otherwise.
      */
     void setHidden(final boolean hidden);
-
-    /**
-     * @return True if the variable is currently hidden or not.
-     */
-    boolean isHidden();
 
     /**
      * @return The name of the variable as a string.
@@ -173,7 +173,9 @@ public interface Variable {
      */
     void removeListener(final VariableListener listener);
 
+    int getOrderIndex();
+
     void setOrderIndex(int newIndex);
 
-    int getOrderIndex();
+    Datastore getOwningDatastore();
 }
