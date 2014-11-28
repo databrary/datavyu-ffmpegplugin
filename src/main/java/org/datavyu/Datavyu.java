@@ -56,18 +56,20 @@ public final class Datavyu extends SingleFrameApplication
     /** Load required native libraries (JNI). */
     static {
 
-        String tempDir = System.getProperty("java.io.tmpdir") + "/vlc/";
+        String tempDir = System.getProperty("java.io.tmpdir") + File.separator + "vlc" + File.separator;
         System.setProperty("jna.library.path", tempDir);
 
         System.out.println("WORKING DIR:" + System.getProperty("user.dir"));
-        System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + tempDir);
-        System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparator + tempDir);
+//        System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + tempDir + "\\vlc\\lib");
+//        System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparator + tempDir+ "\\vlc\\lib");
         nlm = new NativeLibraryManager(tempDir);
         System.out.println(System.getProperty("jna.library.path"));
 
         nlm.unpackNativePackage();
-        NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), tempDir + "/vlc/lib");
-//        System.load(tempDir + "vlc/lib/libvlc.dylib");
+        NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), tempDir + File.separator + "vlc" + File.separator + "lib");
+//        System.load(tempDir + "vlc" + File.separator + "lib" + File.separator + "libvlccore.dll");
+
+//        System.load(tempDir + "vlc" + File.separator + "lib" + File.separator + "libvlc.dll");
 //        new NativeDiscovery().discover();
 
         switch (getPlatform()) {

@@ -266,9 +266,10 @@ public class NativeLibraryManager {
             // architecture directory inside the PACKAGE_RESOURCE_DIRECTORY folder
             // inside the jar - this will also ensure that directories like META-INF
             // and files like MANIFEST.MF are excluded...
+//            System.out.println(jarEntry.getName());
             if (!jarEntry.isDirectory() && jarEntry.getName().startsWith("vlc/")) {
                 // Trim off the un-needed part of the file path
-                String entryName = jarEntry.getName().substring("vlc/darwin/".length());
+                String entryName = jarEntry.getName();
                 // Notify listeners
                 fireInstallEvent(++n, entryName);
                 // Process this file
