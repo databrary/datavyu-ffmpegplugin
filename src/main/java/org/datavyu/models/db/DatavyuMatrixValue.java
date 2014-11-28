@@ -135,7 +135,10 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
 
     @Override
     public void set(String value) {
-        String[] args = value.substring(1, value.length()-1).split(",");
+        if (value.startsWith("(") && value.endsWith(")")) {
+            value = value.substring(1, value.length() - 1);
+        }
+        String[] args = value.split(",");
         List<Value> values = getArguments();
         if(args.length != values.size()) {
             System.err.println("Error: Arg list and value list are different sizes, cannot undo.");

@@ -81,10 +81,11 @@ public class RunScriptEdit extends SpreadsheetEdit {
 
     private void setSpreadsheetState(List<VariableTO> varsTO) {
         try {
-            new DeleteColumnC(new ArrayList(model.getAllVariables()));
+            new DeleteColumnC(new ArrayList<Variable>(model.getAllVariables()));
 
             for (VariableTO varTO : varsTO) {
                 Variable var = model.createVariable(varTO.getName(), varTO.getType().type);
+                var.setRootNode(varTO.getType());
 
                 for (CellTO cellTO : varTO.getTOCells()) {
                     Cell c = var.createCell();
@@ -95,6 +96,7 @@ public class RunScriptEdit extends SpreadsheetEdit {
             }
         } catch (UserWarningException uwe) {
             LOGGER.error("Unable to set spreadsheet state", uwe);
+            uwe.printStackTrace();
         }
 
         unselectAll();

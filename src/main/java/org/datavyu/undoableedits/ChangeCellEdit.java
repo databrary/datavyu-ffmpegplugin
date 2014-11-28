@@ -45,34 +45,31 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
      */
     protected Granularity granularity;
 
-    public Granularity getGranularity() {
-        return granularity;
-    }
-
-    public enum Granularity {
-        FINEGRAINED,
-        COARSEGRAINED
-    }
-
     public ChangeCellEdit(Cell c, Granularity granularity) {
         // New constructor.
         super();
         this.granularity = granularity;
 
         Variable var = Datavyu.getProjectController().getDB().getVariable(c);
-        columnName = var.getName();
+        if (var != null) {
+            columnName = var.getName();
 
-        for (Cell cell : var.getCells()) {
-            ord++;
+            for (Cell cell : var.getCells()) {
+                ord++;
 
-            if (cell.equals(c)) {
-                return;
+                if (cell.equals(c)) {
+                    return;
+                }
             }
         }
     }
 
     public ChangeCellEdit(Cell c) {
         this(c, Granularity.COARSEGRAINED);
+    }
+
+    public Granularity getGranularity() {
+        return granularity;
     }
 
     @Override
@@ -127,5 +124,10 @@ abstract public class ChangeCellEdit extends SpreadsheetEdit {
         hash += granularity.hashCode() * Constants.SEED1;
         long val = Double.doubleToLongBits(hash);
         return (int) (val ^ (val >>> 32));
+    }
+
+    public enum Granularity {
+        FINEGRAINED,
+        COARSEGRAINED
     }
 }

@@ -78,9 +78,12 @@ public final class MatrixRootView extends JTextArea implements FocusListener {
         //for funny behaviors with the return key
         addKeyListener(new KeyListener() {
                    public void keyPressed(KeyEvent e) {
-                       UndoableEdit edit = new ChangeValCellEdit(parentCell, oldValue, ChangeCellEdit.Granularity.FINEGRAINED);
-                       Datavyu.getView().getUndoSupport().postEdit(edit);
-                       if (e.getKeyCode() == KeyEvent.VK_ENTER){ //&& getSelectedText() != null) {
+                       if ((Character.isAlphabetic(e.getKeyChar()) || Character.isDigit(e.getKeyChar())
+                               || Character.isSpaceChar(e.getKeyChar())) && !e.isAltDown() && !e.isControlDown() && !e.isMetaDown()) {
+                           UndoableEdit edit = new ChangeValCellEdit(parentCell, oldValue, ChangeCellEdit.Granularity.FINEGRAINED);
+                           Datavyu.getView().getUndoSupport().postEdit(edit);
+                       }
+                       if (e.getKeyCode() == KeyEvent.VK_ENTER) { //&& getSelectedText() != null) {
                            e.consume();
                        }
                     }
