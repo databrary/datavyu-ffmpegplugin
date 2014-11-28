@@ -132,7 +132,7 @@ public final class PluginManager {
                 resource = null;
             }
 
-            if (resource.getPath().endsWith("lib/")) {
+            if (resource != null && resource.getPath().endsWith("lib/")) {
                 resource = null;
             }
 
