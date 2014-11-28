@@ -439,7 +439,7 @@
                                             <outputDirectory>
                                                 ${project.build.directory}/jfx/app/lib/vlc-macosx-${os.arch}
                                             </outputDirectory>
-                                            <destFileName>vlc-macosx-macosx.jar</destFileName>
+                                            <destFileName>vlc-macosx-${os.arch}.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}/jfx/app/lib/vlc-macosx-${os.arch}
