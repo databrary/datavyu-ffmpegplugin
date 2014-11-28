@@ -605,7 +605,7 @@
                     <mainClass>org.datavyu.Datavyu</mainClass>
                     <jvmArgs>
                         <argument>-Xmx1g</argument>
-                        <argument>-Dapple.laf.useScreenMenuBar=true</argument>
+                        <!--<argument>-Dapple.laf.useScreenMenuBar=true</argument>-->
                     </jvmArgs>
                 </configuration>
             </plugin>
@@ -708,7 +708,7 @@
                             <addClasspath>true</addClasspath>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>./</Class-Path>
+                            <!--<Class-Path>./</Class-Path>-->
                         </manifestEntries>
                     </archive>
                 </configuration>

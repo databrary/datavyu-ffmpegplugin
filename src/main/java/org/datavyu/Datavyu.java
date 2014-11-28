@@ -42,6 +42,7 @@ import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.URL;
 import java.util.EventObject;
 import java.util.Stack;
 
@@ -57,13 +58,18 @@ public final class Datavyu extends SingleFrameApplication
     static {
 
         String tempDir = System.getProperty("java.io.tmpdir") + File.separator + "vlc" + File.separator;
-        System.setProperty("jna.library.path", tempDir);
+//        System.setProperty("jna.library.path", tempDir);
 
         System.out.println("WORKING DIR:" + System.getProperty("user.dir"));
+        System.out.println("CLASS PATH: " + System.getProperty("java.class.path"));
+//        System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparator + "./");
 //        System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + tempDir + "\\vlc\\lib");
 //        System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparator + tempDir+ "\\vlc\\lib");
         nlm = new NativeLibraryManager(tempDir);
         System.out.println(System.getProperty("jna.library.path"));
+
+        URL resource = Datavyu.class.getClassLoader().getResource("../");
+        System.out.println(resource);
 
         nlm.unpackNativePackage();
         NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), tempDir + File.separator + "vlc" + File.separator + "lib");

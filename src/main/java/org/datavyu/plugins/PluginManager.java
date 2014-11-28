@@ -119,8 +119,10 @@ public final class PluginManager {
      */
     private void initialize() {
 
+        System.out.println("Initializing plugin Manager");
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
+//            ClassLoader loader = Datavyu.class.getClassLoader();
             URL resource = loader.getResource("");
 
             // Quaqua workaround
@@ -130,10 +132,23 @@ public final class PluginManager {
                 resource = null;
             }
 
+            if (resource.getPath().endsWith("lib/")) {
+                resource = null;
+            }
+
+            // Windows being stupid workaround
+//            if(resource == null) {
+//                CodeSource src = Datavyu.class.getProtectionDomain().getCodeSource();
+//                System.out.println("SRC LOCATION: " + src.getLocation().getPath());
+//                resource = src.getLocation();
+//            }
+//            System.out.println("RESOURCE: " + resource);
+
             // The classloader references a jar - open the jar file up and
             // iterate through all the entries and add the entries that are
             // concrete Plugins.
             if (resource == null) {
+                System.out.println("Loading plugins from jar");
                 resource = loader.getResource("org/datavyu");
 
                 if (resource == null) {
