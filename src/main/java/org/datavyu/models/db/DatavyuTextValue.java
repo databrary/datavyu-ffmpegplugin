@@ -33,11 +33,13 @@ public final class DatavyuTextValue extends DatavyuValue implements TextValue {
     public DatavyuTextValue(UUID parent_id, Cell parent) {
         this.parent_id = parent_id;
         this.index = -1;
+        this.parent = parent;
     }
 
     public DatavyuTextValue(UUID parent_id, Argument arg, Cell parent) {
         this(parent_id, parent);
         this.arg = arg;
+        this.parent = parent;
     }
 
     public DatavyuTextValue(UUID parent_id, String name, int index, Argument arg, Cell parent) {
@@ -45,5 +47,6 @@ public final class DatavyuTextValue extends DatavyuValue implements TextValue {
         this.name = name;
         this.index = index;
         this.arg = arg;
+        this.parent = parent;
     }
 }
