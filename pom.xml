@@ -334,12 +334,12 @@
                                             <type>jar</type>
                                             <overWrite>true</overWrite>
                                             <outputDirectory>
-                                                ${project.build.outputDirectory}/lib/vlc-${os.name}-${os.arch}
+                                                ${project.build.outputDirectory}/lib/vlc-macosx-${os.arch}
                                             </outputDirectory>
                                             <destFileName>vlc-${os.name}-${os.arch}.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.outputDirectory}/lib/vlc-${os.name}-${os.arch}
+                                    <outputDirectory>${project.build.outputDirectory}/lib/vlc-macosx-${os.arch}
                                     </outputDirectory>
                                     <overWriteReleases>false</overWriteReleases>
                                     <overWriteSnapshots>true</overWriteSnapshots>
@@ -373,12 +373,12 @@
                                             <type>jar</type>
                                             <overWrite>true</overWrite>
                                             <outputDirectory>
-                                                ${project.build.outputDirectory}/lib/vlc-${os.name}-${os.arch}
+                                                ${project.build.outputDirectory}/lib/vlc-windows-${os.arch}
                                             </outputDirectory>
-                                            <destFileName>vlc-${os.name}-${os.arch}.jar</destFileName>
+                                            <destFileName>vlc-windows-${os.arch}.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.outputDirectory}/lib/vlc-${os.name}-${os.arch}
+                                    <outputDirectory>${project.build.outputDirectory}/lib/vlc-windows-${os.arch}
                                     </outputDirectory>
                                     <overWriteReleases>false</overWriteReleases>
                                     <overWriteSnapshots>true</overWriteSnapshots>
@@ -437,12 +437,12 @@
                                             <type>jar</type>
                                             <overWrite>true</overWrite>
                                             <outputDirectory>
-                                                ${project.build.directory}/jfx/app/lib/vlc-${os.name}-${os.arch}
+                                                ${project.build.directory}/jfx/app/lib/vlc-macosx-${os.arch}
                                             </outputDirectory>
-                                            <destFileName>vlc-${os.name}-${os.arch}.jar</destFileName>
+                                            <destFileName>vlc-macosx-macosx.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/jfx/app/lib/vlc-${os.name}-${os.arch}
+                                    <outputDirectory>${project.build.directory}/jfx/app/lib/vlc-macosx-${os.arch}
                                     </outputDirectory>
                                     <overWriteReleases>false</overWriteReleases>
                                     <overWriteSnapshots>true</overWriteSnapshots>
@@ -495,12 +495,12 @@
                                             <type>jar</type>
                                             <overWrite>true</overWrite>
                                             <outputDirectory>
-                                                ${project.build.directory}/jfx/app/lib/vlc-${os.name}-${os.arch}
+                                                ${project.build.directory}/jfx/app/lib/vlc-windows-${os.arch}
                                             </outputDirectory>
-                                            <destFileName>vlc-${os.name}-${os.arch}.jar</destFileName>
+                                            <destFileName>vlc-windows-${os.arch}.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/jfx/app/lib/vlc-${os.name}-${os.arch}
+                                    <outputDirectory>${project.build.directory}/jfx/app/lib/vlc-windows-${os.arch}
                                     </outputDirectory>
                                     <overWriteReleases>false</overWriteReleases>
                                     <overWriteSnapshots>true</overWriteSnapshots>

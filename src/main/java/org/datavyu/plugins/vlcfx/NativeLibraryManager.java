@@ -237,7 +237,13 @@ public class NativeLibraryManager {
         Logger.debug("installDirectory={}", installDirectory);
         // Get the jar file containing the native resources, the resources are
         // platform-dependent
-        String osName = System.getProperty("os.name");
+        String osName;
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            osName = "windows";
+        } else {
+            osName = "macosx";
+        }
+
         Logger.debug("osName={}", osName);
         String osArch = System.getProperty("os.arch");
         Logger.debug("osArch={}", osArch);
