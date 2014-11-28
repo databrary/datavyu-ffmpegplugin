@@ -363,12 +363,6 @@
 
             <dependencies>
 
-                <!--        <dependency>
-                          <groupId>org.vlc</groupId>
-                          <artifactId>libvlc-osx</artifactId>
-                          <version>2.0.1</version>
-                        </dependency>-->
-
                 <dependency>
                     <groupId>org.datavyu</groupId>
                     <artifactId>vlcLibs-macosx</artifactId>
@@ -532,6 +526,10 @@
                 <version>2.0</version>
                 <configuration>
                     <mainClass>org.datavyu.Datavyu</mainClass>
+                    <jvmArgs>
+                        <argument>-Xmx1g</argument>
+                        <argument>-Dapple.laf.useScreenMenuBar=true</argument>
+                    </jvmArgs>
                 </configuration>
             </plugin>
 
@@ -632,6 +630,9 @@
                             <mainClass>org.datavyu.Datavyu</mainClass>
                             <addClasspath>true</addClasspath>
                         </manifest>
+                        <manifestEntries>
+                            <Class-Path>./</Class-Path>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
@@ -1013,6 +1014,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.7</version>
+        </dependency>
+
+        <!-- NOTE THIS DOES SOME SORT OF POM FILE MAGIC THAT MAKES VLC WORK... -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv</artifactId>
+            <version>0.9</version>
         </dependency>
 
         <!--<dependency>-->
