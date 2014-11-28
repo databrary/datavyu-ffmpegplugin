@@ -39,7 +39,6 @@ public final class DatavyuNominalValue extends DatavyuValue implements NominalVa
     public DatavyuNominalValue(UUID parent_id, Argument arg, Cell parent) {
         this(parent_id, parent);
         this.arg = arg;
-        this.parent = parent;
     }
 
     public DatavyuNominalValue(UUID parent_id, String name, int index, Argument type, Cell parent) {
