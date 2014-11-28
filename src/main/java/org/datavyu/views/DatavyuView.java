@@ -1326,7 +1326,9 @@ public final class DatavyuView extends FrameView
         });
         task.execute();
         try {
-            createNewSpreadsheet(task.get());
+            ProjectController p = task.get();
+            if (p != null)
+                createNewSpreadsheet(p);
 
             progressBar.close();
         } catch (Exception e) {
@@ -2724,15 +2726,19 @@ public final class DatavyuView extends FrameView
         @Override
         public ProjectController doInBackground() {
 
-            if (tabbedPane.getTabCount() == 1 &&
-                    Datavyu.getProjectController().getProjectName() == null &&
-                    !Datavyu.getProjectController().isChanged()) {
-                tabbedPane.remove(0);
-            }
 
-            if (!jd.getSelectedFile().exists()) {
+            if (jd != null && !jd.getSelectedFile().exists()) {
                 setProgress(2);
                 return null;
+            }
+
+            if (jd != null &&
+                    tabbedPane != null && Datavyu.getProjectController() != null &&
+                    tabbedPane.getTabCount() == 1 &&
+                    Datavyu.getProjectController().getProjectName() == null &&
+                    !Datavyu.getProjectController().isChanged() &&
+                    jd.getSelectedFile().exists()) {
+                tabbedPane.remove(0);
             }
 
 

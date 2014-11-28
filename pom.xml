@@ -336,7 +336,7 @@
                                             <outputDirectory>
                                                 ${project.build.outputDirectory}/lib/vlc-macosx-${os.arch}
                                             </outputDirectory>
-                                            <destFileName>vlc-${os.name}-${os.arch}.jar</destFileName>
+                                            <destFileName>vlc-macosx-${os.arch}.jar</destFileName>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.outputDirectory}/lib/vlc-macosx-${os.arch}
@@ -405,7 +405,7 @@
                 <dependency>
                     <groupId>org.datavyu</groupId>
                     <artifactId>vlcLibs-macosx</artifactId>
-                    <version>2.2.1</version>
+                    <version>2.2.2</version>
                     <scope>provided</scope>
                 </dependency>
 
