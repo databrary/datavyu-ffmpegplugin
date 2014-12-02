@@ -51,6 +51,10 @@ public final class VocabEditorV extends DatavyuDialog {
      */
     private static Logger LOGGER = UserMetrix.getLogger(VocabEditorV.class);
     /**
+     * Model
+     */
+    Datastore ds;
+    /**
      * All the vocab views displayed in the editor.
      */
     private List<VocabElementV> veViews;
@@ -74,11 +78,6 @@ public final class VocabEditorV extends DatavyuDialog {
      * The handler for all keyboard shortcuts
      */
     private KeyEventDispatcher ked;
-    /**
-     * Model
-     */
-    Datastore ds;
-
     /**
      * Swing components.
      */
@@ -361,7 +360,7 @@ public final class VocabEditorV extends DatavyuDialog {
             // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
             LOGGER.event("vocEd - delete argument");
-            //no edit created for this!!!
+            //TODO no edit created for this!!!
             selectedVocabElement.getVariable().removeArgument(selectedArgument.getModel().name);
             selectedVocabElement.rebuildContents();
             applyChanges();
@@ -511,7 +510,6 @@ public final class VocabEditorV extends DatavyuDialog {
 
             // W00t - argument is selected - populate the index so that the user
             // can shift the argument around.
-            selectedVocabElement.getModel().childArguments.lastIndexOf(selectedArgument.getModel());
             if (selectedArgumentI > 0) {
                 moveCodeLeftButton.setEnabled(true);
             } else {

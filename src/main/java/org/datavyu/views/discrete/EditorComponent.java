@@ -32,49 +32,76 @@ import java.awt.event.KeyEvent;
 public abstract class EditorComponent implements ClipboardOwner {
 
     /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = UserMetrix.getLogger(EditorComponent.class);
+    /**
      * JTextComponent containing this EditorComponent.
      */
     private JTextComponent parentComp;
-
     /**
      * Character position in the JTextComponent where this editor begins.
      */
     private int startPos;
-
     /**
      * Local copy of this editor's text.
      */
     private String editorText;
-
     /**
      * Is the editorComponent editable?  Used by EditorTracker.
      */
     private boolean editable;
-
     /**
      * Does the editorComponent allow Return characters to be input?
      */
     private boolean acceptsReturnKey;
-
     /**
      * A list of characters that can not be removed from this view.
      */
     private String preservedChars;
-
     /**
      * Are we deleting characters, or replacing them with a substitute?
      */
     private boolean isDeletingChar;
-
     /**
      * The character to use as a substitute if we are doing replacement.
      */
     private char replaceChar;
 
     /**
-     * The logger for this class.
+     * Default Constructor.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(EditorComponent.class);
+    public EditorComponent() {
+        startPos = 0;
+        editorText = "";
+        editable = false;
+        parentComp = null;
+        preservedChars = "";
+        isDeletingChar = true;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param tc JTextComponent this editor works with.
+     */
+    public EditorComponent(final JTextComponent tc) {
+        this();
+        parentComp = tc;
+        parentComp.setBackground(Configuration.getInstance()
+                .getSSBackgroundColour());
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param tc   JTextComponent this editor works with.
+     * @param text text to initialise the editor to.
+     */
+    public EditorComponent(final JTextComponent tc, final String text) {
+        this(tc);
+        editorText = text;
+    }
 
     /**
      * Action to invoke when a key is pressed.
@@ -123,38 +150,10 @@ public abstract class EditorComponent implements ClipboardOwner {
     }
 
     /**
-     * Default Constructor.
+     * @return is the editorcomponent "editable".
      */
-    public EditorComponent() {
-        startPos = 0;
-        editorText = "";
-        editable = false;
-        parentComp = null;
-        preservedChars = "";
-        isDeletingChar = true;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param tc JTextComponent this editor works with.
-     */
-    public EditorComponent(final JTextComponent tc) {
-        this();
-        parentComp = tc;
-        parentComp.setBackground(Configuration.getInstance()
-                .getSSBackgroundColour());
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param tc   JTextComponent this editor works with.
-     * @param text text to initialise the editor to.
-     */
-    public EditorComponent(final JTextComponent tc, final String text) {
-        this(tc);
-        editorText = text;
+    public final boolean isEditable() {
+        return editable;
     }
 
     /**
@@ -162,13 +161,6 @@ public abstract class EditorComponent implements ClipboardOwner {
      */
     public final void setEditable(final boolean canEdit) {
         editable = canEdit;
-    }
-
-    /**
-     * @return is the editorcomponent "editable".
-     */
-    public final boolean isEditable() {
-        return editable;
     }
 
     /**
@@ -186,13 +178,6 @@ public abstract class EditorComponent implements ClipboardOwner {
     }
 
     /**
-     * @param pos the start location in the JTextComponent for this editor.
-     */
-    public final void setStartPos(final int pos) {
-        startPos = pos;
-    }
-
-    /**
      * @return pos the start location in the JTextComponent for this editor.
      */
     public final int getStartPos() {
@@ -200,19 +185,17 @@ public abstract class EditorComponent implements ClipboardOwner {
     }
 
     /**
+     * @param pos the start location in the JTextComponent for this editor.
+     */
+    public final void setStartPos(final int pos) {
+        startPos = pos;
+    }
+
+    /**
      * @return the current text of this editor.
      */
     public final String getText() {
         return editorText;
-    }
-
-    /**
-     * Set the text without updating the associated JTextComponent.
-     *
-     * @param text new text to set.
-     */
-    public final void resetText(final String text) {
-        editorText = text;
     }
 
     /**
@@ -227,6 +210,15 @@ public abstract class EditorComponent implements ClipboardOwner {
         int localPos = getCaretPosition();
         replaceRange(text, startPos, startPos + prevlength);
         setCaretPosition(localPos);
+    }
+
+    /**
+     * Set the text without updating the associated JTextComponent.
+     *
+     * @param text new text to set.
+     */
+    public final void resetText(final String text) {
+        editorText = text;
     }
 
     /**
@@ -267,6 +259,21 @@ public abstract class EditorComponent implements ClipboardOwner {
     }
 
     /**
+     * Set the caret position of the parentComponent given a local value to
+     * set within the editor.
+     *
+     * @param localPos Position of caret relative to the start of this editor.
+     */
+    public final void setCaretPosition(final int localPos) {
+        if (parentComp != null) {
+            int pos = Math.max(0, localPos);
+            pos = Math.min(Math.min(pos, editorText.length()), parentComp.getText().length());
+
+            parentComp.setCaretPosition(startPos + pos);
+        }
+    }
+
+    /**
      * @return the selection start within the segment as a local value.
      */
     public final int getSelectionStart() {
@@ -290,20 +297,6 @@ public abstract class EditorComponent implements ClipboardOwner {
         }
 
         return pos;
-    }
-
-    /**
-     * Set the caret position of the parentComponent given a local value to
-     * set within the editor.
-     *
-     * @param localPos Position of caret relative to the start of this editor.
-     */
-    public final void setCaretPosition(final int localPos) {
-        if (parentComp != null) {
-            int pos = Math.max(0, localPos);
-            pos = Math.min(pos, editorText.length());
-            parentComp.setCaretPosition(startPos + pos);
-        }
     }
 
     /**
