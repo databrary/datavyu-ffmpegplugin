@@ -31,7 +31,6 @@ import quicktime.std.movies.TimeInfo;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
@@ -43,26 +42,30 @@ import java.io.File;
 public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
     /**
-     * The quicktime movie this viewer is displaying.
+     * How many milliseconds in a second?
      */
-    private Movie movie;
-
+    private static final int MILLI = 1000;
     /**
-     * The visual track for the above quicktime movie.
+     * How many frames to check when correcting the FPS.
      */
-    private Track visualTrack;
-
-    /**
-     * The visual media for the above visual track.
-     */
-    private Media visualMedia;
-
+    private static final int CORRECTIONFRAMES = 5;
     /**
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(QTDataViewer.class);
-    
     private static float FALLBACK_FRAME_RATE = 24.0f;
+    /**
+     * The quicktime movie this viewer is displaying.
+     */
+    private Movie movie;
+    /**
+     * The visual track for the above quicktime movie.
+     */
+    private Track visualTrack;
+    /**
+     * The visual media for the above visual track.
+     */
+    private Media visualMedia;
 
     public QTDataViewer(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
@@ -116,7 +119,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     protected void setQTDataFeed(final File videoFile) {
 
         try {
-            QTFile v = new QTFile(videoFile);
+//            QTFile v = new QTFile(videoFile);
             OpenMovieFile omf = OpenMovieFile.asRead(new QTFile(videoFile));
             movie = Movie.fromFile(omf);
             movie.setVolume(0.7F);
@@ -166,14 +169,12 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                         || (visualMedia.getSampleCount() == 1)) {
                     fps = correctFPS();
                 }
-                
+
                 if (fps == 1 || fps < 1.0f) {
                     throw new QTException(0);
                 }
             }
-        }
-        catch(QTException e)
-        {
+        } catch (QTException e) {
             LOGGER.error("Unable to calculate FPS, assuming " + FALLBACK_FRAME_RATE, e);
             assumedFPS = true;
             fps = FALLBACK_FRAME_RATE;
@@ -181,16 +182,6 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
         return fps;
     }
-
-    /**
-     * How many milliseconds in a second?
-     */
-    private static final int MILLI = 1000;
-
-    /**
-     * How many frames to check when correcting the FPS.
-     */
-    private static final int CORRECTIONFRAMES = 5;
 
     /**
      * If there was a problem getting the fps, we use this method to fix it. The

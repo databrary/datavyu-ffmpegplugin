@@ -52,12 +52,12 @@
       <key>MainClass</key>
       <string>org.datavyu.Datavyu</string>
       <key>JVMVersion</key>
-      <string>1.6+</string>
+      <string>1.6</string>
       <key>SplashFile</key>
       <string>$JAVAROOT/../splash.png</string>
       <key>VMOptions</key>
       <!--<string>-Xms1024m -Xmx2048m -XX:MaxDirectMemorySize=512M</string>-->
-      <string>-Xms1024m -Xmx1280m -XX:MaxDirectMemorySize=512M</string>
+      <string>-d32 -Xms1024m -Xmx1280m -XX:MaxDirectMemorySize=512M</string>
 
       <key>ClassPath</key>
       <array>
@@ -78,10 +78,10 @@
         <string>$JAVAROOT/repo/gnu/trove/2.1.0/trove-2.1.0.jar</string>
         <string>$JAVAROOT/repo/ch/randelshofer/quaqua/quaqua-filechooser-only/7.0.1/quaqua-filechooser-only-7.0.1.jar</string>
         <string>$JAVAROOT/repo/ca/beq/jregistrykey/1.4.5/jregistrykey-1.4.5.jar</string>
-        <string>$JAVAROOT/repo/uk/co/caprica/vlcj/3.0.0/vlcj-3.0.0.jar</string>
+        <string>$JAVAROOT/repo/uk/co/caprica/vlcj/3.0.1/vlcj-3.0.1.jar</string>
         <!--<string>$JAVAROOT/repo/org/vlc/libvlc-osx/2.0.1/libvlc-osx-2.0.1.jar</string>-->
         <string>$JAVAROOT/repo/rcaller/RCaller/2.1.1-SNAPSHOT/RCaller-2.1.1-SNAPSHOT.jar</string>
-        <string>$JAVAROOT/repo/net/java/dev/jna/jna/4.0.0/jna-4.0.0.jar</string>
+        <string>$JAVAROOT/repo/net/java/dev/jna/jna/3.5.2/jna-3.5.2.jar</string>
 
         <string>$JAVAROOT/repo/org/rococoa/rococoa-cocoa/0.5.1x3/rococoa-cocoa-0.5.1x3.jar</string>
         <string>$JAVAROOT/repo/org/rococoa/rococoa-core/0.5.1x3/rococoa-core-0.5.1x3.jar</string>
@@ -89,7 +89,6 @@
         <string>$JAVAROOT/repo/org/slf4j/slf4j-api/1.5.8/slf4j-api-1.5.8.jar</string>
         <string>$JAVAROOT/repo/org/slf4j/slf4j-jdk14/1.5.8/slf4j-jdk14-1.5.8.jar</string>
         <string>$JAVAROOT/repo/asm/asm/3.1/asm-3.1.jar</string>
-        <string>$JAVAROOT/repo/xuggle/xuggle-xuggler/5.4/xuggle-xuggler-5.4.jar</string>
         <string>$JAVAROOT/repo/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar</string>
         <string>$JAVAROOT/repo/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.jar</string>
         <string>$JAVAROOT/repo/org/bytedeco/javacv/0.9/javacv-0.9.jar</string>

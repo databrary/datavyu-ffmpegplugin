@@ -909,7 +909,7 @@
                     <!--</singleInstance>-->
                     <classPath>
                         <mainClass>org.datavyu.Datavyu</mainClass>
-                        <preCp>jna-4.0.0.jar</preCp>
+                        <preCp>jna-3.5.2.jar</preCp>
                         <preCp>appframework-1.0.3.jar</preCp>
                         <preCp>snakeyaml-1.7.jar</preCp>
                         <preCp>UserMetrix-jclient-0.0.6.jar</preCp>
@@ -1101,11 +1101,33 @@
         </dependency>
 
         <!--<dependency>-->
+        <!--<groupId>org.robovm</groupId>-->
+        <!--<artifactId>robovm-rt</artifactId>-->
+        <!--<version>1.0.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+        <!--<groupId>org.robovm</groupId>-->
+        <!--<artifactId>robovm-cocoatouch</artifactId>-->
+        <!--<version>1.0.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
         <!--<groupId>com.oracle</groupId>-->
-        <!--<artifactId>javafx</artifactId>-->
+        <!--<artifactId>javafx-macosx</artifactId>-->
         <!--<version>2.2</version>-->
-        <!--<systemPath>${java.home}/lib/jfxrt.jar</systemPath>-->
         <!--<scope>system</scope>-->
+        <!--<systemPath>${java.home}/lib/jfxrt.jar</systemPath>-->
+
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+        <!--<groupId>com.oracle</groupId>-->
+        <!--<artifactId>javafx-runtime</artifactId>-->
+        <!--<version>2.2</version>-->
+        <!--&lt;!&ndash;<scope>system</scope>&ndash;&gt;-->
+        <!--&lt;!&ndash;<systemPath>${java.home}/lib/jfxrt.jar</systemPath>&ndash;&gt;-->
+
         <!--</dependency>-->
 
 

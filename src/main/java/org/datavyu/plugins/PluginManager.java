@@ -380,7 +380,7 @@ public final class PluginManager {
         } catch (ClassFormatError e) {
             LOGGER.error("Plugin with bad class format.", e);
             e.printStackTrace();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             LOGGER.error("Unable to instantiate plugin", e);
             e.printStackTrace();
         }

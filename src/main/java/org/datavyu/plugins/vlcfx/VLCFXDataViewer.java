@@ -262,7 +262,7 @@ public class VLCFXDataViewer extends BaseQuickTimeDataViewer {
 //        Platform.runLater(new Runnable() {
 //            @Override
 //            public void run() {
-                vlcFxApp.seek(position);
+        vlcFxApp.seek(position);
 //            }
 //        });
 

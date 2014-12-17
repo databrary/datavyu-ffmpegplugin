@@ -58,21 +58,23 @@ public final class Datavyu extends SingleFrameApplication
     static {
 
         String tempDir = System.getProperty("java.io.tmpdir") + File.separator + "vlc" + File.separator;
-//        System.setProperty("jna.library.path", tempDir);
 
         System.out.println("WORKING DIR:" + System.getProperty("user.dir"));
         System.out.println("CLASS PATH: " + System.getProperty("java.class.path"));
-//        System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparator + "./");
-//        System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + tempDir + "\\vlc\\lib");
-//        System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparator + tempDir+ "\\vlc\\lib");
         nlm = new NativeLibraryManager(tempDir);
-        System.out.println(System.getProperty("jna.library.path"));
 
-        URL resource = Datavyu.class.getClassLoader().getResource("../");
-        System.out.println(resource);
+        try {
 
-        nlm.unpackNativePackage();
-        NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), tempDir + File.separator + "vlc" + File.separator + "lib");
+            System.out.println(System.getProperty("jna.library.path"));
+
+            URL resource = Datavyu.class.getClassLoader().getResource("../");
+            System.out.println(resource);
+
+            nlm.unpackNativePackage();
+            NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), tempDir + File.separator + "vlc" + File.separator + "lib");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        System.load(tempDir + "vlc" + File.separator + "lib" + File.separator + "libvlccore.dll");
 
 //        System.load(tempDir + "vlc" + File.separator + "lib" + File.separator + "libvlc.dll");
@@ -82,6 +84,8 @@ public final class Datavyu extends SingleFrameApplication
             case MAC:
                 try {
                     NativeLoader.LoadNativeLib("quaqua64");
+//                    System.loadLibrary("QTJNative");
+//                    NativeLoader.LoadNativeLib("QTJNative");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -1015,6 +1019,7 @@ public final class Datavyu extends SingleFrameApplication
         if (updateWindow.Available() && !updateWindow.IgnoreVersion()) {
             Datavyu.getApplication().show(updateWindow);
         }
+
     }
 
     /**
@@ -1066,7 +1071,6 @@ public final class Datavyu extends SingleFrameApplication
 
         // The DB we create by default doesn't really have any unsaved changes.
         projectController.getDB().markAsUnchanged();
-
         ready();
     }
 

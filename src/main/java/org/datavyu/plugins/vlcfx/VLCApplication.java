@@ -83,6 +83,8 @@ public class VLCApplication extends Application {
 
     private double aspect;
 
+    private long prevSeekTime = -1;
+
 
     private boolean assumedFps = false;
 
@@ -110,9 +112,12 @@ public class VLCApplication extends Application {
 
     public void seek(long time) {
 
-        System.out.println("SEEKING TO " + time);
-
-        mp.setTime(time);
+        if (prevSeekTime != time || time != mp.getTime()) {
+            System.out.println("SEEKING TO " + time);
+            mp.setTime(time);
+            prevSeekTime = time;
+            System.out.println(mp.getTime());
+        }
     }
 
     public void pause() {
