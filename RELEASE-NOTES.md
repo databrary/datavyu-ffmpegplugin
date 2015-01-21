@@ -5,6 +5,8 @@ Yosemite no longer supports Java QuickTime and so Datavyu is not curently compat
 
 If you try to download Datavyu and receive a pop up saying: "Datavyu is damaged and should be moved to the trash," please  check your security settings to allow the download of the software. Please go to System Preferences/Security/General tab and then check "Allow apps to be downloaded from: anywhere." 
 
+Can't seem to hold down jog while navigating your video? All you have to do is go to your Terminal (found in your Hard Drive/Applications/Utilities folder) and enter the following: defaults write -g ApplePressAndHoldEnabled -bool false
+
 
 # Datavyu Pre-release Notes
 ## 9/25/14
