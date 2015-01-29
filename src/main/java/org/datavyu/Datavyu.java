@@ -84,6 +84,9 @@ public final class Datavyu extends SingleFrameApplication
             case MAC:
                 try {
                     NativeLoader.LoadNativeLib("quaqua64");
+                    System.out.println(System.getProperty("java.library.path"));
+//                    System.loadLibrary("QTKitCanvas");
+
 //                    System.loadLibrary("QTJNative");
 //                    NativeLoader.LoadNativeLib("QTJNative");
                 } catch (Exception e) {

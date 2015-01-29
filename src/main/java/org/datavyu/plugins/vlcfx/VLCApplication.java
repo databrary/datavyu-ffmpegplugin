@@ -218,6 +218,8 @@ public class VLCApplication extends Application {
 
         scene = new Scene(borderPane);
 
+        System.out.println(com.sun.prism.GraphicsPipeline.getPipeline().getClass().getName());
+
 
         mediaPlayerComponent = new TestMediaPlayerComponent();
         mp = mediaPlayerComponent.getMediaPlayer();

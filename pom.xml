@@ -1100,6 +1100,19 @@
             <version>0.9</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.datavyu</groupId>
+            <artifactId>libQTKitCanvas</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>org.rococoa</groupId>-->
+        <!--<artifactId>rococoa-parent</artifactId>-->
+        <!--<version>0.5</version>-->
+        <!--</dependency>-->
+
+
         <!--<dependency>-->
         <!--<groupId>org.robovm</groupId>-->
         <!--<artifactId>robovm-rt</artifactId>-->

@@ -84,6 +84,34 @@ public class NativeLoader {
         }
     }
 
+    public static void UnpackNativeLib(final String libName) throws Exception {
+        Enumeration<URL> resources;
+        String extension;
+
+        if (System.getProperty("os.name").contains("Mac")) {
+            extension = ".jnilib";
+            resources = NativeLoader.class.getClassLoader()
+                    .getResources("lib" + libName + extension);
+
+            if (!resources.hasMoreElements()) {
+                extension = ".dylib";
+                resources = NativeLoader.class.getClassLoader()
+                        .getResources(libName + extension);
+            }
+
+        } else {
+            extension = ".dll";
+            resources = NativeLoader.class.getClassLoader()
+                    .getResources(libName + extension);
+        }
+
+        File outfile;
+        while (resources.hasMoreElements()) {
+            outfile = copyFileToTmpDontLoad((libName + extension), resources.nextElement());
+            setLibraryPath(outfile.getParent());
+        }
+    }
+
     public static void setLibraryPath(String path) throws Exception {
         System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + path);
 
@@ -117,6 +145,34 @@ public class NativeLoader {
         final String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
         newPaths[newPaths.length - 1] = pathToAdd;
         usrPathsField.set(null, newPaths);
+    }
+
+    private static File copyFileToTmpDontLoad(final String destName, final URL u) throws Exception {
+        System.err.println("Attempting to load: " + u.toString());
+
+        InputStream in = u.openStream();
+        File outfile = new File(System.getProperty("java.io.tmpdir"), destName);
+
+        // Create a temporary output location for the library.
+        FileOutputStream out = new FileOutputStream(outfile);
+        BufferedOutputStream dest = new BufferedOutputStream(out, BUFFER);
+
+        int count;
+        byte[] data = new byte[BUFFER];
+        while ((count = in.read(data, 0, BUFFER)) != -1) {
+            dest.write(data, 0, count);
+        }
+
+        dest.flush();
+        dest.close();
+        out.close();
+        in.close();
+
+        loadedLibs.add(outfile);
+        System.err.println("Temp File:" + outfile);
+//        System.load(outfile.toString());
+        System.err.println("Extracted lib: " + outfile);
+        return outfile;
     }
 
     private static File copyFileToTmp(final String destName, final URL u) throws Exception {
