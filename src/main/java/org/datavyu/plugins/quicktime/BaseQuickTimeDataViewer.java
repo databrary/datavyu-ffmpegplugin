@@ -87,6 +87,10 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     protected boolean isVisible = true;
     protected boolean assumedFPS = false;
     /**
+     * The original size of the movie when first loaded.
+     */
+    protected Dimension nativeVideoSize;
+    /**
      * Rate for playback.
      */
     private float playRate;
@@ -145,10 +149,6 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
             return null;
         }
     };
-    /**
-     * The original size of the movie when first loaded.
-     */
-    private Dimension nativeVideoSize;
     /**
      * A context menu for resizing the video.
      */

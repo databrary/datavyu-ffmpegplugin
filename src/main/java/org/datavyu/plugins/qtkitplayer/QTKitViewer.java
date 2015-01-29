@@ -93,24 +93,31 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
         this.addNotify();
 
         movie = new QTKitPlayer(videoFile);
-        movie.setPreferredSize(new Dimension(400, 200));
+
         this.add(movie, BorderLayout.CENTER);
-        this.pack();
-        this.setVisible(true);
+
+        nativeVideoSize = getQTVideoSize();
+        System.out.println(nativeVideoSize);
+        setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(),
+                (int) nativeVideoSize.getHeight());
+
+
+
+
 
         EventQueue.invokeLater(new Runnable() {
             public void run() {
+//                System.out.println(new Dimension(movie.getWidth(), movie.getHeight()));
+
                 movie.setVolume(0.7F);
             }
         });
-
 
     }
 
     @Override
     protected Dimension getQTVideoSize() {
-
-        return new Dimension(movie.getWidth(), movie.getHeight());
+        return new Dimension((int) movie.getMovieWidth(), (int) movie.getMovieHeight());
     }
 
     @Override
