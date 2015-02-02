@@ -96,13 +96,6 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
 
         this.add(movie, BorderLayout.CENTER);
 
-        nativeVideoSize = getQTVideoSize();
-        System.out.println(nativeVideoSize);
-
-        if (nativeVideoSize.getHeight() == 0) {
-            nativeVideoSize = new Dimension(320, 240);
-        }
-
 //        setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(),
 //                (int) nativeVideoSize.getHeight());
 //

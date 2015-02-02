@@ -76,7 +76,11 @@ public class QTKitPlayer extends Canvas {
     public void addNotify() {
         super.addNotify();
         System.out.println("Opening video file: " + fileToLoad.toURI().getPath());
-        addNativeCoreAnimationLayer("file://" + fileToLoad.toURI().getPath());
+        try {
+            addNativeCoreAnimationLayer("file://" + fileToLoad.toURI().getPath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // This method is implemented in native code. See NativeCanvas.m

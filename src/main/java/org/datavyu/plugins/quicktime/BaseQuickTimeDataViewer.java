@@ -434,6 +434,8 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         setQTDataFeed(mediaFile);
 
         nativeVideoSize = getQTVideoSize();
+        System.out.println("SETTING SIZE TO:" + nativeVideoSize);
+        setPreferredSize(nativeVideoSize);
         setBounds(getX(), getY(), (int) nativeVideoSize.getWidth(),
                 (int) nativeVideoSize.getHeight());
         pack();
@@ -580,6 +582,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
             property = settings.getProperty("height");
 
             if ((property != null) && !property.equals("")) {
+                System.out.println("Setting video height to: " + property);
                 setVideoHeight(Integer.parseInt(property));
             }
 
