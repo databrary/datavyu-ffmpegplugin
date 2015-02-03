@@ -414,6 +414,12 @@
                     <artifactId>quaqua-osx64</artifactId>
                     <version>7.0.1</version>
                 </dependency>
+
+                <dependency>
+                    <groupId>org.datavyu</groupId>
+                    <artifactId>libQTKitCanvas</artifactId>
+                    <version>0.1</version>
+                </dependency>
             </dependencies>
 
             <build>
@@ -465,12 +471,12 @@
 
             <dependencies>
 
-                <dependency>
-                    <groupId>org.datavyu</groupId>
-                    <artifactId>vlcLibs-windows64</artifactId>
-                    <version>1.0.2</version>
-                    <scope>provided</scope>
-                </dependency>
+                <!--<dependency>-->
+                <!--<groupId>org.datavyu</groupId>-->
+                <!--<artifactId>vlcLibs-windows64</artifactId>-->
+                <!--<version>1.0.2</version>-->
+                <!--<scope>provided</scope>-->
+                <!--</dependency>-->
 
             </dependencies>
 
@@ -1098,12 +1104,6 @@
             <groupId>org.bytedeco</groupId>
             <artifactId>javacv</artifactId>
             <version>0.9</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.datavyu</groupId>
-            <artifactId>libQTKitCanvas</artifactId>
-            <version>0.1</version>
         </dependency>
 
         <!--<dependency>-->
