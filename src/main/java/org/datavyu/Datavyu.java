@@ -100,7 +100,7 @@ public final class Datavyu extends SingleFrameApplication
                 }
             case WINDOWS:
                 try {
-                    if(false && System.getProperty("sun.arch.data.model").equals("32") && !Datavyu.quicktimeLibrariesFound())
+                    if(System.getProperty("sun.arch.data.model").equals("32") && !Datavyu.quicktimeLibrariesFound())
                     {
                         NativeLoader.LoadNativeLib("QTJNative");
                         NativeLoader.LoadNativeLib("QTJavaNative");
