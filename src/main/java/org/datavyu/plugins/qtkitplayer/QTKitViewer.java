@@ -71,7 +71,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
         }
         EventQueue.invokeLater(new Runnable() {
             public void run() {
-                movie.setVolume(volume);
+                movie.setVolume(volume, movie.id);
             }
         });
     }
@@ -83,7 +83,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     public long getDuration() {
 
 
-        return movie.getDuration();
+        return movie.getDuration(movie.id);
     }
 
     @Override
@@ -105,7 +105,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
             public void run() {
 //                System.out.println(new Dimension(movie.getWidth(), movie.getHeight()));
 
-                movie.setVolume(0.7F);
+                movie.setVolume(0.7F, movie.id);
             }
         });
 
@@ -113,13 +113,14 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
 
     @Override
     protected Dimension getQTVideoSize() {
-        return new Dimension((int) movie.getMovieWidth(), (int) movie.getMovieHeight());
+        System.err.println(movie.id);
+        return new Dimension((int) movie.getMovieWidth(movie.id), (int) movie.getMovieHeight(movie.id));
     }
 
     @Override
     protected float getQTFPS() {
 
-        return movie.getFPS();
+        return movie.getFPS(movie.id);
     }
 
 
@@ -135,7 +136,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
             if (movie != null) {
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
-                        movie.setRate(getPlaybackSpeed());
+                        movie.setRate(getPlaybackSpeed(), movie.id);
                     }
                 });
             }
@@ -156,7 +157,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
             if (movie != null) {
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
-                        movie.stop();
+                        movie.stop(movie.id);
                     }
                 });
             }
@@ -172,10 +173,10 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     public void seekTo(final long position) {
 
         try {
-            if (movie != null && (prevSeekTime != position || position != movie.getCurrentTime())) {
+            if (movie != null && (prevSeekTime != position || position != movie.getCurrentTime(movie.id))) {
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
-                        movie.setTime(position);
+                        movie.setTime(position, movie.id);
                     }
                 });
                 prevSeekTime = position;
@@ -192,7 +193,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     public long getCurrentTime() {
 
         try {
-            return movie.getCurrentTime();
+            return movie.getCurrentTime(movie.id);
         } catch (Exception e) {
             LOGGER.error("Unable to get time", e);
         }

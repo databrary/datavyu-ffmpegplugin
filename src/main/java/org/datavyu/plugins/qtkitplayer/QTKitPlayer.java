@@ -53,6 +53,9 @@ import java.awt.*;
 import java.io.File;
 
 public class QTKitPlayer extends Canvas {
+
+    protected static int playerCount = 0;
+
     static {
         // Standard JNI: load the native library
         try {
@@ -66,10 +69,13 @@ public class QTKitPlayer extends Canvas {
 
     }
 
+    public final int id;
     File fileToLoad;
 
     public QTKitPlayer(File fileToLoad) {
         super();
+        this.id = QTKitPlayer.playerCount;
+        QTKitPlayer.playerCount += 1;
         this.fileToLoad = fileToLoad;
     }
 
@@ -86,30 +92,30 @@ public class QTKitPlayer extends Canvas {
     // This method is implemented in native code. See NativeCanvas.m
     public native void addNativeCoreAnimationLayer(String path);
 
-    public native void stop();
+    public native void stop(int id);
 
-    public native void play();
+    public native void play(int id);
 
-    public native void setTime(long time);
+    public native void setTime(long time, int id);
 
-    public native void setVolume(float time);
+    public native void setVolume(float time, int id);
 
-    public native void release();
+    public native void release(int id);
 
-    public native double getMovieHeight();
+    public native double getMovieHeight(int id);
 
-    public native double getMovieWidth();
+    public native double getMovieWidth(int id);
 
-    public native long getCurrentTime();
+    public native long getCurrentTime(int id);
 
-    public native long getDuration();
+    public native long getDuration(int id);
 
-    public native float getRate();
+    public native float getRate(int id);
 
-    public native void setRate(float rate);
+    public native void setRate(float rate, int id);
 
-    public native boolean isPlaying();
+    public native boolean isPlaying(int id);
 
-    public native float getFPS();
+    public native float getFPS(int id);
 
 }
