@@ -408,22 +408,67 @@ public final class PluginManager {
 
     public Iterable<Plugin> getPlugins() {
         List<Plugin> p = Lists.newArrayList(plugins);
-        Collections.sort(p, new Comparator<Plugin>() {
-            @Override
-            public int compare(final Plugin o1, final Plugin o2) {
+        if (Datavyu.getPlatform() == Datavyu.Platform.MAC) {
+            Collections.sort(p, new Comparator<Plugin>() {
+                @Override
+                public int compare(final Plugin o1, final Plugin o2) {
 
-                // Want the JavaFX video plugin to always be first.
-                if ("QTKit Video".equals(o1.getPluginName())) {
-                    return -1;
+                    if ("QTKit Video".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("QTKit Video".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
+                    return o1.getPluginName().compareTo(o2.getPluginName());
                 }
-
-                if ("QTKit Video".equals(o2.getPluginName())) {
-                    return 1;
+            });
+            for (int i = 0; i < p.size(); i++) {
+                if (p.get(i).getPluginName() == "QuickTime Video") {
+                    p.remove(i);
+                    break;
                 }
-
-                return o1.getPluginName().compareTo(o2.getPluginName());
             }
-        });
+        } else if (Datavyu.getPlatform() == Datavyu.Platform.WINDOWS) {
+            Collections.sort(p, new Comparator<Plugin>() {
+                @Override
+                public int compare(final Plugin o1, final Plugin o2) {
+
+                    if ("QuickTime Video".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("QuickTime Video".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
+                    return o1.getPluginName().compareTo(o2.getPluginName());
+                }
+            });
+            for (int i = 0; i < p.size(); i++) {
+                if (p.get(i).getPluginName() == "QTKit Video") {
+                    p.remove(i);
+                    break;
+                }
+            }
+        } else {
+            Collections.sort(p, new Comparator<Plugin>() {
+                @Override
+                public int compare(final Plugin o1, final Plugin o2) {
+
+                    if ("JavaFX Video".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("JavaFX Video".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
+                    return o1.getPluginName().compareTo(o2.getPluginName());
+                }
+            });
+        }
 
         return p;
     }
