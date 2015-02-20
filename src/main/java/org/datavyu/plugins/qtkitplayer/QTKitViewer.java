@@ -123,6 +123,20 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
         return movie.getFPS(movie.id);
     }
 
+    @Override
+    public void setPlaybackSpeed(final float rate) {
+        super.setPlaybackSpeed(rate);
+//        try {
+//        EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                movie.setRate(rate, movie.id);
+//            }
+//        });
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+    }
+
 
     /**
      * {@inheritDoc}
@@ -130,12 +144,16 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     @Override
     public void play() {
         super.play();
+        System.err.println("Playing at " + getPlaybackSpeed());
 
         try {
 
             if (movie != null) {
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
+                        if (movie.getRate(movie.id) != 0) {
+                            movie.stop(movie.id);
+                        }
                         movie.setRate(getPlaybackSpeed(), movie.id);
                     }
                 });

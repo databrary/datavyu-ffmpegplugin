@@ -519,7 +519,7 @@ public final class DataControllerV extends DatavyuDialog
 
                 // Synchronise viewers only if we have exceeded our pulse time.
                 if ((time - playbackModel.getLastSync())
-                        > (SYNC_PULSE * clock.getRate())) {
+                        > (SYNC_PULSE * clock.getRate()) || playbackModel.getLastSync() == 0) {
                     long thresh = (long) (SYNC_THRESH
                             * Math.abs(clock.getRate()));
                     playbackModel.setLastSync(time);
