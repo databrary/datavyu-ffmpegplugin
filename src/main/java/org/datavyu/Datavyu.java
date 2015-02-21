@@ -45,7 +45,6 @@ import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.EventObject;
 import java.util.Stack;
@@ -104,7 +103,7 @@ public final class Datavyu extends SingleFrameApplication
                 }
             case WINDOWS:
                 try {
-                    if(System.getProperty("sun.arch.data.model").equals("32"))
+                    if (System.getProperty("sun.arch.data.model").equals("32") && !Datavyu.quicktimeLibrariesFound())
                     {
                         NativeLoader.LoadNativeLib("QTJNative");
                         NativeLoader.LoadNativeLib("QTJavaNative");
@@ -116,41 +115,7 @@ public final class Datavyu extends SingleFrameApplication
                     }
                 } catch (Exception e) {
                     // for copying style
-                    JLabel label = new JLabel();
-                    Font font = label.getFont();
-
-                    // create some css from the label's font
-                    StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
-                    style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
-                    style.append("font-size:" + font.getSize() + "pt;");
-
-                    // html content
-                    JEditorPane ep = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
-                            + "Error: Could not load Quicktime 7.  <a href=\"http://google.com/\">Please install Quicktime 7 from here</a><br>" +
-                            "and when installing, select \"Custom Install\" and then left click on the red X<br>" +
-                            "next to \"Legacy options\" and select \"Will be installed to local harddrive\". Then click \"Next\" and install. " //
-                            + "</body></html>");
-
-                    // handle link events
-                    ep.addHyperlinkListener(new HyperlinkListener()
-                    {
-                        @Override
-                        public void hyperlinkUpdate(HyperlinkEvent e)
-                        {
-                            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
-                                try {
-                                    Desktop.getDesktop().browse(e.getURL().toURI()); // roll your own link launcher or use Desktop if J6+
-                                } catch (Exception u) {
-                                    u.printStackTrace();
-                                }
-                            }
-                        }
-                    });
-                    ep.setEditable(false);
-                    ep.setBackground(label.getBackground());
-
-                    // show
-                    JOptionPane.showMessageDialog(null, ep);
+                    e.printStackTrace();
                 }
 
 //                break;
@@ -233,6 +198,8 @@ public final class Datavyu extends SingleFrameApplication
         try {
             Class.forName("quicktime.QTSession");
             ans = true;
+            QTDataViewer.librariesFound = true;
+
         } catch (ClassNotFoundException ce) {
             System.out.println("Class not found: " + ce.getMessage());
         } catch (Exception e) {
@@ -321,6 +288,42 @@ public final class Datavyu extends SingleFrameApplication
         }
 
         launch(Datavyu.class, args);
+
+        if (Datavyu.getPlatform() == Platform.WINDOWS && !QTDataViewer.librariesFound) {
+            JLabel label = new JLabel();
+            Font font = label.getFont();
+
+            // create some css from the label's font
+            StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
+            style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
+            style.append("font-size:" + font.getSize() + "pt;");
+
+            // html content
+            JEditorPane ep = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
+                    + "Error: Could not load Quicktime 7.  <a href=\"http://google.com/\">Please install Quicktime 7 from here</a><br>" +
+                    "and when installing, select \"Custom Install\" and then left click on the red X<br>" +
+                    "next to \"Legacy options\" and select \"Will be installed to local harddrive\". Then click \"Next\" and install. " //
+                    + "</body></html>");
+
+            // handle link events
+            ep.addHyperlinkListener(new HyperlinkListener() {
+                @Override
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI()); // roll your own link launcher or use Desktop if J6+
+                        } catch (Exception u) {
+                            u.printStackTrace();
+                        }
+                    }
+                }
+            });
+            ep.setEditable(false);
+            ep.setBackground(label.getBackground());
+
+            // show
+            JOptionPane.showMessageDialog(null, ep);
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
