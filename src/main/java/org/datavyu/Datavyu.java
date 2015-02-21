@@ -39,8 +39,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.swing.*;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -288,42 +286,6 @@ public final class Datavyu extends SingleFrameApplication
         }
 
         launch(Datavyu.class, args);
-
-        if (Datavyu.getPlatform() == Platform.WINDOWS && !QTDataViewer.librariesFound) {
-            JLabel label = new JLabel();
-            Font font = label.getFont();
-
-            // create some css from the label's font
-            StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
-            style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
-            style.append("font-size:" + font.getSize() + "pt;");
-
-            // html content
-            JEditorPane ep = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
-                    + "Error: Could not load Quicktime 7.  <a href=\"http://google.com/\">Please install Quicktime 7 from here</a><br>" +
-                    "and when installing, select \"Custom Install\" and then left click on the red X<br>" +
-                    "next to \"Legacy options\" and select \"Will be installed to local harddrive\". Then click \"Next\" and install. " //
-                    + "</body></html>");
-
-            // handle link events
-            ep.addHyperlinkListener(new HyperlinkListener() {
-                @Override
-                public void hyperlinkUpdate(HyperlinkEvent e) {
-                    if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
-                        try {
-                            Desktop.getDesktop().browse(e.getURL().toURI()); // roll your own link launcher or use Desktop if J6+
-                        } catch (Exception u) {
-                            u.printStackTrace();
-                        }
-                    }
-                }
-            });
-            ep.setEditable(false);
-            ep.setBackground(label.getBackground());
-
-            // show
-            JOptionPane.showMessageDialog(null, ep);
-        }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
