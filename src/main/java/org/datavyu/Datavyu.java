@@ -23,6 +23,7 @@ import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.models.db.TitleNotifier;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.plugins.PluginManager;
+import org.datavyu.plugins.quicktime.QTDataViewer;
 import org.datavyu.plugins.vlcfx.NativeLibraryManager;
 import org.datavyu.undoableedits.SpreadsheetUndoManager;
 import org.datavyu.util.MacHandler;
@@ -38,10 +39,13 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.EventObject;
 import java.util.Stack;
@@ -100,16 +104,53 @@ public final class Datavyu extends SingleFrameApplication
                 }
             case WINDOWS:
                 try {
-                    if(System.getProperty("sun.arch.data.model").equals("32") && !Datavyu.quicktimeLibrariesFound())
+                    if(System.getProperty("sun.arch.data.model").equals("32"))
                     {
                         NativeLoader.LoadNativeLib("QTJNative");
                         NativeLoader.LoadNativeLib("QTJavaNative");
                         System.out.println(System.getProperty("java.library.path"));
                         System.loadLibrary("QTJNative");
                         System.loadLibrary("QTJavaNative");
+
+                        QTDataViewer.librariesFound = true;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    // for copying style
+                    JLabel label = new JLabel();
+                    Font font = label.getFont();
+
+                    // create some css from the label's font
+                    StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
+                    style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
+                    style.append("font-size:" + font.getSize() + "pt;");
+
+                    // html content
+                    JEditorPane ep = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
+                            + "Error: Could not load Quicktime 7.  <a href=\"http://google.com/\">Please install Quicktime 7 from here</a><br>" +
+                            "and when installing, select \"Custom Install\" and then left click on the red X<br>" +
+                            "next to \"Legacy options\" and select \"Will be installed to local harddrive\". Then click \"Next\" and install. " //
+                            + "</body></html>");
+
+                    // handle link events
+                    ep.addHyperlinkListener(new HyperlinkListener()
+                    {
+                        @Override
+                        public void hyperlinkUpdate(HyperlinkEvent e)
+                        {
+                            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+                                try {
+                                    Desktop.getDesktop().browse(e.getURL().toURI()); // roll your own link launcher or use Desktop if J6+
+                                } catch (Exception u) {
+                                    u.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                    ep.setEditable(false);
+                    ep.setBackground(label.getBackground());
+
+                    // show
+                    JOptionPane.showMessageDialog(null, ep);
                 }
 
 //                break;

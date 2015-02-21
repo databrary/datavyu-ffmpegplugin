@@ -53,6 +53,8 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -423,8 +425,12 @@ public final class DataControllerV extends DatavyuDialog
                                 .getViewerStateListener(dataViewer.getIdentifier()));
             } catch (Throwable t) {
                 LOGGER.error(t);
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                t.printStackTrace(pw);
+                 // stack trace as a string
                 JOptionPane.showMessageDialog(null,
-                        "Could not open data source: " + t.getMessage());
+                        "Could not open data source: " + t.getMessage() + "\n" + sw.toString());
                 t.printStackTrace();
             }
         }
