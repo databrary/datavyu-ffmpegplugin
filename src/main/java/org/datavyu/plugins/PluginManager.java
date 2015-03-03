@@ -18,7 +18,10 @@ import com.google.common.collect.*;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.Datavyu;
+import org.datavyu.plugins.javafx.JavaFxPlugin;
+import org.datavyu.plugins.qtkitplayer.QTKitPlugin;
 import org.datavyu.plugins.quicktime.QTDataViewer;
+import org.datavyu.plugins.quicktime.java.QTPlugin;
 import org.jdesktop.application.LocalStorage;
 
 import javax.swing.filechooser.FileFilter;
@@ -426,7 +429,7 @@ public final class PluginManager {
                 }
             });
             for (int i = 0; i < p.size(); i++) {
-                if (p.get(i).getPluginName() == "QuickTime Video") {
+                if (p.get(i).getPluginName().equals("QuickTime Video")) {
                     p.remove(i);
                     break;
                 }
@@ -458,7 +461,7 @@ public final class PluginManager {
                 }
             });
             for (int i = 0; i < p.size(); i++) {
-                if (p.get(i).getPluginName() == "QTKit Video") {
+                if (p.get(i).getPluginName().equals("QTKit Video")) {
                     p.remove(i);
                     break;
                 }
@@ -494,6 +497,21 @@ public final class PluginManager {
      */
     public Plugin getCompatiblePlugin(final String classifier,
                                       final File file) {
+
+        // Shortcircuit this for the preferred new plugins for Windows and OSX
+        if (classifier.equals("datavyu.video")) {
+            if (Datavyu.getPlatform() == Datavyu.Platform.MAC) {
+                return new QTKitPlugin();
+            }
+
+            if (Datavyu.getPlatform() == Datavyu.Platform.WINDOWS) {
+                return new QTPlugin();
+            }
+
+            if (Datavyu.getPlatform() == Datavyu.Platform.LINUX) {
+                return new JavaFxPlugin();
+            }
+        }
 
         for (Plugin candidate : pluginClassifiers.get(classifier)) {
 

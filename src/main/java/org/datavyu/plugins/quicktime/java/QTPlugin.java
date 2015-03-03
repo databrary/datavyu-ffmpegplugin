@@ -81,7 +81,7 @@ public final class QTPlugin implements Plugin {
 
     @Override
     public String getClassifier() {
-        return "datavyu.quicktime";
+        return "datavyu.video";
     }
 
     @Override
@@ -97,7 +97,7 @@ public final class QTPlugin implements Plugin {
     @Override
     public Class<? extends DataViewer> getViewerClass() {
 
-        if (Platform.isMac() || Platform.isWindows()) {
+        if (Platform.isWindows()) {
             return QTDataViewer.class;
         }
 

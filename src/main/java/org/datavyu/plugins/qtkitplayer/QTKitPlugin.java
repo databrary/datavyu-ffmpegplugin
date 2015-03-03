@@ -22,7 +22,6 @@ import org.datavyu.plugins.DataViewer;
 import org.datavyu.plugins.Filter;
 import org.datavyu.plugins.FilterNames;
 import org.datavyu.plugins.Plugin;
-import org.datavyu.plugins.quicktime.QTDataViewer;
 
 import javax.swing.*;
 import java.io.FileFilter;
@@ -81,7 +80,7 @@ public final class QTKitPlugin implements Plugin {
 
     @Override
     public String getClassifier() {
-        return "qtkit.video";
+        return "datavyu.video";
     }
 
     @Override
@@ -97,8 +96,8 @@ public final class QTKitPlugin implements Plugin {
     @Override
     public Class<? extends DataViewer> getViewerClass() {
 
-        if (Platform.isMac() || Platform.isWindows()) {
-            return QTDataViewer.class;
+        if (Platform.isMac()) {
+            return QTKitViewer.class;
         }
 
         return null;

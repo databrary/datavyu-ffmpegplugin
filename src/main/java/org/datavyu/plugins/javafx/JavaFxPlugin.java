@@ -46,7 +46,7 @@ public class JavaFxPlugin implements Plugin {
 
     @Override
     public String getClassifier() {
-        return "javafxplugin";
+        return "datavyu.video";
     }
 
     @Override
