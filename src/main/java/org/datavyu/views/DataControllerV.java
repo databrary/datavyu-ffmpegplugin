@@ -613,11 +613,22 @@ public final class DataControllerV extends DatavyuDialog
         resetSync();
         setCurrentTime(time);
 
-        for (DataViewer viewer : viewers) {
-            viewer.stop();
+        if (viewers.size() == 1) {
+            // Using an iterator because viewers is a set
+            for (DataViewer viewer : viewers) {
+                try {
+                    clock.setTime(viewer.getCurrentTime());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            for (DataViewer viewer : viewers) {
+                viewer.stop();
 
-            if (isWithinPlayRange(time, viewer)) {
-                viewer.seekTo(time - viewer.getOffset());
+                if (isWithinPlayRange(time, viewer)) {
+                    viewer.seekTo(time - viewer.getOffset());
+                }
             }
         }
     }

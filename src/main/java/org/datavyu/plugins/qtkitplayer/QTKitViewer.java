@@ -170,12 +170,18 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     public void stop() {
         super.stop();
 
+        System.out.println("HIT STOP");
+        final double time = System.currentTimeMillis();
         try {
 
             if (movie != null) {
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
+                        System.out.println("EXECUTING STOP");
+                        System.out.println(System.currentTimeMillis() - time);
                         movie.stop(movie.id);
+                        System.out.println("STOPPED");
+                        System.out.println(System.currentTimeMillis() - time);
                     }
                 });
             }
@@ -194,7 +200,13 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
             if (movie != null && (prevSeekTime != position || position != movie.getCurrentTime(movie.id))) {
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
+                        boolean wasPlaying = isPlaying();
+                        float prevRate = getPlaybackSpeed();
+                        movie.stop(movie.id);
                         movie.setTime(position, movie.id);
+                        if (wasPlaying) {
+                            movie.setRate(prevRate, movie.id);
+                        }
                     }
                 });
                 prevSeekTime = position;
