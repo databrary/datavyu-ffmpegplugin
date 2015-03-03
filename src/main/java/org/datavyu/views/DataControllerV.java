@@ -53,6 +53,8 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -423,8 +425,50 @@ public final class DataControllerV extends DatavyuDialog
                                 .getViewerStateListener(dataViewer.getIdentifier()));
             } catch (Throwable t) {
                 LOGGER.error(t);
-                JOptionPane.showMessageDialog(null,
-                        "Could not open data source: " + t.getMessage());
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                t.printStackTrace(pw);
+                 // stack trace as a string
+
+                if (plugin.getClassifier().contains("quicktime")) {
+                    JLabel label = new JLabel();
+                    Font font = label.getFont();
+
+                    // create some css from the label's font
+                    StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
+                    style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
+                    style.append("font-size:" + font.getSize() + "pt;");
+
+                    // html content
+                    JEditorPane ep = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
+                            + "Error: Could not load Quicktime.  <a href=\"https://www.apple.com/quicktime/download/\">Please install Quicktime 7 from here</a><br>" +
+                            "and when installing, select \"Custom Install\" and then left click on the [+] next to the red X<br>" +
+                            "next to \"Legacy options\", click on the red X next to Quicktime For Java and select <br>\"Will be installed to local harddrive\". Then click \"Next\" and install.<br>" +
+                            "Afterwards relaunch Datavyu to use the Quicktime plugin." //
+                            + "</body></html>");
+
+                    // handle link events
+                    ep.addHyperlinkListener(new HyperlinkListener() {
+                        @Override
+                        public void hyperlinkUpdate(HyperlinkEvent e) {
+                            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+                                try {
+                                    Desktop.getDesktop().browse(e.getURL().toURI()); // roll your own link launcher or use Desktop if J6+
+                                } catch (Exception u) {
+                                    u.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                    ep.setEditable(false);
+                    ep.setBackground(label.getBackground());
+
+                    // show
+                    JOptionPane.showMessageDialog(null, ep);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Could not open data source: " + t.getMessage());
+                }
                 t.printStackTrace();
             }
         }

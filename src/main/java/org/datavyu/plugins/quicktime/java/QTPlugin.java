@@ -81,7 +81,7 @@ public final class QTPlugin implements Plugin {
 
     @Override
     public String getClassifier() {
-        return "datavyu.video";
+        return "datavyu.quicktime";
     }
 
     @Override

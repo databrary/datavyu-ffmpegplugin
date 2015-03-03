@@ -18,6 +18,7 @@ import com.google.common.collect.*;
 import com.usermetrix.jclient.Logger;
 import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.Datavyu;
+import org.datavyu.plugins.quicktime.QTDataViewer;
 import org.jdesktop.application.LocalStorage;
 
 import javax.swing.filechooser.FileFilter;
@@ -435,12 +436,22 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
-                    if ("QuickTime Video".equals(o1.getPluginName())) {
-                        return -1;
-                    }
+                    if(QTDataViewer.librariesFound) {
+                        if ("QuickTime Video".equals(o1.getPluginName())) {
+                            return -1;
+                        }
 
-                    if ("QuickTime Video".equals(o2.getPluginName())) {
-                        return 1;
+                        if ("QuickTime Video".equals(o2.getPluginName())) {
+                            return 1;
+                        }
+                    } else {
+                        if ("JavaFX Video".equals(o1.getPluginName())) {
+                            return -1;
+                        }
+
+                        if ("JavaFX Video".equals(o2.getPluginName())) {
+                            return 1;
+                        }
                     }
 
                     return o1.getPluginName().compareTo(o2.getPluginName());

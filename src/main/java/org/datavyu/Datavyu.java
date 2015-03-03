@@ -23,6 +23,7 @@ import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.models.db.TitleNotifier;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.plugins.PluginManager;
+import org.datavyu.plugins.quicktime.QTDataViewer;
 import org.datavyu.plugins.vlcfx.NativeLibraryManager;
 import org.datavyu.undoableedits.SpreadsheetUndoManager;
 import org.datavyu.util.MacHandler;
@@ -100,15 +101,18 @@ public final class Datavyu extends SingleFrameApplication
                 }
             case WINDOWS:
                 try {
-                    if(false && System.getProperty("sun.arch.data.model").equals("32") && !Datavyu.quicktimeLibrariesFound())
+                    if (System.getProperty("sun.arch.data.model").equals("32") && !Datavyu.quicktimeLibrariesFound())
                     {
                         NativeLoader.LoadNativeLib("QTJNative");
                         NativeLoader.LoadNativeLib("QTJavaNative");
                         System.out.println(System.getProperty("java.library.path"));
                         System.loadLibrary("QTJNative");
                         System.loadLibrary("QTJavaNative");
+
+                        QTDataViewer.librariesFound = true;
                     }
                 } catch (Exception e) {
+                    // for copying style
                     e.printStackTrace();
                 }
 
@@ -192,6 +196,8 @@ public final class Datavyu extends SingleFrameApplication
         try {
             Class.forName("quicktime.QTSession");
             ans = true;
+            QTDataViewer.librariesFound = true;
+
         } catch (ClassNotFoundException ce) {
             System.out.println("Class not found: " + ce.getMessage());
         } catch (Exception e) {

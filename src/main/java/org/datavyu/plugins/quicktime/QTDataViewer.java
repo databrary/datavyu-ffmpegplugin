@@ -41,6 +41,7 @@ import java.io.File;
  */
 public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
+    public static boolean librariesFound = false;
     /**
      * How many milliseconds in a second?
      */
