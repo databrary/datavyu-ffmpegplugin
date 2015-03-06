@@ -655,7 +655,6 @@ public final class DataControllerV extends DatavyuDialog
     public void clockStop(final long time) {
         clock.stop();
         resetSync();
-        setCurrentTime(time);
 
         if (viewers.size() == 1) {
             // Using an iterator because viewers is a set
@@ -673,6 +672,8 @@ public final class DataControllerV extends DatavyuDialog
                         viewerTime = viewerTime + stepSize - mod;
                     }
 
+                    viewer.seekTo(viewerTime);
+
                     clock.setTimeDontNotify(viewerTime);
                     resetSync();
                     updateCurrentTimeLabel();
@@ -681,6 +682,7 @@ public final class DataControllerV extends DatavyuDialog
                 }
             }
         } else {
+            setCurrentTime(time);
             for (DataViewer viewer : viewers) {
                 viewer.stop();
 
@@ -2067,31 +2069,36 @@ public final class DataControllerV extends DatavyuDialog
     public void jogBackAction() {
         LOGGER.event("Jog back");
 
-        int mul = 1;
+        if (!clock.isStopped()) {
+            clockStop(clock.getTime());
+        } else {
 
-        if (shiftMask) {
-            mul = SHIFTJOG;
-        }
+            int mul = 1;
 
-        if (ctrlMask) {
-            mul = CTRLJOG;
-        }
+            if (shiftMask) {
+                mul = SHIFTJOG;
+            }
 
-        long stepSize = ((-ONE_SECOND) / (long) playbackModel.getCurrentFPS());
-        long nextTime = (long) (mul * stepSize);
+            if (ctrlMask) {
+                mul = CTRLJOG;
+            }
 
-        long mod = clock.getTime() % stepSize;
+            long stepSize = ((-ONE_SECOND) / (long) playbackModel.getCurrentFPS());
+            long nextTime = (long) (mul * stepSize);
 
-        if (mod != 0) {
-            nextTime = -mod;
-        }
+            long mod = clock.getTime() % stepSize;
+
+            if (mod != 0) {
+                nextTime = -mod;
+            }
 
         /* BugzID:1361 - Disallow jog to skip past the region boundaries. */
-        if ((clock.getTime() + nextTime) > playbackModel.getWindowPlayStart()) {
-            stopAction();
-            jump(nextTime);
-        } else {
-            jumpTo(playbackModel.getWindowPlayStart());
+            if ((clock.getTime() + nextTime) > playbackModel.getWindowPlayStart()) {
+                stopAction();
+                jump(nextTime);
+            } else {
+                jumpTo(playbackModel.getWindowPlayStart());
+            }
         }
     }
 
@@ -2102,32 +2109,37 @@ public final class DataControllerV extends DatavyuDialog
     public void jogForwardAction() {
         LOGGER.event("Jog forward");
 
-        int mul = 1;
+        if (!clock.isStopped()) {
+            clockStop(clock.getTime());
+        } else {
 
-        if (shiftMask) {
-            mul = SHIFTJOG;
-        }
+            int mul = 1;
 
-        if (ctrlMask) {
-            mul = CTRLJOG;
-        }
+            if (shiftMask) {
+                mul = SHIFTJOG;
+            }
 
-        long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
-        long nextTime = (long) (mul * stepSize);
+            if (ctrlMask) {
+                mul = CTRLJOG;
+            }
+
+            long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
+            long nextTime = (long) (mul * stepSize);
 
         /* BugzID:1544 - Preserve precision - force jog to frame markers. */
-        long mod = (clock.getTime() % stepSize);
+            long mod = (clock.getTime() % stepSize);
 
-        if (mod != 0) {
-            nextTime = nextTime + stepSize - mod;
-        }
+            if (mod != 0) {
+                nextTime = nextTime + stepSize - mod;
+            }
 
         /* BugzID:1361 - Disallow jog to skip past the region boundaries. */
-        if ((clock.getTime() + nextTime) < playbackModel.getWindowPlayEnd()) {
-            stopAction();
-            jump(nextTime);
-        } else {
-            jumpTo(playbackModel.getWindowPlayEnd());
+            if ((clock.getTime() + nextTime) < playbackModel.getWindowPlayEnd()) {
+                stopAction();
+                jump(nextTime);
+            } else {
+                jumpTo(playbackModel.getWindowPlayEnd());
+            }
         }
     }
 

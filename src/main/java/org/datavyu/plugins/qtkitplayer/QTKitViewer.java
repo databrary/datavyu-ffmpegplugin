@@ -197,19 +197,21 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     public void seekTo(final long position) {
 
         try {
-            if (movie != null && (prevSeekTime != position || position != movie.getCurrentTime(movie.id))) {
+            if (movie != null && (prevSeekTime != position)) {
+                prevSeekTime = position;
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
                         boolean wasPlaying = isPlaying();
                         float prevRate = getPlaybackSpeed();
-                        movie.stop(movie.id);
+                        if (isPlaying())
+                            movie.stop(movie.id);
                         movie.setTime(position, movie.id);
                         if (wasPlaying) {
                             movie.setRate(prevRate, movie.id);
                         }
                     }
                 });
-                prevSeekTime = position;
+
             }
         } catch (Exception e) {
             LOGGER.error("Unable to find", e);
