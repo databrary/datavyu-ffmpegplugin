@@ -660,8 +660,22 @@ public final class DataControllerV extends DatavyuDialog
         if (viewers.size() == 1) {
             // Using an iterator because viewers is a set
             for (DataViewer viewer : viewers) {
+                viewer.stop();
                 try {
-                    clock.setTime(viewer.getCurrentTime());
+                    long viewerTime = viewer.getCurrentTime();
+
+                    long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
+
+                     /* BugzID:1544 - Preserve precision - force jog to frame markers. */
+                    long mod = (viewerTime % stepSize);
+
+                    if (mod != 0) {
+                        viewerTime = viewerTime + stepSize - mod;
+                    }
+
+                    clock.setTimeDontNotify(viewerTime);
+                    resetSync();
+                    updateCurrentTimeLabel();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -2066,8 +2080,11 @@ public final class DataControllerV extends DatavyuDialog
         long stepSize = ((-ONE_SECOND) / (long) playbackModel.getCurrentFPS());
         long nextTime = (long) (mul * stepSize);
 
-        /* BugzID:1544 - Preserve precision - force jog to frame markers. */
-        nextTime = nextTime - (clock.getTime() % stepSize);
+        long mod = clock.getTime() % stepSize;
+
+        if (mod != 0) {
+            nextTime = -mod;
+        }
 
         /* BugzID:1361 - Disallow jog to skip past the region boundaries. */
         if ((clock.getTime() + nextTime) > playbackModel.getWindowPlayStart()) {

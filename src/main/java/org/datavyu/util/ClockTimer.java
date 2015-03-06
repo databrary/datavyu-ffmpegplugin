@@ -116,6 +116,24 @@ public final class ClockTimer {
     //
     //
 
+    public synchronized void setTimeDontNotify(final long newTime) {
+
+        if (isStopped) {
+            time = newTime;
+            time = Math.max(time, 0);
+//            notifyStep();
+        } else {
+            stop();
+        }
+    }
+
+    /**
+     * @return Current clock time.
+     */
+    public synchronized long getTime() {
+        return (long) time;
+    }
+
     /**
      * @param newTime Millisecond time to set clock to.
      */
@@ -131,10 +149,10 @@ public final class ClockTimer {
     }
 
     /**
-     * @return Current clock time.
+     * @return Current clock multipler.
      */
-    public synchronized long getTime() {
-        return (long) time;
+    public synchronized float getRate() {
+        return rate;
     }
 
     /**
@@ -143,13 +161,6 @@ public final class ClockTimer {
     public synchronized void setRate(final float newRate) {
         rate = newRate;
         notifyRate();
-    }
-
-    /**
-     * @return Current clock multipler.
-     */
-    public synchronized float getRate() {
-        return rate;
     }
 
     /**
