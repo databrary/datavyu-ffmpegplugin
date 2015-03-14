@@ -41,7 +41,6 @@ import java.io.File;
  */
 public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
-    public static boolean librariesFound = false;
     /**
      * How many milliseconds in a second?
      */
@@ -50,11 +49,12 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
      * How many frames to check when correcting the FPS.
      */
     private static final int CORRECTIONFRAMES = 5;
+    public static boolean librariesFound = false;
     /**
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(QTDataViewer.class);
-    private static float FALLBACK_FRAME_RATE = 24.0f;
+    private static float FALLBACK_FRAME_RATE = 29.97f;
     /**
      * The quicktime movie this viewer is displaying.
      */
@@ -164,10 +164,14 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
         try {
             if (visualMedia != null) {
 
-                fps = (float) visualMedia.getSampleCount()
-                        / visualMedia.getDuration() * visualMedia.getTimeScale();
+                try {
+                    fps = (float) visualMedia.getSampleCount()
+                            / visualMedia.getDuration() * visualMedia.getTimeScale();
+                } catch (Exception d) {
+                    System.err.println("Could not find fps the normal way, trying the fake route.");
+                }
                 if ((visualMedia.getSampleCount() == 1.0)
-                        || (visualMedia.getSampleCount() == 1)) {
+                        || (visualMedia.getSampleCount() == 1) || fps == 0) {
                     fps = correctFPS();
                 }
 
@@ -176,7 +180,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
                 }
             }
         } catch (QTException e) {
-            LOGGER.error("Unable to calculate FPS, assuming " + FALLBACK_FRAME_RATE, e);
+//            LOGGER.error("Unable to calculate FPS, assuming " + FALLBACK_FRAME_RATE, e);
             assumedFPS = true;
             fps = FALLBACK_FRAME_RATE;
         }
