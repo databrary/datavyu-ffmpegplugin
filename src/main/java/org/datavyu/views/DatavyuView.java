@@ -334,6 +334,7 @@ public final class DatavyuView extends FrameView
                     if (Datavyu.getProjectController().getProject().getProjectDirectory() == null) {
                         baseDir = new File(System.getProperty("user.home")).getParent();
                     } else {
+//                        baseDir = new File(".").getParent();
                         baseDir = new File(Datavyu.getProjectController().getProject().getProjectDirectory()).getParent();
                     }
                     final File f = new File(baseDir + File.separator + path);
@@ -908,6 +909,8 @@ public final class DatavyuView extends FrameView
         if (result == JFileChooser.APPROVE_OPTION) {
             save(jd);
         }
+        fileTree = new FileSystemTreeModel(new File(jd.getSelectedFile().getParent()));
+        fileDrawer.setModel(fileTree);
         updateTitle();
     }
 
