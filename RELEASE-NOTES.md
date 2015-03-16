@@ -1,4 +1,9 @@
 # Announcements
+## 3/16/2015
+
+* Datavyu now has a working Yosemite build! Please download version 1.3 to try it out on your Mac! It also comes with Java included so you no longer have to download it separately. 
+
+# Announcements
 ## 1/20/2015
 
 * Yosemite no longer supports Java QuickTime and so Datavyu is not curently compatible. We apologize for the inconvenience     and advise our users to be aware of the situation before deciding to upgrade to Yosemite. 
