@@ -7,9 +7,9 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>English</string>
   <key>CFBundleExecutable</key>
-  <string>datavyu-1.2</string>
+  <string>datavyu-1.3</string>
   <key>CFBundleIconFile</key>
-  <string>datavyu-1.2.icns</string>
+  <string>datavyu-1.3.icns</string>
   <key>CFBundleIdentifier</key>
   <string>org.datavyu.datavyu</string>
   <key>CFBundleInfoDictionaryVersion</key>
@@ -59,7 +59,7 @@
   <key>JVMAppClasspath</key>
   <string></string>
   <key>JVMMainJarName</key>
-  <string>datavyu-1.2-jfx.jar</string>
+  <string>datavyu-1.3-jfx.jar</string>
   <key>JVMPreferencesID</key>
   <string>org/datavyu/datavyu</string>
   <key>JVMOptions</key>

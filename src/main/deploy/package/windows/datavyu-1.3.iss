@@ -1,17 +1,17 @@
 ;This file will be executed next to the application bundle image
-;I.e. current directory will contain folder datavyu-1.2 with application files
+;I.e. current directory will contain folder datavyu-1.3 with application files
 [Setup]
 AppId={{org.datavyu}}
-AppName=datavyu-1.2
+AppName=datavyu-1.3
 AppVersion=1.0
-AppVerName=datavyu-1.2
+AppVerName=datavyu-1.3
 AppPublisher=Datavyu Foundation
-AppComments=datavyu-1.2
+AppComments=datavyu-1.3
 AppCopyright=Copyright (C) 2015
 ;AppPublisherURL=http://java.com/
 ;AppSupportURL=http://java.com/
 ;AppUpdatesURL=http://java.com/
-DefaultDirName={code:DefDirRoot}\datavyu-1.2
+DefaultDirName={code:DefDirRoot}\datavyu-1.3
 DisableStartupPrompt=Yes
 DisableDirPage=No
 DisableProgramGroupPage=Yes
@@ -23,15 +23,15 @@ DefaultGroupName=Datavyu Foundation
 LicenseFile=
 ;WinXP or above
 MinVersion=0,5.1 
-OutputBaseFilename=datavyu-1.2-1.0
+OutputBaseFilename=datavyu-1.3-1.0
 Compression=lzma
 SolidCompression=yes
 PrivilegesRequired=lowest
-SetupIconFile=datavyu-1.2\datavyu-1.2.ico
-UninstallDisplayIcon={app}\datavyu-1.2.ico
-UninstallDisplayName=datavyu-1.2
+SetupIconFile=datavyu-1.3\datavyu-1.3.ico
+UninstallDisplayIcon={app}\datavyu-1.3.ico
+UninstallDisplayName=datavyu-1.3
 WizardImageStretch=No
-WizardSmallImageFile=datavyu-1.2-setup-icon.bmp   
+WizardSmallImageFile=datavyu-1.3-setup-icon.bmp   
 ArchitecturesInstallIn64BitMode=
 UsePreviousAppDir=No
 
@@ -39,20 +39,20 @@ UsePreviousAppDir=No
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-Source: "datavyu-1.2\datavyu-1.2.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "datavyu-1.2\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "datavyu-1.3\datavyu-1.3.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "datavyu-1.3\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\datavyu-1.2"; Filename: "{app}\datavyu-1.2.exe"; IconFilename: "{app}\datavyu-1.2.ico"; Check: returnTrue()
+Name: "{group}\datavyu-1.3"; Filename: "{app}\datavyu-1.3.exe"; IconFilename: "{app}\datavyu-1.3.ico"; Check: returnTrue()
 Name: "{group}\Uninstall Datavyu"; Filename: "{uninstallexe}"
-Name: "{userdesktop}\Datavyu-1.2"; Filename: "{app}\datavyu-1.2.exe";  IconFilename: "{app}\datavyu-1.2.ico"; Check: returnTrue()
+Name: "{userdesktop}\Datavyu-1.3"; Filename: "{app}\datavyu-1.3.exe";  IconFilename: "{app}\datavyu-1.3.ico"; Check: returnTrue()
 
 [Run]
-Filename: "{app}\datavyu-1.2.exe"; Description: "{cm:LaunchProgram,datavyu-1.2}"; Flags: nowait postinstall skipifsilent; Check: returnTrue()
-Filename: "{app}\datavyu-1.2.exe"; Parameters: "-install -svcName ""datavyu-1.2"" -svcDesc ""datavyu-1.2"" -mainExe ""datavyu-1.2.exe""  "; Check: returnFalse()
+Filename: "{app}\datavyu-1.3.exe"; Description: "{cm:LaunchProgram,datavyu-1.3}"; Flags: nowait postinstall skipifsilent; Check: returnTrue()
+Filename: "{app}\datavyu-1.3.exe"; Parameters: "-install -svcName ""datavyu-1.3"" -svcDesc ""datavyu-1.3"" -mainExe ""datavyu-1.3.exe""  "; Check: returnFalse()
 
 [UninstallRun]
-Filename: "{app}\datavyu-1.2.exe "; Parameters: "-uninstall -svcName datavyu-1.2 -stopOnUninstall"; Check: returnFalse()
+Filename: "{app}\datavyu-1.3.exe "; Parameters: "-uninstall -svcName datavyu-1.3 -stopOnUninstall"; Check: returnFalse()
 
 [Code]
 function returnTrue(): Boolean;
