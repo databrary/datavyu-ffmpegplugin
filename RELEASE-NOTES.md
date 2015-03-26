@@ -2,11 +2,11 @@
 ## 3/16/2015
 
 ### Additions 
-* Datavyu now works on Yosemite OSX! 
 * Datavyu's packaging now includes Java so users no longer have to download it separately
 * Check out Karen Adolph's [Best Practices for Coding Behavioral Data](http://datavyu.org/user-guide/best-practices.html) on our User Guide
 
 ### Bug Fixes
+* Datavyu now works on Yosemite OSX! 
 * Adding a coded spreadsheet to Datavyu will replace the Untitled Blank document to eliminate potential saving issues
 * Closing tabs no longer requires additional saving 
 
