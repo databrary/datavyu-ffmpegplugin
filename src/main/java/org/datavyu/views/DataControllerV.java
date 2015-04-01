@@ -576,7 +576,7 @@ public final class DataControllerV extends DatavyuDialog
                          */
 
                         if (!v.isPlaying() && isWithinPlayRange(time, v)) {
-                            v.seekTo(time - v.getOffset());
+                            //v.seekTo(time - v.getOffset());
                             v.play();
                         }
 

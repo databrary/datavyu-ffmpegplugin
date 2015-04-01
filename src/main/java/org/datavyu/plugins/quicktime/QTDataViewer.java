@@ -138,6 +138,8 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
             // rendered as blank if the QT component is added before the window
             // is displayable/visible
             add(QTFactory.makeQTComponent(movie).asComponent());
+//            visualMedia.loadIntoRam(0, (int)getDuration()+500, StdQTConstants.unkeepInRam);
+            seekTo(0L);
         } catch (QTException e) {
             LOGGER.error("Unable to setVideoFile", e);
         }
@@ -228,9 +230,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     @Override
     public void play() {
         super.play();
-
         try {
-
             if (movie != null) {
                 movie.setRate(getPlaybackSpeed());
             }
@@ -250,6 +250,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
             if (movie != null) {
                 movie.stop();
+//                movie.setRate(0);
             }
         } catch (QTException e) {
             LOGGER.error("Unable to stop", e);
@@ -264,7 +265,8 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 
         try {
 
-            if (movie != null) {
+            stop();
+            if (movie != null && position != getCurrentTime()) {
                 TimeRecord time = new TimeRecord(Constants.TICKS_PER_SECOND,
                         Math.min(Math.max(position, 0), getDuration() - 1));
                 movie.setTime(time);
