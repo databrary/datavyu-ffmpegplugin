@@ -446,6 +446,9 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
 
         System.out.println("FPS:");
         System.out.println(fps);
+
+        // Try to display the first frame
+        seekTo(0L);
     }
 
     /**
