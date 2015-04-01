@@ -2184,7 +2184,12 @@ public final class DataControllerV extends DatavyuDialog
      * @param step Milliseconds to jump.
      */
     private void jump(final long step) {
-        clock.stepTime(step);
+        if ((clock.getTime() + step) > playbackModel.getWindowPlayStart()) {
+            stopAction();
+            clock.stepTime(step);
+        } else {
+            jumpTo(playbackModel.getWindowPlayStart());
+        }
     }
 
     /**
