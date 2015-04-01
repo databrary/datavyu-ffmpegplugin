@@ -1,3 +1,18 @@
+# Datavyu 1.3 Pre-Release Notes 
+## 3/16/2015
+
+### Additions 
+* Datavyu's packaging now includes Java so users no longer have to download it separately
+* Check out Karen Adolph's [Best Practices for Coding Behavioral Data](http://datavyu.org/user-guide/best-practices.html) on our User Guide
+
+### Bug Fixes
+* Datavyu now works on OS X 10.10 Yosemite! 
+* Adding a coded spreadsheet to Datavyu will replace the Untitled Blank document to eliminate potential saving issues
+* Closing tabs no longer requires additional saving 
+
+
+
+
 # Announcements
 ## 1/20/2015
 
@@ -8,7 +23,7 @@
 * Can't seem to hold down jog while navigating your video? All you have to do is go to your Terminal (found in your Hard       Drive/Applications/Utilities folder) and enter the following: defaults write -g ApplePressAndHoldEnabled -bool false
 
 
-# Datavyu Pre-release Notes
+# Datavyu 1.2.2 Pre-release Notes
 ## 9/25/14
 
 ### Additions
@@ -21,7 +36,6 @@
 * You can have a file, save it as a different name and open both files in datavyu
 * Point cell no longer changes the previous cell’s offset
 * Undo history works when adding a cell
-* Point cell no longer changes the previous cell's offset
 * You can no longer open two of the same spreadsheets at once 
 
 ### Known Issues
