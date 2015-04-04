@@ -740,9 +740,13 @@ public final class DataControllerV extends DatavyuDialog
 
         for (DataViewer viewer : viewers) {
 
-//            System.out.println(time);
-            if (isWithinPlayRange(time, viewer)) {
-                viewer.seekTo(time - viewer.getOffset());
+            System.out.println(time);
+            try {
+                if (isWithinPlayRange(time, viewer) && time != viewer.getCurrentTime()) {
+                    viewer.seekTo(time - viewer.getOffset());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -2261,5 +2265,9 @@ public final class DataControllerV extends DatavyuDialog
 
     public float getCurrentFPS() {
         return playbackModel.getCurrentFPS();
+    }
+
+    public ClockTimer getClock() {
+        return clock;
     }
 }

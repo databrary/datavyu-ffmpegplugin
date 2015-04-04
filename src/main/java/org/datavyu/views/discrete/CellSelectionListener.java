@@ -34,6 +34,8 @@ public interface CellSelectionListener {
      */
     void addCellToContinousSelection(SpreadsheetCell cell);
 
+    void removeCellFromSelection(SpreadsheetCell cell);
+
     /**
      * Sets the currently selected cell.
      *
@@ -45,6 +47,6 @@ public interface CellSelectionListener {
      * Notifiers the listeners to clear all the currently selected cells.
      */
     void clearCellSelection();
-    
+
     void clearColumnSelection();
 }

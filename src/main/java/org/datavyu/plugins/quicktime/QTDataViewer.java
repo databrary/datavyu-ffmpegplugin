@@ -141,7 +141,8 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
 //            visualMedia.loadIntoRam(0, (int)getDuration()+500, StdQTConstants.unkeepInRam);
             seekTo(0L);
         } catch (QTException e) {
-            LOGGER.error("Unable to setVideoFile", e);
+//            LOGGER.error("Unable to setVideoFile", e);
+            e.printStackTrace();
         }
     }
 

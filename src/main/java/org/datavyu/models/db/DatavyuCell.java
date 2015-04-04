@@ -107,6 +107,15 @@ public class DatavyuCell implements Cell {
     }
 
     @Override
+    public void setOffset(final long newOffset) {
+        if (newOffset != offset) parent.getOwningDatastore().markDBAsChanged();
+        offset = newOffset;
+        for (CellListener cl : getListeners(getID())) {
+            cl.offsetChanged(offset);
+        }
+    }
+
+    @Override
     public void setOffset(final String newOffset) {
         setOffset(convertTimestampToMS(newOffset));
     }
@@ -117,17 +126,13 @@ public class DatavyuCell implements Cell {
     }
 
     @Override
-    public void setOffset(final long newOffset) {
-        if (newOffset != offset) parent.getOwningDatastore().markDBAsChanged();
-        offset = newOffset;
-        for (CellListener cl : getListeners(getID())) {
-            cl.offsetChanged(offset);
-        }
+    public long getOnset() {
+        return onset;
     }
 
     @Override
-    public long getOnset() {
-        return onset;
+    public void setOnset(final String newOnset) {
+        setOnset(convertTimestampToMS(newOnset));
     }
 
     @Override
@@ -143,11 +148,6 @@ public class DatavyuCell implements Cell {
     public String getOnsetString() {
         return convertMStoTimestamp(onset);
 
-    }
-
-    @Override
-    public void setOnset(final String newOnset) {
-        setOnset(convertTimestampToMS(newOnset));
     }
 
     @Override
@@ -277,6 +277,15 @@ public class DatavyuCell implements Cell {
         DatavyuCell otherC = (DatavyuCell) other;
 
         if (otherC.getID().toString().equals(this.getID().toString())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isInTimeWindow(long time) {
+        if (time >= getOnset() && time < getOffset()) {
             return true;
         } else {
             return false;

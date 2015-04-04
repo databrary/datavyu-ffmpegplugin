@@ -219,16 +219,6 @@ public final class ClockTimer {
      */
     private synchronized void tick() {
 
-        if (!isStopped) {
-            long currentNano = System.nanoTime();
-            time += rate * (currentNano - nanoTime) / NANO_IN_MILLI;
-            nanoTime = currentNano;
-
-            notifyTick();
-        }
-
-        // Notify listeners if the clock has started or stopped since the last
-        // tick.
         if (oldIsStopped != isStopped) {
 
             if (isStopped) {
@@ -239,6 +229,18 @@ public final class ClockTimer {
 
             oldIsStopped = isStopped;
         }
+
+        if (!isStopped) {
+            long currentNano = System.nanoTime();
+            time += rate * (currentNano - nanoTime) / NANO_IN_MILLI;
+            nanoTime = currentNano;
+
+            notifyTick();
+        }
+
+        // Notify listeners if the clock has started or stopped since the last
+        // tick.
+
     }
 
     //

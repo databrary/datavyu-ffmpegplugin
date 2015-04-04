@@ -1330,8 +1330,10 @@ public final class DatavyuView extends FrameView
         task.execute();
         try {
             ProjectController p = task.get();
-            if (p != null)
+            if (p != null) {
+                Datavyu.setProjectController(p);
                 createNewSpreadsheet(p);
+            }
 
             progressBar.close();
         } catch (Exception e) {
@@ -1566,12 +1568,18 @@ public final class DatavyuView extends FrameView
     }
 
     public ProjectController createNewSpreadsheet(ProjectController pc) {
+        Datavyu.setProjectController(pc);
+
+        // Data controller needs to be registered before load for the cell positioning highlighting
+        DataControllerV dcv = new DataControllerV(Datavyu.getApplication().getMainFrame(), false);
+        Datavyu.setDataController(dcv);
+
+
         pc.setSpreadsheetPanel(new SpreadsheetPanel(pc, null));
         SpreadsheetPanel panel = pc.getSpreadsheetPanel();
         panel.registerListeners();
         panel.addFileDropEventListener(this);
-        panel.setDataController(new DataControllerV(Datavyu.getApplication().getMainFrame(), false));
-        Datavyu.setProjectController(panel.getProjectController());
+        panel.setDataController(dcv);
 
         tabbedPane.add(panel);
         tabbedPane.setTabComponentAt(tabbedPane.indexOfComponent(panel), new TabWithCloseButton(tabbedPane));

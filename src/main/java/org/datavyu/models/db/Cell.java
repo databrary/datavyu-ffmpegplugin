@@ -43,19 +43,19 @@ public interface Cell {
     /**
      * Sets the offset for this cell.
      *
+     * @param newOffset The new offset timestamp in milliseconds to use for this
+     *                  cell.
+     */
+    void setOffset(final long newOffset);
+
+    /**
+     * Sets the offset for this cell.
+     *
      * @param newOffset The new onset timestamp for this cell in string in the
      *                  format "HH:MM:SS:mmm" where HH = hours, MM = minutes, SS = seconds and
      *                  mmm = milliseconds.
      */
     void setOffset(final String newOffset);
-
-    /**
-     * Sets the offset for this cell.
-     *
-     * @param newOffset The new offset timestamp in milliseconds to use for this
-     *                  cell.
-     */
-    void setOffset(final long newOffset);
 
     /**
      * @return The onset timestamp in milliseconds. Returns -1 if the onset
@@ -65,6 +65,15 @@ public interface Cell {
     Cell getFreshCell();
 
     long getOnset();
+
+    /**
+     * Sets the onset for this cell.
+     *
+     * @param newOnset The new onset timestamp for this cell in string in the
+     *                 format "HH:MM:SS:mmm" where HH = hours, MM = minutes, SS = seconds and
+     *                 mmm = milliseconds.
+     */
+    void setOnset(final String newOnset);
 
     /**
      * Sets the onset for this cell.
@@ -80,15 +89,6 @@ public interface Cell {
      * milliseconds in a second.
      */
     String getOnsetString();
-
-    /**
-     * Sets the onset for this cell.
-     *
-     * @param newOnset The new onset timestamp for this cell in string in the
-     *                 format "HH:MM:SS:mmm" where HH = hours, MM = minutes, SS = seconds and
-     *                 mmm = milliseconds.
-     */
-    void setOnset(final String newOnset);
 
     /**
      * @return The value stored in the cell as a string. Returns null if the
@@ -181,4 +181,6 @@ public interface Cell {
      * the cell changes.
      */
     void removeListener(final CellListener listener);
+
+    boolean isInTimeWindow(long time);
 }

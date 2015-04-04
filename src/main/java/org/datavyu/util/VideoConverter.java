@@ -14,6 +14,7 @@ import javafx.scene.image.WritablePixelFormat;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import uk.co.caprica.vlcj.component.DirectMediaPlayerComponent;
+import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -31,6 +32,10 @@ import java.nio.ByteBuffer;
  * @author jesse
  */
 public class VideoConverter extends Application {
+
+    static {
+        new NativeDiscovery().discover();
+    }
 
     /**
      * Target width, unless {@link #useSourceSize} is set.
@@ -90,9 +95,13 @@ public class VideoConverter extends Application {
 
     public void ConvertVideo(File infile, File outfile, final JProgressBar progressBar) {
 //        :sout=#transcode{vcodec=mp4v,vb=1024,acodec=mp4a,ab=192}:standard{mux=mp4,access=file{no-overwrite},dst=/Users/jesse/Desktop/test.mp4}
-        String[] libvlcArgs = {"-vvvvv", "--no-plugins-cache", ":sout=#transcode{venc=x264{profile=baseline}," +
-                "vcodec=mp4v,vfilter=canvas{padd=true},aenc=ffmpeg{strict=-2},acodec=mp4a,ab=192,channels=2"
-                + "}:standard{access=file,mux=mp4,dst="
+//        String[] libvlcArgs = {"-vvvvv", "--no-plugins-cache", ":sout=#transcode{venc=x264{profile=baseline}," +
+//                "vcodec=mp4v,vfilter=canvas{padd=true},aenc=ffmpeg{strict=-2},acodec=mp4a,ab=192,channels=2"
+//                + "}:standard{access=file,mux=mp4,dst="
+//                + outfile.getAbsolutePath() + "}"};
+        String[] libvlcArgs = {"-vvvvv", ":sout=#transcode{" +
+                "vcodec=h264,vb=1200,aenc=ffmpeg{strict=-2},acodec=mp4a,ab=192,channels=2,samplerate=44100,deinterlace,audio-sync,scale=1"
+                + "}:standard{access=file,dst="
                 + outfile.getAbsolutePath() + "}"};
 
         mediaPlayerComponent = new MediaPlayerFactory(libvlcArgs).newDirectMediaPlayer(new TestBufferFormatCallback(), new RenderCallback() {
@@ -163,7 +172,8 @@ public class VideoConverter extends Application {
         scene = new Scene(borderPane);
 
         primaryStage.setScene(scene);
-        primaryStage.show();
+//        primaryStage.show();
+//        primaryStage.hide();
 
     }
 

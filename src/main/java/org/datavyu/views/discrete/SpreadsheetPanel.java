@@ -67,89 +67,73 @@ public final class SpreadsheetPanel extends JPanel
         KeyEventDispatcher {
 
     /**
-     * The current project.
-     */
-    private ProjectController projectController;
-
-    private DataControllerV dataController;
-
-    /**
      * To use when navigating left.
      */
     static final int LEFT_DIR = -1;
-
     /**
      * To use when navigating right.
      */
     static final int RIGHT_DIR = 1;
-
-    /**
-     * Scrollable view inserted into the JScrollPane.
-     */
-    private SpreadsheetView mainView;
-
-    /**
-     * View showing the Column titles.
-     */
-    private JPanel headerView;
-    
-    //WR WANT TO RIGHT JUSTIFY THIS
-    //private final SpringLayout.Constraints HIDDEN_VARS_CONSTRAINTS = SpringLayout.Constraints(Spring(SpringLayout.WEST),SpringLayout.VERTICAL_CENTER);
-
-    /**
-     * The Database being viewed.
-     */
-    private Datastore datastore;
-
-    /**
-     * Vector of the Spreadsheetcolumns added to the Spreadsheet.
-     */
-    private List<SpreadsheetColumn> columns;
-
     /**
      * The logger for this class.
      */
     private static final Logger LOGGER = UserMetrix.getLogger(SpreadsheetPanel.class);
-
+    private static int numNewSheets = 1;
+    /**
+     * List containing listeners interested in file drop events.
+     */
+    private final transient CopyOnWriteArrayList<FileDropEventListener> fileDropListeners;
+    /**
+     * The current project.
+     */
+    private ProjectController projectController;
+    
+    //WR WANT TO RIGHT JUSTIFY THIS
+    //private final SpringLayout.Constraints HIDDEN_VARS_CONSTRAINTS = SpringLayout.Constraints(Spring(SpringLayout.WEST),SpringLayout.VERTICAL_CENTER);
+    private DataControllerV dataController;
+    /**
+     * Scrollable view inserted into the JScrollPane.
+     */
+    private SpreadsheetView mainView;
+    /**
+     * View showing the Column titles.
+     */
+    private JPanel headerView;
+    /**
+     * The Database being viewed.
+     */
+    private Datastore datastore;
+    /**
+     * Vector of the Spreadsheetcolumns added to the Spreadsheet.
+     */
+    private List<SpreadsheetColumn> columns;
     /**
      * Reference to the scrollPane.
      */
     private JScrollPane scrollPane;
-
     /**
      * New variable button to be added to the column header panel.
      */
     private JButton newVar = new JButton();
     private JLabel newVarSpacer = new JLabel();
-
+    ;
     /**
      * Hidden variables button to be added to the column header panel.
      */
     private JButton hiddenVars;
     private JLabel hiddenVarsSpacer = new JLabel();
-    ;
-
     /**
      * The currently highlighted cell.
      */
     private SpreadsheetCell highlightedCell;
-
     /**
      * Last selected cell - used as an end point for continuous selections.
      */
     private SpreadsheetCell lastSelectedCell;
-
     /**
      * The layout that is currently being used.
      */
     private SheetLayoutType currentLayoutType;
-
-    private static int numNewSheets = 1;
-
-    /**
-     * List containing listeners interested in file drop events.
-     */
-    private final transient CopyOnWriteArrayList<FileDropEventListener> fileDropListeners;
 
     //    public SpreadsheetPanel(final Datastore db, DVProgressBar progressBar) {
 //        ProjectController pc = new ProjectController(null, this);
@@ -223,8 +207,8 @@ public final class SpreadsheetPanel extends JPanel
 
 
         //layout the columns
-        buildColumns(progressBar);
         projectController = pc;
+        buildColumns(progressBar);
         pc.setSpreadsheetPanel(this);
 
         setName(datastore.getName());
@@ -864,6 +848,18 @@ public final class SpreadsheetPanel extends JPanel
         }
 
         lastSelectedCell = cell;
+    }
+
+    @Override
+    public void removeCellFromSelection(final SpreadsheetCell cell) {
+
+        if (highlightedCell != null) {
+            highlightedCell.getCell().setSelected(false);
+            highlightedCell.getCell().setHighlighted(false);
+            highlightedCell = null;
+        }
+
+//        lastSelectedCell = cell;
     }
 
     /**
