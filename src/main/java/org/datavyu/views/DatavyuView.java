@@ -2749,7 +2749,12 @@ public final class DatavyuView extends FrameView
                     Datavyu.getProjectController().getProjectName() == null &&
                     !Datavyu.getProjectController().isChanged() &&
                     jd.getSelectedFile().exists()) {
-                tabbedPane.remove(0);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        tabbedPane.remove(0);
+                    }
+                });
             }
 
 
