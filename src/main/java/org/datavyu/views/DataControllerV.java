@@ -354,6 +354,7 @@ public final class DataControllerV extends DatavyuDialog
 
         if (Datavyu.getPlatform() == Platform.MAC) {
             osModifier = "osx";
+            setJMenuBar(((JFrame) parent).getJMenuBar());
         } else {
             osModifier = "win";
         }
