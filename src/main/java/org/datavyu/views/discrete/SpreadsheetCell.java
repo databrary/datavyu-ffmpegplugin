@@ -448,7 +448,7 @@ public class SpreadsheetCell extends JPanel
         dataPanel.requestFocusInWindow();
     }
 
-    private void updateSelectionDisplay() {
+    public void updateSelectionDisplay() {
         if (model.isHighlighted()) {
             if (cellOverlap) {
                 cellPanel.setBorder(HIGHLIGHT_OVERLAP_BORDER);
@@ -475,7 +475,7 @@ public class SpreadsheetCell extends JPanel
             cellPanel.setBackground(Configuration.getInstance().getSSBackgroundColour());
         }
 
-        if (model.isInTimeWindow(Datavyu.getDataController().getCurrentTime())) {
+        if (model.isInTimeWindow(Datavyu.getDataController().getCurrentTime()) && Datavyu.getDataController().getCellHighlighting()) {
             cellPanel.setBackground(timeHighlightColor);
         }
 

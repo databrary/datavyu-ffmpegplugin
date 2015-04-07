@@ -48,98 +48,82 @@ import java.util.Map;
 public final class MixerController implements PropertyChangeListener,
         CarriageEventListener, AdjustmentListener, TimescaleListener {
 
-    /**
-     * Root interface panel.
-     */
-    private JPanel tracksPanel;
-
-    /**
-     * Scroll pane that holds track information.
-     */
-    private JScrollPane tracksScrollPane;
-
-    /**
-     * This layered pane holds the needle painter.
-     */
-    private JLayeredPane layeredPane;
-
-    /**
-     * Zoom setting in the interval (0, 1.0) where increasing values represent "zooming in".
-     */
-    private double zoomSetting = MixerConstants.DEFAULT_ZOOM;
-
     private final int TRACKS_SCROLL_BAR_RANGE = 1000000;
-
-    /**
-     * The value of the earliest video's start time in milliseconds.
-     */
-    private long minStart;
-
-    /**
-     * Listeners interested in tracks controller events.
-     */
-    private EventListenerList listenerList;
-
-    /**
-     * Controller responsible for managing the time scale.
-     */
-    private TimescaleController timescaleController;
-
-    /**
-     * Controller responsible for managing the timing needle.
-     */
-    private NeedleController needleController;
-
-    /**
-     * Controller responsible for managing a selected region.
-     */
-    private RegionController regionController;
-
-    /**
-     * Controller responsible for managing tracks.
-     */
-    private TracksEditorController tracksEditorController;
-
-    /**
-     * Bookmark (create snap point) button.
-     */
-    private JButton bookmarkButton;
-
-    /**
-     * Button for locking and unlocking all tracks.
-     */
-    private JToggleButton lockToggle;
-
-    /**
-     * Tracks horizontal scroll bar.
-     */
-    private JScrollBar tracksScrollBar;
-    private boolean isUpdatingTracksScrollBar = false;
-
-    /**
-     * Zoom slider.
-     */
-    private JSlider zoomSlide;
-    private boolean isUpdatingZoomSlide = false;
-
     /**
      * Zoom icon.
      */
     private final ImageIcon zoomIcon = new ImageIcon(getClass().getResource(
             "/icons/magnifier.png"));
-
     /**
      * Master mixer to listen to.
      */
     private final MixerModelImpl mixerModel;
     private final ViewportModel viewportModel;
     private final RegionModel regionModel;
-
     /**
      * Listens and processes gestures on Mac OS X.
      */
     private final OSXGestureListener osxGestureListener = Platform.isMac()
             ? new OSXGestureListener() : null;
+    /**
+     * Root interface panel.
+     */
+    private JPanel tracksPanel;
+    /**
+     * Scroll pane that holds track information.
+     */
+    private JScrollPane tracksScrollPane;
+    /**
+     * This layered pane holds the needle painter.
+     */
+    private JLayeredPane layeredPane;
+    /**
+     * Zoom setting in the interval (0, 1.0) where increasing values represent "zooming in".
+     */
+    private double zoomSetting = MixerConstants.DEFAULT_ZOOM;
+    /**
+     * The value of the earliest video's start time in milliseconds.
+     */
+    private long minStart;
+    /**
+     * Listeners interested in tracks controller events.
+     */
+    private EventListenerList listenerList;
+    /**
+     * Controller responsible for managing the time scale.
+     */
+    private TimescaleController timescaleController;
+    /**
+     * Controller responsible for managing the timing needle.
+     */
+    private NeedleController needleController;
+    /**
+     * Controller responsible for managing a selected region.
+     */
+    private RegionController regionController;
+    /**
+     * Controller responsible for managing tracks.
+     */
+    private TracksEditorController tracksEditorController;
+    /**
+     * Bookmark (create snap point) button.
+     */
+    private JButton bookmarkButton;
+    /**
+     * Button for locking and unlocking all tracks.
+     */
+    private JToggleButton lockToggle;
+    /**
+     * Tracks horizontal scroll bar.
+     */
+    private JScrollBar tracksScrollBar;
+    private boolean isUpdatingTracksScrollBar = false;
+    /**
+     * Zoom slider.
+     */
+    private JSlider zoomSlide;
+    private boolean isUpdatingZoomSlide = false;
+    private JButton enableHighlight;
 
     /**
      * Create a new MixerController.
@@ -222,6 +206,14 @@ public final class MixerController implements PropertyChangeListener,
         });
         clearRegion.setName("clearRegionButton");
 
+        enableHighlight = new JButton("Enable Cell Highlighting");
+        enableHighlight.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                enableHighlightHandler(e);
+            }
+        });
+        enableHighlight.setName("enableHighlightButton");
+
         zoomSlide = new JSlider(JSlider.HORIZONTAL, 1, 1000, 1);
         zoomSlide.addChangeListener(new ChangeListener() {
             public void stateChanged(final ChangeEvent e) {
@@ -260,6 +252,7 @@ public final class MixerController implements PropertyChangeListener,
         tracksPanel.add(bookmarkButton);
         tracksPanel.add(snapRegion);
         tracksPanel.add(clearRegion);
+        tracksPanel.add(enableHighlight);
         tracksPanel.add(zoomRegionButton);
         tracksPanel.add(zoomSlide, "wrap");
 
@@ -811,6 +804,23 @@ public final class MixerController implements PropertyChangeListener,
      */
     private void clearRegionHandler(final ActionEvent e) {
         clearRegionOfInterest();
+    }
+
+    /**
+     * Enables/Disables cell highlighting.
+     *
+     * @param e The event that triggered this action.
+     */
+    private void enableHighlightHandler(final ActionEvent e) {
+        Datavyu.getDataController().toggleCellHighlighting();
+
+        if (!Datavyu.getDataController().getCellHighlighting()) {
+            enableHighlight.setText("Enable Cell Highlighting");
+        } else {
+            enableHighlight.setText("Disable Cell Highlighting");
+        }
+
+        Datavyu.getProjectController().getSpreadsheetPanel().redrawCells();
     }
 
     /**

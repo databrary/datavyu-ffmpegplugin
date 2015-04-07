@@ -271,6 +271,7 @@ public final class SpreadsheetPanel extends JPanel
         for (SpreadsheetColumn col : getColumns()) {
             for (SpreadsheetCell cell : col.getCells()) {
                 cell.valueChange(cell.getCell().getValue());
+                cell.updateSelectionDisplay();
             }
         }
     }

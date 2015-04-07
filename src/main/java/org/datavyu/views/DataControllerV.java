@@ -324,6 +324,8 @@ public final class DataControllerV extends DatavyuDialog
 
     private String osModifier;
 
+    private boolean highlightCells = false;
+
     // -------------------------------------------------------------------------
     // [initialization]
     //
@@ -2012,6 +2014,14 @@ public final class DataControllerV extends DatavyuDialog
         } catch (ParseException e) {
             LOGGER.error("unable to find within video", e);
         }
+    }
+
+    public void toggleCellHighlighting() {
+        highlightCells = !highlightCells;
+    }
+
+    public boolean getCellHighlighting() {
+        return highlightCells;
     }
 
     public void clearRegionOfInterestAction() {
