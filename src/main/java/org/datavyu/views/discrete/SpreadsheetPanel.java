@@ -983,6 +983,17 @@ public final class SpreadsheetPanel extends JPanel
         }
     }
 
+    public SpreadsheetCell getSpreadsheetCell(Cell c) {
+        for (SpreadsheetColumn v : getColumns()) {
+            for (SpreadsheetCell sc : v.getCells()) {
+                if (sc.getCell().getCellID().equals(c.getCellID())) {
+                    return sc;
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Inner class for handling file drag and drop.
      */
