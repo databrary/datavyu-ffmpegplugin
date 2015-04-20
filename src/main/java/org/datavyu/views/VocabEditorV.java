@@ -255,6 +255,7 @@ public final class VocabEditorV extends DatavyuDialog {
 
             matrixV.requestFocus();
             matrixV.rebuildContents();
+            matrixV.requestFocus();
 
             applyChanges();
             updateDialogState();

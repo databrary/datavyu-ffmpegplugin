@@ -134,40 +134,46 @@ public class JavaFXApplication extends Application {
 
     }
 
-    public void start(Stage primaryStage) {
+    public void start(final Stage primaryStage) {
         stage = primaryStage;
 
         final Media m = new Media(dataFile.toURI().toString());
         mp = new MediaPlayer(m);
-        mv = new MediaView(mp);
+        mp.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                mv = new MediaView(mp);
 
 
-        final DoubleProperty width = mv.fitWidthProperty();
-        final DoubleProperty height = mv.fitHeightProperty();
+                final DoubleProperty width = mv.fitWidthProperty();
+                final DoubleProperty height = mv.fitHeightProperty();
 
-        width.bind(Bindings.selectDouble(mv.sceneProperty(), "width"));
-        height.bind(Bindings.selectDouble(mv.sceneProperty(), "height"));
+                width.bind(Bindings.selectDouble(mv.sceneProperty(), "width"));
+                height.bind(Bindings.selectDouble(mv.sceneProperty(), "height"));
 
 
-        mv.setPreserveRatio(true);
+                mv.setPreserveRatio(true);
 
-        StackPane root = new StackPane();
-        root.getChildren().add(mv);
+                StackPane root = new StackPane();
+                root.getChildren().add(mv);
 
-        final Scene scene = new Scene(root, 960, 540);
-        scene.setFill(Color.BLACK);
+                final Scene scene = new Scene(root, 960, 540);
+                scene.setFill(Color.BLACK);
 
-        primaryStage.setScene(scene);
-        primaryStage.setTitle(dataFile.getName());
+                primaryStage.setScene(scene);
+                primaryStage.setTitle(dataFile.getName());
 //        primaryStage.setFullScreen(true);
-        primaryStage.show();
+                primaryStage.show();
 
 
-        System.out.println("Setting init to true");
-        System.out.println(mp.getTotalDuration().toMillis());
+                System.out.println("Setting init to true");
+                System.out.println(mp.getTotalDuration().toMillis());
 
-        init = true;
-        System.out.println(init);
+                init = true;
+                System.out.println(init);
+            }
+        });
+
 
     }
 

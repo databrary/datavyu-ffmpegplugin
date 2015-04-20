@@ -31,6 +31,7 @@ import quicktime.std.movies.TimeInfo;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
@@ -231,13 +232,21 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     @Override
     public void play() {
         super.play();
-        try {
-            if (movie != null) {
-                movie.setRate(getPlaybackSpeed());
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (movie != null) {
+                        movie.setRate(getPlaybackSpeed());
+                    }
+                } catch (
+                        QTException e
+                        ) {
+                    LOGGER.error("Unable to play", e);
+                }
             }
-        } catch (QTException e) {
-            LOGGER.error("Unable to play", e);
-        }
+        });
+
     }
 
     /**
@@ -246,16 +255,20 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     @Override
     public void stop() {
         super.stop();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-        try {
-
-            if (movie != null) {
-                movie.stop();
+                    if (movie != null) {
+                        movie.stop();
 //                movie.setRate(0);
+                    }
+                } catch (QTException e) {
+                    LOGGER.error("Unable to stop", e);
+                }
             }
-        } catch (QTException e) {
-            LOGGER.error("Unable to stop", e);
-        }
+        });
     }
 
     /**

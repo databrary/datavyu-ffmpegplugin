@@ -51,54 +51,6 @@ public class VocabElementV extends JPanel {
      */
     private static final Dimension ICON_SIZE = new Dimension(VE_WIDTH,
             VE_HEIGHT);
-
-    /**
-     * The label to use for if this vocab element has changed.
-     */
-    private JLabel invalidBangIcon;
-
-    /**
-     * The label to use for if this vocab element is marked for removal.
-     */
-    private JLabel deleteIcon;
-
-    /**
-     * The rootView of the VocabElement.
-     */
-    private VocabElementRootView veRootView;
-
-    /**
-     * The icon to use for if this vocab element has changed or not.
-     */
-    private ImageIcon bangIcon;
-
-    private String bangIconText;
-
-    /**
-     * Is the name currently displayed for this column invalid
-     */
-    private boolean invalidState;
-
-    /**
-     * Most recent valid name - the name currently stored in model
-     */
-    private String lastValidState;
-
-    /**
-     * Is this vocab element view marked for removal?
-     */
-    private boolean deleteVE;
-
-    /**
-     * The underlying variable model that this vocab element view represents.
-     */
-    private Variable varModel;
-
-    /**
-     * The parent editor for this vocab element view.
-     */
-    private VocabEditorV parentEditor;
-
     /**
      * Border adds a line across and a bit of space between
      */
@@ -106,17 +58,52 @@ public class VocabElementV extends JPanel {
             BorderFactory.createCompoundBorder(
                     BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY),
                     BorderFactory.createEmptyBorder(3, 0, 3, 0));
-
     /**
      * The logger for this class.
      */
     private static Logger LOGGER = UserMetrix.getLogger(VocabElementV.class);
-
     /**
      * the light blue colour used for backgrounds
      */
     private static Color lightBlue = new Color(224, 248, 255, 255);
     private static Color lightRed = new Color(255, 200, 200, 255);
+    /**
+     * The label to use for if this vocab element has changed.
+     */
+    private JLabel invalidBangIcon;
+    /**
+     * The label to use for if this vocab element is marked for removal.
+     */
+    private JLabel deleteIcon;
+    /**
+     * The rootView of the VocabElement.
+     */
+    private VocabElementRootView veRootView;
+    /**
+     * The icon to use for if this vocab element has changed or not.
+     */
+    private ImageIcon bangIcon;
+    private String bangIconText;
+    /**
+     * Is the name currently displayed for this column invalid
+     */
+    private boolean invalidState;
+    /**
+     * Most recent valid name - the name currently stored in model
+     */
+    private String lastValidState;
+    /**
+     * Is this vocab element view marked for removal?
+     */
+    private boolean deleteVE;
+    /**
+     * The underlying variable model that this vocab element view represents.
+     */
+    private Variable varModel;
+    /**
+     * The parent editor for this vocab element view.
+     */
+    private VocabEditorV parentEditor;
 
     public VocabElementV(Argument vocabArgument, Variable var, VocabEditorV vev) {
 
@@ -181,22 +168,11 @@ public class VocabElementV extends JPanel {
     }
 
     /**
-     * Replaces the model used for this vocab element view.
-     *
-     * @param vocabArgument The new model to use with this view.
-     */
-    public final void setModel(final Argument vocabArgument) {
-        varModel.setRootNode(vocabArgument);
-        this.rebuildContents();
-    }
-
-    /**
      * Updates the display of the vocab element view by rebuilding its contents.
      */
     public final void rebuildContents() {
         veRootView.setVocabElement(varModel, this);
     }
-
 
     public final void setInvalid(final boolean invalid, final String lastValidName) {
         invalidState = invalid;
@@ -250,6 +226,16 @@ public class VocabElementV extends JPanel {
      */
     public final Argument getModel() {
         return varModel.getRootNode();
+    }
+
+    /**
+     * Replaces the model used for this vocab element view.
+     *
+     * @param vocabArgument The new model to use with this view.
+     */
+    public final void setModel(final Argument vocabArgument) {
+        varModel.setRootNode(vocabArgument);
+        this.rebuildContents();
     }
 
     public final Variable getVariable() {
@@ -343,6 +329,7 @@ public class VocabElementV extends JPanel {
     @Override
     public final void requestFocus() {
         veRootView.requestFocus();
+        veRootView.getEdTracker().setEditor(getNameComponent());
     }
 
     public final void requestFocus(VENameEditor veNEd) {
