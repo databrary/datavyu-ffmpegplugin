@@ -429,7 +429,7 @@ public final class PluginManager {
                 }
             });
             for (int i = 0; i < p.size(); i++) {
-                if (p.get(i).getPluginName().equals("QuickTime Video")) {
+                if (p.get(i).getPluginName().equals("QuickTime Video") || p.get(i).getPluginName().equals("VLC Video")) {
                     p.remove(i);
                     break;
                 }
