@@ -42,8 +42,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Stack;
 
@@ -54,6 +57,39 @@ public final class Datavyu extends SingleFrameApplication
         implements KeyEventDispatcher, TitleNotifier {
 
     private static final NativeLibraryManager nlm;
+    /**
+     * The desired minimum initial width.
+     */
+    private static final int INITMINX = 600;
+    /**
+     * The desired minimum initial height.
+     */
+    private static final int INITMINY = 700;
+    public static boolean scriptRunning = false;
+    private static boolean osxPressAndHoldEnabled;
+    /**
+     * Constant variable for the Datavyu main panel. This is so we can send
+     * keyboard shortcuts to it while the QTController is in focus. It actually
+     * get initialized in startup().
+     */
+    private static DatavyuView VIEW;
+    /**
+     * The scripting engine manager that we use with Datavyu.
+     */
+    private static ScriptEngineManager m2;
+    /**
+     * The scripting engine factory that we use with Datavyu
+     */
+    private static ScriptEngineFactory sef;
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = UserMetrix.getLogger(Datavyu.class);
+    /**
+     * The view to use for the quick time video controller.
+     */
+    private static DataControllerV dataController;
+    private static ProjectController projectController;
 
     /** Load required native libraries (JNI). */
     static {
@@ -99,10 +135,14 @@ public final class Datavyu extends SingleFrameApplication
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                if (getOSXPressAndHoldValue()) {
+                    osxPressAndHoldEnabled = true;
+                    setOSXPressAndHoldValue(false);
+                }
+
             case WINDOWS:
                 try {
-                    if (System.getProperty("sun.arch.data.model").equals("32"))
-                    {
+                    if (System.getProperty("sun.arch.data.model").equals("32")) {
                         NativeLoader.LoadNativeLib("QTJNative");
                         NativeLoader.LoadNativeLib("QTJavaNative");
                         System.out.println(System.getProperty("java.library.path"));
@@ -123,39 +163,7 @@ public final class Datavyu extends SingleFrameApplication
 //        System.setProperty("jna.library.path", "/Applications/VLC.app/Contents/MacOS/lib/vlc/lib");
 //        System.setProperty("VLC_PLUGIN_PATH", "/Applications/VLC.app/Contents/MacOS/plugins");
     }
-    /**
-     * The desired minimum initial width.
-     */
-    private static final int INITMINX = 600;
-    /**
-     * The desired minimum initial height.
-     */
-    private static final int INITMINY = 700;
 
-    public static boolean scriptRunning = false;
-    /**
-     * Constant variable for the Datavyu main panel. This is so we can send
-     * keyboard shortcuts to it while the QTController is in focus. It actually
-     * get initialized in startup().
-     */
-    private static DatavyuView VIEW;
-    /**
-     * The scripting engine manager that we use with Datavyu.
-     */
-    private static ScriptEngineManager m2;
-    /**
-     * The scripting engine factory that we use with Datavyu
-     */
-    private static ScriptEngineFactory sef;
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(Datavyu.class);
-    /**
-     * The view to use for the quick time video controller.
-     */
-    private static DataControllerV dataController;
-    private static ProjectController projectController;
     public boolean ready = false;
     /**
      * The scripting engine that we use with Datavyu.
@@ -269,6 +277,79 @@ public final class Datavyu extends SingleFrameApplication
         }
 
         return Platform.UNKNOWN;
+    }
+
+    private static boolean getOSXPressAndHoldValue() {
+        Runtime rt = Runtime.getRuntime();
+        String[] commands = {"defaults", "read", "-g ApplePressAndHoldEnabled"};
+        try {
+            Process process =
+                    new ProcessBuilder(new String[]{"bash", "-c", "defaults read -g ApplePressAndHoldEnabled"})
+                            .redirectErrorStream(true)
+                            .directory(new File("./"))
+                            .start();
+
+            ArrayList<String> output = new ArrayList<String>();
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+            String line = null;
+            while ((line = br.readLine()) != null)
+                output.add(line);
+
+            if (output.size() > 0 && output.get(0).equals("0")) {
+                return false;
+            } else {
+//                osxPressAndHoldEnabled = true;
+                return true;
+            }
+
+            //There should really be a timeout here.
+//            if (0 != process.waitFor())
+//                return null;
+
+//            return output;
+
+        } catch (Exception e) {
+            //Warning: doing this is no good in high quality applications.
+            //Instead, present appropriate error messages to the user.
+            //But it's perfectly fine for prototyping.
+
+//            return null;
+        }
+
+        return true;
+    }
+
+    private static void setOSXPressAndHoldValue(boolean bool) {
+        String strVal;
+        if (bool) {
+            strVal = "true";
+        } else {
+            strVal = "false";
+        }
+        try {
+            Process process =
+                    new ProcessBuilder(new String[]{"bash", "-c", "defaults write -g ApplePressAndHoldEnabled -bool " + strVal})
+                            .redirectErrorStream(true)
+                            .directory(new File("./"))
+                            .start();
+
+            ArrayList<String> output = new ArrayList<String>();
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+            String line = null;
+            while ((line = br.readLine()) != null)
+                output.add(line);
+
+        } catch (Exception e) {
+            //Warning: doing this is no good in high quality applications.
+            //Instead, present appropriate error messages to the user.
+            //But it's perfectly fine for prototyping.
+
+//            return null;
+        }
+
+//        return true;
     }
 
     /**
@@ -914,6 +995,8 @@ public final class Datavyu extends SingleFrameApplication
      */
     @Override
     protected void end() {
+
+
         Datavyu.getApplication().getMainFrame().setVisible(false);
         UserMetrix.shutdown();
         shutdown();
@@ -1098,6 +1181,10 @@ public final class Datavyu extends SingleFrameApplication
      */
     @Override
     public void shutdown() {
+        if (getPlatform() == Platform.MAC && osxPressAndHoldEnabled) {
+            setOSXPressAndHoldValue(true);
+        }
+
         NativeLoader.cleanAllTmpFiles();
         nlm.purge();
         super.shutdown();
