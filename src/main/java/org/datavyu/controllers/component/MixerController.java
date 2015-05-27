@@ -165,7 +165,7 @@ public final class MixerController implements PropertyChangeListener,
         // Set up the root panel
         tracksPanel = new JPanel();
         tracksPanel.setLayout(new MigLayout("ins 0",
-                "[left|left|left|left]rel push[right|right]", ""));
+                "[left|left|left]rel push[right|right] [left|left]", ""));
         tracksPanel.setBackground(Color.WHITE);
 
         if (Platform.isMac()) {
@@ -248,13 +248,13 @@ public final class MixerController implements PropertyChangeListener,
         });
         zoomRegionButton.setName("zoomRegionButton");
 
-        tracksPanel.add(lockToggle);
         tracksPanel.add(bookmarkButton);
         tracksPanel.add(snapRegion);
-        tracksPanel.add(clearRegion);
-        tracksPanel.add(enableHighlight);
+        tracksPanel.add(lockToggle);
         tracksPanel.add(zoomRegionButton);
         tracksPanel.add(zoomSlide, "wrap");
+        tracksPanel.add(enableHighlight);
+        tracksPanel.add(clearRegion, "wrap");
 
         timescaleController = new TimescaleController(mixerModel);
         timescaleController.addTimescaleEventListener(this);
