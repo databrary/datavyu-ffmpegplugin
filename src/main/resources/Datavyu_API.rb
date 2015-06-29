@@ -276,6 +276,17 @@ class RCell
 			return false
 		end
 	end
+
+	#-------------------------------------------------------------------
+	# Method name: duration
+	# Function: Return the duration of this cell
+	# Arguments: None
+	# Usage:
+	# 	duration = myCell.duration
+	#-------------------------------------------------------------------
+	def duration
+		return @offset - @onset
+	end
 end
 
 #-------------------------------------------------------------------
