@@ -2070,11 +2070,3 @@ end
 def deleteCell(cell)
 	cell.db_cell.getVariable.removeCell(cell.db_cell)
 end
-###################################################################################
-# USER EDITABLE SECTION.  PLEASE PLACE YOUR SCRIPT BETWEEN BEGIN AND END BELOW.
-# #################################################################################
-
-
-begin
-	#$debug=true
-end
