@@ -8,7 +8,7 @@
 #                 during argument rewrite
 # 1.06 2/4/14 - Updated to work with new DB, added function for deleting cells
 # 1.05 1/3/14 - Fixed the loadMacshapaDB function so it now works properly with CLOSED files
-# 1.041 12/11/13 - Updated function names to be consistent with new terminology 
+# 1.041 12/11/13 - Updated function names to be consistent with new terminology
 #                  ('variable' functions renamed to 'column', 'arg' to code').
 #                  Old names will still work.
 # 1.04 11/25/13 - Fixed mutex function which was failing in some cases
@@ -454,7 +454,7 @@ end
 def getVariable(name)
 
 	var = $db.getVariable(name)
-	if (var == nil) 
+	if (var == nil)
 		printNoColumnFoundWarning(name.to_s)
 		return nil
 	end
@@ -1218,8 +1218,8 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
 		for j in v1idx..var1.cells.length-1
 			c = var1.cells[j]
 			v1cell = nil
-			if $debug 
-				p "---", "T1", t0, t1, c.onset, c.offset, "---" 
+			if $debug
+				p "---", "T1", t0, t1, c.onset, c.offset, "---"
 			end
 			if c.onset <= t0 and c.offset >= t1 and ( t1-t0 > 1 or (c.onset==t0 and c.offset==t1) )
 				v1cell = c
@@ -1249,7 +1249,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
 			end
 		end
 
-		if v1cell != nil or v2cell != nil 
+		if v1cell != nil or v2cell != nil
 			mutex_cell = mutex.create_cell
 
 			mutex_cell.change_arg("onset", t0)
@@ -1443,7 +1443,7 @@ def deleteVariable(colname)
 		colname = colname.name
 	end
 	col = $db.getVariable(colname)
-	if (col == nil) 
+	if (col == nil)
 		printNoColumnFoundWarning(colname.to_s)
 	end
 	$db.removeVariable(col)
@@ -2078,4 +2078,3 @@ end
 begin
 	#$debug=true
 end
-
