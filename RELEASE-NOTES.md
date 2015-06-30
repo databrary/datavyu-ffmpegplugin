@@ -3,14 +3,20 @@
 
 ### Additions 
 * Datavyu's packaging now includes Java so users no longer have to download it separately
+* Added a progress bar to the video conversion tool
+* Highlighting can now show you where your video is playing across the spreadsheet. Enable highlighting on the Controller. 
 * Check out Karen Adolph's [Best Practices for Coding Behavioral Data](http://datavyu.org/user-guide/best-practices.html) on our User Guide
 
 ### Bug Fixes
 * Datavyu now works on OS X 10.10 Yosemite! 
 * Adding a coded spreadsheet to Datavyu will replace the Untitled Blank document to eliminate potential saving issues
 * Closing tabs no longer requires additional saving 
+* Adding cells to the right or left keeps the spreadsheet focus 
+* Windows: initial video frame should be seen on the video
 
-
+### Known issues: 
+* Hitting undo after running a script causes the spreadsheet to delete data
+* Video lag might occur with high definition videos. Please try out the different video plugins to see which works best for your videos. 
 
 
 # Announcements
