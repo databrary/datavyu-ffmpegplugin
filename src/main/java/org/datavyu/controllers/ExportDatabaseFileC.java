@@ -130,13 +130,15 @@ public final class ExportDatabaseFileC {
             while (current_time <= last_time) {
                 // Update the currentIndex list
                 for (int i = 0; i < variables.size(); i++) {
-                    Cell c = cellCache.get(i).get(currentIndex[i]);
-                    if (current_time > c.getOffset()) {
-                        
-                        for (int j = currentIndex[i]; j < cellCache.get(i).size(); j++) {
-                            Cell nextCell = cellCache.get(i).get(j);
-                            if (current_time >= nextCell.getOnset()) {
-                                currentIndex[i] = j;
+                    if (!cellCache.get(i).isEmpty()) {
+                        Cell c = cellCache.get(i).get(currentIndex[i]);
+                        if (current_time > c.getOffset()) {
+
+                            for (int j = currentIndex[i]; j < cellCache.get(i).size(); j++) {
+                                Cell nextCell = cellCache.get(i).get(j);
+                                if (current_time >= nextCell.getOnset()) {
+                                    currentIndex[i] = j;
+                                }
                             }
                         }
                     }
@@ -147,58 +149,62 @@ public final class ExportDatabaseFileC {
                 String row = Integer.toString(framenum) + "," +
                         Long.toString(current_time) + ",";
                 for (int i = 0; i < variables.size(); i++) {
-                    Cell cell = cellCache.get(i).get(currentIndex[i]);
+                    if (!cellCache.get(i).isEmpty()) {
 
-                    if (cell.getOnset() <= current_time && cell.getOffset() >= current_time) {
+                        Cell cell = cellCache.get(i).get(currentIndex[i]);
 
-                        Value value = cell.getValue();
+                        if (cell.getOnset() <= current_time && cell.getOffset() >= current_time) {
 
-                        // Print ordinal, onset, offset
-                        row += Integer.toString(currentIndex[i]+1) + "," +
-                                Long.toString(cell.getOnset()) + "," +
-                                Long.toString(cell.getOffset());
+                            Value value = cell.getValue();
+
+                            // Print ordinal, onset, offset
+                            row += Integer.toString(currentIndex[i] + 1) + "," +
+                                    Long.toString(cell.getOnset()) + "," +
+                                    Long.toString(cell.getOffset());
 
 
-                        if (value instanceof MatrixValue) {
-                            // Then this is a matrix value, get the sub arguments
-                            MatrixValue mv = (MatrixValue) value;
-                            for (Value v : mv.getArguments()) {
-                                // Loop over each value and print it with a comma
-                                // seperator
-                                row += "," + StringUtils.escapeCSVQuotes(v.toString());
+                            if (value instanceof MatrixValue) {
+                                // Then this is a matrix value, get the sub arguments
+                                MatrixValue mv = (MatrixValue) value;
+                                for (Value v : mv.getArguments()) {
+                                    // Loop over each value and print it with a comma
+                                    // seperator
+                                    row += "," + StringUtils.escapeCSVQuotes(v.toString());
+                                }
+                            } else {
+                                // Otherwise just print the single argument
+                                row += "," + StringUtils.escapeCSVQuotes(cell.getValue().toString());
                             }
+                            row += ",";
+
                         } else {
-                            // Otherwise just print the single argument
-                            row += "," + StringUtils.escapeCSVQuotes(cell.getValue().toString());
-                        }
-                        row += ",";
-                        
-                    } else {
-                        // Figure out what to print if we don't have a cell here
-                        Value value = cell.getValue();
+                            // Figure out what to print if we don't have a cell here
+                            Value value = cell.getValue();
 
-                        // Print ordinal, onset, offset
-                        row += ",,";
+                            // Print ordinal, onset, offset
+                            row += ",,";
 
 
-                        if (value instanceof MatrixValue) {
-                            // Then this is a matrix value, get the sub arguments
-                            MatrixValue mv = (MatrixValue) value;
-                            for (Value v : mv.getArguments()) {
-                                // Loop over each value and print it with a comma
-                                // seperator
+                            if (value instanceof MatrixValue) {
+                                // Then this is a matrix value, get the sub arguments
+                                MatrixValue mv = (MatrixValue) value;
+                                for (Value v : mv.getArguments()) {
+                                    // Loop over each value and print it with a comma
+                                    // seperator
+                                    row += ",";
+                                }
+                            } else {
+                                // Otherwise just print the single argument
                                 row += ",";
                             }
-                        } else {
-                            // Otherwise just print the single argument
                             row += ",";
                         }
-                        row += ",";
                     }
+                    ps.println(row);
+                    current_time += 1000.0 / framerate;
+                    ++framenum;
                 }
-                ps.println(row);
-                current_time += 1000.0 / framerate;
-                ++framenum;
+
             }
 
             fos.close();
