@@ -291,5 +291,11 @@ public class DatavyuCell implements Cell {
             return false;
         }
     }
+    
+    @Override
+    /* Print string representation of this cell. */
+    public String toString(){
+        return "[" +onset+ "," + offset + "," + getValueAsString()+ "]";
+    }
 }
 
