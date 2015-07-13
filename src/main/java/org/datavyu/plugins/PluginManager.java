@@ -49,6 +49,8 @@ public final class PluginManager {
     /**
      * A reference to the interface that plugins must override.
      */
+
+    /* WARNING: PLUGIN_CLASS, static { PLUGIN_CLASS }, and LOGGER and INSTANCE MUST APPEAR IN THIS ORDER */
     private static final Class<?> PLUGIN_CLASS;
 
     //
