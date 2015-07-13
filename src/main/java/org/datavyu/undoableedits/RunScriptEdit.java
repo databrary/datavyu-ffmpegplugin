@@ -24,6 +24,7 @@ import org.datavyu.models.db.Variable;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -81,6 +82,10 @@ public class RunScriptEdit extends SpreadsheetEdit {
 
     private void setSpreadsheetState(List<VariableTO> varsTO) {
         try {
+            HashMap<String, Boolean> hiddenStates = new HashMap<String, Boolean>();
+            for (Variable v : model.getAllVariables()) {
+                hiddenStates.put(v.getName(), v.isHidden());
+            }
             new DeleteColumnC(new ArrayList<Variable>(model.getAllVariables()));
 
             for (VariableTO varTO : varsTO) {
@@ -93,6 +98,9 @@ public class RunScriptEdit extends SpreadsheetEdit {
                     c.setOffset(cellTO.getOffset());
                     c.getValue().set(cellTO.getValue());
                 }
+            }
+            for (Variable v : model.getAllVariables()) {
+                v.setHidden(hiddenStates.get(v.getName()));
             }
         } catch (UserWarningException uwe) {
             LOGGER.error("Unable to set spreadsheet state", uwe);
