@@ -1120,13 +1120,6 @@ public final class Datavyu extends SingleFrameApplication
         show(VIEW);
         VIEW.getFileSplitPane().setDividerLocation(0.75);
 
-        // Now that datavyu is up - we may need to ask the user if can send
-        // gather logs.
-//        if (Configuration.getInstance().getCanSendLogs() == null) {
-//            LOGGER.info("show usermetrix dialog");
-//            show(new LogManagerV(VIEW.getFrame(), true));
-//        }
-
         // BugzID:435 - Correct size if a small size is detected.
         int width = (int) getMainFrame().getSize().getWidth();
         int height = (int) getMainFrame().getSize().getHeight();
