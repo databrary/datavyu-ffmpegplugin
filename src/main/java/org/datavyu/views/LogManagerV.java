@@ -14,17 +14,16 @@
  */
 package org.datavyu.views;
 
-import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.Configuration;
 
 import javax.swing.*;
 
-public class UserMetrixV extends DatavyuDialog {
+public class LogManagerV extends DatavyuDialog {
 
     /**
-     * Creates new form UserMetrixV
+     * Creates new form LogManagerV
      */
-    public UserMetrixV(final java.awt.Frame parent, final boolean modal) {
+    public LogManagerV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
         initComponents();
         groupCanSend.add(radioCanSend);
@@ -48,7 +47,7 @@ public class UserMetrixV extends DatavyuDialog {
         Blurb = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(UserMetrixV.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(LogManagerV.class);
         setTitle(resourceMap.getString("Form.title")); 
         setName("Form"); 
         setResizable(false);
@@ -113,7 +112,7 @@ public class UserMetrixV extends DatavyuDialog {
      */
     private void radioCanSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioCanSendActionPerformed
         Configuration.getInstance().setCanSendLogs(radioCanSend.isSelected());
-        UserMetrix.setCanSendLogs(radioCanSend.isSelected());
+//        LogManager.setCanSendLogs(radioCanSend.isSelected());
         this.dispose();
     }//GEN-LAST:event_radioCanSendActionPerformed
 
@@ -125,7 +124,7 @@ public class UserMetrixV extends DatavyuDialog {
      */
     private void radioDoNotSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioDoNotSendActionPerformed
         Configuration.getInstance().setCanSendLogs(radioCanSend.isSelected());
-        UserMetrix.setCanSendLogs(radioCanSend.isSelected());
+//        LogManager.setCanSendLogs(radioCanSend.isSelected());
         this.dispose();
     }//GEN-LAST:event_radioDoNotSendActionPerformed
 
@@ -134,6 +133,17 @@ public class UserMetrixV extends DatavyuDialog {
     private javax.swing.ButtonGroup groupCanSend;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JRadioButton radioCanSend;
-    private javax.swing.JRadioButton radioDoNotSend;
+
+    /**
+     * Action to invoke when the user has clicked on the do not send radio
+     * button.
+     *
+     * @param evt The event that triggered this action.
+     */
+    private void radioDoNotSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioDoNotSendActionPerformed
+        Configuration.getInstance().setCanSendLogs(radioCanSend.isSelected());
+//        LogManager.setCanSendLogs(radioCanSend.isSelected());
+        this.dispose();
+    }//GEN-LAST:event_radioDoNotSendActionPerformed    private javax.swing.JRadioButton radioDoNotSend;
     // End of variables declaration//GEN-END:variables
 }

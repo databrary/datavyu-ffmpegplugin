@@ -14,8 +14,8 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.*;
 import org.datavyu.util.StringUtils;
@@ -33,7 +33,7 @@ public final class SaveDatabaseFileC {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(SaveDatabaseFileC.class);
+    private static Logger LOGGER = LogManager.getLogger(SaveDatabaseFileC.class);
 
     /**
      * Saves the database to the specified destination, if the file ends with
@@ -89,7 +89,7 @@ public final class SaveDatabaseFileC {
      */
     public void saveAsCSV(final OutputStream outStream, final Datastore ds)
             throws UserWarningException {
-        LOGGER.event("save database as CSV to stream");
+        LOGGER.info("save database as CSV to stream");
 
         // Dump out an identifier for the version of file.
         PrintStream ps = new PrintStream(outStream);

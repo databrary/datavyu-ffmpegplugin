@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.CreateNewCellC;
@@ -47,7 +47,7 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
     /**
      * The logger for this class.
      */
-    private static final Logger LOGGER = UserMetrix.getLogger(SpreadsheetEmptyCell.class);
+    private static final Logger LOGGER = LogManager.getLogger(SpreadsheetEmptyCell.class);
 
     /**
      * Border to use for normal cell. No extra information to show.
@@ -288,7 +288,7 @@ public class SpreadsheetEmptyCell extends JPanel implements MouseListener {
      */
     @Override
     public void mouseClicked(final MouseEvent me) {
-        LOGGER.event("Pressed empty cell");
+        LOGGER.info("Pressed empty cell");
         CreateNewCellC controller = new CreateNewCellC();
         controller.createDefaultCell(model);
     }

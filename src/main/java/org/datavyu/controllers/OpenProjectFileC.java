@@ -14,8 +14,8 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.controllers.project.DatavyuProjectConstructor;
 import org.datavyu.models.project.Project;
 import org.yaml.snakeyaml.Loader;
@@ -31,7 +31,7 @@ public final class OpenProjectFileC {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(OpenProjectFileC.class);
+    private static Logger LOGGER = LogManager.getLogger(OpenProjectFileC.class);
 
     /**
      * Opens and loads a project file from disk.

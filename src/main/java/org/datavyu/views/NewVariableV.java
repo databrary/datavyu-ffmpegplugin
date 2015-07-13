@@ -14,8 +14,8 @@
  */
 package org.datavyu.views;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Datastore;
@@ -31,14 +31,18 @@ import javax.swing.undo.UndoableEdit;
 public final class NewVariableV extends DatavyuDialog {
 
     /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(NewVariableV.class);
+    /**
      * The database to add the new variable to.
      */
     private Datastore model;
-
-    /**
-     * The logger for this class.
-     */
-    private static final Logger LOGGER = UserMetrix.getLogger(NewVariableV.class);
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cancelButton;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JTextField nameField;
+    private javax.swing.JButton okButton;
 
     /**
      * Constructor, creates a new form to create a new variable.
@@ -48,7 +52,7 @@ public final class NewVariableV extends DatavyuDialog {
      */
     public NewVariableV(final java.awt.Frame parent, final boolean modal) {
         super(parent, modal);
-        LOGGER.event("newVar - show");
+        LOGGER.info("newVar - show");
         initComponents();
         setName(this.getClass().getSimpleName());
 
@@ -142,7 +146,7 @@ public final class NewVariableV extends DatavyuDialog {
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_okButtonActionPerformed
         try {
-            LOGGER.event("newVar - create column:" + getVariableType());
+            LOGGER.info("newVar - create column:" + getVariableType());
             Variable var = model.createVariable(getVariableName(), getVariableType());
             Datavyu.getProjectController().setLastCreatedVariable(var);
 
@@ -168,7 +172,7 @@ public final class NewVariableV extends DatavyuDialog {
      * @param evt The event that triggered this action.
      */
     private void cancelButtonActionPerformed(final java.awt.event.ActionEvent evt) {// GEN-FIRST:event_cancelButtonActionPerformed
-        LOGGER.event("newVar - cancel create.");
+        LOGGER.info("newVar - cancel create.");
         dispose();
 
     }// GEN-LAST:event_cancelButtonActionPerformed
@@ -186,11 +190,5 @@ public final class NewVariableV extends DatavyuDialog {
     public Argument.Type getVariableType() {
         return Argument.Type.MATRIX; //this is now the only allowed
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cancelButton;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JTextField nameField;
-    private javax.swing.JButton okButton;
     // End of variables declaration//GEN-END:variables
 }

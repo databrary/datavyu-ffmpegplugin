@@ -14,8 +14,8 @@
  */
 package org.datavyu.undoableedits;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.controllers.DeleteCellC;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Variable;
@@ -32,7 +32,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
     /**
      * The logger for this class.
      */
-    private static final Logger LOGGER = UserMetrix.getLogger(RemoveCellEdit.class);
+    private static final Logger LOGGER = LogManager.getLogger(RemoveCellEdit.class);
 
     private List<CellTO> cellTOV;
 
@@ -65,7 +65,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
     @Override
     public void redo() throws CannotRedoException {
         super.redo();
-        LOGGER.event("Redoing remove cells");
+        LOGGER.info("Redoing remove cells");
 
         List<Cell> cellsToDelete = new ArrayList<Cell>();
 
@@ -87,7 +87,7 @@ public class RemoveCellEdit extends SpreadsheetEdit {
     @Override
     public void undo() throws CannotUndoException {
         super.undo();
-        LOGGER.event("Undoing remove cells");
+        LOGGER.info("Undoing remove cells");
         for (CellTO cellTO : cellTOV) {
             Variable var = model.getVariable(cellTO.getParentVariableName());
             var.addCell(cellTO.getCell());

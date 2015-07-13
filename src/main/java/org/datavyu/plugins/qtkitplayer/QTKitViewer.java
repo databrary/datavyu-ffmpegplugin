@@ -14,8 +14,8 @@
  */
 package org.datavyu.plugins.qtkitplayer;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.quicktime.BaseQuickTimeDataViewer;
 import quicktime.std.movies.Track;
 import quicktime.std.movies.media.Media;
@@ -41,7 +41,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(QTKitViewer.class);
+    private static Logger LOGGER = LogManager.getLogger(QTKitViewer.class);
     private static float FALLBACK_FRAME_RATE = 24.0f;
     long prevSeekTime = -1;
     /**

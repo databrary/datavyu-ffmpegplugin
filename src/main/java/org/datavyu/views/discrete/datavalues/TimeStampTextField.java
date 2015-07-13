@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete.datavalues;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Variable;
@@ -35,19 +35,17 @@ public final class TimeStampTextField extends JTextField
         implements FocusListener, KeyListener {
 
     /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(TimeStampTextField.class);
+    /**
      * The parent cell for this JPanel.
      */
     private Cell parentCell = null;
-
     /**
      * The editors that make up the representation of the data.
      */
     private TimeStampDataValueEditor myEditor;
-
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(TimeStampTextField.class);
 
     /**
      * Creates a new instance of MatrixV.

@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete.datavalues.vocabelements;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.models.db.Variable;
 import org.datavyu.views.discrete.EditorComponent;
 import org.datavyu.views.discrete.EditorTracker;
@@ -31,25 +31,21 @@ import java.util.List;
 public final class VocabElementRootView extends JTextArea {
 
     /**
-     * The editors that make up the representation of the data.
-     */
-    private List<EditorComponent> editors;
-
-    /**
-     * The editor tracker responsible for the editor components.
-     */
-    private EditorTracker edTracker;
-
-    /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(VocabElementRootView.class);
-
+    private static Logger LOGGER = LogManager.getLogger(VocabElementRootView.class);
     /**
      * Border to set the text area more aligned to the icons.
      */
     private static Border GAP_BORDER = BorderFactory.createEmptyBorder(2, 0, 0, 0);
-
+    /**
+     * The editors that make up the representation of the data.
+     */
+    private List<EditorComponent> editors;
+    /**
+     * The editor tracker responsible for the editor components.
+     */
+    private EditorTracker edTracker;
     private VocabElementV pv;
 
     /**

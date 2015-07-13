@@ -22,8 +22,8 @@
  */
 package org.datavyu.models.db;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
@@ -33,14 +33,11 @@ import java.util.*;
 public class DatavyuDatastore implements Datastore {
 
     // The logger for the datastore
-    private static Logger LOGGER = UserMetrix.getLogger(DatavyuDatastore.class);
-
-    // Name of the datastore - does not need to persist - is used for file names.
-    private String name = "untitled";
-
+    private static Logger LOGGER = LogManager.getLogger(DatavyuDatastore.class);
     // The notifier to ping when the application's title changes.
     private static TitleNotifier titleNotifier = null;
-
+    // Name of the datastore - does not need to persist - is used for file names.
+    private String name = "untitled";
     // Has tbhe datastore changed since it has last been marked as unchanged?
     private boolean changed;
     //
@@ -218,6 +215,11 @@ public class DatavyuDatastore implements Datastore {
     }
 
     @Override
+    public void setName(final String datastoreName) {
+        name = datastoreName;
+    }
+
+    @Override
     public void canSetUnsaved(final boolean canSet) {
     }
 
@@ -242,11 +244,6 @@ public class DatavyuDatastore implements Datastore {
     @Override
     public boolean isChanged() {
         return changed;
-    }
-
-    @Override
-    public void setName(final String datastoreName) {
-        name = datastoreName;
     }
 
     @Override

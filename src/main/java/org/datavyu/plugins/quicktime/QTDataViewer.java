@@ -14,8 +14,8 @@
  */
 package org.datavyu.plugins.quicktime;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.util.Constants;
 import quicktime.QTException;
 import quicktime.QTSession;
@@ -54,7 +54,7 @@ public final class QTDataViewer extends BaseQuickTimeDataViewer {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(QTDataViewer.class);
+    private static Logger LOGGER = LogManager.getLogger(QTDataViewer.class);
     private static float FALLBACK_FRAME_RATE = 29.97f;
     /**
      * The quicktime movie this viewer is displaying.

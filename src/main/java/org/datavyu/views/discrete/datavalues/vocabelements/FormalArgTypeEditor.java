@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete.datavalues.vocabelements;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.models.db.Argument;
 import org.datavyu.views.discrete.EditorComponent;
 
@@ -29,19 +29,17 @@ import java.awt.event.KeyEvent;
 public final class FormalArgTypeEditor extends EditorComponent {
 
     /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(FormalArgTypeEditor.class);
+    /**
      * Parent Vocab Element.
      */
     private Argument parentArgument;
-
     /**
      * Index of the formal arg.
      */
     private int argIndex;
-
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(FormalArgTypeEditor.class);
 
     public FormalArgTypeEditor(final JTextComponent ta,
                                final Argument pa,

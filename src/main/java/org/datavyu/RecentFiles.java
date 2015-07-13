@@ -16,9 +16,9 @@ package org.datavyu;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdesktop.application.LocalStorage;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -50,22 +50,19 @@ public enum RecentFiles {
     /**
      * Class logger.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(RecentFiles.class);
-
-    /**
-     * List of recently opened projects.
-     */
-    private List<File> projects;
-
-    /**
-     * List of recently opened scripts.
-     */
-    private List<File> scripts;
-
+    private static Logger LOGGER = LogManager.getLogger(RecentFiles.class);
     /**
      * The history file to read and write to.
      */
     private final File historyFile;
+    /**
+     * List of recently opened projects.
+     */
+    private List<File> projects;
+    /**
+     * List of recently opened scripts.
+     */
+    private List<File> scripts;
 
     private RecentFiles() {
         LocalStorage storage = Datavyu.getApplication().getContext()

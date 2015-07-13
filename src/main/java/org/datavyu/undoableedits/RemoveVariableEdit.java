@@ -14,8 +14,8 @@
  */
 package org.datavyu.undoableedits;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.controllers.DeleteColumnC;
 import org.datavyu.models.db.Variable;
 
@@ -30,7 +30,7 @@ public class RemoveVariableEdit extends VocabEditorEdit {
     /**
      * The logger for this class.
      */
-    private static final Logger LOGGER = UserMetrix.getLogger(RemoveVariableEdit.class);
+    private static final Logger LOGGER = LogManager.getLogger(RemoveVariableEdit.class);
 
     private List<Variable> deletedVariables;
 

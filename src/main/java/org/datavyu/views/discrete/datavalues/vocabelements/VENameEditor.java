@@ -14,14 +14,14 @@
  */
 package org.datavyu.views.discrete.datavalues.vocabelements;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.datavyu.Datavyu;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
 import org.datavyu.util.SequentialNumberGenerator;
 import org.datavyu.views.discrete.EditorComponent;
-import org.datavyu.Datavyu;
 
 import javax.swing.text.JTextComponent;
 import java.awt.event.FocusEvent;
@@ -34,25 +34,21 @@ import java.util.logging.Level;
 public final class VENameEditor extends EditorComponent {
 
     /**
+     * String holding the reserved characters.
+     */
+    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n .-!@#$%^&*()+=\\'\"";
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(VENameEditor.class);
+    /**
      * Parent Vocab Element.
      */
     private Argument model;
-
     /**
      * Parent Variable.
      */
     private Variable varModel;
-
-    /**
-     * String holding the reserved characters.
-     */
-    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n .-!@#$%^&*()+=\\'\"";
-
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(VENameEditor.class);
-
     /**
      * The parent editor window that this argument belongs too.
      */

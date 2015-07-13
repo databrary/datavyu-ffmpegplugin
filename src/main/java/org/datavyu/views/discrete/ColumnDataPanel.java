@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.Variable;
@@ -33,40 +33,33 @@ import java.util.List;
  */
 public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher {
     /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(ColumnDataPanel.class);
+    /**
      * Width of the column.
      */
     private int columnWidth;
-
     /**
      * Height of the column.
      */
     private int columnHeight;
-
     /**
      * The model that this variable represents.
      */
     private Variable model;
-
     /**
      * The cell selection listener used for cells in this column.
      */
     private CellSelectionListener cellSelectionL;
-
     /**
      * Collection of the SpreadsheetCells held in by this data panel.
      */
     private List<SpreadsheetCell> cells;
-
     /**
      * The mapping between the database and the spreadsheet cells.
      */
     private Map<Cell, SpreadsheetCell> viewMap;
-
-    /**
-     * The logger for this class.
-     */
-    private static final Logger LOGGER = UserMetrix.getLogger(ColumnDataPanel.class);
-
     /**
      * button for creating a new empty cell.
      */

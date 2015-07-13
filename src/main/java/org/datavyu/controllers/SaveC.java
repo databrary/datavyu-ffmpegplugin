@@ -14,8 +14,8 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.RecentFiles;
 import org.datavyu.models.db.Datastore;
@@ -40,7 +40,7 @@ public final class SaveC {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(SaveC.class);
+    private static Logger LOGGER = LogManager.getLogger(SaveC.class);
 
     /**
      * Saves only a database to disk.
@@ -80,7 +80,7 @@ public final class SaveC {
                              final Datastore datastore,
                              boolean remember)
             throws UserWarningException {
-        LOGGER.event("saving database");
+        LOGGER.info("saving database");
 
         SaveDatabaseFileC saveDBC = new SaveDatabaseFileC();
         saveDBC.saveDatabase(databaseFile, datastore);
@@ -122,7 +122,7 @@ public final class SaveC {
                             boolean remember) throws UserWarningException {
 
         try {
-            LOGGER.event("save project");
+            LOGGER.info("save project");
 
             FileOutputStream fos = new FileOutputStream(projectFile);
             ZipOutputStream zos = new ZipOutputStream(fos);

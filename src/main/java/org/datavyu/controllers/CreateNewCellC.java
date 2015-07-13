@@ -14,20 +14,20 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.Variable;
 import org.datavyu.undoableedits.AddCellEdit;
+import org.datavyu.undoableedits.ChangeCellEdit;
+import org.datavyu.undoableedits.ChangeOffsetCellEdit;
 import org.datavyu.util.ArrayDirection;
 import org.datavyu.views.discrete.SpreadsheetPanel;
 
 import javax.swing.undo.UndoableEdit;
 import java.util.List;
-import org.datavyu.undoableedits.ChangeCellEdit;
-import org.datavyu.undoableedits.ChangeOffsetCellEdit;
 
 
 /**
@@ -38,7 +38,7 @@ public final class CreateNewCellC {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(CreateNewCellC.class);
+    private static Logger LOGGER = LogManager.getLogger(CreateNewCellC.class);
 
     /**
      * The view (the spreadsheet) for this controller.
@@ -60,83 +60,6 @@ public final class CreateNewCellC {
     }
 
     /**
-     * Inserts a cell into the end of the supplied variable.
-     *
-     * @param v The variable that we want to add a cell too.
-     * @return The cell that was just inserted.
-     */
-    public Cell createCell(final Variable v) {
-        LOGGER.event("create cell in selected column");
-
-        // perform the operation
-        List<Cell> cells = v.getCellsTemporally();
-
-        long newOnset = 0;
-        newOnset = Datavyu.getDataController().getCurrentTime();
-
-        Cell newCell = v.createCell();
-        newCell.setOnset(newOnset);
-        Datavyu.getProjectController().setLastCreatedCell(newCell);
-        Datavyu.getProjectController().setLastCreatedVariable(v);
-
-        return newCell;
-    }
-
-    /**
-     * Create a default cell at the end of the nominated variable.
-     *
-     * @param v The variable we are adding a cell to the end of.
-     */
-    public void createDefaultCell(final Variable v) {
-        model.deselectAll();
-        Cell c = createCell(v);
-
-        // record the effect
-        UndoableEdit edit = new AddCellEdit(v.getName(), c);
-
-        // Display any changes.
-        Datavyu.getView().getComponent().revalidate();
-        // notify the listeners
-        Datavyu.getView().getUndoSupport().postEdit(edit);
-    }
-
-    /**
-     * Create a default cell
-     * @param preferFirstSelected prefer the first selected variable
-     */
-    public void createDefaultCell(boolean preferFirstSelected) {
-        Cell newCell = null;
-        Variable v =  Datavyu.getProjectController().getLastCreatedVariable();
-        if (preferFirstSelected){
-            List<Variable> vlist = Datavyu.getProjectController().getDB().getSelectedVariables();
-            if (!vlist.isEmpty()){
-                v = vlist.get(0);
-            }
-        }
-        
-        if (v != null) {
-            newCell = createCell(v);
-
-            // record the effect
-            UndoableEdit edit = new AddCellEdit(v.getName(), newCell);
-            Datavyu.getView().getComponent().revalidate();
-            Datavyu.getView().getUndoSupport().postEdit(edit);
-        }
-
-        if (newCell != null) {
-            model.deselectAll();
-            newCell.setHighlighted(true);
-        }
-    }
-
-    /**
-     * Create a default cell
-     */
-    public void createDefaultCell() {
-        createDefaultCell(false);
-    }
-    
-    /**
      * Create New Cell Controller - creates new cells in columns adjacent to the
      * supplied cells. If no column is adjacent in the specified direction, no
      * cell will be created.
@@ -152,7 +75,7 @@ public final class CreateNewCellC {
 
         Cell newCell = null;
 
-        LOGGER.event("create adjacent cells:" + direction);
+        LOGGER.info("create adjacent cells:" + direction);
 
         // Get the column that is the parent of the source cell.
         for (Cell sourceCell : sourceCells) {
@@ -231,8 +154,8 @@ public final class CreateNewCellC {
                 }
             }
         }
-        
-        //If there is no last created cell, use time to determine appopriate cell in 
+
+        //If there is no last created cell, use time to determine appopriate cell in
         //FIRST selected variable or the variable belonging to the FIRST selected cell
         if (setPrevOffset && lastCreatedCell == null){
               Variable v = null;
@@ -250,7 +173,7 @@ public final class CreateNewCellC {
                           }
                   }
               }
-              
+
               if(v != null){
                     Cell oneBefore = null;
                     for(Cell c : v.getCellsTemporally()){
@@ -270,6 +193,84 @@ public final class CreateNewCellC {
 
         // Create the new cell.
         createNewCell(milliseconds);
+    }
+
+    /**
+     * Inserts a cell into the end of the supplied variable.
+     *
+     * @param v The variable that we want to add a cell too.
+     * @return The cell that was just inserted.
+     */
+    public Cell createCell(final Variable v) {
+        LOGGER.info("create cell in selected column");
+
+        // perform the operation
+        List<Cell> cells = v.getCellsTemporally();
+
+        long newOnset = 0;
+        newOnset = Datavyu.getDataController().getCurrentTime();
+
+        Cell newCell = v.createCell();
+        newCell.setOnset(newOnset);
+        Datavyu.getProjectController().setLastCreatedCell(newCell);
+        Datavyu.getProjectController().setLastCreatedVariable(v);
+
+        return newCell;
+    }
+
+    /**
+     * Create a default cell at the end of the nominated variable.
+     *
+     * @param v The variable we are adding a cell to the end of.
+     */
+    public void createDefaultCell(final Variable v) {
+        model.deselectAll();
+        Cell c = createCell(v);
+
+        // record the effect
+        UndoableEdit edit = new AddCellEdit(v.getName(), c);
+
+        // Display any changes.
+        Datavyu.getView().getComponent().revalidate();
+        // notify the listeners
+        Datavyu.getView().getUndoSupport().postEdit(edit);
+    }
+
+    /**
+     * Create a default cell
+     *
+     * @param preferFirstSelected prefer the first selected variable
+     */
+    public void createDefaultCell(boolean preferFirstSelected) {
+        Cell newCell = null;
+        Variable v = Datavyu.getProjectController().getLastCreatedVariable();
+        if (preferFirstSelected) {
+            List<Variable> vlist = Datavyu.getProjectController().getDB().getSelectedVariables();
+            if (!vlist.isEmpty()) {
+                v = vlist.get(0);
+            }
+        }
+
+        if (v != null) {
+            newCell = createCell(v);
+
+            // record the effect
+            UndoableEdit edit = new AddCellEdit(v.getName(), newCell);
+            Datavyu.getView().getComponent().revalidate();
+            Datavyu.getView().getUndoSupport().postEdit(edit);
+        }
+
+        if (newCell != null) {
+            model.deselectAll();
+            newCell.setHighlighted(true);
+        }
+    }
+
+    /**
+     * Create a default cell
+     */
+    public void createDefaultCell() {
+        createDefaultCell(false);
     }
 
     /**
@@ -319,7 +320,7 @@ public final class CreateNewCellC {
         model = Datavyu.getProjectController().getDB();
 
         for (Variable var : model.getSelectedVariables()) {
-            LOGGER.event("create cell in selected column");
+            LOGGER.info("create cell in selected column");
             newCell = var.createCell();
             newCell.setOnset(onset);
             Datavyu.getProjectController().setLastCreatedCell(newCell);
@@ -338,7 +339,7 @@ public final class CreateNewCellC {
 
         if (!newcelladded) {
             for (Cell cell : model.getSelectedCells()) {
-                LOGGER.event("create cell below selected cell");
+                LOGGER.info("create cell below selected cell");
 
                 // reget the selected cell from the database using its id
                 // in case a previous insert has changed its ordinal.
@@ -366,7 +367,7 @@ public final class CreateNewCellC {
         // and has requested a new cell
         if (!newcelladded && multiadd) {
             if (Datavyu.getProjectController().getLastSelectedCell() != null) {
-                LOGGER.event("create cell while editing existing cell");
+                LOGGER.info("create cell while editing existing cell");
                 Variable var = model.getVariable(Datavyu.getProjectController().getLastCreatedCell());
                 if (var != null) {
                     newCell = var.createCell();
@@ -386,7 +387,7 @@ public final class CreateNewCellC {
         // else go with Situation 4: Video controller requested - create in the
         // same column as the last created cell or the last focused cell.
         if (!newcelladded) {
-            LOGGER.event("create cell in same location as last created cell");
+            LOGGER.info("create cell in same location as last created cell");
 
             // BugzID:779 - Check for presence of columns, else return
             if (model.getAllVariables().isEmpty()) {

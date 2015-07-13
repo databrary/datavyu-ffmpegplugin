@@ -14,8 +14,8 @@
  */
 package org.datavyu.views;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.NewProjectC;
 import org.jdesktop.application.Application;
@@ -32,7 +32,7 @@ public final class NewProjectV extends DatavyuDialog {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(NewProjectV.class);
+    private static Logger LOGGER = LogManager.getLogger(NewProjectV.class);
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
@@ -49,7 +49,7 @@ public final class NewProjectV extends DatavyuDialog {
      */
     public NewProjectV(final Frame parent, final boolean modal) {
         super(parent, modal);
-        LOGGER.event("newProj - show");
+        LOGGER.info("newProj - show");
         initComponents();
 
         // Need to set a unique name so that we save and restore session data
@@ -151,7 +151,7 @@ public final class NewProjectV extends DatavyuDialog {
      * @param evt The event that triggered this action.
      */
     private void okButtonActionPerformed(final java.awt.event.ActionEvent evt) { // GEN-FIRST:event_okButtonActionPerformed
-        LOGGER.event("create new project");
+        LOGGER.info("create new project");
         ResourceMap r = Application.getInstance(Datavyu.class).getContext().getResourceMap(NewProjectV.class);
         DatavyuView s = (DatavyuView) Datavyu.getView();
 

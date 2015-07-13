@@ -14,9 +14,9 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.models.db.UserWarningException;
@@ -34,10 +34,13 @@ public class AutosaveC implements ActionListener {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(DeleteColumnC.class);
+    private static Logger LOGGER = LogManager.getLogger(DeleteColumnC.class);
 
     private static Timer timer;
     private static File f;
+
+    private AutosaveC() {
+    }
 
     public static void setInterval(int interval) {
         if (interval == 0) {
@@ -104,8 +107,5 @@ public class AutosaveC implements ActionListener {
         } finally {
             f.deleteOnExit();
         }
-    }
-
-    private AutosaveC() {
     }
 }

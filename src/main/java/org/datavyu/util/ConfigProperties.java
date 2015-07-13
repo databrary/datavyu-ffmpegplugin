@@ -75,7 +75,7 @@ public final class ConfigProperties implements Serializable {
     private String lastChooserDirectory;
 
     /**
-     * User has given permission to send usage logs to UserMetrix.
+     * User has given permission to send usage logs to LogManager.
      */
     private Boolean canSendLogs;
 
@@ -123,6 +123,13 @@ public final class ConfigProperties implements Serializable {
     }
 
     /**
+     * @return The spreadsheet data font.
+     */
+    public Font getSSDataFont() {
+        return spreadsheetDataFont;
+    }
+
+    /**
      * Sets the spreadsheet data font.
      *
      * @param font The new font to use for spreadsheet data.
@@ -134,8 +141,8 @@ public final class ConfigProperties implements Serializable {
     /**
      * @return The spreadsheet data font.
      */
-    public Font getSSDataFont() {
-        return spreadsheetDataFont;
+    public Font getSSLabelFont() {
+        return spreadsheetLabelFont;
     }
 
     /**
@@ -148,10 +155,10 @@ public final class ConfigProperties implements Serializable {
     }
 
     /**
-     * @return The spreadsheet data font.
+     * @return The spreadsheet background colour.
      */
-    public Font getSSLabelFont() {
-        return spreadsheetLabelFont;
+    public Color getSSBackgroundColour() {
+        return spreadsheetBackgroundColour;
     }
 
     /**
@@ -164,10 +171,10 @@ public final class ConfigProperties implements Serializable {
     }
 
     /**
-     * @return The spreadsheet background colour.
+     * @return The spreadsheet foreground colour.
      */
-    public Color getSSBackgroundColour() {
-        return spreadsheetBackgroundColour;
+    public Color getSSForegroundColour() {
+        return spreadsheetForegroundColour;
     }
 
     /**
@@ -180,10 +187,10 @@ public final class ConfigProperties implements Serializable {
     }
 
     /**
-     * @return The spreadsheet foreground colour.
+     * @return The spreadsheet ordinal foreground colour.
      */
-    public Color getSSForegroundColour() {
-        return spreadsheetForegroundColour;
+    public Color getSSOrdinalColour() {
+        return spreadsheetOrdinalForeground;
     }
 
     /**
@@ -193,13 +200,6 @@ public final class ConfigProperties implements Serializable {
      */
     public void setSSOrdinalColour(final Color newColour) {
         spreadsheetOrdinalForeground = newColour;
-    }
-
-    /**
-     * @return The spreadsheet ordinal foreground colour.
-     */
-    public Color getSSOrdinalColour() {
-        return spreadsheetOrdinalForeground;
     }
 
     /**
@@ -219,6 +219,13 @@ public final class ConfigProperties implements Serializable {
     }
 
     /**
+     * @return The spreadsheet selections colour.
+     */
+    public Color getSSSelectedColour() {
+        return spreadsheetSelectedColour;
+    }
+
+    /**
      * Sets the spreadsheet selected colour.
      *
      * @param newColour The new colour to use for spreadsheet selections.
@@ -228,10 +235,10 @@ public final class ConfigProperties implements Serializable {
     }
 
     /**
-     * @return The spreadsheet selections colour.
+     * @return The spreadsheet overlap colour.
      */
-    public Color getSSSelectedColour() {
-        return spreadsheetSelectedColour;
+    public Color getSSOverlapColour() {
+        return spreadsheetOverlapColour;
     }
 
     /**
@@ -244,10 +251,10 @@ public final class ConfigProperties implements Serializable {
     }
 
     /**
-     * @return The spreadsheet overlap colour.
+     * @return The last chooser directory that the user nominated.
      */
-    public Color getSSOverlapColour() {
-        return spreadsheetOverlapColour;
+    public String getLCDirectory() {
+        return lastChooserDirectory;
     }
 
     /**
@@ -260,26 +267,19 @@ public final class ConfigProperties implements Serializable {
     }
 
     /**
-     * @return The last chooser directory that the user nominated.
-     */
-    public String getLCDirectory() {
-        return lastChooserDirectory;
-    }
-
-    /**
-     * Set if we are able to transmit logs or not to UserMetrix.
-     *
-     * @param send Can we send logs to UserMetrix?
-     */
-    public void setCanSendLogs(final Boolean send) {
-        canSendLogs = send;
-    }
-
-    /**
-     * @return True if we can send usage logs to UserMetrix.
+     * @return True if we can send usage logs to LogManager.
      */
     public Boolean getCanSendLogs() {
         return canSendLogs;
+    }
+
+    /**
+     * Set if we are able to transmit logs or not to LogManager.
+     *
+     * @param send Can we send logs to LogManager?
+     */
+    public void setCanSendLogs(final Boolean send) {
+        canSendLogs = send;
     }
 
     /**

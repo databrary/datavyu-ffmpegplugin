@@ -14,8 +14,8 @@
  */
 package org.datavyu.undoableedits;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -28,7 +28,7 @@ public abstract class MoveArgumentRightEdit extends VocabEditorEdit {
     /**
      * The logger for this class.
      */
-    private static final Logger LOGGER = UserMetrix.getLogger(MoveArgumentRightEdit.class);
+    private static final Logger LOGGER = LogManager.getLogger(MoveArgumentRightEdit.class);
 
     public MoveArgumentRightEdit() {
         super();

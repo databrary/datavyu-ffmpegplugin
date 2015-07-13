@@ -17,8 +17,8 @@ package org.datavyu;
 import ca.beq.util.win32.registry.Win32Exception;
 import ch.randelshofer.quaqua.QuaquaManager;
 import com.sun.jna.NativeLibrary;
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.controllers.project.ProjectController;
 import org.datavyu.models.db.TitleNotifier;
 import org.datavyu.models.db.UserWarningException;
@@ -84,7 +84,7 @@ public final class Datavyu extends SingleFrameApplication
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(Datavyu.class);
+    private static Logger LOGGER = LogManager.getLogger();
     /**
      * The view to use for the quick time video controller.
      */
@@ -1006,7 +1006,6 @@ public final class Datavyu extends SingleFrameApplication
 
 
         Datavyu.getApplication().getMainFrame().setVisible(false);
-        UserMetrix.shutdown();
         shutdown();
         super.end();
     }
@@ -1081,28 +1080,16 @@ public final class Datavyu extends SingleFrameApplication
 
         windows = new Stack<Window>();
 
-        // Initalise the logger (UserMetrix).
+        // Initalise the logger (LogManager).
         LocalStorage ls = Datavyu.getApplication().getContext()
                 .getLocalStorage();
         ResourceMap rMap = Application.getInstance(Datavyu.class).getContext()
                 .getResourceMap(Datavyu.class);
 
-        com.usermetrix.jclient.Configuration config =
-                new com.usermetrix.jclient.Configuration(2);
-        config.setTmpDirectory(ls.getDirectory().toString() + File.separator);
-        config.addMetaData("build",
-                rMap.getString("Application.version") + ":"
-                        + rMap.getString("Application.build"));
-        UserMetrix.initalise(config);
-        LOGGER = UserMetrix.getLogger(Datavyu.class);
+        LOGGER = LogManager.getLogger();
 
         // If the user hasn't specified, we don't send error logs.
-        if (Configuration.getInstance().getCanSendLogs() == null) {
-            UserMetrix.setCanSendLogs(false);
-        } else {
-            UserMetrix.setCanSendLogs(Configuration.getInstance()
-                    .getCanSendLogs());
-        }
+        Configuration.getInstance().setCanSendLogs(false);
 
         // Init scripting engine
         m2 = new ScriptEngineManager();
@@ -1135,10 +1122,10 @@ public final class Datavyu extends SingleFrameApplication
 
         // Now that datavyu is up - we may need to ask the user if can send
         // gather logs.
-        if (Configuration.getInstance().getCanSendLogs() == null) {
-            LOGGER.event("show usermetrix dialog");
-            show(new UserMetrixV(VIEW.getFrame(), true));
-        }
+//        if (Configuration.getInstance().getCanSendLogs() == null) {
+//            LOGGER.info("show usermetrix dialog");
+//            show(new LogManagerV(VIEW.getFrame(), true));
+//        }
 
         // BugzID:435 - Correct size if a small size is detected.
         int width = (int) getMainFrame().getSize().getWidth();

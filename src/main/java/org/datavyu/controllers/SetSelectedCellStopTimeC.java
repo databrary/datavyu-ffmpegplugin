@@ -14,8 +14,8 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
@@ -33,7 +33,7 @@ public class SetSelectedCellStopTimeC {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(SetSelectedCellStopTimeC.class);
+    private static Logger LOGGER = LogManager.getLogger(SetSelectedCellStopTimeC.class);
 
     /**
      * Sets all selected cells to have the specified stop time / offset.
@@ -42,7 +42,7 @@ public class SetSelectedCellStopTimeC {
      *                     cells offset / stop time.
      */
     public SetSelectedCellStopTimeC(final long milliseconds) {
-        LOGGER.event("set selected cell offset");
+        LOGGER.info("set selected cell offset");
 
         // Get the datastore that we are manipulating.
         Datastore datastore = Datavyu.getProjectController().getDB();

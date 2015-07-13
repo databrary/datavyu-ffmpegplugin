@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete.datavalues;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.undoableedits.ChangeCellEdit.Granularity;
@@ -37,7 +37,7 @@ public final class TimeStampDataValueEditor extends EditorComponent {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(TimeStampDataValueEditor.class);
+    private static Logger LOGGER = LogManager.getLogger(TimeStampDataValueEditor.class);
 
     /**
      * The parent datacell for the TimeStamp that this view represents.
@@ -58,17 +58,6 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      * UndoableEdit
      */
     private UndoableEdit edit = null;
-
-    public enum TimeStampSource {
-        /**
-         * Timestamp is the Onset of the datacell associated.
-         */
-        Onset,
-        /**
-         * Timestamp is the Offset of the datacell associated.
-         */
-        Offset
-    }
 
     /**
      * Constructor.
@@ -304,5 +293,16 @@ public final class TimeStampDataValueEditor extends EditorComponent {
      */
     @Override
     public void keyReleased(final KeyEvent e) {
+    }
+
+    public enum TimeStampSource {
+        /**
+         * Timestamp is the Onset of the datacell associated.
+         */
+        Onset,
+        /**
+         * Timestamp is the Offset of the datacell associated.
+         */
+        Offset
     }
 }

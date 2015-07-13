@@ -15,8 +15,8 @@
 package org.datavyu.plugins;
 
 import com.google.common.collect.*;
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.plugins.javafx.JavaFxPlugin;
 import org.datavyu.plugins.qtkitplayer.QTKitPlugin;
@@ -50,24 +50,25 @@ public final class PluginManager {
      * A reference to the interface that plugins must override.
      */
     private static final Class<?> PLUGIN_CLASS;
-
-    static {
-        PLUGIN_CLASS = Plugin.class;
-    }
     /**
      * The single instance of the PluginManager for Datavyu.
      */
     private static final PluginManager INSTANCE = new PluginManager();
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(PluginManager.class);
 
     //
     //
     // !!! WARNING: instance must be last static - or Datavyu will crash !!!
     // 
     //
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(PluginManager.class);
+
+    static {
+        PLUGIN_CLASS = Plugin.class;
+    }
+
     /**
      * Set of plugins.
      */

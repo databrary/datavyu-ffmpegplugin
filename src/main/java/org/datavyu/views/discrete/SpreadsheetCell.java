@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
@@ -101,7 +101,7 @@ public class SpreadsheetCell extends JPanel
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetCell.class);
+    private static Logger LOGGER = LogManager.getLogger(SpreadsheetCell.class);
     boolean isLaid = false;
     private boolean brandNew;
     /**

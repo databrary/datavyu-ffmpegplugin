@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.Datavyu.Platform;
 import org.datavyu.controllers.NewVariableC;
@@ -77,7 +77,7 @@ public final class SpreadsheetPanel extends JPanel
     /**
      * The logger for this class.
      */
-    private static final Logger LOGGER = UserMetrix.getLogger(SpreadsheetPanel.class);
+    private static final Logger LOGGER = LogManager.getLogger(SpreadsheetPanel.class);
     private static int numNewSheets = 1;
     /**
      * List containing listeners interested in file drop events.
@@ -659,7 +659,7 @@ public final class SpreadsheetPanel extends JPanel
      *                  column.
      */
     public void moveColumnLeft(final Variable var, final int positions) {
-        LOGGER.event("move column left");
+        LOGGER.info("move column left");
 
         // What index does the given column sit at
         int columnIndex = var.getOrderIndex();
@@ -692,7 +692,7 @@ public final class SpreadsheetPanel extends JPanel
      *                  column.
      */
     public void moveColumnRight(final Variable var, final int positions) {
-        LOGGER.event("move column right");
+        LOGGER.info("move column right");
 
         // What index does the column sit at
         int columnIndex = var.getOrderIndex();

@@ -14,10 +14,10 @@
  */
 package org.datavyu.views;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.Datavyu.Platform;
 import org.datavyu.controllers.CreateNewCellC;
@@ -139,6 +139,20 @@ public final class DataControllerV extends DatavyuDialog
      */
     private static final DateFormat CLOCK_FORMAT;
     private static final DateFormat CLOCK_FORMAT_HTML;
+    private static final String QT_URL = "http://www.datavyu.org/user-guide/guide/install.html";
+    private static final String QT_IN_PAGE_HREF = "#software-requirements";
+    // -------------------------------------------------------------------------
+    // [static]
+    //
+    private static final String QT_WARNING_MSG =
+            "<html><body>Quicktime's Java libraries are not found.<br />"
+                    + "You must install these libraries to load videos using Quicktime.<br />"
+                    + "Note that for Quicktime versions 7.7.5 or later under Windows, you must manually include the Java libraries under Custom install<br />"
+                    + "See the User Guide at <a href=\"" + QT_URL + QT_IN_PAGE_HREF + "\">" + QT_URL + "</a> for details.</body></html>";
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(DataControllerV.class);
 
     // initialize standard date format for clock display.
     static {
@@ -160,23 +174,6 @@ public final class DataControllerV extends DatavyuDialog
         CLOCK_FORMAT_HTML.setTimeZone(new SimpleTimeZone(0, "NO_ZONE"));
     }
 
-    private static final String QT_URL = "http://www.datavyu.org/user-guide/guide/install.html";
-    private static final String QT_IN_PAGE_HREF = "#software-requirements";
-
-    // -------------------------------------------------------------------------
-    // [static]
-    //
-    private static final String QT_WARNING_MSG =
-            "<html><body>Quicktime's Java libraries are not found.<br />"
-                    + "You must install these libraries to load videos using Quicktime.<br />"
-                    + "Note that for Quicktime versions 7.7.5 or later under Windows, you must manually include the Java libraries under Custom install<br />"
-                    + "See the User Guide at <a href=\"" + QT_URL + QT_IN_PAGE_HREF + "\">" + QT_URL + "</a> for details.</body></html>";
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(DataControllerV.class);
-    private boolean visible = false;
-
     // Initialize SHUTTLE_RATES
     static {
         SHUTTLE_RATES = new float[]{
@@ -188,6 +185,7 @@ public final class DataControllerV extends DatavyuDialog
         };
     }
 
+    private boolean visible = false;
     /**
      * Determines whether or not Shift is being held.
      */
@@ -1401,7 +1399,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     private void openVideoButtonActionPerformed(
             final java.awt.event.ActionEvent evt) {
-        LOGGER.event("Add data");
+        LOGGER.info("Add data");
 
         PluginChooser chooser = null;
 
@@ -1454,14 +1452,14 @@ public final class DataControllerV extends DatavyuDialog
                 DataControllerV.class);
 
         if (tracksPanelEnabled) {
-            LOGGER.event("Show tracks (" + button.getName() + ")");
+            LOGGER.info("Show tracks (" + button.getName() + ")");
 
             // Panel is being displayed, hide it
             button.setIcon(resourceMap.getIcon(button.getName() + ".show.icon." + osModifier));
             button.setPressedIcon(resourceMap.getIcon(button.getName() + "Selected.show.icon." + osModifier));
 
         } else {
-            LOGGER.event("Hide tracks (" + button.getName() + ")");
+            LOGGER.info("Hide tracks (" + button.getName() + ")");
 
             // Panel is hidden, show it
             button.setIcon(resourceMap.getIcon(button.getName() + ".hide.icon." + osModifier));
@@ -1574,7 +1572,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void setCellOnsetAction() {
-        LOGGER.event("Set cell onset");
+        LOGGER.info("Set cell onset");
         new SetSelectedCellStartTimeC(getCurrentTime());
         setOnsetField(getCurrentTime());
     }
@@ -1584,7 +1582,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void setCellOffsetAction() {
-        LOGGER.event("Set cell offset");
+        LOGGER.info("Set cell offset");
         new SetSelectedCellStopTimeC(getCurrentTime());
         setOffsetField(getCurrentTime());
     }
@@ -1863,7 +1861,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void playAction() {
-        LOGGER.event("Play");
+        LOGGER.info("Play");
         System.out.println("Play button...");
 
         // BugzID:464 - When stopped at the end of the region of interest.
@@ -1882,7 +1880,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void forwardAction() {
-        LOGGER.event("Fast forward");
+        LOGGER.info("Fast forward");
         playAt(FFORWARD_RATE);
     }
 
@@ -1891,7 +1889,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void rewindAction() {
-        LOGGER.event("Rewind");
+        LOGGER.info("Rewind");
         playAt(REWIND_RATE);
     }
 
@@ -1900,7 +1898,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void pauseAction() {
-        LOGGER.event("Pause");
+        LOGGER.info("Pause");
         System.out.println("Pause button...");
         System.out.println(System.currentTimeMillis());
 
@@ -1923,7 +1921,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void stopAction() {
-        LOGGER.event("Stop event");
+        LOGGER.info("Stop event");
         System.out.println("Stop button");
         System.out.println(System.currentTimeMillis());
         clock.stop();
@@ -1937,7 +1935,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void shuttleForwardAction() {
-        LOGGER.event("Shuttle forward");
+        LOGGER.info("Shuttle forward");
         shuttle(1);
     }
 
@@ -1946,7 +1944,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void shuttleBackAction() {
-        LOGGER.event("Shuttle back");
+        LOGGER.info("Shuttle back");
         shuttle(-1);
     }
 
@@ -1991,7 +1989,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void findAction() {
-        LOGGER.event("Find");
+        LOGGER.info("Find");
 
         if (shiftMask) {
             findOffsetAction();
@@ -2062,7 +2060,7 @@ public final class DataControllerV extends DatavyuDialog
     public void goBackAction() {
 
         try {
-            LOGGER.event("Go back");
+            LOGGER.info("Go back");
 
             long j = -CLOCK_FORMAT.parse(goBackTextField.getText()).getTime();
             jump(j);
@@ -2082,7 +2080,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void jogBackAction() {
-        LOGGER.event("Jog back");
+        LOGGER.info("Jog back");
 
         if (!clock.isStopped()) {
             clockStop(clock.getTime());
@@ -2122,7 +2120,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void jogForwardAction() {
-        LOGGER.event("Jog forward");
+        LOGGER.info("Jog forward");
 
         if (!clock.isStopped()) {
             clockStop(clock.getTime());
@@ -2224,7 +2222,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void createNewCellAction() {
-        LOGGER.event("New cell");
+        LOGGER.info("New cell");
         CreateNewCellC controller = new CreateNewCellC();
         controller.createDefaultCell(true);
     }
@@ -2234,7 +2232,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void createNewCellAndSetOffsetAction() {
-        LOGGER.event("New cell set offset");
+        LOGGER.info("New cell set offset");
         new CreateNewCellC(getCurrentTime(), true);
     }
 
@@ -2243,7 +2241,7 @@ public final class DataControllerV extends DatavyuDialog
      */
     @Action
     public void pointCellAction() {
-        LOGGER.event("Set new cell offset");
+        LOGGER.info("Set new cell offset");
 
         long time = getCurrentTime();
         new CreateNewCellC(time, false);

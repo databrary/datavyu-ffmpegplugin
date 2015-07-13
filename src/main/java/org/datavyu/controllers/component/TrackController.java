@@ -15,10 +15,10 @@
 package org.datavyu.controllers.component;
 
 import com.google.common.collect.Maps;
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.event.component.CarriageEvent;
 import org.datavyu.event.component.CarriageEvent.EventType;
@@ -53,91 +53,81 @@ public final class TrackController implements ViewerStateListener,
         PropertyChangeListener {
 
     /**
-     * The UserMetrix logger for this class.
+     * Tooltip text for visible icon
      */
-    private static final Logger LOGGER = UserMetrix.getLogger(
+    public static final String VISIBLE_TOOLTIP = "Toggle video visibility";
+    /**
+     * Tooltip text for lock/unlock icon
+     */
+    public static final String LOCKUNLOCK_TOOLTIP = "Toggle lock/unlock";
+    /**
+     * Tooltip text for rubbish icon
+     */
+    public static final String RUBBISH_TOOLTIP = "Close video";
+    /**
+     * The LogManager logger for this class.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(
             TrackController.class);
-
     /**
      * Main panel holding the track UI.
      */
     private final JPanel view;
-
     /**
      * Header block.
      */
     private final JPanel header;
-
     /**
      * Track label.
      */
     private final JLabel trackLabel;
-
     /**
      * Label holding the icon.
      */
     private final JLabel iconLabel;
-
     /**
      * Component that paints the track.
      */
     private final TrackPainter trackPainter;
-
     /**
      * Right click menu.
      */
     private final JPopupMenu menu;
-
     private final JMenuItem setBookmarkMenuItem;
-
     private final JMenuItem clearBookmarkMenuItem;
-
     /**
      * Button for (un)locking the track.
      */
     private final JButton lockUnlockButton;
-
     /**
      * Button for unloading the track (and its associated plugin).
      */
     private final JButton rubbishButton;
-
     /**
      * Button for hiding or showing the data viewer.
      */
     private final JButton visibleButton;
-
     /**
      * Viewable model.
      */
     private final MixerModel mixerModel;
-
     /**
      * Track model.
      */
     private final TrackModel trackModel;
 
+    //TODO: These may be better suited for a resource bundle and properties file, OR TrackConstants.java
     /**
      * Listeners interested in custom playback region events and mouse events on
      * the track.
      */
     private final EventListenerList listenerList;
-
     /**
      * States.
      */
     // can the carriage be moved using the mouse when snap is switched on
     private boolean isMoveable;
-
     private boolean isViewerVisible = true;
-
-    //TODO: These may be better suited for a resource bundle and properties file, OR TrackConstants.java
-    /**Tooltip text for visible icon */
-    public static final String VISIBLE_TOOLTIP = "Toggle video visibility";
-    /**Tooltip text for lock/unlock icon */
-    public static final String LOCKUNLOCK_TOOLTIP = "Toggle lock/unlock";
-    /**Tooltip text for rubbish icon */
-    public static final String RUBBISH_TOOLTIP = "Close video";
     
     /**
      * Creates a new TrackController.
@@ -324,6 +314,20 @@ public final class TrackController implements ViewerStateListener,
         view.validate();
     }
 
+    /**
+     * Calculates the time threshold below which data tracks will snap into place.
+     *
+     * @param viewport current viewport
+     * @return snapping threshold in time units (milliseconds);
+     */
+    public static long calculateSnappingThreshold(
+            final ViewportState viewport) {
+        final long MINIMUM_THRESHOLD_MILLISECONDS = 10;
+
+        return Math.max((long) Math.ceil(0.01F * viewport.getViewDuration()),
+                MINIMUM_THRESHOLD_MILLISECONDS);
+    }
+
     private void updatePopupMenu() {
 
         // 1. Remove every other popup menu item apart from the defaults.
@@ -472,6 +476,21 @@ public final class TrackController implements ViewerStateListener,
     }
 
     /**
+     * Set if the track carriage can be moved.
+     *
+     * @param lock true if the carriage is locked, false otherwise.
+     */
+    public void setLocked(final boolean lock) {
+        trackModel.setLocked(lock);
+
+        if (lock) {
+            lockUnlockButton.setIcon(TrackConstants.LOCK_ICON);
+        } else {
+            lockUnlockButton.setIcon(TrackConstants.UNLOCK_ICON);
+        }
+    }
+
+    /**
      * @return Offset in milliseconds.
      */
     public long getOffset() {
@@ -523,21 +542,6 @@ public final class TrackController implements ViewerStateListener,
      */
     public void setMoveable(final boolean canMove) {
         isMoveable = canMove;
-    }
-
-    /**
-     * Set if the track carriage can be moved.
-     *
-     * @param lock true if the carriage is locked, false otherwise.
-     */
-    public void setLocked(final boolean lock) {
-        trackModel.setLocked(lock);
-
-        if (lock) {
-            lockUnlockButton.setIcon(TrackConstants.LOCK_ICON);
-        } else {
-            lockUnlockButton.setIcon(TrackConstants.UNLOCK_ICON);
-        }
     }
 
     /**
@@ -992,60 +996,39 @@ public final class TrackController implements ViewerStateListener,
     }
 
     /**
-     * Calculates the time threshold below which data tracks will snap into place.
-     *
-     * @param viewport current viewport
-     * @return snapping threshold in time units (milliseconds);
-     */
-    public static long calculateSnappingThreshold(
-            final ViewportState viewport) {
-        final long MINIMUM_THRESHOLD_MILLISECONDS = 10;
-
-        return Math.max((long) Math.ceil(0.01F * viewport.getViewDuration()),
-                MINIMUM_THRESHOLD_MILLISECONDS);
-    }
-
-    /**
      * Inner listener used to handle mouse events.
      */
     private class TrackPainterListener extends MouseInputAdapter {
-
-        /**
-         * Initial offset value.
-         */
-        private long offsetInit;
-
-        /**
-         * Is the mouse in the carriage.
-         */
-        private boolean inCarriage;
-
-        /**
-         * Whether the track was selected when the mouse was first pressed.
-         */
-        private boolean wasTrackSelected;
-
-        /**
-         * Initial x-coord position.
-         */
-        private int xInit;
-
-        /**
-         * Initial track state.
-         */
-        private TrackState initialState;
 
         /**
          * Mouse cursor when hovering over a track that can be moved.
          */
         private final Cursor moveableTrackHoverCursor = Cursor
                 .getPredefinedCursor(Cursor.HAND_CURSOR);
-
         /**
          * Default mouse cursor.
          */
         private final Cursor defaultCursor = Cursor.getDefaultCursor();
-
+        /**
+         * Initial offset value.
+         */
+        private long offsetInit;
+        /**
+         * Is the mouse in the carriage.
+         */
+        private boolean inCarriage;
+        /**
+         * Whether the track was selected when the mouse was first pressed.
+         */
+        private boolean wasTrackSelected;
+        /**
+         * Initial x-coord position.
+         */
+        private int xInit;
+        /**
+         * Initial track state.
+         */
+        private TrackState initialState;
         private ViewportState viewport;
 
         @Override

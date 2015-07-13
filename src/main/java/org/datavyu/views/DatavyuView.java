@@ -14,9 +14,9 @@
  */
 package org.datavyu.views;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
 import org.datavyu.Datavyu.Platform;
@@ -83,7 +83,7 @@ public final class DatavyuView extends FrameView
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(DatavyuView.class);
+    private static Logger LOGGER = LogManager.getLogger(DatavyuView.class);
     private static boolean redraw = true;
     private final Icon rubyIcon = new ImageIcon(getClass().getResource("/icons/ruby.png"));
     private final Icon opfIcon = new ImageIcon(getClass().getResource("/icons/datavyu.png"));
@@ -1708,7 +1708,7 @@ public final class DatavyuView extends FrameView
      */
     @Action
     public void hideColumn() {
-        LOGGER.event("Hidding columns");
+        LOGGER.info("Hidding columns");
         Datastore ds = Datavyu.getProjectController().getDB();
 
         for (Variable var : ds.getSelectedVariables()) {
@@ -1724,7 +1724,7 @@ public final class DatavyuView extends FrameView
      */
     @Action
     public void showAllColumns() {
-        LOGGER.event("Showing all columns");
+        LOGGER.info("Showing all columns");
         Datastore ds = Datavyu.getProjectController().getDB();
 
         for (Variable var : ds.getAllVariables()) {

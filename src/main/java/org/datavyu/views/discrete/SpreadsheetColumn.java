@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.*;
@@ -55,7 +55,7 @@ public final class SpreadsheetColumn extends JLabel
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(SpreadsheetColumn.class);
+    private static Logger LOGGER = LogManager.getLogger(SpreadsheetColumn.class);
 
     /**
      * Database reference.
@@ -169,20 +169,6 @@ public final class SpreadsheetColumn extends JLabel
     }
 
     /**
-     * @param padding The working onset padding to use for cells in this column.
-     */
-    public void setWorkingOnsetPadding(final int padding) {
-        onsetPadding = padding;
-    }
-
-    /**
-     * @param padding The working offset padding to use for cells in this column.
-     */
-    public void setWorkingOffsetPadding(final int padding) {
-        offsetPadding = padding;
-    }
-
-    /**
      * @return The onset padding to use for the next cell you are laying in this
      * column
      */
@@ -191,11 +177,25 @@ public final class SpreadsheetColumn extends JLabel
     }
 
     /**
+     * @param padding The working onset padding to use for cells in this column.
+     */
+    public void setWorkingOnsetPadding(final int padding) {
+        onsetPadding = padding;
+    }
+
+    /**
      * @return The offset padding to use for the next cell you are laying in
      * this column.
      */
     public int getWorkingOffsetPadding() {
         return offsetPadding;
+    }
+
+    /**
+     * @param padding The working offset padding to use for cells in this column.
+     */
+    public void setWorkingOffsetPadding(final int padding) {
+        offsetPadding = padding;
     }
 
     /**
@@ -330,10 +330,18 @@ public final class SpreadsheetColumn extends JLabel
     }
 
     /**
+     * @return Column Width in pixels.
+     */
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    /**
      * @param colWidth Column width to set in pixels.
      */
     public void setWidth(final int colWidth) {
-        LOGGER.event("set column width");
+        LOGGER.info("set column width");
         width = colWidth;
 
         Dimension dim = getHeaderSize();
@@ -343,14 +351,6 @@ public final class SpreadsheetColumn extends JLabel
 
         datapanel.setWidth(width);
         datapanel.revalidate();
-    }
-
-    /**
-     * @return Column Width in pixels.
-     */
-    @Override
-    public int getWidth() {
-        return width;
     }
 
     /**
@@ -368,12 +368,31 @@ public final class SpreadsheetColumn extends JLabel
     }
 
     /**
+     * Set the selected state for the DataColumn this displays and clear all other cells and columns.
+     *
+     * @param isSelected Selected state.
+     */
+    public void setExclusiveSelected(final boolean isSelected) {
+        LOGGER.info("select column");
+        cellSelList.clearCellSelection();
+        columnSelList.clearColumnSelection();
+        setSelected(isSelected);
+    }
+
+    /**
+     * @return selection status of underlying variable
+     */
+    public boolean isSelected() {
+        return variable.isSelected();
+    }
+
+    /**
      * Set the selected state for the DataColumn this displays.
      *
      * @param isSelected Selected state.
      */
     public void setSelected(final boolean isSelected) {
-        LOGGER.event("select column");
+        LOGGER.info("select column");
         variable.setSelected(isSelected);
         this.selected = isSelected;
 
@@ -384,26 +403,6 @@ public final class SpreadsheetColumn extends JLabel
         }
 
 //        repaint();
-    }
-
-    /**
-     * Set the selected state for the DataColumn this displays and clear all other cells and columns.
-     *
-     * @param isSelected Selected state.
-     */
-    public void setExclusiveSelected(final boolean isSelected) {
-        LOGGER.event("select column");
-        cellSelList.clearCellSelection();
-        columnSelList.clearColumnSelection();
-        setSelected(isSelected);
-    }
-
-
-    /**
-     * @return selection status of underlying variable
-     */
-    public boolean isSelected() {
-        return variable.isSelected();
     }
 
     /**

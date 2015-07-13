@@ -14,20 +14,19 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.Variable;
-import org.datavyu.models.db.DatavyuVariable;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -41,14 +40,11 @@ public class OpenCTest {
 
     @BeforeClass
     public void spinUp() {
-        com.usermetrix.jclient.Configuration config = new com.usermetrix.jclient.Configuration(2);
-        UserMetrix.initalise(config);
-        UserMetrix.setCanSendLogs(false);
+        LogManager.getLogger();
     }
 
     @AfterClass
     public void spinDown() {
-        UserMetrix.shutdown();
     }
 
     @Test

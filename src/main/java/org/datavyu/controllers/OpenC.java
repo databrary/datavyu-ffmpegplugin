@@ -14,8 +14,8 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.project.Project;
 import org.datavyu.models.project.ViewerSetting;
@@ -33,7 +33,7 @@ public final class OpenC {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(OpenC.class);
+    private static Logger LOGGER = LogManager.getLogger(OpenC.class);
     /**
      * A reference to the database that this controller opened.
      */
@@ -73,12 +73,12 @@ public final class OpenC {
 
         // If project is archive - open it as such.
         if (projectFile.getName().endsWith(".opf")) {
-            LOGGER.event("open project archive");
+            LOGGER.info("open project archive");
             openProjectArchive(projectFile);
 
             // Otherwise project is uncompressed.
         } else {
-            LOGGER.event("open legacy shapa");
+            LOGGER.info("open legacy shapa");
 
             OpenProjectFileC opc = new OpenProjectFileC();
             project = opc.open(projectFile);

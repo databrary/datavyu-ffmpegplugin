@@ -14,8 +14,9 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.*;
 
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.min;
-import org.datavyu.Configuration;
 
 /**
  * Controller for opening a database from disk.
@@ -52,13 +52,11 @@ public final class OpenDatabaseFileC {
      * Bool so we know whether or not we've had an error while reading in a file
      */
     private static boolean parse_error = false;
-
-    private int numVarsRead = 0;
-
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(OpenDatabaseFileC.class);
+    private static Logger LOGGER = LogManager.getLogger(OpenDatabaseFileC.class);
+    private int numVarsRead = 0;
 
     /**
      * Opens a database.
@@ -108,7 +106,7 @@ public final class OpenDatabaseFileC {
     public Datastore openAsCSV(final File sFile) {
 
         try {
-            LOGGER.event("open csv database from file");
+            LOGGER.info("open csv database from file");
 
             FileInputStream fis = new FileInputStream(sFile);
             Datastore result = openAsCSV(fis);
@@ -134,7 +132,7 @@ public final class OpenDatabaseFileC {
      */
     public Datastore openAsCSV(final InputStream inStream) {
         try {
-            LOGGER.event("open csv database from stream");
+            LOGGER.info("open csv database from stream");
 
             Datastore db = DatastoreFactory.newDatastore();
             db.setTitleNotifier(Datavyu.getApplication());

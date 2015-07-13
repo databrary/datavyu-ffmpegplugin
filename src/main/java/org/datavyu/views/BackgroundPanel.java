@@ -14,8 +14,8 @@
  */
 package org.datavyu.views;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -25,14 +25,13 @@ import java.net.URL;
 
 public class BackgroundPanel extends JPanel {
     /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(BackgroundPanel.class);
+    /**
      * The image to use as the background.
      */
     Image image;
-
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(BackgroundPanel.class);
 
     public BackgroundPanel(String resource) {
         try {

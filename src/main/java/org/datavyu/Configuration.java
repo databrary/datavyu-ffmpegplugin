@@ -14,8 +14,8 @@
  */
 package org.datavyu;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.util.ConfigProperties;
 import org.jdesktop.application.LocalStorage;
 
@@ -31,15 +31,13 @@ import java.io.IOException;
 public final class Configuration {
 
     /**
+     * The colour to use for the border.
+     */
+    public static final Color BORDER_COLOUR = new Color(175, 175, 175);
+    /**
      * The name of the configuration file.
      */
     private static final String CONFIG_FILE = "settings.xml";
-
-    /**
-     * The single instance of the configuration object for Datavyu.
-     */
-    private static Configuration instance = null;
-
     /**
      * The default font to be used by Datavyu.
      */
@@ -59,72 +57,58 @@ public final class Configuration {
      * The default label font size to be used by Datavyu labels.
      */
     private static final float LABEL_FONT_SIZE = 12;
-
-    /**
-     * The colour to use for the border.
-     */
-    public static final Color BORDER_COLOUR = new Color(175, 175, 175);
-
     /**
      * The default spreadsheet background colour.
      */
     private static final Color DEFAULT_BACKGROUND = new Color(249, 249, 249);
-
     /**
      * The default spreadsheet foreground colour.
      */
     private static final Color DEFAULT_FOREGROUND = new Color(58, 58, 58);
-
     /**
      * The default spreadsheet ordinal foreground colour.
      */
     private static final Color DEFAULT_ORDINAL = new Color(175, 175, 175);
-
     /**
      * The default spreadsheet time stamp foreground colour.
      */
     private static final Color DEFAULT_TIMESTAMP = new Color(90, 90, 90);
-
     /**
      * The default spreadsheet selected colour.
      */
     private static final Color DEFAULT_SELECTED = new Color(176, 197, 227);
-
     /**
      * The default spreadsheet overlap colour.
      */
     private static final Color DEFAULT_OVERLAP = Color.RED;
-
     /**
      * Fill colour of a carriage in the unselected/normal state.
      */
     private static final Color DEFAULT_NORMAL_CARRIAGE_COLOR = new Color(169, 218, 248);
-
     /**
      * Outline colour of a carriage in the unselected/normal state.
      */
     private static final Color DEFAULT_NORMAL_OUTLINE_COLOR = new Color(129, 167, 188);
-
     /**
      * Fill colour of a carriage in the selected state.
      */
     private static final Color DEFAULT_SELECTED_CARRIAGE_COLOR = new Color(138, 223, 162);
-
     /**
      * Outline colour of a carriage in the selected state.
      */
     private static final Color DEFAULT_SELECTED_OUTLINE_COLOR = new Color(105, 186, 128);
-
+    /**
+     * The single instance of the configuration object for Datavyu.
+     */
+    private static Configuration instance = null;
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger();
     /**
      * The configuration properties.
      */
     private ConfigProperties properties;
-
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(Configuration.class);
-
     /**
      * Default font type.
      */
@@ -229,6 +213,13 @@ public final class Configuration {
     }
 
     /**
+     * @return The data font to use for the spreadsheet.
+     */
+    public Font getSSDataFont() {
+        return properties.getSSDataFont();
+    }
+
+    /**
      * Sets and saves (to the config file) the data font to use on the
      * spreadsheet.
      *
@@ -240,13 +231,6 @@ public final class Configuration {
     }
 
     /**
-     * @return The data font to use for the spreadsheet.
-     */
-    public Font getSSDataFont() {
-        return properties.getSSDataFont();
-    }
-
-    /**
      * Changes the data font size.
      *
      * @param size new font size
@@ -254,6 +238,13 @@ public final class Configuration {
     public void setSSDataFontSize(final float size) {
         properties.setSSDataFont(newFont.deriveFont(size));
         save();
+    }
+
+    /**
+     * @return The data font to use for the spreadsheet.
+     */
+    public Font getSSLabelFont() {
+        return properties.getSSLabelFont();
     }
 
     /**
@@ -268,10 +259,10 @@ public final class Configuration {
     }
 
     /**
-     * @return The data font to use for the spreadsheet.
+     * @return The background colour for the spreadsheet.
      */
-    public Font getSSLabelFont() {
-        return properties.getSSLabelFont();
+    public Color getSSBackgroundColour() {
+        return properties.getSSBackgroundColour();
     }
 
     /**
@@ -286,10 +277,10 @@ public final class Configuration {
     }
 
     /**
-     * @return The background colour for the spreadsheet.
+     * @return The foreground colour of the spreadsheet.
      */
-    public Color getSSBackgroundColour() {
-        return properties.getSSBackgroundColour();
+    public Color getSSForegroundColour() {
+        return properties.getSSForegroundColour();
     }
 
     /**
@@ -300,24 +291,6 @@ public final class Configuration {
      */
     public void setSSForegroundColour(final Color colour) {
         properties.setSSForegroundColour(colour);
-        save();
-    }
-
-    /**
-     * @return The foreground colour of the spreadsheet.
-     */
-    public Color getSSForegroundColour() {
-        return properties.getSSForegroundColour();
-    }
-
-    /**
-     * Sets and saves (to the config file) the ordinal foreground colour of the
-     * spreadsheet.
-     *
-     * @param colour The new colour to use for the spreadsheet ordinal foreground.
-     */
-    public void setSSOrdinalColour(final Color colour) {
-        properties.setSSOrdinalColour(colour);
         save();
     }
 
@@ -334,8 +307,8 @@ public final class Configuration {
      *
      * @param colour The new colour to use for the spreadsheet ordinal foreground.
      */
-    public void setSSTimestampColour(final Color colour) {
-        properties.setSSTimestampColour(colour);
+    public void setSSOrdinalColour(final Color colour) {
+        properties.setSSOrdinalColour(colour);
         save();
     }
 
@@ -344,6 +317,24 @@ public final class Configuration {
      */
     public Color getSSTimestampColour() {
         return properties.getSSTimestampeColour();
+    }
+
+    /**
+     * Sets and saves (to the config file) the ordinal foreground colour of the
+     * spreadsheet.
+     *
+     * @param colour The new colour to use for the spreadsheet ordinal foreground.
+     */
+    public void setSSTimestampColour(final Color colour) {
+        properties.setSSTimestampColour(colour);
+        save();
+    }
+
+    /**
+     * @return The selected colour of the spreadsheet.
+     */
+    public Color getSSSelectedColour() {
+        return properties.getSSSelectedColour();
     }
 
     /**
@@ -358,10 +349,10 @@ public final class Configuration {
     }
 
     /**
-     * @return The selected colour of the spreadsheet.
+     * @return The overlap colour of the spreadsheet.
      */
-    public Color getSSSelectedColour() {
-        return properties.getSSSelectedColour();
+    public Color getSSOverlapColour() {
+        return properties.getSSOverlapColour();
     }
 
     /**
@@ -376,10 +367,10 @@ public final class Configuration {
     }
 
     /**
-     * @return The overlap colour of the spreadsheet.
+     * @return The last directory the user navigated too in a file chooser.
      */
-    public Color getSSOverlapColour() {
-        return properties.getSSOverlapColour();
+    public File getLCDirectory() {
+        return new File(properties.getLCDirectory());
     }
 
     /**
@@ -393,20 +384,13 @@ public final class Configuration {
         save();
     }
 
-    /**
-     * @return The last directory the user navigated too in a file chooser.
-     */
-    public File getLCDirectory() {
-        return new File(properties.getLCDirectory());
+    public Boolean getCanSendLogs() {
+        return properties.getCanSendLogs();
     }
 
     public void setCanSendLogs(final Boolean send) {
         properties.setCanSendLogs(send);
         save();
-    }
-
-    public Boolean getCanSendLogs() {
-        return properties.getCanSendLogs();
     }
 
     /**
@@ -470,17 +454,16 @@ public final class Configuration {
         properties.setColumnNameWarning(b);
         save();
     }
+
+    public String getFavouritesFolder() {
+        return properties.getFavouritesFolder();
+    }
     
     public void setFavouritesFolder(final String path)
     {
         System.out.println(path);
         properties.setFavouritesFolder(path);
         save();
-    }
-    
-    public String getFavouritesFolder()
-    {
-        return properties.getFavouritesFolder();
     }
 
     /**

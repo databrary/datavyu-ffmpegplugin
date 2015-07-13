@@ -15,9 +15,9 @@
 package org.datavyu.views;
 
 import com.google.common.collect.HashBiMap;
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import net.miginfocom.swing.MigLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.DatastoreListener;
@@ -39,30 +39,25 @@ public final class VariableListV extends DatavyuDialog
         implements TableModelListener, DatastoreListener {
 
     /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(VariableListV.class);
-
-    /**
      * The column for if a variable is visible or not.
      */
     private static final int VCOLUMN = 1;
-
     /**
      * The column for a variables name.
      */
     private static final int NCOLUMN = 2;
-    
     /**
      * The column for order index of variable
      */
     private static final int OCOLUMN = 0;
-
     /**
      * The total number of columns in the variables list.
      */
     private static final int TOTAL_COLUMNS = 3;
-
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(VariableListV.class);
     /**
      * Datastore for holding all the information in the variable list.
      */
@@ -210,7 +205,7 @@ public final class VariableListV extends DatavyuDialog
             Variable var = dbToTableMap.inverse().get(row);
 
             if (columnName.equals(rMap.getString("Table.visibleColumn"))) {
-                LOGGER.event("Editied Variable Visbility from VariableList");
+                LOGGER.info("Editied Variable Visbility from VariableList");
 
                 if (var.isHidden() == (Boolean) data) {
                     var.setHidden(!(Boolean) data);
@@ -218,7 +213,7 @@ public final class VariableListV extends DatavyuDialog
                 }
 
             } else if (columnName.equals(rMap.getString("Table.nameColumn"))) {
-                LOGGER.event("Editied Variable Name from VariableList");
+                LOGGER.info("Editied Variable Name from VariableList");
 
                 if (!var.getName().equals(data)) {
                     try {

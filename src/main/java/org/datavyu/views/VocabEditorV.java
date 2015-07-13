@@ -14,8 +14,8 @@
  */
 package org.datavyu.views;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.controllers.DeleteColumnC;
 import org.datavyu.models.db.Argument;
@@ -49,7 +49,7 @@ public final class VocabEditorV extends DatavyuDialog {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(VocabEditorV.class);
+    private static Logger LOGGER = LogManager.getLogger(VocabEditorV.class);
     /**
      * Model
      */
@@ -107,7 +107,7 @@ public final class VocabEditorV extends DatavyuDialog {
     public VocabEditorV(final Frame parent, final boolean modal) {
         super(parent, modal);
 
-        LOGGER.event("vocEd - show");
+        LOGGER.info("vocEd - show");
         ds = Datavyu.getProjectController().getDB();
 
         initComponents();
@@ -237,7 +237,7 @@ public final class VocabEditorV extends DatavyuDialog {
     public void addColumn() {
         String varName = "column" + getMatNameNum();
         try {
-            LOGGER.event("vocEd - add column");
+            LOGGER.info("vocEd - add column");
 
             // perform the action
             Variable v = ds.createVariable(varName, Argument.Type.MATRIX);
@@ -322,7 +322,7 @@ public final class VocabEditorV extends DatavyuDialog {
         selectedVocabElement.setModel(var.getRootNode());
 
         String type = "Nominal"; //Hardcoded. Was previously (String) argTypeComboBox.getSelectedItem() but this form element is now removed
-        LOGGER.event("vocEd - add argument:" + type);
+        LOGGER.info("vocEd - add argument:" + type);
 
         selectedVocabElement.rebuildContents();
 
@@ -347,7 +347,7 @@ public final class VocabEditorV extends DatavyuDialog {
             if (JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the variable " +
                     selectedVocabElement.getVariable().getName() + "?", "Confirm delete variable",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                LOGGER.event("vocEd - delete element");
+                LOGGER.info("vocEd - delete element");
                 // record the effect
                 List<Variable> varsToDelete = new ArrayList<Variable>();
                 varsToDelete.add(selectedVocabElement.getVariable());
@@ -360,7 +360,7 @@ public final class VocabEditorV extends DatavyuDialog {
 
             // User has argument selected - delete it from the vocab element.
         } else if (selectedArgument != null) {
-            LOGGER.event("vocEd - delete argument");
+            LOGGER.info("vocEd - delete argument");
             //TODO no edit created for this!!!
             selectedVocabElement.getVariable().removeArgument(selectedArgument.getModel().name);
             selectedVocabElement.rebuildContents();
@@ -390,7 +390,7 @@ public final class VocabEditorV extends DatavyuDialog {
      */
     @Action
     public int applyChanges() {
-        LOGGER.event("vocEd - apply");
+        LOGGER.info("vocEd - apply");
 
         int errors = 0;
         updateDialogState();
@@ -422,7 +422,7 @@ public final class VocabEditorV extends DatavyuDialog {
      */
     @Action
     public void ok() {
-        LOGGER.event("vocEd - ok");
+        LOGGER.info("vocEd - ok");
         if (applyChanges() == 0) {
             try {
                 dispose();
@@ -437,7 +437,7 @@ public final class VocabEditorV extends DatavyuDialog {
      */
     @Action
     public void closeWindow() {
-        LOGGER.event("vocEd - close");
+        LOGGER.info("vocEd - close");
         try {
             dispose();
         } catch (Throwable e) {

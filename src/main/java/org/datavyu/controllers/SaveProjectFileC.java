@@ -14,8 +14,8 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.controllers.project.DatavyuProjectRepresenter;
 import org.datavyu.models.project.Project;
 import org.yaml.snakeyaml.Dumper;
@@ -33,7 +33,7 @@ public final class SaveProjectFileC {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(SaveProjectFileC.class);
+    private static Logger LOGGER = LogManager.getLogger(SaveProjectFileC.class);
 
     /**
      * Serialize the Datavyu project to a stream. The caller is responsible
@@ -43,7 +43,7 @@ public final class SaveProjectFileC {
      * @param project   The project you wish to serialize.
      */
     public void save(final OutputStream outStream, final Project project) {
-        LOGGER.event("save to stream");
+        LOGGER.info("save to stream");
         Dumper dumper = new Dumper(new DatavyuProjectRepresenter(),
                 new DumperOptions());
         Yaml yaml = new Yaml(dumper);

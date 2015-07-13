@@ -14,8 +14,8 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.RecentFiles;
 import org.datavyu.models.db.*;
@@ -46,7 +46,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(RunScriptC.class);
+    private static Logger LOGGER = LogManager.getLogger(RunScriptC.class);
     /**
      * The path to the script file we are executing.
      */
@@ -134,7 +134,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
     @Override
     protected Object doInBackground() {
-        LOGGER.event("run script");
+        LOGGER.info("run script");
 
         ReaderThread t = new ReaderThread();
         t.start();

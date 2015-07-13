@@ -14,7 +14,6 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.UserMetrix;
 import org.datavyu.models.db.*;
 import org.datavyu.models.project.Project;
 import org.datavyu.util.UIUtils;
@@ -36,14 +35,10 @@ public class SaveCTest {
 
     @BeforeClass
     public void spinUp() {
-        com.usermetrix.jclient.Configuration config = new com.usermetrix.jclient.Configuration(2);
-        UserMetrix.initalise(config);
-        UserMetrix.setCanSendLogs(false);
     }
 
     @AfterClass
     public void spinDown() {
-        UserMetrix.shutdown();
     }
 
     @Test

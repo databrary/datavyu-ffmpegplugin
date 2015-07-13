@@ -14,8 +14,8 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.Variable;
@@ -31,7 +31,7 @@ public final class DeleteColumnC {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(DeleteColumnC.class);
+    private static Logger LOGGER = LogManager.getLogger(DeleteColumnC.class);
 
     /**
      * Constructor.
@@ -39,7 +39,7 @@ public final class DeleteColumnC {
      * @param colsToDelete The columns to remove from the database/spreadsheet.
      */
     public DeleteColumnC(final List<Variable> colsToDelete) {
-        LOGGER.event("delete columns");
+        LOGGER.info("delete columns");
 
         // The spreadsheet is the view for this controller.
         SpreadsheetPanel view = (SpreadsheetPanel) Datavyu.getView().getComponent();

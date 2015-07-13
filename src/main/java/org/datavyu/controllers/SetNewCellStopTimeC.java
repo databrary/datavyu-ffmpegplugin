@@ -14,8 +14,8 @@
  */
 package org.datavyu.controllers;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Cell;
 import org.datavyu.undoableedits.ChangeCellEdit;
@@ -31,7 +31,7 @@ public final class SetNewCellStopTimeC {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(SetNewCellStopTimeC.class);
+    private static Logger LOGGER = LogManager.getLogger(SetNewCellStopTimeC.class);
 
     /**
      * Sets the stop time of the last cell that was created.
@@ -40,7 +40,7 @@ public final class SetNewCellStopTimeC {
      *                     spreadsheet to set the stop time for.
      */
     public SetNewCellStopTimeC(final long milliseconds) {
-        LOGGER.event("set new cell offset");
+        LOGGER.info("set new cell offset");
 
         Cell c = Datavyu.getProjectController().getLastCreatedCell();
         // record the effect

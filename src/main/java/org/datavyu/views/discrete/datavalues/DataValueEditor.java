@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete.datavalues;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.models.db.MatrixValue;
 import org.datavyu.models.db.NominalValue;
 import org.datavyu.models.db.TextValue;
@@ -34,24 +34,21 @@ import java.awt.event.KeyEvent;
 public abstract class DataValueEditor extends EditorComponent {
 
     /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(DataValueEditor.class);
+    /**
      * The value that this view represents.
      */
     private Value model = null;
-
     /**
      * The specific type of model this view represents.
      */
     private Class modelType = null;
-
     /**
      * Text when editor gained focus (became current editor).
      */
     private String textOnFocus;
-
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(DataValueEditor.class);
 
     /**
      * Constructor.

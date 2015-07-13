@@ -14,8 +14,8 @@
  */
 package org.datavyu.undoableedits;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.UserWarningException;
 import org.datavyu.models.db.Variable;
@@ -31,7 +31,7 @@ public class ChangeNameVariableEdit extends SpreadsheetEdit {
     /**
      * The logger for this class.
      */
-    private static final Logger LOGGER = UserMetrix.getLogger(ChangeNameVariableEdit.class);
+    private static final Logger LOGGER = LogManager.getLogger(ChangeNameVariableEdit.class);
     private String oldVarName;
     private String newVarName;
 
@@ -57,7 +57,7 @@ public class ChangeNameVariableEdit extends SpreadsheetEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        LOGGER.event("REDO VariableNameEdit");
+        LOGGER.info("REDO VariableNameEdit");
         super.redo();
         try {
             Variable var = model.getVariable(oldVarName);
@@ -72,7 +72,7 @@ public class ChangeNameVariableEdit extends SpreadsheetEdit {
 
     @Override
     public void undo() throws CannotUndoException {
-        LOGGER.event("UNDO VariableNameEdit");
+        LOGGER.info("UNDO VariableNameEdit");
         super.undo();
         try {
             Variable var = model.getVariable(newVarName);

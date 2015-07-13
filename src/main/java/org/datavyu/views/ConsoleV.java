@@ -14,8 +14,8 @@
  */
 package org.datavyu.views;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 
 import javax.swing.*;
@@ -31,12 +31,16 @@ public final class ConsoleV extends DatavyuDialog {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(ConsoleV.class);
+    private static Logger LOGGER = LogManager.getLogger(ConsoleV.class);
 
     /**
      * The instance of the console.
      */
     private static ConsoleV instance;
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton closeButton;
+    private javax.swing.JTextArea console;
+    private javax.swing.JScrollPane jScrollPane1;
 
     /**
      * Constructor.
@@ -53,13 +57,6 @@ public final class ConsoleV extends DatavyuDialog {
     }
 
     /**
-     * @return The text area that makes up the console.
-     */
-    public JTextArea getConsole() {
-        return this.console;
-    }
-
-    /**
      * @return The single instance of the console viewer.
      */
     public static ConsoleV getInstance() {
@@ -69,6 +66,13 @@ public final class ConsoleV extends DatavyuDialog {
         }
 
         return instance;
+    }
+
+    /**
+     * @return The text area that makes up the console.
+     */
+    public JTextArea getConsole() {
+        return this.console;
     }
 
     /**
@@ -87,19 +91,19 @@ public final class ConsoleV extends DatavyuDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(org.datavyu.Datavyu.class).getContext().getResourceMap(ConsoleV.class);
-        setTitle(resourceMap.getString("Form.title")); 
-        setName("Form"); 
+        setTitle(resourceMap.getString("Form.title"));
+        setName("Form");
 
-        jScrollPane1.setName("jScrollPane1"); 
+        jScrollPane1.setName("jScrollPane1");
 
         console.setColumns(20);
         console.setRows(5);
         console.setMinimumSize(new java.awt.Dimension(200, 150));
-        console.setName("console"); 
+        console.setName("console");
         jScrollPane1.setViewportView(console);
 
-        closeButton.setText(resourceMap.getString("closeButton.text")); 
-        closeButton.setName("closeButton"); 
+        closeButton.setText(resourceMap.getString("closeButton.text"));
+        closeButton.setName("closeButton");
         closeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeButtonActionPerformed(evt);
@@ -146,10 +150,5 @@ public final class ConsoleV extends DatavyuDialog {
             LOGGER.error("Unable to release window NewVariableV.", e);
         }
     }//GEN-LAST:event_closeButtonActionPerformed
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton closeButton;
-    private javax.swing.JTextArea console;
-    private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

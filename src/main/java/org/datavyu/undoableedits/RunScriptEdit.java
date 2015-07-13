@@ -14,8 +14,8 @@
  */
 package org.datavyu.undoableedits;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.controllers.DeleteColumnC;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.UserWarningException;
@@ -34,7 +34,7 @@ public class RunScriptEdit extends SpreadsheetEdit {
     /**
      * The logger for this class.
      */
-    private static final Logger LOGGER = UserMetrix.getLogger(RunScriptEdit.class);
+    private static final Logger LOGGER = LogManager.getLogger(RunScriptEdit.class);
 
     private String scriptPath;
     private List<VariableTO> colsTO; // DataColumn relevant values

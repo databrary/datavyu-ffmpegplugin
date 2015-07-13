@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete.datavalues.vocabelements;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Variable;
 import org.datavyu.views.discrete.EditorComponent;
@@ -30,25 +30,21 @@ import java.awt.event.KeyEvent;
 public final class FormalArgEditor extends EditorComponent {
 
     /**
+     * String holding the reserved characters.
+     */
+    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(FormalArgEditor.class);
+    /**
      * Parent Vocab Variable.
      */
     private Variable parentVariable;
-
     /**
      * Index of the formal arg.
      */
     private int argIndex;
-
-    /**
-     * String holding the reserved characters.
-     */
-    private static final String RESERVED_CHARS = ")(<>|,;\t\r\n";
-
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = UserMetrix.getLogger(FormalArgEditor.class);
-
     /**
      * The parent editor window that this argument belongs too.
      */

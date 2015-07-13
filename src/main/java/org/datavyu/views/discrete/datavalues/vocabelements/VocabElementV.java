@@ -14,8 +14,8 @@
  */
 package org.datavyu.views.discrete.datavalues.vocabelements;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Variable;
@@ -61,7 +61,7 @@ public class VocabElementV extends JPanel {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(VocabElementV.class);
+    private static Logger LOGGER = LogManager.getLogger(VocabElementV.class);
     /**
      * the light blue colour used for backgrounds
      */

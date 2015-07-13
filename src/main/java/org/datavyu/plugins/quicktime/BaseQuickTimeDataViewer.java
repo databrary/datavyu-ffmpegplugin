@@ -14,9 +14,9 @@
  */
 package org.datavyu.plugins.quicktime;
 
-import com.usermetrix.jclient.Logger;
-import com.usermetrix.jclient.UserMetrix;
 import net.miginfocom.swing.MigLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.id.Identifier;
 import org.datavyu.plugins.CustomActions;
@@ -56,7 +56,7 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = UserMetrix.getLogger(BaseQuickTimeDataViewer.class);
+    private static Logger LOGGER = LogManager.getLogger(BaseQuickTimeDataViewer.class);
     /**
      * Icon for displaying volume slider.
      */
