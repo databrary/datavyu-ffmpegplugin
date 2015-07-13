@@ -140,11 +140,17 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
         }
         String[] args = value.split(",");
         List<Value> values = getArguments();
-        if(args.length != values.size()) {
-            System.err.println("Error: Arg list and value list are different sizes, cannot undo.");
-        }
-        for(int i = 0; i < args.length; i++) {
-            values.get(i).set(args[i]);
+
+        // Handle legacy variable types
+        if (values.size() == 1 && values.get(0).getArgument().type != Argument.Type.MATRIX) {
+            values.get(0).set(value);
+        } else {
+            if (args.length != values.size()) {
+                System.err.println("Error: Arg list and value list are different sizes, cannot undo.");
+            }
+            for (int i = 0; i < args.length; i++) {
+                values.get(i).set(args[i]);
+            }
         }
     }
 }
