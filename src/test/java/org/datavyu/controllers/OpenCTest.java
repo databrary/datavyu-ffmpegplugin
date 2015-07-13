@@ -19,12 +19,15 @@ import org.datavyu.models.db.Argument;
 import org.datavyu.models.db.Cell;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.models.db.Variable;
+import org.datavyu.models.db.DatavyuVariable;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -97,32 +100,47 @@ public class OpenCTest {
         Datastore ds = openc.getDatastore();
         List<Variable> vars = ds.getAllVariables();
         assertEquals(vars.size(), 4);
-        assertEquals(vars.get(0).getName(), "testColumn");
-        assertEquals(vars.get(0).getRootNode().type, Argument.Type.TEXT);
-        assertEquals(vars.get(0).isHidden(), false);
-        List<Cell> cells = vars.get(0).getCells();
+        
+        // Sort the columns by name to match up the order with what we expect.
+        Collections.sort(vars, 
+                new Comparator<Variable>(){
+                    @Override
+                    public int compare(Variable v1, Variable v2){
+                        return (v1.getName().compareTo(v2.getName()));
+                    }
+                }
+        );
+        
+        Variable var = vars.get(0);
+        assertEquals(var.getName(), "hiddenColumn");
+        assertEquals(var.getRootNode().type, Argument.Type.TEXT);
+        assertEquals(var.isHidden(), true);
+        List<Cell> cells = var.getCells();
+        assertEquals(cells.size(), 0);
+        
+        var = vars.get(1);
+        assertEquals(var.getName(), "testColumn");
+        assertEquals(var.getRootNode().type, Argument.Type.TEXT);
+        assertEquals(var.isHidden(), false);
+        cells = var.getCells();
         assertEquals(cells.size(), 1);
         assertEquals(cells.get(0).getValueAsString(), "cellA");
 
-        assertEquals(vars.get(1).getName(), "testColumn2");
-        assertEquals(vars.get(1).getRootNode().type, Argument.Type.NOMINAL);
-        assertEquals(vars.get(1).isHidden(), false);
-        cells = vars.get(1).getCells();
+        var = vars.get(2);
+        assertEquals(var.getName(), "testColumn2");
+        assertEquals(var.getRootNode().type, Argument.Type.NOMINAL);
+        assertEquals(var.isHidden(), false);
+        cells = var.getCells();
         assertEquals(cells.size(), 1);
         assertEquals(cells.get(0).getValueAsString(), "cellB");
 
-        assertEquals(vars.get(2).getName(), "testColumn3");
-        assertEquals(vars.get(2).getRootNode().type, Argument.Type.MATRIX);
-        assertEquals(vars.get(2).isHidden(), false);
-        cells = vars.get(2).getCells();
+        var = vars.get(3);
+        assertEquals(var.getName(), "testColumn3");
+        assertEquals(var.getRootNode().type, Argument.Type.MATRIX);
+        assertEquals(var.isHidden(), false);
+        cells = var.getCells();
         assertEquals(cells.size(), 1);
         assertEquals(cells.get(0).getValueAsString(), "(cellC)");
-
-        assertEquals(vars.get(3).getName(), "hiddenColumn");
-        assertEquals(vars.get(3).getRootNode().type, Argument.Type.TEXT);
-        assertEquals(vars.get(3).isHidden(), true);
-        cells = vars.get(3).getCells();
-        assertEquals(cells.size(), 0);
     }
 
     @Test
