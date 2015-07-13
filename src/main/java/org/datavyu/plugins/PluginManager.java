@@ -50,6 +50,12 @@ public final class PluginManager {
      * A reference to the interface that plugins must override.
      */
     private static final Class<?> PLUGIN_CLASS;
+
+    //
+    //
+    // !!! WARNING: instance must be last static - or Datavyu will crash !!!
+    //
+    //
     /**
      * The single instance of the PluginManager for Datavyu.
      */
@@ -57,13 +63,7 @@ public final class PluginManager {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = LogManager.getLogger(PluginManager.class);
-
-    //
-    //
-    // !!! WARNING: instance must be last static - or Datavyu will crash !!!
-    // 
-    //
+    private static Logger LOGGER = LogManager.getLogger(PluginManager.class.getName());
 
     static {
         PLUGIN_CLASS = Plugin.class;
