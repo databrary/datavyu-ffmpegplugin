@@ -138,7 +138,7 @@ public final class DatavyuMatrixValue extends DatavyuValue implements MatrixValu
         if (value.startsWith("(") && value.endsWith(")")) {
             value = value.substring(1, value.length() - 1);
         }
-        String[] args = value.split(",");
+        String[] args = value.split(",", -1);
         List<Value> values = getArguments();
 
         // Handle legacy variable types
