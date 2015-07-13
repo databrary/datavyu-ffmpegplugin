@@ -56,18 +56,19 @@ public final class PluginManager {
     // !!! WARNING: instance must be last static - or Datavyu will crash !!!
     //
     //
-    /**
-     * The single instance of the PluginManager for Datavyu.
-     */
-    private static final PluginManager INSTANCE = new PluginManager();
-    /**
-     * The logger for this class.
-     */
-    private static Logger LOGGER = LogManager.getLogger(PluginManager.class.getName());
 
     static {
         PLUGIN_CLASS = Plugin.class;
     }
+    /**
+     * The logger for this class.
+     */
+    private static Logger LOGGER = LogManager.getLogger(PluginManager.class.getName());
+    /**
+     * The single instance of the PluginManager for Datavyu.
+     */
+    private static final PluginManager INSTANCE = new PluginManager();
+
 
     /**
      * Set of plugins.
