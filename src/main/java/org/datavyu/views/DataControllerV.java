@@ -657,7 +657,7 @@ public final class DataControllerV extends DatavyuDialog
         clock.stop();
         resetSync();
 
-        if (viewers.size() == 1) {
+        if (viewers.size() == 1 && playbackModel.getWindowPlayStart() > 0) {
             // Using an iterator because viewers is a set
             for (DataViewer viewer : viewers) {
                 viewer.stop();
