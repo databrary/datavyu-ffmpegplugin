@@ -287,6 +287,21 @@ class RCell
 	def duration
 		return @offset - @onset
 	end
+
+	# Override method missing.
+	# Check if the method is trying to get/set an arg.
+	# If it is, define accessor method and send the method to self.
+	def method_missing(m, *args, &block)
+		mn = m.to_s
+		code = (mn.end_with?('='))? mn.chop : mn
+		if(@arglist.include?(code))
+			index = arglist.index(code)
+			instance_eval "def #{code}; return argvals[#{index}]; end"
+			instance_eval "def #{code}=(val); argvals[#{index}] = val; end"
+			self.send m, args
+		end
+	end
+
 end
 
 #-------------------------------------------------------------------
