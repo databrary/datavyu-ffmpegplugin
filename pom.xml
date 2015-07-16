@@ -5,7 +5,7 @@
     <groupId>org.datavyu</groupId>
     <artifactId>datavyu</artifactId>
     <packaging>jar</packaging>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
     <name>Datavyu</name>
     <url>http://datavyu.org</url>
 

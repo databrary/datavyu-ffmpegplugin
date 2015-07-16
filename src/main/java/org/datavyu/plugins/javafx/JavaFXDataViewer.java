@@ -198,7 +198,12 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
 
 
         // Wait for javafx to initialize
-        while (!javafxapp.isInit()) {
+        if (!javafxapp.isInit()) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         // Hide our fake dialog box
