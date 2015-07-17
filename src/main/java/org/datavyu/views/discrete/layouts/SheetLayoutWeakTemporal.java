@@ -244,8 +244,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     }
                 }
 
-//                if (onset == nextOnset) {
-                if (nextOnset - offset <= 1) {
+                if (onset == nextOnset) {
+//                if (nextOnset - offset <= 1) {
                     for (int j = 0; j < timeArray.length; j++) {
                         if (timeArray[j] > nextOnset) {
                             timeByLoc.put(timeArray[j], timeByLoc.get(timeArray[j]) + cell.getPreferredSize().height);
