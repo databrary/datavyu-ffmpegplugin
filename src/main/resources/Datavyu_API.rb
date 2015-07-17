@@ -135,6 +135,9 @@ class RCell
 			#Handle this later by allowing numbers to be numbers but keeping strings.
 
 			instance_eval "def #{arg}; return argvals[#{i}]; end"
+			instance_eval "def #{arg}=(val);
+			 raise \"Invalid type for code #{arg}. Values may only be strings.\" if val.class!=String;
+			 argvals[#{i}] = val; end"
 			i += 1
 		end
 	end
