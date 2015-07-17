@@ -657,7 +657,11 @@ public final class DataControllerV extends DatavyuDialog
         clock.stop();
         resetSync();
 
-        if (viewers.size() == 1 && playbackModel.getWindowPlayStart() > 0) {
+        /*
+            This is the new style time reckoning where the timer gets updated from the video
+            This gets rid of the
+         */
+        if (viewers.size() == 1 && (time < playbackModel.getWindowPlayEnd() && time > playbackModel.getWindowPlayStart())) {
             // Using an iterator because viewers is a set
             for (DataViewer viewer : viewers) {
                 viewer.stop();

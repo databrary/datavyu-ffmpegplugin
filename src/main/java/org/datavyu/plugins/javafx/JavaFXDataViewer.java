@@ -1,7 +1,7 @@
 package org.datavyu.plugins.javafx;
 
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
+import javafx.scene.canvas.Canvas;
 import javafx.stage.Stage;
 import org.datavyu.models.db.Datastore;
 import org.datavyu.plugins.CustomActions;
@@ -14,7 +14,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 
 public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
@@ -76,6 +75,7 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
 
     public JavaFXDataViewer(final Frame parent, final boolean modal) {
         super(parent, modal);
+//        new JFXPanel();
 //        stateListeners = new ArrayList<ViewerStateListener>();
 
     }
@@ -91,23 +91,23 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
         }
 
         // queue on JavaFX thread and wait for completion
-        final CountDownLatch doneLatch = new CountDownLatch(1);
+//        final CountDownLatch doneLatch = new CountDownLatch(1);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 try {
                     action.run();
                 } finally {
-                    doneLatch.countDown();
+//                    doneLatch.countDown();
                 }
             }
         });
 
-        try {
-            doneLatch.await();
-        } catch (InterruptedException e) {
-            // ignore exception
-        }
+//        try {
+//            doneLatch.await();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
@@ -182,13 +182,23 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
 
     @Override
     public void setDataFeed(final File dataFeed) {
+        System.out.println("Setting datafeed");
         data = dataFeed;
+        Platform.setImplicitExit(false);
+
 
 
         // Needed to init JavaFX stuff
-        new JFXPanel();
+
+//        new JFXPanel();
+//        runAndWait(() -> {});
+
         javafxapp = new JavaFXApplication(dataFeed);
 
+        System.out.println(SwingUtilities.isEventDispatchThread());
+        System.out.println(Platform.isFxApplicationThread());
+
+//                    System.out.println("Starting JFX App in new thread...");
         runAndWait(new Runnable() {
             @Override
             public void run() {
@@ -197,10 +207,22 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
         });
 
 
+//        PlatformImpl.startup(() -> {});
+
+
+
+
         // Wait for javafx to initialize
+        System.out.println("Waiting for JFX app to init");
         while (!javafxapp.isInit()) {
+            try {
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
+        System.out.println("Inited, going");
         // Hide our fake dialog box
         dialog.setVisible(false);
 
