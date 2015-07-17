@@ -297,8 +297,12 @@ class RCell
 		if(@arglist.include?(code))
 			index = arglist.index(code)
 			instance_eval "def #{code}; return argvals[#{index}]; end"
-			instance_eval "def #{code}=(val); argvals[#{index}] = val; end"
-			self.send m, args
+			instance_eval "def #{code}=(val);
+			 raise \"Invalid type for code #{code}. Values may only be strings.\" if val.class!=String;
+			 argvals[#{index}] = val; end"
+			self.send m.to_sym, *args
+		else
+			super
 		end
 	end
 
