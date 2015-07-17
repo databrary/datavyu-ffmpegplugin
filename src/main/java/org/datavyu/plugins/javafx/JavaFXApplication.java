@@ -139,9 +139,10 @@ public class JavaFXApplication extends Application {
 
         final Media m = new Media(dataFile.toURI().toString());
         mp = new MediaPlayer(m);
-        mp.setOnReady(new Runnable() {
-            @Override
-            public void run() {
+//        mp.setOnReady(new Runnable() {
+//            @Override
+//            public void run() {
+        System.out.println("Creating new media view");
                 mv = new MediaView(mp);
 
 
@@ -171,8 +172,8 @@ public class JavaFXApplication extends Application {
 
                 init = true;
                 System.out.println(init);
-            }
-        });
+//            }
+//        });
 
 
     }

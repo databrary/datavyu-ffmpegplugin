@@ -14,6 +14,7 @@
  */
 package org.datavyu.views;
 
+import javafx.embed.swing.JFXPanel;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -211,6 +212,7 @@ public final class DatavyuView extends FrameView
 
         // generated GUI builder code
         initComponents();
+        new JFXPanel();
 
         // BugzID:492 - Set the shortcut for new cell, so a keystroke that won't
         // get confused for the "carriage return". The shortcut for new cells
