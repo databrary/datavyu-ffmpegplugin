@@ -123,6 +123,16 @@ public class SpreadsheetUndoManager extends UndoManager implements ListModel {
         return v;
     }
 
+    // Return the last edit.
+    public synchronized UndoableEdit getLastEdit(){
+        return edits.size()>0 ? edits.lastElement() : null;
+    }
+
+    // Return index of next add.
+    public synchronized int getIndexOfNextAdd(){
+        String[] toks = super.toString().split(":");
+        return Integer.parseInt(toks[toks.length-1].trim());
+    }
     // ListModel Methods
     @Override
     public Object getElementAt(int index) {
