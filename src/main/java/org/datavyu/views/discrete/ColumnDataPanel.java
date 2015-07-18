@@ -187,7 +187,7 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
     /**
      * Insert a new SpreadsheetCell for a given cell.
      *
-     * @param db       The database holding the cell that is being inserted into this
+     * @param ds       The database holding the cell that is being inserted into this
      *                 column data panel.
      * @param cell     The cell to create and insert into this column data panel.
      * @param cellSelL SpreadsheetCellSelectionListener to notify of changes in
