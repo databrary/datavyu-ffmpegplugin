@@ -37,8 +37,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     // The maximum height of the layout in pixels.
     int maxHeight;
     private JScrollPane pane;
-    int editIdx;
+    int editIdx;    // index of edit in UndoManager when layoutContainer() was last run
     boolean mustRun; // force layoutContainer() method to run fully
+    Integer columnHash;
 
     /**
      * SheetLayoutOrdinal constructor.
@@ -50,20 +51,16 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         mustRun = true;
     }
 
+    /* Set mustRun to true. */
+    public void forceRun(){
+        mustRun = true;
+    }
+
     @Override
     public void layoutContainer(Container parent) {
-        // Do nothing if datastore hasn't changed?
         long startTime = System.currentTimeMillis();
         super.layoutContainer(parent);
         pane = (JScrollPane) parent;
-
-        int eidx = Datavyu.getView().getSpreadsheetUndoManager().getIndexOfNextAdd();
-        if(!mustRun && editIdx == eidx){
-            System.err.println(String.format("Didn't align.  Time: %d.",System.currentTimeMillis()-startTime));
-            return;
-        }
-        editIdx = eidx;
-        mustRun = false;
 
         // This layout must be applied to a Spreadsheet panel.
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
@@ -74,11 +71,22 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // Get visible columns.
         List<SpreadsheetColumn> visible_columns = getVisibleColumns(mainView);
 
-        HashSet<SpreadsheetCell> visibleCells = visible_columns.stream()
-                .flatMap(col -> col.getCells().stream())
-//                .sorted((SpreadsheetCell c1, SpreadsheetCell c2) -> Long.compare(c1.getOnsetTicks(), c2.getOnsetTicks()))
-                .collect(HashSet<SpreadsheetCell>::new, HashSet<SpreadsheetCell>::add, HashSet<SpreadsheetCell>::addAll);
-        long position = 0;
+        /* Check if we can skip laying the entire spreadsheet.
+           Relies on the UndoManager, so it isn't very intuitive on when it skips
+            (e.g. redraws when column name is changed, but not when columns are hidden or shown).
+           But it should stop over-running this routine on scrolls.
+         */
+        int eidx = Datavyu.getView().getSpreadsheetUndoManager().getIndexOfNextAdd();
+        int ch = visible_columns.stream()
+                .map( col -> col.getColumnName())
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString().hashCode();
+        if( !mustRun
+                && (columnHash!=null && columnHash==ch)
+                && (editIdx == eidx)){
+            System.err.println(String.format("Didn't align.  Time: %d.",System.currentTimeMillis()-startTime));
+            return;
+        }
 
         // Cell cache so we only have to get from the DB once.
         // Greatly speeds up the algorithm.
@@ -90,8 +98,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             width = visible_columns.get(i).getWidth();
         }
         width--;
-
-//        long starttime = System.currentTimeMillis();
 
         // The size the of the gap to use between cells and as overlap on
         // overlapping cells in different columns
@@ -150,9 +156,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 }
             }
 
-            minHeight = cellsWithOnset.stream()
-                    .mapToInt( c -> c.getPreferredSize().height)
-                    .max().orElse(0);
             timeByLoc.put(time, maxPosition);
             maxPosition += minHeight;
 
@@ -253,6 +256,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         }
 
         padColumns(mainView, parent);
+        editIdx = eidx;
+        mustRun = false;
+        columnHash = new Integer(ch);
         System.err.println(String.format("Aligned.  Time: %d.", System.currentTimeMillis() - startTime));
     }
 

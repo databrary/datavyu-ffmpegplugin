@@ -130,6 +130,7 @@ public class SpreadsheetUndoManager extends UndoManager implements ListModel {
 
     // Return index of next add.
     public synchronized int getIndexOfNextAdd(){
+        // The index is actually not exposed directly, but we can cheat and get it from the toString...
         String[] toks = super.toString().split(":");
         return Integer.parseInt(toks[toks.length-1].trim());
     }
