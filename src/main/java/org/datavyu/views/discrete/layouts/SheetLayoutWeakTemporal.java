@@ -58,7 +58,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
     @Override
     public void layoutContainer(Container parent) {
-        long startTime = System.currentTimeMillis();
+        //TODO: figure out how to make this whole algorithm neater.
+//        long startTime = System.currentTimeMillis();
         super.layoutContainer(parent);
         pane = (JScrollPane) parent;
 
@@ -84,7 +85,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         if( !mustRun
                 && (columnHash!=null && columnHash==ch)
                 && (editIdx == eidx)){
-            System.err.println(String.format("Didn't align.  Time: %d.",System.currentTimeMillis()-startTime));
+//            System.err.println(String.format("Didn't align.  Time: %d.",System.currentTimeMillis()-startTime));
             return;
         }
 
@@ -139,7 +140,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
         // Now go through all the times and try to map them to a position
         int maxPosition = 0;
-        HashMap<Long, Integer> timeByLoc = new HashMap<Long, Integer>();
+        TreeMap<Long, Integer> timeByLoc = new TreeMap<Long, Integer>();
         for (int i = 0; i < times.size(); i++) {
             Long time = timeArray[i];
             List<SpreadsheetCell> cellsWithOnset = cellsByOnset.get(time);
@@ -193,6 +194,22 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             }
         }
 
+        /* Go through our time mapping and ensure uniqueness. */
+        HashMap<Long, Integer> timeByLoc2 = new HashMap<>();
+        int adjust = 0;
+        Map.Entry<Long, Integer> p = timeByLoc.pollFirstEntry();
+        long pk = p.getKey();
+        int pv = p.getValue();
+        timeByLoc2.put(pk, pv);
+        for( Map.Entry<Long, Integer> e : timeByLoc.entrySet()){
+            long ck = e.getKey();
+            int cv = e.getValue();
+            if(cv==pv){
+                adjust+= gapSize;
+            }
+            timeByLoc2.put(ck, cv+adjust);
+            pv = cv;
+        }
         // Set all of the cell positions now that we have figured them out
         for (Long time : times) {
             List<SpreadsheetCell> cellsWithOnset = cellsByOnset.get(time);
@@ -201,18 +218,18 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
             if (cellsWithOnset != null) {
                 for (SpreadsheetCell cell : cellsWithOnset) {
-                    cell.setBounds(0, timeByLoc.get(time), width, cell.getPreferredSize().height);
+                    cell.setBounds(0, timeByLoc2.get(time), width, cell.getPreferredSize().height);
                 }
             }
 
             if (cellsWithOffset != null) {
                 for (SpreadsheetCell cell : cellsWithOffset) {
-                    cell.setBounds(0, cell.getY(), width, (timeByLoc.get(time) - cell.getY()));
+                    cell.setBounds(0, cell.getY(), width, (timeByLoc2.get(time) - cell.getY()));
                 }
             }
 
-            if (maxHeight < timeByLoc.get(time)) {
-                maxHeight = timeByLoc.get(time);
+            if (maxHeight < timeByLoc2.get(time)) {
+                maxHeight = timeByLoc2.get(time);
             }
         }
 //        System.out.println(maxHeight);
@@ -259,7 +276,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         editIdx = eidx;
         mustRun = false;
         columnHash = new Integer(ch);
-        System.err.println(String.format("Aligned.  Time: %d.", System.currentTimeMillis() - startTime));
+//        System.err.println(String.format("Aligned.  Time: %d.", System.currentTimeMillis() - startTime));
     }
 
     public void reorientView(SpreadsheetCell cell) {
@@ -311,7 +328,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     }
 
     private List<SpreadsheetColumn> getVisibleColumns(SpreadsheetView mainView) {
-        return mainView.getColumns().stream()
+        return mainView.getColumns().parallelStream()
                 .filter(c -> c.isVisible())
                 .collect(Collectors.toList());
     }
