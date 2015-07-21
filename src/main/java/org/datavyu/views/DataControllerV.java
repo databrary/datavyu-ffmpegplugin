@@ -407,72 +407,74 @@ public final class DataControllerV extends DatavyuDialog
         Plugin plugin = chooser.getSelectedPlugin();
         File f = chooser.getSelectedFile();
 
-        if (plugin != null) {
+        new Thread(() -> {
+            if (plugin != null) {
 
-            try {
-                DataViewer dataViewer = plugin.getNewDataViewer(Datavyu
-                        .getApplication().getMainFrame(), false);
-                dataViewer.setIdentifier(IDController.generateIdentifier());
-                dataViewer.setDataFeed(f);
-                dataViewer.seekTo(clock.getTime());
-                dataViewer.setDatastore(Datavyu.getProjectController()
-                        .getDB());
-                addDataViewer(plugin.getTypeIcon(), dataViewer, f,
-                        dataViewer.getTrackPainter());
-                mixerController.bindTrackActions(dataViewer.getIdentifier(),
-                        dataViewer.getCustomActions());
-                dataViewer.addViewerStateListener(
-                        mixerController.getTracksEditorController()
-                                .getViewerStateListener(dataViewer.getIdentifier()));
-            } catch (Throwable t) {
-                LOGGER.error(t);
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                t.printStackTrace(pw);
-                 // stack trace as a string
+                try {
+                    DataViewer dataViewer = plugin.getNewDataViewer(Datavyu
+                            .getApplication().getMainFrame(), false);
+                    dataViewer.setIdentifier(IDController.generateIdentifier());
+                    dataViewer.setDataFeed(f);
+                    dataViewer.seekTo(clock.getTime());
+                    dataViewer.setDatastore(Datavyu.getProjectController()
+                            .getDB());
+                    addDataViewer(plugin.getTypeIcon(), dataViewer, f,
+                            dataViewer.getTrackPainter());
+                    mixerController.bindTrackActions(dataViewer.getIdentifier(),
+                            dataViewer.getCustomActions());
+                    dataViewer.addViewerStateListener(
+                            mixerController.getTracksEditorController()
+                                    .getViewerStateListener(dataViewer.getIdentifier()));
+                } catch (Throwable t) {
+                    LOGGER.error(t);
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    t.printStackTrace(pw);
+                    // stack trace as a string
 
-                if (plugin.getClassifier().contains("quicktime")) {
-                    JLabel label = new JLabel();
-                    Font font = label.getFont();
+                    if (plugin.getClassifier().contains("quicktime")) {
+                        JLabel label = new JLabel();
+                        Font font = label.getFont();
 
-                    // create some css from the label's font
-                    StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
-                    style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
-                    style.append("font-size:" + font.getSize() + "pt;");
+                        // create some css from the label's font
+                        StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
+                        style.append("font-weight:" + (font.isBold() ? "bold" : "normal") + ";");
+                        style.append("font-size:" + font.getSize() + "pt;");
 
-                    // html content
-                    JEditorPane ep = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
-                            + "Error: Could not load Quicktime.  <a href=\"https://www.apple.com/quicktime/download/\">Please install Quicktime 7 from here</a><br>" +
-                            "and when installing, select \"Custom Install\" and then left click on the [+] next to the red X<br>" +
-                            "next to \"Legacy options\", click on the red X next to Quicktime For Java and select <br>\"Will be installed to local harddrive\". Then click \"Next\" and install.<br>" +
-                            "Afterwards relaunch Datavyu to use the Quicktime plugin." //
-                            + "</body></html>");
+                        // html content
+                        JEditorPane ep = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
+                                + "Error: Could not load Quicktime.  <a href=\"https://www.apple.com/quicktime/download/\">Please install Quicktime 7 from here</a><br>" +
+                                "and when installing, select \"Custom Install\" and then left click on the [+] next to the red X<br>" +
+                                "next to \"Legacy options\", click on the red X next to Quicktime For Java and select <br>\"Will be installed to local harddrive\". Then click \"Next\" and install.<br>" +
+                                "Afterwards relaunch Datavyu to use the Quicktime plugin." //
+                                + "</body></html>");
 
-                    // handle link events
-                    ep.addHyperlinkListener(new HyperlinkListener() {
-                        @Override
-                        public void hyperlinkUpdate(HyperlinkEvent e) {
-                            if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
-                                try {
-                                    Desktop.getDesktop().browse(e.getURL().toURI()); // roll your own link launcher or use Desktop if J6+
-                                } catch (Exception u) {
-                                    u.printStackTrace();
+                        // handle link events
+                        ep.addHyperlinkListener(new HyperlinkListener() {
+                            @Override
+                            public void hyperlinkUpdate(HyperlinkEvent e) {
+                                if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+                                    try {
+                                        Desktop.getDesktop().browse(e.getURL().toURI()); // roll your own link launcher or use Desktop if J6+
+                                    } catch (Exception u) {
+                                        u.printStackTrace();
+                                    }
                                 }
                             }
-                        }
-                    });
-                    ep.setEditable(false);
-                    ep.setBackground(label.getBackground());
+                        });
+                        ep.setEditable(false);
+                        ep.setBackground(label.getBackground());
 
-                    // show
-                    JOptionPane.showMessageDialog(null, ep);
-                } else {
-                    JOptionPane.showMessageDialog(null,
-                            "Could not open data source: " + t.getMessage());
+                        // show
+                        JOptionPane.showMessageDialog(null, ep);
+                    } else {
+                        JOptionPane.showMessageDialog(null,
+                                "Could not open data source: " + t.getMessage());
+                    }
+                    t.printStackTrace();
                 }
-                t.printStackTrace();
             }
-        }
+        }).start();
     }
 
     /**

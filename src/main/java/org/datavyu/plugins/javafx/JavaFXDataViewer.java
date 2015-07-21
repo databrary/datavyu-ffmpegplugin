@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 
 public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
@@ -75,6 +76,7 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
 
     public JavaFXDataViewer(final Frame parent, final boolean modal) {
         super(parent, modal);
+        javafxapp = new JavaFXApplication(null);
 //        new JFXPanel();
 //        stateListeners = new ArrayList<ViewerStateListener>();
 
@@ -85,6 +87,7 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
             throw new NullPointerException("action");
 
         // run synchronously on JavaFX thread
+        System.out.println("AM I THE JAVAFX THREAD?:" + Platform.isFxApplicationThread());
         if (Platform.isFxApplicationThread()) {
             action.run();
             return;
@@ -96,13 +99,17 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
             @Override
             public void run() {
                 try {
+                    System.out.println("RUNNING ACTION");
+                    System.out.println("AM I THE JAVAFX THREAD?:" + Platform.isFxApplicationThread());
                     action.run();
+                    System.out.println("I RAN THE ACTION");
                 } finally {
 //                    doneLatch.countDown();
                 }
             }
         });
 
+        System.out.println("TESTING WEHTEHR IT RETURNS");
 //        try {
 //            doneLatch.await();
 //        } catch (InterruptedException e) {
@@ -182,38 +189,31 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
 
     @Override
     public void setDataFeed(final File dataFeed) {
+
+        final CountDownLatch latch = new CountDownLatch(1);
         System.out.println("Setting datafeed");
         data = dataFeed;
         Platform.setImplicitExit(false);
-
-
-
-        // Needed to init JavaFX stuff
-
-//        new JFXPanel();
-//        runAndWait(() -> {});
 
         javafxapp = new JavaFXApplication(dataFeed);
 
         System.out.println(SwingUtilities.isEventDispatchThread());
         System.out.println(Platform.isFxApplicationThread());
 
-//                    System.out.println("Starting JFX App in new thread...");
         runAndWait(new Runnable() {
             @Override
             public void run() {
+
                 javafxapp.start(new Stage());
+                latch.countDown();
             }
         });
+        try {
+            latch.await();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-
-//        PlatformImpl.startup(() -> {});
-
-
-
-
-        // Wait for javafx to initialize
-        System.out.println("Waiting for JFX app to init");
         while (!javafxapp.isInit()) {
             try {
                 Thread.sleep(1000);
@@ -223,11 +223,14 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
         }
 
         System.out.println("Inited, going");
+        System.out.println(javafxapp.getDuration());
         // Hide our fake dialog box
         dialog.setVisible(false);
 
+
         // TODO Add in function to guess framerate
     }
+
 
     /**
      * Scales the video to the desired ratio.
