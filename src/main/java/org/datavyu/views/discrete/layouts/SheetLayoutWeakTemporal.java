@@ -43,25 +43,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     HashMap<Long, List<SpreadsheetCell>> offsetToLoc;
     private JScrollPane pane;
 
-
-    /**
-     * Information on each element in the row we are currently processing.
-     */
-    private class CellInfo {
-
-        public CellInfo(SpreadsheetCell nCell, long onset, long offset) {
-            cell = nCell;
-            onset = cell.getOnsetTicks();
-            offset = cell.getOffsetTicks();
-        }
-
-        // The cell that this row information is about.
-        public SpreadsheetCell cell;
-        public long onset;
-        // The column that the above cell belongs too.
-        public long offset;
-    }
-
     /**
      * SheetLayoutOrdinal constructor.
      *
@@ -77,8 +58,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         super.layoutContainer(parent);
         pane = (JScrollPane) parent;
 
-
-        long overallTime = System.currentTimeMillis();
 
         onsetToLoc = new HashMap();
         offsetToLoc = new HashMap();
@@ -154,20 +133,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // untill we have no cells left to lay.
         int pad = 0;    // The cumulative padding we need to apply to cell positioning - this is the total
         // amount of extra vertical space we have had to pad out, to make entire cells visible.
-
-        // This array is guaranteed initialized to 0 by the java lang spec
-        // Stores the current cell position for each col
-        int[] position_index = new int[visible_columns.size()];
-        ArrayList<Integer> column_bottoms = new ArrayList<Integer>();
-        ArrayList<Long> current_offsets = new ArrayList<Long>();
-        SpreadsheetCell[] rowCells = new SpreadsheetCell[visible_columns.size()];
-        SpreadsheetCell[] prevRowCells = new SpreadsheetCell[visible_columns.size()];
-        SpreadsheetCell prevLaidCell = null;
-        SpreadsheetColumn prevLaidCol = null;
-        int prevColIndex = -1;
-
-        int prev_t = 0;
-        int prev_b = 0;
 
         // Cell cache so we only have to get from the DB once.
         // Greatly speeds up the algorithm.
@@ -280,6 +245,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 }
 
                 if (onset == nextOnset) {
+//                if (nextOnset - offset <= 1) {
                     for (int j = 0; j < timeArray.length; j++) {
                         if (timeArray[j] > nextOnset) {
                             timeByLoc.put(timeArray[j], timeByLoc.get(timeArray[j]) + cell.getPreferredSize().height);

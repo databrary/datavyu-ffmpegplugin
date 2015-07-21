@@ -135,6 +135,9 @@ class RCell
 			#Handle this later by allowing numbers to be numbers but keeping strings.
 
 			instance_eval "def #{arg}; return argvals[#{i}]; end"
+			instance_eval "def #{arg}=(val);
+			 raise \"Invalid type for code #{arg}. Values may only be strings.\" if val.class!=String;
+			 argvals[#{i}] = val; end"
 			i += 1
 		end
 	end
@@ -287,6 +290,25 @@ class RCell
 	def duration
 		return @offset - @onset
 	end
+
+	# Override method missing.
+	# Check if the method is trying to get/set an arg.
+	# If it is, define accessor method and send the method to self.
+	def method_missing(m, *args, &block)
+		mn = m.to_s
+		code = (mn.end_with?('='))? mn.chop : mn
+		if(@arglist.include?(code))
+			index = arglist.index(code)
+			instance_eval "def #{code}; return argvals[#{index}]; end"
+			instance_eval "def #{code}=(val);
+			 raise \"Invalid type for code #{code}. Values may only be strings.\" if val.class!=String;
+			 argvals[#{index}] = val; end"
+			self.send m.to_sym, *args
+		else
+			super
+		end
+	end
+
 end
 
 #-------------------------------------------------------------------
