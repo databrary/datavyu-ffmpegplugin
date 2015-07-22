@@ -300,7 +300,7 @@ public class JavaFXDataViewer extends BaseQuickTimeDataViewer {
 
     @Override
     public void setPlaybackSpeed(final float rate) {
-//        javafxapp.setRate(rate);
+        javafxapp.setRate(rate);
     }
 
     @Override

@@ -42,12 +42,27 @@ public class JavaFXApplication extends Application {
         } else {
             System.out.println("SEEKING TO: " + time);
 
+            double rate = 0;
+            if (mp.getCurrentRate() != 0) {
+                mp.pause();
+                rate = mp.getCurrentRate();
+            }
+//            System.out.println("BEFORE: " + mp.getCurrentTime());
+
+            // NOTE: JavaFX only seems to be able to seek accurately in 2.2 when the rate != 0,
+            // so lets fake that here.
+            mp.setRate(1);
             mp.seek(Duration.millis(time));
+            mp.setRate(rate);
+//            System.out.println("AFTER: " + mp.getCurrentTime());
+
+//            mp.setRate(rate);
             lastSeekTime = time;
         }
     }
 
     public void pause() {
+        System.out.println(mp.getCurrentTime());
         mp.pause();
     }
 
