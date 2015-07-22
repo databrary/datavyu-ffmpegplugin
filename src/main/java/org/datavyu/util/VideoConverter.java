@@ -99,8 +99,12 @@ public class VideoConverter extends Application {
 //                "vcodec=mp4v,vfilter=canvas{padd=true},aenc=ffmpeg{strict=-2},acodec=mp4a,ab=192,channels=2"
 //                + "}:standard{access=file,mux=mp4,dst="
 //                + outfile.getAbsolutePath() + "}"};
-        String[] libvlcArgs = {"-vvvvv", ":sout=#transcode{" +
-                "vcodec=h264,vb=1200,aenc=ffmpeg{strict=-2},acodec=mp4a,ab=192,channels=2,samplerate=44100,deinterlace,audio-sync,scale=1"
+        String[] libvlcArgs = {"-vvvvv",
+                "--sout-x264-preset", "baseline",
+//                "--sout-x264-tune","film", "--sout-transcode-threads","8",
+//                "--sout-x264-keyint","50", "--sout-x264-lookahead","100", "--sout-x264-vbv-maxrate","6000", "--sout-x264-vbv-bufsize","6000",
+                ":sout=#transcode{" +
+                        "vcodec=h264,vb=1200,aenc=ffmpeg{strict=-2},acodec=mp4a,ab=192,channels=2,samplerate=44100,scale=1,fps=29.97"
                 + "}:standard{access=file,dst="
                 + outfile.getAbsolutePath() + "}"};
 

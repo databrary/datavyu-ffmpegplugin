@@ -11,7 +11,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.datavyu.util.VideoConverter;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author jesse
@@ -39,6 +45,7 @@ public class VideoConverterV extends javax.swing.JFrame {
     private javax.swing.JLabel statusLabel;
     private javax.swing.JButton targetFileButton;
     private javax.swing.JTextPane targetText;
+    private javax.swing.JButton handbrakeMessage;
 
     public VideoConverterV() {
         initComponents();
@@ -125,6 +132,28 @@ public class VideoConverterV extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         closeButton = new javax.swing.JButton();
         statusLabel = new javax.swing.JLabel();
+        handbrakeMessage = new javax.swing.JButton();
+
+
+        class OpenUrlAction implements ActionListener {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    URI uri = null;
+                    try {
+                        uri = new URI("https://handbrake.fr/");
+                    } catch (URISyntaxException ue) {
+                        ue.printStackTrace();
+                    }
+                    Desktop.getDesktop().browse(uri);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        }
+
+        handbrakeMessage.setText("<html>NOTE: We highly recommend using the Handbrake tool for video conversion.<br>This tool can be obtained from <a href=\"https://handbrake.fr/</html>\">https://handbrake.fr/</a>");
+        handbrakeMessage.addActionListener(new OpenUrlAction());
 
         setTitle("Convert Videos");
         setMinimumSize(new java.awt.Dimension(571, 192));
@@ -193,8 +222,9 @@ public class VideoConverterV extends javax.swing.JFrame {
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                         .add(layout.createSequentialGroup()
                                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                                                        .add(jLabel1)
-                                                        .add(jLabel2))
+                                                                .add(jLabel1)
+                                                                .add(jLabel2)
+                                                )
                                                 .add(28, 28, 28)
                                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                                         .add(jScrollPane1)
@@ -204,6 +234,7 @@ public class VideoConverterV extends javax.swing.JFrame {
                                                         .add(sourceFileButton)
                                                         .add(targetFileButton)))
                                         .add(progressBar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .add(handbrakeMessage, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                                                 .add(statusLabel, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 297, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 100, Short.MAX_VALUE)
@@ -221,7 +252,8 @@ public class VideoConverterV extends javax.swing.JFrame {
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                                                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                                .add(jLabel1))
+                                                        .add(jLabel1)
+                                        )
                                         .add(sourceFileButton))
                                 .add(13, 13, 13)
                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -233,17 +265,23 @@ public class VideoConverterV extends javax.swing.JFrame {
                                         .add(layout.createSequentialGroup()
                                                 .add(12, 12, 12)
                                                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                                                        .add(convertButton)
-                                                        .add(cancelButton)
-                                                        .add(closeButton)))
+                                                                .add(convertButton)
+                                                                .add(cancelButton)
+                                                                .add(closeButton)
+                                                ))
                                         .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                                                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                                                 .add(statusLabel)))
-                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                                .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                        .add(progressBar, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                        .add(handbrakeMessage, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+
+
+                                        .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        )
         );
 
+        add(handbrakeMessage);
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
