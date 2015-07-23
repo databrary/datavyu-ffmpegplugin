@@ -118,13 +118,13 @@ public final class ClockTimer {
 
     public synchronized void setTimeDontNotify(final long newTime) {
 
-        if (isStopped) {
+//        if (isStopped) {
             time = newTime;
             time = Math.max(time, 0);
 //            notifyStep();
-        } else {
-            stop();
-        }
+//        } else {
+//            stop();
+//        }
     }
 
     /**
