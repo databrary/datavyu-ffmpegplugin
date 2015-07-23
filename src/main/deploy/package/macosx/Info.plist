@@ -55,7 +55,7 @@
   <key>NSHumanReadableCopyright</key>
   <string>Copyright (C) 2015</string>
   <key>JVMRuntime</key>
-  <string>jdk1.8.0_31.jdk</string>
+  <string>$APPDIR/PlugIns/Java.runtime</string>
   <key>JVMMainClassName</key>
   <string>org.datavyu.Datavyu</string>
   <key>JVMAppClasspath</key>

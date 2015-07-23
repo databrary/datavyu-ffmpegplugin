@@ -652,6 +652,34 @@ public final class DataControllerV extends DatavyuDialog
                 && (time < (view.getOffset() + view.getDuration()));
     }
 
+    public void adjustClock(final long time) {
+        if (viewers.size() == 1 && (time < playbackModel.getWindowPlayEnd() && time > playbackModel.getWindowPlayStart())) {
+            // Using an iterator because viewers is a set
+            for (DataViewer viewer : viewers) {
+                try {
+                    long viewerTime = viewer.getCurrentTime();
+
+                    long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
+
+                     /* BugzID:1544 - Preserve precision - force jog to frame markers. */
+                    long mod = (viewerTime % stepSize);
+
+                    if (mod != 0) {
+                        viewerTime = viewerTime + stepSize - mod;
+                    }
+
+                    viewer.seekTo(viewerTime);
+
+                    clock.setTimeDontNotify(viewerTime);
+                    resetSync();
+                    updateCurrentTimeLabel();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     /**
      * @param time Current clock time in milliseconds.
      */
@@ -1579,6 +1607,7 @@ public final class DataControllerV extends DatavyuDialog
     @Action
     public void setCellOnsetAction() {
         LOGGER.info("Set cell onset");
+//        adjustClock(getCurrentTime());
         new SetSelectedCellStartTimeC(getCurrentTime());
         setOnsetField(getCurrentTime());
     }
@@ -1589,6 +1618,7 @@ public final class DataControllerV extends DatavyuDialog
     @Action
     public void setCellOffsetAction() {
         LOGGER.info("Set cell offset");
+//        adjustClock(getCurrentTime());
         new SetSelectedCellStopTimeC(getCurrentTime());
         setOffsetField(getCurrentTime());
     }
@@ -2229,6 +2259,7 @@ public final class DataControllerV extends DatavyuDialog
     @Action
     public void createNewCellAction() {
         LOGGER.info("New cell");
+        adjustClock(getCurrentTime());
         CreateNewCellC controller = new CreateNewCellC();
         controller.createDefaultCell(true);
     }
@@ -2239,6 +2270,7 @@ public final class DataControllerV extends DatavyuDialog
     @Action
     public void createNewCellAndSetOffsetAction() {
         LOGGER.info("New cell set offset");
+        adjustClock(getCurrentTime());
         new CreateNewCellC(getCurrentTime(), true);
     }
 
@@ -2249,6 +2281,7 @@ public final class DataControllerV extends DatavyuDialog
     public void pointCellAction() {
         LOGGER.info("Set new cell offset");
 
+        adjustClock(getCurrentTime());
         long time = getCurrentTime();
         new CreateNewCellC(time, false);
         new SetNewCellStopTimeC(time);
