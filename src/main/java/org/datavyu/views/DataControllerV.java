@@ -668,8 +668,6 @@ public final class DataControllerV extends DatavyuDialog
                         viewerTime = viewerTime + stepSize - mod;
                     }
 
-                    viewer.seekTo(viewerTime);
-
                     clock.setTimeDontNotify(viewerTime);
                     resetSync();
                     updateCurrentTimeLabel();
