@@ -234,6 +234,7 @@ class RCell
 		end
 	end
 
+
 	#-------------------------------------------------------------------
 	# Method name: is_within
 	# Function: Is encased by outer_cell temporally
@@ -250,7 +251,7 @@ class RCell
 	#-------------------------------------------------------------------
 
 	def is_within(outer_cell)
-		if outer_cell.onset <= @onset and outer_cell.offset >= @offset
+		if (outer_cell.onset <= @onset && outer_cell.offset >= @offset && outer_cell.onset <= @offset && outer_cell.offset >= @onset)
 			return true
 		else
 			return false
@@ -273,7 +274,7 @@ class RCell
 	#-------------------------------------------------------------------
 
 	def contains(inner_cell)
-		if inner_cell.onset >= @onset and inner_cell.offset <= @offset
+		if (inner_cell.onset >= @onset && inner_cell.offset <= @offset && inner_cell.onset <= @offset && inner_cell.offset >= @onset)
 			return true
 		else
 			return false
