@@ -33,7 +33,7 @@ UninstallDisplayName=datavyu
 WizardImageStretch=No
 WizardSmallImageFile=datavyu-setup-icon.bmp   
 ArchitecturesInstallIn64BitMode=
-UsePreviousAppDir=No
+UsePreviousAppDir=Yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
