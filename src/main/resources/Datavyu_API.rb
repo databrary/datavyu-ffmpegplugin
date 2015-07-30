@@ -620,22 +620,27 @@ def setVariable(*args)
 			end
 
 			# Now see if we have deleted any arguments
-			for dbarg in values
-				flag = false
-				for arg in var.old_args
-					if arg == dbarg.name
-						flag = true
-						break
-					end
-				end
-
-				# If we didn't find dbarg in old_args, then we must
-				# have deleted it. Remove the argument from the DB
-				if flag == false
-					puts "DELETING ARG:" + dbarg.name
-					var.db_var.removeArgument(dbarg.name)
-				end
+			deleted_args = values.map{ |x| x.name} - var.old_args
+			deleted_args.each do |arg|
+				puts "DELETING ARG: #{arg}"
+				var.db_var.removeArgument(arg)
 			end
+			# for dbarg in values
+			# 	flag = false
+			# 	for arg in var.old_args
+			# 		if arg == dbarg.name
+			# 			flag = true
+			# 			break
+			# 		end
+			# 	end
+			#
+			# 	# If we didn't find dbarg in old_args, then we must
+			# 	# have deleted it. Remove the argument from the DB
+			# 	if flag == false
+			# 		puts "DELETING ARG:" + dbarg.name
+			# 		var.db_var.removeArgument(dbarg.name)
+			# 	end
+			# end
 		end
 
 
