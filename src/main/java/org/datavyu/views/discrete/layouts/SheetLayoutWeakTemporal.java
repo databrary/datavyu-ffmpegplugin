@@ -14,15 +14,19 @@
  */
 package org.datavyu.views.discrete.layouts;
 
+import org.datavyu.Datavyu;
+import org.datavyu.models.db.Datastore;
 import org.datavyu.views.discrete.SpreadsheetCell;
 import org.datavyu.views.discrete.SpreadsheetColumn;
 import org.datavyu.views.discrete.SpreadsheetView;
+import org.datavyu.views.discrete.layouts.SheetLayoutFactory.SheetLayoutType;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-
+import java.util.stream.Collectors;
+import javax.swing.undo.UndoableEdit;
 /**
  * SheetLayoutWeakTemporal - mimics the weak temporal alignment style from
  * original MacSHAPA.
@@ -30,18 +34,12 @@ import java.util.List;
 public class SheetLayoutWeakTemporal extends SheetLayout {
     // The of the right hand margin.
 
-    int marginSize;
-    // The total number of cells that we have laid.
-    int laidCells;
     // The maximum height of the layout in pixels.
     int maxHeight;
-    // The temporal ratio/scale we are using to display cells.
-    double ratio;
-    // Hash of placements by onset
-    HashMap<Long, List<SpreadsheetCell>> onsetToLoc;
-    // Hash of placements by offset
-    HashMap<Long, List<SpreadsheetCell>> offsetToLoc;
     private JScrollPane pane;
+    int editIdx;    // index of edit in UndoManager when layoutContainer() was last run
+    boolean mustRun; // force layoutContainer() method to run fully
+    Integer columnHash;
 
     /**
      * SheetLayoutOrdinal constructor.
@@ -49,90 +47,47 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
      * @param margin The size of the margin used for this layout.
      */
     public SheetLayoutWeakTemporal(final int margin) {
-        marginSize = margin;
-        laidCells = 0;
+        editIdx = Datavyu.getView().getSpreadsheetUndoManager().getIndexOfNextAdd();
+        mustRun = true;
+    }
+
+    /* Set mustRun to true. */
+    public void forceRun(){
+        mustRun = true;
     }
 
     @Override
     public void layoutContainer(Container parent) {
+        //TODO: figure out how to make this whole algorithm neater.
+//        long startTime = System.currentTimeMillis();
         super.layoutContainer(parent);
         pane = (JScrollPane) parent;
-
-
-        onsetToLoc = new HashMap();
-        offsetToLoc = new HashMap();
 
         // This layout must be applied to a Spreadsheet panel.
         SpreadsheetView mainView = (SpreadsheetView) pane.getViewport()
                 .getView();
 
-        // See if we need to redraw this spreadsheet
-//        if(!Datavyu.getProjectController().getDB().isChanged() && !Datavyu.getView().getRedraw()) {
-//            return;
-//        }
-//        Datavyu.getProjectController().getDB().markAsUnchanged();
-//        Datavyu.getView().setRedraw(false);
-
-        laidCells = 0;
-//        maxHeight = 0;
         maxHeight = parent.getHeight();
 
-        // Determine the ratio/scale to use with temporal alignment, we pick the
-        // the largest column size in pixels and temporal length in ticks to
-        // use as an aggressive ratio/scale to fit as many cells on the screen
-        // as possible.
-        long ratioHeight = 0;   // The height required to fit all the visible cells on the spreadsheet without any spacing.
-        long ratioTicks = 0;    // The maximum offset used in the entire visible spreadsheet.
-        int totalCells = 0;     // The total number of visible cells we are laying out on the spreadsheet.
-        ratio = 1.0;            // The ratio / scale that we are using to position the cells temporally.
-
-
+        // Get visible columns.
         List<SpreadsheetColumn> visible_columns = getVisibleColumns(mainView);
 
-        for (SpreadsheetColumn c : visible_columns) {
-            // Take this opportunity to initalise the working data we need for each of the columns.
-            c.setWorkingHeight(0);
-            c.setWorkingOrd(0);
-            c.setWorkingOnsetPadding(0);
-            c.setWorkingOffsetPadding(0);
-
-            // Determine the total height in pixels of the cells in this column.
-            List<SpreadsheetCell> colCells = c.getCellsTemporally();
-            int colHeight = 0;
-            for (SpreadsheetCell cell : colCells) {
-                if (cell != null) {
-                    colHeight += cell.getPreferredSize().height;
-                }
-            }
-
-            // Determine the maximum column height in pixels.
-            ratioHeight = Math.max(ratioHeight, colHeight);
-
-            // Determine the temporal length of the column in ticks.
-            if (colCells.size() > 0) {
-                SpreadsheetCell lastCell = colCells.get((colCells.size() - 1));
-
-                // If the offset is zero or smaller, we need to consider the
-                // onset of the cell instead for determining the maximum offset
-                // required to display the entire spreadsheet.
-                if (lastCell != null && lastCell.getOffsetTicks() <= 0) {
-                    ratioTicks = Math.max(ratioTicks, lastCell.getOnsetTicks());
-                } else if (lastCell != null) {
-                    ratioTicks = Math.max(ratioTicks, lastCell.getOffsetTicks());
-                }
-            }
-            totalCells = totalCells + colCells.size();
+        /* Check if we can skip laying the entire spreadsheet.
+           Relies on the UndoManager, so it isn't very intuitive on when it skips
+            (e.g. redraws when column name is changed, but not when columns are hidden or shown).
+           But it should stop over-running this routine on scrolls.
+         */
+        int eidx = Datavyu.getView().getSpreadsheetUndoManager().getIndexOfNextAdd();
+        int ch = visible_columns.stream()
+                .map( col -> col.getColumnName())
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString().hashCode();
+        if( !mustRun
+                && (columnHash!=null && columnHash==ch)
+                && (editIdx == eidx)){
+//            System.err.println(String.format("Didn't align.  Time: %d.",System.currentTimeMillis()-startTime));
+            return;
         }
-        // Determine the final temporal ratio/scale we are going to use for the spreadsheet.
-        if (ratioTicks > 0) {
-            ratio = ratioHeight / (double) ratioTicks;
-        }
-
-        // Untill we have laid all the cells, we position each of them
-        // temporarily. We do this row by row with the cells sorted temporarily,
-        // untill we have no cells left to lay.
-        int pad = 0;    // The cumulative padding we need to apply to cell positioning - this is the total
-        // amount of extra vertical space we have had to pad out, to make entire cells visible.
 
         // Cell cache so we only have to get from the DB once.
         // Greatly speeds up the algorithm.
@@ -145,26 +100,19 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         }
         width--;
 
-//        long starttime = System.currentTimeMillis();
-
         // The size the of the gap to use between cells and as overlap on
         // overlapping cells in different columns
         int gapSize = 10;
-        int minCellHeight = 45;
 
-
-        int numCells = 0;
         Set<Long> times = new TreeSet<Long>();
         HashMap<Long, List<SpreadsheetCell>> cellsByOnset = new HashMap<Long, List<SpreadsheetCell>>();
         HashMap<Long, List<SpreadsheetCell>> cellsByOffset = new HashMap<Long, List<SpreadsheetCell>>();
-
-        SpreadsheetCell selectedCell = null;
 
         for (int key : cellCache.keySet()) {
             for (SpreadsheetCell cell : cellCache.get(key)) {
                 long onset = cell.getOnsetTicks();
                 long offset = cell.getOffsetTicks();
-                numCells += 1;
+
                 if (!cellsByOnset.containsKey(onset)) {
                     cellsByOnset.put(onset, new LinkedList<SpreadsheetCell>());
                 }
@@ -185,9 +133,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 times.add(offset);
 
                 cell.setOverlapBorder(false);
-                if (cell.getCell().isSelected()) {
-                    selectedCell = cell;
-                }
             }
         }
 
@@ -195,7 +140,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
         // Now go through all the times and try to map them to a position
         int maxPosition = 0;
-        HashMap<Long, Integer> timeByLoc = new HashMap<Long, Integer>();
+        TreeMap<Long, Integer> timeByLoc = new TreeMap<Long, Integer>();
         for (int i = 0; i < times.size(); i++) {
             Long time = timeArray[i];
             List<SpreadsheetCell> cellsWithOnset = cellsByOnset.get(time);
@@ -203,6 +148,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
             // Get the minimum height we can go down from these cells
             int minHeight = 0;
+
             if (cellsWithOnset != null) {
                 for (SpreadsheetCell cell : cellsWithOnset) {
                     if (minHeight < cell.getPreferredSize().height) {
@@ -210,14 +156,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     }
                 }
             }
-
-//            if(cellsWithOffset != null) {
-//                for(SpreadsheetCell cell : cellsWithOffset) {
-//                    if(minHeight < cell.getPreferredSize().height) {
-//                        minHeight = cell.getPreferredSize().height;
-//                    }
-//                }
-//            }
 
             timeByLoc.put(time, maxPosition);
             maxPosition += minHeight;
@@ -256,6 +194,22 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             }
         }
 
+        /* Go through our time mapping and ensure uniqueness. */
+        HashMap<Long, Integer> timeByLoc2 = new HashMap<>();
+        int adjust = 0;
+        Map.Entry<Long, Integer> p = timeByLoc.pollFirstEntry();
+        long pk = p.getKey();
+        int pv = p.getValue();
+        timeByLoc2.put(pk, pv);
+        for( Map.Entry<Long, Integer> e : timeByLoc.entrySet()){
+            long ck = e.getKey();
+            int cv = e.getValue();
+            if(cv==pv){
+                adjust+= gapSize;
+            }
+            timeByLoc2.put(ck, cv+adjust);
+            pv = cv;
+        }
         // Set all of the cell positions now that we have figured them out
         for (Long time : times) {
             List<SpreadsheetCell> cellsWithOnset = cellsByOnset.get(time);
@@ -264,22 +218,18 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
             if (cellsWithOnset != null) {
                 for (SpreadsheetCell cell : cellsWithOnset) {
-//                    if(!cell.isBeingProcessed()) {
-                    cell.setBounds(0, timeByLoc.get(time), width, cell.getPreferredSize().height);
-//                    }
+                    cell.setBounds(0, timeByLoc2.get(time), width, cell.getPreferredSize().height);
                 }
             }
 
             if (cellsWithOffset != null) {
                 for (SpreadsheetCell cell : cellsWithOffset) {
-//                    if(!cell.isBeingProcessed()) {
-                    cell.setBounds(0, cell.getY(), width, (timeByLoc.get(time) - cell.getY()));
-//                    }
+                    cell.setBounds(0, cell.getY(), width, (timeByLoc2.get(time) - cell.getY()));
                 }
             }
 
-            if (maxHeight < timeByLoc.get(time)) {
-                maxHeight = timeByLoc.get(time);
+            if (maxHeight < timeByLoc2.get(time)) {
+                maxHeight = timeByLoc2.get(time);
             }
         }
 //        System.out.println(maxHeight);
@@ -288,8 +238,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         List<SpreadsheetColumn> visibleColumns = getVisibleColumns(mainView);
         for (int key : cellCache.keySet()) {
             SpreadsheetColumn col = visibleColumns.get(key);
-//            System.out.println(key);
-//            System.out.println(cellCache.get(key).size());
             if (cellCache.get(key).size() > 0) {
                 SpreadsheetCell cell = cellCache.get(key).get(cellCache.get(key).size() - 1);
                 col.setWorkingHeight(cell.getY() + cell.getHeight());
@@ -325,6 +273,10 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         }
 
         padColumns(mainView, parent);
+        editIdx = eidx;
+        mustRun = false;
+        columnHash = new Integer(ch);
+//        System.err.println(String.format("Aligned.  Time: %d.", System.currentTimeMillis() - startTime));
     }
 
     public void reorientView(SpreadsheetCell cell) {
@@ -376,14 +328,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     }
 
     private List<SpreadsheetColumn> getVisibleColumns(SpreadsheetView mainView) {
-        List<SpreadsheetColumn> viscolumns = new ArrayList<SpreadsheetColumn>();
-
-        for (SpreadsheetColumn c : mainView.getColumns()) {
-            if (c.isVisible()) {
-                viscolumns.add(c);
-            }
-        }
-
-        return viscolumns;
+        return mainView.getColumns().parallelStream()
+                .filter(c -> c.isVisible())
+                .collect(Collectors.toList());
     }
 }
