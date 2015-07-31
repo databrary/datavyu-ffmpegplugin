@@ -136,8 +136,8 @@ class RCell
 
 			instance_eval "def #{arg}; return argvals[#{i}]; end"
 			instance_eval "def #{arg}=(val);
-			 raise \"Invalid type for code #{arg}. Could not convert to String.\" unless val.respond_to?(:to_s);
-			 argvals[#{i}] = val.to_s; end"
+			 raise \"Invalid type for code #{arg}. Values may only be strings.\" if val.class!=String;
+			 argvals[#{i}] = val; end"
 			i += 1
 		end
 	end
@@ -147,9 +147,6 @@ class RCell
 	end
 	def change_arg_name(i, new_name)
 		instance_eval "def #{new_name}; return argvals[#{i}]; end"
-		instance_eval "def #{arg}=(val);
-		 raise \"Invalid type for code #{arg}. Could not convert to String.\" unless val.respond_to?(:to_s);
-		 argvals[#{i}] = val.to_s; end"
 	end
 
 	def add_code(new_name)
@@ -159,9 +156,6 @@ class RCell
 		@argvals << ""
 		i = argvals.length - 1
 		instance_eval "def #{new_name}; return argvals[#{i}]; end"
-		instance_eval "def #{arg}=(val);
-		 raise \"Invalid type for code #{arg}. Could not convert to String.\" unless val.respond_to?(:to_s);
-		 argvals[#{i}] = val.to_s; end"
 	end
 
 	def remove_code(name)
@@ -307,9 +301,9 @@ class RCell
 		if(@arglist.include?(code))
 			index = arglist.index(code)
 			instance_eval "def #{code}; return argvals[#{index}]; end"
-			instance_eval "def #{arg}=(val);
-			 raise \"Invalid type for code #{arg}. Could not convert to String.\" unless val.respond_to?(:to_s);
-			 argvals[#{i}] = val.to_s; end"
+			instance_eval "def #{code}=(val);
+			 raise \"Invalid type for code #{code}. Values may only be strings.\" if val.class!=String;
+			 argvals[#{index}] = val; end"
 			self.send m.to_sym, *args
 		else
 			super
