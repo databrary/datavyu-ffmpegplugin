@@ -135,9 +135,7 @@ class RCell
 			#Handle this later by allowing numbers to be numbers but keeping strings.
 
 			instance_eval "def #{arg}; return argvals[#{i}]; end"
-			instance_eval "def #{arg}=(val);
-			 raise \"Invalid type for code #{arg}. Values may only be strings.\" if val.class!=String;
-			 argvals[#{i}] = val; end"
+			instance_eval "def #{arg}=(val); argvals[#{i}] = val.to_s; end"
 			i += 1
 		end
 	end
@@ -147,6 +145,7 @@ class RCell
 	end
 	def change_arg_name(i, new_name)
 		instance_eval "def #{new_name}; return argvals[#{i}]; end"
+		instance_eval "def #{new_name}=(val); argvals[#{i}] = val.to_s; end"
 	end
 
 	def add_code(new_name)
@@ -156,6 +155,7 @@ class RCell
 		@argvals << ""
 		i = argvals.length - 1
 		instance_eval "def #{new_name}; return argvals[#{i}]; end"
+		instance_eval "def #{new_name}=(val); argvals[#{i}] = val.to_s; end"
 	end
 
 	def remove_code(name)
@@ -301,9 +301,7 @@ class RCell
 		if(@arglist.include?(code))
 			index = arglist.index(code)
 			instance_eval "def #{code}; return argvals[#{index}]; end"
-			instance_eval "def #{code}=(val);
-			 raise \"Invalid type for code #{code}. Values may only be strings.\" if val.class!=String;
-			 argvals[#{index}] = val; end"
+			instance_eval "def #{code}=(val); argvals[#{index}] = val.to_s; end"
 			self.send m.to_sym, *args
 		else
 			super
@@ -620,22 +618,27 @@ def setVariable(*args)
 			end
 
 			# Now see if we have deleted any arguments
-			for dbarg in values
-				flag = false
-				for arg in var.old_args
-					if arg == dbarg.name
-						flag = true
-						break
-					end
-				end
-
-				# If we didn't find dbarg in old_args, then we must
-				# have deleted it. Remove the argument from the DB
-				if flag == false
-					puts "DELETING ARG:" + dbarg.name
-					var.db_var.removeArgument(dbarg.name)
-				end
+			deleted_args = values.map{ |x| x.name} - var.old_args
+			deleted_args.each do |arg|
+				puts "DELETING ARG: #{arg}"
+				var.db_var.removeArgument(arg)
 			end
+			# for dbarg in values
+			# 	flag = false
+			# 	for arg in var.old_args
+			# 		if arg == dbarg.name
+			# 			flag = true
+			# 			break
+			# 		end
+			# 	end
+			#
+			# 	# If we didn't find dbarg in old_args, then we must
+			# 	# have deleted it. Remove the argument from the DB
+			# 	if flag == false
+			# 		puts "DELETING ARG:" + dbarg.name
+			# 		var.db_var.removeArgument(dbarg.name)
+			# 	end
+			# end
 		end
 
 
@@ -762,6 +765,84 @@ def setVariable(*args)
 	#c.set_val(mat)
 	#$db.append_cell(c)
 	#end
+end
+
+#-------------------------------------------------------------------
+# Method name: setVariable!
+# Function: Deletes a variable from the spreadsheet and rebuilds it from
+# 					the given RVariable object.
+# 					Behaves similar to setVariable(), but this will ALWAYS delete
+# 					and rebuild the spreadsheet colum and its vocab.
+#-------------------------------------------------------------------
+def setVariable!(*args)
+	if args.length == 1
+		var = args[0]
+		name = var.name
+	elsif args.length == 2
+		var = args[1]
+		name = args[0]
+	end
+
+	if getColumnList().include?(name)
+		deleteVariable(name)
+	end
+
+	# Create a new variable
+	v = $db.createVariable(name, Argument::Type::MATRIX)
+	var.db_var = v
+
+	if var.arglist.length > 0
+		var.db_var.removeArgument("code01")
+	end
+
+	# Set variable's vocab
+	for arg in var.arglist
+		new_arg = v.addArgument(Argument::Type::NOMINAL)
+		new_arg.name = arg
+		main_arg = var.db_var.getRootNode()
+		child_args = main_arg.childArguments
+
+		child_args.get(child_args.length-1).name = arg
+
+		var.db_var.setRootNode(main_arg)
+	end
+	var.db_var = v
+
+	# Create new cells and fill them in for each cell in the variable
+	for cell in var.cells
+		# Copy the information from the ruby variable to the new cell
+		cell.db_cell = var.db_var.createCell()
+
+		value = cell.db_cell.getValue()
+
+		if cell.onset != cell.db_cell.getOnset
+			cell.db_cell.setOnset(cell.onset)
+		end
+
+		if cell.offset != cell.db_cell.getOffset
+			cell.db_cell.setOffset(cell.offset)
+		end
+
+		# Matrix cell
+		if cell.db_cell.getVariable.getRootNode.type == Argument::Type::MATRIX
+			values = cell.db_cell.getValue().getArguments()
+			for arg in var.old_args
+				# Find the arg in the db's arglist that we are looking for
+				for i in 0...values.size
+					dbarg = values[i]
+					dbarg_name = dbarg.getArgument.name
+					if dbarg_name == arg and not ["", nil].include?(cell.get_arg(var.convert_argname(arg)))
+						dbarg.set(cell.get_arg(var.convert_argname(arg)))
+						break
+					end
+				end
+			end
+		# Non-matrix cell
+		else
+			value = cell.db_cell.getValue()
+			value.set(cell.get_arg("var"))
+		end
+	end
 end
 
 #-------------------------------------------------------------------

@@ -136,7 +136,7 @@ public final class SpreadsheetColumn extends JLabel
      * Creates new SpreadsheetColumn.
      *
      * @param db       Database reference.
-     * @param colID    the variable this column displays.
+     * @param var    the variable this column displays.
      * @param cellSelL Spreadsheet cell selection listener to notify
      * @param colSelL  Column selection listener to notify.
      */

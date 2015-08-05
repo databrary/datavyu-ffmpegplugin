@@ -1,3 +1,18 @@
+# Datavyu 1.3.3 Pre-Release Notes
+## 07/14/2015
+
+### Additions
+* Datavyu should start up faster
+
+### Bug Fixes
+* Datavyu's Export File by Frame script now works on files with empty columns
+* Drag and drop onto the application is fixed since 1.3.1 
+* New improvements to the undo feature 
+* Locking into a cell now stops the video at the offset
+
+### Known Issues:
+* Dragging and dropping a file onto the application on PC's creates a new Datavyu window
+
 # Datavyu 1.3 Pre-Release Notes 
 ## 3/16/2015
 
@@ -14,7 +29,7 @@
 * Adding cells to the right or left keeps the spreadsheet focus 
 * Windows: initial video frame should be seen on the video
 
-### Known issues: 
+### Known issues 
 * Hitting undo after running a script causes the spreadsheet to delete data
 * Video lag might occur with high definition videos. Please try out the different video plugins to see which works best for your videos. 
 
