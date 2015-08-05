@@ -962,7 +962,7 @@
         <dependency>
             <groupId>org.jruby</groupId>
             <artifactId>jruby-complete</artifactId>
-            <version>1.6.7.2</version>
+            <version>1.7.21</version>
         </dependency>
 
         <dependency>
