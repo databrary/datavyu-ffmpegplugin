@@ -702,9 +702,9 @@ def setVariable(*args)
     # Save the changes back to the DB
 
   end
-  if var.hidden
-    var.db_var.setHidden(var.get_hidden())
-  end
+  # if var.hidden
+  var.db_var.setHidden(var.get_hidden())
+  # end
 end
 
 #-------------------------------------------------------------------
