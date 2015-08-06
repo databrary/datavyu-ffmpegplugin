@@ -703,7 +703,7 @@ def setVariable(*args)
 
   end
   # if var.hidden
-  var.db_var.setHidden(var.get_hidden())
+  var.db_var.setHidden(var.hidden)
   # end
 end
 
@@ -784,11 +784,9 @@ def setVariable!(*args)
     end
   end
 
-  p var.hidden
-  if var.hidden
-    p "HIDING"
-    var.db_var.setHidden(var.get_hidden())
-  end
+  # if var.hidden
+  var.db_var.setHidden(var.hidden)
+  # end
 end
 
 #-------------------------------------------------------------------
