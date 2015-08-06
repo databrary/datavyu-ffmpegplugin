@@ -662,10 +662,12 @@ public final class DataControllerV extends DatavyuDialog
                     long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
 
                      /* BugzID:1544 - Preserve precision - force jog to frame markers. */
-                    long mod = (viewerTime % stepSize);
+                    if (!clock.isStopped()) {
+                        long mod = (viewerTime % stepSize);
 
-                    if (mod != 0) {
-                        viewerTime = viewerTime + stepSize - mod;
+                        if (mod != 0) {
+                            viewerTime = viewerTime + stepSize - mod;
+                        }
                     }
 
                     clock.setTimeDontNotify(viewerTime);
