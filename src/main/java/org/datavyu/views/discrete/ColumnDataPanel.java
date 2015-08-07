@@ -255,9 +255,11 @@ public final class ColumnDataPanel extends JPanel implements KeyEventDispatcher 
         for (Cell c : model.getCellsTemporally()) {
             SpreadsheetCell sc = viewMap.get(c);
 //            sc.forceCellRefresh();
-            sc.setOrdinal(ord);
-            ord++;
-            result.add(sc);
+            if (sc != null) {
+                sc.setOrdinal(ord);
+                ord++;
+                result.add(sc);
+            }
         }
 
         return result;

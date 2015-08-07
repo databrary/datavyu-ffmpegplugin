@@ -26,6 +26,7 @@ package org.datavyu.models.db;
 import org.datavyu.Datavyu;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Maps a variable object to a datastore.
@@ -36,7 +37,8 @@ public final class DatavyuVariable implements Variable {
             new HashMap<UUID, List<VariableListener>>();
     private static CellComparator CellComparator = new CellComparator();
     final private UUID variableId = UUID.randomUUID();
-    private List<Cell> cells = new ArrayList<Cell>();
+    //    private List<Cell> cells = new ArrayList<Cell>();
+    private List<Cell> cells = new CopyOnWriteArrayList<>();
     private Argument rootNodeArgument = null;
     private Boolean selected;
     private Boolean highlighted;
