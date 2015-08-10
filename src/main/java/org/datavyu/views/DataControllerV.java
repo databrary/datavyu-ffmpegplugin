@@ -694,26 +694,28 @@ public final class DataControllerV extends DatavyuDialog
         if (viewers.size() == 1 && (time < playbackModel.getWindowPlayEnd() && time > playbackModel.getWindowPlayStart())) {
             // Using an iterator because viewers is a set
             for (DataViewer viewer : viewers) {
-                viewer.stop();
-                try {
-                    long viewerTime = viewer.getCurrentTime();
+                if (viewer.isPlaying()) {
+                    viewer.stop();
+                    try {
+                        long viewerTime = viewer.getCurrentTime();
 
-                    long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
+                        long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
 
                      /* BugzID:1544 - Preserve precision - force jog to frame markers. */
-                    long mod = (viewerTime % stepSize);
+                        long mod = (viewerTime % stepSize);
 
-                    if (mod != 0) {
-                        viewerTime = viewerTime + stepSize - mod;
+                        if (mod != 0) {
+                            viewerTime = viewerTime + stepSize - mod;
+                        }
+
+                        viewer.seekTo(viewerTime);
+
+                        clock.setTimeDontNotify(viewerTime);
+                        resetSync();
+                        updateCurrentTimeLabel();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-
-                    viewer.seekTo(viewerTime);
-
-                    clock.setTimeDontNotify(viewerTime);
-                    resetSync();
-                    updateCurrentTimeLabel();
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         } else {
@@ -2245,8 +2247,10 @@ public final class DataControllerV extends DatavyuDialog
      * @param time Absolute time to jump to.
      */
     private void jumpTo(final long time) {
-        clock.stop();
-        clock.setTime(time);
+        synchronized (clock) {
+            clock.stop();
+            clock.setTime(time);
+        }
     }
 
     // -------------------------------------------------------------------------
