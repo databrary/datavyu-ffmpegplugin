@@ -77,6 +77,7 @@ require 'csv'
 require 'time'
 require 'date'
 require 'set'
+require 'rbconfig'
 #require 'ftools'
 
 import 'org.datavyu.models.db.Datastore'
@@ -2127,4 +2128,28 @@ end
 
 def deleteCell(cell)
   cell.db_cell.getVariable.removeCell(cell.db_cell)
+end
+
+#-------------------------------------------------------------------
+# Method name: getOS
+# Function: Return the OS version
+# Arguments: None
+# Returns: one of ['windows', 'mac', 'linux']
+#
+# Example:
+#  filepath = (getOS() == 'windows')? 'C:\data' : '~/data'
+# -------------------------------------------------------------------
+def getOS
+	host_os = RbConfig::CONFIG['host_os']
+	case host_os
+	when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
+		os = 'windows'
+	when /darwin|mac os/
+		os = 'mac'
+	when /linux|solaris|bsd/
+		os = 'linux'
+	else
+		raise "Unknown OS: #{host_os.inspect}"
+	end
+	return os
 end
