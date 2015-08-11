@@ -526,18 +526,17 @@ public final class SpreadsheetColumn extends JLabel
     // MouseListener Overrides
     // *************************************************************************
     @Override
-    public void mouseEntered(final MouseEvent me) {
-        setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-    }
+    public void mouseEntered(final MouseEvent me) {}
 
     @Override
     public void mouseExited(final MouseEvent me) {
-        setCursor(Cursor.getDefaultCursor());
     }
 
     @Override
     public void mousePressed(final MouseEvent me) {
-        System.err.println("pressed");
+        if(moveable) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        }
     }
 
     @Override
@@ -582,9 +581,6 @@ public final class SpreadsheetColumn extends JLabel
     public void mouseClicked(final MouseEvent me) {
         if (me.getClickCount() == 2) {
             showChangeVarNameDialog();
-        }
-        else if(moveable) {
-            setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         }
         else {
             int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
