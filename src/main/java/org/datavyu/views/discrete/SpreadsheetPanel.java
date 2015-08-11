@@ -730,7 +730,8 @@ public final class SpreadsheetPanel extends JPanel
             columns.remove(source);
             columns.add(destination, sourceColumn);
 
-            // Go through columns and setOrderIndex()
+            // Go through columns and setOrderIndex().
+//            updateColumnIndex();
             for(int i = Math.min(source, destination); i<= Math.max(source, destination); i++){
                 columns.get(i).getVariable().setOrderIndex(i);
             }
