@@ -18,6 +18,10 @@ public class GhostGlassPane extends JPanel {
         this.dragged = dragged;
     }
 
+    public BufferedImage getImage() {
+        return this.dragged;
+    }
+
     public void setPoint(Point location) {
         this.location = location;
     }

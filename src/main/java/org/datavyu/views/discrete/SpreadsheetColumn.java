@@ -544,23 +544,6 @@ public final class SpreadsheetColumn extends JLabel
     @Override
     public void mousePressed(final MouseEvent me) {
         if(moveable && !draggable) {
-            Component c = me.getComponent();
-
-            BufferedImage image = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_ARGB);
-            Graphics g = image.getGraphics();
-            c.paint(g);
-
-            glassPane.setVisible(true);
-
-            Point p = (Point) me.getPoint().clone();
-            SwingUtilities.convertPointToScreen(p, c);
-            SwingUtilities.convertPointFromScreen(p, glassPane);
-
-            glassPane.setPoint(p);
-            glassPane.setImage(image);
-            glassPane.setBackground(Color.BLACK);
-            glassPane.repaint();
-
 
             if(System.getProperty("os.name").startsWith("Mac OS X")){
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -660,6 +643,25 @@ public final class SpreadsheetColumn extends JLabel
                 this.setWidth(newWidth);
             }
         } else if (moveable) {
+            if (glassPane.getImage() == null) {
+                Component c = me.getComponent();
+
+                BufferedImage image = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                Graphics g = image.getGraphics();
+                c.paint(g);
+
+                glassPane.setVisible(true);
+
+                Point p = (Point) me.getPoint().clone();
+                SwingUtilities.convertPointToScreen(p, c);
+                SwingUtilities.convertPointFromScreen(p, glassPane);
+
+                glassPane.setPoint(p);
+                glassPane.setImage(image);
+                glassPane.setBackground(Color.BLACK);
+                glassPane.repaint();
+            }
+
             Component c = me.getComponent();
 
             Point p = (Point) me.getPoint().clone();
