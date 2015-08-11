@@ -21,6 +21,7 @@ import org.datavyu.Datavyu;
 import org.datavyu.models.db.*;
 import org.datavyu.undoableedits.ChangeNameVariableEdit;
 import org.datavyu.util.Constants;
+import org.datavyu.util.DragAndDrop.GhostGlassPane;
 import org.jdesktop.application.Action;
 
 import javax.swing.*;
@@ -30,6 +31,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -133,6 +135,8 @@ public final class SpreadsheetColumn extends JLabel
      */
     private int offsetPadding = 0;
 
+    private GhostGlassPane glassPane = (GhostGlassPane) Datavyu.getView().getFrame().getGlassPane();
+
     /**
      * Creates new SpreadsheetColumn.
      *
@@ -167,6 +171,11 @@ public final class SpreadsheetColumn extends JLabel
         datapanel = new ColumnDataPanel(db, width, var, cellSelL);
         this.setVisible(!var.isHidden());
         datapanel.setVisible(!var.isHidden());
+
+        System.out.println("COLUMN");
+        System.out.println((JFrame) SwingUtilities.getWindowAncestor(this));
+
+        int x = 0;
     }
 
     /**
@@ -535,6 +544,24 @@ public final class SpreadsheetColumn extends JLabel
     @Override
     public void mousePressed(final MouseEvent me) {
         if(moveable && !draggable) {
+            Component c = me.getComponent();
+
+            BufferedImage image = new BufferedImage(c.getWidth(), c.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics g = image.getGraphics();
+            c.paint(g);
+
+            glassPane.setVisible(true);
+
+            Point p = (Point) me.getPoint().clone();
+            SwingUtilities.convertPointToScreen(p, c);
+            SwingUtilities.convertPointFromScreen(p, glassPane);
+
+            glassPane.setPoint(p);
+            glassPane.setImage(image);
+            glassPane.setBackground(Color.BLACK);
+            glassPane.repaint();
+
+
             if(System.getProperty("os.name").startsWith("Mac OS X")){
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
@@ -549,6 +576,19 @@ public final class SpreadsheetColumn extends JLabel
         // BugzID:301 - Fix dragging columns
         // Call column moving routine if user dragged mouse across columns.
         if (moveable) {
+
+            Component c = me.getComponent();
+
+            Point p = (Point) me.getPoint().clone();
+            SwingUtilities.convertPointToScreen(p, c);
+
+            Point eventPoint = (Point) p.clone();
+            SwingUtilities.convertPointFromScreen(p, glassPane);
+
+            glassPane.setPoint(p);
+            glassPane.setVisible(false);
+            glassPane.setImage(null);
+
             int x = me.getX();
             // Iterate over the spreadsheet columns, starting at current column, to figure out how many
             // positions to shift by.
@@ -619,6 +659,15 @@ public final class SpreadsheetColumn extends JLabel
             if (newWidth >= this.getMinimumSize().width) {
                 this.setWidth(newWidth);
             }
+        } else if (moveable) {
+            Component c = me.getComponent();
+
+            Point p = (Point) me.getPoint().clone();
+            SwingUtilities.convertPointToScreen(p, c);
+            SwingUtilities.convertPointFromScreen(p, glassPane);
+            glassPane.setPoint(p);
+
+            glassPane.repaint();
         }
     }
 
