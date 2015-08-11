@@ -9,26 +9,23 @@ You can find binaries of Datavyu available for Windows and OSX on [the Datavyu.o
 
 To get started with Datavyu development, you will need to download and install a few development tools. Datavyu is primarily written in Java, along with a little Ruby (via JRuby) for additional scripting tasks. So the list of toys you will need to download:
 
-* [Netbeans](http://www.netbeans.org/)
-* [Maven2](http://maven.apache.org/)
+* [Java JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) 
+* [Maven 3.0.5](http://maven.apache.org/)
 * [Git](http://git-scm.com/)
 
-## Datavyu OSX Builds
+## Datavyu OSX And Windows builds
 
-To build and package Datavyu to run on OSX, use the following commands:
+To build and package Datavyu, use the following commands:
 
 	git clone https://github.com/databrary/datavyu.git
 	cd datavyu
 	export MAVEN_OPTS="-Xmx256M"
-	mvn -Prelease clean -Dmaven.test.skip=true package osxappbundle:bundle
+	mvn clean -U -Dmaven.test.skip=true jfx:native
 
-## Datavyu Windows Builds
+## Running Datavyu in an IDE
 
-To build and package Datavyu to run on windows, use the following commands in a cygwin window:
-
-	git clone https://github.com/databrary/datavyu.git
-	cd datavyu
-	mvn -Prelease,win-package -Dmaven.test.skip=true clean package jar:jar launch4j:launch4j assembly:assembly
+To build and run Datavyu an in IDE like IntelliJ Idea or Netbeans set Datavyu up as a Maven project and run it with the following maven command line options:
+	clean compile jfx:run
 
 ## More Information
 
