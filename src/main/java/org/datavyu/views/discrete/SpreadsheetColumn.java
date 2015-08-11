@@ -32,6 +32,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * This class maintains the visual representation of the column in the
@@ -536,17 +537,56 @@ public final class SpreadsheetColumn extends JLabel
 
     @Override
     public void mousePressed(final MouseEvent me) {
+        System.err.println("pressed");
     }
 
     @Override
     public void mouseReleased(final MouseEvent me) {
+        // BugzID:301 - Fix dragging columns
+        // Call column moving routine if user dragged mouse across columns.
+        if (moveable) {
+            int x = me.getX();
+            // Iterate over the spreadsheet columns, starting at current column, to figure out how many
+            // positions to shift by.
+            SpreadsheetPanel sp = (SpreadsheetPanel) Datavyu.getView().getComponent();
+            List<SpreadsheetColumn> cols = sp.getColumns();
+            int positions = 0;
+            ListIterator<SpreadsheetColumn> itr = cols.listIterator(cols.indexOf(this));
+
+            final int columnWidth = this.getWidth();
+
+            if (x > columnWidth) {
+                x -= columnWidth;
+//                positions = 1; // we end up incrementing position by one too much in the following loop anyway
+                while(x>0 && itr.hasNext()){
+                    x -= itr.next().getWidth();
+                    positions++;
+                }
+                sp.moveColumnRight(this.getVariable(), positions);
+            }
+            else if (x < 0) {
+                while(x<0 && itr.hasPrevious()){
+                    x += itr.previous().getWidth();
+                    positions++;
+                }
+                sp.moveColumnLeft(this.getVariable(), positions);
+            }
+
+            // Update globals
+            moveable = false;
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
     }
 
     @Override
     public void mouseClicked(final MouseEvent me) {
         if (me.getClickCount() == 2) {
             showChangeVarNameDialog();
-        } else {
+        }
+        else if(moveable) {
+            setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        }
+        else {
             int keyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
             boolean groupSel = (((me.getModifiers() & ActionEvent.SHIFT_MASK)
@@ -567,6 +607,7 @@ public final class SpreadsheetColumn extends JLabel
     // *************************************************************************
     // MouseMotionListener Overrides
     // *************************************************************************
+
     @Override
     public void mouseDragged(final MouseEvent me) {
         // BugzID:660 - Implements columns dragging.
@@ -575,25 +616,6 @@ public final class SpreadsheetColumn extends JLabel
 
             if (newWidth >= this.getMinimumSize().width) {
                 this.setWidth(newWidth);
-            }
-        }
-
-        if (moveable) {
-            setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-
-            final int columnWidth = this.getWidth();
-
-            if (me.getX() > columnWidth) {
-                int positions = Math.round((me.getX() * 1F) / (columnWidth * 1F));
-
-                SpreadsheetPanel sp = (SpreadsheetPanel) Datavyu.getView().getComponent();
-                sp.moveColumnRight(this.getVariable(), positions);
-
-            } else if (me.getX() < 0) {
-                int positions = Math.round((me.getX() * -1F) / (columnWidth * 1F));
-                SpreadsheetPanel sp = (SpreadsheetPanel) Datavyu.getView().getComponent();
-
-                sp.moveColumnLeft(this.getVariable(), positions);
             }
         }
     }
@@ -606,16 +628,17 @@ public final class SpreadsheetColumn extends JLabel
         final int rangeEnd = Math.round(3F * componentWidth / 4F);
 
         // BugzID:660 - Implements columns dragging.
-        if ((componentWidth - xCoord) < 4) {
+        if (!moveable && (componentWidth - xCoord) < 4) {
             setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
             draggable = true;
 
             // BugzID:128 - Implements moveable columns
-        } else if ((rangeStart <= xCoord) && (xCoord <= rangeEnd)) {
+        } else if (!draggable && (rangeStart <= xCoord) && (xCoord <= rangeEnd)) {
             moveable = true;
         } else {
             draggable = false;
             moveable = false;
         }
     }
+
 }
