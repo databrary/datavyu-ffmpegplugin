@@ -560,11 +560,12 @@ public final class SpreadsheetColumn extends JLabel
             final int columnWidth = this.getWidth();
 
             if (x > columnWidth) {
-                x -= columnWidth;
-//                positions = 1; // we end up incrementing position by one too much in the following loop anyway
-                while(x>0 && itr.hasNext()){
-                    x -= itr.next().getWidth();
+                SpreadsheetColumn col = itr.next();
+                while(x>col.getWidth()){
+                    x -= col.getWidth();
                     positions++;
+                    if(itr.hasNext()) col = itr.next();
+                    else break;
                 }
                 sp.moveColumnRight(this.getVariable(), positions);
             }
