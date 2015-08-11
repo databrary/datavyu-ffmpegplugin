@@ -25,6 +25,7 @@ To build and package Datavyu, use the following commands:
 ## Running Datavyu in an IDE
 
 To build and run Datavyu an in IDE like IntelliJ Idea or Netbeans set Datavyu up as a Maven project and run it with the following maven command line options:
+
 	clean compile jfx:run
 
 ## More Information
