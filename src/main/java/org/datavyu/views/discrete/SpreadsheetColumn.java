@@ -634,6 +634,7 @@ public final class SpreadsheetColumn extends JLabel
         } else {
             draggable = false;
             moveable = false;
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 
