@@ -535,7 +535,12 @@ public final class SpreadsheetColumn extends JLabel
     @Override
     public void mousePressed(final MouseEvent me) {
         if(moveable) {
-            setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            if(System.getProperty("os.name").startsWith("Mac OS X")){
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+            else{
+                setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            }
         }
     }
 
