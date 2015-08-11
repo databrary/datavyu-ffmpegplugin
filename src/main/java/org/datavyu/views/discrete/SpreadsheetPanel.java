@@ -724,37 +724,28 @@ public final class SpreadsheetPanel extends JPanel
         }
         System.out.println(source + ", " + destination);
 
-        // Reorder the columns vector
-        SpreadsheetColumn sourceColumn = columns.get(source);
-        columns.get(source).getVariable().setOrderIndex(destination);
-        columns.get(destination).getVariable().setOrderIndex(source);
-        columns.remove(source);
-        columns.add(destination, sourceColumn);
+        synchronized(this.getTreeLock()) {
+            // Reorder the columns vector
+            SpreadsheetColumn sourceColumn = columns.get(source);
+            columns.remove(source);
+            columns.add(destination, sourceColumn);
 
-        // Reorder the header components
-        List<Component> newHeaders = new ArrayList<Component>(Arrays.asList(headerView.getComponents()));
+            // Go through columns and setOrderIndex()
+            for(int i = Math.min(source, destination); i<= Math.max(source, destination); i++){
+                columns.get(i).getVariable().setOrderIndex(i);
+            }
 
-        Component sourceHeaderComponent = newHeaders.get(source + 1);
-        newHeaders.remove(source + 1);
-        newHeaders.add(destination + 1, sourceHeaderComponent);
+            // Reorder the header components
+            Component comp = headerView.getComponent(source + 1);
+            headerView.remove(source + 1);
+            headerView.add(comp, destination + 1);
 
-        headerView.removeAll();
-        for (Component header : newHeaders) {
-            headerView.add(header);
+            // Reorder the data components
+            comp = mainView.getComponent(source);
+            mainView.remove(source);
+            mainView.add(comp, destination);
         }
 
-        // Reorder the data components
-        List<Component> newData = new ArrayList<Component>(Arrays.asList(mainView.getComponents()));
-        Component sourceDataComponent = newData.get(source);
-        newData.remove(source);
-        newData.add(destination, sourceDataComponent);
-
-        mainView.removeAll();
-        for (Component data : newData) {
-            mainView.add(data);
-        }
-
-//        updateColumnIndex();
         revalidate();
     }
 
