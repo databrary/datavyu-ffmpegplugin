@@ -194,7 +194,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             }
         }
 
-        /* Go through our time mapping and ensure uniqueness. */
+        /* BugzID:255 - Fixes different offsets aligning.
+           Go through our time mapping and ensure uniqueness. */
         HashMap<Long, Integer> timeByLoc2 = new HashMap<>();
         int adjust = 0;
         Map.Entry<Long, Integer> p = timeByLoc.pollFirstEntry();
