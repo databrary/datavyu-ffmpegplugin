@@ -658,30 +658,6 @@ public final class SpreadsheetPanel extends JPanel
         new NewVariableC();
     }
 
-    /**
-     * Moves a given column to the left by a certain number of positions.
-     *
-     * @param var       The variable for the column to move
-     * @param positions the number of positions to the left to move the given
-     *                  column.
-     */
-    public void moveColumnLeft(final Variable var, final int positions) {
-        LOGGER.info("move column left");
-
-        // What index does the given column sit at
-        int columnIndex = var.getOrderIndex();
-
-        if (columnIndex >= 0) {
-            int newIndex = columnIndex - positions;
-
-            if (newIndex < 0) {
-                newIndex = 0;
-            }
-//            updateColumnIndex();
-            shuffleColumn(columnIndex, newIndex);
-        }
-    }
-
     public void updateColumnIndex() {
         // What index does the given column sit at
 
@@ -695,22 +671,17 @@ public final class SpreadsheetPanel extends JPanel
      * Moves a given column to the right by a certain number of positions.
      *
      * @param var       The variable for the column to move
-     * @param positions the number for positions to the right to move the given
-     *                  column.
+     * @param swapVar   The variable we are swapping with
      */
-    public void moveColumnRight(final Variable var, final int positions) {
+    public void moveColumn(final Variable var, final Variable swapVar) {
         LOGGER.info("move column right");
 
         // What index does the column sit at
         int columnIndex = var.getOrderIndex();
+        int swapColumnIndex = swapVar.getOrderIndex();
 
-        if (columnIndex >= 0) {
-            int newIndex = columnIndex + positions;
-
-            if (newIndex < columns.size()) {
-//                updateColumnIndex();
-                shuffleColumn(columnIndex, newIndex);
-            }
+        if (columnIndex >= 0 && swapColumnIndex >= 0) {
+            shuffleColumn(columnIndex, swapColumnIndex);
         }
     }
 
