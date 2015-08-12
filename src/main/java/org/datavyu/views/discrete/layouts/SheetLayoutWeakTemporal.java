@@ -86,19 +86,19 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 && (columnHash!=null && columnHash==ch)
                 && (editIdx == eidx)){
 //            System.err.println(String.format("Didn't align.  Time: %d.",System.currentTimeMillis()-startTime));
-            return;
+//            return;
         }
 
         // Cell cache so we only have to get from the DB once.
         // Greatly speeds up the algorithm.
         // Redrawing would be even faster if this was only done on DB update
-        int width = 0;
+//        int width = 0;
         HashMap<Integer, List<SpreadsheetCell>> cellCache = new HashMap<Integer, List<SpreadsheetCell>>();
         for (int i = 0; i < visible_columns.size(); i++) {
             cellCache.put(i, visible_columns.get(i).getCellsTemporally());
-            width = visible_columns.get(i).getWidth();
+//            width = visible_columns.get(i).getWidth();
         }
-        width--;
+//        width--;
 
         // The size the of the gap to use between cells and as overlap on
         // overlapping cells in different columns
@@ -109,7 +109,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         HashMap<Long, List<SpreadsheetCell>> cellsByOffset = new HashMap<Long, List<SpreadsheetCell>>();
 
         for (int key : cellCache.keySet()) {
+            int width = visible_columns.get(key).getWidth();
             for (SpreadsheetCell cell : cellCache.get(key)) {
+                // Fix cell width to column width
+                cell.setWidth(width);
+
                 long onset = cell.getOnsetTicks();
                 long offset = cell.getOffsetTicks();
 
@@ -219,13 +223,13 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
             if (cellsWithOnset != null) {
                 for (SpreadsheetCell cell : cellsWithOnset) {
-                    cell.setBounds(0, timeByLoc2.get(time), width, cell.getPreferredSize().height);
+                    cell.setBounds(0, timeByLoc2.get(time), cell.getWidth(), cell.getPreferredSize().height);
                 }
             }
 
             if (cellsWithOffset != null) {
                 for (SpreadsheetCell cell : cellsWithOffset) {
-                    cell.setBounds(0, cell.getY(), width, (timeByLoc2.get(time) - cell.getY()));
+                    cell.setBounds(0, cell.getY(), cell.getWidth(), (timeByLoc2.get(time) - cell.getY()));
                 }
             }
 
@@ -255,7 +259,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 SpreadsheetColumn col = visibleColumns.get(key);
 
                 if (curCell.getOffsetTicks() > nextCell.getOnsetTicks()) {
-                    curCell.setBounds(0, curCell.getY(), width, nextCell.getY() - curCell.getY());
+                    curCell.setBounds(0, curCell.getY(), col.getWidth(), nextCell.getY() - curCell.getY());
                     curCell.setOverlapBorder(true);
                 }
                 
@@ -264,8 +268,8 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 }
 
                 if (curCell.getOnsetTicks() == nextCell.getOnsetTicks()) {
-                    curCell.setBounds(0, curCell.getY(), width, curCell.getPreferredSize().height);
-                    nextCell.setBounds(0, curCell.getY() + curCell.getHeight(), width, nextCell.getPreferredSize().height);
+                    curCell.setBounds(0, curCell.getY(), col.getWidth(), curCell.getPreferredSize().height);
+                    nextCell.setBounds(0, curCell.getY() + curCell.getHeight(), col.getWidth(), nextCell.getPreferredSize().height);
                     if (col.getWorkingHeight() < nextCell.getY() + nextCell.getHeight()) {
                         col.setWorkingHeight(nextCell.getY() + nextCell.getHeight());
                     }
