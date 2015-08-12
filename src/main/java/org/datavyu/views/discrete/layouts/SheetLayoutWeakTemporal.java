@@ -26,7 +26,6 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.swing.undo.UndoableEdit;
 /**
  * SheetLayoutWeakTemporal - mimics the weak temporal alignment style from
  * original MacSHAPA.
@@ -37,9 +36,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     // The maximum height of the layout in pixels.
     int maxHeight;
     private JScrollPane pane;
-    int editIdx;    // index of edit in UndoManager when layoutContainer() was last run
-    boolean mustRun; // force layoutContainer() method to run fully
-    Integer columnHash;
 
     /**
      * SheetLayoutOrdinal constructor.
@@ -47,13 +43,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
      * @param margin The size of the margin used for this layout.
      */
     public SheetLayoutWeakTemporal(final int margin) {
-        editIdx = Datavyu.getView().getSpreadsheetUndoManager().getIndexOfNextAdd();
-        mustRun = true;
-    }
-
-    /* Set mustRun to true. */
-    public void forceRun(){
-        mustRun = true;
     }
 
     @Override
@@ -72,33 +61,13 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // Get visible columns.
         List<SpreadsheetColumn> visible_columns = getVisibleColumns(mainView);
 
-        /* Check if we can skip laying the entire spreadsheet.
-           Relies on the UndoManager, so it isn't very intuitive on when it skips
-            (e.g. redraws when column name is changed, but not when columns are hidden or shown).
-           But it should stop over-running this routine on scrolls.
-         */
-        int eidx = Datavyu.getView().getSpreadsheetUndoManager().getIndexOfNextAdd();
-        int ch = visible_columns.stream()
-                .map( col -> col.getColumnName())
-                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
-                .toString().hashCode();
-        if( !mustRun
-                && (columnHash!=null && columnHash==ch)
-                && (editIdx == eidx)){
-//            System.err.println(String.format("Didn't align.  Time: %d.",System.currentTimeMillis()-startTime));
-            return;
-        }
-
         // Cell cache so we only have to get from the DB once.
         // Greatly speeds up the algorithm.
         // Redrawing would be even faster if this was only done on DB update
-        int width = 0;
         HashMap<Integer, List<SpreadsheetCell>> cellCache = new HashMap<Integer, List<SpreadsheetCell>>();
         for (int i = 0; i < visible_columns.size(); i++) {
             cellCache.put(i, visible_columns.get(i).getCellsTemporally());
-            width = visible_columns.get(i).getWidth();
         }
-        width--;
 
         // The size the of the gap to use between cells and as overlap on
         // overlapping cells in different columns
@@ -109,7 +78,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         HashMap<Long, List<SpreadsheetCell>> cellsByOffset = new HashMap<Long, List<SpreadsheetCell>>();
 
         for (int key : cellCache.keySet()) {
+            int width = visible_columns.get(key).getWidth();
             for (SpreadsheetCell cell : cellCache.get(key)) {
+                // Fix cell width to column width
+                cell.setWidth(width);
+
                 long onset = cell.getOnsetTicks();
                 long offset = cell.getOffsetTicks();
 
@@ -211,72 +184,44 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             timeByLoc2.put(ck, cv+adjust);
             pv = cv;
         }
-        // Set all of the cell positions now that we have figured them out
-        for (Long time : times) {
-            List<SpreadsheetCell> cellsWithOnset = cellsByOnset.get(time);
-            List<SpreadsheetCell> cellsWithOffset = cellsByOffset.get(time);
-
-
-            if (cellsWithOnset != null) {
-                for (SpreadsheetCell cell : cellsWithOnset) {
-                    cell.setBounds(0, timeByLoc2.get(time), width, cell.getPreferredSize().height);
-                }
-            }
-
-            if (cellsWithOffset != null) {
-                for (SpreadsheetCell cell : cellsWithOffset) {
-                    cell.setBounds(0, cell.getY(), width, (timeByLoc2.get(time) - cell.getY()));
-                }
-            }
-
-            if (maxHeight < timeByLoc2.get(time)) {
-                maxHeight = timeByLoc2.get(time);
-            }
-        }
-//        System.out.println(maxHeight);
-
-        // Set the working heights for all of the columns
-        List<SpreadsheetColumn> visibleColumns = getVisibleColumns(mainView);
-        for (int key : cellCache.keySet()) {
-            SpreadsheetColumn col = visibleColumns.get(key);
-            if (cellCache.get(key).size() > 0) {
-                SpreadsheetCell cell = cellCache.get(key).get(cellCache.get(key).size() - 1);
-                col.setWorkingHeight(cell.getY() + cell.getHeight());
-            }
-        }
 
         // Now go through each of the columns and shorten cells that overlap
         // with the one ahead of them to guarantee all cells can be seen
-
         for (int key : cellCache.keySet()) {
-            for (int i = 0; i < cellCache.get(key).size() - 1; i++) {
-                SpreadsheetCell curCell = cellCache.get(key).get(i);
-                SpreadsheetCell nextCell = cellCache.get(key).get(i + 1);
-                SpreadsheetColumn col = visibleColumns.get(key);
+            SpreadsheetColumn col = visible_columns.get(key);
+            int colWidth = col.getWidth();
+            SpreadsheetCell prevCell = null;
+            int colHeight = 0;
+            for (SpreadsheetCell curCell : col.getCells()) {
+//                SpreadsheetCell nextCell = cellCache.get(key).get(i + 1);
 
-                if (curCell.getOffsetTicks() > nextCell.getOnsetTicks()) {
-                    curCell.setBounds(0, curCell.getY(), width, nextCell.getY() - curCell.getY());
+                // Overlapping if cell is upside down
+                if (curCell.isUpsideDown()) {
                     curCell.setOverlapBorder(true);
                 }
-                
-                if (nextCell.isUpsideDown()){
-                        nextCell.setOverlapBorder(true);
+
+                // Overlapping if previous cell offset extends past current cell onset
+                if (prevCell != null && prevCell.getOffsetTicks() > curCell.getOnsetTicks()) {
+                    prevCell.setOverlapBorder(true);
                 }
 
-                if (curCell.getOnsetTicks() == nextCell.getOnsetTicks()) {
-                    curCell.setBounds(0, curCell.getY(), width, curCell.getPreferredSize().height);
-                    nextCell.setBounds(0, curCell.getY() + curCell.getHeight(), width, nextCell.getPreferredSize().height);
-                    if (col.getWorkingHeight() < nextCell.getY() + nextCell.getHeight()) {
-                        col.setWorkingHeight(nextCell.getY() + nextCell.getHeight());
-                    }
-                }
+                // Set cell boundary.
+                int cellTopY = timeByLoc2.get(curCell.getOnsetTicks());
+                int cellHeight = timeByLoc2.get(curCell.getOffsetTicks()) - cellTopY;
+                curCell.setBounds(0, cellTopY, colWidth-1, cellHeight);
+
+                // Increment column height variable
+                colHeight += cellHeight;
+
+                prevCell = curCell;
             }
+
+            // Set column working height
+            col.setWorkingHeight(colHeight);
+            maxHeight = Math.max(maxHeight, colHeight);
         }
 
         padColumns(mainView, parent);
-        editIdx = eidx;
-        mustRun = false;
-        columnHash = new Integer(ch);
 //        System.err.println(String.format("Aligned.  Time: %d.", System.currentTimeMillis() - startTime));
     }
 
