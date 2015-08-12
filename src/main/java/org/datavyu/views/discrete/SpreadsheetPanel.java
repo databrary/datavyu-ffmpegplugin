@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 
 /**
@@ -428,6 +429,14 @@ public final class SpreadsheetPanel extends JPanel
     }
 
     /**
+     * @return the vector of Spreadsheet columns.
+     * Need for UISpec4J testing
+     */
+    public List<SpreadsheetColumn> getVisibleColumns() {
+        return columns.stream().filter(c -> c.isVisible()).collect(Collectors.toList());
+    }
+
+    /**
      * Deselect all selected items in the Spreadsheet.
      */
     public void deselectAll() {
@@ -722,6 +731,10 @@ public final class SpreadsheetPanel extends JPanel
         }
         System.out.println(source + ", " + destination);
 
+        /*
+        I BROKE IT ALL MAYBE GIT REVERT
+         */
+
         synchronized(this.getTreeLock()) {
             // Reorder the columns vector
             SpreadsheetColumn sourceColumn = columns.get(source);
@@ -733,7 +746,6 @@ public final class SpreadsheetPanel extends JPanel
             for(int i = Math.min(source, destination); i<= Math.max(source, destination); i++){
                 columns.get(i).getVariable().setOrderIndex(i);
             }
-
             // Reorder the header components
             Component comp = headerView.getComponent(source + 1);
             headerView.remove(source + 1);

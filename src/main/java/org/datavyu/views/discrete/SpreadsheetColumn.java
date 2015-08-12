@@ -171,11 +171,6 @@ public final class SpreadsheetColumn extends JLabel
         datapanel = new ColumnDataPanel(db, width, var, cellSelL);
         this.setVisible(!var.isHidden());
         datapanel.setVisible(!var.isHidden());
-
-        System.out.println("COLUMN");
-        System.out.println((JFrame) SwingUtilities.getWindowAncestor(this));
-
-        int x = 0;
     }
 
     /**
@@ -544,6 +539,7 @@ public final class SpreadsheetColumn extends JLabel
     @Override
     public void mousePressed(final MouseEvent me) {
         if(moveable && !draggable) {
+            System.out.println("Pressed X: " + me.getX());
 
             if(System.getProperty("os.name").startsWith("Mac OS X")){
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -558,6 +554,10 @@ public final class SpreadsheetColumn extends JLabel
     public void mouseReleased(final MouseEvent me) {
         // BugzID:301 - Fix dragging columns
         // Call column moving routine if user dragged mouse across columns.
+
+        // TODO Move all of this code to the spreadsheet, which should be handling this. We are using relative X coords
+        // TODO and we dont know which columns we are dropping over because we can't see them... could add widths
+        // TODO or maybe we only count the widths of visible columns? And then shift the position of only visible ones?
         if (moveable) {
 
             Component c = me.getComponent();
@@ -573,32 +573,55 @@ public final class SpreadsheetColumn extends JLabel
             glassPane.setImage(null);
 
             int x = me.getX();
+            System.out.println("Released X: " + x);
             // Iterate over the spreadsheet columns, starting at current column, to figure out how many
             // positions to shift by.
             SpreadsheetPanel sp = (SpreadsheetPanel) Datavyu.getView().getComponent();
-            List<SpreadsheetColumn> cols = sp.getColumns();
-            int positions = 0;
+            List<SpreadsheetColumn> cols = sp.getVisibleColumns();
+//            int positions = 0;
             ListIterator<SpreadsheetColumn> itr = cols.listIterator(cols.indexOf(this));
 
             final int columnWidth = this.getWidth();
 
-            if (x > columnWidth) {
-                SpreadsheetColumn col = itr.next();
-                while(x>col.getWidth()){
-                    x -= col.getWidth();
-                    positions++;
-                    if(itr.hasNext()) col = itr.next();
-                    else break;
+            /*
+            TODO
+            This is where the issue is: we need to have 2 concrete locations to swap
+            We can't just swap one and the other
+             */
+
+            /*
+            Figure out which column is at this x position that we just released at
+             */
+
+            SpreadsheetColumn swapCol = null;
+            for (SpreadsheetColumn col : cols) {
+                if (col.getX() + col.getWidth() > x && col.getX() < x) {
+                    swapCol = col;
+                    break;
                 }
-                sp.moveColumnRight(this.getVariable(), positions);
             }
-            else if (x < 0) {
-                while(x<0 && itr.hasPrevious()){
-                    x += itr.previous().getWidth();
-                    positions++;
-                }
-                sp.moveColumnLeft(this.getVariable(), positions);
-            }
+
+            int positions = this.getVariable().getOrderIndex() - swapCol.getVariable().getOrderIndex();
+            if (positions > 0) sp.moveColumnLeft(this.getVariable(), positions);
+            if (positions < 0) sp.moveColumnRight(this.getVariable(), -positions);
+
+//            if (x > columnWidth) {
+//                SpreadsheetColumn col = itr.next();
+//                while(x>col.getWidth()){
+//                    x -= col.getWidth();
+//                    positions++;
+//                    if(itr.hasNext()) col = itr.next();
+//                    else break;
+//                }
+//                sp.moveColumnRight(this.getVariable(), positions);
+//            }
+//            else if (x < 0) {
+//                while(x<0 && itr.hasPrevious()){
+//                    x += itr.previous().getWidth();
+//                    positions++;
+//                }
+//                sp.moveColumnLeft(this.getVariable(), positions);
+//            }
 
             // Update globals
             moveable = false;
