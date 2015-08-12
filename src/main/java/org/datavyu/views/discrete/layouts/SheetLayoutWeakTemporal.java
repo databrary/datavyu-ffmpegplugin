@@ -190,10 +190,15 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         for (int key : cellCache.keySet()) {
             SpreadsheetColumn col = visible_columns.get(key);
             int colWidth = col.getWidth();
-            SpreadsheetCell prevCell = null;
             int colHeight = 0;
-            for (SpreadsheetCell curCell : col.getCells()) {
-//                SpreadsheetCell nextCell = cellCache.get(key).get(i + 1);
+            SpreadsheetCell prevCell = null;
+            for (SpreadsheetCell curCell : cellCache.get(key)) {
+                // Set cell boundary.
+                int cellTopY = timeByLoc2.get(curCell.getOnsetTicks());
+                int cellHeight = timeByLoc2.get(curCell.getOffsetTicks()) - cellTopY;
+                int cellHeightMin = curCell.getPreferredSize().height;
+                cellHeight = Math.max(cellHeight, cellHeightMin);
+                curCell.setBounds(0, cellTopY, colWidth-1, cellHeight);
 
                 // Overlapping if cell is upside down
                 if (curCell.isUpsideDown()) {
@@ -203,16 +208,11 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 // Overlapping if previous cell offset extends past current cell onset
                 if (prevCell != null && prevCell.getOffsetTicks() > curCell.getOnsetTicks()) {
                     prevCell.setOverlapBorder(true);
+                    prevCell.setBounds(0, prevCell.getY(), colWidth-1, cellTopY - prevCell.getY());
                 }
 
-                // Set cell boundary.
-                int cellTopY = timeByLoc2.get(curCell.getOnsetTicks());
-                int cellHeight = timeByLoc2.get(curCell.getOffsetTicks()) - cellTopY;
-                curCell.setBounds(0, cellTopY, colWidth-1, cellHeight);
-
-                // Increment column height variable
-                colHeight += cellHeight;
-
+                // Update vars
+                colHeight = Math.max(colHeight, cellTopY+cellHeight);
                 prevCell = curCell;
             }
 
