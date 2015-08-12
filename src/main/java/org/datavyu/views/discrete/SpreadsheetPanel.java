@@ -223,6 +223,8 @@ public final class SpreadsheetPanel extends JPanel
 
         updateHiddenVars();
         headerView.add(hiddenVars);
+
+        projectController.getDB().markAsUnchanged();
     }
     
     private JButton makeHiddenVarsButton()
@@ -702,9 +704,6 @@ public final class SpreadsheetPanel extends JPanel
         }
         System.out.println(source + ", " + destination);
 
-        /*
-        I BROKE IT ALL MAYBE GIT REVERT
-         */
 
         synchronized(this.getTreeLock()) {
             // Reorder the columns vector
@@ -726,8 +725,8 @@ public final class SpreadsheetPanel extends JPanel
             comp = mainView.getComponent(source);
             mainView.remove(source);
             mainView.add(comp, destination);
-        }
 
+        }
         revalidate();
     }
 

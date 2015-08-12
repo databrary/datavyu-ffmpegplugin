@@ -276,6 +276,7 @@ public final class DatavyuVariable implements Variable {
         }
 
         this.setRootNode(arg);
+        owningDatastore.markDBAsChanged();
         return arg.childArguments.get(arg.childArguments.size() - 1);
     }
 
@@ -296,6 +297,7 @@ public final class DatavyuVariable implements Variable {
         for (Cell cell : getCells()) {
             cell.moveMatrixValue(old_index, new_index);
         }
+        owningDatastore.markDBAsChanged();
         this.setRootNode(arg);
     }
 
@@ -303,6 +305,7 @@ public final class DatavyuVariable implements Variable {
     public void moveArgument(final String name, final int new_index) {
         int old_index = getArgumentIndex(name);
         moveArgument(old_index, new_index);
+        owningDatastore.markDBAsChanged();
     }
 
     @Override
@@ -316,6 +319,7 @@ public final class DatavyuVariable implements Variable {
             cell.removeMatrixValue(arg_index);
         }
 
+        owningDatastore.markDBAsChanged();
         this.setRootNode(arg);
     }
 
@@ -348,6 +352,7 @@ public final class DatavyuVariable implements Variable {
     @Override
     public void setOrderIndex(final int newIndex) {
         orderIndex = newIndex;
+        owningDatastore.markDBAsChanged();
     }
 
     //would like to change the above calls to DatavyuDatastore.markDBAsChanged to this,
