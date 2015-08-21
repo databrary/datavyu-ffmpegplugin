@@ -48,7 +48,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
     @Override
     public void layoutContainer(Container parent) {
         //TODO: figure out how to make this whole algorithm neater.
-        long startTime = System.currentTimeMillis();
+//        long startTime = System.currentTimeMillis();
         super.layoutContainer(parent);
         pane = (JScrollPane) parent;
 
@@ -101,9 +101,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 offsetMap.put(time, pos - gapSize);
                 continue;
             }
+            if(offsetMap.containsKey(time))
+                pos = Math.max(pos, offsetMap.get(time));
+
             onsetMap.put(time, pos);
             int height = heightMap.get(time);
-            offsetMap.putIfAbsent(time, pos + height);
+            offsetMap.put(time, pos + height);
             pos += height + gapSize;
         }
 
@@ -156,7 +159,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         // with the one ahead of them to guarantee all cells can be seen
 
         padColumns(mainView, parent);
-        System.err.println(String.format("Aligned.  Time: %d.", System.currentTimeMillis() - startTime));
+//        System.err.println(String.format("Aligned.  Time: %d.", System.currentTimeMillis() - startTime));
     }
 
     public void reorientView(SpreadsheetCell cell) {
