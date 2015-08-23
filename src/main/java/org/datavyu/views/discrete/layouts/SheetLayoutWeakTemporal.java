@@ -82,7 +82,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
                 // Add the onset and offset times to our master set.
                 times.add(onset);
-                long offset = curCell.getOffsetTicks();
+                long offset = curCell.getOffsetTicksActual();
                 if(offset > onset) times.add(offset);
             }
             // Merge the intermediate map entries.
@@ -117,7 +117,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 SpreadsheetCell nextCell = (i==orderedCells.size()-1)? null : orderedCells.get(i+1);
 
                 long onset = curCell.getOnsetTicks();
-                long offset = curCell.getOffsetTicks();
+                long offset = curCell.getOffsetTicksActual();
                 int cellTopY = onsetMapLocal.get(onset);
 
                 // Clear overlap border on this cell.
@@ -134,12 +134,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 // Current onset equals next onset
                 else if(nextCell != null && onset == nextCell.getOnsetTicks()){
                     cellHeight = cellHeightMin;
-                    if(onset != offset || offset == nextCell.getOffsetTicks()) curCell.setOverlapBorder(true);
+                    if(onset != offset || offset == nextCell.getOffsetTicksActual()) curCell.setOverlapBorder(true);
                 }
                 // Current offset greater than next onset
                 else if(nextCell != null && offset > nextCell.getOnsetTicks()){
                     cellHeight = onsetMapLocal.get(nextCell.getOnsetTicks()) - cellTopY;
-                    if(offset > nextCell.getOnsetTicks()) curCell.setOverlapBorder(true) ;
+                    curCell.setOverlapBorder(true) ;
                 }
                 else{
                     cellHeight = offsetMap.getOrDefault(offset, onsetMap.get(offset)) - cellTopY;
@@ -150,11 +150,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 curCell.setBounds(0, cellTopY, colWidth-1, cellHeight);
 
                 // Update local onset map
-                final int adj = cellHeight;
-                onsetMapLocal.compute(onset, (k,v) -> v+adj);
+                int adjOn = cellHeight;
+                onsetMapLocal.compute(onset, (k, v) -> v + adjOn);
 
                 // Update offset map
-                offsetMap.put(offset, cellTopY + cellHeight);
+                int adjOff = cellTopY + cellHeight;
+                offsetMap.compute(offset, (k, v) -> (v==null)? adjOff : Math.max(v, adjOff));
 
                 // Update vars
                 colHeight = cellTopY + cellHeight;
