@@ -356,6 +356,13 @@ public class SpreadsheetCell extends JPanel
         }
         return model.getOffset();
     }
+
+    /**
+     * Get the actual offset ticks (even if less than onset).
+     *
+     * @return Offset ticks as a long.
+     */
+    public long getOffsetTicksActual() { return model.getOffset(); }
     
     public boolean isUpsideDown() {
         return model.getOffset() < model.getOnset() && model.getOffset() != 0;  
