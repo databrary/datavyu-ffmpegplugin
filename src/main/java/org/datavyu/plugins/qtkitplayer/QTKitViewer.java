@@ -104,8 +104,14 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
 //                System.out.println(new Dimension(movie.getWidth(), movie.getHeight()));
-
-                movie.setVolume(0.7F, movie.id);
+                try {
+                    // Make sure movie is actually loaded
+                    movie.setVolume(0.7F, movie.id);
+                } catch (Exception e) {
+                    // Oops! Back out
+                    QTKitPlayer.playerCount -= 1;
+                    throw e;
+                }
             }
         });
 

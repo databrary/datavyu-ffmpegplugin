@@ -469,7 +469,7 @@ public final class DataControllerV extends DatavyuDialog
                         JOptionPane.showMessageDialog(null, ep);
                     } else {
                         JOptionPane.showMessageDialog(null,
-                                "Could not open data source: " + t.getMessage());
+                                "This plugin could not load this file. Error message:\n" + t.getMessage());
                     }
                     t.printStackTrace();
                 }
@@ -742,7 +742,7 @@ public final class DataControllerV extends DatavyuDialog
         // If rate is faster than two times - we need to fake playback to give
         // the illusion of 'smooth'. We do this by stopping the dataviewer and
         // doing many seekTo's to grab individual frames.
-        if (Math.abs(rate) > 2.0 || rate < 0 || Math.abs(rate) < 0.25) {
+        if (Math.abs(rate) > 2.0 || rate < 0) {
             playbackModel.setFakePlayback(true);
 
             for (DataViewer viewer : viewers) {

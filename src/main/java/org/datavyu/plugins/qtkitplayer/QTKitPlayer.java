@@ -85,6 +85,7 @@ public class QTKitPlayer extends Canvas {
         try {
             addNativeCoreAnimationLayer("file://" + fileToLoad.toURI().getPath());
         } catch (Exception e) {
+            System.out.println("ERROR CAUGHT");
             e.printStackTrace();
         }
     }
