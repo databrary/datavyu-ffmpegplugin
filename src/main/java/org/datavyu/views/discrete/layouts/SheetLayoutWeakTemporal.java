@@ -112,6 +112,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             int colWidth = col.getWidth();
             int colHeight = 0;
             HashMap<Long, Integer> onsetMapLocal = new HashMap<>(onsetMap);
+            SpreadsheetCell prevCell = null;
             for (int i=0; i<orderedCells.size(); i++) {
                 SpreadsheetCell curCell = orderedCells.get(i);
                 SpreadsheetCell nextCell = (i==orderedCells.size()-1)? null : orderedCells.get(i+1);
@@ -145,6 +146,10 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     cellHeight = offsetMap.getOrDefault(offset, onsetMap.get(offset)) - cellTopY;
                 }
 
+                // Treat cells with 1ms interval as continuous. Stretch bottom of previous cell to top of current cell.
+                if(prevCell != null && onset-prevCell.getOffsetTicks() == 1)
+                    prevCell.setBounds(0, prevCell.getY(), colWidth-1, cellTopY-prevCell.getY());
+
                 cellHeight = Math.max(cellHeight, cellHeightMin); // fix for edge cases...maybe investigate later
                 // Set cell boundary
                 curCell.setBounds(0, cellTopY, colWidth-1, cellHeight);
@@ -159,6 +164,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
 
                 // Update vars
                 colHeight = cellTopY + cellHeight;
+                prevCell = curCell;
             }
 
             // Set column working height
