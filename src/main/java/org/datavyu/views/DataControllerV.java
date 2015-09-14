@@ -443,7 +443,7 @@ public final class DataControllerV extends DatavyuDialog
 
                         // html content
                         JEditorPane ep = new JEditorPane("text/html", "<html><body style=\"" + style + "\">" //
-                                + "Error: Could not load Quicktime.  <a href=\"https://www.apple.com/quicktime/download/\">Please install Quicktime 7 from here</a><br>" +
+                                + "Error: Could not load Quicktime.  <a href=\"https://support.apple.com/kb/DL1822?locale=en_US\">Please install Quicktime 7.7.6 from here</a><br>" +
                                 "and when installing, select \"Custom Install\" and then left click on the [+] next to the red X<br>" +
                                 "next to \"Legacy options\", click on the red X next to Quicktime For Java and select <br>\"Will be installed to local harddrive\". Then click \"Next\" and install.<br>" +
                                 "Afterwards relaunch Datavyu to use the Quicktime plugin." //
