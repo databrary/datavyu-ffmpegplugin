@@ -29,6 +29,7 @@ import rcaller.RCode;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
@@ -166,6 +167,8 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         Datavyu.scriptRunning = true;
         outString = new StringBuilder("");
         ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
+        ScriptContext rubyContext = new SimpleScriptContext();
+        rubyContext.setAttribute("db", Datavyu.getProjectController().getDB(), ScriptContext.ENGINE_SCOPE);
 
         try {
             try {
@@ -176,6 +179,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 consoleWriter.flush();
 
                 // Place reference to various Datavyu functionality.
+                System.out.println(Datavyu.getProjectController().getDB());
                 rubyEngine.put("db", Datavyu.getProjectController().getDB());
                 rubyEngine.put("pj", Datavyu.getProjectController().getProject());
                 rubyEngine.put("mixer", Datavyu.getDataController().getMixerController());
@@ -191,7 +195,9 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
                 rubyEngine.getContext().setWriter(consoleWriter);
                 rubyEngine.getContext().setErrorWriter(consoleWriter);
-                rubyEngine.getContext().setAttribute(AttributeName.TERMINATION.toString(), new Boolean(true),
+                rubyEngine.getContext().setAttribute(AttributeName.TERMINATION.toString(), true,
+                        ScriptContext.ENGINE_SCOPE);
+                rubyEngine.getContext().setAttribute(AttributeName.CLEAR_VARAIBLES.toString(), true,
                         ScriptContext.ENGINE_SCOPE);
                 try{
                     rubyEngine.eval(lineReader);
@@ -199,10 +205,10 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                     consoleWriter.close();
                     
                     // Remove references.
-                    //rubyEngine.put("db", null);
-                    //rubyEngine.put("pj", null);
-                    //rubyEngine.put("mixer", null);
-                    //rubyEngine.put("viewers", null);
+                    rubyEngine.put("db", null);
+                    rubyEngine.put("pj", null);
+                    rubyEngine.put("mixer", null);
+                    rubyEngine.put("viewers", null);
 
                     consoleWriterAfter.write("\nScript has finished running.");
                     consoleWriterAfter.flush();

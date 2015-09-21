@@ -1096,7 +1096,6 @@ public final class Datavyu extends SingleFrameApplication
 
         // Init ruby factory
         sef = m2.getEngineByName("jruby").getFactory();
-
         // Initialize plugin manager
         PluginManager.getInstance();
 
