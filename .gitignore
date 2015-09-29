@@ -29,3 +29,6 @@ usermetrix.id
 .RData
 packaged_docs/user-guide.pdf
 datavyu.iml
+QTKitCanvas/build
+QTKitCanvas/make
+QTKitCanvas/resources
