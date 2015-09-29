@@ -125,7 +125,11 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
 
     @Override
     protected float getQTFPS() {
-
+        float fps = movie.getFPS(movie.id);
+        if (fps <= 1) {
+            assumedFPS = true;
+            return 29.97f;
+        }
         return movie.getFPS(movie.id);
     }
 
