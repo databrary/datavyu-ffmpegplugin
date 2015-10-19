@@ -200,10 +200,11 @@ public final class ExportDatabaseFileC {
                             row += ",";
                         }
                     }
-                    ps.println(row);
-                    current_time += 1000.0 / framerate;
-                    ++framenum;
+
                 }
+                ps.println(row);
+                current_time += 1000.0 / framerate;
+                ++framenum;
 
             }
 
