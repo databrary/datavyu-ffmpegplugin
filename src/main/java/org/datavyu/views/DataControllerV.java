@@ -652,6 +652,9 @@ public final class DataControllerV extends DatavyuDialog
                 && (time < (view.getOffset() + view.getDuration()));
     }
 
+    /*
+        Method to sync the clock to the video
+     */
     public void adjustClock(final long time) {
         if (viewers.size() == 1 && (time < playbackModel.getWindowPlayEnd() && time > playbackModel.getWindowPlayStart())) {
             // Using an iterator because viewers is a set
@@ -2264,7 +2267,7 @@ public final class DataControllerV extends DatavyuDialog
     @Action
     public void createNewCellAction() {
         LOGGER.info("New cell");
-        adjustClock(getCurrentTime());
+        if (!clock.isStopped()) adjustClock(getCurrentTime());
         CreateNewCellC controller = new CreateNewCellC();
         controller.createDefaultCell(true);
     }
@@ -2275,7 +2278,7 @@ public final class DataControllerV extends DatavyuDialog
     @Action
     public void createNewCellAndSetOffsetAction() {
         LOGGER.info("New cell set offset");
-        adjustClock(getCurrentTime());
+        if (!clock.isStopped()) adjustClock(getCurrentTime());
         new CreateNewCellC(getCurrentTime(), true);
     }
 
