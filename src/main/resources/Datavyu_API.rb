@@ -80,6 +80,7 @@ require 'set'
 require 'rbconfig'
 #require 'ftools'
 
+import 'org.datavyu.Datavyu'
 import 'org.datavyu.models.db.Datastore'
 import 'org.datavyu.models.db.MatrixValue'
 import 'org.datavyu.models.db.NominalValue'
@@ -99,6 +100,11 @@ def print_debug(*s)
     p s
   end
 end
+
+# Set $db, this is so that JRuby doesn't decide to overwrite it halfway thru the script.
+$db = Datavyu.get_project_controller.get_db
+$pj = Datavyu.get_project_controller.get_project
+# puts "Loading api2!"
 
 class RCell
 

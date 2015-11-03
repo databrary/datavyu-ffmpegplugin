@@ -1092,6 +1092,7 @@ public final class Datavyu extends SingleFrameApplication
         Configuration.getInstance().setCanSendLogs(false);
 
         // Init scripting engine
+        System.setProperty("org.jruby.embed.localvariable.behavior", "transient");
         m2 = new ScriptEngineManager();
 
         // Init ruby factory

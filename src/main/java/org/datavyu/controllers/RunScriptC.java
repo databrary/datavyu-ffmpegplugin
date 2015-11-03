@@ -168,7 +168,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
         outString = new StringBuilder("");
         ScriptEngine rubyEngine = Datavyu.getScriptingEngine();
         ScriptContext rubyContext = new SimpleScriptContext();
-        rubyContext.setAttribute("db", Datavyu.getProjectController().getDB(), ScriptContext.ENGINE_SCOPE);
+//        rubyContext.setAttribute("db", Datavyu.getProjectController().getDB(), ScriptContext.ENGINE_SCOPE);
 
         try {
             try {
@@ -180,10 +180,12 @@ public final class RunScriptC extends SwingWorker<Object, String> {
 
                 // Place reference to various Datavyu functionality.
                 System.out.println(Datavyu.getProjectController().getDB());
-                rubyEngine.put("db", Datavyu.getProjectController().getDB());
-                rubyEngine.put("pj", Datavyu.getProjectController().getProject());
-                rubyEngine.put("mixer", Datavyu.getDataController().getMixerController());
-                rubyEngine.put("viewers", Datavyu.getDataController());
+//                rubyEngine.put("db", Datavyu.getProjectController().getDB());
+//                rubyEngine.put("pj_handle", Datavyu.getProjectController().getProject());
+//                rubyEngine.put("mixer_handle", Datavyu.getDataController().getMixerController());
+//                rubyEngine.put("viewers_handle", Datavyu.getDataController());
+//                rubyEngine.getContext().setAttribute("db_handle", Datavyu.getProjectController().getDB(),
+//                        ScriptContext.ENGINE_SCOPE);
                 String path = System.getProperty("user.dir") + File.separator;
                 
                 rubyEngine.put("path", path);
@@ -193,6 +195,7 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                         fileReaderIntoStringReader(scriptReader));
                 //System.out.println(wholeScript);
 
+                rubyEngine.setContext(rubyContext);
                 rubyEngine.getContext().setWriter(consoleWriter);
                 rubyEngine.getContext().setErrorWriter(consoleWriter);
                 rubyEngine.getContext().setAttribute(AttributeName.TERMINATION.toString(), true,
@@ -200,15 +203,16 @@ public final class RunScriptC extends SwingWorker<Object, String> {
                 rubyEngine.getContext().setAttribute(AttributeName.CLEAR_VARAIBLES.toString(), true,
                         ScriptContext.ENGINE_SCOPE);
                 try{
+                    rubyEngine.eval("load 'Datavyu_API.rb'\n");
                     rubyEngine.eval(lineReader);
                     //System.out.println("SCRIPT OVER");
                     consoleWriter.close();
                     
                     // Remove references.
-                    rubyEngine.put("db", null);
-                    rubyEngine.put("pj", null);
-                    rubyEngine.put("mixer", null);
-                    rubyEngine.put("viewers", null);
+//                    rubyEngine.put("db", null);
+//                    rubyEngine.put("pj", null);
+//                    rubyEngine.put("mixer", null);
+//                    rubyEngine.put("viewers", null);
 
                     consoleWriterAfter.write("\nScript has finished running.");
                     consoleWriterAfter.flush();
