@@ -127,13 +127,16 @@ public final class ExportDatabaseFileC {
             ps.println(header);
 
             int framenum = 1;
-            while (current_time <= last_time) {
+            while (current_time <= last_time + 1000.0 / framerate) {
                 // Update the currentIndex list
                 for (int i = 0; i < variables.size(); i++) {
                     if (!cellCache.get(i).isEmpty()) {
                         Cell c = cellCache.get(i).get(currentIndex[i]);
                         if (current_time > c.getOffset()) {
 
+                            if (current_time > 37300) {
+                                System.out.println("test");
+                            }
                             for (int j = currentIndex[i]; j < cellCache.get(i).size(); j++) {
                                 Cell nextCell = cellCache.get(i).get(j);
                                 if (current_time >= nextCell.getOnset()) {
@@ -153,7 +156,12 @@ public final class ExportDatabaseFileC {
 
                         Cell cell = cellCache.get(i).get(currentIndex[i]);
 
-                        if (cell.getOnset() <= current_time && cell.getOffset() >= current_time) {
+
+                        if ((cell.getOnset() <= current_time && cell.getOffset() >= current_time) ||
+                                (Math.abs(cell.getOffset() - cell.getOnset()) < 1000.0 / framerate &&
+                                        cell.getOnset() > current_time - 1000.0 / framerate + 1 &&
+                                        current_time >= cell.getOnset() &&
+                                        cell.getOnset() < current_time + 1000.0 / framerate - 1)) {
 
                             Value value = cell.getValue();
 
