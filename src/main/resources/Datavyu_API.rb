@@ -79,6 +79,7 @@ require 'date'
 require 'set'
 require 'rbconfig'
 #require 'ftools'
+require 'matrix'
 
 import 'org.datavyu.Datavyu'
 import 'org.datavyu.models.db.Datastore'
@@ -490,6 +491,154 @@ class RVariable
     @hidden = value
   end
 
+end
+
+# Patch Matrix class with setter method.  See fmendez.com/blog
+class Matrix
+  def []=(row, column, value)
+    @rows[row][column] = value
+  end
+end
+
+# Class for keeping track of the agreement table for one code
+class CTable
+  attr_accessor :table, :codes
+
+  def initialize(*values)
+    raise "CTable must have at least 2 valid values. Got : #{values}" if values.size<2
+    @codes = values
+    @table = Matrix.zero(values.size)
+  end
+
+  # Add a code pair.  Order always pri,rel.
+  def add(pri_value, rel_value)
+    pri_idx = @codes.index(pri_value)
+    raise "Invalid primary value: #{pri_value}" if pri_idx.nil?
+    rel_idx = @codes.index(rel_value)
+    raise "Invalid reliability value: #{rel_value}" if rel_idx.nil?
+
+    @table[pri_idx, rel_idx] += 1
+  end
+
+  # Compute kappa
+  def kappa
+    agree = @table.trace
+    total = self.total
+    efs = self.efs
+    k = (agree-efs)/(total-efs)
+    return k
+  end
+
+  # Return the expected frequency of agreement by chance for the given index
+  def ef(idx)
+    raise "Index out of bounds: requested #{idx}, have #{@codes.size}." if idx >= @codes.size
+
+    # The expected frequency is (row_total * column_total)/matrix_total
+    row_total = @table.row(idx).to_a.reduce(:+)
+    col_total = @table.column(idx).to_a.reduce(:+)
+    ret = (row_total * col_total)/self.total.to_f
+    return ret
+  end
+
+  # Return the sum of the expected frequency of agreement by chance for all indices in table
+  def efs
+    sum = 0
+    for idx in 0..@codes.size-1
+      sum += self.ef(idx).to_f
+    end
+    return sum
+  end
+
+  # Return the sum of all elements in matrix table
+  def total
+    v = Matrix.row_vector([1] * @codes.size) # row vector of 1s
+    vt = v.t  # column vector of 1s
+    ret = (v * @table * vt)
+    return ret[0,0]
+  end
+
+  # Table to String
+  # Return formatted string to display the table
+  def to_s
+    str = "\t" + codes.join("\t") + "\n"
+    for i in 0..@codes.size-1
+      str << @codes[i] + "\t"
+      for j in 0..@codes.size-1
+        str << @table[i,j].to_s + "\t"
+      end
+      str << "\n"
+    end
+    return str
+  end
+end
+
+## API Functions
+
+#-------------------------------------------------------------------
+# Method name: computeKappa
+# Function: Computes Cohen's kappa from the given primary and reliability columns.
+# Arguments:
+# => pri_col (required): The primary coder's column.
+# => rel_col (required): The reliability coder's column.
+# => codes (required 1 or more): Strings denoting codes to compute kappas for
+# Returns:
+# => A hash mapping from each of the codenames to its computed kappa value.
+# Usage:
+# =>    primary_column_name = 'trial'
+# =>    reliability_column_name = 'trial_rel'
+# =>    codes_to_compute = ['condition', 'result']
+# =>    kappas = computeKappa(colPri, colRel, codes_to_compute)
+# =>    kappas.each_pair { |code, k| puts "#{code}: #{k}" }
+#-------------------------------------------------------------------
+def computeKappa(pri_col, rel_col, *codes)
+  codes = pri_col.arglist if codes.nil? || codes.empty?
+  raise "No codes!" if codes.empty?
+  p codes
+  pri_col = getVariable(pri_col) if pri_col.class == String
+  rel_col = getVariable(rel_col) if rel_col.class == String
+  codes.flatten!
+
+  raise "Invalid parameters for getKappa()" unless (pri_col.class==RVariable && rel_col.class==RVariable)
+
+  # Get the list of observed values in each cell, per code
+  cells = pri_col.cells + rel_col.cells
+
+  # Build a hashmap from the list of codes to all observed values for that code
+  # across primary and reliability cells.
+  observed_values = Hash.new{ |h, k| h[k] = [] }
+  cells.each do |cell|
+    codes.each do |code|
+      observed_values[code] << cell.get_arg(code)
+    end
+  end
+
+  observed_values.each_value{ |v| v.uniq! }
+
+  # Init contingency tables for each code name
+  tables = Hash.new
+  observed_values.each_pair do |codename, codevalues|
+    tables[codename] = CTable.new(*codevalues)
+  end
+
+  # Get the pairs of corresponding primary and reliability cells
+  cellPairs = Hash.new
+  for relcell in rel_col.cells
+    cellPairs[relcell] = pri_col.cells.find{ |pricell| pricell.onset == relcell.onset} # match by onset times
+  end
+
+  cellPairs.each_pair do |pricell, relcell|
+    codes.each do |x|
+      tables[x].add(pricell.get_arg(x), relcell.get_arg(x))
+    end
+  end
+
+
+  kappas = Hash.new
+  tables.each_pair do |codename, ctable|
+    kappas[codename] = ctable.kappa
+  end
+
+  return kappas, tables
 end
 
 #-------------------------------------------------------------------
