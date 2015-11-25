@@ -310,6 +310,14 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         volumeButton.setIcon(getVolumeButtonIcon());
     }
 
+    public void setVolume(float volume) {
+        setQTVolume(volume);
+    }
+
+    public float getVolume() {
+        return volume;
+    }
+
     protected abstract void setQTVolume(float volume);
 
     // ------------------------------------------------------------------------
@@ -448,7 +456,12 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
         System.out.println(fps);
 
         // Try to display the first frame
+//        setPlaybackSpeed(1.0f);
+//        play();
+//        stop();
         seekTo(0L);
+
+
     }
 
     /**

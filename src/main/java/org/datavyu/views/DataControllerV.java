@@ -36,6 +36,7 @@ import org.datavyu.models.id.Identifier;
 import org.datavyu.plugins.DataViewer;
 import org.datavyu.plugins.Plugin;
 import org.datavyu.plugins.PluginManager;
+import org.datavyu.plugins.quicktime.BaseQuickTimeDataViewer;
 import org.datavyu.util.ClockTimer;
 import org.datavyu.util.ClockTimer.ClockListener;
 import org.datavyu.util.FloatUtils;
@@ -425,6 +426,35 @@ public final class DataControllerV extends DatavyuDialog
                     dataViewer.addViewerStateListener(
                             mixerController.getTracksEditorController()
                                     .getViewerStateListener(dataViewer.getIdentifier()));
+
+                    /*
+                    "Warm up" the data controller... this is a really gross hack but seems to help controllers
+                    to get accurate positions for the first few frames.
+                     */
+                    new Thread(() -> {
+                        Datavyu.getDataController().playAction();
+                        ArrayList<Float> volumes = new ArrayList<>();
+                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
+                            if (dv instanceof BaseQuickTimeDataViewer) {
+                                volumes.add(((BaseQuickTimeDataViewer) dv).getVolume());
+                                ((BaseQuickTimeDataViewer) dv).setVolume(0.0f);
+                            }
+                        }
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Datavyu.getDataController().stopAction();
+                        Datavyu.getDataController().setCurrentTime(0);
+                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
+                            if (dv instanceof BaseQuickTimeDataViewer) {
+                                float v = volumes.remove(0);
+                                ((BaseQuickTimeDataViewer) dv).setVolume(v);
+                            }
+                        }
+
+                    }).start();
                 } catch (Throwable t) {
                     LOGGER.error(t);
                     StringWriter sw = new StringWriter();

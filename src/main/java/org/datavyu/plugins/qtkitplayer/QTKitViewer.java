@@ -107,6 +107,11 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
                 try {
                     // Make sure movie is actually loaded
                     movie.setVolume(0.7F, movie.id);
+//                    movie.setRate(1.0f, movie.id);
+//                    while(movie.getCurrentTime(movie.id) < 1000) {}
+//                    System.out.println(getCurrentTime());
+//                    movie.stop(movie.id);
+//                    movie.setTime(0, movie.id);
                 } catch (Exception e) {
                     // Oops! Back out
                     QTKitPlayer.playerCount -= 1;
@@ -114,6 +119,11 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
                 }
             }
         });
+
+//        setPlaybackSpeed(1.0f);
+//        play();
+//        while(movie.getCurrentTime(movie.id) < 1000) {}
+//        stop();
 
     }
 
@@ -167,6 +177,8 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
                         movie.setRate(getPlaybackSpeed(), movie.id);
                     }
                 });
+            } else {
+                System.err.println("WARNING: Movie is currently null");
             }
         } catch (Exception e) {
             LOGGER.error("Unable to play", e);
@@ -211,6 +223,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
                 prevSeekTime = position;
                 EventQueue.invokeLater(new Runnable() {
                     public void run() {
+                        System.out.println("Seeking to " + position);
                         boolean wasPlaying = isPlaying();
                         float prevRate = getPlaybackSpeed();
                         if (isPlaying())

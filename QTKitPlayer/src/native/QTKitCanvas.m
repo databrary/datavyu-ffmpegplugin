@@ -309,6 +309,7 @@ JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_getFPS
     
     JNF_COCOA_ENTER(env);
     
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     return [[fpses objectAtIndex:movieId] floatValue];
     
 //    for (QTTrack *track in [GetQtMovie(movieId) tracks]) {
@@ -445,8 +446,18 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTime
 //    QTTime t = QTMakeTime((long long)time, (long)time);
     
     QTTime newQTTime = [GetQtMovie(movieId) currentTime];
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     newQTTime.timeValue = ((long long)time / 1000.0f) * newQTTime.timeScale;
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     [GetQtMovie(movieId) setCurrentTime:newQTTime];
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    
+    newQTTime = [GetQtMovie(movieId) currentTime];
+    long long time = (newQTTime.timeValue * 1000.0f) / newQTTime.timeScale;
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    
+    
+    NSLog(@"Reported time %lld", time);
     
 //    [movie stop];
 //    [movie setCurrentTime:t];
@@ -545,11 +556,10 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_release
     // Open the movie in editing mode, get the FPS, close it, open it in playback mode
     QTMovie *movie = nil;
     NSError *error = nil;
-    NSNumber *num = [NSNumber numberWithBool:YES];
     NSDictionary *attributes =
     [NSDictionary dictionaryWithObjectsAndKeys:
      [NSURL URLWithString:file], QTMovieURLAttribute,
-     num, QTMovieLoopsAttribute,
+     [NSNumber numberWithBool:YES], QTMovieLoopsAttribute,
      [NSNumber numberWithBool:NO], QTMovieOpenForPlaybackAttribute,
      [NSNumber numberWithBool:NO], QTMovieOpenAsyncOKAttribute,
      nil];
@@ -567,35 +577,45 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_release
         long sampleCount = [(NSNumber *)[media attributeForKey:QTMediaSampleCountAttribute] longValue];
         fps = sampleCount * ((NSTimeInterval)duration.timeScale / (NSTimeInterval)duration.timeValue);
     }
-    
+    NSSize sourceSize = [[[movie movieAttributes] valueForKey:@"QTMovieNaturalSizeAttribute"] sizeValue];
+    NSLog(@"Normal Height: %f, Width: %f", sourceSize.height, sourceSize.width);
+    NSLog(@"Releasing movie");
     [movie release];
     
     attributes =
     [NSDictionary dictionaryWithObjectsAndKeys:
      [NSURL URLWithString:file], QTMovieURLAttribute,
-     num, QTMovieLoopsAttribute,
-     num, QTMovieOpenForPlaybackAttribute,
+     [NSNumber numberWithBool:YES], QTMovieLoopsAttribute,
+     [NSNumber numberWithBool:YES], QTMovieOpenForPlaybackAttribute,
      [NSNumber numberWithBool:NO], QTMovieOpenAsyncOKAttribute,
+//     [NSNumber numberWithBool:YES], QTMoviePlaysAllFramesAttribute,
      nil];
+    NSLog(@"Opening movie in playback mode");
     movie = [[QTMovie alloc] initWithAttributes:attributes
                                           error:&error];
     
 
-
+//    [movie setAttribute:[NSNumber numberWithBool:YES] forKey:QTMoviePlaysAllFramesAttribute];
 //    QTMovie* movie = [QTMovie movieWithURL: [NSURL URLWithString:file] error:&error];
 //    movie = [QTMovie movieWithURL: [NSURL URLWithString:@"file:///Users/jesse/Desktop/minecraft.mp4"] error:nil];
     if(movie == nil || error)
         NSLog(@"Error: %@ %@", error, [error userInfo]);
-    NSLog(@"Movie loaded: %lld, %ld", [movie duration].timeValue, [movie duration].timeScale);
+//    NSLog(@"Movie loaded: %lld, %ld", [movie duration].timeValue, [movie duration].timeScale);
+    sourceSize = [[[movie movieAttributes] valueForKey:@"QTMovieNaturalSizeAttribute"] sizeValue];
+    NSLog(@"Playback Height: %f, Width: %f", sourceSize.height, sourceSize.width);
 
+//    NSLog@(@"Movie width: %ld, height: %ld", [movie ])
+    NSLog(@"Movie opened in playback mode");
     QTMovieLayer* qtMovieLayer = [QTMovieLayer layerWithMovie:movie];
+    NSLog(@"Layer created");
     [self addSublayer:qtMovieLayer];
-    
+    NSLog(@"Added sublayer");
     [movies addObject:movie];
+    NSLog(@"Added movie");
     [movieLayers addObject:self];
     [fpses addObject:[NSNumber numberWithFloat:fps]];
     
-    
+    NSLog(@"Returning, movie loaded");
 	return self;
 }
 
