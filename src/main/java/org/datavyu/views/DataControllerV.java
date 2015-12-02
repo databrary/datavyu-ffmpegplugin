@@ -446,13 +446,18 @@ public final class DataControllerV extends DatavyuDialog
                             e.printStackTrace();
                         }
                         Datavyu.getDataController().stopAction();
-                        Datavyu.getDataController().setCurrentTime(0);
                         for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
                             if (dv instanceof BaseQuickTimeDataViewer) {
                                 float v = volumes.remove(0);
                                 ((BaseQuickTimeDataViewer) dv).setVolume(v);
                             }
                         }
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Datavyu.getDataController().setCurrentTime(0);
 
                     }).start();
                 } catch (Throwable t) {

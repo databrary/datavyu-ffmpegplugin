@@ -443,6 +443,9 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTime
     JNF_COCOA_ENTER(env);
     
     NSLog(@"Setting time %lld", (long long)time);
+    if(time == 0) {
+        time = 1;
+    }
 //    QTTime t = QTMakeTime((long long)time, (long)time);
     
     QTTime newQTTime = [GetQtMovie(movieId) currentTime];
@@ -559,7 +562,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_release
     NSDictionary *attributes =
     [NSDictionary dictionaryWithObjectsAndKeys:
      [NSURL URLWithString:file], QTMovieURLAttribute,
-     [NSNumber numberWithBool:YES], QTMovieLoopsAttribute,
+     [NSNumber numberWithBool:NO], QTMovieLoopsAttribute,
      [NSNumber numberWithBool:NO], QTMovieOpenForPlaybackAttribute,
      [NSNumber numberWithBool:NO], QTMovieOpenAsyncOKAttribute,
      nil];
@@ -585,7 +588,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_release
     attributes =
     [NSDictionary dictionaryWithObjectsAndKeys:
      [NSURL URLWithString:file], QTMovieURLAttribute,
-     [NSNumber numberWithBool:YES], QTMovieLoopsAttribute,
+     [NSNumber numberWithBool:NO], QTMovieLoopsAttribute,
      [NSNumber numberWithBool:YES], QTMovieOpenForPlaybackAttribute,
      [NSNumber numberWithBool:NO], QTMovieOpenAsyncOKAttribute,
 //     [NSNumber numberWithBool:YES], QTMoviePlaysAllFramesAttribute,
