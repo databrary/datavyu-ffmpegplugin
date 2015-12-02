@@ -438,6 +438,7 @@ public final class DataControllerV extends DatavyuDialog
                             if (dv instanceof BaseQuickTimeDataViewer) {
                                 volumes.add(((BaseQuickTimeDataViewer) dv).getVolume());
                                 ((BaseQuickTimeDataViewer) dv).setVolume(0.0f);
+                                dv.setDataViewerVisible(false);
                             }
                         }
                         try {
@@ -450,6 +451,7 @@ public final class DataControllerV extends DatavyuDialog
                             if (dv instanceof BaseQuickTimeDataViewer) {
                                 float v = volumes.remove(0);
                                 ((BaseQuickTimeDataViewer) dv).setVolume(v);
+                                dv.setDataViewerVisible(true);
                             }
                         }
                         try {
