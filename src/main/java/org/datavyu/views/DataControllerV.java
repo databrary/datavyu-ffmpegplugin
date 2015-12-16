@@ -657,7 +657,7 @@ public final class DataControllerV extends DatavyuDialog
             if (time < windowPlayStart) {
                 setCurrentTime(windowPlayStart);
                 clock.stop();
-                clock.setTime(windowPlayStart);
+//                clock.setTime(windowPlayStart);
                 clockStop(windowPlayStart);
             }
 
@@ -667,7 +667,7 @@ public final class DataControllerV extends DatavyuDialog
             if ((time >= windowPlayEnd) && (clock.getRate() >= 0)) {
                 setCurrentTime(windowPlayEnd);
                 clock.stop();
-                clock.setTime(windowPlayEnd);
+//                clock.setTime(windowPlayEnd);
                 clockStop(windowPlayEnd);
 
                 return;
@@ -729,7 +729,6 @@ public final class DataControllerV extends DatavyuDialog
 
         /*
             This is the new style time reckoning where the timer gets updated from the video
-            This gets rid of the
          */
         if (viewers.size() == 1 && (time < playbackModel.getWindowPlayEnd() && time > playbackModel.getWindowPlayStart())) {
             // Using an iterator because viewers is a set
@@ -761,10 +760,12 @@ public final class DataControllerV extends DatavyuDialog
         } else {
             setCurrentTime(time);
             for (DataViewer viewer : viewers) {
-                viewer.stop();
+                if (viewer.isPlaying()) {
+                    viewer.stop();
+                }
 
                 if (isWithinPlayRange(time, viewer)) {
-                    viewer.seekTo(time - viewer.getOffset());
+//                    viewer.seekTo(time - viewer.getOffset());
                 }
             }
         }
@@ -2074,6 +2075,7 @@ public final class DataControllerV extends DatavyuDialog
         } else {
 
             try {
+                System.out.println("Finding to " + onsetTextField.getText() + " " + CLOCK_FORMAT.parse(onsetTextField.getText()).getTime());
                 jumpTo(CLOCK_FORMAT.parse(onsetTextField.getText()).getTime());
             } catch (ParseException e) {
                 LOGGER.error("unable to find within video", e);

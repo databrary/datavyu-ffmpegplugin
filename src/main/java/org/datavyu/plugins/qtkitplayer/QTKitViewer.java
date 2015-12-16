@@ -218,26 +218,31 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     @Override
     public void seekTo(final long position) {
 
-        try {
-            if (movie != null && (prevSeekTime != position)) {
-                prevSeekTime = position;
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        System.out.println("Seeking to " + position);
-                        boolean wasPlaying = isPlaying();
-                        float prevRate = getPlaybackSpeed();
-                        if (isPlaying())
-                            movie.stop(movie.id);
-                        movie.setTime(position, movie.id);
-                        if (wasPlaying) {
-                            movie.setRate(prevRate, movie.id);
+        if (position != prevSeekTime) {
+            try {
+                if (movie != null) {
+                    prevSeekTime = position;
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            System.out.println("Seeking to " + position);
+                            boolean wasPlaying = isPlaying();
+                            float prevRate = getPlaybackSpeed();
+                            if (isPlaying()) {
+                                System.out.println("Stopping playback");
+                                movie.stop(movie.id);
+                            }
+                            movie.setTime(position, movie.id);
+                            if (wasPlaying) {
+                                movie.setRate(prevRate, movie.id);
+                            }
+                            movie.repaint();
                         }
-                    }
-                });
+                    });
 
+                }
+            } catch (Exception e) {
+                LOGGER.error("Unable to find", e);
             }
-        } catch (Exception e) {
-            LOGGER.error("Unable to find", e);
         }
     }
 

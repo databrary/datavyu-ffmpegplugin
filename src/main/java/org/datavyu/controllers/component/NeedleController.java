@@ -41,6 +41,7 @@ public final class NeedleController implements PropertyChangeListener {
     private final NeedleModelImpl needleModel;
     private final MixerModel mixerModel;
     private final MixerController mixerController;
+    private long lastTime = 0;
 
     public NeedleController(final MixerController mixerController, final MixerModel mixer) {
         this.mixerController = mixerController;
@@ -142,6 +143,7 @@ public final class NeedleController implements PropertyChangeListener {
                 long newTime = viewport.computeTimeFromXOffset(dx) + viewport.getViewStart();
                 newTime = Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd());
                 mixerController.getTimescaleController().jumpToTime(newTime, false); // TEMPORARY UGLY HACK
+                lastTime = System.currentTimeMillis();
             }
         }
 
@@ -155,8 +157,15 @@ public final class NeedleController implements PropertyChangeListener {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            viewport = null;
-            needlePositionOffsetX = 0.0;
+//            System.out.println("MOUSE RELEASED");
+//            if (viewport != null) {
+//                final double dx = Math.min(Math.max(e.getX() - NeedleConstants.NEEDLE_HEAD_WIDTH - needlePositionOffsetX, 0), view.getWidth());
+//                long newTime = viewport.computeTimeFromXOffset(dx) + viewport.getViewStart();
+//                newTime = Math.min(Math.max(newTime, viewport.getViewStart()), viewport.getViewEnd());
+//                mixerController.getTimescaleController().jumpToTime(newTime, false); // TEMPORARY UGLY HACK
+//            }
+//            viewport = null;
+//            needlePositionOffsetX = 0.0;
         }
     }
 }

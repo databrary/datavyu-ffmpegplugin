@@ -453,14 +453,29 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTime
     newQTTime.timeValue = ((long long)time / 1000.0f) * newQTTime.timeScale;
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     [GetQtMovie(movieId) setCurrentTime:newQTTime];
+//    if(time == 0) {
+    
+//    }
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+     long long t = (newQTTime.timeValue * 1000.0f) / newQTTime.timeScale;
+    if(time == 1) {
+        
+        [GetQtMovie(movieId) stepForward];
+        
+        newQTTime = [GetQtMovie(movieId) currentTime];
+        
+        while(t > 20) {
+            NSLog(@"Reported time %lld", t);
+            t = (newQTTime.timeValue * 1000.0f) / newQTTime.timeScale;
+            [GetQtMovie(movieId) stepBackward];
+        }
+    }
+
+    
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     
-    newQTTime = [GetQtMovie(movieId) currentTime];
-    long long time = (newQTTime.timeValue * 1000.0f) / newQTTime.timeScale;
-    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     
-    
-    NSLog(@"Reported time %lld", time);
+    NSLog(@"Reported time %lld", t);
     
 //    [movie stop];
 //    [movie setCurrentTime:t];
@@ -598,9 +613,6 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_release
                                           error:&error];
     
 
-//    [movie setAttribute:[NSNumber numberWithBool:YES] forKey:QTMoviePlaysAllFramesAttribute];
-//    QTMovie* movie = [QTMovie movieWithURL: [NSURL URLWithString:file] error:&error];
-//    movie = [QTMovie movieWithURL: [NSURL URLWithString:@"file:///Users/jesse/Desktop/minecraft.mp4"] error:nil];
     if(movie == nil || error)
         NSLog(@"Error: %@ %@", error, [error userInfo]);
 //    NSLog(@"Movie loaded: %lld, %ld", [movie duration].timeValue, [movie duration].timeScale);
