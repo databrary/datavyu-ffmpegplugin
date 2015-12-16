@@ -203,6 +203,7 @@ class RCell
   end
 
   def change_arg(arg, val)
+    arg = arg.gsub(/(\W)+/, "").downcase
     if arg == "onset"
       @onset = val
     elsif arg == "offset"
