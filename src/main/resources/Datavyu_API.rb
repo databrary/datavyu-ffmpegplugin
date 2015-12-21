@@ -2181,6 +2181,78 @@ def checkValidCodes(var, dump_file, *arg_code_pairs)
   end
 end
 
+#-------------------------------------------------------------------
+# Method name: checkValidCodes2
+# Function: Check valid codes on cells in a column using regex. Backwards-compatible with checkValidCodes
+# Arguments:
+# => val (required): The variable that the codes belong to.
+# => dump_file (required): The full path of the file to dump output to.
+#     Use "" to not dump to a file.  You may also pass a Ruby File object.
+# => arg_filt_pairs (required): Pairs of code name and acceptable values either as an array of values or regexp
+# Returns:
+# => Nothing but the console and file output.
+#
+# Example:
+#  checkValidCodes2("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", /\A\d+\Z/)
+# -------------------------------------------------------------------
+def checkValidCodes2(var, dump_file, *arg_filt_pairs)
+	if var.class == "".class
+		var = getVariable(var)
+	end
+
+	if dump_file != ""
+		if dump_file.class == "".class
+	    	dump_file = open(dump_file, 'a')
+	  	end
+	end
+
+	# Make the argument/code hash
+	arg_code = Hash.new
+	for i in 0...arg_filt_pairs.length
+	  if i % 2 == 0
+		if arg_filt_pairs[i].class != "".class
+			print_debug 'FATAL ERROR in argument/valid code array.  Exiting.  Please check to make sure it is in the format "argumentname", ["valid","codes"]'
+			exit
+		end
+
+		arg = arg_filt_pairs[i]
+		if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[1].chr)
+			arg = arg[1..arg.length]
+		end
+		arg = arg.gsub(/(\W )+/,"").downcase
+
+	    # Add the filter for this code.  If the given filter is an array, convert it to a regular expression using Regex.union
+	    filt = arg_filt_pairs[i+1]
+	    if(filt.class == Array)
+	     	arg_code[arg] = Regexp.new('\A(' + Regexp.union(filt).source + ')\Z')
+	    elsif(filt.class == Regexp)
+	     	arg_code[arg] = arg_filt_pairs[i+1]
+	    else
+	    	print_debug "FATAL ERROR in argument/valid code array: expected array or regular expression for filtering #{arg}, received #{filt.class}."
+	     	raise "Unhandled filter type: #{filt.class}"
+	    end
+	  end
+	end
+
+	errors = false
+	for cell in var.cells
+		for arg, filt in arg_code
+      	val = eval "cell.#{arg}"
+      	if filt.match(val).nil?
+          	errors = true
+          	str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
+          	print str
+          	if dump_file != ""
+            	dump_file.write(str)
+          	end
+      	end
+    	end
+	end
+	if not errors
+  	print_debug "No errors found."
+	end
+end
+
 def getColumnList()
   return getVariableList()
 end
