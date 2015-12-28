@@ -57,6 +57,14 @@ public class UpdateV extends javax.swing.JDialog {
                 url = new URL(version_file);
 
                 URLConnection conn = url.openConnection();
+
+                /* Bug 320: Add OS information to user-agent */
+                String ua = Application.getInstance(Datavyu.class).getContext().getResourceMap(Build.class).getString("Application.version")
+                        + "\t" +System.getProperty("java.version")
+                        + "\t" + System.getProperty("os.name")
+                        + "\t" + System.getProperty("os.version");
+                conn.setRequestProperty("User-Agent", ua);
+
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 version = br.readLine();
