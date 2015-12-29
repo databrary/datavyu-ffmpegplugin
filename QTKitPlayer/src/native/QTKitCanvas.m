@@ -453,7 +453,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTime
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     newQTTime.value = ((long long)time / 1000.0f) * newQTTime.timescale;
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
-    [GetQtMovie(movieId) seekToTime:newQTTime];
+    [GetQtMovie(movieId) seekToTime:newQTTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
 //    if(time == 0) {
     
 //    }
@@ -586,10 +586,12 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_release
     AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL: [NSURL URLWithString:file]];
     movie = [AVPlayer playerWithPlayerItem:playerItem];
     
+    
     float fps = 0.00;
     for (AVPlayerItemTrack *track in playerItem.tracks) {
         if ([track.assetTrack.mediaType isEqualToString:AVMediaTypeVideo]) {
-            fps = track.currentVideoFrameRate;
+//            fps = track.currentVideoFrameRate;
+            fps = track.assetTrack.nominalFrameRate;
         }
     }
     
