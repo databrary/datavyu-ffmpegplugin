@@ -324,7 +324,6 @@ public final class DataControllerV extends DatavyuDialog
     private String osModifier;
 
     private boolean highlightCells = false;
-
     // -------------------------------------------------------------------------
     // [initialization]
     //
@@ -402,7 +401,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Handles opening a data source.
      *
-     * @param jd The file chooser used to open the data source.
+     * @param chooser The file chooser used to open the data source.
      */
     private void openVideo(final PluginChooser chooser) {
         Plugin plugin = chooser.getSelectedPlugin();
@@ -730,7 +729,8 @@ public final class DataControllerV extends DatavyuDialog
         /*
             This is the new style time reckoning where the timer gets updated from the video
          */
-        if (viewers.size() == 1 && (time < playbackModel.getWindowPlayEnd() && time > playbackModel.getWindowPlayStart())) {
+        if (viewers.size() == 1 && (time < playbackModel.getWindowPlayEnd()
+                && time > playbackModel.getWindowPlayStart())) {
             // Using an iterator because viewers is a set
             for (DataViewer viewer : viewers) {
                 if (viewer.isPlaying()) {
@@ -2069,7 +2069,6 @@ public final class DataControllerV extends DatavyuDialog
     @Action
     public void findAction() {
         LOGGER.info("Find");
-
         if (shiftMask) {
             findOffsetAction();
         } else {
@@ -2249,7 +2248,7 @@ public final class DataControllerV extends DatavyuDialog
     }
 
     /**
-     * @param direction The required direction of the shuttle.
+     * @param shuttlejump The required rate/direction of the shuttle.
      */
     private void shuttle(final int shuttlejump) {
         float currentRate = clock.getRate();
