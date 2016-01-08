@@ -120,9 +120,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 long onset = curCell.getOnsetTicks();
                 long offset = curCell.getOffsetTicksActual();
                 int cellTopY = onsetMapLocal.get(onset);
-
-                // Clear overlap border on this cell.
-                curCell.setOverlapBorder(false);
+                
 
                 // Get height for cell
                 int cellHeight;
