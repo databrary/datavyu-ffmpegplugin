@@ -121,7 +121,6 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 long offset = curCell.getOffsetTicksActual();
                 int cellTopY = onsetMapLocal.get(onset);
                 
-
                 // Get height for cell
                 int cellHeight;
                 int cellHeightMin = curCell.getPreferredSize().height;
@@ -141,6 +140,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     curCell.setOverlapBorder(true);
                 } else {
                     cellHeight = offsetMap.getOrDefault(offset, onsetMap.get(offset)) - cellTopY;
+                    curCell.setOverlapBorder(false);
                 }
 
                 // Treat cells with 1ms interval as continuous. Stretch bottom of previous cell to top of current cell.
