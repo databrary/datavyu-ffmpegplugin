@@ -92,7 +92,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         /* Iterate over sorted set of times and assign position values.
            For onset times o1, o2 : Map(o2) = Map(o1) + heightMap(o1) + gapSize
          */
-        int gapSize = 10;   // default space separating unique times
+        int gapSize = 15;   // default space separating unique times
         HashMap<Long, Integer> onsetMap = new HashMap<>();
         int pos = 0;    // position to assign to next onset time
         for(Long time : times){
