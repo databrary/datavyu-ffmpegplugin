@@ -193,10 +193,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         int cellMax = cell.getY() + cell.getHeight();
         int cellMin = cell.getY();
 
-        if (viewMax < cellMax) {
+        if (viewMax < cellMax && viewMin < cellMin) {
+            int delta = (int)Math.min(cellMax - viewMax,
+                    cellMin - viewMin);
             pane.getViewport().setViewPosition(
                     new Point((int) pane.getViewport().getViewRect().getX(),
-                            cellMax - pane.getViewport().getHeight()));
+                            (int)viewMin + delta));
             //                pane.getVerticalScrollBar().setValue(cellMax);
         } else if (viewMin > cellMin) {
             pane.getViewport().setViewPosition(
