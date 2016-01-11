@@ -120,27 +120,27 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 long onset = curCell.getOnsetTicks();
                 long offset = curCell.getOffsetTicksActual();
                 int cellTopY = onsetMapLocal.get(onset);
-                
+
                 // Get height for cell
                 int cellHeight;
-                int cellHeightMin = curCell.getPreferredSize().height;
                 // Figure out height by looking at next cell's onset and offset times.
                 if (onset > offset) { // cell is reversed
-                    cellHeight = cellHeightMin;
                     curCell.setOverlapBorder(true);
+                    cellHeight = curCell.getPreferredSize().height;
                 }
                 // Current onset equals next onset
                 else if (nextCell != null && onset == nextCell.getOnsetTicks()) {
-                    cellHeight = cellHeightMin;
-                    if (onset != offset || offset == nextCell.getOffsetTicksActual()) curCell.setOverlapBorder(true);
+                    if (onset != offset || offset == nextCell.getOffsetTicksActual())
+                        curCell.setOverlapBorder(true);
+                    cellHeight = curCell.getPreferredSize().height;
                 }
                 // Current offset greater than or equal to next onset
                 else if (nextCell != null && offset >= nextCell.getOnsetTicks()) {
-                    cellHeight = onsetMapLocal.get(nextCell.getOnsetTicks()) - cellTopY;
                     curCell.setOverlapBorder(true);
+                    cellHeight = onsetMapLocal.get(nextCell.getOnsetTicks()) - cellTopY;
                 } else {
-                    cellHeight = offsetMap.getOrDefault(offset, onsetMap.get(offset)) - cellTopY;
                     curCell.setOverlapBorder(false);
+                    cellHeight = offsetMap.getOrDefault(offset, onsetMap.get(offset)) - cellTopY;
                 }
 
                 // Treat cells with 1ms interval as continuous. Stretch bottom of previous cell to top of current cell.
@@ -149,7 +149,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                     offsetMap.compute(offset, (k, v) -> (v == null) ? cellTopY : Math.max(v, cellTopY));
                 }
 
-                cellHeight = Math.max(cellHeight, cellHeightMin); // fix for edge cases...maybe investigate later
+                cellHeight = Math.max(cellHeight, curCell.getPreferredSize().height); // fix for edge cases...maybe investigate later
                 // Set cell boundary
                 curCell.setBounds(0, cellTopY, colWidth - 1, cellHeight);
 
