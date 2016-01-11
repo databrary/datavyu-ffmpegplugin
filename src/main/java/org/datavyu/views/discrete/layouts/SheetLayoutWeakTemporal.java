@@ -158,8 +158,10 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
                 onsetMapLocal.compute(onset, (k, v) -> v + adjOn);
 
                 // Update offset map
-                int adjOff = cellTopY + cellHeight;
-                offsetMap.compute(offset, (k, v) -> (v == null) ? adjOff : Math.max(v, adjOff));
+                if(!curCell.getOverlapBorder()) {
+                    int adjOff = cellTopY + cellHeight;
+                    offsetMap.compute(offset, (k, v) -> (v == null) ? adjOff : Math.max(v, adjOff));
+                }
 
                 // Update vars
                 colHeight = cellTopY + cellHeight;
@@ -175,8 +177,9 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         for (SpreadsheetColumn col : visible_columns) {
             int colWidth = col.getWidth();
             for (SpreadsheetCell sc : cellMap.get(col)) {
-                if (!sc.getOverlapBorder() && sc.getSize().getHeight() < offsetMap.get(sc.getOffsetTicks()) - sc.getY())
-                    sc.setBounds(0, sc.getY(), colWidth - 1, offsetMap.get(sc.getOffsetTicks()));
+                int mapHeight = offsetMap.getOrDefault(sc.getOffsetTicks(), -1) - sc.getY();
+                if (!sc.getOverlapBorder() && sc.getSize().getHeight() < mapHeight)
+                    sc.setBounds(0, sc.getY(), colWidth - 1, mapHeight);
             }
         }
 
