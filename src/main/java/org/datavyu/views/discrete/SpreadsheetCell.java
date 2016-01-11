@@ -430,7 +430,7 @@ public class SpreadsheetCell extends JPanel
     /**
      * Get overlap.
      */
-    public boolean getOverlap(){
+    public boolean getOverlapBorder(){
         return cellOverlap;
     }
 

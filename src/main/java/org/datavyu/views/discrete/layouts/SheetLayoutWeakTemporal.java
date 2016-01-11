@@ -175,7 +175,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         for (SpreadsheetColumn col : visible_columns) {
             int colWidth = col.getWidth();
             for (SpreadsheetCell sc : cellMap.get(col)) {
-                if (!sc.getOverlap() && sc.getSize().getHeight() < offsetMap.get(sc.getOffsetTicks()) - sc.getY())
+                if (!sc.getOverlapBorder() && sc.getSize().getHeight() < offsetMap.get(sc.getOffsetTicks()) - sc.getY())
                     sc.setBounds(0, sc.getY(), colWidth - 1, offsetMap.get(sc.getOffsetTicks()));
             }
         }
