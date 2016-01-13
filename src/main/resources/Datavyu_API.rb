@@ -1470,7 +1470,7 @@ def createMutuallyExclusive(name, var1name, var2name, var1_argprefix=nil, var2_a
     c = mutex.cells[i]
     c.change_arg("ordinal", i+1)
   end
-  puts "Created a column with ", mutex.cells.length, " cells."
+  puts "Created a column with " + mutex.cells.length + " cells."
 
   return mutex
 end
