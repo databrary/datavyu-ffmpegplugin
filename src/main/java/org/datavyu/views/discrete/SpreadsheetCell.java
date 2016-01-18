@@ -428,6 +428,13 @@ public class SpreadsheetCell extends JPanel
     }
 
     /**
+     * Get overlap.
+     */
+    public boolean getOverlapBorder(){
+        return cellOverlap;
+    }
+
+    /**
      * @return The MatrixRootView of this cell.
      */
     public final MatrixRootView getDataView() {

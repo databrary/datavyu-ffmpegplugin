@@ -92,7 +92,7 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         /* Iterate over sorted set of times and assign position values.
            For onset times o1, o2 : Map(o2) = Map(o1) + heightMap(o1) + gapSize
          */
-        int gapSize = 10;   // default space separating unique times
+        int gapSize = 15;   // default space separating unique times
         HashMap<Long, Integer> onsetMap = new HashMap<>();
         int pos = 0;    // position to assign to next onset time
         for(Long time : times){
@@ -113,54 +113,55 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             int colHeight = 0;
             HashMap<Long, Integer> onsetMapLocal = new HashMap<>(onsetMap);
             SpreadsheetCell prevCell = null;
-            for (int i=0; i<orderedCells.size(); i++) {
+            for (int i = 0; i < orderedCells.size(); i++) {
                 SpreadsheetCell curCell = orderedCells.get(i);
-                SpreadsheetCell nextCell = (i==orderedCells.size()-1)? null : orderedCells.get(i+1);
+                SpreadsheetCell nextCell = (i == orderedCells.size() - 1) ? null : orderedCells.get(i + 1);
 
                 long onset = curCell.getOnsetTicks();
                 long offset = curCell.getOffsetTicksActual();
                 int cellTopY = onsetMapLocal.get(onset);
 
-                // Clear overlap border on this cell.
-                curCell.setOverlapBorder(false);
-
                 // Get height for cell
                 int cellHeight;
-                int cellHeightMin = curCell.getPreferredSize().height;
                 // Figure out height by looking at next cell's onset and offset times.
-                if(onset > offset){ // cell is reversed
-                    cellHeight = cellHeightMin;
+                if (onset > offset) { // cell is reversed
                     curCell.setOverlapBorder(true);
+                    cellHeight = curCell.getPreferredSize().height;
                 }
                 // Current onset equals next onset
-                else if(nextCell != null && onset == nextCell.getOnsetTicks()){
-                    cellHeight = cellHeightMin;
-                    if(onset != offset || offset == nextCell.getOffsetTicksActual()) curCell.setOverlapBorder(true);
+                else if (nextCell != null && onset == nextCell.getOnsetTicks()) {
+                    if (onset != offset || offset == nextCell.getOffsetTicksActual())
+                        curCell.setOverlapBorder(true);
+                    cellHeight = curCell.getPreferredSize().height;
                 }
-                // Current offset greater than next onset
-                else if(nextCell != null && offset > nextCell.getOnsetTicks()){
+                // Current offset greater than or equal to next onset
+                else if (nextCell != null && offset >= nextCell.getOnsetTicks()) {
+                    curCell.setOverlapBorder(true);
                     cellHeight = onsetMapLocal.get(nextCell.getOnsetTicks()) - cellTopY;
-                    curCell.setOverlapBorder(true) ;
-                }
-                else{
+                } else {
+                    curCell.setOverlapBorder(false);
                     cellHeight = offsetMap.getOrDefault(offset, onsetMap.get(offset)) - cellTopY;
                 }
 
                 // Treat cells with 1ms interval as continuous. Stretch bottom of previous cell to top of current cell.
-                if(prevCell != null && onset-prevCell.getOffsetTicks() == 1)
-                    prevCell.setBounds(0, prevCell.getY(), colWidth-1, cellTopY-prevCell.getY());
+                if (prevCell != null && onset - prevCell.getOffsetTicks() == 1) {
+                    prevCell.setBounds(0, prevCell.getY(), colWidth - 1, cellTopY - prevCell.getY());
+                    offsetMap.compute(offset, (k, v) -> (v == null) ? cellTopY : Math.max(v, cellTopY));
+                }
 
-                cellHeight = Math.max(cellHeight, cellHeightMin); // fix for edge cases...maybe investigate later
+                cellHeight = Math.max(cellHeight, curCell.getPreferredSize().height); // fix for edge cases...maybe investigate later
                 // Set cell boundary
-                curCell.setBounds(0, cellTopY, colWidth-1, cellHeight);
+                curCell.setBounds(0, cellTopY, colWidth - 1, cellHeight);
 
                 // Update local onset map
                 int adjOn = cellHeight;
                 onsetMapLocal.compute(onset, (k, v) -> v + adjOn);
 
                 // Update offset map
-                int adjOff = cellTopY + cellHeight;
-                offsetMap.compute(offset, (k, v) -> (v==null)? adjOff : Math.max(v, adjOff));
+                if(!curCell.getOverlapBorder()) {
+                    int adjOff = cellTopY + cellHeight;
+                    offsetMap.compute(offset, (k, v) -> (v == null) ? adjOff : Math.max(v, adjOff));
+                }
 
                 // Update vars
                 colHeight = cellTopY + cellHeight;
@@ -172,8 +173,15 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
             maxHeight = Math.max(maxHeight, colHeight);
         }
 
-        // Now go through each of the columns and shorten cells that overlap
-        // with the one ahead of them to guarantee all cells can be seen
+        /* Do a second pass to update the offsets again. */
+        for (SpreadsheetColumn col : visible_columns) {
+            int colWidth = col.getWidth();
+            for (SpreadsheetCell sc : cellMap.get(col)) {
+                int mapHeight = offsetMap.getOrDefault(sc.getOffsetTicks(), -1) - sc.getY();
+                if (!sc.getOverlapBorder() && sc.getSize().getHeight() < mapHeight)
+                    sc.setBounds(0, sc.getY(), colWidth - 1, mapHeight);
+            }
+        }
 
         padColumns(mainView, parent);
 //        System.err.println(String.format("Aligned.  Time: %d.", System.currentTimeMillis() - startTime));
@@ -185,10 +193,12 @@ public class SheetLayoutWeakTemporal extends SheetLayout {
         int cellMax = cell.getY() + cell.getHeight();
         int cellMin = cell.getY();
 
-        if (viewMax < cellMax) {
+        if (viewMax < cellMax && viewMin < cellMin) {
+            int delta = (int)Math.min(cellMax - viewMax,
+                    cellMin - viewMin);
             pane.getViewport().setViewPosition(
                     new Point((int) pane.getViewport().getViewRect().getX(),
-                            cellMax - pane.getViewport().getHeight()));
+                            (int)viewMin + delta));
             //                pane.getVerticalScrollBar().setValue(cellMax);
         } else if (viewMin > cellMin) {
             pane.getViewport().setViewPosition(
