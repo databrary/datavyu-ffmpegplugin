@@ -94,7 +94,7 @@ public final class QTKitPlugin implements Plugin {
 
     @Override
     public String getPluginName() {
-        return "QTKit Video";
+        return "Native OSX Video";
     }
 
     @Override
