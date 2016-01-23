@@ -22,7 +22,10 @@
  */
 package org.datavyu.plugins;
 
+import org.datavyu.Datavyu;
+
 import javax.swing.ImageIcon;
+import java.util.List;
 
 
 /**
@@ -74,4 +77,6 @@ public interface Plugin {
      * for audio files.
      */
     Filter[] getFilters();
+
+    List<Datavyu.Platform> getValidPlatforms();
 }

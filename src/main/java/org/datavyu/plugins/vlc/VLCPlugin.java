@@ -3,6 +3,7 @@ package org.datavyu.plugins.vlc;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.datavyu.Datavyu;
 import org.datavyu.plugins.DataViewer;
 import org.datavyu.plugins.Filter;
 import org.datavyu.plugins.FilterNames;
@@ -16,6 +17,8 @@ import java.util.List;
 
 
 public class VLCPlugin implements Plugin {
+
+    private static final List<Datavyu.Platform> VALID_OPERATING_SYSTEMS = Lists.newArrayList(Datavyu.Platform.WINDOWS);
 
     private static final Filter VIDEO_FILTER = new Filter() {
         final SuffixFileFilter ff;
@@ -78,4 +81,8 @@ public class VLCPlugin implements Plugin {
         return VLCDataViewer.class;
     }
 
+    @Override
+    public List<Datavyu.Platform> getValidPlatforms() {
+        return VALID_OPERATING_SYSTEMS;
+    }
 }

@@ -353,6 +353,11 @@ public final class PluginManager {
                 {
                     Plugin p = (Plugin) testClass.newInstance();
 
+                    if(!p.getValidPlatforms().contains(Datavyu.getPlatform())) {
+                        // Not valid for this operating system
+                        return;
+                    }
+
                     String pluginName = p.getPluginName();
 
                     if (pluginNames.contains(p.getPluginName())) {
