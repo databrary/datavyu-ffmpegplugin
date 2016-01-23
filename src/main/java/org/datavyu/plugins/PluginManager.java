@@ -426,11 +426,11 @@ public final class PluginManager {
                 @Override
                 public int compare(final Plugin o1, final Plugin o2) {
 
-                    if ("QTKit Video".equals(o1.getPluginName())) {
+                    if ("Native OSX Video".equals(o1.getPluginName())) {
                         return -1;
                     }
 
-                    if ("QTKit Video".equals(o2.getPluginName())) {
+                    if ("Native OSX Video".equals(o2.getPluginName())) {
                         return 1;
                     }
 
