@@ -57,6 +57,8 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
      */
     private Media visualMedia;
 
+    private boolean seeking = false;
+
     public QTKitViewer(final Frame parent, final boolean modal) {
         super(parent, modal);
 
@@ -218,7 +220,8 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     @Override
     public void seekTo(final long position) {
 
-        if (position != prevSeekTime) {
+        if (position != prevSeekTime && !seeking) {
+            seeking = true;
             try {
                 if (movie != null) {
                     prevSeekTime = position;
@@ -236,6 +239,8 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
                                 movie.setRate(prevRate, movie.id);
                             }
                             movie.repaint();
+
+                            seeking = false;
                         }
                     });
 

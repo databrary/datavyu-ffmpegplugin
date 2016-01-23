@@ -324,7 +324,6 @@ public final class DataControllerV extends DatavyuDialog
     private String osModifier;
 
     private boolean highlightCells = false;
-
     // -------------------------------------------------------------------------
     // [initialization]
     //
@@ -402,7 +401,7 @@ public final class DataControllerV extends DatavyuDialog
     /**
      * Handles opening a data source.
      *
-     * @param jd The file chooser used to open the data source.
+     * @param chooser The file chooser used to open the data source.
      */
     private void openVideo(final PluginChooser chooser) {
         Plugin plugin = chooser.getSelectedPlugin();
@@ -431,37 +430,37 @@ public final class DataControllerV extends DatavyuDialog
                     "Warm up" the data controller... this is a really gross hack but seems to help controllers
                     to get accurate positions for the first few frames.
                      */
-                    new Thread(() -> {
-                        Datavyu.getDataController().playAction();
-                        ArrayList<Float> volumes = new ArrayList<>();
-                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
-                            if (dv instanceof BaseQuickTimeDataViewer) {
-                                volumes.add(((BaseQuickTimeDataViewer) dv).getVolume());
-                                ((BaseQuickTimeDataViewer) dv).setVolume(0.0f);
-                                dv.setDataViewerVisible(false);
-                            }
-                        }
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Datavyu.getDataController().stopAction();
-                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
-                            if (dv instanceof BaseQuickTimeDataViewer) {
-                                float v = volumes.remove(0);
-                                ((BaseQuickTimeDataViewer) dv).setVolume(v);
-                                dv.setDataViewerVisible(true);
-                            }
-                        }
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Datavyu.getDataController().setCurrentTime(0);
-
-                    }).start();
+//                    new Thread(() -> {
+//                        Datavyu.getDataController().playAction();
+//                        ArrayList<Float> volumes = new ArrayList<>();
+//                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
+//                            if (dv instanceof BaseQuickTimeDataViewer) {
+//                                volumes.add(((BaseQuickTimeDataViewer) dv).getVolume());
+//                                ((BaseQuickTimeDataViewer) dv).setVolume(0.0f);
+//                                dv.setDataViewerVisible(false);
+//                            }
+//                        }
+//                        try {
+//                            Thread.sleep(500);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        Datavyu.getDataController().stopAction();
+//                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
+//                            if (dv instanceof BaseQuickTimeDataViewer) {
+//                                float v = volumes.remove(0);
+//                                ((BaseQuickTimeDataViewer) dv).setVolume(v);
+//                                dv.setDataViewerVisible(true);
+//                            }
+//                        }
+//                        try {
+//                            Thread.sleep(100);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        Datavyu.getDataController().setCurrentTime(0);
+//
+//                    }).start();
                 } catch (Throwable t) {
                     LOGGER.error(t);
                     StringWriter sw = new StringWriter();
@@ -730,7 +729,8 @@ public final class DataControllerV extends DatavyuDialog
         /*
             This is the new style time reckoning where the timer gets updated from the video
          */
-        if (viewers.size() == 1 && (time < playbackModel.getWindowPlayEnd() && time > playbackModel.getWindowPlayStart())) {
+        if (viewers.size() == 1 && (time < playbackModel.getWindowPlayEnd()
+                && time > playbackModel.getWindowPlayStart())) {
             // Using an iterator because viewers is a set
             for (DataViewer viewer : viewers) {
                 if (viewer.isPlaying()) {
@@ -2069,7 +2069,6 @@ public final class DataControllerV extends DatavyuDialog
     @Action
     public void findAction() {
         LOGGER.info("Find");
-
         if (shiftMask) {
             findOffsetAction();
         } else {
@@ -2249,7 +2248,7 @@ public final class DataControllerV extends DatavyuDialog
     }
 
     /**
-     * @param direction The required direction of the shuttle.
+     * @param shuttlejump The required rate/direction of the shuttle.
      */
     private void shuttle(final int shuttlejump) {
         float currentRate = clock.getRate();

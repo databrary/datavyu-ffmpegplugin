@@ -30,6 +30,9 @@
 		339D72F212A9AFE600DDCCF4 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 339D72F112A9AFE600DDCCF4 /* QTKit.framework */; };
 		33E72DBE12A6CCBB00E0AE06 /* JAWTExample.jar in Copy Java Resources */ = {isa = PBXBuildFile; fileRef = 33E72DBD12A6CCAA00E0AE06 /* JAWTExample.jar */; };
 		882308F11A72FFA1001438C6 /* libjawt.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 882308F01A72FFA1001438C6 /* libjawt.dylib */; };
+		88CD4D0A1C31E52100799092 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88CD4D081C31E52100799092 /* AVFoundation.framework */; };
+		88CD4D0B1C31E52100799092 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88CD4D091C31E52100799092 /* AVKit.framework */; };
+		88CD4D0D1C3245FE00799092 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88CD4D0C1C3245FE00799092 /* CoreMedia.framework */; };
 		89C3F2920F5250A300B0048E /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 89C3F2900F5250A300B0048E /* Credits.rtf */; };
 		89D0F0240F392F20007831A7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 89D0F0210F392F20007831A7 /* InfoPlist.strings */; };
 		89D0F0410F39306C007831A7 /* JavaApplicationStub in Copy Executable */ = {isa = PBXBuildFile; fileRef = 89D0F03E0F39304A007831A7 /* JavaApplicationStub */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -88,6 +91,9 @@
 		882308E71A72F98D001438C6 /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = System/Library/Frameworks/JavaVM.framework; sourceTree = SDKROOT; };
 		882308E91A72F9F3001438C6 /* libawt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libawt.dylib; path = ../../../../Library/Java/JavaVirtualMachines/jdk1.7.0_67.jdk/Contents/Home/jre/lib/libawt.dylib; sourceTree = "<group>"; };
 		882308F01A72FFA1001438C6 /* libjawt.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjawt.dylib; path = ../../../../Library/Java/JavaVirtualMachines/jdk1.7.0_67.jdk/Contents/Home/jre/lib/libjawt.dylib; sourceTree = "<group>"; };
+		88CD4D081C31E52100799092 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		88CD4D091C31E52100799092 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		88CD4D0C1C3245FE00799092 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		89C3F2910F5250A300B0048E /* English */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = English; path = English.lproj/Credits.rtf; sourceTree = "<group>"; };
 		89D0F0220F392F20007831A7 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		89D0F0230F392F20007831A7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -105,6 +111,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				88CD4D0D1C3245FE00799092 /* CoreMedia.framework in Frameworks */,
+				88CD4D0A1C31E52100799092 /* AVFoundation.framework in Frameworks */,
+				88CD4D0B1C31E52100799092 /* AVKit.framework in Frameworks */,
 				89D0F05C0F39404F007831A7 /* Cocoa.framework in Frameworks */,
 				882308F11A72FFA1001438C6 /* libjawt.dylib in Frameworks */,
 				89D0F0850F394066007831A7 /* JavaNativeFoundation.framework in Frameworks */,
@@ -143,6 +152,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				88CD4D0C1C3245FE00799092 /* CoreMedia.framework */,
+				88CD4D081C31E52100799092 /* AVFoundation.framework */,
+				88CD4D091C31E52100799092 /* AVKit.framework */,
 				882308F01A72FFA1001438C6 /* libjawt.dylib */,
 				882308E91A72F9F3001438C6 /* libawt.dylib */,
 				882308E71A72F98D001438C6 /* JavaVM.framework */,

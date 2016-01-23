@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 
 public class VLCDataViewer implements DataViewer {
@@ -399,7 +400,14 @@ public class VLCDataViewer implements DataViewer {
     @Override
     public void storeSettings(final OutputStream os) {
         try {
-            DataViewerUtils.storeDefaults(this, os);
+            Properties settings = new Properties();
+            settings.setProperty("offset", Long.toString(getOffset()));
+//            settings.setProperty("volume", Float.toString());
+//            settings.setProperty("visible", Boolean.toString());
+            settings.setProperty("height", Integer.toString(vlcDialog.getHeight()));
+            settings.setProperty("fps", Float.toString(fps));
+
+            settings.store(os, null);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

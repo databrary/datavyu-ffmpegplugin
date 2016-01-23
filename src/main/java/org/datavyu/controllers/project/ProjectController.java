@@ -403,6 +403,9 @@ public final class ProjectController {
                     .getApplication().getMainFrame(), false);
             viewer.setIdentifier(IDController.generateIdentifier());
 
+            viewer.setDataFeed(file);
+            viewer.setDatastore(db);
+
             if (setting.getSettingsId() != null) {
 
                 // new project file
@@ -413,8 +416,7 @@ public final class ProjectController {
                 viewer.setOffset(setting.getOffset());
             }
 
-            viewer.setDataFeed(file);
-            viewer.setDatastore(db);
+
 
             dataController.addViewer(viewer, viewer.getOffset());
 
