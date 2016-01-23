@@ -605,7 +605,6 @@ public abstract class BaseQuickTimeDataViewer extends DatavyuDialog
             property = settings.getProperty("fps");
             System.out.println(property);
             if ((property != null) && !property.equals("")) {
-                System.out.println("LOADING FPS");
                 fps = Float.parseFloat(property);
             }
 

@@ -50,7 +50,7 @@ public class VLCFXPlugin implements Plugin {
 
     @Override
     public String getClassifier() {
-        return "vlcfxplugin";
+        return "datavyu.video";
     }
 
     @Override

@@ -430,37 +430,37 @@ public final class DataControllerV extends DatavyuDialog
                     "Warm up" the data controller... this is a really gross hack but seems to help controllers
                     to get accurate positions for the first few frames.
                      */
-                    new Thread(() -> {
-                        Datavyu.getDataController().playAction();
-                        ArrayList<Float> volumes = new ArrayList<>();
-                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
-                            if (dv instanceof BaseQuickTimeDataViewer) {
-                                volumes.add(((BaseQuickTimeDataViewer) dv).getVolume());
-                                ((BaseQuickTimeDataViewer) dv).setVolume(0.0f);
-                                dv.setDataViewerVisible(false);
-                            }
-                        }
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Datavyu.getDataController().stopAction();
-                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
-                            if (dv instanceof BaseQuickTimeDataViewer) {
-                                float v = volumes.remove(0);
-                                ((BaseQuickTimeDataViewer) dv).setVolume(v);
-                                dv.setDataViewerVisible(true);
-                            }
-                        }
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Datavyu.getDataController().setCurrentTime(0);
-
-                    }).start();
+//                    new Thread(() -> {
+//                        Datavyu.getDataController().playAction();
+//                        ArrayList<Float> volumes = new ArrayList<>();
+//                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
+//                            if (dv instanceof BaseQuickTimeDataViewer) {
+//                                volumes.add(((BaseQuickTimeDataViewer) dv).getVolume());
+//                                ((BaseQuickTimeDataViewer) dv).setVolume(0.0f);
+//                                dv.setDataViewerVisible(false);
+//                            }
+//                        }
+//                        try {
+//                            Thread.sleep(500);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        Datavyu.getDataController().stopAction();
+//                        for (DataViewer dv : Datavyu.getDataController().getDataViewers()) {
+//                            if (dv instanceof BaseQuickTimeDataViewer) {
+//                                float v = volumes.remove(0);
+//                                ((BaseQuickTimeDataViewer) dv).setVolume(v);
+//                                dv.setDataViewerVisible(true);
+//                            }
+//                        }
+//                        try {
+//                            Thread.sleep(100);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        Datavyu.getDataController().setCurrentTime(0);
+//
+//                    }).start();
                 } catch (Throwable t) {
                     LOGGER.error(t);
                     StringWriter sw = new StringWriter();

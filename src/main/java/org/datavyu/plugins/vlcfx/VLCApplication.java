@@ -27,8 +27,12 @@ import java.util.TimerTask;
 /**
  * Created by jesse on 10/21/14.
  */
-public class VLCApplication extends Application {
 
+public class VLCApplication extends Application {
+    static {
+        Platform.setImplicitExit(false);
+        new uk.co.caprica.vlcj.discovery.NativeDiscovery();
+    }
     /**
      * Pixel format.
      */
@@ -173,10 +177,15 @@ public class VLCApplication extends Application {
         mp.setRate(rate);
     }
 
+    public boolean isVisible() { return stage.isShowing(); }
+
     public void setVisible(final boolean visible) {
+        System.out.println("Running " + visible);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                System.out.println("Setting " + visible);
+
                 if (!visible) {
                     stage.hide();
                 } else {
@@ -208,6 +217,14 @@ public class VLCApplication extends Application {
 
     public boolean isPlaying() {
         return mp.isPlaying();
+    }
+
+    public int getHeight() {
+        return (int) stage.getHeight();
+    }
+
+    public int getWidth() {
+        return (int) stage.getWidth();
     }
 
     public void start(final Stage primaryStage) {
@@ -348,19 +365,5 @@ public class VLCApplication extends Application {
         }
     }
 
-//    private final EventHandler<ActionEvent> nextFrame = new EventHandler<ActionEvent>() {
-//        @Override
-//        public void handle(ActionEvent t) {
-//            Memory[] nativeBuffers = mediaPlayerComponent.getMediaPlayer().lock();
-//            if (nativeBuffers != null) {
-//                // FIXME there may be more efficient ways to do this...
-//                Memory nativeBuffer = nativeBuffers[0];
-//                ByteBuffer byteBuffer = nativeBuffer.getByteBuffer(0, nativeBuffer.size());
-//                BufferFormat bufferFormat = ((DefaultDirectMediaPlayer) mediaPlayerComponent.getMediaPlayer()).getBufferFormat();
-//                pixelWriter.setPixels(0, 0, bufferFormat.getWidth(), bufferFormat.getHeight(), pixelFormat, byteBuffer, bufferFormat.getPitches()[0]);
-//            }
-////            mediaPlayerComponent.getMediaPlayer().unlock();
-//        };
-//    };
 
 }

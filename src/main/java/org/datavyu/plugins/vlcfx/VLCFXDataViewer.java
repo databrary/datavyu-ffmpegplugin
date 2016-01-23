@@ -14,7 +14,10 @@ import org.datavyu.views.component.TrackPainter;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 
@@ -86,7 +89,7 @@ public class VLCFXDataViewer extends BaseQuickTimeDataViewer {
     public VLCFXDataViewer(final Frame parent, final boolean modal) {
         super(parent, modal);
 //        stateListeners = new ArrayList<ViewerStateListener>();
-
+        dialog.setVisible(false);
     }
 
     public static void runAndWait(final Runnable action) {
@@ -213,6 +216,11 @@ public class VLCFXDataViewer extends BaseQuickTimeDataViewer {
     }
 
     @Override
+    public void setVisible(final boolean isVisible) {
+        vlcFxApp.setVisible(isVisible);
+    }
+
+    @Override
     public File getDataFeed() {
         return data;
     }
@@ -319,4 +327,19 @@ public class VLCFXDataViewer extends BaseQuickTimeDataViewer {
         return vlcFxApp.isAssumedFps();
     }
 
+    @Override
+    public void storeSettings(final OutputStream os) {
+        try {
+            Properties settings = new Properties();
+            settings.setProperty("offset", Long.toString(getOffset()));
+            settings.setProperty("volume", Float.toString(getVolume()));
+            settings.setProperty("visible", Boolean.toString(vlcFxApp.isVisible()));
+            settings.setProperty("height", Integer.toString(vlcFxApp.getHeight()));
+            settings.setProperty("fps", Float.toString(vlcFxApp.getFrameRate()));
+
+            settings.store(os, null);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }
