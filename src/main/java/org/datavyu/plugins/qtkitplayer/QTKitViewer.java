@@ -84,7 +84,12 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     @Override
     public long getDuration() {
 
-
+        System.out.println("Init Duration:" + movie.getDuration(movie.id));
+        if(movie.getDuration(movie.id) < 0) {
+            try { Thread.sleep(2000); } catch (Exception e) { e.printStackTrace(); }
+            System.out.println("Sleeping");
+        }
+        System.out.println("New duration: " + movie.getDuration(movie.id));
         return movie.getDuration(movie.id);
     }
 
