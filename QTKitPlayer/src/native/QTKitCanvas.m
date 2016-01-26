@@ -309,9 +309,16 @@ JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_getFPS
 #ifdef JAWT_MACOSX_USE_CALAYER // Java for Mac OS X 10.6 Update 4 or later required
     
     JNF_COCOA_ENTER(env);
-    
+    float fps = 0.00;
+    for (AVPlayerItemTrack *track in GetQtMovie(movieId).currentItem.tracks) {
+        if ([track.assetTrack.mediaType isEqualToString:AVMediaTypeVideo]) {
+            //            fps = track.currentVideoFrameRate;
+            fps = track.assetTrack.nominalFrameRate;
+        }
+    }
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
-    return [[fpses objectAtIndex:movieId] floatValue];
+    return fps;
+//    return [[fpses objectAtIndex:movieId] floatValue];
     
 //    for (QTTrack *track in [GetQtMovie(movieId) tracks]) {
 //        QTMedia *media = [track media];
