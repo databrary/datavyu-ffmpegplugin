@@ -2256,14 +2256,6 @@ def checkValidCodes2(var, dump_file, *arg_filt_pairs)
 
   	    # Add the filter for this code.  If the given filter is an array, convert it to a regular expression using Regex.union
         arg_code[arg] = arg_filt_pairs[i+1]
-  	    # if(filt.class == Array)
-  	    #  	arg_code[arg] = Regexp.new('\A(' + Regexp.union(filt).source + ')\Z')
-  	    # elsif(filt.class == Regexp)
-  	    #  	arg_code[arg] = arg_filt_pairs[i+1]
-  	    # else
-  	    # 	print_debug "FATAL ERROR in argument/valid code array: expected array or regular expression for filtering #{arg}, received #{filt.class}."
-  	    #  	raise "Unhandled filter type: #{filt.class}"
-  	    # end
   	  end
   	end
 
