@@ -5,7 +5,7 @@ import org.datavyu.Datavyu;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-    /* Private class for handling the local version number */
+/* Class for handling the local version number. */
 public class LocalVersion {
     public String version = "";
     public String build = "";
