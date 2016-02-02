@@ -5,10 +5,6 @@ import org.datavyu.Datavyu;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.ResourceMap;
 
-/**
- * Created by shohanhasan on 2/1/16.
- */
-
     /* Private class for handling the local version number */
 public class LocalVersion {
     public String version = "";
