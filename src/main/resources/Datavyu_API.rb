@@ -155,23 +155,23 @@ class RCell
   # Arguments:
   # => *argnames (optional): Names of codes.
   #-------------------------------------------------------------------
-def getArgs(*codes)
-  codes = self.arglist if codes.nil? || codes.empty?
-  vals = codes.map do |cname|
-    case(cname)
-    when /onset/
-      self.onset
-    when /offset/
-      self.offset
-    when /ordinal/
-      self.ordinal
-    else
-      @arglist.include?(cname)? self.get_arg(cname) : raise("Cell does not have code #{cname}")
+  def getArgs(*codes)
+    codes = self.arglist if codes.nil? || codes.empty?
+    vals = codes.map do |cname|
+      case(cname)
+      when /onset/
+        self.onset
+      when /offset/
+        self.offset
+      when /ordinal/
+        self.ordinal
+      else
+        @arglist.include?(cname)? self.get_arg(cname) : raise("Cell does not have code #{cname}")
+      end
     end
-  end
 
-  return vals
-end
+    return vals
+  end
 
   def change_code_name(i, new_name)
     change_arg_name(i, new_name)
