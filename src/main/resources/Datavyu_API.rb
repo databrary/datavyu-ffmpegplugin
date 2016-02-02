@@ -362,6 +362,10 @@ class RVariable
     hidden = false
   end
 
+  # Validate code name. Remove special characters and replace
+  def convert_argname(arg)
+    return arg.gsub(/(\W)+/, "").downcase
+  end
   #-------------------------------------------------------------------
   # NOTE: This function is not for general use.
   #
@@ -371,9 +375,6 @@ class RVariable
   # => newcells (required): Array of cells coming from the database via getVariable
   # => arglist (required): Array of the names of the arguments from the database
   #-------------------------------------------------------------------
-  def convert_argname(arg)
-    return arg.gsub(/(\W)+/, "").downcase
-  end
 
   def set_cells(newcells, arglist)
     print_debug "Setting cells"
