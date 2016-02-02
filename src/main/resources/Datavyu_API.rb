@@ -1164,6 +1164,10 @@ def add_codes_to_column(var, *args)
   add_args_to_var(var, *args)
 end
 
+def addCodesToColumn(var *args)
+  add_args_to_var(var, *args)
+end
+
 def add_args_to_var(var, *args)
   if var.class == "".class
     var = getVariable(var)
