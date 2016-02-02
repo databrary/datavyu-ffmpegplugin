@@ -2224,56 +2224,80 @@ end
 def checkValidCodes2(var, dump_file, *arg_filt_pairs)
 	if var.class == "".class
 		var = getVariable(var)
+  elsif var.class == Hash
+    # var is already a hashmap
+    map = var
 	end
 
 	if dump_file != ""
 		if dump_file.class == "".class
-	    	dump_file = open(dump_file, 'a')
+	    	dump_file = open(File.expand_path(dump_file), 'a')
 	  	end
 	end
 
-	# Make the argument/code hash
-	arg_code = Hash.new
-	for i in 0...arg_filt_pairs.length
-	  if i % 2 == 0
-		if arg_filt_pairs[i].class != "".class
-			print_debug 'FATAL ERROR in argument/valid code array.  Exiting.  Please check to make sure it is in the format "argumentname", ["valid","codes"]'
-			exit
-		end
+  # Create a map if a mapping wasn't passed in. Mostly for backwards compatibility with checkValidCodes().
+  if map.nil?
+    map = Hash.new
 
-		arg = arg_filt_pairs[i]
-		if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[1].chr)
-			arg = arg[1..arg.length]
-		end
-		arg = arg.gsub(/(\W )+/,"").downcase
+  	# Make the argument/code hash
+  	arg_code = Hash.new
+  	for i in 0...arg_filt_pairs.length
+  	  if i % 2 == 0
+    		if arg_filt_pairs[i].class != "".class
+    			print_debug 'FATAL ERROR in argument/valid code array.  Exiting.  Please check to make sure it is in the format "argumentname", ["valid","codes"]'
+    			exit
+    		end
 
-	    # Add the filter for this code.  If the given filter is an array, convert it to a regular expression using Regex.union
-	    filt = arg_filt_pairs[i+1]
-	    if(filt.class == Array)
-	     	arg_code[arg] = Regexp.new('\A(' + Regexp.union(filt).source + ')\Z')
-	    elsif(filt.class == Regexp)
-	     	arg_code[arg] = arg_filt_pairs[i+1]
-	    else
-	    	print_debug "FATAL ERROR in argument/valid code array: expected array or regular expression for filtering #{arg}, received #{filt.class}."
-	     	raise "Unhandled filter type: #{filt.class}"
-	    end
-	  end
-	end
+    		arg = arg_filt_pairs[i]
+    		if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[1].chr)
+    			arg = arg[1..arg.length]
+    		end
+    		arg = arg.gsub(/(\W )+/,"").downcase
+
+  	    # Add the filter for this code.  If the given filter is an array, convert it to a regular expression using Regex.union
+        arg_code[arg] = arg_filt_pairs[i+1]
+  	    # if(filt.class == Array)
+  	    #  	arg_code[arg] = Regexp.new('\A(' + Regexp.union(filt).source + ')\Z')
+  	    # elsif(filt.class == Regexp)
+  	    #  	arg_code[arg] = arg_filt_pairs[i+1]
+  	    # else
+  	    # 	print_debug "FATAL ERROR in argument/valid code array: expected array or regular expression for filtering #{arg}, received #{filt.class}."
+  	    #  	raise "Unhandled filter type: #{filt.class}"
+  	    # end
+  	  end
+  	end
+
+    map[var] = arg_code
+  end
 
 	errors = false
-	for cell in var.cells
-		for arg, filt in arg_code
-      	val = eval "cell.#{arg}"
-      	if filt.match(val).nil?
-          	errors = true
-          	str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
-          	print str
-          	if dump_file != ""
-            	dump_file.write(str)
-          	end
+  # Iterate over key,entry (column, valid code mapping) in map
+  map.each_pair do |var, arg_code|
+    var = getVariable(var) if var.class == String
+
+    # Iterate over cells in var and check each code's value
+  	for cell in var.cells
+  		for arg, filt in arg_code
+        	val = eval "cell.#{arg}"
+          # Check whether value is valid — different functions depending on filter type
+          valid = case # note: we can't use case on filt.class because case uses === for comparison
+          when filt.class == Regexp
+          	!(filt.match(val).nil?)
+          when filt.class == Array
+            filt.include?(val)
+          else
+            raise "Unhandled filter type: #{filt.class}"
+          end
+
+          if !valid
+            errors = true
+            str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
+            print str
+            dump_file.write(str) unless dump_file == ""
+          end
       	end
-    	end
-	end
+  	end
+  end
 	if not errors
   	print_debug "No errors found."
 	end
