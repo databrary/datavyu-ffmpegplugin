@@ -2390,3 +2390,30 @@ def getOS
 	end
 	return os
 end
+
+#-------------------------------------------------------------------
+# Method name: getDatavyuVersion
+# Function: Return Datavyu version string.
+# Arguments: None
+# Returns: String containing Datavyu version.
+# ------------------------------------------------------------------
+def getDatavyuVersion
+  return org.datavyu.util.LocalVersion.new.version
+end
+
+
+#-------------------------------------------------------------------
+# Method name: checkDatavyuVersion
+# Function: Check whether current Datavyu version falls within the specified minimum and maximum versions (inclusive)
+# Arguments:
+# => minVersion (required): Minimum version as a String (e.g. "v:1.3.5")
+# => maxVersion (optional): Maximum version as a String
+# Returns: true if min,max version check passes; false otherwise.
+# ------------------------------------------------------------------
+def checkDatavyuVersion(minVersion, maxVersion = nil)
+  currentVersion = getDatavyuVersion()
+  minCheck = (minVersion <=> currentVersion) <= 0
+  maxCheck = (maxVersion.nil?)? true : (currentVersion <=> maxVersion) <= 0
+
+  return minCheck && maxCheck
+end
