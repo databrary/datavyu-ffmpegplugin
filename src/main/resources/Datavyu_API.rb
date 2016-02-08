@@ -1800,7 +1800,14 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
       if line[2] == id
 
         print_debug id
-        col = getVariable(id.slice(0, id.index("(")).gsub(/\W+/,'_'))
+        varname = id.slice(0, id.index("(")).gsub(/\W+/,'_')
+        if getVariableList.include?(varname)
+          col = getVariable()
+        else
+          puts "Column #{varname} not found. Skipping."
+          next
+        end
+        
         #print_debug varname
         start = varSection.index(l) + 1
 
