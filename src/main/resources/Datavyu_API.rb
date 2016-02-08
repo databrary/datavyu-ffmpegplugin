@@ -1752,6 +1752,14 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
     if varname != "###QueryVar###" and varname != "div" and varname != "qnotes" \
 			and not ignore_vars.include?(varname)
       print_debug varname
+
+      # Replace non-alphabet with underscores
+      vname2 = varname.gsub(/\W+/, '_')
+      if vname2 != varname
+        puts "Replacing #{varname} with #{vname2}"
+        varname = vname2
+      end
+
       variables[varname] = l[l.index("(")+1..l.length-2].split(/,/)
       varIdent << l
     end
@@ -1792,7 +1800,7 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
       if line[2] == id
 
         print_debug id
-        col = getVariable(id.slice(0, id.index("(")))
+        col = getVariable(id.slice(0, id.index("(")).gsub(/\W+/,'_'))
         #print_debug varname
         start = varSection.index(l) + 1
 
@@ -1847,15 +1855,20 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
           end
           # Cycle thru cell data arguments and fill them into the cell matrix
           narg = 0
-          data.each_with_index do |d, i|
-            print_debug cell.arglist[1]
-            argname = cell.arglist[i]
-            if d == nil
-              cell.change_arg(argname, "")
-            elsif d == "" or d.index("<") != nil
-              cell.change_arg(argname, "")
-            else
-              cell.change_arg(argname, d)
+          if data.is_a?(String)
+            argname = cell.arglist.last
+            cell.change_arg(argname, data)
+          elsif data.is_a?(Array)
+            data.each_with_index do |d, i|
+              print_debug cell.arglist[1]
+              argname = cell.arglist[i]
+              if d == nil
+                cell.change_arg(argname, "")
+              elsif d == "" or d.index("<") != nil
+                cell.change_arg(argname, "")
+              else
+                cell.change_arg(argname, d)
+              end
             end
           end
           start += 1
