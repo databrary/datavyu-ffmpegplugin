@@ -1164,7 +1164,7 @@ def add_codes_to_column(var, *args)
   add_args_to_var(var, *args)
 end
 
-def addCodesToColumn(var *args)
+def addCodesToColumn(var, *args)
   add_args_to_var(var, *args)
 end
 
