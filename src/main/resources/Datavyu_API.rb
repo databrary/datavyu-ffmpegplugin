@@ -1807,7 +1807,7 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
           puts "Column #{varname} not found. Skipping."
           next
         end
-        
+
         #print_debug varname
         start = varSection.index(l) + 1
 
@@ -2079,10 +2079,7 @@ end
 #   or
 #  check_rel("trial", "rel.trial", "trialnum", 100)
 # -------------------------------------------------------------------
-def check_rel(main_col, rel_col, match_arg, time_tolerance, *dump_file)
-  checkReliability(main_col, rel_col, match_arg, time_tolerance, dump_file[0])
-end
-def checkReliability(main_col, rel_col, match_arg, time_tolerance, *dump_file)
+def check_reliability(main_col, rel_col, match_arg, time_tolerance, *dump_file)
   # Make the match_arg conform to the method format that is used
   if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(match_arg[0].chr)
     match_arg = match_arg[1..match_arg.length]
@@ -2164,6 +2161,9 @@ def checkReliability(main_col, rel_col, match_arg, time_tolerance, *dump_file)
 
   return errors, rel_col.cells.length.to_f
 end
+alias_method checkReliability, check_reliability
+alias_method check_rel, check_reliability
+alias_method checkRel, check_reliability
 
 #-------------------------------------------------------------------
 # Method name: check_valid_codes
@@ -2181,9 +2181,6 @@ end
 #  check_valid_codes("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", [1,2,3])
 # -------------------------------------------------------------------
 def check_valid_codes(var, dump_file, *arg_code_pairs)
-  checkValidCodes(var, dump_file, *arg_code_pairs)
-end
-def checkValidCodes(var, dump_file, *arg_code_pairs)
   if var.class == "".class
     var = getVariable(var)
   end
@@ -2230,6 +2227,7 @@ def checkValidCodes(var, dump_file, *arg_code_pairs)
     print_debug "No errors found."
   end
 end
+alias_method checkValidCodes, check_valid_codes
 
 #-------------------------------------------------------------------
 # Method name: checkValidCodes2
@@ -2245,7 +2243,7 @@ end
 # Example:
 #  checkValidCodes2("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", /\A\d+\Z/)
 # -------------------------------------------------------------------
-def checkValidCodes2(var, dump_file, *arg_filt_pairs)
+def check_valid_codes2(var, dump_file, *arg_filt_pairs)
 	if var.class == "".class
 		var = getVariable(var)
   elsif var.class == Hash
@@ -2318,11 +2316,9 @@ def checkValidCodes2(var, dump_file, *arg_filt_pairs)
   	print_debug "No errors found."
 	end
 end
+alias_method checkValidCodes2, check_valid_codes2
 
-def getColumnList()
-  return getVariableList()
-end
-def getVariableList()
+def get_column_list()
   name_list = Array.new
   vars = $db.getAllVariables()
   for v in vars
@@ -2331,8 +2327,10 @@ def getVariableList()
 
   return name_list
 end
+alias_method getColumnList, get_column_list
+alias_method getVariableList, get_column_list
 
-def printAllNested(file)
+def print_all_nested(file)
   columns = getColumnList()
   columns.sort! # This is just so everything is the same across runs, regardless of column order
   # Scan each column, getting a list of how many cells the cells of that
@@ -2352,12 +2350,9 @@ def printAllNested(file)
   # that they take up.
 
 end
+alias_method printAllNested, print_all_nested
 
-def printCell(cell, file)
-
-end
-
-def smoothColumn(colname, tol=33)
+def smooth_column(colname, tol=33)
   col = getVariable(colname)
   for i in 0..col.cells.length-2
     curcell = col.cells[i]
@@ -2369,19 +2364,18 @@ def smoothColumn(colname, tol=33)
   end
   setVariable(colname, col)
 end
+alias_method smoothColumn, smooth_column
 
 def print_codes(cell, file, args)
-  print_args(cell, file, args)
-end
-def print_args(cell, file, args)
   for a in args
     #puts "Printing: " + a
     val = eval "cell.#{a}"
     file.write(val.to_s + "\t")
   end
 end
+alias_method print_args, print_codes
 
-def getCellFromTime(col, time)
+def get_cell_from_time(col, time)
   for cell in col.cells
     if cell.onset <= time and cell.offset >= time
       return cell
@@ -2389,11 +2383,9 @@ def getCellFromTime(col, time)
   end
   return nil
 end
+alias_method getCellFromTime, get_cell_from_time
 
-def printCellCodes(cell)
-  printCellArgs(cell)
-end
-def printCellArgs(cell)
+def print_cell_codes(cell)
   s = Array.new
   s << cell.ordinal.to_s
   s << cell.onset.to_s
@@ -2403,10 +2395,13 @@ def printCellArgs(cell)
   end
   return s
 end
+alias_method printCellCodes, print_cell_codes
+alias_method printCellArgs, print_cell_codes
 
 def deleteCell(cell)
   cell.db_cell.getVariable.removeCell(cell.db_cell)
 end
+alias_method deleteCell, delete_cell
 
 #-------------------------------------------------------------------
 # Method name: getOS
@@ -2431,6 +2426,7 @@ def getOS
 	end
 	return os
 end
+alias_method getOS, get_os
 
 #-------------------------------------------------------------------
 # Method name: getDatavyuVersion
@@ -2441,7 +2437,7 @@ end
 def getDatavyuVersion
   return org.datavyu.util.LocalVersion.new.version
 end
-
+alias_method getDatavyuVersion, get_datavyu_version
 
 #-------------------------------------------------------------------
 # Method name: checkDatavyuVersion
@@ -2458,3 +2454,4 @@ def checkDatavyuVersion(minVersion, maxVersion = nil)
 
   return minCheck && maxCheck
 end
+alias_method checkDatavyuVersion, check_datavyu_version
