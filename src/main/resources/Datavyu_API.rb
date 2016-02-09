@@ -2293,6 +2293,8 @@ def check_valid_codes2(var, dump_file, *arg_filt_pairs)
 end
 alias_method :checkValidCodes2, :check_valid_codes2
 
+# Return a list of columns from the current spreadsheet.
+# @return [Array]
 def get_column_list()
   name_list = Array.new
   vars = $db.getAllVariables()
@@ -2306,7 +2308,8 @@ alias_method :getColumnList, :get_column_list
 alias_method :getVariableList, :get_column_list
 
 # TODO: Finish?
-def print_all_nested(file) #:nodoc:
+#++ Incomplete method.
+def print_all_nested(file)
   columns = getColumnList()
   columns.sort! # This is just so everything is the same across runs, regardless of column order
   # Scan each column, getting a list of how many cells the cells of that
@@ -2327,8 +2330,9 @@ def print_all_nested(file) #:nodoc:
 
 end
 alias_method :printAllNested, :print_all_nested
+private :print_all_nested
 
-def smooth_column(colname, tol=33) #:nodoc:
+def smooth_column(colname, tol=33)
   col = getVariable(colname)
   for i in 0..col.cells.length-2
     curcell = col.cells[i]
@@ -2341,6 +2345,7 @@ def smooth_column(colname, tol=33) #:nodoc:
   setVariable(colname, col)
 end
 alias_method :smoothColumn, :smooth_column
+private :smooth_column
 
 # Outputs the values of all codes specified from the given cell to the given output file.
 # Row is delimited by tabs.
@@ -2353,6 +2358,8 @@ def print_codes(cell, file, args)
 end
 alias_method :print_args, :print_codes
 
+# Returns a cell that is within the given millisecond timestamp from the specified column.
+# @return [RCell]
 def get_cell_from_time(col, time)
   for cell in col.cells
     if cell.onset <= time and cell.offset >= time
@@ -2363,6 +2370,7 @@ def get_cell_from_time(col, time)
 end
 alias_method :getCellFromTime, :get_cell_from_time
 
+# Prints ordinal, onset, offset, and the values of all codes from the given cell.
 def print_cell_codes(cell)
   s = Array.new
   s << cell.ordinal.to_s
@@ -2376,17 +2384,16 @@ end
 alias_method :printCellCodes, :print_cell_codes
 alias_method :printCellArgs, :print_cell_codes
 
-def deleteCell(cell)
+# Delete a cell from the spreadsheet
+# @param [RCell] cell
+# @return [nil]
+def delete_cell(cell)
   cell.db_cell.getVariable.removeCell(cell.db_cell)
 end
 alias_method :deleteCell, :delete_cell
 
 # Function: Return the OS version
-#
-# Arguments: None
-#
-# Returns: one of ['windows', 'mac', 'linux']
-#
+# @return ['windows', 'mac', 'linux']
 # Example:
 #  filepath = (getOS() == 'windows')? 'C:\data' : '~/data'
 def get_os
@@ -2405,25 +2412,17 @@ def get_os
 end
 alias_method :getOS, :get_os
 
-#-------------------------------------------------------------------
-# Method name: getDatavyuVersion
-# Function: Return Datavyu version string.
-# Arguments: None
-# Returns: String containing Datavyu version.
-# ------------------------------------------------------------------
+# Return Datavyu version string.
+# @return [String] Version string in the fromat "v.:#.#"
 def get_datavyu_version
   return org.datavyu.util.LocalVersion.new.version
 end
 alias_method :getDatavyuVersion, :get_datavyu_version
 
-#-------------------------------------------------------------------
-# Method name: checkDatavyuVersion
-# Function: Check whether current Datavyu version falls within the specified minimum and maximum versions (inclusive)
-# Arguments:
-# => minVersion (required): Minimum version as a String (e.g. "v:1.3.5")
-# => maxVersion (optional): Maximum version as a String
-# Returns: true if min,max version check passes; false otherwise.
-# ------------------------------------------------------------------
+# Check whether current Datavyu version falls within the specified minimum and maximum versions (inclusive)
+# @param [String] minVersion Minimum version (e.g. 'v:1.3.5')
+# @param [String] maxVersion Maximum version. If unspecified, no upper bound is checked.
+# @return [Boolean] true if min,max version check passes; false otherwise.
 def check_datavyu_version(minVersion, maxVersion = nil)
   currentVersion = getDatavyuVersion()
   minCheck = (minVersion <=> currentVersion) <= 0
