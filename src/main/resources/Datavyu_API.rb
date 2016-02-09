@@ -1559,9 +1559,6 @@ end
 # $db,$pj = load_db("/Users/username/Desktop/test.opf")
 # -------------------------------------------------------------------
 def load_db(filename)
-  loadDB(filename)
-end
-def loadDB(filename)
   # Packages needed for opening and saving projects and databases.
 
 
@@ -1611,7 +1608,7 @@ def loadDB(filename)
 
   return db, proj
 end
-
+alias_method loadDB, load_db
 
 #-------------------------------------------------------------------
 # Method name: save_db
@@ -1629,9 +1626,6 @@ end
 # save_db("/Users/username/Desktop/test.opf")
 # -------------------------------------------------------------------
 def save_db(filename)
-  saveDB(filename)
-end
-def saveDB(filename)
   #
   # Main body of example script:
   #
@@ -1660,15 +1654,10 @@ def saveDB(filename)
   end
 
   print_debug "Save successful."
-
 end
+alias_method saveDB, save_db
 
-# This method is deprecated, only kept for backwards compatibility
 def delete_column(colname)
-  deleteVariable(colname)
-end
-
-def deleteVariable(colname)
   if colname.class != "".class
     colname = colname.name
   end
@@ -1678,12 +1667,15 @@ def deleteVariable(colname)
   end
   $db.removeVariable(col)
 end
+alias_method deleteColumn, delete_column
+alias_method delete_variable, delete_column
+alias_method deleteVariable, delete_column
 
 # Let the user know that a given column was not found. Error is confusing, this should clarify.
-def printNoColumnFoundWarning(colName)
+def print_no_column_found_warning(colName)
   puts "WARNING: No column with name '" + colName + "' was found!"
 end
-
+alias_method printNoColumnFoundWarning, print_no_column_found_warning
 
 #-------------------------------------------------------------------
 # Method name: load_macshapa_db
@@ -1709,11 +1701,7 @@ end
 # $db,$pj = load_db("/Users/username/Desktop/test.opf")
 # -------------------------------------------------------------------
 def load_macshapa_db(filename, write_to_gui, *ignore_vars)
-  loadMacshapaDB(filename, write_to_gui, ignore_vars)
-end
-def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
-
-
+  
   # Create a new DB for us to use so we don't touch the GUI... some of these
   # files can be huge.
   # Since I don't know how to make a whole new project, lets just load a blank file.
@@ -1889,6 +1877,7 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
 
   return $db, $pj
 end
+alias_method loadMacshapaDB, load_macshapa_db
 
 #-------------------------------------------------------------------
 # Method name: transfer_columns
@@ -1918,9 +1907,6 @@ end
 #  and leave test.opf intact with no modifications.
 # -------------------------------------------------------------------
 def transfer_columns(db1, db2, remove, *varnames)
-  transferVariable(db1, db2, remove, *varnames)
-end
-def transferVariable(db1, db2, remove, *varnames)
   # Save the current $db and $proj global variables
   saved_db, saved_proj = $db, $proj
 
@@ -2052,7 +2038,11 @@ def transferVariable(db1, db2, remove, *varnames)
 
   puts "Transfer completed successfully!"
 end
-
+alias_method transfer_column, transfer_columns
+alias_method transferColumns, transfer_columns
+alias_method transferColumn, transfer_columns
+alias_method transferVariables, transfer_columns
+alias_method transferVariable, transfer_columns
 
 #-------------------------------------------------------------------
 # Method name: check_rel
