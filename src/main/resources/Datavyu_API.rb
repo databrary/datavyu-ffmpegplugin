@@ -218,7 +218,7 @@ class RCell
   #       trial = getVariable("trial")
   #       trial.cells[0].change_arg("onset", 1000)
   #       setVariable("trial",trial)
-  def change_arg(arg, val)
+  def change_code(arg, val)
     arg = arg.gsub(/(\W)+/, "").downcase
     if arg == "onset"
       @onset = val
