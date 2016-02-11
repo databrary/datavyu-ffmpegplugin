@@ -596,7 +596,7 @@ class LCS
   attr_accessor :memo
 
   def initialize(list1, list2)
-    @memo = Matrix.build(s1.size, s2.size) { |r,c| nil }
+    @memo = Array.new(list1.size, Array.new(list2.size, nil))
     @s1 = list1
     @s2 = list2
   end
@@ -613,22 +613,23 @@ class LCS
     # Base case: return new node with size zero and empty arrays.
     return Node.new([], [], 0) if i < 0 || j < 0
 
-    if memo[i,j].nil?
+    # p i, j, @memo[i][j]
+    if memo[i][j].nil?
       if @s1[i] == @s2[j]
         n = lcs(i-1, j-1)
         n.size += 1
         n.a << i
         n.b << j
-        memo[i,j] =  n
+        memo[i][j] =  n
       else
         r1 = lcs(i-1, j)
         r2 = lcs(i, j-1)
 
-        memo[i,j] = (r1.size >= r2.size)? r1 : r2
+        memo[i][j] = (r1.size >= r2.size)? r1 : r2
       end
     end
 
-    return memo[i,j]
+    return memo[i][j]
   end
 
   # Solution node. Contains the the indices of the
@@ -2495,16 +2496,21 @@ alias_method :checkDatavyuVersion, :check_datavyu_version
 def sequence_reliability(list1, list2, filler, delimiter = "\t")
   solver = LCS.new(list1, list2)
   solution = solver.solve
-
-  out = []
-  (0..[list1.size-1, list2.size-1].max).each do |i|
-    code1 = solution.a.include?(i)? list1[i] : filler
-    code2 = solution.b.include?(i)? list2[i] : filler
-
-    out << "#{code1}#{delimiter}#{code2}"
-
-    puts out
-  end
+  a = solution.a
+  b = solution.b
+  # z = solution.a.zip(solution.b)
+  puts a.inspect
+  puts b.inspect
+  # out = []
+  # (0..[list1.size-1, list2.size-1].max).each do |i|
+  #   if solution.a.include?(i) || solution.b.include?(i)
+  #   code1 = solution.a.include?(i)? list1[i] : filler
+  #   code2 = solution.b.include?(i)? list2[i] : filler
+  #
+  #   out << "#{code1}#{delimiter}#{code2}"
+  #
+  #   puts out
+  # end
 end
 
 # Driver for sequence_reliability
@@ -2512,8 +2518,8 @@ def check_sequence_reliability(columns_codes)
   lists = []
   lists = columns_codes.each_pair.map do |col, codes|
     col = getVariable(col) if col == String
-    codes.map{ |c| col.get_arg(c) }.join(',')
+    col.cells.map{ |cell| codes.map{ |code| cell.get_arg(code) }.join(',') }
   end
 
-  sequence_reliability(lists.first, lists[0], '-')
+  sequence_reliability(lists.first, lists[1], '-')
 end
