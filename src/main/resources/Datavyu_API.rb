@@ -590,60 +590,6 @@ class CTable
   end
 end
 
-# Class for computing longest subsequences.
-# Useful for sequence-based reliability
-class LCS
-  attr_accessor :memo
-
-  def initialize(list1, list2)
-    @memo = Array.new(list1.size, Array.new(list2.size, nil))
-    @s1 = list1
-    @s2 = list2
-  end
-
-  def solve
-    @solution = lcs(@s1.size-1, @s2.size-1)
-  end
-
-  def solution
-    @solution || solve
-  end
-
-  def lcs(i, j)
-    # Base case: return new node with size zero and empty arrays.
-    return Node.new([], [], 0) if i < 0 || j < 0
-
-    # p i, j, @memo[i][j]
-    if memo[i][j].nil?
-      if @s1[i] == @s2[j]
-        n = lcs(i-1, j-1)
-        n.size += 1
-        n.a << i
-        n.b << j
-        memo[i][j] =  n
-      else
-        r1 = lcs(i-1, j)
-        r2 = lcs(i, j-1)
-
-        memo[i][j] = (r1.size >= r2.size)? r1 : r2
-      end
-    end
-
-    return memo[i][j]
-  end
-
-  # Solution node. Contains the the indices of the
-  class Node
-    attr_accessor :a, :b, :size
-
-    def initialize(a, b, size)
-      @a = a
-      @b = b
-      @size = size
-    end
-  end
-end
-
 ## API Functions
 
 #-------------------------------------------------------------------
@@ -2485,41 +2431,3 @@ def check_datavyu_version(minVersion, maxVersion = nil)
   return minCheck && maxCheck
 end
 alias :checkDatavyuVersion :check_datavyu_version
-
-# Take two lists and find the longest common sequence.
-# Print the two sequences side by side; fill in placeholders as necessary.
-# @param [List] list1
-# @param [List] list2
-# @param [String] filler
-# @param [String] delimiter
-# @return [nil]
-def sequence_reliability(list1, list2, filler, delimiter = "\t")
-  solver = LCS.new(list1, list2)
-  solution = solver.solve
-  a = solution.a
-  b = solution.b
-  # z = solution.a.zip(solution.b)
-  puts a.inspect
-  puts b.inspect
-  # out = []
-  # (0..[list1.size-1, list2.size-1].max).each do |i|
-  #   if solution.a.include?(i) || solution.b.include?(i)
-  #   code1 = solution.a.include?(i)? list1[i] : filler
-  #   code2 = solution.b.include?(i)? list2[i] : filler
-  #
-  #   out << "#{code1}#{delimiter}#{code2}"
-  #
-  #   puts out
-  # end
-end
-
-# Driver for sequence_reliability
-def check_sequence_reliability(columns_codes)
-  lists = []
-  lists = columns_codes.each_pair.map do |col, codes|
-    col = getVariable(col) if col == String
-    col.cells.map{ |cell| codes.map{ |code| cell.get_arg(code) }.join(',') }
-  end
-
-  sequence_reliability(lists.first, lists[1], '-')
-end
