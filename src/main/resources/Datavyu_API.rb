@@ -234,7 +234,7 @@ class RCell
       end
     end
   end
-  alias_method :change_arg, :change_code
+  alias :change_arg :change_code
 
   #-------------------------------------------------------------------
   # Method name: print_all
@@ -1225,9 +1225,9 @@ def add_codes_to_column(var, *args)
   return var_new
 end
 
-alias_method :add_args_to_var, :add_codes_to_column
-alias_method :addCodesToColumn, :add_codes_to_column
-alias_method :addArgsToVar, :add_codes_to_column
+alias :add_args_to_var :add_codes_to_column
+alias :addCodesToColumn :add_codes_to_column
+alias :addArgsToVar :add_codes_to_column
 
 # -------------------------------------------------------------------
 # Method name: create_mutually_exclusive
@@ -1543,7 +1543,7 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
 
   return mutex
 end
-alias_method :createMutuallyExclusive, :create_mutually_exclusive
+alias :createMutuallyExclusive :create_mutually_exclusive
 
 def fillMutexCell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix) # :nodoc:
   if v1cell != nil and v2cell != nil
@@ -1646,7 +1646,7 @@ def load_db(filename)
 
   return db, proj
 end
-alias_method :loadDB, :load_db
+alias :loadDB :load_db
 
 #-------------------------------------------------------------------
 # Method name: save_db
@@ -1693,7 +1693,7 @@ def save_db(filename)
 
   print_debug "Save successful."
 end
-alias_method :saveDB, :save_db
+alias :saveDB :save_db
 
 def delete_column(colname)
   if colname.class != "".class
@@ -1706,15 +1706,15 @@ def delete_column(colname)
   $db.removeVariable(col)
 end
 
-alias_method :deleteColumn, :delete_column
-alias_method :delete_variable, :delete_column
-alias_method :deleteVariable, :delete_column
+alias :deleteColumn :delete_column
+alias :delete_variable :delete_column
+alias :deleteVariable :delete_column
 
 # Let the user know that a given column was not found. Error is confusing, this should clarify.
 def print_no_column_found_warning(colName)
   puts "WARNING: No column with name '" + colName + "' was found!"
 end
-alias_method :printNoColumnFoundWarning, :print_no_column_found_warning
+alias :printNoColumnFoundWarning :print_no_column_found_warning
 
 #-------------------------------------------------------------------
 # Method name: load_macshapa_db
@@ -1916,7 +1916,7 @@ def load_macshapa_db(filename, write_to_gui, *ignore_vars)
 
   return $db, $pj
 end
-alias_method :loadMacshapaDB, :load_macshapa_db
+alias :loadMacshapaDB :load_macshapa_db
 
 #-------------------------------------------------------------------
 # Method name: transfer_columns
@@ -2077,11 +2077,11 @@ def transfer_columns(db1, db2, remove, *varnames)
 
   puts "Transfer completed successfully!"
 end
-alias_method :transfer_column, :transfer_columns
-alias_method :transferColumns, :transfer_columns
-alias_method :transferColumn, :transfer_columns
-alias_method :transferVariables, :transfer_columns
-alias_method :transferVariable, :transfer_columns
+alias :transfer_column :transfer_columns
+alias :transferColumns :transfer_columns
+alias :transferColumn :transfer_columns
+alias :transferVariables :transfer_columns
+alias :transferVariable :transfer_columns
 
 #-------------------------------------------------------------------
 # Method name: check_rel
@@ -2190,9 +2190,9 @@ def check_reliability(main_col, rel_col, match_arg, time_tolerance, *dump_file)
 
   return errors, rel_col.cells.length.to_f
 end
-alias_method :checkReliability, :check_reliability
-alias_method :check_rel, :check_reliability
-alias_method :checkRel, :check_reliability
+alias :checkReliability :check_reliability
+alias :check_rel :check_reliability
+alias :checkRel :check_reliability
 
 #-------------------------------------------------------------------
 # Method name: check_valid_codes
@@ -2256,7 +2256,7 @@ def check_valid_codes(var, dump_file, *arg_code_pairs)
     print_debug "No errors found."
   end
 end
-alias_method :checkValidCodes, :check_valid_codes
+alias :checkValidCodes :check_valid_codes
 
 # Check valid codes on cells in a column using regex. Backwards-compatible with checkValidCodes
 # call-seq:
@@ -2345,7 +2345,7 @@ def check_valid_codes2(var, dump_file, *arg_filt_pairs)
   	print_debug "No errors found."
 	end
 end
-alias_method :checkValidCodes2, :check_valid_codes2
+alias :checkValidCodes2 :check_valid_codes2
 
 # Return a list of columns from the current spreadsheet.
 # @return [Array]
@@ -2358,8 +2358,8 @@ def get_column_list()
 
   return name_list
 end
-alias_method :getColumnList, :get_column_list
-alias_method :getVariableList, :get_column_list
+alias :getColumnList :get_column_list
+alias :getVariableList :get_column_list
 
 # TODO: Finish?
 #++ Incomplete method.
@@ -2383,7 +2383,7 @@ def print_all_nested(file)
   # that they take up.
 
 end
-alias_method :printAllNested, :print_all_nested
+alias :printAllNested :print_all_nested
 private :print_all_nested
 
 def smooth_column(colname, tol=33)
@@ -2398,7 +2398,7 @@ def smooth_column(colname, tol=33)
   end
   setVariable(colname, col)
 end
-alias_method :smoothColumn, :smooth_column
+alias :smoothColumn :smooth_column
 private :smooth_column
 
 # Outputs the values of all codes specified from the given cell to the given output file.
@@ -2410,7 +2410,7 @@ def print_codes(cell, file, args)
     file.write(val.to_s + "\t")
   end
 end
-alias_method :print_args, :print_codes
+alias :print_args :print_codes
 
 # Returns a cell that is within the given millisecond timestamp from the specified column.
 # @return [RCell]
@@ -2422,7 +2422,7 @@ def get_cell_from_time(col, time)
   end
   return nil
 end
-alias_method :getCellFromTime, :get_cell_from_time
+alias :getCellFromTime :get_cell_from_time
 
 # Prints ordinal, onset, offset, and the values of all codes from the given cell.
 def print_cell_codes(cell)
@@ -2435,8 +2435,8 @@ def print_cell_codes(cell)
   end
   return s
 end
-alias_method :printCellCodes, :print_cell_codes
-alias_method :printCellArgs, :print_cell_codes
+alias :printCellCodes :print_cell_codes
+alias :printCellArgs :print_cell_codes
 
 # Delete a cell from the spreadsheet
 # @param [RCell] cell
@@ -2444,7 +2444,7 @@ alias_method :printCellArgs, :print_cell_codes
 def delete_cell(cell)
   cell.db_cell.getVariable.removeCell(cell.db_cell)
 end
-alias_method :deleteCell, :delete_cell
+alias :deleteCell :delete_cell
 
 # Function: Return the OS version
 # @return ['windows', 'mac', 'linux']
@@ -2464,14 +2464,14 @@ def get_os
 	end
 	return os
 end
-alias_method :getOS, :get_os
+alias :getOS :get_os
 
 # Return Datavyu version string.
 # @return [String] Version string in the fromat "v.:#.#"
 def get_datavyu_version
   return org.datavyu.util.LocalVersion.new.version
 end
-alias_method :getDatavyuVersion, :get_datavyu_version
+alias :getDatavyuVersion :get_datavyu_version
 
 # Check whether current Datavyu version falls within the specified minimum and maximum versions (inclusive)
 # @param [String] minVersion Minimum version (e.g. 'v:1.3.5')
@@ -2484,7 +2484,7 @@ def check_datavyu_version(minVersion, maxVersion = nil)
 
   return minCheck && maxCheck
 end
-alias_method :checkDatavyuVersion, :check_datavyu_version
+alias :checkDatavyuVersion :check_datavyu_version
 
 # Take two lists and find the longest common sequence.
 # Print the two sequences side by side; fill in placeholders as necessary.
