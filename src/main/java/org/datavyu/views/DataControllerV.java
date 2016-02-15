@@ -36,7 +36,6 @@ import org.datavyu.models.id.Identifier;
 import org.datavyu.plugins.DataViewer;
 import org.datavyu.plugins.Plugin;
 import org.datavyu.plugins.PluginManager;
-import org.datavyu.plugins.quicktime.BaseQuickTimeDataViewer;
 import org.datavyu.util.ClockTimer;
 import org.datavyu.util.ClockTimer.ClockListener;
 import org.datavyu.util.FloatUtils;
@@ -783,20 +782,20 @@ public final class DataControllerV extends DatavyuDialog
         // If rate is faster than two times - we need to fake playback to give
         // the illusion of 'smooth'. We do this by stopping the dataviewer and
         // doing many seekTo's to grab individual frames.
-        if (Math.abs(rate) > 2.0 || rate < 0) {
-            playbackModel.setFakePlayback(true);
-
-            for (DataViewer viewer : viewers) {
-                viewer.stop();
-
-                if (isWithinPlayRange(time, viewer)) {
-                    viewer.setPlaybackSpeed(rate);
-                }
-            }
-
-            // Rate is less than two times - use the data viewer internal code
-            // to draw every frame.
-        } else {
+//        if (Math.abs(rate) > 2.0 || rate < 0) {
+//            playbackModel.setFakePlayback(true);
+//
+//            for (DataViewer viewer : viewers) {
+//                viewer.stop();
+//
+//                if (isWithinPlayRange(time, viewer)) {
+//                    viewer.setPlaybackSpeed(rate);
+//                }
+//            }
+//
+//            // Rate is less than two times - use the data viewer internal code
+//            // to draw every frame.
+//        } else {
             playbackModel.setFakePlayback(false);
 
             for (DataViewer viewer : viewers) {
@@ -806,7 +805,7 @@ public final class DataControllerV extends DatavyuDialog
                     viewer.play();
                 }
             }
-        }
+//        }
     }
 
     /**

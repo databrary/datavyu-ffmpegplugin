@@ -295,6 +295,24 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setRate
     
     JNF_COCOA_ENTER(env);
     
+    if(rate > 0.5 && rate < 2.0) {
+        for (AVPlayerItemTrack *track in GetQtMovie(movieId).currentItem.tracks)
+        {
+            if ([track.assetTrack.mediaType isEqual:AVMediaTypeAudio])
+            {
+                track.enabled = true;
+            }
+        }
+    } else {
+        for (AVPlayerItemTrack *track in GetQtMovie(movieId).currentItem.tracks)
+        {
+            if ([track.assetTrack.mediaType isEqual:AVMediaTypeAudio])
+            {
+                track.enabled = false;
+            }
+        }
+    }
+    
     [GetQtMovie(movieId) setRate:rate];
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
 
