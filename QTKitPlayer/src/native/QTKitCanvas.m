@@ -466,18 +466,18 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTime
 //    }
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     long long t = (newQTTime.value * 1000.0f) / newQTTime.timescale;
-    if(time == 1) {
-        
-//        [GetQtMovie(movieId) stepForward];
-        
-        newQTTime = [GetQtMovie(movieId) currentTime];
-        
-        while(t > 20) {
-            NSLog(@"Reported time %lld", t);
-            t = (newQTTime.value * 1000.0f) / newQTTime.timescale;
-//            [GetQtMovie(movieId) stepBackward];
-        }
-    }
+//    if(time == 1) {
+//        
+////        [GetQtMovie(movieId) stepForward];
+//        
+//        newQTTime = [GetQtMovie(movieId) currentTime];
+//        
+//        while(t > 20) {
+//            NSLog(@"Reported time %lld", t);
+//            t = (newQTTime.value * 1000.0f) / newQTTime.timescale;
+////            [GetQtMovie(movieId) stepBackward];
+//        }
+//    }
 
     
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
@@ -582,17 +582,26 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_release
     // Open the movie in editing mode, get the FPS, close it, open it in playback mode
     AVPlayer *movie = nil;
     NSError *error = nil;
-    NSDictionary *attributes =
-    [NSDictionary dictionaryWithObjectsAndKeys:
-     [NSURL URLWithString:file], QTMovieURLAttribute,
-     [NSNumber numberWithBool:NO], QTMovieLoopsAttribute,
-     [NSNumber numberWithBool:NO], QTMovieOpenForPlaybackAttribute,
-     [NSNumber numberWithBool:NO], QTMovieOpenAsyncOKAttribute,
-     nil];
+//    NSDictionary *attributes =
+//    [NSDictionary dictionaryWithObjectsAndKeys:
+//     [NSURL URLWithString:file], QTMovieURLAttribute,
+//     [NSNumber numberWithBool:NO], QTMovieLoopsAttribute,
+//     [NSNumber numberWithBool:NO], QTMovieOpenForPlaybackAttribute,
+//     [NSNumber numberWithBool:NO], QTMovieOpenAsyncOKAttribute,
+//     nil];
     
-    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL: [NSURL URLWithString:file]];
+    AVURLAsset *asset = [AVURLAsset assetWithURL:[NSURL URLWithString:file]];
+    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
+    [playerItem addObserver:self forKeyPath:@"status" options:0 context:nil];
+
+//    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL: [NSURL URLWithString:file]];
     movie = [AVPlayer playerWithPlayerItem:playerItem];
-    
+    [movie addObserver:self forKeyPath:@"status" options:0 context:nil];
+//    while(movie.status != AVPlayerStatusUnknown ||
+//       movie.currentItem.status != AVPlayerItemStatusReadyToPlay) {
+//        NSLog(@"%ld %ld", movie.status, (long)movie.currentItem.status);
+//        sleep(1);
+//    }
     
     float fps = 0.00;
     for (AVPlayerItemTrack *track in playerItem.tracks) {
@@ -603,7 +612,6 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_release
     }
     
     NSSize sourceSize = [[playerItem asset] naturalSize];
-    
     
     
     
@@ -651,6 +659,66 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_release
 //    QTMovieLayer* qtMovieLayer = [QTMovieLayer layerWithMovie:movie];
 //    [self addSublayer:qtMovieLayer];
 
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([object isKindOfClass:[AVPlayer class]])
+    {
+        AVPlayer *player = (AVPlayer *)object;
+        if ([keyPath isEqualToString:@"status"])
+        {   //yes->check it...
+            switch(player.status)
+            {
+                case AVPlayerStatusFailed:
+                    NSLog(@"player item status failed");
+                    break;
+                case AVPlayerStatusReadyToPlay:
+                    NSLog(@"player item status is ready to play");
+                    // Do some initialization
+                    float vol = player.volume;
+                    player.volume = 0;
+                    [player play];
+                    sleep(1);
+                    [player pause];
+                    [player seekToTime:CMTimeMakeWithSeconds(0.01, 600)];
+                    player.volume = vol;
+                    break;
+                case AVPlayerStatusUnknown:
+                    NSLog(@"player item status is unknown");
+                    break;
+            }
+        }
+
+    }
+    if ([object isKindOfClass:[AVPlayerItem class]])
+    {
+        AVPlayerItem *item = (AVPlayerItem *)object;
+        //playerItem status value changed?
+        if ([keyPath isEqualToString:@"status"])
+        {   //yes->check it...
+            switch(item.status)
+            {
+                case AVPlayerItemStatusFailed:
+                    NSLog(@"player item status failed");
+                    break;
+                case AVPlayerItemStatusReadyToPlay:
+                    NSLog(@"player item status is ready to play");
+                    
+                    break;
+                case AVPlayerItemStatusUnknown:
+                    NSLog(@"player item status is unknown");
+                    break;
+            }
+        }
+        else if ([keyPath isEqualToString:@"playbackBufferEmpty"])
+        {
+            if (item.playbackBufferEmpty)
+            {
+                NSLog(@"player item playback buffer is empty");
+            }
+        }
+    }
 }
 
 @end
