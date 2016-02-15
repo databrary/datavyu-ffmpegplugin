@@ -148,6 +148,31 @@ class RCell
     end
   end
 
+  #-------------------------------------------------------------------
+  #
+  # Method name: getArgs
+  # Function: Maps the specified code names to their values. If no names specified, use self.arglist.
+  # Arguments:
+  # => *argnames (optional): Names of codes.
+  #-------------------------------------------------------------------
+  def getArgs(*codes)
+    codes = self.arglist if codes.nil? || codes.empty?
+    vals = codes.map do |cname|
+      case(cname)
+      when /onset/
+        self.onset
+      when /offset/
+        self.offset
+      when /ordinal/
+        self.ordinal
+      else
+        @arglist.include?(cname)? self.get_arg(cname) : raise("Cell does not have code #{cname}")
+      end
+    end
+
+    return vals
+  end
+
   def change_code_name(i, new_name)
     change_arg_name(i, new_name)
   end
@@ -337,6 +362,10 @@ class RVariable
     hidden = false
   end
 
+  # Validate code name. Remove special characters and replace
+  def convert_argname(arg)
+    return arg.gsub(/(\W)+/, "").downcase
+  end
   #-------------------------------------------------------------------
   # NOTE: This function is not for general use.
   #
@@ -346,9 +375,6 @@ class RVariable
   # => newcells (required): Array of cells coming from the database via getVariable
   # => arglist (required): Array of the names of the arguments from the database
   #-------------------------------------------------------------------
-  def convert_argname(arg)
-    return arg.gsub(/(\W)+/, "").downcase
-  end
 
   def set_cells(newcells, arglist)
     print_debug "Setting cells"
@@ -1138,6 +1164,10 @@ def add_codes_to_column(var, *args)
   add_args_to_var(var, *args)
 end
 
+def addCodesToColumn(var, *args)
+  add_args_to_var(var, *args)
+end
+
 def add_args_to_var(var, *args)
   if var.class == "".class
     var = getVariable(var)
@@ -1722,6 +1752,14 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
     if varname != "###QueryVar###" and varname != "div" and varname != "qnotes" \
 			and not ignore_vars.include?(varname)
       print_debug varname
+
+      # Replace non-alphabet with underscores
+      vname2 = varname.gsub(/\W+/, '_')
+      if vname2 != varname
+        puts "Replacing #{varname} with #{vname2}"
+        varname = vname2
+      end
+
       variables[varname] = l[l.index("(")+1..l.length-2].split(/,/)
       varIdent << l
     end
@@ -1762,7 +1800,14 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
       if line[2] == id
 
         print_debug id
-        col = getVariable(id.slice(0, id.index("(")))
+        varname = id.slice(0, id.index("(")).gsub(/\W+/,'_')
+        if getVariableList.include?(varname)
+          col = getVariable()
+        else
+          puts "Column #{varname} not found. Skipping."
+          next
+        end
+        
         #print_debug varname
         start = varSection.index(l) + 1
 
@@ -1817,15 +1862,20 @@ def loadMacshapaDB(filename, write_to_gui, *ignore_vars)
           end
           # Cycle thru cell data arguments and fill them into the cell matrix
           narg = 0
-          data.each_with_index do |d, i|
-            print_debug cell.arglist[1]
-            argname = cell.arglist[i]
-            if d == nil
-              cell.change_arg(argname, "")
-            elsif d == "" or d.index("<") != nil
-              cell.change_arg(argname, "")
-            else
-              cell.change_arg(argname, d)
+          if data.is_a?(String)
+            argname = cell.arglist.last
+            cell.change_arg(argname, data)
+          elsif data.is_a?(Array)
+            data.each_with_index do |d, i|
+              print_debug cell.arglist[1]
+              argname = cell.arglist[i]
+              if d == nil
+                cell.change_arg(argname, "")
+              elsif d == "" or d.index("<") != nil
+                cell.change_arg(argname, "")
+              else
+                cell.change_arg(argname, d)
+              end
             end
           end
           start += 1
@@ -2198,56 +2248,72 @@ end
 def checkValidCodes2(var, dump_file, *arg_filt_pairs)
 	if var.class == "".class
 		var = getVariable(var)
+  elsif var.class == Hash
+    # var is already a hashmap
+    map = var
 	end
 
 	if dump_file != ""
 		if dump_file.class == "".class
-	    	dump_file = open(dump_file, 'a')
+	    	dump_file = open(File.expand_path(dump_file), 'a')
 	  	end
 	end
 
-	# Make the argument/code hash
-	arg_code = Hash.new
-	for i in 0...arg_filt_pairs.length
-	  if i % 2 == 0
-		if arg_filt_pairs[i].class != "".class
-			print_debug 'FATAL ERROR in argument/valid code array.  Exiting.  Please check to make sure it is in the format "argumentname", ["valid","codes"]'
-			exit
-		end
+  # Create a map if a mapping wasn't passed in. Mostly for backwards compatibility with checkValidCodes().
+  if map.nil?
+    map = Hash.new
 
-		arg = arg_filt_pairs[i]
-		if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[1].chr)
-			arg = arg[1..arg.length]
-		end
-		arg = arg.gsub(/(\W )+/,"").downcase
+  	# Make the argument/code hash
+  	arg_code = Hash.new
+  	for i in 0...arg_filt_pairs.length
+  	  if i % 2 == 0
+    		if arg_filt_pairs[i].class != "".class
+    			print_debug 'FATAL ERROR in argument/valid code array.  Exiting.  Please check to make sure it is in the format "argumentname", ["valid","codes"]'
+    			exit
+    		end
 
-	    # Add the filter for this code.  If the given filter is an array, convert it to a regular expression using Regex.union
-	    filt = arg_filt_pairs[i+1]
-	    if(filt.class == Array)
-	     	arg_code[arg] = Regexp.new('\A(' + Regexp.union(filt).source + ')\Z')
-	    elsif(filt.class == Regexp)
-	     	arg_code[arg] = arg_filt_pairs[i+1]
-	    else
-	    	print_debug "FATAL ERROR in argument/valid code array: expected array or regular expression for filtering #{arg}, received #{filt.class}."
-	     	raise "Unhandled filter type: #{filt.class}"
-	    end
-	  end
-	end
+    		arg = arg_filt_pairs[i]
+    		if ["0","1","2","3","4","5","6","7","8","9"].include?(arg[1].chr)
+    			arg = arg[1..arg.length]
+    		end
+    		arg = arg.gsub(/(\W )+/,"").downcase
+
+  	    # Add the filter for this code.  If the given filter is an array, convert it to a regular expression using Regex.union
+        arg_code[arg] = arg_filt_pairs[i+1]
+  	  end
+  	end
+
+    map[var] = arg_code
+  end
 
 	errors = false
-	for cell in var.cells
-		for arg, filt in arg_code
-      	val = eval "cell.#{arg}"
-      	if filt.match(val).nil?
-          	errors = true
-          	str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
-          	print str
-          	if dump_file != ""
-            	dump_file.write(str)
-          	end
+  # Iterate over key,entry (column, valid code mapping) in map
+  map.each_pair do |var, arg_code|
+    var = getVariable(var) if var.class == String
+
+    # Iterate over cells in var and check each code's value
+  	for cell in var.cells
+  		for arg, filt in arg_code
+        	val = eval "cell.#{arg}"
+          # Check whether value is valid — different functions depending on filter type
+          valid = case # note: we can't use case on filt.class because case uses === for comparison
+          when filt.class == Regexp
+          	!(filt.match(val).nil?)
+          when filt.class == Array
+            filt.include?(val)
+          else
+            raise "Unhandled filter type: #{filt.class}"
+          end
+
+          if !valid
+            errors = true
+            str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
+            print str
+            dump_file.write(str) unless dump_file == ""
+          end
       	end
-    	end
-	end
+  	end
+  end
 	if not errors
   	print_debug "No errors found."
 	end
@@ -2364,4 +2430,31 @@ def getOS
 		raise "Unknown OS: #{host_os.inspect}"
 	end
 	return os
+end
+
+#-------------------------------------------------------------------
+# Method name: getDatavyuVersion
+# Function: Return Datavyu version string.
+# Arguments: None
+# Returns: String containing Datavyu version.
+# ------------------------------------------------------------------
+def getDatavyuVersion
+  return org.datavyu.util.LocalVersion.new.version
+end
+
+
+#-------------------------------------------------------------------
+# Method name: checkDatavyuVersion
+# Function: Check whether current Datavyu version falls within the specified minimum and maximum versions (inclusive)
+# Arguments:
+# => minVersion (required): Minimum version as a String (e.g. "v:1.3.5")
+# => maxVersion (optional): Maximum version as a String
+# Returns: true if min,max version check passes; false otherwise.
+# ------------------------------------------------------------------
+def checkDatavyuVersion(minVersion, maxVersion = nil)
+  currentVersion = getDatavyuVersion()
+  minCheck = (minVersion <=> currentVersion) <= 0
+  maxCheck = (maxVersion.nil?)? true : (currentVersion <=> maxVersion) <= 0
+
+  return minCheck && maxCheck
 end

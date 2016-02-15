@@ -8,8 +8,7 @@ import org.datavyu.Build;
 import org.datavyu.Configuration;
 import org.datavyu.Datavyu;
 import org.jdesktop.application.Application;
-import org.jdesktop.application.ResourceMap;
-
+import org.datavyu.util.LocalVersion;
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,19 +31,6 @@ public class UpdateV extends javax.swing.JDialog {
     private boolean m_update_available = false;
     private ServerVersion m_server;
     private LocalVersion m_local;
-
-    /* Private class for handling the local version number */
-    private class LocalVersion {
-        public String version = "";
-        public String build = "";
-
-        public LocalVersion() {
-            ResourceMap bMap = Application.getInstance(Datavyu.class).getContext().getResourceMap(Build.class);
-            ResourceMap rMap = Application.getInstance(Datavyu.class).getContext().getResourceMap(Datavyu.class);
-            version = rMap.getString("Application.version");
-            build = bMap.getString("Application.build");
-        }
-    }
 
     /* Private class for handling the server version number */
     private class ServerVersion {
