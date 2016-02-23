@@ -31,3 +31,5 @@ packaged_docs/user-guide.pdf
 datavyu.iml
 QTKitPlayer/build
 QTKitPlayer/resources
+src/main/resources/doc
+src/main/resources/.yardoc
