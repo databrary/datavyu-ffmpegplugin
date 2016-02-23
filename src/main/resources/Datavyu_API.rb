@@ -592,8 +592,6 @@ end
 
 ## API Functions
 
-#-------------------------------------------------------------------
-# Method name: computeKappa
 # Function: Computes Cohen's kappa from the given primary and reliability columns.
 # Arguments:
 #  pri_col (required): The primary coder's column.
@@ -607,8 +605,7 @@ end
 #     codes_to_compute = ['condition', 'result']
 #     kappas = computeKappa(colPri, colRel, codes_to_compute)
 #     kappas.each_pair { |code, k| puts "#{code}: #{k}" }
-#-------------------------------------------------------------------
-def computeKappa(pri_col, rel_col, *codes)
+def compute_kappa(pri_col, rel_col, *codes)
   codes = pri_col.arglist if codes.nil? || codes.empty?
   raise "No codes!" if codes.empty?
   p codes
@@ -658,22 +655,16 @@ def computeKappa(pri_col, rel_col, *codes)
 
   return kappas, tables
 end
+alias :compute_kappa :computeKappa
 
-#-------------------------------------------------------------------
-# Method name: getVariable
-# Function: getVariable retrieves a variable from the database and print_debug it into a Ruby object.
+# Function: Retrieve a variable from the database and print_debug it into a Ruby object.
 # Arguments:
-# => name (required): The Datavyu name of the variable being retrieved
+#    name (required): The Datavyu name of the variable being retrieved
 # Returns:
-# => A Ruby object representation of the variable inside Datavyu or nil if the named column does not exist.
+#    A Ruby object representation of the variable inside Datavyu or nil if the named column does not exist.
 # Usage:
-#       trial = getVariable("trial")
-#-------------------------------------------------------------------
-
-def getColumn(name)
-  getVariable(name)
-end
-def getVariable(name)
+#       trial = get_column("trial")
+def get_column(name)
 
   var = $db.getVariable(name)
   if (var == nil)
@@ -711,6 +702,8 @@ def getVariable(name)
 
   return v
 end
+alias :getVariable :get_column
+alias :getColumn :get_column
 
 #-------------------------------------------------------------------
 # Method name: setVariable
@@ -725,10 +718,7 @@ end
 #       ** Do some modification to trial
 #       setVariable("trial", trial)
 #-------------------------------------------------------------------
-def setColumn(*args)
-  setVariable(*args)
-end
-def setVariable(*args)
+def set_column(*args)
 
   if args.length == 1
     var = args[0]
@@ -864,15 +854,15 @@ def setVariable(*args)
   var.db_var.setHidden(var.hidden)
   # end
 end
+alias :setVariable :set_column
+alias :setColumn :set_column
 
-#-------------------------------------------------------------------
-# Method name: setVariable!
-# Function: Deletes a variable from the spreadsheet and rebuilds it from
-# 					the given RVariable object.
-# 					Behaves similar to setVariable(), but this will ALWAYS delete
-# 					and rebuild the spreadsheet colum and its vocab.
-#-------------------------------------------------------------------
-def setVariable!(*args)
+
+# Deletes a variable from the spreadsheet and rebuilds it from
+# the given RVariable object.
+# Behaves similar to setVariable(), but this will ALWAYS delete
+# and rebuild the spreadsheet colum and its vocab.
+def set_column!(*args)
   if args.length == 1
     var = args[0]
     name = var.name
@@ -946,6 +936,7 @@ def setVariable!(*args)
   var.db_var.setHidden(var.hidden)
   # end
 end
+alias :setVariable! :set_column!
 
 #-------------------------------------------------------------------
 # Method name: make_rel
@@ -965,10 +956,7 @@ end
 # Usage:
 #       rel_trial = make_rel("rel.trial", "trial", 2, "onset", "trialnum", "unit")
 #-------------------------------------------------------------------
-def make_rel(relname, var_to_copy, multiple_to_keep, *args_to_keep)
-  makeReliability(relname, var_to_copy, multiple_to_keep, args_to_keep)
-end
-def makeReliability(relname, var_to_copy, multiple_to_keep, *args_to_keep)
+def make_reliability(relname, var_to_copy, multiple_to_keep, *args_to_keep)
   # Get the primary variable from the DB
 
   if var_to_copy.class == String
@@ -1010,33 +998,21 @@ def makeReliability(relname, var_to_copy, multiple_to_keep, *args_to_keep)
   setVariable(relname, var_to_copy)
   return var_to_copy
 end
+alias :makeReliability :make_reliability
+alias :make_rel :make_reliability
 
-#-------------------------------------------------------------------
-# Method name: createNewVariable
 # Function: Creates a brand new blank variable with argument *args and name name.
 # Arguments:
-# => name (required): The Datavyu name of the variable being retrieved
-# => *args: (optional): List of arguments that the variable will contain.  Onset, Offset, and
+#   name (required): The Datavyu name of the variable being retrieved
+#   *args: (optional): List of arguments that the variable will contain.  Onset, Offset, and
 #               ordinal are created by default.
 # Returns:
-# => A Ruby object representation of the variable inside Datavyu.
+# A Ruby object representation of the variable inside Datavyu.
 # Usage:
 #       trial = createNewVariable("trial", "trialnum", "unit")
 #       blank_cell = trial.make_new_cell()
 #       setVariable(trial)
-#-------------------------------------------------------------------
-def createNewColumn(name, *args)
-  createVariable(name, *args)
-end
-def createColumn(name, *args)
-  createVariable(name, *args)
-end
-
-def createNewVariable(name, *args)
-  createVariable(name, args)
-end
-
-def createVariable(name, *args)
+def create_new_column(name, *args)
   print_debug "Creating new variable"
   v = RVariable.new
 
@@ -1067,6 +1043,10 @@ def createVariable(name, *args)
   print_debug "Finished creating variable"
   return v
 end
+alias :createNewColumn :create_new_column
+alias :createVariable :create_new_column
+alias :createNewVariable :create_new_column
+alias :create_column :create_new_column
 
 #-----------------------------------------------------------------
 # EXPERIMENTAL METHODS FOR FUTURE RELEASE
@@ -1175,25 +1155,6 @@ alias :add_args_to_var :add_codes_to_column
 alias :addCodesToColumn :add_codes_to_column
 alias :addArgsToVar :add_codes_to_column
 
-# -------------------------------------------------------------------
-# Method name: create_mutually_exclusive
-# Function: Create a new column from two others, mixing their cells together
-#  such that the new variable has all of the arguments of both other variables
-#  and a new cell for each overlap and mixture of the two cells.  Mixing two
-#  variables together.
-# Arguments:
-#  name (required): The name of the new variable.
-#  var1name (required): Name of the first variable to be mutexed.
-#  var2name (required): Name of the second variable to be mutexed.
-#
-# Returns:
-#  The new Ruby representation of the variable.  Write it back to the database
-# to save it.
-#
-# Example:
-# test = create_mutually_exclusive("test", "var1", "var2")
-# setVariable("test",test)
-# -------------------------------------------------------------------
 def combine_columns(name, varnames)
   stationary_var = varnames[0]
   for i in 1...varnames.length
@@ -1277,6 +1238,21 @@ end
 # Combine two columns into a third column.
 # The new column's code list is a union of the original two columns with a prefix added to each code name.
 # The default prefix is the name of the source column (e.g. column "task" code "ordinal" becomes "task_ordinal")
+# Create a new column from two others, mixing their cells together
+#  such that the new variable has all of the arguments of both other variables
+#  and a new cell for each overlap and mixture of the two cells.
+# Arguments:
+#  name (required): The name of the new variable.
+#  var1name (required): Name of the first variable to be mutexed.
+#  var2name (required): Name of the second variable to be mutexed.
+#
+# Returns:
+#  The new Ruby representation of the variable.  Write it back to the database
+# to save it.
+#
+# Example:
+# test = create_mutually_exclusive("test", "var1", "var2")
+# setVariable("test",test)
 def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2_argprefix=nil)
   if var1name.class == "".class
     var1 = getVariable(var1name)
@@ -1291,16 +1267,7 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
 
   scan_for_bad_cells(var1)
   scan_for_bad_cells(var2)
-  # fix_one_off_cells(var1, var2)
 
-  # for i in 0..var1.cells.length-2
-  #     cell1 = var1.cells[i]
-  #     cell2 = var1.cells[i+1]
-  #     if cell1.offset == cell2.onset
-  #         puts "WARNING: Found cells with the same onset/offset.  Adjusting onset by 1."
-  #         cell2.change_arg("onset", cell2.onset+1)
-  #     end
-  # end
   for cell in var1.cells
     if cell.offset == 0
       puts "ERROR: CELL IN " + var1.name + " ORD: " + cell.ordinal.to_s + "HAS BLANK OFFSET, EXITING"
@@ -1314,15 +1281,6 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
       exit
     end
   end
-
-  # for i in 0..var2.cells.length-2
-  #     cell1 = var2.cells[i]
-  #     cell2 = var2.cells[i+1]
-  #     if cell1.offset == cell2.onset
-  #         puts "WARNING: Found cells with the same onset/offset.  Adjusting onset by 1."
-  #         # cell2.change_arg("onset", cell2.onset+1)
-  #     end
-  # end
 
   # Handle special cases where one or both of columns have no cells
 
@@ -2345,7 +2303,6 @@ def smooth_column(colname, tol=33)
   setVariable(colname, col)
 end
 alias :smoothColumn :smooth_column
-private :smooth_column
 
 # Outputs the values of all codes specified from the given cell to the given output file.
 # Row is delimited by tabs.
