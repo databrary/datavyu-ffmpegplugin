@@ -114,11 +114,10 @@ class RCell
     end
   end
 
-  # Map the specified code names to their values. If no names specified, use self.arglist.
-  # Arguments:
-  #   *argnames (optional): Names of codes.
-  #-------------------------------------------------------------------
-  def getArgs(*codes)
+  # Map the specified code names to their values.
+  # If no names specified, use self.arglist.
+  # @param codes [Array<String>] (optional): Names of codes.
+  def get_args(*codes)
     codes = self.arglist if codes.nil? || codes.empty?
     vals = codes.map do |cname|
       case(cname)
@@ -135,6 +134,7 @@ class RCell
 
     return vals
   end
+  alias :getArgs :get_args
 
   def change_code_name(i, new_name)
     change_arg_name(i, new_name)
