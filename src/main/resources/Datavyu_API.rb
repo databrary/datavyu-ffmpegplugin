@@ -60,21 +60,18 @@ $pj = Datavyu.get_project_controller.get_project
 
 # Ruby representation of a spreadsheet cell.
 # Generally, the two ways to get access to a cell are:
-#   RColumn:cells to get a list of cells from a column
-#   RColumn.make_new_cell to create a blank cell in a column.
+#   RColumn.cells to get a list of cells from a column
+#   RColumn.new_cell to create a blank cell in a column.
 class RCell
 
   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals, :db_cell, :parent
 
-  # Note: This method is not for general use, it is used only when creating
+  # @note This method is not for general use, it is used only when creating
   #       this variable from the database in the getVariable method.
-  #
-  # Method name: set_args
-  # Function: sets up methods that can be used to reference the arguments in
-  #           the cell.
-  # Arguments:
-  # => argvals (required): Values of the arguments being created
-  # => arglist (required): Names of the arguments being created
+  # Sets up methods that can be used to reference the arguments in
+  # the cell.
+  # @param argvals (required): Values of the arguments being created
+  # @param arglist (required): Names of the arguments being created
   def set_args(argvals, arglist) #:nodoc:
     @arglist = arglist
     @argvals = argvals
