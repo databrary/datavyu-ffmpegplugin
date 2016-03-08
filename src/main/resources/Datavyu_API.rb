@@ -1,55 +1,8 @@
-#-------------------------------------------------------------------
-# Datavyu API v 1.07
-
+# Ruby API for Datavyu
+# @author Jesse Lingeman
+# @author Shohan Hasan
 # Please read the function headers for information on how to use them.
 
-# CHANGE LOG
-# 1.07 3/20/14 - Fixed a situation where argument names in mutex could overlap, causing a failure
-#                 during argument rewrite
-# 1.06 2/4/14 - Updated to work with new DB, added function for deleting cells
-# 1.05 1/3/14 - Fixed the loadMacshapaDB function so it now works properly with CLOSED files
-# 1.041 12/11/13 - Updated function names to be consistent with new terminology
-#                  ('variable' functions renamed to 'column', 'arg' to code').
-#                  Old names will still work.
-# 1.04 11/25/13 - Fixed mutex function which was failing in some cases
-# 1.03 08/27/13 - Fixed makeReliability and change_arg functions so they behave properly
-# 1.02 07/07/13 - Fixed functions involving createVariable.
-# 1.01 03/13/12 - Fixed the set variable function so it now correctly writes back to
-#                 mongodb
-# 1.0 07/24/12 - Updated API to work with new MongoDB. Also updated function names
-#                such that they are more consistent. Old names should work, but are
-#                now deprecated and may be removed in a later version.
-# 0.995 02/28/12 - Fixed the print_debug statement and potentially fixed an issue
-#                   with create_mutually_exclusive
-# 0.994 01/24/12 - Added mutex method to identify and correct causes of inf loops.
-# 0.993 11/28/11 - Fixed typo in Mutex, added in mutex error checking,
-#                  and made all print statements available only when $debug=true
-# 0.992 9/13/11 - CreateMutuallyExclusive now adds proper ordinals on
-# 0.991 8/26/11 - Fixed an edge case where mutexing would miss a cell it should get.
-#                 Also made the function jump times.  Should be MUCH faster.
-# 0.99 7/6/11 - Totally rewrote create_mutually_exclusive function so it is faster
-#                 and now works with point cells.  Also made some fixes in
-#                 preparation for Datavyu 2.00.
-# 0.984 2/16/11 - Fixed a heap error bug in mutex, several bugs with editing
-#                 variable arguments.  Added functions for adding variable
-#                 arguments, and framework for generic print script.  Several
-#                 versions of incremental fixes.
-# 0.98 10/10/10 - Added function to get list of columns, fixed up the import
-#                 Macshapa function.  It should work for most files now.
-# 0.97 8/11/10 -  Added a function to check for valid codes in a variable,
-#                 and fixed a bug with check_rel.
-# 0.96 8/11/10 -  Added a function to check reliability between two columns
-#                 and print either to a file or to the console.
-# 0.95 7/22/10 -  Added a function to transfer columns between files and
-#                 added headers to functions that didn't have any.
-# 0.94 7/22/10 -  Fixed the save_db function so it works with opf files
-#                 and will detect if you are saving a csv file.
-# 0.93 7/20/10 -  Merged in function to read MacSHAPA Closed database
-#                 files into Datavyu.
-# 0.92 6/29/10 -  Added function to delete columns
-# 0.91 6/25/10 -  Added load functions, fixed some issues with Mutex
-# =>              save still has some issues though; working out how to
-# =>              access the project variables from Ruby.
 
 # Licensing information:
 #
@@ -78,7 +31,6 @@ require 'time'
 require 'date'
 require 'set'
 require 'rbconfig'
-#require 'ftools'
 require 'matrix'
 
 import 'org.datavyu.Datavyu'
