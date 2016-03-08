@@ -396,19 +396,14 @@ class RVariable
     end
   end
 
-  #-------------------------------------------------------------------
-  # Method name: make_new_cell
-  # Function: Creates a new, blank cell at the end of this variable's cell array
-  # Arguments:
-  # => None
-  # Returns:
-  # => Reference to the cell that was just created.  Modify the cell using this reference.
-  # Usage:
-  #       trial = getVariable("trial")
-  #       new_cell = trial.make_new_cell()
-  #       new_cell.change_arg("onset", 1000)
-  #       setVariable("trial", trial)
-  #-------------------------------------------------------------------
+
+  # Creates a new, blank cell at the end of this variable's cell array
+  # @return RCell Reference to the cell that was just created.  Modify the cell using this reference.
+  # @example
+  #   trial = getVariable("trial")
+  #   new_cell = trial.make_new_cell()
+  #   new_cell.change_arg("onset", 1000)
+  #   setVariable("trial", trial)
   def new_cell()
     c = RCell.new
     c.onset = 0
