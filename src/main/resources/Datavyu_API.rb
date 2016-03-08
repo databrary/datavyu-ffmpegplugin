@@ -340,11 +340,9 @@ class RCell
 
 end
 
-#-------------------------------------------------------------------
-# Class name: Variable
-# Function: This is the Ruby container for Datavyu variables.
-#-------------------------------------------------------------------
-
+#
+# Ruby implementation of Datavyu column.
+#
 class RVariable
 
   attr_accessor :name, :type, :cells, :arglist, :old_args, :dirty, :db_var, :hidden
