@@ -62,8 +62,26 @@ $pj = Datavyu.get_project_controller.get_project
 # Generally, the two ways to get access to a cell are:
 #   RColumn.cells to get a list of cells from a column
 #   RColumn.new_cell to create a blank cell in a column.
+# @!attribute ordinal
+#   @note Prone to change after saving the column to Datavyu.
+#   @return [Fixnum] ordinal number of the cell
+# @!attribute onset
+#   @return [Fixnum] onset time of the cell in milliseconds
+# @!attribute offset
+#   @return [Fixnum] offset time of the cell in milliseconds
+# @!attribute [rw] arglist
+#   @note Use RColumn methods to modify column codes. Changing this list for the cell has no effect on the column.
+#   @return [Array<String>] list of codes inherited from parent column.
+# @!attribute argvals
+#   @note Dangerous to modify this directly since the order of the values must match the order of the code names.
+#   @return [Array] list of code values
+# @!attribute db_cell
+#   @note MODIFY AT OWN RISK.
+#   @return native Datavyu object corresponding to this cell.
+# @!attribute parent
+#   @note MODIFY AT OWN RISK.
+#   @return [RVariable] the column this cell belongs to
 class RCell
-
   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals, :db_cell, :parent
 
   # @note This method is not for general use, it is used only when creating
