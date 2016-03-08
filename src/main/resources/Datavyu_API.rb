@@ -434,23 +434,11 @@ class RVariable
   end
 
 
-  #-------------------------------------------------------------------
-  # Method name: change_arg_name
-  # Function: Creates a new, blank cell at the end of this variable's cell array
-  # Arguments:
-  # => old_name: the name of the argument you want to change
-  # => new_name: the name you want to change old_name to
-  # Returns:
-  # => nothing.
-  # Usage:
-  #       trial = getVariable("trial")
-  #
-  #-------------------------------------------------------------------
+  # Changes the name of a code. Updates the name for all cells in the column
+  # @param old_name: the name of the argument you want to change
+  # @param new_name: the name you want to change old_name to
+  # @return nil
   def change_code_name(old_name, new_name)
-    change_arg_name(old_name, new_name)
-  end
-
-  def change_arg_name(old_name, new_name)
     i = @old_args.index(old_name)
     @old_args[i] = new_name
     if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(old_name[1].chr)
@@ -466,12 +454,11 @@ class RVariable
 
     @dirty = true
   end
+  alias :change_arg_name, :change_code_name
 
+  # Add a code to this column. Updates all cells in column with new code.
+  # @param [String] name the name of the new code
   def add_code(name)
-    add_arg(name)
-  end
-
-  def add_arg(name)
     @old_args << name
     if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(name[1].chr)
       name = "_" + name
@@ -485,12 +472,11 @@ class RVariable
 
     @dirty = true
   end
+  alias :add_arg, :add_code
 
+  # Remove a code from this column. Updates all cells in column.
+  # @param [String] name the name of the code to remove
   def remove_code(name)
-    remove_arg(name)
-  end
-
-  def remove_arg(name)
     @old_args.delete(name)
 
     name = name.gsub(/(\W)+/, "").downcase
@@ -502,6 +488,7 @@ class RVariable
 
     @dirty = true
   end
+  alias :remove_arg, :remove_code
 
   def set_hidden(value)
     @hidden = value
