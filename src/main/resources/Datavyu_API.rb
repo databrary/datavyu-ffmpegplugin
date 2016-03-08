@@ -416,7 +416,7 @@ class RVariable
   #       new_cell.change_arg("onset", 1000)
   #       setVariable("trial", trial)
   #-------------------------------------------------------------------
-  def make_new_cell()
+  def new_cell()
     c = RCell.new
     c.onset = 0
     c.offset = 0
@@ -426,10 +426,8 @@ class RVariable
     @cells << c
     return c
   end
-
-  def create_cell()
-    make_new_cell()
-  end
+  alias :make_new_cell, :new_cell
+  alias :create_cell, :new_cell
 
   def sort_cells()
     cells.sort! { |a, b| a.onset <=> b.onset }
