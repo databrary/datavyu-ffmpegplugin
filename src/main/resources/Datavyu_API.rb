@@ -355,16 +355,11 @@ class RVariable
   def convert_argname(arg)
     return arg.gsub(/(\W)+/, "").downcase
   end
-  #-------------------------------------------------------------------
-  # NOTE: This function is not for general use.
-  #
-  # Method name: set_cells
-  # Function: Creates the cell object in the Variable object.
-  # Arguments:
-  # => newcells (required): Array of cells coming from the database via getVariable
-  # => arglist (required): Array of the names of the arguments from the database
-  #-------------------------------------------------------------------
 
+  # @note This function is not for general use.
+  # Creates the cell object in the Variable object.
+  # @param newcells (required): Array of cells coming from the database via getVariable
+  # @param arglist (required): Array of the names of the arguments from the database
   def set_cells(newcells, arglist)
     print_debug "Setting cells"
     @cells = Array.new
