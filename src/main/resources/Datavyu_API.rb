@@ -414,17 +414,17 @@ class RVariable
     @cells << c
     return c
   end
-  alias :make_new_cell, :new_cell
-  alias :create_cell, :new_cell
+  alias :make_new_cell :new_cell
+  alias :create_cell :new_cell
 
+  # Sorts cells based on onset times.
   def sort_cells()
     cells.sort! { |a, b| a.onset <=> b.onset }
   end
 
-
   # Changes the name of a code. Updates the name for all cells in the column
-  # @param old_name: the name of the argument you want to change
-  # @param new_name: the name you want to change old_name to
+  # @param old_name the name of the argument you want to change
+  # @param new_name the name you want to change old_name to
   # @return nil
   def change_code_name(old_name, new_name)
     i = @old_args.index(old_name)
@@ -442,7 +442,7 @@ class RVariable
 
     @dirty = true
   end
-  alias :change_arg_name, :change_code_name
+  alias :change_arg_name :change_code_name
 
   # Add a code to this column. Updates all cells in column with new code.
   # @param [String] name the name of the new code
@@ -460,7 +460,7 @@ class RVariable
 
     @dirty = true
   end
-  alias :add_arg, :add_code
+  alias :add_arg :add_code
 
   # Remove a code from this column. Updates all cells in column.
   # @param [String] name the name of the code to remove
@@ -476,7 +476,7 @@ class RVariable
 
     @dirty = true
   end
-  alias :remove_arg, :remove_code
+  alias :remove_arg :remove_code
 
   def set_hidden(value)
     @hidden = value
