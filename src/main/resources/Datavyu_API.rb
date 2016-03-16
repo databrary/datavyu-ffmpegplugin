@@ -203,18 +203,13 @@ class RCell
   end
   alias :change_arg :change_code
 
-  #-------------------------------------------------------------------
-  # Method name: print_all
-  # Function: Dumps all of the arguments in the cell to a string.
-  # Arguments:
-  # => p (optional): The seperator used between the arguments.  Defaults to tab (\t)
-  # Returns:
-  # => A string of the arguments starting with ordinal/onset/offset then argument.
-  # Usage:
-  #       trial = getVariable("trial")
-  #       print trial.cells[0].print_all()
-  #-------------------------------------------------------------------
 
+  # Dumps all of the arguments in the cell to a string.
+  # @param p (optional): The seperator used between the arguments.  Defaults to tab ("\\t").
+  # @return [String] String of the arguments starting with ordinal/onset/offset then argument.
+  # @example Print the first cell in the 'trial' column
+  #       trial = get_column("trial")
+  #       puts trial.cells[0].print_all()
   def print_all(*p)
     if p.empty?
       p << "\t"
