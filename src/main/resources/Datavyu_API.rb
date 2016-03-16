@@ -226,28 +226,17 @@ class RCell
     end
   end
 
-
-  #-------------------------------------------------------------------
-  # Method name: is_within
-  # Function: Is encased by outer_cell temporally
-  # Arguments:
-  # => outer_cell: check to see if this cell is in outer_cell
-  # Returns:
-  # => boolean
-  # Usage:
+  # Function: Check if self is nested temporally nested
+  # @param outer_cell [RCell]: cell to check nesting against
+  # @return [Boolean]
+  # @example
   #       trial = getVariable("trial")
   #       id = getVariable("id")
   #       if trial.cells[0].is_within(id.cells[0])
   #           do something
   #       end
-  #-------------------------------------------------------------------
-
   def is_within(outer_cell)
-    if (outer_cell.onset <= @onset && outer_cell.offset >= @offset && outer_cell.onset <= @offset && outer_cell.offset >= @onset)
-      return true
-    else
-      return false
-    end
+    return (outer_cell.onset <= @onset && outer_cell.offset >= @offset && outer_cell.onset <= @offset && outer_cell.offset >= @onset)
   end
 
   #-------------------------------------------------------------------
