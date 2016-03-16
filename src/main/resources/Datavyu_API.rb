@@ -181,10 +181,10 @@ class RCell
   #   val (required): Value to change the argument to
   # Returns:
   #   Nothing
-  # Usage:
-  #       trial = getVariable("trial")
+  # @example
+  #       trial = get_column("trial")
   #       trial.cells[0].change_arg("onset", 1000)
-  #       setVariable("trial",trial)
+  #       set_column(trial)
   def change_code(arg, val)
     arg = arg.gsub(/(\W)+/, "").downcase
     if arg == "onset"
