@@ -2087,19 +2087,32 @@ end
 alias :checkValidCodes :check_valid_codes
 
 # Check valid codes on cells in a column using regex. Backwards-compatible with checkValidCodes
-# call-seq:
-#   check_valid_codes2(column, outfile, *code_filter_pairs)
+# @since 1.3.5
+# @overload check_valid_codes2(data, outfile, *code_filter_pairs)
+#   @param [String, RColumn, Hash] data	When this parameter is a String or a column object from getVariable(), the function operates on codes within this column. If the parameter is a Hash (associative array), the function ignores the arg_code_pairs arguments and uses data from this Hash. The Hash must be structured as a nested mapping from columns (either as Strings or RVariables) to Hashes. These nested hashes must be mappings from code names (as Strings) to valid code values (as either lists (Arrays) or patterns (Regexp)).
+#   @param outfile[String, File] (required): The full path of the file to print output to. Use '' to print to scripting console.
+#   @param code_filter_pairs (required): Pairs of code name and acceptable values either as an array of values or regexp. Ignored if first parameter is a Hash.
+# @return nothing
 #
-# Arguments:
-#  * val (required): The variable that the codes belong to.
-#  * dump_file (required): The full path of the file to dump output to.
-#   Use "" to not dump to a file.  You may also pass a Ruby File object.
-#  * arg_filt_pairs (required): Pairs of code name and acceptable values either as an array of values or regexp
-# Returns:
-#   * Nothing (output is printed to file or console).
-#
-# Example:
-#  checkValidCodes2("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", /\A\d+\Z/)
+# @example
+#   check_valid_codes2("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", /\A\d+\Z/)
+#   date_format = /\A\d{2}\/\d{2}\/\d{4}\Z/ # dates must be formatted: ##/##/####
+#   map = {
+#     'id' => {
+#       'testdate' => date_format,
+#       'idnum' => /\A\d{3}\Z/, # id number must be exactly 3 digits
+#       'gender' => ['m', 'f', '.'], # gender can be one of 3 values
+#       'birthdate' => date_format
+#     },
+#     'condition' => {
+#       'cond_ab' => ['a', 'b'] # condition can be either 'a' or 'b'
+#     },
+#     'trial' => {
+#       'trialnum' => /\A\d+\Z/, # trial number must be one or more digits
+#       'result_xyz' => ['x', 'y', 'z'] # result must be one of 3 values
+#     }
+#   }
+#   check_valid_codes2(map, '~/Desktop/check.txt')
 def check_valid_codes2(var, dump_file, *arg_filt_pairs)
 	if var.class == "".class
 		var = getVariable(var)
