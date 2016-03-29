@@ -116,6 +116,14 @@ extern "C" {
     
     /*
      * Class:     org_datavyu_plugins_qtkitplayer_QTKitPlayer
+     * Method:    setTimePrecise
+     * Signature: (J)V
+     */
+    JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTimePrecise
+    (JNIEnv *, jobject, jlong, jint);
+    
+    /*
+     * Class:     org_datavyu_plugins_qtkitplayer_QTKitPlayer
      * Method:    setVolume
      * Signature: (F)V
      */
@@ -462,6 +470,42 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_play
 #endif // JAWT_MACOSX_USE_CALAYER
 }
 
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTimePrecise
+(JNIEnv *env, jobject canvas, jlong time, jint movieId) {
+#ifdef JAWT_MACOSX_USE_CALAYER // Java for Mac OS X 10.6 Update 4 or later required
+    
+    JNF_COCOA_ENTER(env);
+    
+    NSLog(@"Setting time %lld", (long long)time);
+    if(time == 0) {
+        time = 1;
+    }
+    //    QTTime t = QTMakeTime((long long)time, (long)time);
+    
+    CMTime newQTTime = [GetQtMovie(movieId) currentTime];
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    newQTTime.value = ((long long)time / 1000.0f) * newQTTime.timescale;
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    [GetQtMovie(movieId) seekToTime:newQTTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    long long t = (newQTTime.value * 1000.0f) / newQTTime.timescale;
+    
+    
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    
+    
+    NSLog(@"Reported time %lld", t);
+    
+    //    [movie stop];
+    //    [movie setCurrentTime:t];
+    //    [movie play];
+    
+    JNF_COCOA_EXIT(env);
+    
+#endif // JAWT_MACOSX_USE_CALAYER
+}
+
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTime
 (JNIEnv *env, jobject canvas, jlong time, jint movieId) {
 #ifdef JAWT_MACOSX_USE_CALAYER // Java for Mac OS X 10.6 Update 4 or later required
@@ -478,24 +522,10 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTime
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     newQTTime.value = ((long long)time / 1000.0f) * newQTTime.timescale;
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
-    [GetQtMovie(movieId) seekToTime:newQTTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-//    if(time == 0) {
-    
-//    }
+    [GetQtMovie(movieId) seekToTime:newQTTime];
+
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     long long t = (newQTTime.value * 1000.0f) / newQTTime.timescale;
-//    if(time == 1) {
-//        
-////        [GetQtMovie(movieId) stepForward];
-//        
-//        newQTTime = [GetQtMovie(movieId) currentTime];
-//        
-//        while(t > 20) {
-//            NSLog(@"Reported time %lld", t);
-//            t = (newQTTime.value * 1000.0f) / newQTTime.timescale;
-////            [GetQtMovie(movieId) stepBackward];
-//        }
-//    }
 
     
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);

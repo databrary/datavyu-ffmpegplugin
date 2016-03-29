@@ -782,20 +782,20 @@ public final class DataControllerV extends DatavyuDialog
         // If rate is faster than two times - we need to fake playback to give
         // the illusion of 'smooth'. We do this by stopping the dataviewer and
         // doing many seekTo's to grab individual frames.
-//        if (Math.abs(rate) > 2.0 || rate < 0) {
-//            playbackModel.setFakePlayback(true);
-//
-//            for (DataViewer viewer : viewers) {
-//                viewer.stop();
-//
-//                if (isWithinPlayRange(time, viewer)) {
-//                    viewer.setPlaybackSpeed(rate);
-//                }
-//            }
-//
-//            // Rate is less than two times - use the data viewer internal code
-//            // to draw every frame.
-//        } else {
+        if (Math.abs(rate) > 2.0 || rate < 0) {
+            playbackModel.setFakePlayback(true);
+
+            for (DataViewer viewer : viewers) {
+                viewer.stop();
+
+                if (isWithinPlayRange(time, viewer)) {
+                    viewer.setPlaybackSpeed(rate);
+                }
+            }
+
+            // Rate is less than two times - use the data viewer internal code
+            // to draw every frame.
+        } else {
             playbackModel.setFakePlayback(false);
 
             for (DataViewer viewer : viewers) {
@@ -805,7 +805,7 @@ public final class DataControllerV extends DatavyuDialog
                     viewer.play();
                 }
             }
-//        }
+        }
     }
 
     /**
@@ -2121,10 +2121,10 @@ public final class DataControllerV extends DatavyuDialog
                 final long newWindowPlayStart = findTextTime;
                 final long newWindowPlayEnd = (findOffsetTime > newWindowPlayStart)
                         ? findOffsetTime : newWindowPlayStart;
-                mixerController.getMixerModel().getRegionModel().setPlaybackRegion(
-                        newWindowPlayStart, newWindowPlayEnd);
                 mixerController.getMixerModel().getNeedleModel().setCurrentTime(
                         newWindowPlayStart);
+                mixerController.getMixerModel().getRegionModel().setPlaybackRegion(
+                        newWindowPlayStart, newWindowPlayEnd);
             } catch (ParseException e) {
                 LOGGER.error("Unable to set playback region of interest", e);
             }

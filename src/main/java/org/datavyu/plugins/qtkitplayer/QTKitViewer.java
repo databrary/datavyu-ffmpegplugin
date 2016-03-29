@@ -30,6 +30,8 @@ import java.io.File;
  */
 public final class QTKitViewer extends BaseQuickTimeDataViewer {
 
+
+    private long timeOfPrevSeek = 0;
     /**
      * How many milliseconds in a second?
      */
@@ -233,6 +235,10 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
      */
     @Override
     public void seekTo(final long position) {
+        if(System.currentTimeMillis() - timeOfPrevSeek < 10) {
+            System.out.println("skipping seek");
+            return;
+        }
 
         if (position != prevSeekTime && !seeking) {
             seeking = true;
@@ -248,12 +254,18 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
                                 System.out.println("Stopping playback");
                                 movie.stop(movie.id);
                             }
-                            movie.setTime(position, movie.id);
+                            if(prevRate >= -8 && prevRate <= 8) {
+                                System.out.println("Precise seeking!");
+                                movie.setTimePrecise(position, movie.id);
+                            } else {
+                                System.out.println("Fast seeking!");
+                                movie.setTime(position, movie.id);
+                            }
                             if (wasPlaying) {
                                 movie.setRate(prevRate, movie.id);
                             }
                             movie.repaint();
-
+                            timeOfPrevSeek = System.currentTimeMillis();
                             seeking = false;
                         }
                     });
