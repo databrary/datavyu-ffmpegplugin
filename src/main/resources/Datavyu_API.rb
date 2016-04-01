@@ -176,11 +176,9 @@ class RCell
 
 
   # Changes the value of an argument in a cell.
-  # Arguments:
-  #   arg (required): Name of the argument to be changed
-  #   val (required): Value to change the argument to
-  # Returns:
-  #   Nothing
+  # @param arg (required): Name of the argument to be changed
+  # @param val (required): Value to change the argument to
+  # @return  Nothing
   # @example
   #       trial = get_column("trial")
   #       trial.cells[0].change_arg("onset", 1000)
@@ -230,30 +228,24 @@ class RCell
   # @param outer_cell [RCell]: cell to check nesting against
   # @return [Boolean]
   # @example
-  #       trial = getVariable("trial")
-  #       id = getVariable("id")
+  #       trial = get_column("trial")
+  #       id = get_column("id")
   #       if trial.cells[0].is_within(id.cells[0])
-  #           do something
+  #           ... # do something
   #       end
   def is_within(outer_cell)
     return (outer_cell.onset <= @onset && outer_cell.offset >= @offset && outer_cell.onset <= @offset && outer_cell.offset >= @onset)
   end
 
-  #-------------------------------------------------------------------
-  # Method name: contains
-  # Function: Check to see if this cell encases inner_cell temporally
-  # Arguments:
-  # => inner_cell: the cell to check if it is inside of this cell
-  # Returns:
-  # => boolean
-  # Usage:
-  #       trial = getVariable("trial")
-  #       id = getVariable("id")
+  # Check to see if this cell encases inner_cell temporally
+  # @param inner_cell: the cell to check if it is inside of this cell
+  # @return [Boolean]
+  # @example
+  #       trial = get_column("trial")
+  #       id = get_column("id")
   #       if id.cells[0].contains(trial.cells[0])
-  #           do something
+  #           ... # do something
   #       end
-  #-------------------------------------------------------------------
-
   def contains(inner_cell)
     if (inner_cell.onset >= @onset && inner_cell.offset <= @offset && inner_cell.onset <= @offset && inner_cell.offset >= @onset)
       return true
@@ -262,13 +254,9 @@ class RCell
     end
   end
 
-  #-------------------------------------------------------------------
-  # Method name: duration
-  # Function: Return the duration of this cell
-  # Arguments: None
-  # Usage:
-  # 	duration = myCell.duration
-  #-------------------------------------------------------------------
+  # Function: Return the duration (onset - offset) of this cell
+  # @example
+  # 	duration = my_cell.duration
   def duration
     return @offset - @onset
   end
@@ -276,6 +264,7 @@ class RCell
   # Override method missing.
   # Check if the method is trying to get/set an arg.
   # If it is, define accessor method and send the method to self.
+  # NOTE: As of 1.3.5, this shouldn't be necessary since methods are dynamically defined when codes are added.
   def method_missing(m, *args, &block)
     mn = m.to_s
     code = (mn.end_with?('=')) ? mn.chop : mn
@@ -349,12 +338,12 @@ class RVariable
 
 
   # Creates a new, blank cell at the end of this variable's cell array
-  # @return RCell Reference to the cell that was just created.  Modify the cell using this reference.
+  # @return [RCell] Reference to the cell that was just created.  Modify the cell using this reference.
   # @example
-  #   trial = getVariable("trial")
-  #   new_cell = trial.make_new_cell()
-  #   new_cell.change_arg("onset", 1000)
-  #   setVariable("trial", trial)
+  #   trial = get_column("trial")
+  #   new_cell = trial.new_cell()
+  #   new_cell.change_code("onset", 1000)
+  #   set_column(trial)
   def new_cell()
     c = RCell.new
     c.onset = 0
@@ -516,28 +505,26 @@ end
 
 ## API Functions
 
-# Function: Computes Cohen's kappa from the given primary and reliability columns.
-# Arguments:
-#  pri_col (required): The primary coder's column.
-#  rel_col (required): The reliability coder's column.
-#  codes (required 1 or more): Strings denoting codes to compute kappas for
-# Returns:
-#  A hash mapping from each of the codenames to its computed kappa value.
-# Usage:
+# Computes Cohen's kappa from the given primary and reliability columns.
+# @param pri_col [RColumn, String] primary coder's column
+# @param rel_col [RColumn, String] reliability coder's column
+# @param codes [Array] list of Strings for which codes to compute kappas
+# @return [Hash] mapping from each of the codenames to its computed kappa value
+# @example
 #     primary_column_name = 'trial'
 #     reliability_column_name = 'trial_rel'
 #     codes_to_compute = ['condition', 'result']
-#     kappas = computeKappa(colPri, colRel, codes_to_compute)
+#     kappas = compute_kappa(primary_column_name, reliability_column_name, codes_to_compute)
 #     kappas.each_pair { |code, k| puts "#{code}: #{k}" }
 def compute_kappa(pri_col, rel_col, *codes)
   codes = pri_col.arglist if codes.nil? || codes.empty?
   raise "No codes!" if codes.empty?
   p codes
-  pri_col = getVariable(pri_col) if pri_col.class == String
-  rel_col = getVariable(rel_col) if rel_col.class == String
+  pri_col = get_column(pri_col) if pri_col.class == String
+  rel_col = get_column(rel_col) if rel_col.class == String
   codes.flatten!
 
-  raise "Invalid parameters for getKappa()" unless (pri_col.class==RVariable && rel_col.class==RVariable)
+  raise "Invalid parameters for #{__method__}" unless (pri_col.class==RVariable && rel_col.class==RVariable)
 
   # Get the list of observed values in each cell, per code
   cells = pri_col.cells + rel_col.cells
@@ -560,12 +547,12 @@ def compute_kappa(pri_col, rel_col, *codes)
   end
 
   # Get the pairs of corresponding primary and reliability cells
-  cellPairs = Hash.new
+  cell_pairs = Hash.new
   for relcell in rel_col.cells
-    cellPairs[relcell] = pri_col.cells.find{ |pricell| pricell.onset == relcell.onset} # match by onset times
+    cell_pairs[relcell] = pri_col.cells.find{ |pricell| pricell.onset == relcell.onset} # match by onset times
   end
 
-  cellPairs.each_pair do |pricell, relcell|
+  cell_pairs.each_pair do |pricell, relcell|
     codes.each do |x|
       tables[x].add(pricell.get_arg(x), relcell.get_arg(x))
     end
@@ -581,12 +568,10 @@ def compute_kappa(pri_col, rel_col, *codes)
 end
 alias :compute_kappa :computeKappa
 
-# Function: Retrieve a variable from the database and print_debug it into a Ruby object.
-# Arguments:
-#    name (required): The Datavyu name of the variable being retrieved
-# Returns:
-#    A Ruby object representation of the variable inside Datavyu or nil if the named column does not exist.
-# Usage:
+# Retrieve a variable from the database and print_debug it into a Ruby object.
+# @param name [String] name of the column being retrieved
+# @return [RColumn] Ruby object representation of the variable inside Datavyu or nil if the named column does not exist.
+# @example
 #       trial = get_column("trial")
 def get_column(name)
 
@@ -629,10 +614,9 @@ end
 alias :getVariable :get_column
 alias :getColumn :get_column
 
-#-------------------------------------------------------------------
-# Method name: setVariable
-# Function: setVariable will overwrite a variable in the database with the same name as the name argument.
-#           If no variable with the same name exists, it will create a new variable.
+
+# NOTE setVariable will overwrite a variable in the database with the same name as the name argument.
+#      If no variable with the same name exists, it will create a new variable.
 # Arguments:
 # => name (optional): The name of the variable being created
 # => var  (required): The Ruby container of the variable to be put into the database.  This is the return value of
@@ -2127,7 +2111,7 @@ def check_valid_codes2(var, dump_file, *arg_filt_pairs)
 	  	end
 	end
 
-  # Create a map if a mapping wasn't passed in. Mostly for backwards compatibility with checkValidCodes().
+  # Create a map if a mapping wasn't passed in. Mostly for backwards compatibility with check_valid_odes().
   if map.nil?
     map = Hash.new
 
@@ -2157,7 +2141,7 @@ def check_valid_codes2(var, dump_file, *arg_filt_pairs)
 	errors = false
   # Iterate over key,entry (column, valid code mapping) in map
   map.each_pair do |var, arg_code|
-    var = getVariable(var) if var.class == String
+    var = get_variable(var) if var.class == String
 
     # Iterate over cells in var and check each code's value
   	for cell in var.cells
@@ -2205,7 +2189,7 @@ alias :getVariableList :get_column_list
 # TODO: Finish?
 #++ Incomplete method.
 def print_all_nested(file)
-  columns = getColumnList()
+  columns = get_column_list()
   columns.sort! # This is just so everything is the same across runs, regardless of column order
   # Scan each column, getting a list of how many cells the cells of that
   # contain and how much time the cells of that column fill
@@ -2228,7 +2212,7 @@ alias :printAllNested :print_all_nested
 private :print_all_nested
 
 def smooth_column(colname, tol=33)
-  col = getVariable(colname)
+  col = get_column(colname)
   for i in 0..col.cells.length-2
     curcell = col.cells[i]
     nextcell = col.cells[i+1]
@@ -2314,14 +2298,14 @@ end
 alias :getDatavyuVersion :get_datavyu_version
 
 # Check whether current Datavyu version falls within the specified minimum and maximum versions (inclusive)
-# @param [String] minVersion Minimum version (e.g. 'v:1.3.5')
-# @param [String] maxVersion Maximum version. If unspecified, no upper bound is checked.
+# @param [String] min_version Minimum version (e.g. 'v:1.3.5')
+# @param [String] max_version Maximum version. If unspecified, no upper bound is checked.
 # @return [Boolean] true if min,max version check passes; false otherwise.
-def check_datavyu_version(minVersion, maxVersion = nil)
-  currentVersion = getDatavyuVersion()
-  minCheck = (minVersion <=> currentVersion) <= 0
-  maxCheck = (maxVersion.nil?)? true : (currentVersion <=> maxVersion) <= 0
+def check_datavyu_version(min_version, max_version = nil)
+  current_version = get_datavyu_version()
+  min_check = (min_version <=> current_version) <= 0
+  max_check = (max_version.nil?)? true : (current_version <=> max_version) <= 0
 
-  return minCheck && maxCheck
+  return min_check && max_check
 end
 alias :checkDatavyuVersion :check_datavyu_version
