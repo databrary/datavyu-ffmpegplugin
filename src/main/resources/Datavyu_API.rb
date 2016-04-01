@@ -85,13 +85,14 @@ $pj = Datavyu.get_project_controller.get_project
 class RCell
   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals, :db_cell, :parent
 
+  # @private
   # @note This method is not for general use, it is used only when creating
   #       this variable from the database in the getVariable method.
   # Sets up methods that can be used to reference the arguments in
   # the cell.
   # @param argvals (required): Values of the arguments being created
   # @param arglist (required): Names of the arguments being created
-  def set_args(argvals, arglist) #:nodoc:
+  def set_args(argvals, arglist)
     @arglist = arglist
     @argvals = argvals
     i = 0
@@ -174,14 +175,10 @@ class RCell
     return argvals[arglist.index(name)]
   end
 
-
-
   # Changes the value of an argument in a cell.
-  # Arguments:
-  #   arg (required): Name of the argument to be changed
-  #   val (required): Value to change the argument to
-  # Returns:
-  #   Nothing
+  # @param arg [String] name of the argument to be changed
+  # @param val [String, Fixnum] value to change the argument to
+  # @return [nil]
   # @example
   #       trial = get_column("trial")
   #       trial.cells[0].change_arg("onset", 1000)
@@ -348,7 +345,6 @@ class RVariable
     end
   end
 
-
   # Creates a new, blank cell at the end of this variable's cell array
   # @return RCell Reference to the cell that was just created.  Modify the cell using this reference.
   # @example
@@ -434,6 +430,10 @@ class RVariable
     @hidden = value
   end
 
+end
+
+# Alias for RVariable
+class RColumn < RVariable
 end
 
 # Patch Matrix class with setter method.  See fmendez.com/blog
@@ -863,11 +863,9 @@ def set_column!(*args)
 end
 alias :setVariable! :set_column!
 
-#-------------------------------------------------------------------
-# Method name: make_rel
-# Function: This function will create a reliability column that is a copy
-#           of another column in the database, copying every nth cell and
-#           carrying over some of the arguments from the original, if wanted.
+# This function will create a reliability column that is a copy
+# of another column in the database, copying every nth cell and
+# carrying over some of the arguments from the original, if wanted.
 # Arguments:
 # => relname (required): The name of the reliability column to be created.
 # => var_to_copy (required): The name of the variable in the database you
@@ -880,7 +878,6 @@ alias :setVariable! :set_column!
 # => A Ruby object representation of the rel column inside Datavyu.
 # Usage:
 #       rel_trial = make_rel("rel.trial", "trial", 2, "onset", "trialnum", "unit")
-#-------------------------------------------------------------------
 def make_reliability(relname, var_to_copy, multiple_to_keep, *args_to_keep)
   # Get the primary variable from the DB
 
@@ -973,18 +970,7 @@ alias :createVariable :create_new_column
 alias :createNewVariable :create_new_column
 alias :create_column :create_new_column
 
-#-----------------------------------------------------------------
-# EXPERIMENTAL METHODS FOR FUTURE RELEASE
-#-----------------------------------------------------------------
 
-#-----------------------------------------------------------#
-# make_duration_rel: Makes a duration based reliability column
-# based on John's method.  It will create two new columns, one
-# that contains a cell with a number for that block, and another
-# blank column for the free coding within that block.
-#-----------------------------------------------------------#
-
-#-------------------------------------------------------------------
 # Method name: makeDurationBlockRel
 # Function: Makes a duration based reliability column
 # based on John's method.  It will create two new columns, one
@@ -1000,7 +986,6 @@ alias :create_column :create_new_column
 #
 # # Returns:
 # => Nothing.  Variables are written to the database.
-# #-------------------------------------------------------------------
 def makeDurationBlockRel(relname, var_to_copy, binding, block_dur, skip_blocks)
   block_var = createVariable(relname + "_blocks", "block_num")
   rel_var = make_rel(relname, var_to_copy, 0)
@@ -1082,7 +1067,8 @@ def combine_columns(name, varnames)
   return var
 end
 
-def scan_for_bad_cells(col) # :nodoc:
+# @private
+def scan_for_bad_cells(col)
   error = false
   for cell in col.cells
     if cell.onset > cell.offset
@@ -1096,7 +1082,8 @@ def scan_for_bad_cells(col) # :nodoc:
   end
 end
 
-def get_later_overlapping_cell(col) # :nodoc:
+# @private
+def get_later_overlapping_cell(col)
   col.sort_cells()
   overlapping_cells = Array.new
   for i in 0..col.cells.length - 2
@@ -1109,7 +1096,8 @@ def get_later_overlapping_cell(col) # :nodoc:
   return overlapping_cells
 end
 
-def fix_one_off_cells(col1, col2) # :nodoc:
+# @private
+def fix_one_off_cells(col1, col2)
   for i in 0..col1.cells.length-2
     cell1 = col1.cells[i]
     for j in 0..col2.cells.length-2
@@ -1365,7 +1353,8 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
 end
 alias :createMutuallyExclusive :create_mutually_exclusive
 
-def fillMutexCell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix) # :nodoc:
+# @private
+def fillMutexCell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix)
   if v1cell != nil and v2cell != nil
     for arg in mutex.arglist
       a = arg.gsub(var1_argprefix, "")
@@ -1703,33 +1692,22 @@ def load_macshapa_db(filename, write_to_gui, *ignore_vars)
 end
 alias :loadMacshapaDB :load_macshapa_db
 
-#-------------------------------------------------------------------
-# Method name: transfer_columns
-# Function: Transfers columns between databases.  If db1 or db2 are set
-#     to the empty string "", then that database is the current database
-#     in $db (usually the GUI's database).  So if you want to transfer a
-#     column into the GUI, set db2 to "".  If you want to tranfer a column
-#     from the GUI into a file, set db1 to "".  Setting remove to true will
-#     DELETE THE COLUMNS YOU ARE TRANSFERRING FROM DB1.  Be careful!
-# Arguments:
-# => db1 (required): The FULL PATH to the saved Datavyu file or set to
-#     "" to use the currently opened database. Columns are transferred FROM here.
-# => db2 (required): The FULL PATH to the saved Datavyu file or set to
-#     "" to use the currently opened database.  Columns are tranferred TO here.
-# => remove (required): Set to true to delete columns in DB1 as they are moved to
-#     db2.  Set to false to leave them intact.
-# => varnames (requires at least 1): You can specify as many var names as you like
-#     that will be retrieved from db1.  These should be the string names of the
-#     variables.
+
+# Transfers columns between databases.
+# If db1 or db2 are set to the empty string "", then that database is the current database in $db (usually the GUI's database).
+# So if you want to transfer a column into the GUI, set db2 to "".
+# If you want to tranfer a column from the GUI into a file, set db1 to "".
+# Setting remove to true will DELETE THE COLUMNS YOU ARE TRANSFERRING FROM DB1.  Be careful!
+# @param db1 [String] The FULL PATH toa Datavyu file or "" to use the currently opened database. Columns are transferred FROM here.
+# @param db2 [String]: The FULL PATH to the saved Datavyu file or "" to use the currently opened database.  Columns are tranferred TO here.
+# @param remove [Boolean] Set to true to delete columns in DB1 as they are moved to db2.  Set to false to leave them intact.
+# @param varnames [Array<String>] column names (requires at least 1): You can specify as many column names as you like that will be retrieved from db1.
 #
 # Returns:
-# => Nothing.  Saves the files in place or modifies the GUI
 #
-# Example:
-#  transfer_columns("/Users/username/Desktop/test.opf","",true,"idchange")
-#  The above example will transfer the column "idchange" from test.opf to the GUI
-#  and leave test.opf intact with no modifications.
-# -------------------------------------------------------------------
+# @example
+#  # Transfer column "idchange" from test.opf to the currently open spreadsheet in Datavyu. Do not delete "idchange" from test.opf.
+#  transfer_columns("/Users/username/Desktop/test.opf", "", true, "idchange")
 def transfer_columns(db1, db2, remove, *varnames)
   # Save the current $db and $proj global variables
   saved_db, saved_proj = $db, $proj
@@ -1868,31 +1846,19 @@ alias :transferColumn :transfer_columns
 alias :transferVariables :transfer_columns
 alias :transferVariable :transfer_columns
 
-#-------------------------------------------------------------------
-# Method name: check_rel
-# Function: Do a quick, in Datavyu, check of reliability errors.
-# Arguments:
-# => main_col (required): Either the string name or the Ruby column from getVariable
-#     of the primary column to compare against.
-# => rel_col (required): Either the string name or the Ruby column from getVariable
-#     of the reliability column to compare to the primary column.
-# => match_arg (required): The string of the argument to use to match the relability
-#     cells to the primary cells.  This must be a unique identifier between the cells.
-# => time_tolerance (required): The amount of slack you allow, in milliseconds, for
-#     difference between onset and offset before it is considered an error.  Set to 0
+# Do a quick, in Datavyu, check of reliability errors.
+# @param main_col [String, RColumn] Either the string name or the Ruby column from getVariable of the primary column to compare against.
+# @param rel_col [String, RColumn] Either the string name or the Ruby column from getVariable of the reliability column to compare to the primary column.
+# @param match_arg [String] The string of the argument to use to match the relability cells to the primary cells.  This must be a unique identifier between the cells.
+# @param time_tolerance [Integer] The amount of slack you allow, in milliseconds, for difference between onset and offset before it is considered an error.  Set to 0
 #     for no difference allowed and to a very large number for infinite distance allowed.
-# => dump_file (optional): The full string path to dump the relability output to.  This
+# @param dump_file [String, File] (optional): The full string path to dump the relability output to.  This
 #     can be used for multi-file dumps or just to keep a log.  You can also give it a Ruby
 #     File object if a file is already started.
-#
-# Returns:
-# => Nothing but the console and file output.
-#
-# Example:
-#  check_rel("trial", "rel.trial", "trialnum", 100, "/Users/motoruser/Desktop/Relcheck.txt")
-#   or
-#  check_rel("trial", "rel.trial", "trialnum", 100)
-# -------------------------------------------------------------------
+# @return [nil]
+# @example
+#   check_rel("trial", "rel.trial", "trialnum", 100, "/Users/motoruser/Desktop/Relcheck.txt")
+#   check_rel("trial", "rel.trial", "trialnum", 100)
 def check_reliability(main_col, rel_col, match_arg, time_tolerance, *dump_file)
   # Make the match_arg conform to the method format that is used
   if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(match_arg[0].chr)
@@ -1979,8 +1945,7 @@ alias :checkReliability :check_reliability
 alias :check_rel :check_reliability
 alias :checkRel :check_reliability
 
-#-------------------------------------------------------------------
-# Method name: check_valid_codes
+
 # Function: Do a quick, in Datavyu, check of valid codes.
 # Arguments:
 # => val (required): The variable that the codes belong to.
@@ -1993,7 +1958,6 @@ alias :checkRel :check_reliability
 #
 # Example:
 #  check_valid_codes("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", [1,2,3])
-# -------------------------------------------------------------------
 def check_valid_codes(var, dump_file, *arg_code_pairs)
   if var.class == "".class
     var = getVariable(var)
@@ -2042,6 +2006,7 @@ def check_valid_codes(var, dump_file, *arg_code_pairs)
   end
 end
 alias :checkValidCodes :check_valid_codes
+
 
 # Check valid codes on cells in a column using regex. Backwards-compatible with checkValidCodes
 # @since 1.3.5
@@ -2225,9 +2190,9 @@ def delete_cell(cell)
 end
 alias :deleteCell :delete_cell
 
-# Function: Return the OS version
-# @return ['windows', 'mac', 'linux']
-# Example:
+# Return the OS version
+# @return [String] 'windows', 'mac', or 'linux'
+# @example
 #  filepath = (getOS() == 'windows')? 'C:\data' : '~/data'
 def get_os
 	host_os = RbConfig::CONFIG['host_os']
