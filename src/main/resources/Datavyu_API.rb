@@ -85,7 +85,7 @@ $pj = Datavyu.get_project_controller.get_project
 class RCell
   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals, :db_cell, :parent
 
-  # @private
+  # @!visibility private
   # @note This method is not for general use, it is used only when creating
   #       this variable from the database in the getVariable method.
   # Sets up methods that can be used to reference the arguments in
@@ -118,9 +118,10 @@ class RCell
 
   # Map the specified code names to their values.
   # If no names specified, use self.arglist.
+  # @note Onset, offset, and ordinal are returned as Integers; all else are Strings
   # @param codes [Array<String>] (optional): Names of codes.
-  # @return [Array<String, Integer>] Values of specified codes. Onset, offset, and ordinal are returned as Integers; all else are Strings
-  def get_args(*codes)
+  # @return [Array] Values of specified codes.
+  def get_codes(*codes)
     codes = self.arglist if codes.nil? || codes.empty?
     vals = codes.map do |cname|
       case(cname)
@@ -137,44 +138,46 @@ class RCell
 
     return vals
   end
-  alias :getArgs :get_args
+  alias :get_args :get_codes
+  alias :getArgs :get_codes
 
+  # Defines an alias for a code
+  # @!visibility private
+  # @param i [Integer] index of code to change
+  # @param new_name [String] new name for code
   def change_code_name(i, new_name)
-    change_arg_name(i, new_name)
-  end
-
-  def change_arg_name(i, new_name)
     instance_eval "def #{new_name}; return argvals[#{i}]; end"
     instance_eval "def #{new_name}=(val); argvals[#{i}] = val.to_s; end"
   end
+  alias :change_arg_name :change_code_name
 
+  # Add specified code to end of arglist.
+  # @param new_name [String] name of new code
+  # @!visibility private
   def add_code(new_name)
-    add_arg(new_name)
-  end
-
-  def add_arg(new_name)
     @argvals << ""
     i = argvals.length - 1
     instance_eval "def #{new_name}; return argvals[#{i}]; end"
     instance_eval "def #{new_name}=(val); argvals[#{i}] = val.to_s; end"
   end
+  alias :add_arg :add_code
 
+  # Removes code from arglist and associated value from argvals
+  # @param name [String] name of code to remove
+  # @return [nil]
   def remove_code(name)
-    remove_arg(name)
-  end
-
-  def remove_arg(name)
     argvals.delete(arglist.index(name))
     @arglist.delete(name)
   end
+  alias :remove_arg :remove_code
 
+  # Get value of a code
+  # @param name [String] name of code
+  # @return [String] value of code
   def get_code(name)
-    get_arg(name)
-  end
-
-  def get_arg(name)
     return argvals[arglist.index(name)]
   end
+  alias :get_arg :get_code
 
   # Changes the value of an argument in a cell.
   # @param arg [String] name of the argument to be changed
@@ -202,18 +205,14 @@ class RCell
   end
   alias :change_arg :change_code
 
-
-  # Dumps all of the arguments in the cell to a string.
-  # @param p (optional): The seperator used between the arguments.  Defaults to tab ("\\t").
-  # @return [String] String of the arguments starting with ordinal/onset/offset then argument.
+  # Print ordinal, onset, offset, and values of all codes in the cell to console.
+  # @param sep [String] seperator used between the arguments
+  # @return [nil]
   # @example Print the first cell in the 'trial' column
   #       trial = get_column("trial")
   #       puts trial.cells[0].print_all()
-  def print_all(*p)
-    if p.empty?
-      p << "\t"
-    end
-    print @ordinal.to_s + p[0] + @onset.to_s + p[0] + @offset.to_s + p[0]
+  def print_all(sep="\t")
+    print @ordinal.to_s + sep + @onset.to_s + sep + @offset.to_s + sep
     @arglist.each do |arg|
       t = eval "self.#{arg}"
       if t == nil
@@ -221,13 +220,13 @@ class RCell
       else
         v = t
       end
-      print v + p[0]
+      print v + sep
     end
   end
 
-  # Function: Check if self is nested temporally nested
+  # Check if self is nested temporally nested
   # @param outer_cell [RCell]: cell to check nesting against
-  # @return [Boolean]
+  # @return [true, false]
   # @example
   #       trial = getVariable("trial")
   #       id = getVariable("id")
@@ -238,21 +237,15 @@ class RCell
     return (outer_cell.onset <= @onset && outer_cell.offset >= @offset && outer_cell.onset <= @offset && outer_cell.offset >= @onset)
   end
 
-  #-------------------------------------------------------------------
-  # Method name: contains
-  # Function: Check to see if this cell encases inner_cell temporally
-  # Arguments:
-  # => inner_cell: the cell to check if it is inside of this cell
-  # Returns:
-  # => boolean
-  # Usage:
+  # Check to see if this cell encases another cell temporally
+  # @param inner_cell [RCell] cell to check if contained by this cell
+  # @return [true, false]
+  # @example
   #       trial = getVariable("trial")
   #       id = getVariable("id")
   #       if id.cells[0].contains(trial.cells[0])
   #           do something
   #       end
-  #-------------------------------------------------------------------
-
   def contains(inner_cell)
     if (inner_cell.onset >= @onset && inner_cell.offset <= @offset && inner_cell.onset <= @offset && inner_cell.offset >= @onset)
       return true
@@ -261,13 +254,10 @@ class RCell
     end
   end
 
-  #-------------------------------------------------------------------
-  # Method name: duration
-  # Function: Return the duration of this cell
-  # Arguments: None
-  # Usage:
+  # Duration of this cell (currently defined as offset minus onset)
+  # @return [Integer] duration of cell in ms
+  # @example
   # 	duration = myCell.duration
-  #-------------------------------------------------------------------
   def duration
     return @offset - @onset
   end
@@ -275,6 +265,7 @@ class RCell
   # Override method missing.
   # Check if the method is trying to get/set an arg.
   # If it is, define accessor method and send the method to self.
+  # @!visibility private
   def method_missing(m, *args, &block)
     mn = m.to_s
     code = (mn.end_with?('=')) ? mn.chop : mn
@@ -1064,7 +1055,7 @@ def combine_columns(name, varnames)
   return var
 end
 
-# @private
+# @!visibility private
 def scan_for_bad_cells(col)
   error = false
   for cell in col.cells
@@ -1079,7 +1070,7 @@ def scan_for_bad_cells(col)
   end
 end
 
-# @private
+# @!visibility private
 def get_later_overlapping_cell(col)
   col.sort_cells()
   overlapping_cells = Array.new
@@ -1093,7 +1084,7 @@ def get_later_overlapping_cell(col)
   return overlapping_cells
 end
 
-# @private
+# @!visibility private
 def fix_one_off_cells(col1, col2)
   for i in 0..col1.cells.length-2
     cell1 = col1.cells[i]
@@ -1350,7 +1341,7 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
 end
 alias :createMutuallyExclusive :create_mutually_exclusive
 
-# @private
+# @!visibility private
 def fillMutexCell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix)
   if v1cell != nil and v2cell != nil
     for arg in mutex.arglist
@@ -1504,7 +1495,7 @@ alias :printNoColumnFoundWarning :print_no_column_found_warning
 # Opens an old, closed database format MacSHAPA file and loads it into the current open database.
 # NOTE This will only read in matrix and string variables.  Predicates are not yet supported. Queries will not be read in.  Times are translated to milliseconds for compatibility with Datavyu.
 # @param filename [String] The FULL PATH to the saved MacSHAPA file.
-# @param write_to_gui [Boolean] Whether the MacSHAPA file should be read into the database currently open in the GUI or whether it should just be read into the Ruby interface.  After this script is run $db and $pj are now the MacSHAPA file.
+# @param write_to_gui [true, false] Whether the MacSHAPA file should be read into the database currently open in the GUI or whether it should just be read into the Ruby interface.  After this script is run $db and $pj are now the MacSHAPA file.
 # @return [Array] An array containing two items: the spreadsheet data and the project information. Set to $db and $pj, respectively (see example).
 #
 # @example
@@ -1697,7 +1688,7 @@ alias :loadMacshapaDB :load_macshapa_db
 # Setting remove to true will DELETE THE COLUMNS YOU ARE TRANSFERRING FROM DB1.  Be careful!
 # @param db1 [String] The FULL PATH toa Datavyu file or "" to use the currently opened database. Columns are transferred FROM here.
 # @param db2 [String]: The FULL PATH to the saved Datavyu file or "" to use the currently opened database.  Columns are tranferred TO here.
-# @param remove [Boolean] Set to true to delete columns in DB1 as they are moved to db2.  Set to false to leave them intact.
+# @param remove [true, false] Set to true to delete columns in DB1 as they are moved to db2.  Set to false to leave them intact.
 # @param varnames [Array<String>] column names (requires at least 1): You can specify as many column names as you like that will be retrieved from db1.
 #
 # Returns:
@@ -2217,7 +2208,7 @@ alias :getDatavyuVersion :get_datavyu_version
 # Check whether current Datavyu version falls within the specified minimum and maximum versions (inclusive)
 # @param [String] minVersion Minimum version (e.g. 'v:1.3.5')
 # @param [String] maxVersion Maximum version. If unspecified, no upper bound is checked.
-# @return [Boolean] true if min,max version check passes; false otherwise.
+# @return [true, false] true if min,max version check passes; false otherwise.
 def check_datavyu_version(minVersion, maxVersion = nil)
   currentVersion = getDatavyuVersion()
   minCheck = (minVersion <=> currentVersion) <= 0
