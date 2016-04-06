@@ -119,15 +119,16 @@ class RCell
   # Map the specified code names to their values.
   # If no names specified, use self.arglist.
   # @param codes [Array<String>] (optional): Names of codes.
+  # @return [Array<String, Integer>] Values of specified codes. Onset, offset, and ordinal are returned as Integers; all else are Strings
   def get_args(*codes)
     codes = self.arglist if codes.nil? || codes.empty?
     vals = codes.map do |cname|
       case(cname)
-      when /onset/
+      when 'onset'
         self.onset
-      when /offset/
+      when 'offset'
         self.offset
-      when /ordinal/
+      when 'ordinal'
         self.ordinal
       else
         @arglist.include?(cname)? self.get_arg(cname) : raise("Cell does not have code #{cname}")
