@@ -81,7 +81,7 @@ $pj = Datavyu.get_project_controller.get_project
 #   @return native Datavyu object corresponding to this cell.
 # @!attribute parent
 #   @note MODIFY AT OWN RISK.
-#   @return [RVariable] the column this cell belongs to
+#   @return [RColumn] the column this cell belongs to
 class RCell
   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals, :db_cell, :parent
 
@@ -292,7 +292,7 @@ end
 #
 # Ruby implementation of Datavyu column.
 #
-class RVariable
+class RColumn
 
   attr_accessor :name, :type, :cells, :arglist, :old_args, :dirty, :db_var, :hidden
 
@@ -432,10 +432,6 @@ class RVariable
 
 end
 
-# Alias for RVariable
-class RColumn < RVariable
-end
-
 # Patch Matrix class with setter method.  See fmendez.com/blog
 class Matrix
   def []=(row, column, value)
@@ -538,7 +534,7 @@ def compute_kappa(pri_col, rel_col, *codes)
   rel_col = getVariable(rel_col) if rel_col.class == String
   codes.flatten!
 
-  raise "Invalid parameters for getKappa()" unless (pri_col.class==RVariable && rel_col.class==RVariable)
+  raise "Invalid parameters for getKappa()" unless (pri_col.class==RColumn && rel_col.class==RColumn)
 
   # Get the list of observed values in each cell, per code
   cells = pri_col.cells + rel_col.cells
@@ -616,7 +612,7 @@ def get_column(name)
     arg_names = ["var"]
   end
 
-  v = RVariable.new
+  v = RColumn.new
   v.name = name
   v.old_args = arg_names
   v.type = type
@@ -784,7 +780,7 @@ alias :setColumn :set_column
 
 
 # Deletes a variable from the spreadsheet and rebuilds it from
-# the given RVariable object.
+# the given RColumn object.
 # Behaves similar to setVariable(), but this will ALWAYS delete
 # and rebuild the spreadsheet colum and its vocab.
 def set_column!(*args)
@@ -936,7 +932,7 @@ alias :make_rel :make_reliability
 #       setVariable(trial)
 def create_new_column(name, *args)
   print_debug "Creating new variable"
-  v = RVariable.new
+  v = RColumn.new
 
   v.name = name
 
@@ -2010,7 +2006,7 @@ alias :checkValidCodes :check_valid_codes
 
 # Check valid codes on cells in a column using regex. Backwards-compatible with checkValidCodes
 # @since 1.3.5
-# @param data [String, RColumn, Hash] When this parameter is a String or a column object from getVariable(), the function operates on codes within this column. If the parameter is a Hash (associative array), the function ignores the arg_code_pairs arguments and uses data from this Hash. The Hash must be structured as a nested mapping from columns (either as Strings or RVariables) to Hashes. These nested hashes must be mappings from code names (as Strings) to valid code values (as either lists (Arrays) or patterns (Regexp)).
+# @param data [String, RColumn, Hash] When this parameter is a String or a column object from getVariable(), the function operates on codes within this column. If the parameter is a Hash (associative array), the function ignores the arg_code_pairs arguments and uses data from this Hash. The Hash must be structured as a nested mapping from columns (either as Strings or RColumns) to Hashes. These nested hashes must be mappings from code names (as Strings) to valid code values (as either lists (Arrays) or patterns (Regexp)).
 # @param outfile [String, File] The full path of the file to print output to. Use '' to print to scripting console.
 # @param arg_filt_pairs Pairs of code name and acceptable values either as an array of values or regexp. Ignored if first parameter is a Hash.
 # @return nothing
