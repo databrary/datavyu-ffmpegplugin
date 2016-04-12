@@ -1497,7 +1497,7 @@ alias :printNoColumnFoundWarning :print_no_column_found_warning
 # @param filename [String] The FULL PATH to the saved MacSHAPA file.
 # @param write_to_gui [true, false] Whether the MacSHAPA file should be read into the database currently open in the GUI or whether it should just be read into the Ruby interface.  After this script is run $db and $pj are now the MacSHAPA file.
 # @return [Array] An array containing two items: the spreadsheet data and the project information. Set to $db and $pj, respectively (see example).
-#
+# @todo fix linter warnings
 # @example
 #   $db,$pj = load_db("/Users/username/Desktop/test.opf")
 def load_macshapa_db(filename, write_to_gui, *ignore_vars)
@@ -1585,7 +1585,7 @@ def load_macshapa_db(filename, write_to_gui, *ignore_vars)
 
     # Search the variable section for the above id
     varSection.each do |l|
-      line = l.split(/[\t\s]/)
+      line = l.split(/[\t\s]/) # @todo linter error : dup char class
       if line[2] == id
 
         print_debug id
