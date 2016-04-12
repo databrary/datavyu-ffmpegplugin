@@ -550,7 +550,7 @@ def compute_kappa(pri_col, rel_col, *codes)
 
   # Get the pairs of corresponding primary and reliability cells
   cellPairs = Hash.new
-  for relcell in rel_col.cells
+  rel_col.cells.each do |relcell|
     cellPairs[relcell] = pri_col.cells.find{ |pricell| pricell.onset == relcell.onset} # match by onset times
   end
 
