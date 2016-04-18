@@ -540,7 +540,6 @@ class CTable
   end
 end
 
-# Top level functions
 
 # Compute Cohen's kappa from the given primary and reliability columns.
 # @param pri_col [RColumn, String] primary coder's column
