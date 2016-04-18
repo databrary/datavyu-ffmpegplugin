@@ -47,6 +47,9 @@ import 'org.datavyu.controllers.OpenC'
 import 'org.datavyu.controllers.project.ProjectController'
 
 $debug = false
+# Prints the specified message if global variable #debug set true.
+# @param s item to print to console
+# @return nil
 def print_debug(*s)
   if $debug == true
     p s
@@ -431,6 +434,9 @@ class RColumn
   end
   alias :remove_arg :remove_code
 
+  # Set hidden state of this column
+  # @param value [true, false] true to hide column in spreadsheet, false to show
+  # @return nil
   def set_hidden(value)
     @hidden = value
   end
@@ -439,6 +445,11 @@ end
 
 # Patch Matrix class with setter method.  See fmendez.com/blog
 class Matrix
+  # Add setter method of form matrix[0][0] = 1
+  # @param row row index
+  # @param column column index
+  # @param value new value
+  # @return nil
   def []=(row, column, value)
     @rows[row][column] = value
   end
