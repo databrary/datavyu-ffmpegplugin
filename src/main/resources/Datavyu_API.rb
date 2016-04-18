@@ -1512,7 +1512,7 @@ alias :printNoColumnFoundWarning :print_no_column_found_warning
 # @param filename [String] The FULL PATH to the saved MacSHAPA file.
 # @param write_to_gui [true, false] Whether the MacSHAPA file should be read into the database currently open in the GUI or whether it should just be read into the Ruby interface.  After this script is run $db and $pj are now the MacSHAPA file.
 # @return [Array] An array containing two items: the spreadsheet data and the project information. Set to $db and $pj, respectively (see example).
-#
+# @todo fix linter warnings
 # @example
 #   $db,$pj = load_db("/Users/username/Desktop/test.opf")
 def load_macshapa_db(filename, write_to_gui, *ignore_vars)
@@ -1600,7 +1600,7 @@ def load_macshapa_db(filename, write_to_gui, *ignore_vars)
 
     # Search the variable section for the above id
     varSection.each do |l|
-      line = l.split(/[\t\s]/)
+      line = l.split(/[\t\s]/) # @todo linter error : dup char class
       if line[2] == id
 
         print_debug id
@@ -2056,30 +2056,30 @@ def check_valid_codes2(data, outfile, *arg_filt_pairs)
 
 	errors = false
   # Iterate over key,entry (column, valid code mapping) in map
-  map.each_pair do |var, arg_code|
+  map.each_pair do |var, col_map|
     var = getVariable(var) if var.class == String
 
     # Iterate over cells in var and check each code's value
   	for cell in var.cells
-  		for arg, filt in arg_code
-        	val = eval "cell.#{arg}"
-          # Check whether value is valid — different functions depending on filter type
-          valid = case # note: we can't use case on filt.class because case uses === for comparison
-          when filt.class == Regexp
-          	!(filt.match(val).nil?)
-          when filt.class == Array
-            filt.include?(val)
-          else
-            raise "Unhandled filter type: #{filt.class}"
-          end
+      for arg, filt in col_map
+      	val = eval "cell.#{arg}"
+        # Check whether value is valid — different functions depending on filter type
+        valid = case # note: we can't use case on filt.class because case uses === for comparison
+        when filt.class == Regexp
+        	!(filt.match(val).nil?)
+        when filt.class == Array
+          filt.include?(val)
+        else
+          raise "Unhandled filter type: #{filt.class}"
+        end
 
-          if !valid
-            errors = true
-            str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
-            print str
-            outfile.write(str) unless outfile == ""
-          end
-      	end
+        if !valid
+          errors = true
+          str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
+          print str
+          outfile.write(str) unless outfile == ""
+        end
+      end
   	end
   end
 	unless errors
