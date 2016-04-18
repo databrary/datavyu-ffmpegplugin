@@ -540,12 +540,13 @@ class CTable
   end
 end
 
+# Top level functions
 
 # Compute Cohen's kappa from the given primary and reliability columns.
 # @param pri_col [RColumn, String] primary coder's column
 # @param rel_col [RColumn, String] reliability coder's column
 # @param codes [Array<String>] codes to compute scores for
-# return [Array<Hash<String, Fixnum>, Hash<String, Matrix>>] two hashmaps mapping from code names to their kappa values and contingency tables, respectively
+# @return [Array<Hash<String, Fixnum> and Hash<String, Matrix>>] two hashmaps mapping from code names to their kappa values and contingency tables, respectively
 # @example
 #     primary_column_name = 'trial'
 #     reliability_column_name = 'trial_rel'
@@ -602,11 +603,11 @@ def compute_kappa(pri_col, rel_col, *codes)
 
   return kappas, tables
 end
-alias :compute_kappa :computeKappa
+alias :computeKappa :compute_kappa
 
 # Construct a Ruby representation of the Datavyu column, if it exists.
 # @param name [String] the name of the column in the spreadsheet
-# @return [RColumn, nil] Ruby object representation of the variable inside Datavyu or nil if the named column does not exist
+# @return [RColumn] Ruby object representation of the variable inside Datavyu or nil if the named column does not exist
 # @note Prints warning message to console if column name is not found in spreadsheet.
 # @example
 #       trial = get_column("trial")
@@ -942,9 +943,9 @@ alias :make_rel :make_reliability
 # @param args [Array<String>] list of codes names to add to column
 # @return [RColumn] Ruby column object
 # @example
-#       trial = createNewVariable("trial", "trialnum", "unit")
-#       blank_cell = trial.make_new_cell()
-#       setVariable(trial)
+#   trial = createNewVariable("trial", "trialnum", "unit")
+#   blank_cell = trial.new_cell()
+#   setVariable(trial)
 def new_column(name, *args)
   print_debug "Creating new variable"
   v = RColumn.new
@@ -980,7 +981,7 @@ alias :create_new_column :new_column
 alias :createNewColumn :new_column
 alias :createVariable :new_column
 alias :createNewVariable :new_column
-alias :create_column :create_new_column
+alias :create_column :new_column
 
 
 # Makes a duration based reliability column
