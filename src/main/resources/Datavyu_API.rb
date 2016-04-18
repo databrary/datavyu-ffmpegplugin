@@ -1960,8 +1960,8 @@ alias :checkRel :check_reliability
 
 # Do a quick, in Datavyu, check of valid codes.
 # @param var [String, RColumn] name of column to check
-# @param [String, File] output file to print messages to. Use '' to print to console.
-# @param [Array<String>]  A list of the argument names and valid codes
+# @param dump_file [String, File] output file to print messages to. Use '' to print to console.
+# @param arg_code_pairs [Array<String>]  A list of the argument names and valid codes
 #     in the following format: "argument_name", ["y","n"], "argument2", ["j","k","m"]
 # @example
 #  check_valid_codes("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", [1,2,3])
@@ -2174,7 +2174,7 @@ alias :print_args :print_codes
 # Finds the first cell in the specified column that overlaps the given time.
 # @param col [RColumn] column to find cell from
 # @param time [Integer] time in milliseconds
-# @return [RCell, nil] Cell that spans the given time; nil if none found.
+# @return [RCell] Cell that spans the given time; nil if none found.
 def get_cell_from_time(col, time)
   for cell in col.cells
     if cell.onset <= time and cell.offset >= time
