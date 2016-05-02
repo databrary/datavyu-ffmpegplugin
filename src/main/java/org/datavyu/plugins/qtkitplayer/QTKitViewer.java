@@ -235,7 +235,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
      */
     @Override
     public void seekTo(final long position) {
-        if(System.currentTimeMillis() - timeOfPrevSeek < 10) {
+        if(System.currentTimeMillis() - timeOfPrevSeek < 35) {
             System.out.println("skipping seek");
             return;
         }
@@ -254,9 +254,12 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
                                 System.out.println("Stopping playback");
                                 movie.stop(movie.id);
                             }
-                            if(prevRate >= -8 && prevRate <= 8) {
+                            if(prevRate >= 0 && prevRate <= 8) {
                                 System.out.println("Precise seeking!");
                                 movie.setTimePrecise(position, movie.id);
+                            } else if (prevRate < 0  && prevRate > -8) {
+                                System.out.println("Moderate seeking!");
+                                movie.setTimeModerate(position, movie.id);
                             } else {
                                 System.out.println("Fast seeking!");
                                 movie.setTime(position, movie.id);

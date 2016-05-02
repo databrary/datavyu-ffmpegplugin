@@ -124,6 +124,14 @@ extern "C" {
     
     /*
      * Class:     org_datavyu_plugins_qtkitplayer_QTKitPlayer
+     * Method:    setTimeModerate
+     * Signature: (J)V
+     */
+    JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTimeModerate
+    (JNIEnv *, jobject, jlong, jint);
+    
+    /*
+     * Class:     org_datavyu_plugins_qtkitplayer_QTKitPlayer
      * Method:    setVolume
      * Signature: (F)V
      */
@@ -487,6 +495,42 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTimeP
     newQTTime.value = ((long long)time / 1000.0f) * newQTTime.timescale;
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     [GetQtMovie(movieId) seekToTime:newQTTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    long long t = (newQTTime.value * 1000.0f) / newQTTime.timescale;
+    
+    
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    
+    
+    NSLog(@"Reported time %lld", t);
+    
+    //    [movie stop];
+    //    [movie setCurrentTime:t];
+    //    [movie play];
+    
+    JNF_COCOA_EXIT(env);
+    
+#endif // JAWT_MACOSX_USE_CALAYER
+}
+
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_qtkitplayer_QTKitPlayer_setTimeModerate
+(JNIEnv *env, jobject canvas, jlong time, jint movieId) {
+#ifdef JAWT_MACOSX_USE_CALAYER // Java for Mac OS X 10.6 Update 4 or later required
+    
+    JNF_COCOA_ENTER(env);
+    
+    NSLog(@"Setting time %lld", (long long)time);
+    if(time == 0) {
+        time = 1;
+    }
+    //    QTTime t = QTMakeTime((long long)time, (long)time);
+    CMTime tol = CMTimeMake(500, 1000);
+    CMTime newQTTime = [GetQtMovie(movieId) currentTime];
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    newQTTime.value = ((long long)time / 1000.0f) * newQTTime.timescale;
+    JNF_CHECK_AND_RETHROW_EXCEPTION(env);
+    [GetQtMovie(movieId) seekToTime:newQTTime toleranceBefore:tol toleranceAfter:tol];
     
     JNF_CHECK_AND_RETHROW_EXCEPTION(env);
     long long t = (newQTTime.value * 1000.0f) / newQTTime.timescale;

@@ -655,7 +655,7 @@ def compute_kappa(pri_col, rel_col, *codes)
 
   return kappas, tables
 end
-alias :compute_kappa :computeKappa
+#alias :compute_kappa :computeKappa
 
 # Function: Retrieve a variable from the database and print_debug it into a Ruby object.
 # Arguments:
@@ -1443,7 +1443,7 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
     c = mutex.cells[i]
     c.change_arg("ordinal", i+1)
   end
-  puts "Created a column with " + mutex.cells.length + " cells."
+  puts "Created a column with " + mutex.cells.length.to_s + " cells."
 
   return mutex
 end

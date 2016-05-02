@@ -101,6 +101,8 @@ public class QTKitPlayer extends Canvas {
 
     public native void setTimePrecise(long time, int id);
 
+    public native void setTimeModerate(long time, int id);
+
     public native void setVolume(float time, int id);
 
     public native void release(int id);
