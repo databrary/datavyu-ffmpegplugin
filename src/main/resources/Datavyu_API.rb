@@ -1,55 +1,8 @@
-#-------------------------------------------------------------------
-# Datavyu API v 1.07
-
+# Ruby API for Datavyu
+# @author Jesse Lingeman
+# @author Shohan Hasan
 # Please read the function headers for information on how to use them.
 
-# CHANGE LOG
-# 1.07 3/20/14 - Fixed a situation where argument names in mutex could overlap, causing a failure
-#                 during argument rewrite
-# 1.06 2/4/14 - Updated to work with new DB, added function for deleting cells
-# 1.05 1/3/14 - Fixed the loadMacshapaDB function so it now works properly with CLOSED files
-# 1.041 12/11/13 - Updated function names to be consistent with new terminology
-#                  ('variable' functions renamed to 'column', 'arg' to code').
-#                  Old names will still work.
-# 1.04 11/25/13 - Fixed mutex function which was failing in some cases
-# 1.03 08/27/13 - Fixed makeReliability and change_arg functions so they behave properly
-# 1.02 07/07/13 - Fixed functions involving createVariable.
-# 1.01 03/13/12 - Fixed the set variable function so it now correctly writes back to
-#                 mongodb
-# 1.0 07/24/12 - Updated API to work with new MongoDB. Also updated function names
-#                such that they are more consistent. Old names should work, but are
-#                now deprecated and may be removed in a later version.
-# 0.995 02/28/12 - Fixed the print_debug statement and potentially fixed an issue
-#                   with create_mutually_exclusive
-# 0.994 01/24/12 - Added mutex method to identify and correct causes of inf loops.
-# 0.993 11/28/11 - Fixed typo in Mutex, added in mutex error checking,
-#                  and made all print statements available only when $debug=true
-# 0.992 9/13/11 - CreateMutuallyExclusive now adds proper ordinals on
-# 0.991 8/26/11 - Fixed an edge case where mutexing would miss a cell it should get.
-#                 Also made the function jump times.  Should be MUCH faster.
-# 0.99 7/6/11 - Totally rewrote create_mutually_exclusive function so it is faster
-#                 and now works with point cells.  Also made some fixes in
-#                 preparation for Datavyu 2.00.
-# 0.984 2/16/11 - Fixed a heap error bug in mutex, several bugs with editing
-#                 variable arguments.  Added functions for adding variable
-#                 arguments, and framework for generic print script.  Several
-#                 versions of incremental fixes.
-# 0.98 10/10/10 - Added function to get list of columns, fixed up the import
-#                 Macshapa function.  It should work for most files now.
-# 0.97 8/11/10 -  Added a function to check for valid codes in a variable,
-#                 and fixed a bug with check_rel.
-# 0.96 8/11/10 -  Added a function to check reliability between two columns
-#                 and print either to a file or to the console.
-# 0.95 7/22/10 -  Added a function to transfer columns between files and
-#                 added headers to functions that didn't have any.
-# 0.94 7/22/10 -  Fixed the save_db function so it works with opf files
-#                 and will detect if you are saving a csv file.
-# 0.93 7/20/10 -  Merged in function to read MacSHAPA Closed database
-#                 files into Datavyu.
-# 0.92 6/29/10 -  Added function to delete columns
-# 0.91 6/25/10 -  Added load functions, fixed some issues with Mutex
-# =>              save still has some issues though; working out how to
-# =>              access the project variables from Ruby.
 
 # Licensing information:
 #
@@ -70,7 +23,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-#+-------------------------------------------------------------------
 
 require 'java'
 require 'csv'
@@ -78,7 +30,6 @@ require 'time'
 require 'date'
 require 'set'
 require 'rbconfig'
-#require 'ftools'
 require 'matrix'
 
 import 'org.datavyu.Datavyu'
@@ -96,6 +47,9 @@ import 'org.datavyu.controllers.OpenC'
 import 'org.datavyu.controllers.project.ProjectController'
 
 $debug = false
+# Prints the specified message if global variable #debug set true.
+# @param s item to print to console
+# @return nil
 def print_debug(*s)
   if $debug == true
     p s
@@ -108,22 +62,38 @@ $pj = Datavyu.get_project_controller.get_project
 
 # Ruby representation of a spreadsheet cell.
 # Generally, the two ways to get access to a cell are:
-#   RColumn:cells to get a list of cells from a column
-#   RColumn.make_new_cell to create a blank cell in a column.
+#   RColumn.cells to get a list of cells from a column
+#   RColumn.new_cell to create a blank cell in a column.
+# @!attribute ordinal
+#   @note Prone to change after saving the column to Datavyu.
+#   @return [Fixnum] ordinal number of the cell
+# @!attribute onset
+#   @return [Fixnum] onset time of the cell in milliseconds
+# @!attribute offset
+#   @return [Fixnum] offset time of the cell in milliseconds
+# @!attribute [rw] arglist
+#   @note Use RColumn methods to modify column codes. Changing this list for the cell has no effect on the column.
+#   @return [Array<String>] list of codes inherited from parent column.
+# @!attribute argvals
+#   @note Dangerous to modify this directly since the order of the values must match the order of the code names.
+#   @return [Array] list of code values
+# @!attribute db_cell
+#   @note MODIFY AT OWN RISK.
+#   @return native Datavyu object corresponding to this cell.
+# @!attribute parent
+#   @note MODIFY AT OWN RISK.
+#   @return [RColumn] the column this cell belongs to
 class RCell
-
   attr_accessor :ordinal, :onset, :offset, :arglist, :argvals, :db_cell, :parent
 
-  # Note: This method is not for general use, it is used only when creating
+  # @!visibility private
+  # @note This method is not for general use, it is used only when creating
   #       this variable from the database in the getVariable method.
-  #
-  # Method name: set_args
-  # Function: sets up methods that can be used to reference the arguments in
-  #           the cell.
-  # Arguments:
-  # => argvals (required): Values of the arguments being created
-  # => arglist (required): Names of the arguments being created
-  def set_args(argvals, arglist) #:nodoc:
+  # Sets up methods that can be used to reference the arguments in
+  # the cell.
+  # @param argvals (required): Values of the arguments being created
+  # @param arglist (required): Names of the arguments being created
+  def set_args(argvals, arglist)
     @arglist = arglist
     @argvals = argvals
     i = 0
@@ -147,19 +117,20 @@ class RCell
     end
   end
 
-  # Map the specified code names to their values. If no names specified, use self.arglist.
-  # Arguments:
-  #   *argnames (optional): Names of codes.
-  #-------------------------------------------------------------------
-  def getArgs(*codes)
+  # Map the specified code names to their values.
+  # If no names specified, use self.arglist.
+  # @note Onset, offset, and ordinal are returned as Integers; all else are Strings
+  # @param codes [Array<String>] (optional): Names of codes.
+  # @return [Array] Values of specified codes.
+  def get_codes(*codes)
     codes = self.arglist if codes.nil? || codes.empty?
     vals = codes.map do |cname|
       case(cname)
-      when /onset/
+      when 'onset'
         self.onset
-      when /offset/
+      when 'offset'
         self.offset
-      when /ordinal/
+      when 'ordinal'
         self.ordinal
       else
         @arglist.include?(cname)? self.get_arg(cname) : raise("Cell does not have code #{cname}")
@@ -168,56 +139,55 @@ class RCell
 
     return vals
   end
+  alias :get_args :get_codes
+  alias :getArgs :get_codes
 
+  # Defines an alias for a code
+  # @!visibility private
+  # @param i [Integer] index of code to change
+  # @param new_name [String] new name for code
   def change_code_name(i, new_name)
-    change_arg_name(i, new_name)
-  end
-
-  def change_arg_name(i, new_name)
     instance_eval "def #{new_name}; return argvals[#{i}]; end"
     instance_eval "def #{new_name}=(val); argvals[#{i}] = val.to_s; end"
   end
+  alias :change_arg_name :change_code_name
 
+  # Add specified code to end of arglist.
+  # @param new_name [String] name of new code
+  # @!visibility private
   def add_code(new_name)
-    add_arg(new_name)
-  end
-
-  def add_arg(new_name)
     @argvals << ""
     i = argvals.length - 1
     instance_eval "def #{new_name}; return argvals[#{i}]; end"
     instance_eval "def #{new_name}=(val); argvals[#{i}] = val.to_s; end"
   end
+  alias :add_arg :add_code
 
+  # Removes code from arglist and associated value from argvals
+  # @param name [String] name of code to remove
+  # @return [nil]
   def remove_code(name)
-    remove_arg(name)
-  end
-
-  def remove_arg(name)
     argvals.delete(arglist.index(name))
     @arglist.delete(name)
   end
+  alias :remove_arg :remove_code
 
+  # Get value of a code
+  # @param name [String] name of code
+  # @return [String] value of code
   def get_code(name)
-    get_arg(name)
-  end
-
-  def get_arg(name)
     return argvals[arglist.index(name)]
   end
-
-
+  alias :get_arg :get_code
 
   # Changes the value of an argument in a cell.
-  # Arguments:
-  #   arg (required): Name of the argument to be changed
-  #   val (required): Value to change the argument to
-  # Returns:
-  #   Nothing
-  # Usage:
-  #       trial = getVariable("trial")
+  # @param arg [String] name of the argument to be changed
+  # @param val [String, Fixnum] value to change the argument to
+  # @return [nil]
+  # @example
+  #       trial = get_column("trial")
   #       trial.cells[0].change_arg("onset", 1000)
-  #       setVariable("trial",trial)
+  #       set_column(trial)
   def change_code(arg, val)
     arg = arg.gsub(/(\W)+/, "").downcase
     if arg == "onset"
@@ -236,23 +206,14 @@ class RCell
   end
   alias :change_arg :change_code
 
-  #-------------------------------------------------------------------
-  # Method name: print_all
-  # Function: Dumps all of the arguments in the cell to a string.
-  # Arguments:
-  # => p (optional): The seperator used between the arguments.  Defaults to tab (\t)
-  # Returns:
-  # => A string of the arguments starting with ordinal/onset/offset then argument.
-  # Usage:
-  #       trial = getVariable("trial")
-  #       print trial.cells[0].print_all()
-  #-------------------------------------------------------------------
-
-  def print_all(*p)
-    if p.empty?
-      p << "\t"
-    end
-    print @ordinal.to_s + p[0] + @onset.to_s + p[0] + @offset.to_s + p[0]
+  # Print ordinal, onset, offset, and values of all codes in the cell to console.
+  # @param sep [String] seperator used between the arguments
+  # @return [nil]
+  # @example Print the first cell in the 'trial' column
+  #       trial = get_column("trial")
+  #       puts trial.cells[0].print_all()
+  def print_all(sep="\t")
+    print @ordinal.to_s + sep + @onset.to_s + sep + @offset.to_s + sep
     @arglist.each do |arg|
       t = eval "self.#{arg}"
       if t == nil
@@ -260,49 +221,32 @@ class RCell
       else
         v = t
       end
-      print v + p[0]
+      print v + sep
     end
   end
 
-
-  #-------------------------------------------------------------------
-  # Method name: is_within
-  # Function: Is encased by outer_cell temporally
-  # Arguments:
-  # => outer_cell: check to see if this cell is in outer_cell
-  # Returns:
-  # => boolean
-  # Usage:
+  # Check if self is nested temporally nested
+  # @param outer_cell [RCell]: cell to check nesting against
+  # @return [true, false]
+  # @example
   #       trial = getVariable("trial")
   #       id = getVariable("id")
   #       if trial.cells[0].is_within(id.cells[0])
   #           do something
   #       end
-  #-------------------------------------------------------------------
-
   def is_within(outer_cell)
-    if (outer_cell.onset <= @onset && outer_cell.offset >= @offset && outer_cell.onset <= @offset && outer_cell.offset >= @onset)
-      return true
-    else
-      return false
-    end
+    return (outer_cell.onset <= @onset && outer_cell.offset >= @offset && outer_cell.onset <= @offset && outer_cell.offset >= @onset)
   end
 
-  #-------------------------------------------------------------------
-  # Method name: contains
-  # Function: Check to see if this cell encases inner_cell temporally
-  # Arguments:
-  # => inner_cell: the cell to check if it is inside of this cell
-  # Returns:
-  # => boolean
-  # Usage:
+  # Check to see if this cell encases another cell temporally
+  # @param inner_cell [RCell] cell to check if contained by this cell
+  # @return [true, false]
+  # @example
   #       trial = getVariable("trial")
   #       id = getVariable("id")
   #       if id.cells[0].contains(trial.cells[0])
   #           do something
   #       end
-  #-------------------------------------------------------------------
-
   def contains(inner_cell)
     if (inner_cell.onset >= @onset && inner_cell.offset <= @offset && inner_cell.onset <= @offset && inner_cell.offset >= @onset)
       return true
@@ -311,13 +255,10 @@ class RCell
     end
   end
 
-  #-------------------------------------------------------------------
-  # Method name: duration
-  # Function: Return the duration of this cell
-  # Arguments: None
-  # Usage:
+  # Duration of this cell (currently defined as offset minus onset)
+  # @return [Integer] duration of cell in ms
+  # @example
   # 	duration = myCell.duration
-  #-------------------------------------------------------------------
   def duration
     return @offset - @onset
   end
@@ -325,6 +266,7 @@ class RCell
   # Override method missing.
   # Check if the method is trying to get/set an arg.
   # If it is, define accessor method and send the method to self.
+  # @!visibility private
   def method_missing(m, *args, &block)
     mn = m.to_s
     code = (mn.end_with?('=')) ? mn.chop : mn
@@ -340,12 +282,20 @@ class RCell
 
 end
 
-#-------------------------------------------------------------------
-# Class name: Variable
-# Function: This is the Ruby container for Datavyu variables.
-#-------------------------------------------------------------------
 
-class RVariable
+# Ruby implementation of Datavyu column.
+# @!attribute name
+#   @return [String] name of the column
+# @!attribute cells
+#   @return [Array<RCell>] list of cells in this column
+# @!attribute arglist
+#   @return [Array<String>] names of codes for cell in this column, excluding onset, offset, and ordinal
+# @!attribute db_var
+#   @note Not intended for general use. Modify at own risk.
+#   @return Java object for this column
+# @!attribute [rw] hidden
+#   @return [true, false] visibility of column in spreadsheet
+class RColumn
 
   attr_accessor :name, :type, :cells, :arglist, :old_args, :dirty, :db_var, :hidden
 
@@ -354,19 +304,16 @@ class RVariable
   end
 
   # Validate code name. Remove special characters and replace
+  # @param arg string to Validate
+  # @return [String] validated code name
   def convert_argname(arg)
     return arg.gsub(/(\W)+/, "").downcase
   end
-  #-------------------------------------------------------------------
-  # NOTE: This function is not for general use.
-  #
-  # Method name: set_cells
-  # Function: Creates the cell object in the Variable object.
-  # Arguments:
-  # => newcells (required): Array of cells coming from the database via getVariable
-  # => arglist (required): Array of the names of the arguments from the database
-  #-------------------------------------------------------------------
 
+  # @note This function is not for general use.
+  # Creates the cell object in the Variable object.
+  # @param newcells (required): Array of cells coming from the database via getVariable
+  # @param arglist (required): Array of the names of the arguments from the database
   def set_cells(newcells, arglist)
     print_debug "Setting cells"
     @cells = Array.new
@@ -403,20 +350,14 @@ class RVariable
     end
   end
 
-  #-------------------------------------------------------------------
-  # Method name: make_new_cell
-  # Function: Creates a new, blank cell at the end of this variable's cell array
-  # Arguments:
-  # => None
-  # Returns:
-  # => Reference to the cell that was just created.  Modify the cell using this reference.
-  # Usage:
-  #       trial = getVariable("trial")
-  #       new_cell = trial.make_new_cell()
-  #       new_cell.change_arg("onset", 1000)
-  #       setVariable("trial", trial)
-  #-------------------------------------------------------------------
-  def make_new_cell()
+  # Creates a new, blank cell at the end of this variable's cell array
+  # @return RCell Reference to the cell that was just created.  Modify the cell using this reference.
+  # @example
+  #   trial = getVariable("trial")
+  #   new_cell = trial.make_new_cell()
+  #   new_cell.change_arg("onset", 1000)
+  #   setVariable("trial", trial)
+  def new_cell()
     c = RCell.new
     c.onset = 0
     c.offset = 0
@@ -426,33 +367,20 @@ class RVariable
     @cells << c
     return c
   end
+  alias :make_new_cell :new_cell
+  alias :create_cell :new_cell
 
-  def create_cell()
-    make_new_cell()
-  end
-
+  # Sorts cells and saves column's cells by ascending onset times.
+  # @return nil
   def sort_cells()
     cells.sort! { |a, b| a.onset <=> b.onset }
   end
 
-
-  #-------------------------------------------------------------------
-  # Method name: change_arg_name
-  # Function: Creates a new, blank cell at the end of this variable's cell array
-  # Arguments:
-  # => old_name: the name of the argument you want to change
-  # => new_name: the name you want to change old_name to
-  # Returns:
-  # => nothing.
-  # Usage:
-  #       trial = getVariable("trial")
-  #
-  #-------------------------------------------------------------------
+  # Changes the name of a code. Updates the name for all cells in the column
+  # @param old_name the name of the argument you want to change
+  # @param new_name the name you want to change old_name to
+  # @return nil
   def change_code_name(old_name, new_name)
-    change_arg_name(old_name, new_name)
-  end
-
-  def change_arg_name(old_name, new_name)
     i = @old_args.index(old_name)
     @old_args[i] = new_name
     if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(old_name[1].chr)
@@ -468,12 +396,12 @@ class RVariable
 
     @dirty = true
   end
+  alias :change_arg_name :change_code_name
 
+  # Add a code to this column. Updates all cells in column with new code.
+  # @param [String] name the name of the new code
+  # @return nil
   def add_code(name)
-    add_arg(name)
-  end
-
-  def add_arg(name)
     @old_args << name
     if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(name[1].chr)
       name = "_" + name
@@ -487,12 +415,12 @@ class RVariable
 
     @dirty = true
   end
+  alias :add_arg :add_code
 
+  # Remove a code from this column. Updates all cells in column.
+  # @param [String] name the name of the code to remove
+  # @return nil
   def remove_code(name)
-    remove_arg(name)
-  end
-
-  def remove_arg(name)
     @old_args.delete(name)
 
     name = name.gsub(/(\W)+/, "").downcase
@@ -504,7 +432,11 @@ class RVariable
 
     @dirty = true
   end
+  alias :remove_arg :remove_code
 
+  # Set hidden state of this column
+  # @param value [true, false] true to hide column in spreadsheet, false to show
+  # @return nil
   def set_hidden(value)
     @hidden = value
   end
@@ -513,12 +445,21 @@ end
 
 # Patch Matrix class with setter method.  See fmendez.com/blog
 class Matrix
+  # Add setter method of form matrix[0][0] = 1
+  # @param row row index
+  # @param column column index
+  # @param value new value
+  # @return nil
   def []=(row, column, value)
     @rows[row][column] = value
   end
 end
 
-# Class for keeping track of the agreement table for one code
+# Class for keeping track of the agreement table for one code.
+# !@attr table
+#   @return [Matrix] contingency table of values
+# !@attr codes
+#   @return [Array<String>] list of code valus; indices serve as keys for table
 class CTable
   attr_accessor :table, :codes
 
@@ -528,7 +469,10 @@ class CTable
     @table = Matrix.zero(values.size)
   end
 
-  # Add a code pair.  Order always pri,rel.
+  # Add a code pair.  Order always pri,rel. Increments the appropriate index of the table by 1.
+  # @param pri_value primary coder's value
+  # @param rel_value reliability coder's value
+  # @return nil
   def add(pri_value, rel_value)
     pri_idx = @codes.index(pri_value)
     raise "Invalid primary value: #{pri_value}" if pri_idx.nil?
@@ -539,6 +483,7 @@ class CTable
   end
 
   # Compute kappa
+  # @return simple kappa score
   def kappa
     agree = @table.trace
     total = self.total
@@ -548,6 +493,8 @@ class CTable
   end
 
   # Return the expected frequency of agreement by chance for the given index
+  # @param idx [Integer] index in codes
+  # @return [Fixnum] agreement by chance
   def ef(idx)
     raise "Index out of bounds: requested #{idx}, have #{@codes.size}." if idx >= @codes.size
 
@@ -559,6 +506,7 @@ class CTable
   end
 
   # Return the sum of the expected frequency of agreement by chance for all indices in table
+  # @return [Fixnum] sum of a agreement by chance
   def efs
     sum = 0
     for idx in 0..@codes.size-1
@@ -568,6 +516,7 @@ class CTable
   end
 
   # Return the sum of all elements in matrix table
+  # @return [Integer] sum of matrix elements
   def total
     v = Matrix.row_vector([1] * @codes.size) # row vector of 1s
     vt = v.t  # column vector of 1s
@@ -577,6 +526,7 @@ class CTable
 
   # Table to String
   # Return formatted string to display the table
+  # @return [String] tab-delimited string showing values in contingency table
   def to_s
     str = "\t" + codes.join("\t") + "\n"
     for i in 0..@codes.size-1
@@ -590,16 +540,13 @@ class CTable
   end
 end
 
-## API Functions
 
-# Function: Computes Cohen's kappa from the given primary and reliability columns.
-# Arguments:
-#  pri_col (required): The primary coder's column.
-#  rel_col (required): The reliability coder's column.
-#  codes (required 1 or more): Strings denoting codes to compute kappas for
-# Returns:
-#  A hash mapping from each of the codenames to its computed kappa value.
-# Usage:
+# Compute Cohen's kappa from the given primary and reliability columns.
+# @param pri_col [RColumn, String] primary coder's column
+# @param rel_col [RColumn, String] reliability coder's column
+# @param codes [Array<String>] codes to compute scores for
+# @return [Array<Hash<String, Fixnum> and Hash<String, Matrix>>] two hashmaps mapping from code names to their kappa values and contingency tables, respectively
+# @example
 #     primary_column_name = 'trial'
 #     reliability_column_name = 'trial_rel'
 #     codes_to_compute = ['condition', 'result']
@@ -608,12 +555,12 @@ end
 def compute_kappa(pri_col, rel_col, *codes)
   codes = pri_col.arglist if codes.nil? || codes.empty?
   raise "No codes!" if codes.empty?
-  p codes
+
   pri_col = getVariable(pri_col) if pri_col.class == String
   rel_col = getVariable(rel_col) if rel_col.class == String
   codes.flatten!
 
-  raise "Invalid parameters for getKappa()" unless (pri_col.class==RVariable && rel_col.class==RVariable)
+  raise "Invalid parameters for getKappa()" unless (pri_col.class==RColumn && rel_col.class==RColumn)
 
   # Get the list of observed values in each cell, per code
   cells = pri_col.cells + rel_col.cells
@@ -637,7 +584,7 @@ def compute_kappa(pri_col, rel_col, *codes)
 
   # Get the pairs of corresponding primary and reliability cells
   cellPairs = Hash.new
-  for relcell in rel_col.cells
+  rel_col.cells.each do |relcell|
     cellPairs[relcell] = pri_col.cells.find{ |pricell| pricell.onset == relcell.onset} # match by onset times
   end
 
@@ -655,14 +602,13 @@ def compute_kappa(pri_col, rel_col, *codes)
 
   return kappas, tables
 end
-#alias :compute_kappa :computeKappa
+alias :computeKappa :compute_kappa
 
-# Function: Retrieve a variable from the database and print_debug it into a Ruby object.
-# Arguments:
-#    name (required): The Datavyu name of the variable being retrieved
-# Returns:
-#    A Ruby object representation of the variable inside Datavyu or nil if the named column does not exist.
-# Usage:
+# Construct a Ruby representation of the Datavyu column, if it exists.
+# @param name [String] the name of the column in the spreadsheet
+# @return [RColumn] Ruby object representation of the variable inside Datavyu or nil if the named column does not exist
+# @note Prints warning message to console if column name is not found in spreadsheet.
+# @example
 #       trial = get_column("trial")
 def get_column(name)
 
@@ -691,7 +637,7 @@ def get_column(name)
     arg_names = ["var"]
   end
 
-  v = RVariable.new
+  v = RColumn.new
   v.name = name
   v.old_args = arg_names
   v.type = type
@@ -705,19 +651,16 @@ end
 alias :getVariable :get_column
 alias :getColumn :get_column
 
-#-------------------------------------------------------------------
-# Method name: setVariable
-# Function: setVariable will overwrite a variable in the database with the same name as the name argument.
-#           If no variable with the same name exists, it will create a new variable.
-# Arguments:
-# => name (optional): The name of the variable being created
-# => var  (required): The Ruby container of the variable to be put into the database.  This is the return value of
-#         createNewVariable or getVariable that has been modified.
-# Usage:
+
+# Translate a Ruby column object into a Datavyu column and saves it to the spreadsheet.
+# If two parameters are specified, the first parameter is the name under which the column will be saved.
+# @note This function will overwrite existing spreadsheet columns with the same name as specified column / name.
+# @param args [String, RColumn] the name and RColumn object to save; the name parameter may be omitted
+# @return nil
+# @example
 #       trial = getVariable("trial")
-#       ** Do some modification to trial
-#       setVariable("trial", trial)
-#-------------------------------------------------------------------
+#         ... Do some modification to trial ...
+#       set_column(trial)
 def set_column(*args)
 
   if args.length == 1
@@ -859,7 +802,7 @@ alias :setColumn :set_column
 
 
 # Deletes a variable from the spreadsheet and rebuilds it from
-# the given RVariable object.
+# the given RColumn object.
 # Behaves similar to setVariable(), but this will ALWAYS delete
 # and rebuild the spreadsheet colum and its vocab.
 def set_column!(*args)
@@ -938,24 +881,16 @@ def set_column!(*args)
 end
 alias :setVariable! :set_column!
 
-#-------------------------------------------------------------------
-# Method name: make_rel
-# Function: This function will create a reliability column that is a copy
-#           of another column in the database, copying every nth cell and
-#           carrying over some of the arguments from the original, if wanted.
-# Arguments:
-# => relname (required): The name of the reliability column to be created.
-# => var_to_copy (required): The name of the variable in the database you
-#                   wish to copy.
-# => multiple_to_keep: The number of cells to skip.  For every other cell, use 2.
-# => *args_to_keep: Comma separated strings for the arguments you want to keep
-#             between cells.  For example, "onset", "trialnum", "block" would keep
-#             those three arguments in the new cells that are created.
-# Returns:
-# => A Ruby object representation of the rel column inside Datavyu.
-# Usage:
+# Create a reliability column that is a copy
+# of another column in the database, copying every nth cell and
+# carrying over some of the arguments from the original, if wanted.
+# @param relname [String, RColumn] the name of the reliability column to be created
+# @param var_to_copy [String] the name of the variable in the database you wish to copy
+# @param multiple_to_keep [Integer] the number of cells to skip.  For every other cell, use 2
+# @param args_to_keep [Array<String>]: names of codes to keep from original column
+# @return [RColumn] Ruby object representation of the rel column
+# @example
 #       rel_trial = make_rel("rel.trial", "trial", 2, "onset", "trialnum", "unit")
-#-------------------------------------------------------------------
 def make_reliability(relname, var_to_copy, multiple_to_keep, *args_to_keep)
   # Get the primary variable from the DB
 
@@ -1001,20 +936,18 @@ end
 alias :makeReliability :make_reliability
 alias :make_rel :make_reliability
 
-# Function: Creates a brand new blank variable with argument *args and name name.
-# Arguments:
-#   name (required): The Datavyu name of the variable being retrieved
-#   *args: (optional): List of arguments that the variable will contain.  Onset, Offset, and
-#               ordinal are created by default.
-# Returns:
-# A Ruby object representation of the variable inside Datavyu.
-# Usage:
-#       trial = createNewVariable("trial", "trialnum", "unit")
-#       blank_cell = trial.make_new_cell()
-#       setVariable(trial)
-def create_new_column(name, *args)
+# Create blank column.
+# @note Column does not exist in Datavyu spreadsheet unless saved with #set_column.
+# @param name [String] name of the column
+# @param args [Array<String>] list of codes names to add to column
+# @return [RColumn] Ruby column object
+# @example
+#   trial = createNewVariable("trial", "trialnum", "unit")
+#   blank_cell = trial.new_cell()
+#   setVariable(trial)
+def new_column(name, *args)
   print_debug "Creating new variable"
-  v = RVariable.new
+  v = RColumn.new
 
   v.name = name
 
@@ -1043,39 +976,24 @@ def create_new_column(name, *args)
   print_debug "Finished creating variable"
   return v
 end
-alias :createNewColumn :create_new_column
-alias :createVariable :create_new_column
-alias :createNewVariable :create_new_column
-alias :create_column :create_new_column
+alias :create_new_column :new_column
+alias :createNewColumn :new_column
+alias :createVariable :new_column
+alias :createNewVariable :new_column
+alias :create_column :new_column
 
-#-----------------------------------------------------------------
-# EXPERIMENTAL METHODS FOR FUTURE RELEASE
-#-----------------------------------------------------------------
 
-#-----------------------------------------------------------#
-# make_duration_rel: Makes a duration based reliability column
+# Makes a duration based reliability column
 # based on John's method.  It will create two new columns, one
 # that contains a cell with a number for that block, and another
 # blank column for the free coding within that block.
-#-----------------------------------------------------------#
-
-#-------------------------------------------------------------------
-# Method name: makeDurationBlockRel
-# Function: Makes a duration based reliability column
-# based on John's method.  It will create two new columns, one
-# that contains a cell with a number for that block, and another
-# blank column for the free coding within that block.
-# Arguments:
-# => relname (required): The name of the rel column to be made.
-# => var_to_copy (required): The name of the variable being copied.
-# => binding (required): The name of the variable to bind the copy to.
-# => block_dur (required): How long (in seconds) should the blocks be?
-# => skip_blocks (required): How many blocks of block_dur should we skip between
-#     each coding block?
-#
-# # Returns:
-# => Nothing.  Variables are written to the database.
-# #-------------------------------------------------------------------
+# @param relname [String] name of the rel column to be made
+# @param var_to_copy [String] name of column being copied
+# @param binding [String] name of column to bind copy to
+# @param block_dur [Integer] duration, in seconds, for each block
+# @param skip_blocks [Integer] multiple of block_dur to skip between coding blocks
+# @return nil
+# @note Column is written to spreadsheet.
 def makeDurationBlockRel(relname, var_to_copy, binding, block_dur, skip_blocks)
   block_var = createVariable(relname + "_blocks", "block_num")
   rel_var = make_rel(relname, var_to_copy, 0)
@@ -1116,21 +1034,15 @@ def makeDurationBlockRel(relname, var_to_copy, binding, block_dur, skip_blocks)
   setVariable(relname + "_blocks", block_var)
 end
 
-#-------------------------------------------------------------------
-# Method name: add_codes_to_column
-# Function: Add new codes to a column
-# Arguments:
-# => var (required): The variable to add args to.  This can be a name or a variable object.
-# => *args (required): A list of the arguments to add to var (can be any number of args)
+# Add a new code to a column
+# @param var [String, RColumn] The variable to add args to.  This can be a name or a variable object.
+# @param args [Array<String>] A list of the arguments to add to var (can be any number of args)
 #
-# Returns:
-# => The new Ruby representation of the variable.  Write it back to the database
-# to save it.
+# @return [RColumn] the new Ruby representation of the variable.  Write it back to the database to save it.
 #
-# Example:
-# test = add_args_to_var("test", "arg1", "arg2", "arg3")
-# setVariable("test",test)
-# -------------------------------------------------------------------
+# @example
+#   test = add_codes_to_column("test", "arg1", "arg2", "arg3")
+#   set_column("test", test)
 def add_codes_to_column(var, *args)
   if var.class == "".class
     var = getVariable(var)
@@ -1150,11 +1062,14 @@ def add_codes_to_column(var, *args)
 
   return var_new
 end
-
 alias :add_args_to_var :add_codes_to_column
 alias :addCodesToColumn :add_codes_to_column
 alias :addArgsToVar :add_codes_to_column
 
+# Combine cells of different columns into a new column.
+# Iteratively runs #create_mutually_exclusive on additional columns.
+# @note Not thoroughly tested.
+# @todo verify this works
 def combine_columns(name, varnames)
   stationary_var = varnames[0]
   for i in 1...varnames.length
@@ -1164,7 +1079,9 @@ def combine_columns(name, varnames)
   return var
 end
 
-def scan_for_bad_cells(col) # :nodoc:
+# @!visibility private
+# Helper method for #create_mutually_exclusive
+def scan_for_bad_cells(col)
   error = false
   for cell in col.cells
     if cell.onset > cell.offset
@@ -1178,7 +1095,9 @@ def scan_for_bad_cells(col) # :nodoc:
   end
 end
 
-def get_later_overlapping_cell(col) # :nodoc:
+# @!visibility private
+# Helper method for #create_mutually_exclusive
+def get_later_overlapping_cell(col)
   col.sort_cells()
   overlapping_cells = Array.new
   for i in 0..col.cells.length - 2
@@ -1191,7 +1110,9 @@ def get_later_overlapping_cell(col) # :nodoc:
   return overlapping_cells
 end
 
-def fix_one_off_cells(col1, col2) # :nodoc:
+# @!visibility private
+# Helper method for #create_mutually_exclusive
+def fix_one_off_cells(col1, col2)
   for i in 0..col1.cells.length-2
     cell1 = col1.cells[i]
     for j in 0..col2.cells.length-2
@@ -1239,20 +1160,18 @@ end
 # The new column's code list is a union of the original two columns with a prefix added to each code name.
 # The default prefix is the name of the source column (e.g. column "task" code "ordinal" becomes "task_ordinal")
 # Create a new column from two others, mixing their cells together
-#  such that the new variable has all of the arguments of both other variables
-#  and a new cell for each overlap and mixture of the two cells.
-# Arguments:
-#  name (required): The name of the new variable.
-#  var1name (required): Name of the first variable to be mutexed.
-#  var2name (required): Name of the second variable to be mutexed.
+# such that the new variable has all of the arguments of both other variables
+# and a new cell for each overlap and mixture of the two cells.
+# @param name name of the new variable.
+# @param var1name name of the first variable to be mutexed.
+# @param var2name name of the second variable to be mutexed.
+# @param var1_argprefix [String] (optional) String to prepend to codes of column 1; defaults to name of column 1
+# @param var2_argprefix [String] (optional) String to prepend to codes of column 2; defaults to name of column 2
+# @return [RColumn] The new Ruby representation of the variable.  Write it back to the database to save it.
 #
-# Returns:
-#  The new Ruby representation of the variable.  Write it back to the database
-# to save it.
-#
-# Example:
-# test = create_mutually_exclusive("test", "var1", "var2")
-# setVariable("test",test)
+# @example
+#   test = create_mutually_exclusive("test", "var1", "var2")
+#   set_column("test",test)
 def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2_argprefix=nil)
   if var1name.class == "".class
     var1 = getVariable(var1name)
@@ -1282,9 +1201,9 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
     end
   end
 
-  # Handle special cases where one or both of columns have no cells
+  # TODO Handle special cases where one or both of columns have no cells
 
-  # Handle special case where column has a cell with negative time
+  # TODO Handle special case where column has a cell with negative time
 
   # Get the earliest time between the two cols
   time1_on = 9999999999
@@ -1443,13 +1362,15 @@ def create_mutually_exclusive(name, var1name, var2name, var1_argprefix=nil, var2
     c = mutex.cells[i]
     c.change_arg("ordinal", i+1)
   end
-  puts "Created a column with " + mutex.cells.length.to_s + " cells."
+  puts "Created a column with " + mutex.cells.length + " cells."
 
   return mutex
 end
 alias :createMutuallyExclusive :create_mutually_exclusive
 
-def fillMutexCell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix) # :nodoc:
+# @!visibility private
+# Helper method for #create_mutually_exclusive
+def fillMutexCell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix)
   if v1cell != nil and v2cell != nil
     for arg in mutex.arglist
       a = arg.gsub(var1_argprefix, "")
@@ -1485,45 +1406,29 @@ def fillMutexCell(v1cell, v2cell, cell, mutex, var1_argprefix, var2_argprefix) #
   end
 end
 
-#-------------------------------------------------------------------
-# Method name: load_db
-# Function: Loads a new database from a file.  DOES NOT ALTER THE GUI.
-# Arguments:
-# => filename (required): The FULL PATH to the saved Datavyu file.
-#
-# Returns:
-# => db: The database of the opened project.  Set to $db to use other
-#     functions with it.
-# => pj: The project data of the opened project.  Set to $pj to use other
-#     functions with it.
-#
-# Example:
-# $db,$pj = load_db("/Users/username/Desktop/test.opf")
-# -------------------------------------------------------------------
+# Loads a new database from a file.
+# @note DOES NOT ALTER THE GUI.
+# @note Use #File.expand_path and related methods to convert from relative to absolute path.
+# @param filename The FULL PATH to the saved Datavyu file.
+# @return [Array] An array containing two items: db, the spreadsheet data, and pj the project data. Set db and pj to $db and $pj, respectively (see example)
+# @example
+#   $db,$pj = load_db("/Users/username/Desktop/test.opf")
 def load_db(filename)
-  # Packages needed for opening and saving projects and databases.
+  # Raise file not found error unless file exists
+  unless File.exist?(filename)
+    raise "File does not exist. Please make sure to put the full path to the file."
+  end
 
-
-  #
-  # ****************************************************************************
-  # *** Check to make sure filename below is the absolute path to a project. ***
-  # ****************************************************************************
-  #
-  #
-  # Main body of example script:
-  #
   print_debug "Opening Project: "
 
   # Create the controller that holds all the logic for opening projects and
   # databases.
   open_c = OpenC.new
 
-  #
   # Opens a project and associated database (i.e. either compressed or
   # uncompressed .shapa files). If you want to just open a standalone database
   # (i.e .odb or .csv file) call open_c.open_database("filename") instead. These
   # methods do *NOT* open the project within the Datavyu UI.
-  #
   db = nil
   proj = nil
   if filename.include?(".csv")
@@ -1552,25 +1457,15 @@ def load_db(filename)
 end
 alias :loadDB :load_db
 
-#-------------------------------------------------------------------
-# Method name: save_db
-# Function: Saves the current $db and $pj variables to filename.  If
-#     filename ends with .csv, it saves a .csv file.  Otherwise it saves
-#     it as a .opf.
-# Arguments:
-# => filename (required): The FULL PATH to where the Datavyu file should
-#        be saved.
-#
-# Returns:
-# => Nothing.
-#
-# Example:
-# save_db("/Users/username/Desktop/test.opf")
-# -------------------------------------------------------------------
+# Saves the current $db and $pj variables to filename.  If
+# filename ends with .csv, it saves a .csv file.  Otherwise it saves
+# it as a .opf.
+# @note Use #File.expand_path and related methods to convert from relative to absolute path.
+# @param filename [String] The FULL PATH to where the Datavyu file should be saved.
+# @return nil
+# @example
+#   save_db("/Users/username/Desktop/test.opf")
 def save_db(filename)
-  #
-  # Main body of example script:
-  #
   print_debug "Saving Database: " + filename
 
   # Create the controller that holds all the logic for opening projects and
@@ -1599,6 +1494,10 @@ def save_db(filename)
 end
 alias :saveDB :save_db
 
+# Deletes a column from the spreadsheet.
+# @note This change is immediately reflected in the spreadsheet and is irreversible.
+# @param colname [RColumn, String] column to delete
+# @return nil
 def delete_column(colname)
   if colname.class != "".class
     colname = colname.name
@@ -1609,7 +1508,6 @@ def delete_column(colname)
   end
   $db.removeVariable(col)
 end
-
 alias :deleteColumn :delete_column
 alias :delete_variable :delete_column
 alias :deleteVariable :delete_column
@@ -1620,34 +1518,20 @@ def print_no_column_found_warning(colName)
 end
 alias :printNoColumnFoundWarning :print_no_column_found_warning
 
-#-------------------------------------------------------------------
-# Method name: load_macshapa_db
-# Function: Opens an old, closed database format MacSHAPA file and loads
-#     it into the current open database.
-#
-#     WARNING: This will only read in
-#     matrix and string variables.  Predicates are not yet supported.
-#     Queries will not be read in.  Times are translated to milliseconds
-#     for compatibility with Datavyu.
-# Arguments:
-# => filename (required): The FULL PATH to the saved MacSHAPA file.
-# => write_to_gui (required): Whether the MacSHAPA file should be read into
-#        the database currently open in the GUI or whether it should just be
-#        read into the Ruby interface.  After this script is run $db and $pj
-#        are now the MacSHAPA file.
-#
-# Returns:
-# => db: The database of the opened project.
-# => pj: The project data of the opened project.
-#
-# Example:
-# $db,$pj = load_db("/Users/username/Desktop/test.opf")
-# -------------------------------------------------------------------
+# Opens an old, closed database format MacSHAPA file and loads it into the current open database.
+# NOTE This will only read in matrix and string variables.  Predicates are not yet supported. Queries will not be read in.  Times are translated to milliseconds for compatibility with Datavyu.
+# @param filename [String] The FULL PATH to the saved MacSHAPA file.
+# @param write_to_gui [true, false] Whether the MacSHAPA file should be read into the database currently open in the GUI or whether it should just be read into the Ruby interface.  After this script is run $db and $pj are now the MacSHAPA file.
+# @return [Array] An array containing two items: the spreadsheet data and the project information. Set to $db and $pj, respectively (see example).
+# @todo fix linter warnings
+# @example
+#   $db,$pj = load_db("/Users/username/Desktop/test.opf")
 def load_macshapa_db(filename, write_to_gui, *ignore_vars)
 
   # Create a new DB for us to use so we don't touch the GUI... some of these
   # files can be huge.
   # Since I don't know how to make a whole new project, lets just load a blank file.
+  # TODO why is this section commented out??
   if not write_to_gui
     #$db,$pj = load_db("/Users/j4lingeman/Desktop/blank.opf")
     # $db = Datastore.new
@@ -1727,7 +1611,7 @@ def load_macshapa_db(filename, write_to_gui, *ignore_vars)
 
     # Search the variable section for the above id
     varSection.each do |l|
-      line = l.split(/[\t\s]/)
+      line = l.split(/[\t\s]/) # @todo linter error : dup char class
       if line[2] == id
 
         print_debug id
@@ -1822,33 +1706,20 @@ def load_macshapa_db(filename, write_to_gui, *ignore_vars)
 end
 alias :loadMacshapaDB :load_macshapa_db
 
-#-------------------------------------------------------------------
-# Method name: transfer_columns
-# Function: Transfers columns between databases.  If db1 or db2 are set
-#     to the empty string "", then that database is the current database
-#     in $db (usually the GUI's database).  So if you want to transfer a
-#     column into the GUI, set db2 to "".  If you want to tranfer a column
-#     from the GUI into a file, set db1 to "".  Setting remove to true will
-#     DELETE THE COLUMNS YOU ARE TRANSFERRING FROM DB1.  Be careful!
-# Arguments:
-# => db1 (required): The FULL PATH to the saved Datavyu file or set to
-#     "" to use the currently opened database. Columns are transferred FROM here.
-# => db2 (required): The FULL PATH to the saved Datavyu file or set to
-#     "" to use the currently opened database.  Columns are tranferred TO here.
-# => remove (required): Set to true to delete columns in DB1 as they are moved to
-#     db2.  Set to false to leave them intact.
-# => varnames (requires at least 1): You can specify as many var names as you like
-#     that will be retrieved from db1.  These should be the string names of the
-#     variables.
-#
-# Returns:
-# => Nothing.  Saves the files in place or modifies the GUI
-#
-# Example:
-#  transfer_columns("/Users/username/Desktop/test.opf","",true,"idchange")
-#  The above example will transfer the column "idchange" from test.opf to the GUI
-#  and leave test.opf intact with no modifications.
-# -------------------------------------------------------------------
+
+# Transfers columns between databases.
+# If db1 or db2 are set to the empty string "", then that database is the current database in $db (usually the GUI's database).
+# So if you want to transfer a column into the GUI, set db2 to "".
+# If you want to tranfer a column from the GUI into a file, set db1 to "".
+# Setting remove to true will DELETE THE COLUMNS YOU ARE TRANSFERRING FROM DB1.  Be careful!
+# @param db1 [String] The FULL PATH toa Datavyu file or "" to use the currently opened database. Columns are transferred FROM here.
+# @param db2 [String]: The FULL PATH to the saved Datavyu file or "" to use the currently opened database.  Columns are tranferred TO here.
+# @param remove [true, false] Set to true to delete columns in DB1 as they are moved to db2.  Set to false to leave them intact.
+# @param varnames [Array<String>] column names (requires at least 1): You can specify as many column names as you like that will be retrieved from db1.
+# @return nil
+# @example
+#  # Transfer column "idchange" from test.opf to the currently open spreadsheet in Datavyu. Do not delete "idchange" from test.opf.
+#  transfer_columns("/Users/username/Desktop/test.opf", "", true, "idchange")
 def transfer_columns(db1, db2, remove, *varnames)
   # Save the current $db and $proj global variables
   saved_db, saved_proj = $db, $proj
@@ -1987,31 +1858,19 @@ alias :transferColumn :transfer_columns
 alias :transferVariables :transfer_columns
 alias :transferVariable :transfer_columns
 
-#-------------------------------------------------------------------
-# Method name: check_rel
-# Function: Do a quick, in Datavyu, check of reliability errors.
-# Arguments:
-# => main_col (required): Either the string name or the Ruby column from getVariable
-#     of the primary column to compare against.
-# => rel_col (required): Either the string name or the Ruby column from getVariable
-#     of the reliability column to compare to the primary column.
-# => match_arg (required): The string of the argument to use to match the relability
-#     cells to the primary cells.  This must be a unique identifier between the cells.
-# => time_tolerance (required): The amount of slack you allow, in milliseconds, for
-#     difference between onset and offset before it is considered an error.  Set to 0
+# Do a quick, in Datavyu, check of reliability errors.
+# @param main_col [String, RColumn] Either the string name or the Ruby column from getVariable of the primary column to compare against.
+# @param rel_col [String, RColumn] Either the string name or the Ruby column from getVariable of the reliability column to compare to the primary column.
+# @param match_arg [String] The string of the argument to use to match the relability cells to the primary cells.  This must be a unique identifier between the cells.
+# @param time_tolerance [Integer] The amount of slack you allow, in milliseconds, for difference between onset and offset before it is considered an error.  Set to 0
 #     for no difference allowed and to a very large number for infinite distance allowed.
-# => dump_file (optional): The full string path to dump the relability output to.  This
+# @param dump_file [String, File] (optional): The full string path to dump the relability output to.  This
 #     can be used for multi-file dumps or just to keep a log.  You can also give it a Ruby
 #     File object if a file is already started.
-#
-# Returns:
-# => Nothing but the console and file output.
-#
-# Example:
-#  check_rel("trial", "rel.trial", "trialnum", 100, "/Users/motoruser/Desktop/Relcheck.txt")
-#   or
-#  check_rel("trial", "rel.trial", "trialnum", 100)
-# -------------------------------------------------------------------
+# @return [nil]
+# @example
+#   check_rel("trial", "rel.trial", "trialnum", 100, "/Users/motoruser/Desktop/Relcheck.txt")
+#   check_rel("trial", "rel.trial", "trialnum", 100)
 def check_reliability(main_col, rel_col, match_arg, time_tolerance, *dump_file)
   # Make the match_arg conform to the method format that is used
   if ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].include?(match_arg[0].chr)
@@ -2098,21 +1957,14 @@ alias :checkReliability :check_reliability
 alias :check_rel :check_reliability
 alias :checkRel :check_reliability
 
-#-------------------------------------------------------------------
-# Method name: check_valid_codes
-# Function: Do a quick, in Datavyu, check of valid codes.
-# Arguments:
-# => val (required): The variable that the codes belong to.
-# => dump_file (required): The full path of the file to dump output to.
-#     Use "" to not dump to a file.  You may also pass a Ruby File object.
-# => arg_code_pairs (required): A list of the argument names and valid codes
+
+# Do a quick, in Datavyu, check of valid codes.
+# @param var [String, RColumn] name of column to check
+# @param dump_file [String, File] output file to print messages to. Use '' to print to console.
+# @param arg_code_pairs [Array<String>]  A list of the argument names and valid codes
 #     in the following format: "argument_name", ["y","n"], "argument2", ["j","k","m"]
-# Returns:
-# => Nothing but the console and file output.
-#
-# Example:
+# @example
 #  check_valid_codes("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", [1,2,3])
-# -------------------------------------------------------------------
 def check_valid_codes(var, dump_file, *arg_code_pairs)
   if var.class == "".class
     var = getVariable(var)
@@ -2162,31 +2014,27 @@ def check_valid_codes(var, dump_file, *arg_code_pairs)
 end
 alias :checkValidCodes :check_valid_codes
 
+
 # Check valid codes on cells in a column using regex. Backwards-compatible with checkValidCodes
-# call-seq:
-#   check_valid_codes2(column, outfile, *code_filter_pairs)
+# @since 1.3.5
+# @param data [String, RColumn, Hash] When this parameter is a String or a column object from getVariable(), the function operates on codes within this column. If the parameter is a Hash (associative array), the function ignores the arg_code_pairs arguments and uses data from this Hash. The Hash must be structured as a nested mapping from columns (either as Strings or RColumns) to Hashes. These nested hashes must be mappings from code names (as Strings) to valid code values (as either lists (Arrays) or patterns (Regexp)).
+# @param outfile [String, File] The full path of the file to print output to. Use '' to print to scripting console.
+# @param arg_filt_pairs Pairs of code name and acceptable values either as an array of values or regexp. Ignored if first parameter is a Hash.
+# @return nothing
 #
-# Arguments:
-#  * val (required): The variable that the codes belong to.
-#  * dump_file (required): The full path of the file to dump output to.
-#   Use "" to not dump to a file.  You may also pass a Ruby File object.
-#  * arg_filt_pairs (required): Pairs of code name and acceptable values either as an array of values or regexp
-# Returns:
-#   * Nothing (output is printed to file or console).
-#
-# Example:
-#  checkValidCodes2("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", /\A\d+\Z/)
-def check_valid_codes2(var, dump_file, *arg_filt_pairs)
-	if var.class == "".class
-		var = getVariable(var)
-  elsif var.class == Hash
-    # var is already a hashmap
-    map = var
+# @example
+#   checkValidCodes2("trial", "", "hand", ["l","r","b","n"], "turn", ["l","r"], "unit", /\A\d+\Z/)
+def check_valid_codes2(data, outfile, *arg_filt_pairs)
+	if data.class == "".class
+		data = getVariable(data)
+  elsif data.class == Hash
+    # data is already a hashmap
+    map = data
 	end
 
-	if dump_file != ""
-		if dump_file.class == "".class
-	    	dump_file = open(File.expand_path(dump_file), 'a')
+	unless outfile == ""
+		if outfile.class == "".class
+	    	outfile = open(File.expand_path(outfile), 'a')
 	  	end
 	end
 
@@ -2214,38 +2062,38 @@ def check_valid_codes2(var, dump_file, *arg_filt_pairs)
   	  end
   	end
 
-    map[var] = arg_code
+    map[data] = arg_code
   end
 
 	errors = false
   # Iterate over key,entry (column, valid code mapping) in map
-  map.each_pair do |var, arg_code|
+  map.each_pair do |var, col_map|
     var = getVariable(var) if var.class == String
 
     # Iterate over cells in var and check each code's value
   	for cell in var.cells
-  		for arg, filt in arg_code
-        	val = eval "cell.#{arg}"
-          # Check whether value is valid — different functions depending on filter type
-          valid = case # note: we can't use case on filt.class because case uses === for comparison
-          when filt.class == Regexp
-          	!(filt.match(val).nil?)
-          when filt.class == Array
-            filt.include?(val)
-          else
-            raise "Unhandled filter type: #{filt.class}"
-          end
+      for arg, filt in col_map
+      	val = eval "cell.#{arg}"
+        # Check whether value is valid — different functions depending on filter type
+        valid = case # note: we can't use case on filt.class because case uses === for comparison
+        when filt.class == Regexp
+        	!(filt.match(val).nil?)
+        when filt.class == Array
+          filt.include?(val)
+        else
+          raise "Unhandled filter type: #{filt.class}"
+        end
 
-          if !valid
-            errors = true
-            str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
-            print str
-            dump_file.write(str) unless dump_file == ""
-          end
-      	end
+        if !valid
+          errors = true
+          str = "Code ERROR: Var: " + var.name + "\tOrdinal: " + cell.ordinal.to_s + "\tArg: " + arg + "\tVal: " + val + "\n"
+          print str
+          outfile.write(str) unless outfile == ""
+        end
+      end
   	end
   end
-	if not errors
+	unless errors
   	print_debug "No errors found."
 	end
 end
@@ -2290,6 +2138,11 @@ end
 alias :printAllNested :print_all_nested
 private :print_all_nested
 
+# Makes temporally adjacent cells in a column continuous if the interval between them is below a given threshold.
+# @param colname [String] name of column to smooth
+# @param tol [Integer] milliseconds below which cell onset should be changed to make continuous
+# @return nil
+# @note Only the onset is changed; not the offset.
 def smooth_column(colname, tol=33)
   col = getVariable(colname)
   for i in 0..col.cells.length-2
@@ -2306,6 +2159,9 @@ alias :smoothColumn :smooth_column
 
 # Outputs the values of all codes specified from the given cell to the given output file.
 # Row is delimited by tabs.
+# @param cell [RCell] cell to print codes from
+# @param file [File] output file
+# @return nil
 def print_codes(cell, file, args)
   for a in args
     #puts "Printing: " + a
@@ -2315,8 +2171,10 @@ def print_codes(cell, file, args)
 end
 alias :print_args :print_codes
 
-# Returns a cell that is within the given millisecond timestamp from the specified column.
-# @return [RCell]
+# Finds the first cell in the specified column that overlaps the given time.
+# @param col [RColumn] column to find cell from
+# @param time [Integer] time in milliseconds
+# @return [RCell] Cell that spans the given time; nil if none found.
 def get_cell_from_time(col, time)
   for cell in col.cells
     if cell.onset <= time and cell.offset >= time
@@ -2327,7 +2185,10 @@ def get_cell_from_time(col, time)
 end
 alias :getCellFromTime :get_cell_from_time
 
-# Prints ordinal, onset, offset, and the values of all codes from the given cell.
+# Returns ordinal, onset, offset, and the values of all codes from the given cell.
+# TODO change method name to something more appropriate
+# @param cell [RCell] cell whose codes to print
+# @return [Array<String>] array of values for all codes in cell
 def print_cell_codes(cell)
   s = Array.new
   s << cell.ordinal.to_s
@@ -2349,9 +2210,9 @@ def delete_cell(cell)
 end
 alias :deleteCell :delete_cell
 
-# Function: Return the OS version
-# @return ['windows', 'mac', 'linux']
-# Example:
+# Return the OS version
+# @return [String] 'windows', 'mac', or 'linux'
+# @example
 #  filepath = (getOS() == 'windows')? 'C:\data' : '~/data'
 def get_os
 	host_os = RbConfig::CONFIG['host_os']
@@ -2379,7 +2240,7 @@ alias :getDatavyuVersion :get_datavyu_version
 # Check whether current Datavyu version falls within the specified minimum and maximum versions (inclusive)
 # @param [String] minVersion Minimum version (e.g. 'v:1.3.5')
 # @param [String] maxVersion Maximum version. If unspecified, no upper bound is checked.
-# @return [Boolean] true if min,max version check passes; false otherwise.
+# @return [true, false] true if min,max version check passes; false otherwise.
 def check_datavyu_version(minVersion, maxVersion = nil)
   currentVersion = getDatavyuVersion()
   minCheck = (minVersion <=> currentVersion) <= 0
