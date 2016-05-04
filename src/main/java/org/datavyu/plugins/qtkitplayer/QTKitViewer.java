@@ -240,7 +240,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
             return;
         }
 
-        if (position != prevSeekTime && !seeking) {
+        if (!seeking) {
             seeking = true;
             try {
                 if (movie != null) {
