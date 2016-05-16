@@ -939,14 +939,19 @@ alias :make_rel :make_reliability
 # Create blank column.
 # @note Column does not exist in Datavyu spreadsheet unless saved with #set_column.
 # @param name [String] name of the column
-# @param args [Array<String>] list of codes names to add to column
+# @param args [Array<String>] list of codes to add to column; must specify at least one code name
 # @return [RColumn] Ruby column object
+# @note Code names must be all lower-case and contain no special characters other than underscores.
 # @example
-#   trial = createNewVariable("trial", "trialnum", "unit")
+#   trial = new_column("trial", "trialnum", "unit")
 #   blank_cell = trial.new_cell()
-#   setVariable(trial)
+#   set_column(trial)
 def new_column(name, *args)
   print_debug "Creating new variable"
+
+  # Illegal to call withiout at least one code name
+  raise "Can not create a column with no codes." unless args.size > 0
+
   v = RColumn.new
 
   v.name = name
