@@ -306,8 +306,12 @@ class RColumn
   # Validate code name. Remove special characters and replace
   # @param arg string to Validate
   # @return [String] validated code name
+  def self.sanitize_codename(name)
+    return name.gsub(/(\W)+/, "").gsub(/^\d{1}/, '_').downcase
+  end
+
   def convert_argname(arg)
-    return arg.gsub(/(\W)+/, "").downcase
+    return RColumn.sanitize_codename(arg)
   end
 
   # @note This function is not for general use.
