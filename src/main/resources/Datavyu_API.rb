@@ -941,7 +941,7 @@ alias :make_rel :make_reliability
 # @param name [String] name of the column
 # @param args [Array<String>] list of codes to add to column; must specify at least one code name
 # @return [RColumn] Ruby column object
-# @note Code names must be all lower-case and contain no special characters other than underscores.
+# @note Code names should be all lower-case and contain no special characters other than underscores.
 # @example
 #   trial = new_column("trial", "trialnum", "unit")
 #   blank_cell = trial.new_cell()
@@ -949,8 +949,8 @@ alias :make_rel :make_reliability
 def new_column(name, *args)
   print_debug "Creating new variable"
 
-  # Illegal to call withiout at least one code name
-  raise "Can not create a column with no codes." unless args.size > 0
+  # Use default code when no codes are specified.
+  args = ['code01'] if args.empty?
 
   v = RColumn.new
 
