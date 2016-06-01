@@ -95,25 +95,12 @@ class RCell
   # @param arglist (required): Names of the arguments being created
   def set_args(argvals, arglist)
     @arglist = arglist
-    @argvals = argvals
-    i = 0
-    if argvals == ""
-      @argvals = Array.new
-      arglist.each do |arg|
-        @argvals << nil
-      end
-    end
-    arglist.each do |arg|
+    @argvals = (argvals == '')? arglist.map{ '' } : argvals.map{ |x| x.nil?? '' : x }
 
-      if @argvals[i].nil?
-        @argvals[i] = ""
-      end
-      #Tricky magic part where we are defining var names on the fly.  Escaped quotes turn everything to strings.
-      #Handle this later by allowing numbers to be numbers but keeping strings.
-
+    # Add getter/setter methods for each code
+    arglist.each_with_index do |arg, i|
       instance_eval "def #{arg}; return argvals[#{i}]; end"
       instance_eval "def #{arg}=(val); argvals[#{i}] = val.to_s; end"
-      i += 1
     end
   end
 
@@ -390,11 +377,11 @@ class RColumn
   #   setVariable("trial", trial)
   def new_cell(cell = nil)
     c = RCell.new
+    c.set_args('', @arglist)
     if(cell.nil?)
       c.onset = 0
       c.offset = 0
       c.ordinal = 0
-      c.set_args("", @arglist)
     else
       c.onset = cell.onset
       c.offset = cell.offset
