@@ -275,10 +275,10 @@
             <url>http://m2.funambol.com/repositories/artifacts</url>
         </repository>
 
-        <repository>
-            <id>sonatype snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
+        <!--<repository>-->
+            <!--<id>sonatype snapshots</id>-->
+            <!--<url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
+        <!--</repository>-->
 
     </repositories>
 
