@@ -294,6 +294,17 @@ class RCell
   def overlaps(cell)
     cell.spans(self.onset) || cell.spans(self.offset) || self.spans(cell.onset) || self.spans(cell.offset)
   end
+
+  # Check if there is any intersection between this cell and given time range (inclusive).
+  # @param on [Numeric] range lower end
+  # @param off [Numeric] range upper end
+  # @return [true, false] true if there is any temporal overlap between self and given time range
+  def overlaps(on, off)
+    dummy_cell = RCell.new
+    dummy_cell.onset = on
+    dummy_cell.offset = off
+    overlaps(dummy_cell)
+  end
 end
 
 
