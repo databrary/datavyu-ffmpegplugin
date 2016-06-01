@@ -379,19 +379,29 @@ class RColumn
     end
   end
 
-  # Creates a new, blank cell at the end of this variable's cell array
-  # @return RCell Reference to the cell that was just created.  Modify the cell using this reference.
+  # Creates a new, blank cell at the end of this variable's cell array.
+  # If a template cell is provided, copies over onset and offset times and code values for any matching code names.
+  # @param cell [RCell] template cell
+  # @return [RCell] Reference to the cell that was just created.  Modify the cell using this reference.
   # @example
   #   trial = getVariable("trial")
   #   new_cell = trial.make_new_cell()
   #   new_cell.change_arg("onset", 1000)
   #   setVariable("trial", trial)
-  def new_cell()
+  def new_cell(cell = nil)
     c = RCell.new
-    c.onset = 0
-    c.offset = 0
-    c.ordinal = 0
-    c.set_args("", @arglist)
+    if(cell.nil?)
+      c.onset = 0
+      c.offset = 0
+      c.ordinal = 0
+      c.set_args("", @arglist)
+    else
+      c.onset = cell.onset
+      c.offset = cell.offset
+      self.arglist.each do |code|
+        c.change_arg(code, cell.get_arg(code)) if cell.arglist.include?(code)
+      end
+    end
     c.parent = @name
     @cells << c
     return c
@@ -469,7 +479,6 @@ class RColumn
   def set_hidden(value)
     @hidden = value
   end
-
 end
 
 # Patch Matrix class with setter method.  See fmendez.com/blog
