@@ -280,6 +280,20 @@ class RCell
     end
   end
 
+  # Check if given time falls within this cell's [onset, offset]
+  # @param time time in milliseconds to check
+  # @return [true, false] true if the given time is greater-than-or-equal to this cell's onset and less-than-or-equal to this cell's offset
+  def spans(time)
+    (self.onset <= time) && (self.offset >= time)
+  end
+
+  # Check if there is any intersection between this cell and given cell
+  # @param cell [RCell] other cell
+  # @return [true, false] true if there is any temporal overlap between self and given cell
+  # @note If the onset of one cell is the offset of another, the two cells are considered to be overlapping.
+  def overlaps(cell)
+    cell.spans(self.onset) || cell.spans(self.offset) || self.spans(cell.onset) || self.spans(cell.offset)
+  end
 end
 
 
