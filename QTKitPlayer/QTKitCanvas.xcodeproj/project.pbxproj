@@ -21,7 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		2C33CA1B12CFC6010054AABD /* QTKitCanvas.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C33CA1A12CFC6010054AABD /* QTKitCanvas.m */; };
+		2C33CA1B12CFC6010054AABD /* NativeOSXCanvas.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C33CA1A12CFC6010054AABD /* NativeOSXCanvas.m */; };
 		338142BD12A6F565006C0927 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 338142BC12A6F565006C0927 /* Quartz.framework */; };
 		338142C812A6F5A3006C0927 /* Clouds.qtz in Resources */ = {isa = PBXBuildFile; fileRef = 338142A412A6F4F3006C0927 /* Clouds.qtz */; };
 		3399FD1B12A6DBEA00D1DE2E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 339999C112A6D74600D1DE2E /* QuartzCore.framework */; };
@@ -80,7 +80,7 @@
 
 /* Begin PBXFileReference section */
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		2C33CA1A12CFC6010054AABD /* QTKitCanvas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QTKitCanvas.m; sourceTree = "<group>"; };
+		2C33CA1A12CFC6010054AABD /* NativeOSXCanvas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NativeOSXCanvas.m; sourceTree = "<group>"; };
 		338142A412A6F4F3006C0927 /* Clouds.qtz */ = {isa = PBXFileReference; lastKnownFileType = "video.quartz-composer"; path = Clouds.qtz; sourceTree = "<group>"; };
 		338142BC12A6F565006C0927 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
 		339999C112A6D74600D1DE2E /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
@@ -196,7 +196,7 @@
 		89D0F0280F392F48007831A7 /* native */ = {
 			isa = PBXGroup;
 			children = (
-				2C33CA1A12CFC6010054AABD /* QTKitCanvas.m */,
+				2C33CA1A12CFC6010054AABD /* NativeOSXCanvas.m */,
 			);
 			path = native;
 			sourceTree = "<group>";
@@ -315,7 +315,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C33CA1B12CFC6010054AABD /* QTKitCanvas.m in Sources */,
+				2C33CA1B12CFC6010054AABD /* NativeOSXCanvas.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

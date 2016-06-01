@@ -45,38 +45,34 @@
  
  */
 
-package org.datavyu.plugins.qtkitplayer;
+package org.datavyu.plugins.nativeosx;
 
 import org.datavyu.util.NativeLoader;
 
 import java.awt.*;
 import java.io.File;
 
-public class QTKitPlayer extends Canvas {
+public class NativeOSXPlayer extends Canvas {
 
     protected static int playerCount = 0;
 
     static {
         // Standard JNI: load the native library
 
-//        System.loadLibrary("QTKitCanvas");
-
-//        System.load("/Users/jesse/Library/Developer/Xcode/DerivedData/JAWTExample-cdhbmpdibiannlgigweelsyjyces/Build/Products/Debug/libQTKitCanvas.jnilib");
-
     }
 
     public final int id;
     File fileToLoad;
 
-    public QTKitPlayer(File fileToLoad) {
+    public NativeOSXPlayer(File fileToLoad) {
         super();
         try {
-            NativeLoader.LoadNativeLib("QTKitCanvas");
+            NativeLoader.LoadNativeLib("NativeOSXCanvas");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.id = QTKitPlayer.playerCount;
-        QTKitPlayer.playerCount += 1;
+        this.id = NativeOSXPlayer.playerCount;
+        NativeOSXPlayer.playerCount += 1;
         this.fileToLoad = fileToLoad;
     }
 
@@ -84,21 +80,25 @@ public class QTKitPlayer extends Canvas {
         super.addNotify();
         System.out.println("Opening video file: " + fileToLoad.toURI().getPath());
         try {
-            addNativeCoreAnimationLayer("file://" + fileToLoad.toURI().getPath());
+            addNativeOSXCoreAnimationLayer("file://" + fileToLoad.toURI().getPath());
         } catch (Exception e) {
             System.out.println("ERROR CAUGHT");
             e.printStackTrace();
         }
     }
 
-    // This method is implemented in native code. See NativeCanvas.m
-    public native void addNativeCoreAnimationLayer(String path);
+    // This method is implemented in native code. See NativeOSXCanvas.m
+    public native void addNativeOSXCoreAnimationLayer(String path);
 
     public native void stop(int id);
 
     public native void play(int id);
 
     public native void setTime(long time, int id);
+
+    public native void setTimePrecise(long time, int id);
+
+    public native void setTimeModerate(long time, int id);
 
     public native void setVolume(float time, int id);
 

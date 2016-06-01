@@ -45,79 +45,34 @@
  
  */
 
-package org.datavyu.plugins.qtkitplayer;
+package org.datavyu.plugins.nativeosxplayer;
 
-import org.datavyu.util.NativeLoader;
+import org.datavyu.plugins.Plugin;
+import org.datavyu.plugins.nativeosx.NativeOSXPlugin;
+import org.datavyu.plugins.qtkitplayer.QTKitPlugin;
 
 import java.awt.*;
-import java.io.File;
 
-public class QTKitPlayer extends Canvas {
+public class NativeOSXPlayerFactory extends Canvas {
 
-    protected static int playerCount = 0;
 
-    static {
+    public static Plugin getNativeOSXPlugin() {
         // Standard JNI: load the native library
-
-//        System.loadLibrary("QTKitCanvas");
-
-//        System.load("/Users/jesse/Library/Developer/Xcode/DerivedData/JAWTExample-cdhbmpdibiannlgigweelsyjyces/Build/Products/Debug/libQTKitCanvas.jnilib");
-
-    }
-
-    public final int id;
-    File fileToLoad;
-
-    public QTKitPlayer(File fileToLoad) {
-        super();
         try {
-            NativeLoader.LoadNativeLib("QTKitCanvas");
+            String osVersion = System.getProperty("os.version");
+
+            int major = Integer.valueOf(osVersion.split("\\.")[1]);
+            if(major >= 12) {
+                return new NativeOSXPlugin();
+            } else {
+                return new QTKitPlugin();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        this.id = QTKitPlayer.playerCount;
-        QTKitPlayer.playerCount += 1;
-        this.fileToLoad = fileToLoad;
+
+        return new NativeOSXPlugin();
     }
 
-    public void addNotify() {
-        super.addNotify();
-        System.out.println("Opening video file: " + fileToLoad.toURI().getPath());
-        try {
-            addNativeCoreAnimationLayer("file://" + fileToLoad.toURI().getPath());
-        } catch (Exception e) {
-            System.out.println("ERROR CAUGHT");
-            e.printStackTrace();
-        }
-    }
-
-    // This method is implemented in native code. See NativeCanvas.m
-    public native void addNativeCoreAnimationLayer(String path);
-
-    public native void stop(int id);
-
-    public native void play(int id);
-
-    public native void setTime(long time, int id);
-
-    public native void setVolume(float time, int id);
-
-    public native void release(int id);
-
-    public native double getMovieHeight(int id);
-
-    public native double getMovieWidth(int id);
-
-    public native long getCurrentTime(int id);
-
-    public native long getDuration(int id);
-
-    public native float getRate(int id);
-
-    public native void setRate(float rate, int id);
-
-    public native boolean isPlaying(int id);
-
-    public native float getFPS(int id);
 
 }

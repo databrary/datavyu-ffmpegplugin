@@ -735,7 +735,8 @@ public final class DataControllerV extends DatavyuDialog
                 if (viewer.isPlaying()) {
                     viewer.stop();
                     try {
-                        long viewerTime = viewer.getCurrentTime();
+//                        long viewerTime = viewer.getCurrentTime();
+                        long viewerTime = time;
 
                         long stepSize = ((ONE_SECOND) / (long) playbackModel.getCurrentFPS());
 

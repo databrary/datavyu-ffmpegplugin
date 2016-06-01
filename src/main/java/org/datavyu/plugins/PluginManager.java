@@ -19,9 +19,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.Datavyu;
 import org.datavyu.plugins.javafx.JavaFxPlugin;
-import org.datavyu.plugins.qtkitplayer.QTKitPlugin;
+import org.datavyu.plugins.nativeosxplayer.NativeOSXPlayerFactory;
 import org.datavyu.plugins.quicktime.QTDataViewer;
 import org.datavyu.plugins.quicktime.java.QTPlugin;
+import org.datavyu.util.MacHandler;
 import org.jdesktop.application.LocalStorage;
 
 import javax.swing.filechooser.FileFilter;
@@ -358,6 +359,12 @@ public final class PluginManager {
                         return;
                     }
 
+                    if(Datavyu.getPlatform() == Datavyu.Platform.MAC) {
+                        if(!p.getValidVersions().checkInRange(MacHandler.getOSVersion())) {
+                            return;
+                        }
+                    }
+
                     String pluginName = p.getPluginName();
 
                     if (pluginNames.contains(p.getPluginName())) {
@@ -431,6 +438,14 @@ public final class PluginManager {
                     }
 
                     if ("Native OSX Video".equals(o2.getPluginName())) {
+                        return 1;
+                    }
+
+                    if ("QTKit Video".equals(o1.getPluginName())) {
+                        return -1;
+                    }
+
+                    if ("QTKit Video".equals(o2.getPluginName())) {
                         return 1;
                     }
 
@@ -510,7 +525,7 @@ public final class PluginManager {
         // Shortcircuit this for the preferred new plugins for Windows and OSX
         if (classifier.equals("datavyu.video")) {
             if (Datavyu.getPlatform() == Datavyu.Platform.MAC) {
-                return new QTKitPlugin();
+                return NativeOSXPlayerFactory.getNativeOSXPlugin();
             }
 
             if (Datavyu.getPlatform() == Datavyu.Platform.WINDOWS) {

@@ -44,6 +44,19 @@ public class MacHandler {
      */
     private static Logger LOGGER = LogManager.getLogger(MacHandler.class);
 
+    public static int getOSVersion() {
+        try {
+            String osVersion = System.getProperty("os.version");
+
+            int major = Integer.valueOf(osVersion.split("\\.")[1]);
+            return major;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
     /**
      * Default constructor.
      */

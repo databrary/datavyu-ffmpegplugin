@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.datavyu.plugins.qtkitplayer;
+package org.datavyu.plugins.nativeosx;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +28,10 @@ import java.io.File;
  * The viewer for a quicktime video file.
  * <b>Do not move this class, this is for backward compatibility with 1.07.</b>
  */
-public final class QTKitViewer extends BaseQuickTimeDataViewer {
+public final class NativeOSXViewer extends BaseQuickTimeDataViewer {
 
+
+    private long timeOfPrevSeek = 0;
     /**
      * How many milliseconds in a second?
      */
@@ -41,13 +43,13 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     /**
      * The logger for this class.
      */
-    private static Logger LOGGER = LogManager.getLogger(QTKitViewer.class);
+    private static Logger LOGGER = LogManager.getLogger(NativeOSXViewer.class);
     private static float FALLBACK_FRAME_RATE = 24.0f;
     long prevSeekTime = -1;
     /**
      * The quicktime movie this viewer is displaying.
      */
-    private QTKitPlayer movie;
+    private NativeOSXPlayer movie;
     /**
      * The visual track for the above quicktime movie.
      */
@@ -57,7 +59,11 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
      */
     private Media visualMedia;
 
-    public QTKitViewer(final Frame parent, final boolean modal) {
+    private boolean seeking = false;
+
+    private long duration = 0;
+
+    public NativeOSXViewer(final Frame parent, final boolean modal) {
         super(parent, modal);
 
         movie = null;
@@ -82,8 +88,17 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     @Override
     public long getDuration() {
 
+//        System.out.println("Init Duration:" + movie.getDuration(movie.id));
+        if(movie.getDuration(movie.id) < 0) {
+            try { Thread.sleep(2000); } catch (Exception e) { e.printStackTrace(); }
+            System.out.println("Error: Could not get duration. Sleeping");
+        }
 
-        return movie.getDuration(movie.id);
+//        System.out.println("New duration: " + movie.getDuration(movie.id));
+        if(duration == 0) {
+            duration = movie.getDuration(movie.id);
+        }
+        return duration;
     }
 
     @Override
@@ -92,7 +107,7 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
         // Ensure that the native hierarchy is set up
         this.addNotify();
 
-        movie = new QTKitPlayer(videoFile);
+        movie = new NativeOSXPlayer(videoFile);
 
         this.add(movie, BorderLayout.CENTER);
 
@@ -107,13 +122,23 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
                 try {
                     // Make sure movie is actually loaded
                     movie.setVolume(0.7F, movie.id);
+//                    movie.setRate(1.0f, movie.id);
+//                    while(movie.getCurrentTime(movie.id) < 1000) {}
+//                    System.out.println(getCurrentTime());
+//                    movie.stop(movie.id);
+//                    movie.setTime(0, movie.id);
                 } catch (Exception e) {
                     // Oops! Back out
-                    QTKitPlayer.playerCount -= 1;
+                    NativeOSXPlayer.playerCount -= 1;
                     throw e;
                 }
             }
         });
+
+//        setPlaybackSpeed(1.0f);
+//        play();
+//        while(movie.getCurrentTime(movie.id) < 1000) {}
+//        stop();
 
     }
 
@@ -125,7 +150,20 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
 
     @Override
     protected float getQTFPS() {
-
+        float fps = movie.getFPS(movie.id);
+        if (fps <= 1) {
+            try {
+                Thread.sleep(2000);
+                fps = movie.getFPS(movie.id);
+                if(fps > 1) {
+                    return fps;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            assumedFPS = true;
+            return 29.97f;
+        }
         return movie.getFPS(movie.id);
     }
 
@@ -163,6 +201,8 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
                         movie.setRate(getPlaybackSpeed(), movie.id);
                     }
                 });
+            } else {
+                System.err.println("WARNING: Movie is currently null");
             }
         } catch (Exception e) {
             LOGGER.error("Unable to play", e);
@@ -202,25 +242,50 @@ public final class QTKitViewer extends BaseQuickTimeDataViewer {
     @Override
     public void seekTo(final long position) {
 
-        try {
-            if (movie != null && (prevSeekTime != position)) {
-                prevSeekTime = position;
-                EventQueue.invokeLater(new Runnable() {
-                    public void run() {
-                        boolean wasPlaying = isPlaying();
-                        float prevRate = getPlaybackSpeed();
-                        if (isPlaying())
-                            movie.stop(movie.id);
-                        movie.setTime(position, movie.id);
-                        if (wasPlaying) {
-                            movie.setRate(prevRate, movie.id);
-                        }
-                    }
-                });
+//        System.out.println("ASKED FOR SEEK TO " + position);
+//        System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+        if(System.currentTimeMillis() - timeOfPrevSeek < 35) {
+//            System.out.println("skipping seek");
+            return;
+        }
 
+        if (!seeking) {
+            seeking = true;
+            try {
+                if (movie != null) {
+                    prevSeekTime = position;
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+//                            System.out.println("Seeking to " + position);
+                            boolean wasPlaying = isPlaying();
+                            float prevRate = getPlaybackSpeed();
+                            if (isPlaying()) {
+//                                System.out.println("Stopping playback");
+                                movie.stop(movie.id);
+                            }
+                            if(prevRate >= 0 && prevRate <= 8) {
+//                                System.out.println("Precise seeking!");
+                                movie.setTimePrecise(position, movie.id);
+                            } else if (prevRate < 0  && prevRate > -8) {
+//                                System.out.println("Moderate seeking!");
+                                movie.setTimeModerate(position, movie.id);
+                            } else {
+//                                System.out.println("Fast seeking!");
+                                movie.setTime(position, movie.id);
+                            }
+                            if (wasPlaying) {
+                                movie.setRate(prevRate, movie.id);
+                            }
+                            movie.repaint();
+                            timeOfPrevSeek = System.currentTimeMillis();
+                            seeking = false;
+                        }
+                    });
+
+                }
+            } catch (Exception e) {
+                LOGGER.error("Unable to find", e);
             }
-        } catch (Exception e) {
-            LOGGER.error("Unable to find", e);
         }
     }
 

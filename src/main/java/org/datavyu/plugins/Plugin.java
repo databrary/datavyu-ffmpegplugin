@@ -23,8 +23,9 @@
 package org.datavyu.plugins;
 
 import org.datavyu.Datavyu;
+import org.datavyu.util.VersionRange;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import java.util.List;
 
 
@@ -79,4 +80,8 @@ public interface Plugin {
     Filter[] getFilters();
 
     List<Datavyu.Platform> getValidPlatforms();
+
+    default VersionRange getValidVersions() {
+        return new VersionRange(0,99);
+    }
 }

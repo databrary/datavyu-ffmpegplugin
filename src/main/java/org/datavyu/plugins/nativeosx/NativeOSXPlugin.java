@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.datavyu.plugins.qtkitplayer;
+package org.datavyu.plugins.nativeosx;
 
 import com.google.common.collect.Lists;
 import com.sun.jna.Platform;
@@ -31,7 +31,7 @@ import java.net.URL;
 import java.util.List;
 
 
-public final class QTKitPlugin implements Plugin {
+public final class NativeOSXPlugin implements Plugin {
 
     private static final List<Datavyu.Platform> VALID_OPERATING_SYSTEMS = Lists.newArrayList(Datavyu.Platform.MAC);
 
@@ -66,7 +66,7 @@ public final class QTKitPlugin implements Plugin {
                                        final boolean modal) {
 
         if (Platform.isMac() || Platform.isWindows()) {
-            return new QTKitViewer(parent, modal);
+            return new NativeOSXViewer(parent, modal);
         } else {
             return null;
         }
@@ -95,14 +95,14 @@ public final class QTKitPlugin implements Plugin {
 
     @Override
     public String getPluginName() {
-        return "QTKit Video";
+        return "Native OSX Video";
     }
 
     @Override
     public Class<? extends DataViewer> getViewerClass() {
 
         if (Platform.isMac()) {
-            return QTKitViewer.class;
+            return NativeOSXViewer.class;
         }
 
         return null;
@@ -115,6 +115,6 @@ public final class QTKitPlugin implements Plugin {
 
     @Override
     public VersionRange getValidVersions() {
-        return new VersionRange(0, 10); // Start with OS version 10, go to 99 for future
+        return new VersionRange(11, 99); // Start with OS version 10, go to 99 for future
     }
 }
