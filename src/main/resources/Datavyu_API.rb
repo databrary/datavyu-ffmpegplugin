@@ -474,6 +474,67 @@ class RColumn
   def set_hidden(value)
     @hidden = value
   end
+
+  # Resamples the cells of this column using given step size.
+  # Optionally can specify the start and end time-points.
+  # @param [Integer] step step size to resample with, in milliseconds
+  # @param [Hash] opts options
+  # @option opts [String] :column_name (self.name) name of returned column
+  # @option opts [Integer] :start_time (earliest onset) time to start resampling from, in milliseconds
+  # @option opts [Integer] :stop_time (latest offset) time to stop resampling at, in milliseconds
+  # @return [RColumn] new column with resampled cells
+  # @note Undefined behavior for columns whose cells overlap with each other.
+  # @since 1.3.5
+  def resample(step, opts={})
+    @resample_defaults = {
+      :column_name => self.name,
+      :start_time => :earliest,
+      :stop_time => :latest
+    }
+
+    opts = @resample_defaults.merge(opts)
+    if opts[:start_time] == :earliest
+      opts[:start_time] = @cells.map(&:onset).min
+    end
+    if opts[:stop_time] == :latest
+      opts[:stop_time] = @cells.map(&:offset).max
+    end
+
+    # Construct new column
+    ncol = new_column(opts[:column_name], self.arglist)
+    # Construct new cells spanning range.
+    ( (opts[:start_time])..(opts[:stop_time]) ).step(step) do |time|
+      ncell = ncol.new_cell
+      ncell.onset = time
+      ncell.offset = time + step - 1
+
+      # Find overlapping cells from self in this time region
+      overlap_cells = self.cells.select{ |x| x.overlaps_cell(ncell) }
+      # if overlap_cells.empty?
+      #   puts "no source cell for time #{time}"
+      #   next
+      # end
+      next if overlap_cells.empty? # no source cell
+
+      # Map each to their intersecting region and find the one with the largest duration.
+      sorted_by_intersection =  overlap_cells.sort do |x, y|
+        r1 = x.intersecting_region(ncell)
+        d1 = r1.last - r1.first
+
+        r2 = y.intersecting_region(ncell)
+        d2 = r2.last - r2.first
+
+        d2 <=> d1 # largest first
+      end
+      winner = sorted_by_intersection.first
+
+      ncell.arglist.each do |code|
+        ncell.change_code(code, winner.get_code(code))
+      end
+      # p ncol.cells.size
+    end
+    return ncol
+  end
 end
 
 # Patch Matrix class with setter method.  See fmendez.com/blog
