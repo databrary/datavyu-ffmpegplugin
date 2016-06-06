@@ -278,19 +278,26 @@ class RCell
   # @param cell [RCell] other cell
   # @return [true, false] true if there is any temporal overlap between self and given cell
   # @note If the onset of one cell is the offset of another, the two cells are considered to be overlapping.
-  def overlaps(cell)
+  def overlaps_cell(cell)
     cell.spans(self.onset) || cell.spans(self.offset) || self.spans(cell.onset) || self.spans(cell.offset)
   end
 
   # Check if there is any intersection between this cell and given time range (inclusive).
-  # @param on [Numeric] range lower end
-  # @param off [Numeric] range upper end
+  # @param [Numeric] range time range
   # @return [true, false] true if there is any temporal overlap between self and given time range
-  def overlaps(on, off)
+  def overlaps_range(range)
     dummy_cell = RCell.new
-    dummy_cell.onset = on
-    dummy_cell.offset = off
-    overlaps(dummy_cell)
+    dummy_cell.onset = range.first
+    dummy_cell.offset = range.last
+    overlaps_cell(dummy_cell)
+  end
+
+  # Gives the intersection region between self and given cell
+  # @param [RCell] cell other cell
+  # @return [Range] time range of intersection
+  def intersecting_region(cell)
+    r = Range.new([self.onset, cell.onset].max, [self.offset, cell.offset].min)
+    return r
   end
 end
 
