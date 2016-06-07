@@ -644,7 +644,7 @@ end
 #     primary_column_name = 'trial'
 #     reliability_column_name = 'trial_rel'
 #     codes_to_compute = ['condition', 'result']
-#     kappas = compute_kappa(colPri, colRel, codes_to_compute)
+#     kappas, tables = compute_kappa(colPri, colRel, codes_to_compute)
 #     kappas.each_pair { |code, k| puts "#{code}: #{k}" }
 def compute_kappa(pri_col, rel_col, *codes)
   codes = pri_col.arglist if codes.nil? || codes.empty?
