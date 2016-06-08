@@ -639,7 +639,8 @@ end
 # @param pri_col [RColumn, String] primary coder's column
 # @param rel_col [RColumn, String] reliability coder's column
 # @param codes [Array<String>] codes to compute scores for
-# @return [Array<Hash<String, Fixnum> and Hash<String, Matrix>>] two hashmaps mapping from code names to their kappa values and contingency tables, respectively
+# @return [Hash<String, Fixnum>] mapping from code names to kappa values
+# @return [Hash<String, Matrix>] mapping fromm code names to contingency tables
 # @example
 #     primary_column_name = 'trial'
 #     reliability_column_name = 'trial_rel'
