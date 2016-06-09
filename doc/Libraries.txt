@@ -1,0 +1,89 @@
+Compiling and Downloading Libraries for datavyu
+
+This guide assumes that you are using a 64 bit version of the JVM and ffmpeg dll’s.
+
+I. Libraries from zeranoe
+Download the following dll’s from zeranoe (https://ffmpeg.zeranoe.com/builds/) to support x264, which I have not gotten to compile properly under windows yet.
+The direct link is https://ffmpeg.zeranoe.com/builds/win64/shared/ffmpeg-20160607-git-49b0246-win64-shared.7z
+avcodec-57.dll
+avformat-57.dll
+avutil-55.dll
+swresample-2.dll
+There will be more dll’s but these are the ones you should add to your java library path. In my case I added them at root level of the datavyu project, because this is where the JVM executes and per default ‘.’ is in the java library path.
+
+
+II. Compiled library and .lib files
+For this step you need to compile the ffmpeg source code and setup your windows environment properly. Here are the steps:
+
+The two installation guides that I used are:
+https://trac.ffmpeg.org/wiki/CompilationGuide/MSVC
+http://ffmpeg.org/platform.html
+
+I’m using Windows 7.
+
+1. Install MVS 2015 (Community edition) from here
+https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx
+
+1. Download the msys2 for 32 bit Windows (For me that was msys2-i686-20160205.exe). The 32 bit version compiles 64 bit code.
+http://msys2.github.io/
+
+2. Launch the msys shell and execute the following commands
+pacman -Sy pacman
+(updates the software)
+pacman -S mingw-w64-x86_64-yasm mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL
+(adds mingw for 64 bits)
+
+3. To setup the environment variables for 64 bit build run the following batch script windows command line tool ‘cmd’:
+cd “C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC”
+vcvarsall.bat x64
+The flag x64 sets the environment up for compilation of 64 bit versions.
+
+4. Run the mingw platform in msys in ‘cmd’ the windows command line. Notice that the environment variables carry over from the windows command line.
+C:\msys32\mingw64_shell.bat
+This should open the mingw platform.
+
+You can check your environment variables that carried over from the windows command line tool through the commands:
+echo $PATH
+echo $LIB
+
+5. Download the git source code, e.g. use 
+git clone https://github.com/FFmpeg/FFmpeg.git
+
+6. Then go to the source location of ffmpeg (your path will be different)
+cd /c/Users/Florian/FFmpeg
+
+7. Prepare the compilation of an DLL through the configure command
+./configure --enable-swscale --enable-asm --enable-yasm --arch=x86_64 --disable-ffserver --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --disable-libopenjpeg --disable-iconv --disable-zlib --prefix=/c/ffmpeg --toolchain=msvc
+
+You can either disable yasm or install yasm!
+Some builds may need swscale. Here, we need swscale and enabled its build with the flag --enable-swscale
+
+install prefix            /usr/local
+source path               .
+C compiler                cl
+C library                 msvcrt
+ARCH                      x86 (generic)
+big-endian                no
+runtime cpu detection     yes
+yasm                      yes
+In the end of configuration, you might also see pkg-config not found issue that you can ignore. It will not affect compilation.
+
+
+8. Compile the source code to produce DLLs:
+make –j 4
+
+The –j 4 flag indicates to use 4 threads for compilation. This speeds up the compilation process. You may want to set the number of threads even higher depending on your hardware.
+
+The successful compilation ends with:
+Creating library libavfilter/avfilter.lib and object libavfilter/avfilter.exp
+
+
+III. Copying additional .dll’s
+Copy the additional dll into your java library path (see I. for more details).
+swscale-4.dll
+
+
+IV. Compiling the dll for DisplayImageFromVideo (or DisplayImageFromJNI)
+The source files DisplayImageFromVideo.cpp  and DisplayImageFromJNI.cpp contain compile instructions.
+
+
