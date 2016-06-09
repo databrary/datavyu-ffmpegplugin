@@ -27,6 +27,9 @@ public class DisplayImageFromVideo extends Canvas {
 	
 	BufferedImage image;
 	int nChannel = 3;
+	ByteBuffer buffer;
+	byte[] data;
+	DataBufferByte dataBuffer;
 	
 	private native ByteBuffer getFrameBuffer();
 	
@@ -40,12 +43,30 @@ public class DisplayImageFromVideo extends Canvas {
 	
 	private native void release();
 	
+	public void update(Graphics g){
+	    paint(g); // instead of resetting just paint directly 
+	}
+	
+	private void getNextFrame(int width, int height) {
+		loadNextFrame();
+		buffer = getFrameBuffer();
+		data = new byte[width*height*nChannel];
+		buffer.get(data); // Unsure how to get rid of that copy!!
+		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
+		ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+		ComponentColorModel cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+		SampleModel sm = cm.createCompatibleSampleModel(width, height);
+		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
+		Hashtable<String, String> properties = new Hashtable<String, String>();
+		image = new BufferedImage(cm, raster, false, properties);
+	}
+	
 	public DisplayImageFromVideo() {}
 	
 	public void setImgeBuffer(int width, int height) {
-		ByteBuffer buffer = getFrameBuffer();
+		buffer = getFrameBuffer();
 		System.out.println("This buffer has the capacity " + buffer.capacity() + " bytes.");
-		byte[] data = new byte[width*height*nChannel];
+		data = new byte[width*height*nChannel];
 		buffer.get(data); // Unsure how to get rid of that copy!!
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
 		ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
@@ -63,14 +84,14 @@ public class DisplayImageFromVideo extends Canvas {
 	public static void main(String[] args) {
 		//String fileName = args[1];
 		//String fileName = "C:\\Users\\Florian\\test.h264";
-		String fileName = "C:\\Users\\Florian\\SleepingBag.MP4";
+		String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
 		final DisplayImageFromVideo display = new DisplayImageFromVideo();
 		display.loadMovie(fileName);
 		int width = display.getMovieWidth();
 		int height = display.getMovieHeight();		
 		display.setImgeBuffer(width, height);		
 		Frame f = new Frame();
-        f.setBounds(0, 0, 1200, 700);
+        f.setBounds(0, 0, width, height);
         f.add(display);
         f.addWindowListener( new WindowAdapter() {
             public void windowClosing(WindowEvent ev) {
@@ -80,14 +101,15 @@ public class DisplayImageFromVideo extends Canvas {
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrame = 50;
+        int nFrame = 150;
         for (int iFrame = 0; iFrame < nFrame; ++iFrame) {
-        	display.loadNextFrame();
-        	display.validate();
+        	display.getNextFrame(width, height);
         	display.repaint();
 //        	try {
-//            	Thread.sleep(100);
-//        	} catch (InterruptedException ie) {}
+//            	Thread.sleep(5);        		
+//        	} catch (InterruptedException ie) {
+//        		
+//        	}
         }
         long t1 = System.nanoTime();
 		System.out.println("width = " + width + " pixels.");

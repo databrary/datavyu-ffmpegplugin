@@ -12,21 +12,25 @@ extern "C" {
 // vcvarsall.bat x64
 // cl DisplayImageFromVideo.cpp /Fe"..\..\lib\DisplayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
-typedef unsigned char BYTE;
-BYTE				*frameData;
+//typedef unsigned char BYTE;
+//BYTE				*frameData;
 int					width = 0;
 int					height = 0;
 int					nChannel = 3;
+int					iFrame = 0;
 AVFormatContext *pFormatCtx = NULL;
-int             i, videoStream;
+int             videoStream;
 AVCodecContext  *pCodecCtx = NULL;
 AVCodec         *pCodec = NULL;
+AVFrame			*pTmp = NULL;
 AVFrame         *pFrame = NULL; 
-AVFrame         *pFrameRGB = NULL;
+AVFrame         *pFrameRead = NULL;
+AVFrame			*pFrameShow = NULL;
 AVPacket        packet;
 int             frameFinished;
 int             numBytes;
-uint8_t         *buffer = NULL;
+uint8_t         *bufferRead = NULL;
+uint8_t			*bufferShow = NULL;
 AVDictionary    *optionsDict = NULL;
 struct SwsContext      *sws_ctx = NULL;
 
@@ -39,6 +43,11 @@ void loadNextFrame() {
 
 			// Did we get a video frame?
 			if(frameFinished) {
+				// Swap pointers.
+				//pTmp = pFrameRead;
+				//pFrameRead = pFrameShow;
+				//pFrameShow = pTmp;
+
 				// Convert the image from its native format to RGB
 				sws_scale
 				(
@@ -47,14 +56,17 @@ void loadNextFrame() {
 					pFrame->linesize,
 					0,
 					pCodecCtx->height,
-					pFrameRGB->data,
-					pFrameRGB->linesize
+					pFrameShow->data,
+					pFrameShow->linesize
 				);
 
-				frameData = pFrameRGB->data[0];
+				//frameData = pFrameRead->data[0];
 				width = pCodecCtx->width;
 				height = pCodecCtx->height;
 				av_free_packet(&packet);
+
+				fprintf(stdout,"Read frame %d.\n",iFrame++);
+
 				return;
 			}
 			// Free the packet that was allocated by av_read_frame
@@ -66,7 +78,7 @@ void loadNextFrame() {
 
 JNIEXPORT jobject JNICALL Java_DisplayImageFromVideo_getFrameBuffer
 (JNIEnv *env, jobject thisObject) {
-	return env->NewDirectByteBuffer((void*) frameData, width*height*nChannel*sizeof(BYTE));
+	return env->NewDirectByteBuffer((void*) pFrameShow->data[0], width*height*nChannel*sizeof(uint8_t));
 }
 
 JNIEXPORT void JNICALL Java_DisplayImageFromVideo_loadNextFrame
@@ -99,7 +111,7 @@ JNIEXPORT void JNICALL Java_DisplayImageFromVideo_loadMovie
   
   // Find the first video stream
   videoStream=-1;
-  for(i=0; i<pFormatCtx->nb_streams; i++)
+  for(int i=0; i<pFormatCtx->nb_streams; i++)
     if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO) {
       videoStream=i;
       break;
@@ -128,16 +140,24 @@ if(videoStream==-1) {
   pFrame=av_frame_alloc();
   
   // Allocate an AVFrame structure
-  pFrameRGB=av_frame_alloc();
-  if(pFrameRGB==NULL) {
-	fprintf(stderr, "Could not allocate RGB frame.\n");
+  pFrameRead=av_frame_alloc();
+  if(pFrameRead==NULL) {
+	fprintf(stderr, "Could not allocate RGB frame for read.\n");
 	exit(1);
   }
+
+  pFrameShow=av_frame_alloc();
+  if(pFrameShow==NULL) {
+	fprintf(stderr, "Could not allocate RGB frame for show.\n");
+	exit(1);
+  }
+
   
   // Determine required buffer size and allocate buffer
   numBytes=avpicture_get_size(AV_PIX_FMT_RGB24, pCodecCtx->width,
 			      pCodecCtx->height);
-  buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
+  bufferRead=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
+  bufferShow=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
 
   sws_ctx =
     sws_getContext
@@ -157,9 +177,12 @@ if(videoStream==-1) {
   // Assign appropriate parts of buffer to image planes in pFrameRGB
   // Note that pFrameRGB is an AVFrame, but AVFrame is a superset
   // of AVPicture
-  avpicture_fill((AVPicture *)pFrameRGB, buffer, AV_PIX_FMT_RGB24,
+  avpicture_fill((AVPicture *)pFrameRead, bufferRead, AV_PIX_FMT_RGB24,
 		 pCodecCtx->width, pCodecCtx->height);
   
+  avpicture_fill((AVPicture *)pFrameShow, bufferShow, AV_PIX_FMT_RGB24,
+		 pCodecCtx->width, pCodecCtx->height);
+
 	loadNextFrame();
 
 	env->ReleaseStringUTFChars(jFileName, fileName);
@@ -179,8 +202,11 @@ JNIEXPORT jint JNICALL Java_DisplayImageFromVideo_getMovieWidth
 JNIEXPORT void JNICALL Java_DisplayImageFromVideo_release
 (JNIEnv *env, jobject thisObject) {
   // Free the RGB image
-  av_free(buffer);
-  av_free(pFrameRGB);
+  av_free(bufferShow);
+  av_free(pFrameShow);
+
+  av_free(bufferRead);
+  av_free(pFrameRead);
   
   // Free the YUV frame
   av_free(pFrame);
