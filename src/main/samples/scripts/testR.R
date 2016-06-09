@@ -1,2 +1,0 @@
-print("test")
-print(db)
