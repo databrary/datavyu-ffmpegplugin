@@ -15,13 +15,17 @@ import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
+/**
+ * Display an image from an pinned byte buffer inside java.
+ * 
+ * @author Florian Raudies
+ * @date 05/30/2016
+ */
 public class DisplayImageFromByteBuffer extends Canvas {
-	/**
-	 * Florian Raudies, 05/30/2016, Mountain View, CA.
-	 */
+
 	private static final long serialVersionUID = 3011662036905343969L;
-	ByteBuffer buffer;
-	BufferedImage image;
+	ByteBuffer buffer = null;
+	BufferedImage image = null;
 	int blockSize = 50;
 	int nChannel = 3;
 	
@@ -37,15 +41,8 @@ public class DisplayImageFromByteBuffer extends Canvas {
 			}
 		}
 		byte[] data = new byte[width*height*nChannel];
-		buffer.get(data); // Unsure how to get rid of that copy!!
+		buffer.get(data); // Unsure how to remove this copy!
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
-		//int dataType = BufferedImage.TYPE_3BYTE_BGR;
-		//int pixelStride = 3;
-		//int scanlineStride = width;
-		//int[] bandOffsets = {0, 1, 2};
-		//SampleModel sm = new ComponentSampleModel(dataType, width, height, pixelStride, scanlineStride, bandOffsets);
-		//ColorSpace cs = ColorSpace.getInstance(ColorSpace.TYPE_RGB);
-		//ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
 		ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		ComponentColorModel cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);

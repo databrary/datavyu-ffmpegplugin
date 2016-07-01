@@ -15,25 +15,34 @@ import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
-
+/**
+ * Display the video frames read and converted into the correct color model with ffmpeg in c/c++. 
+ * @author Florian Raudies
+ * @date 06/27/2016
+ *
+ */
 public class DisplayImageFromVideo extends Canvas {
 	
 	static {
-		// Make sure to place the ffmpeg libraries (dll's) in the library path I use '.'
+		// Make sure to place the ffmpeg libraries (dll's) in the java library path. I use '.'
 		System.loadLibrary("./lib/DisplayImageFromVideo");
 	}
 	
 	private static final long serialVersionUID = -6199180436635445511L;
 	
-	BufferedImage image;
-	int nChannel = 3;
-	ByteBuffer buffer;
-	byte[] data;
-	DataBufferByte dataBuffer;
+	ColorSpace cs 							= ColorSpace.getInstance(ColorSpace.CS_sRGB);
+	ComponentColorModel cm 					= new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+	Hashtable<String, String> properties 	= new Hashtable<String, String>();
+	
+	int 			nChannel = 3;
+	BufferedImage 	image = null;
+	ByteBuffer 		buffer = null;
+	byte[] 			data = null;
+	DataBufferByte 	dataBuffer = null;
 	
 	private native ByteBuffer getFrameBuffer();
 	
-	private native void loadNextFrame(); // loop the video
+	private native void loadNextFrame(); // loop the video, or stop at the end?
 	
 	private native void loadMovie(String fileName);
 	
@@ -53,11 +62,8 @@ public class DisplayImageFromVideo extends Canvas {
 		data = new byte[width*height*nChannel];
 		buffer.get(data); // Unsure how to get rid of that copy!!
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
-		ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-		ComponentColorModel cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-		Hashtable<String, String> properties = new Hashtable<String, String>();
 		image = new BufferedImage(cm, raster, false, properties);
 	}
 	
@@ -69,11 +75,8 @@ public class DisplayImageFromVideo extends Canvas {
 		data = new byte[width*height*nChannel];
 		buffer.get(data); // Unsure how to get rid of that copy!!
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
-		ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-		ComponentColorModel cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-		Hashtable<String, String> properties = new Hashtable<String, String>();
 		image = new BufferedImage(cm, raster, false, properties);
 	}
 	
@@ -82,7 +85,6 @@ public class DisplayImageFromVideo extends Canvas {
 	}	
 	
 	public static void main(String[] args) {
-		//String fileName = args[1];
 		//String fileName = "C:\\Users\\Florian\\test.h264";
 		String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
 		final DisplayImageFromVideo display = new DisplayImageFromVideo();
@@ -105,11 +107,6 @@ public class DisplayImageFromVideo extends Canvas {
         for (int iFrame = 0; iFrame < nFrame; ++iFrame) {
         	display.getNextFrame(width, height);
         	display.repaint();
-//        	try {
-//            	Thread.sleep(5);        		
-//        	} catch (InterruptedException ie) {
-//        		
-//        	}
         }
         long t1 = System.nanoTime();
 		System.out.println("width = " + width + " pixels.");

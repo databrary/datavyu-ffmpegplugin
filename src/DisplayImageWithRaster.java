@@ -6,11 +6,13 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
-
+/**
+ * Display an image using the writable raster in java.
+ * @author Florian Raudies
+ * @date 06/27/2016
+ */
 public class DisplayImageWithRaster extends Canvas {
-	/**
-	 * Florian Raudies, 05/30/2016, Mountain View, CA.
-	 */
+
 	private static final long serialVersionUID = 4847026109565928971L;
 	private BufferedImage image;
 	
