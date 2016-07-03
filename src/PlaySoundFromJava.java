@@ -27,6 +27,12 @@ public class PlaySoundFromJava {
 			File soundFile = new File(fileName);
 			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
 			AudioFormat audioFormat = audioInputStream.getFormat();
+			System.out.println("encoding: " + audioFormat.getEncoding());
+			System.out.println("sample rate: " + audioFormat.getSampleRate());
+			System.out.println("sample size: " + audioFormat.getSampleSizeInBits());
+			System.out.println("channels: " + audioFormat.getChannels());
+			System.out.println("frame rate: " + audioFormat.getFrameRate());
+			System.out.println("frame size: " + audioFormat.getFrameSize());
 			System.out.println(audioFormat);
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
 			soundLine = (SourceDataLine) AudioSystem.getLine(info);

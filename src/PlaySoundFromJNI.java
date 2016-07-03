@@ -53,7 +53,7 @@ public class PlaySoundFromJNI {
 			UnsupportedAudioFileException, LineUnavailableException {
 		
 		loadAudio(fileName);
-		buffer = getAudioBuffer(BUFFER_SIZE);
+		buffer = getAudioBuffer(BUFFER_SIZE);		
 		isOpen = true;
 		// Create the audio format.
 		String sampleFormat = getSampleFormat();
@@ -62,17 +62,17 @@ public class PlaySoundFromJNI {
 		int channels = getNumberOfChannels();
 		int frameSize = getFrameSizeInBy();
 		float frameRate = getFramesPerSecond();
-		boolean bigEndian = bigEndian();
+		//boolean bigEndian = bigEndian();
+		boolean bigEndian = true;
 		
-		System.out.println("sample format = " + sampleFormat);
-		System.out.println("sample rate = " + sampleRate);
-		System.out.println("sample size in bits = " + sampleSizeInBits);
-		System.out.println("channels = " + channels);
-		System.out.println("frameSize = " + frameSize);
-		System.out.println("frameRate = " + frameRate);
-		System.out.println("bigEndian = " + bigEndian);
+		//System.out.println("sample format = " + sampleFormat);
+		//System.out.println("sample rate = " + sampleRate);
+		//System.out.println("sample size in bits = " + sampleSizeInBits);
+		//System.out.println("channels = " + channels);
+		//System.out.println("frameSize = " + frameSize);
+		//System.out.println("frameRate = " + frameRate);
+		//System.out.println("bigEndian = " + bigEndian);
 		
-		// PCM_UNSIGNED 22050.0 Hz, 8 bit, mono, 1 bytes/frame, 
 		Encoding encoding = Encoding.PCM_UNSIGNED; // TODO: Get this info from ffmpeg.
 		audioFormat = new AudioFormat(encoding, sampleRate, sampleSizeInBits, 
 				channels, frameSize, frameRate, bigEndian);
@@ -81,22 +81,31 @@ public class PlaySoundFromJNI {
 		soundLine.open(audioFormat);
 		soundLine.start();
 		sampleData = new byte[buffer.capacity()]; // could be too large, let's see.
-		playerThread = new PlayerThread();
+		//playerThread = new PlayerThread();
 	}
 	
 	class PlayerThread extends Thread {
 		@Override
 		public void run() {
-			while (doPlay && loadNextFrame()) {
-				buffer.get(sampleData, 0, BUFFER_SIZE);
-				soundLine.write(sampleData, 0, BUFFER_SIZE);
-			}
+//			while (doPlay && loadNextFrame()) {
+//				buffer.get(sampleData, 0, BUFFER_SIZE);
+//				soundLine.write(sampleData, 0, BUFFER_SIZE);
+//			}
+			loadNextFrame();
+			buffer.get(sampleData, 0, BUFFER_SIZE);
+			soundLine.write(sampleData, 0, BUFFER_SIZE);
 		}
 	}
 	
+	
+	
 	public void play()  {
-		doPlay = true;
-		playerThread.start();
+		//doPlay = true;
+		//playerThread.start();
+		loadNextFrame();
+		buffer.get(sampleData, 0, BUFFER_SIZE);
+		soundLine.write(sampleData, 0, BUFFER_SIZE);
+		
 	}
 	
 	public void stop() {
