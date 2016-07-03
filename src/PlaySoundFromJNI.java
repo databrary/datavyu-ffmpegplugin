@@ -9,7 +9,12 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-
+/**
+ * Plays the first 2 seconds of an audio file and then stops and destroys all threads for this player:
+ * These are a producer thread in c/c++ and an consumer thread in java.
+ * @author Florian Raudies
+ * @date 07/03/2016
+ */
 public class PlaySoundFromJNI {
 	static {
 		// Make sure to place the ffmpeg libraries (dll's) in the java library path. I use '.'
@@ -25,7 +30,6 @@ public class PlaySoundFromJNI {
 	private AudioFormat audioFormat = null;
 	private byte[] sampleData = null;
 	
-		
 	private native ByteBuffer getAudioBuffer(int nByte); // provides pointer to stream.
 	
 	private native boolean loadNextFrame(); // frees memory advances pointer
@@ -62,17 +66,7 @@ public class PlaySoundFromJNI {
 		int channels = getNumberOfChannels();
 		int frameSize = getFrameSizeInBy();
 		float frameRate = getFramesPerSecond();
-		//boolean bigEndian = bigEndian();
-		boolean bigEndian = true;
-		
-		//System.out.println("sample format = " + sampleFormat);
-		//System.out.println("sample rate = " + sampleRate);
-		//System.out.println("sample size in bits = " + sampleSizeInBits);
-		//System.out.println("channels = " + channels);
-		//System.out.println("frameSize = " + frameSize);
-		//System.out.println("frameRate = " + frameRate);
-		//System.out.println("bigEndian = " + bigEndian);
-		
+		boolean bigEndian = bigEndian();
 		Encoding encoding = Encoding.PCM_UNSIGNED; // TODO: Get this info from ffmpeg.
 		audioFormat = new AudioFormat(encoding, sampleRate, sampleSizeInBits, 
 				channels, frameSize, frameRate, bigEndian);
@@ -81,31 +75,33 @@ public class PlaySoundFromJNI {
 		soundLine.open(audioFormat);
 		soundLine.start();
 		sampleData = new byte[buffer.capacity()]; // could be too large, let's see.
-		//playerThread = new PlayerThread();
+		playerThread = new PlayerThread();
+		playerThread.setDaemon(true); // can be shutdown by JVM.
 	}
 	
 	class PlayerThread extends Thread {
 		@Override
-		public void run() {
-//			while (doPlay && loadNextFrame()) {
-//				buffer.get(sampleData, 0, BUFFER_SIZE);
-//				soundLine.write(sampleData, 0, BUFFER_SIZE);
-//			}
-			loadNextFrame();
-			buffer.get(sampleData, 0, BUFFER_SIZE);
-			soundLine.write(sampleData, 0, BUFFER_SIZE);
+		public void run() { // TODO: Stop and restart of player.
+			while (doPlay && loadNextFrame()) {
+				System.out.println("Got next audio frame.");
+				buffer.get(sampleData, 0, BUFFER_SIZE);
+				System.out.println("First byte: " + buffer.get(0) + " and last byte " + buffer.get(BUFFER_SIZE-1));
+				soundLine.write(sampleData, 0, BUFFER_SIZE);
+				buffer.rewind();
+				System.out.println("Rewound buffer.");
+				System.out.flush();
+			}
+			System.out.println("Stopped player loop.");
 		}
 	}
 	
-	
+	public void restart() {
+		doPlay = true;
+	}
 	
 	public void play()  {
-		//doPlay = true;
-		//playerThread.start();
-		loadNextFrame();
-		buffer.get(sampleData, 0, BUFFER_SIZE);
-		soundLine.write(sampleData, 0, BUFFER_SIZE);
-		
+		doPlay = true;
+		playerThread.start();
 	}
 	
 	public void stop() {
@@ -113,12 +109,15 @@ public class PlaySoundFromJNI {
 	}
 	
 	public void close() {
-		doPlay = false;		
-		isOpen = false;
+		doPlay = false;
+		System.out.println("State of player thread: " + playerThread.getState());
+		//playerThread.notify();
+		release();
+		System.out.println("Player thread alive? " + playerThread.isAlive());
+		System.out.println("Player thread is deamon? " + playerThread.isDaemon());
 		soundLine.drain();
 		soundLine.stop();
 		soundLine.close();
-		release();
 	}
 	
 	public static void main(String[] args) {
@@ -127,7 +126,12 @@ public class PlaySoundFromJNI {
 		// Set up an audio input stream piped from the sound file.
 		try {
 			player.open(fileName);
-			//player.play();
+			System.out.println("Opened audio file!");
+			player.play();
+			System.out.println("Started player thread!");
+			Thread.sleep(2000); // Play the file for 2 sec and then shut down.
+		} catch (InterruptedException ex) {
+			ex.printStackTrace();			
 		} catch (UnsupportedAudioFileException ex) {
 			ex.printStackTrace();
 		} catch (IOException ex) {
@@ -135,9 +139,13 @@ public class PlaySoundFromJNI {
 		} catch (LineUnavailableException ex) {
 			ex.printStackTrace();
 		} finally {
+			System.out.println("Stopping player.");
 			player.stop();
+			System.out.println("Closing player.");
 			player.close();
+			System.out.println("Closed player.");
+			// Now get that Java Sound event dispatcher thread to close (THIS WAS NOT THE PROBLEM)
+			// http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4365713
 		}		
 	}
-
 }

@@ -41,6 +41,7 @@ public class PlaySoundFromJava {
 			int nBytes = 0;
 			byte[] sampleData = new byte[BUFFER_SIZE];
 			while (nBytes != -1) {
+				System.out.println("Decoded packet for audio stream.");
 				nBytes = audioInputStream.read(sampleData, 0, sampleData.length);
 				if (nBytes > 0) {
 					soundLine.write(sampleData, 0, nBytes);
