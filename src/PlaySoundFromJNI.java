@@ -4,10 +4,19 @@ import java.nio.ByteBuffer;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Control;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
+// TODO: stop/restart, fast/slow play back, change the volume (use gain control on data line)?
+// For faster/slower playback see this post
+// http://stackoverflow.com/questions/5760128/increase-playback-speed-of-sound-file-in-java
+// Essentially drop/repeat samples (look at this sample rate converter) which encapsulates that
+// functionally into a class   http://www.jsresources.org/examples/SampleRateConverter.html
+
 
 /**
  * Plays the first 2 seconds of an audio file and then stops and destroys all threads for this player:
@@ -74,6 +83,18 @@ public class PlaySoundFromJNI {
 		soundLine = (SourceDataLine) AudioSystem.getLine(info);
 		soundLine.open(audioFormat);
 		soundLine.start();
+		
+		// Get all controls for this data line.
+		Control controls[] = soundLine.getControls();
+		for (Control control : controls) {
+			System.out.println(control);
+		}
+		// We noticed that it offers a gain control which we use to change the volume by -10dB.
+		FloatControl gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
+		gainControl.setValue(-10.0f);
+		System.out.println("max volume: " + gainControl.getMaximum());
+		System.out.println("min volume: " + gainControl.getMinimum());
+		
 		sampleData = new byte[buffer.capacity()]; // could be too large, let's see.
 		playerThread = new PlayerThread();
 		playerThread.setDaemon(true); // can be shutdown by JVM.
