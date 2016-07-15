@@ -86,7 +86,8 @@ public class DisplayImageFromVideo extends Canvas {
 	
 	public static void main(String[] args) {
 		//String fileName = "C:\\Users\\Florian\\test.h264";
-		String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
+		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
+		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
 		final DisplayImageFromVideo display = new DisplayImageFromVideo();
 		display.loadMovie(fileName);
 		int width = display.getMovieWidth();

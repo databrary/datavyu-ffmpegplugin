@@ -41,6 +41,14 @@ JNIEXPORT jstring JNICALL Java_PlaySoundFromJNI_getSampleFormat
 
 /*
  * Class:     PlaySoundFromJNI
+ * Method:    getCodecName
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_PlaySoundFromJNI_getCodecName
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlaySoundFromJNI
  * Method:    getSampleRate
  * Signature: ()F
  */

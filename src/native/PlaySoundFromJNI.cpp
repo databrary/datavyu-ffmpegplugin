@@ -338,6 +338,12 @@ JNIEXPORT jstring JNICALL Java_PlaySoundFromJNI_getSampleFormat
 	return env->NewStringUTF(name);
 }
 
+JNIEXPORT jstring JNICALL Java_PlaySoundFromJNI_getCodecName
+(JNIEnv *env, jobject thisObject) {
+	const char* name = aCodecCtx->codec->name;
+	return env->NewStringUTF(name);
+}
+
 JNIEXPORT jfloat JNICALL Java_PlaySoundFromJNI_getSampleRate
 (JNIEnv *env, jobject thisObject) {
 	return aCodecCtx->sample_rate;

@@ -5,24 +5,28 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Control;
+import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-// TODO: stop/restart, fast/slow play back, change the volume (use gain control on data line)?
+// TODO: stop/restart, fast/slow play back, change the volume (use gain control on data line)
 // For faster/slower playback see this post
 // http://stackoverflow.com/questions/5760128/increase-playback-speed-of-sound-file-in-java
 // Essentially drop/repeat samples (look at this sample rate converter) which encapsulates that
 // functionally into a class   http://www.jsresources.org/examples/SampleRateConverter.html
 
-
 /**
  * Plays the first 2 seconds of an audio file and then stops and destroys all threads for this player:
  * These are a producer thread in c/c++ and an consumer thread in java.
+ * 
+ * This player can only play audio files with an PCM encoding. Other encodings won't work because
+ * the javax.sound framework does not provide data lines for these audio codecs.
+ * 
  * @author Florian Raudies
- * @date 07/03/2016
+ * @date 07/14/2016
  */
 public class PlaySoundFromJNI {
 	static {
@@ -47,6 +51,8 @@ public class PlaySoundFromJNI {
 	
 	private native String getSampleFormat();
 	
+	private native String getCodecName();
+	
 	private native float getSampleRate();
 	
 	private native int getSampleSizeInBits();
@@ -61,7 +67,18 @@ public class PlaySoundFromJNI {
 		
 	private native void release();
 	
-	
+	private Encoding getEncoding() {
+		String codecName = getCodecName();
+		Encoding encoding = new Encoding(codecName);
+		switch (codecName) {
+			case "pcm_u8":
+			case "pcm_u16LE":
+				encoding = Encoding.PCM_UNSIGNED;
+				break;
+		}
+		return encoding;
+	}
+
 	public void open(String fileName) throws IOException, 
 			UnsupportedAudioFileException, LineUnavailableException {
 		
@@ -69,14 +86,13 @@ public class PlaySoundFromJNI {
 		buffer = getAudioBuffer(BUFFER_SIZE);		
 		isOpen = true;
 		// Create the audio format.
-		String sampleFormat = getSampleFormat();
 		float sampleRate = getSampleRate();
 		int sampleSizeInBits = getSampleSizeInBits();
 		int channels = getNumberOfChannels();
 		int frameSize = getFrameSizeInBy();
 		float frameRate = getFramesPerSecond();
 		boolean bigEndian = bigEndian();
-		Encoding encoding = Encoding.PCM_UNSIGNED; // TODO: Get this info from ffmpeg.
+		Encoding encoding = getEncoding();
 		audioFormat = new AudioFormat(encoding, sampleRate, sampleSizeInBits, 
 				channels, frameSize, frameRate, bigEndian);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
@@ -132,7 +148,6 @@ public class PlaySoundFromJNI {
 	public void close() {
 		doPlay = false;
 		System.out.println("State of player thread: " + playerThread.getState());
-		//playerThread.notify();
 		release();
 		System.out.println("Player thread alive? " + playerThread.isAlive());
 		System.out.println("Player thread is deamon? " + playerThread.isDaemon());
@@ -142,6 +157,13 @@ public class PlaySoundFromJNI {
 	}
 	
 	public static void main(String[] args) {
+		System.out.print("Audio file types supported by javax.sound: ");
+		AudioFileFormat.Type audioTypes[] = AudioSystem.getAudioFileTypes();
+		for (AudioFileFormat.Type type : audioTypes) {
+			System.out.print(type + ", ");
+		}
+		System.out.println();
+		
 		String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
 		PlaySoundFromJNI player = new PlaySoundFromJNI();
 		// Set up an audio input stream piped from the sound file.
