@@ -10,13 +10,13 @@ extern "C" {
 	#include <libavformat/avformat.h>
 }
 
-// Florian Raudies, 07/03/2016, Mountain View, CA.
+// Florian Raudies, 07/14/2016, Mountain View, CA.
 // vcvarsall.bat x64
 // cl PlaySoundFromJNI.cpp /Fe"..\..\lib\PlaySoundFromJNI" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib"
 
 #define AUDIO_BUFFER_SIZE 1024
 #define MAX_AUDIO_FRAME_SIZE 192000
-#define AUDIO_QUEUE_MAX_SIZE 128 // TODO: Implement the max size.
+#define AUDIO_QUEUE_MAX_SIZE 128
 
 typedef struct PacketQueue {
   AVPacketList *first_pkt, *last_pkt;

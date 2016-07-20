@@ -261,7 +261,7 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 	uint8_t **converted_input_samples = NULL;
 
 	int len1, data_size = 0;
-	int data_size2;
+	//int data_size2;
 
 	for(;;) {
 		while(audio_pkt_size > 0) {
@@ -279,21 +279,13 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 
 			if(got_frame) {
 				fprintf(stderr, "Got data from packet queue.\n");
-
-				
 				data_size = av_samples_get_buffer_size(NULL, 
-								aInCodecCtx->channels,
-								frame.nb_samples,
-								aInCodecCtx->sample_fmt,
-								1);
-								
-				data_size2 = av_samples_get_buffer_size(NULL, 
 								aOutCodecCtx->channels,
 								frame.nb_samples,
 								aOutCodecCtx->sample_fmt,
 								1);
 				fprintf(stderr, "\tFrame has %d samples.\n", frame.nb_samples);
-				fprintf(stderr, "\t\tData size 2 = %d.\n", data_size2);
+				fprintf(stderr, "\t\tData size = %d.\n", data_size);
 
 				assert(data_size <= buf_size);
 
@@ -309,8 +301,7 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 						return -1;
 				}
 
-				//memcpy(audio_buf, frame.data[0], data_size);
-				memcpy(audio_buf, converted_input_samples[0], data_size2);
+				memcpy(audio_buf, converted_input_samples[0], data_size);
 
 				av_freep(&converted_input_samples[0]);
 				free(converted_input_samples);
@@ -321,7 +312,7 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 				continue;
 			}
 			/* We have data, return it and come back for more later */
-			fprintf(stderr, "decoded %d data from packet.\n", data_size);
+			//fprintf(stderr, "decoded %d data from packet.\n", data_size);
 			return data_size;
 		}
 		if(pkt.data)

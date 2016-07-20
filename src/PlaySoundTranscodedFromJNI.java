@@ -13,7 +13,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 // TODO: stop/restart, fast/slow play back, change the volume through gain control on data line
-// For faster/slower playback see this post
+// For faster/slower play back see this post
 // http://stackoverflow.com/questions/5760128/increase-playback-speed-of-sound-file-in-java
 // Essentially drop/repeat samples (look at this sample rate converter) which encapsulates that
 // functionally into a class   http://www.jsresources.org/examples/SampleRateConverter.html
@@ -22,12 +22,11 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 // https://www.ffmpeg.org/doxygen/2.4/transcoding_8c_source.html
 // https://www.ffmpeg.org/doxygen/2.2/transcode_aac_8c-example.html
 
-
 /**
  * Plays the first 2 seconds of an audio file and then stops and destroys all threads for this player:
  * These are a producer thread in c/c++ and an consumer thread in java.
  * @author Florian Raudies
- * @date 07/14/2016
+ * @date 07/19/2016
  */
 public class PlaySoundTranscodedFromJNI {
 	static {
@@ -130,16 +129,6 @@ public class PlaySoundTranscodedFromJNI {
 	
 	// Nice overview:  https://docs.oracle.com/javase/tutorial/sound/sampled-overview.html
 	public static void main(String[] args) {
-//		AudioFileFormat.Type audioTypes[] = AudioSystem.getAudioFileTypes();
-//		for (AudioFileFormat.Type type : audioTypes) {
-//			System.out.println(type);
-//		}
-//		
-//		AudioFormat audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, 48000.0f, 8, 1, 1, 48000, false);		
-//		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-//		System.out.println(info);
-//		System.out.println("Supported: " + AudioSystem.isLineSupported(info));
-		
 		//String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
 		String fileName = "C:\\Users\\Florian\\SleepingBag.MP4";
 		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
