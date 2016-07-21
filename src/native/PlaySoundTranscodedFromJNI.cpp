@@ -11,7 +11,7 @@ extern "C" {
 	#include <libswresample/swresample.h>
 }
 
-// Florian Raudies, 07/17/2016, Mountain View, CA.
+// Florian Raudies, 07/20/2016, Mountain View, CA.
 // vcvarsall.bat x64
 // cl PlaySoundTranscodedFromJNI.cpp /Fe"..\..\lib\PlaySoundTranscodedFromJNI" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg2\libswresample\swresample.lib"
 
@@ -23,6 +23,18 @@ extern "C" {
 #define OUTPUT_BIT_RATE 22050
 /** The number of output channels */
 #define OUTPUT_CHANNELS 1
+
+/**
+ * Convert an error code into a text message.
+ * @param error Error code to be converted
+ * @return Corresponding error text (not thread-safe)
+ */
+static const char *get_error_text(const int error)
+{
+    static char error_buffer[256];
+    av_strerror(error, error_buffer, sizeof(error_buffer));
+    return error_buffer;
+}
 
 typedef struct PacketQueue {
   AVPacketList *first_pkt, *last_pkt;
@@ -126,7 +138,7 @@ static int packet_queue_get(PacketQueue *q, AVPacket *pkt) {
 
 	std::unique_lock<std::mutex> locker(*q->mu);
     q->cv->wait(locker, [q](){return (q->nb_packets > 0) || (flush==1);});
-	fprintf(stderr, "Acquired mutex to read packet queue.\n");
+	//fprintf(stderr, "Acquired mutex to read packet queue.\n");
 
 	if (flush==1) {
 		ret = -1; // puts silence
@@ -184,7 +196,8 @@ static int init_resampler(AVCodecContext *input_codec_context,
 
         /** Open the resampler with the specified parameters. */
         if ((error = swr_init(*resample_context)) < 0) {
-            fprintf(stderr, "Could not open resample context\n");
+			fprintf(stderr, "Could not open resamlpe context. Error: '%s'.\n",
+					get_error_text(error));
             swr_free(resample_context);
             return error;
         }
@@ -221,7 +234,8 @@ static int init_converted_samples(uint8_t ***converted_input_samples,
                                   output_codec_context->channels,
                                   frame_size,
                                   output_codec_context->sample_fmt, 0)) < 0) {
-        fprintf(stderr, "Could not allocate converted input samples.\n");
+		fprintf(stderr, "Could not allocate converted input samples. Error: '%s')\n",
+						get_error_text(error));
         av_freep(&(*converted_input_samples)[0]);
         free(*converted_input_samples);
         return 1;
@@ -239,12 +253,12 @@ static int convert_samples(const uint8_t **input_data,
                            SwrContext *resample_context)
 {
     int error;
-
-    /** Convert the samples using the resampler. */
+    /** Convert samples using the resampler context. */
     if ((error = swr_convert(resample_context,
                              converted_data, frame_size,
                              input_data    , frame_size)) < 0) {
-        fprintf(stderr, "Could not convert input samples.\n");
+        fprintf(stderr, "Could not convert input samples. Error '%s')\n",
+                get_error_text(error));
         return 1;
     }
     return 0;
@@ -252,16 +266,14 @@ static int convert_samples(const uint8_t **input_data,
 
 // decodes packet from queue into audio_buf
 int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_size) {
-	fprintf(stderr, "Called audio_decode_frame.\n");
-
+	//fprintf(stderr, "Called audio_decode_frame.\n");
 	static AVPacket pkt;
 	static uint8_t *audio_pkt_data = NULL;
 	static int audio_pkt_size = 0;
 	static AVFrame frame;
 	uint8_t **converted_input_samples = NULL;
-
 	int len1, data_size = 0;
-	//int data_size2;
+	int error;
 
 	for(;;) {
 		while(audio_pkt_size > 0) {
@@ -278,27 +290,36 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 			data_size = 0;
 
 			if(got_frame) {
-				fprintf(stderr, "Got data from packet queue.\n");
+				//fprintf(stderr, "Got data from packet queue.\n");
 				data_size = av_samples_get_buffer_size(NULL, 
 								aOutCodecCtx->channels,
 								frame.nb_samples,
 								aOutCodecCtx->sample_fmt,
 								1);
-				fprintf(stderr, "\tFrame has %d samples.\n", frame.nb_samples);
-				fprintf(stderr, "\t\tData size = %d.\n", data_size);
+				//fprintf(stderr, "\tFrame has %d samples.\n", frame.nb_samples);
+				//fprintf(stderr, "\t\tData size = %d.\n", data_size);
 
 				assert(data_size <= buf_size);
 
-				if (init_converted_samples(&converted_input_samples, aOutCodecCtx,
-					frame.nb_samples)) {
-						fprintf(stderr, "Error in init of conversion.\n");
-						return -1;
+				if ((error = init_converted_samples(&converted_input_samples, 
+											aOutCodecCtx, frame.nb_samples))<0) {
+					// clean-up
+					if (converted_input_samples) {
+						av_freep(&converted_input_samples[0]);
+						free(converted_input_samples);					
+					}
+					return error;
 				}
 
-				if (convert_samples((const uint8_t**)frame.extended_data, 
-					converted_input_samples, frame.nb_samples, resample_context)) {
-						fprintf(stderr, "Error in conversion of samples.\n");
-						return -1;
+				if ((error = convert_samples((const uint8_t**)frame.extended_data, 
+											converted_input_samples, 
+											frame.nb_samples, resample_context))<0) {
+					// clean-up
+					if (converted_input_samples) {
+						av_freep(&converted_input_samples[0]);
+						free(converted_input_samples);					
+					}
+					return error;
 				}
 
 				memcpy(audio_buf, converted_input_samples[0], data_size);
@@ -322,9 +343,9 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 			return -1;
 		}
 
-		fprintf(stderr, "  Calling packet_queue_get\n");
+		//fprintf(stderr, "  Calling packet_queue_get\n");
 		if(packet_queue_get(&audioq, &pkt) < 0) {
-			fprintf(stderr, "No data in packet queue.\n");
+			//fprintf(stderr, "No data in packet queue.\n");
 			return -1;
 		}
 
@@ -337,7 +358,10 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 JNIEXPORT jobject JNICALL Java_PlaySoundTranscodedFromJNI_getAudioBuffer
 (JNIEnv *env, jobject thisObject, jint nByte) {
 	nLen = nByte;
-	streamAudio = (uint8_t*) malloc(nByte); // TODO: add error handling.
+	streamAudio = (uint8_t*) malloc(nByte);
+	if (!streamAudio) {
+		fprintf(stderr, "Failed to allocate stream audio buffer.\n");
+	}
 	return env->NewDirectByteBuffer((void*) streamAudio, nByte*sizeof(uint8_t));
 }
 
@@ -356,18 +380,18 @@ JNIEXPORT jboolean JNICALL Java_PlaySoundTranscodedFromJNI_loadNextFrame
 	static unsigned int audio_buf_index = 0;
 
 	while(len > 0) {
-		fprintf(stderr, "Length that still needs to be read is %d.\n", len);
+		//fprintf(stderr, "Length that still needs to be read is %d.\n", len);
 
 		if(audio_buf_index >= audio_buf_size) {
 			/* We have already sent all our data; get more */
 			audio_size = audio_decode_frame(aInCodecCtx, audio_buf, sizeof(audio_buf));
 
-			fprintf(stderr, "\tThe audio size is %d.\n", audio_size);
+			//fprintf(stderr, "\tThe audio size is %d.\n", audio_size);
 
 			if(audio_size < 0) {
 				/* If error, output silence */
 				audio_buf_size = 1024; // arbitrary?
-				fprintf(stderr, "Set silience for %d bytes.\n", audio_buf_size);
+				//fprintf(stderr, "Set silience for %d bytes.\n", audio_buf_size);
 				memset(audio_buf, 0, audio_buf_size);
 			} else {
 				audio_buf_size = audio_size;
@@ -384,17 +408,17 @@ JNIEXPORT jboolean JNICALL Java_PlaySoundTranscodedFromJNI_loadNextFrame
 		stream += len1;
 		audio_buf_index += len1;
 	}
-	fprintf(stderr, "Audio buffer address: %x\n", streamAudio);
-	fprintf(stderr, "Stream address: %x\n", stream);
+	//fprintf(stderr, "Audio buffer address: %x\n", streamAudio);
+	//fprintf(stderr, "Stream address: %x\n", stream);
 
-	return quit==0;
+	return quit == 0;
 }
 
 void decodeLoop() {
 	AVPacket packet;
 	while(!quit && av_read_frame(pFormatCtx, &packet)>=0) {
 		if(packet.stream_index==iAudioStream) {
-			fprintf(stderr, "Decoded packet for audio stream %d.\n",iAudioStream);
+			//fprintf(stderr, "Decoded packet for audio stream %d.\n",iAudioStream);
 			packet_queue_put(&audioq, &packet);
 		} else {
 			av_free_packet(&packet);
@@ -408,20 +432,23 @@ JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_loadAudio
 	int             i;
 	AVCodec         *aInCodec = nullptr;
 	AVCodec			*aOutCodec = nullptr;
-
+	int				error;
 	// Register all formats and codecs
 	av_register_all();
 
 	// Open video file
-	if(avformat_open_input(&pFormatCtx, fileName, NULL, NULL)!=0) {
-		fprintf(stderr, "Couldn't open file.\n");
-		exit(1);
+	if((error = avformat_open_input(&pFormatCtx, fileName, NULL, NULL))<0) {
+		fprintf(stderr, "Could not open input file '%s'. Error: '%s'.\n",
+                fileName, get_error_text(error));
+		exit(error);
 	}
 
 	// Retrieve stream information
-	if(avformat_find_stream_info(pFormatCtx, NULL)<0) {
-		fprintf(stderr, "Couldn't find stream information.\n");
-		exit(1);		
+	if((error = avformat_find_stream_info(pFormatCtx, NULL))<0) {
+		fprintf(stderr, "Could not find stream information. Error: '%s'.\n",
+                fileName, get_error_text(error));
+		avformat_close_input(&pFormatCtx);
+		exit(error);
 	}
 
 	// Dump information about file onto standard error
@@ -429,44 +456,58 @@ JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_loadAudio
 
 	// Find the first video stream
 	iAudioStream = -1;
-	for(i=0; i<pFormatCtx->nb_streams; i++) {
+	for(i = 0; i < pFormatCtx->nb_streams; i++) {
 		if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
 			iAudioStream = i;
 			break;
 		}
 	}
-	if(iAudioStream==-1) {
-		fprintf(stderr, "Couldn't not find audio stream.\n");
-		exit(1);
+	if(iAudioStream == -1) {
+		fprintf(stderr, "Could not find an audio stream.\n");
+		avformat_close_input(&pFormatCtx);
+		exit(AVERROR_EXIT);
 	}
 
 	aInCodecCtxOrig = pFormatCtx->streams[iAudioStream]->codec;
-	aInCodec = avcodec_find_decoder(aInCodecCtxOrig->codec_id);
-	if(!aInCodec) {
-		fprintf(stderr, "Unsupported codec!\n");
-		exit(1);
+	if(!(aInCodec = avcodec_find_decoder(aInCodecCtxOrig->codec_id))) {
+		fprintf(stderr, "Could not find input codec!\n");
+		avformat_close_input(&pFormatCtx);
+		exit(AVERROR_EXIT);
 	}
 
-	aInCodecCtx = avcodec_alloc_context3(aInCodec);
-	if(avcodec_copy_context(aInCodecCtx, aInCodecCtxOrig) != 0) {
-		fprintf(stderr, "Couldn't copy codec context.\n");
-		exit(1);
+	if (!(aInCodecCtx = avcodec_alloc_context3(aInCodec))) {
+		fprintf(stderr, "Could not allocate a decoding context.\n");
+		avformat_close_input(&pFormatCtx);
+		exit(AVERROR_EXIT);
 	}
 
-	if(avcodec_open2(aInCodecCtx, aInCodec, NULL)<0) {
-		fprintf(stderr, "Could not open audio codec.\n");
-		exit(1);
+	if((error = avcodec_copy_context(aInCodecCtx, aInCodecCtxOrig))<0) {
+		fprintf(stderr, "Could not copy codec context. Error: '%s'.\n",
+                fileName, get_error_text(error));
+		avformat_close_input(&pFormatCtx);
+		exit(error);
+	}
+
+	if((error = avcodec_open2(aInCodecCtx, aInCodec, NULL))<0) {
+		fprintf(stderr, "Could not open audio codec. Error: '%s'.\n",
+                get_error_text(error));
+		avformat_close_input(&pFormatCtx);
+		exit(error);
 	}
 
 	packet_queue_init(&audioq);
 
 	// create the output codec
-	aOutCodec = avcodec_find_encoder(AV_CODEC_ID_PCM_U8);
+	if (!(aOutCodec = avcodec_find_encoder(AV_CODEC_ID_PCM_U8))) {
+		fprintf(stderr, "Could not create output codec.");
+		avformat_close_input(&pFormatCtx);
+		exit(AVERROR_EXIT);
+	}
 
-	aOutCodecCtx = avcodec_alloc_context3(aOutCodec);
-    if (!aOutCodecCtx) {
+    if (!(aOutCodecCtx = avcodec_alloc_context3(aOutCodec))) {
         fprintf(stderr, "Could not allocate an encoding output context\n");
-		exit(1);
+		avformat_close_input(&pFormatCtx);
+		exit(AVERROR_EXIT);
     }
 
     aOutCodecCtx->channels       = OUTPUT_CHANNELS;
@@ -476,15 +517,17 @@ JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_loadAudio
     aOutCodecCtx->bit_rate       = OUTPUT_BIT_RATE;
 
     /** Open the encoder for the audio stream to use it later. */
-    if (avcodec_open2(aOutCodecCtx, aOutCodec, NULL)<0) {
-        fprintf(stderr, "Could not open output codec!\n");
-        exit(1);
+    if ((error = avcodec_open2(aOutCodecCtx, aOutCodec, NULL))<0) {
+		fprintf(stderr, "Could not open output codec. Error: '%s'.\n",
+                get_error_text(error));
+		avformat_close_input(&pFormatCtx);
+        exit(error);
     }
 
     /** Initialize the resampler to be able to convert audio sample formats. */
-    if (init_resampler(aInCodecCtx, aOutCodecCtx, &resample_context)) {
-		fprintf(stderr, "Could not initialize resampler for codec conversion.\n");
-		exit(1);
+    if ((error = init_resampler(aInCodecCtx, aOutCodecCtx, &resample_context))<0) {
+		avformat_close_input(&pFormatCtx);
+		exit(error);
 	}
 
 	decodingThread = new std::thread(decodeLoop);
@@ -492,9 +535,8 @@ JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_loadAudio
 	env->ReleaseStringUTFChars(jFileName, fileName);
 }
 
-JNIEXPORT void Java_PlaySoundTranscodedFromJNI_release
+JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_release
 (JNIEnv *env, jobject thisObject) {
-
 	quit = 1;
 
 	decodingThread->join();

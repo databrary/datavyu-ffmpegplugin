@@ -26,7 +26,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * Plays the first 2 seconds of an audio file and then stops and destroys all threads for this player:
  * These are a producer thread in c/c++ and an consumer thread in java.
  * @author Florian Raudies
- * @date 07/19/2016
+ * @date 07/20/2016
  */
 public class PlaySoundTranscodedFromJNI {
 	static {
@@ -90,13 +90,13 @@ public class PlaySoundTranscodedFromJNI {
 		@Override
 		public void run() { // TODO: Stop and restart of player.
 			while (doPlay && loadNextFrame()) {
-				System.out.println("Got next audio frame.");
+				//System.out.println("Got next audio frame.");
 				buffer.get(sampleData, 0, BUFFER_SIZE);
-				System.out.println("First byte: " + buffer.get(0) + " and last byte " + buffer.get(BUFFER_SIZE-1));
+				//System.out.println("First byte: " + buffer.get(0) + " and last byte " + buffer.get(BUFFER_SIZE-1));
 				soundLine.write(sampleData, 0, BUFFER_SIZE);
 				buffer.rewind();
-				System.out.println("Rewound buffer.");
-				System.out.flush();
+				//System.out.println("Rewound buffer.");
+				//System.out.flush();
 			}
 			System.out.println("Stopped player loop.");
 		}
