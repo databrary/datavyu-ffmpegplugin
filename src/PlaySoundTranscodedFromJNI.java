@@ -12,6 +12,8 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+//import javafx.scene.media.Media;
+
 // TODO: stop/restart, fast/slow play back, change the volume through gain control on data line
 // For faster/slower play back see this post
 // http://stackoverflow.com/questions/5760128/increase-playback-speed-of-sound-file-in-java
@@ -130,8 +132,10 @@ public class PlaySoundTranscodedFromJNI {
 	// Nice overview:  https://docs.oracle.com/javase/tutorial/sound/sampled-overview.html
 	public static void main(String[] args) {
 		//String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
-		String fileName = "C:\\Users\\Florian\\SleepingBag.MP4";
+		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4";
 		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		String fileName = "C:\\Users\\Florian\\VideosForPlayer\\dvm1.mpg";
+		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\Gah.mov";
 		PlaySoundTranscodedFromJNI player = new PlaySoundTranscodedFromJNI();
 		// Set up an audio input stream piped from the sound file.
 		try {
@@ -139,7 +143,7 @@ public class PlaySoundTranscodedFromJNI {
 			System.out.println("Opened audio file!");
 			player.play();
 			System.out.println("Started player thread!");
-			Thread.sleep(2000); // Play the file for 2 sec and then shut down.
+			Thread.sleep(5000); // Play the file for 2 sec and then shut down.
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();			
 		} catch (UnsupportedAudioFileException ex) {
