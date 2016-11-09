@@ -108,6 +108,10 @@ public class DisplayImageFromVideo extends Canvas {
         for (int iFrame = 0; iFrame < nFrame; ++iFrame) {
         	display.getNextFrame(width, height);
         	display.repaint();
+        	try {
+            	Thread.sleep(30/2/2/2);
+        		//Thread.sleep(1);
+        	} catch (InterruptedException ie) {}
         }
         long t1 = System.nanoTime();
 		System.out.println("width = " + width + " pixels.");
