@@ -104,7 +104,7 @@ public class DisplayImageFromVideo extends Canvas {
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrame = 150;
+        int nFrame = 50;
         for (int iFrame = 0; iFrame < nFrame; ++iFrame) {
         	display.getNextFrame(width, height);
         	display.repaint();

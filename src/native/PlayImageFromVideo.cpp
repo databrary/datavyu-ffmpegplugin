@@ -9,16 +9,37 @@ extern "C" {
 	#include <libavformat/avformat.h>
 	#include <libswscale/swscale.h>
 }
+
 #include "PlayImageFromVideo.h"
 #include <mutex>
 #include <condition_variable>
 #include <thread>
-// Florian Raudies, 11/06/2016, Mountain View, CA.
+
+// Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
 // cl PlayImageFromVideo.cpp /Fe"..\..\lib\PlayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
 #define N_MAX_IMAGES 8
 #define N_MAX_BUFFER 4
+
+class ImageBufferBuffer; // forward declaration for linker.
+
+int					width			= 0;
+int					height			= 0;
+int					nChannel		= 3;
+int					iFrame			= 0;
+AVFormatContext		*pFormatCtx		= NULL;
+int					iVideoStream	= -1;
+AVCodecContext		*pCodecCtx		= NULL;
+AVCodec				*pCodec			= NULL;
+AVFrame				*pFrame			= NULL;
+AVFrame				*pFrameShow		= NULL;
+AVPacket			packet;
+AVDictionary		*optionsDict	= NULL;
+struct SwsContext   *sws_ctx		= NULL;
+std::thread			*decodingThread = NULL;
+bool				quit			= false;
+ImageBufferBuffer	*ibb			= NULL;
 
 class ImageBuffer { // ring buffer
 	AVFrame** data;
@@ -58,17 +79,16 @@ public:
 	}
 	AVFrame* getWritePtr() {
 		if (writeFull()) return nullptr;
-		AVFrame* pFrame = data[iWrite];
-		iWrite += (iWrite != nData);
+		AVFrame* pFrame = data[iWrite++];
 		return pFrame;
 	}
 	AVFrame* getReadPtr() {
 		if (readEmpty()) return nullptr;
-		AVFrame* pFrame = data[iRead];
-		iRead += (iRead != nData);
+		AVFrame* pFrame = data[iRead++];
 		return pFrame;
 	}
 };
+
 
 class ImageBufferBuffer {
 	ImageBuffer** data;
@@ -76,10 +96,11 @@ class ImageBufferBuffer {
 	int iRead;
 	int iWrite;
 	int iDiff;
+	bool flush;
 	std::mutex mu;
 	std::condition_variable cv;
 public:
-	ImageBufferBuffer(int width, int height) : nData(N_MAX_BUFFER) {
+	ImageBufferBuffer(int width, int height) : nData(N_MAX_BUFFER), flush(false) {
 		data = new ImageBuffer*[nData];
 		for (int iData = 0; iData < nData; ++iData) {
 			data[iData] = new ImageBuffer(width, height);
@@ -93,82 +114,91 @@ public:
 		delete [] data;
 	}
 	void reset() {
+		for (int iData = 0; iData < nData; ++iData) {
+			data[iData]->reset();
+		}
 		iRead = 0;
 		iWrite = 0;
 		iDiff = 0;
 	}
+	void doFlush() {
+		flush = true;
+		cv.notify_all();
+		std::unique_lock<std::mutex> locker(mu);
+		reset();
+		locker.unlock();
+		flush = false;
+	}
 	AVFrame* getReadPtr() {
+		fflush(stdout);
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return iDiff>(int)data[iRead]->readEmpty();});
-		if (data[iRead]->readEmpty()) {
-			data[iRead]->reset();
-			iRead = (iRead+1) % nData;
-			iDiff--;
+		cv.wait(locker, [this](){return (iDiff>(int)data[iRead]->readEmpty()) || flush;});
+		if (!flush) {
+			if (data[iRead]->readEmpty()) {
+				data[iRead]->reset();
+				iRead = (iRead+1) % nData;
+				iDiff--;
+			}
+			pFrame = data[iRead]->getReadPtr();
 		}
-		pFrame = data[iRead]->getReadPtr();
-		mu.unlock();
-		cv.notify_one();
+		locker.unlock();
+		cv.notify_all();
 		return pFrame;
 	}
 	AVFrame* getWritePtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return iDiff<(nData-data[iWrite]->writeFull());});
-		if (data[iWrite]->writeFull()) {
-			iWrite = (iWrite+1) % nData;
-			iDiff++;
+		cv.wait(locker, [this](){return (iDiff<(nData-data[iWrite]->writeFull())) || flush;});
+		if (!flush) {
+			if (data[iWrite]->writeFull()) {
+				iWrite = (iWrite+1) % nData;
+				iDiff++;
+			}
+			pFrame = data[iWrite]->getWritePtr();
 		}
-		pFrame = data[iWrite]->getWritePtr();
-		mu.unlock();
-		cv.notify_one();
+		locker.unlock();
+		cv.notify_all();
 		return pFrame;
 	}
 };
 
-int					width			= 0;
-int					height			= 0;
-int					nChannel		= 3;
-int					iFrame			= 0;
-AVFormatContext		*pFormatCtx		= NULL;
-int					iVideoStream	= -1;
-AVCodecContext		*pCodecCtx		= NULL;
-AVCodec				*pCodec			= NULL;
-AVFrame				*pFrame			= NULL;
-AVFrame				*pFrameShow		= NULL;
-AVPacket			packet;
-AVDictionary		*optionsDict	= NULL;
-struct SwsContext   *sws_ctx		= NULL;
-ImageBufferBuffer	*ibb			= NULL;
-std::thread			*decodingThread = NULL;
-
 void loadNextFrame() {
 	int frameFinished;
-	while(av_read_frame(pFormatCtx, &packet) >= 0) {
+	while(!quit && (av_read_frame(pFormatCtx, &packet) >= 0)) {
+		
 		// Is this a packet from the video stream?
 		if(packet.stream_index == iVideoStream) {
-			// Decode video frame
+			
+			// Decode the video frame
 			avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
-
-			// Did we get a video frame?
+			
+			// Did we get a full video frame?
 			if(frameFinished) {
-				// Convert the image from its native format to RGB
-				AVFrame* pFrameBuffer = ibb->getWritePtr(); // get next may block
-				sws_scale
-				(
-					sws_ctx,
-					(uint8_t const * const *)pFrame->data,
-					pFrame->linesize,
-					0,
-					pCodecCtx->height,
-					pFrameBuffer->data,
-					pFrameBuffer->linesize
-				);
-				fprintf(stdout,"Read frame %d.\n",iFrame++);
+
+				// Get the next writeable buffer (this may block and can be unblocked with a flush)
+				AVFrame* pFrameBuffer = ibb->getWritePtr();
+				
+				// Did we get a frame buffer?
+				if (pFrameBuffer) {
+
+					// Convert the image from its native format into RGB.
+					sws_scale
+					(
+						sws_ctx,
+						(uint8_t const * const *)pFrame->data,
+						pFrame->linesize,
+						0,
+						pCodecCtx->height,
+						pFrameBuffer->data,
+						pFrameBuffer->linesize
+					);
+				}
 			}
-			// Free the packet that was allocated by av_read_frame
-			av_free_packet(&packet);
 		}
+
+		// Free the packet that was allocated by av_read_frame.
+		av_free_packet(&packet);
 	}
 }
 
@@ -185,13 +215,17 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime
 
 JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
 (JNIEnv *env, jobject thisObject) {
-	return env->NewDirectByteBuffer((void*) pFrameShow->data[0], width*height*nChannel*sizeof(uint8_t));
+	return env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
+									width*height*nChannel*sizeof(uint8_t));
 }
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadNextFrame
 (JNIEnv *env, jobject thisObject) {
+	AVFrame *pFrameTmp = ibb->getReadPtr();
+	if (pFrameTmp) {
+		pFrameShow = pFrameTmp;
+	}
 	// TODO: Add clock here!
-	pFrameShow = ibb->getReadPtr();
 }
 
 // Opens movie file and loads first frame.
@@ -272,6 +306,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 	env->ReleaseStringUTFChars(jFileName, fileName);
 
 	pFrameShow = ibb->getReadPtr(); // load the first frame from the buffer
+
 }
 
 JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieHeight
@@ -287,16 +322,25 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieWidth
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_release
 (JNIEnv *env, jobject thisObject) {
+
+	// Set the quit flag for the docding thread.
+	quit = true;
+
+	// Flush the image buffer buffer (which unblocks all readers/writers).
+	ibb->doFlush();
+
+	// Join the decoding thread with this one.
 	decodingThread->join();
 
+	// Free the decoding thread.
+	delete decodingThread;
+	
+	// Free the image buffer buffer.
 	delete ibb;
 
 	// Free the YUV frame
 	av_free(pFrame);
 
-	// Close the codec
-	avcodec_close(pCodecCtx);
-
 	// Close the video file
-	avformat_close_input(&pFormatCtx);  
+	avformat_close_input(&pFormatCtx);
 }

@@ -131,10 +131,10 @@ public class PlaySoundTranscodedFromJNI {
 	
 	// Nice overview:  https://docs.oracle.com/javase/tutorial/sound/sampled-overview.html
 	public static void main(String[] args) {
-		//String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
+		String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
 		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4";
 		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
-		String fileName = "C:\\Users\\Florian\\VideosForPlayer\\dvm1.mpg";
+		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\dvm1.mpg";
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\Gah.mov";
 		PlaySoundTranscodedFromJNI player = new PlaySoundTranscodedFromJNI();
 		// Set up an audio input stream piped from the sound file.

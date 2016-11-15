@@ -69,7 +69,8 @@ public class PlayImageFromVideo extends Canvas {
 	
 	public void setImgeBuffer(int width, int height) {
 		buffer = getFrameBuffer();
-		System.out.println("This buffer has the capacity " + buffer.capacity() + " bytes.");
+		//System.out.flush();
+		//System.out.println("This buffer has the capacity " + buffer.capacity() + " bytes.");
 		data = new byte[width*height*nChannel];
 		buffer.get(data); // Unsure how to get rid of that copy!!
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
@@ -102,12 +103,12 @@ public class PlayImageFromVideo extends Canvas {
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrame = 150;
+        int nFrame = 50;
         for (int iFrame = 0; iFrame < nFrame; ++iFrame) {
         	display.getNextFrame(width, height);
         	display.repaint();
         	try {
-            	Thread.sleep(30/2/2/2);
+            	Thread.sleep(30/2);
         		//Thread.sleep(1);
         	} catch (InterruptedException ie) {}
         }
