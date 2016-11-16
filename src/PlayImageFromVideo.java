@@ -85,8 +85,8 @@ public class PlayImageFromVideo extends Canvas {
 	
 	public static void main(String[] args) {
 		//String fileName = "C:\\Users\\Florian\\test.h264";
-		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
-		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
+		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
 		final PlayImageFromVideo display = new PlayImageFromVideo();
 		display.loadMovie(fileName);
 		int width = display.getMovieWidth();
@@ -107,10 +107,12 @@ public class PlayImageFromVideo extends Canvas {
         for (int iFrame = 0; iFrame < nFrame; ++iFrame) {
         	display.getNextFrame(width, height);
         	display.repaint();
+        	
         	try {
             	Thread.sleep(30/2);
         		//Thread.sleep(1);
         	} catch (InterruptedException ie) {}
+        	
         }
         long t1 = System.nanoTime();
 		System.out.println("width = " + width + " pixels.");

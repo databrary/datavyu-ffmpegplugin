@@ -8,12 +8,14 @@ extern "C" {
 	#include <libavcodec/avcodec.h>
 	#include <libavformat/avformat.h>
 	#include <libswscale/swscale.h>
+	#include <libavutil/time.h>
 }
 
 #include "PlayImageFromVideo.h"
 #include <mutex>
 #include <condition_variable>
 #include <thread>
+#include <chrono>
 
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
@@ -21,6 +23,9 @@ extern "C" {
 
 #define N_MAX_IMAGES 8
 #define N_MAX_BUFFER 4
+#define AV_SYNC_THRESHOLD 0.01
+#define AV_NOSYNC_THRESHOLD 10.0
+
 
 class ImageBufferBuffer; // forward declaration for linker.
 
@@ -40,6 +45,15 @@ struct SwsContext   *sws_ctx		= NULL;
 std::thread			*decodingThread = NULL;
 bool				quit			= false;
 ImageBufferBuffer	*ibb			= NULL;
+// playback speed
+double				speed			= 1;
+double				video_clock		= 0; // pts of last decoded frame / predicted pts of next decoded frame
+double				frame_timer		= 0;
+double				last_pts		= 0;
+double				last_delay		= 0;
+
+
+double getTime() { return speed*av_gettime() / 1000000.0; }
 
 class ImageBuffer { // ring buffer
 	AVFrame** data;
@@ -163,6 +177,23 @@ public:
 	}
 };
 
+double synchronizeVideo(AVFrame *pFrame, double pts) {
+  double delay;
+  if(pts != 0) {
+    /* if we have pts, set video clock to it */
+    video_clock = pts;
+  } else {
+    /* if we aren't given a pts, set it to the clock */
+    pts = video_clock;
+  }
+  /* update the video clock */
+  delay = av_q2d(pCodecCtx->time_base);
+  /* if we are repeating a frame, adjust clock accordingly */
+  delay += pFrame->repeat_pict * (delay * 0.5);
+  video_clock += delay;
+  return pts;
+}
+
 void loadNextFrame() {
 	int frameFinished;
 	while(!quit && (av_read_frame(pFormatCtx, &packet) >= 0)) {
@@ -175,13 +206,11 @@ void loadNextFrame() {
 			
 			// Did we get a full video frame?
 			if(frameFinished) {
-
 				// Get the next writeable buffer (this may block and can be unblocked with a flush)
 				AVFrame* pFrameBuffer = ibb->getWritePtr();
 				
 				// Did we get a frame buffer?
 				if (pFrameBuffer) {
-
 					// Convert the image from its native format into RGB.
 					sws_scale
 					(
@@ -193,6 +222,22 @@ void loadNextFrame() {
 						pFrameBuffer->data,
 						pFrameBuffer->linesize
 					);
+
+					double pts = 0;
+					if(packet.dts != AV_NOPTS_VALUE) {
+						pts = av_frame_get_best_effort_timestamp(pFrame);
+					}
+					//int64_t pts2 = av_frame_get_best_effort_timestamp(pFrame);
+					//pts2 = av_rescale_q(pts2, pCodecCtx->time_base, AV_TIME_BASE_Q);
+					//fprintf(stdout, "Best effort pts = " PRId64 ".\n", pts2);
+
+					fprintf(stdout, "Best effort pts = %f.\n", pts);
+
+					pts *= av_q2d(pCodecCtx->time_base);
+
+					fprintf(stdout, "Best effort pts x time base = %f.\n", pts);
+
+					pFrameBuffer->pts = synchronizeVideo(pFrame, pts);
 				}
 			}
 		}
@@ -203,8 +248,8 @@ void loadNextFrame() {
 }
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
-(JNIEnv *env, jobject thisObject, jfloat speed) {
-
+(JNIEnv *env, jobject thisObject, jfloat inSpeed) {
+	speed = inSpeed;
 }
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime
@@ -219,13 +264,55 @@ JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
 									width*height*nChannel*sizeof(uint8_t));
 }
 
+
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadNextFrame
 (JNIEnv *env, jobject thisObject) {
+
 	AVFrame *pFrameTmp = ibb->getReadPtr();
+
 	if (pFrameTmp) {
+		double pts = pFrameTmp->pts;
+		double delay = pts - last_pts; /* the last pts */	
+		if(delay <= 0 || delay >= 1.0) {
+			/* if incorrect delay, use previous one */
+			delay = last_delay;
+		}
+		/* save for next time */
+		last_delay = delay;
+		last_pts = pts;
+
+		/* update diff to sync video to master */
+		double diff = pts - getTime();
+
+		/* Skip or repeat the frame. Take delay into account
+		FFPlay still doesn't "know if this is the best guess." */
+		double sync_threshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
+		if (fabs(diff) < AV_NOSYNC_THRESHOLD) {
+			if (diff <= -sync_threshold) {
+				delay = 0;
+			} else if (diff >= sync_threshold) {
+				delay *= 2;
+			}
+		}
+		frame_timer += delay;
+
+		/* computer the REAL delay */
+		double actual_delay = frame_timer - getTime(); //(av_gettime() / 1000000.0);
+		if(actual_delay < 0.010) {
+			/* Really it should skip the picture instead */
+			actual_delay = 0.010;
+		}
+		// After this delay update show pointer and return to caller.
+		int sleepTime = (int)(actual_delay * 1000 + 0.5);
+
+		fprintf(stdout, "For frame %d, thread sleeps for %d ms, pts = %f, delay = %f, and actual_delay = %f.\n", 
+			iFrame++, sleepTime, pts, delay, actual_delay);
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
+
+		// Update show pointer
 		pFrameShow = pFrameTmp;
 	}
-	// TODO: Add clock here!
 }
 
 // Opens movie file and loads first frame.
@@ -307,6 +394,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 
 	pFrameShow = ibb->getReadPtr(); // load the first frame from the buffer
 
+	frame_timer = getTime();
 }
 
 JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieHeight
