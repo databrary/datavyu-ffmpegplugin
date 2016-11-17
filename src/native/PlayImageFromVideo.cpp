@@ -25,12 +25,8 @@ using namespace std::chrono;
 
 #define N_MAX_IMAGES 8
 #define N_MAX_BUFFER 4
-#define AV_SYNC_THRESHOLD 0.01 //0.01
-#define AV_NOSYNC_THRESHOLD 10.0 //10.0
-#define KP 0.1
-#define KI 0.5
-#define KD 0.2
-#define DT 0.1
+#define AV_SYNC_THRESHOLD 0.01
+#define AV_NOSYNC_THRESHOLD 10.0
 
 class ImageBufferBuffer; // forward declaration for linker.
 
@@ -53,6 +49,7 @@ bool				quit			= false;
 ImageBufferBuffer	*ibb			= NULL;
 
 // playback
+bool				reverse			= false;
 double				speed			= 1;
 bool				init			= true; // on reset set to true
 double				last_pts		= 0; // on reset set to 0
@@ -116,10 +113,11 @@ class ImageBufferBuffer {
 	int iWrite;
 	int iDiff;
 	bool flush;
+	bool locked;
 	std::mutex mu;
 	std::condition_variable cv;
 public:
-	ImageBufferBuffer(int width, int height) : nData(N_MAX_BUFFER), flush(false) {
+	ImageBufferBuffer(int width, int height) : nData(N_MAX_BUFFER), flush(false), locked(false) {
 		data = new ImageBuffer*[nData];
 		for (int iData = 0; iData < nData; ++iData) {
 			data[iData] = new ImageBuffer(width, height);
@@ -140,6 +138,12 @@ public:
 		iWrite = 0;
 		iDiff = 0;
 	}
+	void lock() {
+		locked = true;
+	}
+	void unlock() {
+		locked = false;
+	}
 	void doFlush() {
 		flush = true;
 		cv.notify_all();
@@ -152,7 +156,7 @@ public:
 		fflush(stdout);
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return (iDiff>(int)data[iRead]->readEmpty()) || flush;});
+		cv.wait(locker, [this](){return (iDiff>(int)data[iRead]->readEmpty() && !locked) || flush;});
 		if (!flush) {
 			if (data[iRead]->readEmpty()) {
 				data[iRead]->reset();
@@ -168,7 +172,7 @@ public:
 	AVFrame* getWritePtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return (iDiff<(nData-data[iWrite]->writeFull())) || flush;});
+		cv.wait(locker, [this](){return (iDiff<(nData-data[iWrite]->writeFull()) && !locked) || flush;});
 		if (!flush) {
 			if (data[iWrite]->writeFull()) {
 				iWrite = (iWrite+1) % nData;
@@ -229,12 +233,31 @@ void loadNextFrame() {
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
 (JNIEnv *env, jobject thisObject, jfloat inSpeed) {
-	speed = inSpeed;
+	reverse = inSpeed < 0;
+	speed = fabs(inSpeed);
 }
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime
-(JNIEnv *env, jobject thisObject, jfloat time) {
+(JNIEnv *env, jobject thisObject, jfloat time) { // time in seconds
+	// set to end
+	int flags = AVSEEK_FLAG_ANY;
+	
+	int64_t seek_time = time < 0 ? pVideoStream->duration-1 : (int64_t)(time*av_q2d(pVideoStream->time_base));
+	
+	seek_time = seek_time > pVideoStream->duration-1 ? pVideoStream->duration-1 : seek_time;
 
+	//fprintf(stdout, "Duration from format context %I64d and from stream %I64d.\n", 
+	//	pFormatCtx->duration, pVideoStream->duration);
+
+	//fprintf(stdout, "Time base of codec %f and of stream %f.\n",
+	//	av_q2d(pCodecCtx->time_base), av_q2d(pVideoStream->time_base));
+
+	ibb->lock();
+	if (av_seek_frame(pFormatCtx, iVideoStream, seek_time, flags) < 0) {
+		fprintf(stderr, "Seek of %f time unsuccessful.\n", time);
+	}
+	ibb->doFlush();
+	ibb->unlock();
 }
 
 

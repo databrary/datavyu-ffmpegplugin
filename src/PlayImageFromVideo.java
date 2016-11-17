@@ -50,7 +50,7 @@ public class PlayImageFromVideo extends Canvas {
 	
 	public native void setPlaybackSpeed(float speed); // +-0.25x, +-0.5x, +-1x, +-2x, +-4x
 	
-	private native void setTime(float time); // time in us // setTime(0) restarts
+	private native void setTime(float time); // time in sec  // negative value sets to end.
 	
 	public void update(Graphics g){
 	    paint(g); // instead of resetting just paint directly 
@@ -96,7 +96,8 @@ public class PlayImageFromVideo extends Canvas {
 		display.setMovie(fileName);
 		int width = display.getFrameWidth();
 		int height = display.getFrameHeight();
-		display.setPlaybackSpeed(4f);
+		display.setTime(-1f); // rewind
+		display.setPlaybackSpeed(-1f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
         f.add(display);
