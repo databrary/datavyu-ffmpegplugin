@@ -7,6 +7,26 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef PlayImageFromVideo_FOCUS_TRAVERSABLE_UNKNOWN
+#define PlayImageFromVideo_FOCUS_TRAVERSABLE_UNKNOWN 0L
+#undef PlayImageFromVideo_FOCUS_TRAVERSABLE_DEFAULT
+#define PlayImageFromVideo_FOCUS_TRAVERSABLE_DEFAULT 1L
+#undef PlayImageFromVideo_FOCUS_TRAVERSABLE_SET
+#define PlayImageFromVideo_FOCUS_TRAVERSABLE_SET 2L
+#undef PlayImageFromVideo_TOP_ALIGNMENT
+#define PlayImageFromVideo_TOP_ALIGNMENT 0.0f
+#undef PlayImageFromVideo_CENTER_ALIGNMENT
+#define PlayImageFromVideo_CENTER_ALIGNMENT 0.5f
+#undef PlayImageFromVideo_BOTTOM_ALIGNMENT
+#define PlayImageFromVideo_BOTTOM_ALIGNMENT 1.0f
+#undef PlayImageFromVideo_LEFT_ALIGNMENT
+#define PlayImageFromVideo_LEFT_ALIGNMENT 0.0f
+#undef PlayImageFromVideo_RIGHT_ALIGNMENT
+#define PlayImageFromVideo_RIGHT_ALIGNMENT 1.0f
+#undef PlayImageFromVideo_serialVersionUID
+#define PlayImageFromVideo_serialVersionUID -7644114512714619750i64
+#undef PlayImageFromVideo_serialVersionUID
+#define PlayImageFromVideo_serialVersionUID -2284879212465893870i64
 #undef PlayImageFromVideo_serialVersionUID
 #define PlayImageFromVideo_serialVersionUID -6199180436635445511i64
 /*
@@ -20,9 +40,9 @@ JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
 /*
  * Class:     PlayImageFromVideo
  * Method:    loadNextFrame
- * Signature: ()V
+ * Signature: ()I
  */
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadNextFrame
+JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
   (JNIEnv *, jobject);
 
 /*

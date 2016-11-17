@@ -29,6 +29,8 @@ public class PlayImageFromVideo extends Canvas {
 	Hashtable<String, String> properties 	= new Hashtable<String, String>();
 	
 	int 			nChannel = 3;
+	int 			width;
+	int 			height;
 	BufferedImage 	image = null;
 	ByteBuffer 		buffer = null;
 	byte[] 			data = null;
@@ -36,7 +38,7 @@ public class PlayImageFromVideo extends Canvas {
 	
 	private native ByteBuffer getFrameBuffer();
 	
-	private native void loadNextFrame(); // loop the video, or stop at the end?
+	private native int loadNextFrame(); // loop the video, or stop at the end?
 	
 	private native void loadMovie(String fileName);
 	
@@ -46,37 +48,40 @@ public class PlayImageFromVideo extends Canvas {
 	
 	private native void release();
 	
-	private native void setPlaybackSpeed(float speed); // 0.25x, 0.5x, 1x, 2x, 4x, -1x, -2x, -4x
+	public native void setPlaybackSpeed(float speed); // +-0.25x, +-0.5x, +-1x, +-2x, +-4x
 	
-	private native void setTime(float time); // time in us
+	private native void setTime(float time); // time in us // setTime(0) restarts
 	
 	public void update(Graphics g){
 	    paint(g); // instead of resetting just paint directly 
 	}
 	
-	private void getNextFrame(int width, int height) {
-		loadNextFrame();
+	public int getNextFrame() {
+		int nFrame = loadNextFrame();
 		buffer = getFrameBuffer();
-		data = new byte[width*height*nChannel];
+		data = new byte[width*height*nChannel];		
 		buffer.get(data); // Unsure how to get rid of that copy!!
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
 		image = new BufferedImage(cm, raster, false, properties);
+		return nFrame;
 	}
 	
 	public PlayImageFromVideo() {}
 	
-	public void setImgeBuffer(int width, int height) {
-		buffer = getFrameBuffer();
-		//System.out.flush();
-		//System.out.println("This buffer has the capacity " + buffer.capacity() + " bytes.");
-		data = new byte[width*height*nChannel];
-		buffer.get(data); // Unsure how to get rid of that copy!!
-		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
-		SampleModel sm = cm.createCompatibleSampleModel(width, height);
-		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-		image = new BufferedImage(cm, raster, false, properties);
+	public void setMovie(String fileName) {
+		loadMovie(fileName);
+		width = getMovieWidth();
+		height = getMovieHeight();
+	}
+	
+	public int getFrameWidth() {
+		return width;
+	}
+	
+	public int getFrameHeight() {
+		return height;
 	}
 	
 	public void paint(Graphics g) {
@@ -88,11 +93,10 @@ public class PlayImageFromVideo extends Canvas {
 		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
 		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
 		final PlayImageFromVideo display = new PlayImageFromVideo();
-		display.loadMovie(fileName);
-		int width = display.getMovieWidth();
-		int height = display.getMovieHeight();		
-		display.setImgeBuffer(width, height);
-		display.setPlaybackSpeed(2f);
+		display.setMovie(fileName);
+		int width = display.getFrameWidth();
+		int height = display.getFrameHeight();
+		display.setPlaybackSpeed(4f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
         f.add(display);
@@ -104,14 +108,19 @@ public class PlayImageFromVideo extends Canvas {
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrame = 100;
-        for (int iFrame = 0; iFrame < nFrame; ++iFrame) {
-        	display.getNextFrame(width, height);
+        int nFrameReq = 20; // Displayed number of frames.
+        int nFrameDec = 0; // Decoded number of frames.
+        int nFrameSkip = 0; // Skipped number of frames.
+        for (int iFrame = 0; iFrame < nFrameReq; ++iFrame) {
+        	int nFrame = display.getNextFrame();
+        	nFrameSkip += nFrame > 1 ? 1 : 0;
+        	nFrameDec += nFrame;
         	display.repaint();
         }
         long t1 = System.nanoTime();
 		System.out.println("width = " + width + " pixels.");
 		System.out.println("height = " + height + " pixels.");
-        System.out.println("Frame rate = " +  ((double)nFrame)/(t1-t0)*1e9f + " frames per second.");
+        System.out.println("Decoded rate = " +  ((double)nFrameDec)/(t1-t0)*1e9f + " frames per second.");
+        System.out.println("Skipped " + nFrameSkip + " frames.");
 	}	
 }

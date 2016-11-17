@@ -17,6 +17,8 @@ extern "C" {
 #include <thread>
 #include <chrono>
 
+using namespace std::chrono;
+
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
 // cl PlayImageFromVideo.cpp /Fe"..\..\lib\PlayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
@@ -51,13 +53,13 @@ bool				quit			= false;
 ImageBufferBuffer	*ibb			= NULL;
 
 // playback
-bool				init			= true;
 double				speed			= 1;
-double				last_pts		= 0;
-std::chrono::high_resolution_clock::time_point last_time;
-double				diff			= 0;
+bool				init			= true; // on reset set to true
+double				last_pts		= 0; // on reset set to 0
+double				diff			= 0; // on reset set to 0
+high_resolution_clock::time_point last_time;
 
-class ImageBuffer { // ring buffer
+class ImageBuffer {
 	AVFrame** data;
 	int nData;
 	int iRead;
@@ -105,7 +107,8 @@ public:
 	}
 };
 
-
+// A ring buffer where reader and writer never work on the same buffer 
+// to support reversed read/write.
 class ImageBufferBuffer {
 	ImageBuffer** data;
 	int nData;
@@ -191,6 +194,7 @@ void loadNextFrame() {
 			
 			// Did we get a full video frame?
 			if(frameFinished) {
+
 				// Get the next writeable buffer (this may block and can be unblocked with a flush)
 				AVFrame* pFrameBuffer = ibb->getWritePtr();
 				
@@ -240,53 +244,39 @@ JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
 									width*height*nChannel*sizeof(uint8_t));
 }
 
-/*
-PID controller
-
-last_error = 0
-integral = 0
-bias = 0
-KP = Some value you need to come up (see tuning section below)
-KI = Some value you need to come up (see tuning section below)
-KD = Some value you need to come up (see tuning section below)
-
-while(1) {
-    error = desired_value – actual_value
-    integral += error*dt
-    derivative = (error – last_error)/dt
-    output = KP*error + KI*integral + KD*derivative + bias
-    error_prior = error
-    sleep(iteration_time)
-}
-*/
-
-
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadNextFrame
+JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 (JNIEnv *env, jobject thisObject) {
+	int nFrame = 0;
 
 	AVFrame *pFrameTmp = ibb->getReadPtr();
 
 	if (pFrameTmp) {
+		nFrame++;
 		double pts = pFrameTmp->pts; // int64_t
 		pts *= av_q2d(pVideoStream->time_base); // time in sec.
-		double pts_diff = init ? 0 : fabs(pts - last_pts);
+		double pts_diff = init ? 0 : fabs(pts - last_pts)/speed;
 
-		auto time = std::chrono::high_resolution_clock::now();
-		double time_diff = init ? 0 : 
-			std::chrono::duration_cast<std::chrono::microseconds>(time-last_time).count()/1000000.0*speed;
+		auto time = high_resolution_clock::now();
+		double time_diff = init ? 0 : duration_cast<microseconds>(time-last_time).count()/1000000.0;
 		diff += pts_diff - time_diff;
 		double delay = pts_diff;
 		double sync_threshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
 		if(fabs(diff) < AV_NOSYNC_THRESHOLD) {
 			if (diff <= -sync_threshold) {
+				AVFrame *pFrameTmp2 = ibb->getReadPtr();
+				if (pFrameTmp2) {
+					pFrameTmp = pFrameTmp2;
+					nFrame++;
+				}
+			} else if (diff < 0) {
 				delay = 0;
 			} else if (diff >= sync_threshold) {
 				delay *= 2;
 			}
 		}
-		delay = delay < 0.001 ? 0.001 : delay; // mimimum delay. up to 1000 fps
-
-		std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
+		if (delay>0) {
+			std::this_thread::sleep_for(milliseconds((int)(delay*1000+0.5)));
+		}
 
 		// Update show pointer
 		pFrameShow = pFrameTmp;
@@ -296,6 +286,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadNextFrame
 		last_time = time;
 		init = false;
 	}
+	return (jint) nFrame;
 }
 
 
