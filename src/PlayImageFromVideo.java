@@ -96,8 +96,8 @@ public class PlayImageFromVideo extends Canvas {
 		display.setMovie(fileName);
 		int width = display.getFrameWidth();
 		int height = display.getFrameHeight();
-		display.setTime(-1f); // rewind
-		display.setPlaybackSpeed(-1f);
+		display.setTime(11f); // set to end
+		//display.setPlaybackSpeed(1f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
         f.add(display);
@@ -109,7 +109,7 @@ public class PlayImageFromVideo extends Canvas {
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrameReq = 20; // Displayed number of frames.
+        int nFrameReq = 50; // Displayed number of frames.
         int nFrameDec = 0; // Decoded number of frames.
         int nFrameSkip = 0; // Skipped number of frames.
         for (int iFrame = 0; iFrame < nFrameReq; ++iFrame) {
