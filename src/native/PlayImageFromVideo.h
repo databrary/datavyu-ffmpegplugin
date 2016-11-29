@@ -95,10 +95,26 @@ JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieNumberOfFrames
 
 /*
  * Class:     PlayImageFromVideo
- * Method:    release
+ * Method:    getMovieTimeInSeconds
+ * Signature: ()D
+ */
+JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieTimeInSeconds
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlayImageFromVideo
+ * Method:    getMovieTimeInFrames
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlayImageFromVideo
+ * Method:    releaseMovie
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_release
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
   (JNIEnv *, jobject);
 
 /*
@@ -111,18 +127,18 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
 
 /*
  * Class:     PlayImageFromVideo
- * Method:    setTime
+ * Method:    setTimeInSeconds
  * Signature: (D)V
  */
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime__D
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInSeconds
   (JNIEnv *, jobject, jdouble);
 
 /*
  * Class:     PlayImageFromVideo
- * Method:    setTime
+ * Method:    setTimeInFrames
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime__J
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInFrames
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

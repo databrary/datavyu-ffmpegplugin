@@ -89,9 +89,21 @@ public class PlayImageFromVideo extends Canvas {
 	public native long getMovieNumberOfFrames();
 	
 	/**
+	 * Get the current time of the movie in seconds.
+	 * @return Current time in seconds.
+	 */
+	public native double getMovieTimeInSeconds();
+	
+	/**
+	 * Get the current time of the movie in frames.
+	 * @return Current time in frames.
+	 */
+	public native long getMovieTimeInFrames();
+	
+	/**
 	 * Release all resources that have been allocated when loading the move.
 	 */
-	protected native void release();
+	public native void releaseMovie();
 	
 	/**
 	 * Set the play back speed.
@@ -108,13 +120,13 @@ public class PlayImageFromVideo extends Canvas {
 	 * A negative value sets the video to the end. If the duration is set above the length
 	 * of the video the video is set to the end.
 	 */
-	public native void setTime(double time);
+	public native void setTimeInSeconds(double time);
 	
 	/**
 	 * Set the time within the movie through a frame number.
 	 * @param frameNo Frame number to set to.
 	 */
-	public native void setTime(long frameNo);
+	public native void setTimeInFrames(long frameNo);
 	
 	
 	public void update(Graphics g){
@@ -143,7 +155,7 @@ public class PlayImageFromVideo extends Canvas {
 	 */
 	public void setMovie(String fileName) {
 		if (loaded) {
-			release();
+			releaseMovie();
 		}
 		loadMovie(fileName);
 		nChannel = getMovieColorChannels();
@@ -170,20 +182,20 @@ public class PlayImageFromVideo extends Canvas {
 		int height = player.getMovieHeight();
 		double duration = player.getMovieDuration();
 		long nFrameMovie = player.getMovieNumberOfFrames();
-		player.setTime(12.0);
-		//player.setPlaybackSpeed(1f);
+		player.setTimeInSeconds(12.0);
+		player.setPlaybackSpeed(1f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
         f.add(player);
         f.addWindowListener( new WindowAdapter() {
             public void windowClosing(WindowEvent ev) {
-            	player.release();
+            	player.releaseMovie();
                 System.exit(0);
             }
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrameReq = 150; // played number of frames.
+        int nFrameReq = 150; // Played number of frames.
         int nFrameDec = 0; // Decoded number of frames.
         int nFrameSkip = 0; // Skipped number of frames.
         for (int iFrame = 0; iFrame < nFrameReq; ++iFrame) {

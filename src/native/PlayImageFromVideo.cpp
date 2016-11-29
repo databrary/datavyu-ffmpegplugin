@@ -315,49 +315,26 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
 	if (reverse != (inSpeed < 0) ) {
 		reverse = inSpeed < 0;
 		ibb->setReverse(reverse);
-		Java_PlayImageFromVideo_setTime__J(env, thisObject, iFrame);
-
-		//iFrame = reverse ? std::max(iFrame, (int64_t)(2*N_MAX_IMAGES)) 
-		//	: std::min(iFrame, (int64_t)(nFrame-2*N_MAX_IMAGES)); // in frames
-		//seekTime = iFrame*deltaPts;
-
-		//seekReq = true;
+		Java_PlayImageFromVideo_setTimeInFrames(env, thisObject, iFrame);
 	}
 	
 	speed = fabs(inSpeed);
 }
 
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime__D
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInSeconds
 (JNIEnv *env, jobject thisObject, jdouble time) { // time in seconds
 
-	// Compute the upper/lower bound using the buffer size.
-	jdouble delta = 2*N_MAX_IMAGES*deltaPts*av_q2d(pVideoStream->time_base); // in seconds
-
-	// Apply upper and lower bound depending on forward/backward replay.
-	seekTime = reverse ? std::max(time, delta) : std::min(time, duration-delta); // in seconds
-
-	// Compute the new frame.
-	int64_t iFrameNew = (int64_t)(seekTime/(deltaPts*av_q2d(pVideoStream->time_base)));
-
-	// Convert the seekTime into time base.
-	seekTime /= av_q2d(pVideoStream->time_base); // in time base
-
-	// Set reverse.
-	reverse = iFrameNew < iFrame;
-
-	// Update the frame number.
-	iFrame = iFrameNew;
-
-	// Issue a seek request.
-	seekReq = true;
+	Java_PlayImageFromVideo_setTimeInFrames(env, thisObject, 
+		(jlong)(time/(deltaPts*av_q2d(pVideoStream->time_base))));
 }
 
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime__J
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInFrames
 (JNIEnv *env, jobject thisObject, jlong time) {
 
 	// If time is out of range given the buffer bring it into range.
 	int64_t iFrameNew = reverse ? std::max(time, (jlong)(2*N_MAX_IMAGES)) 
-		: std::min(time, (jlong)(nFrame-2*N_MAX_IMAGES)); // in frames
+		: std::min(time, (jlong)(nFrame-4*N_MAX_IMAGES)); // in frames
+	// TODO: Check why we have the large minimum buffer at the end!!
 
 	// Set reverse.
 	reverse = iFrameNew < iFrame; // in frames
@@ -473,13 +450,13 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 	av_register_all();
 
 	// Open the video file.
-	if(avformat_open_input(&pFormatCtx, fileName, nullptr, nullptr)!=0) {
+	if (avformat_open_input(&pFormatCtx, fileName, nullptr, nullptr) != 0) {
 		fprintf(stderr, "Couldn't open file %s.\n", fileName);
 		exit(1);
 	}
 
 	// Retrieve the stream information.
-	if(avformat_find_stream_info(pFormatCtx, nullptr)<0) {
+	if (avformat_find_stream_info(pFormatCtx, nullptr) < 0) {
 		fprintf(stderr, "Couldn't find stream information for file %s.\n", fileName);
 		exit(1);
 	}
@@ -489,13 +466,14 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 
 	// Find the first video stream.
 	iVideoStream = -1;
-	for(int i = 0; i < pFormatCtx->nb_streams; i++)
-		if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
-		iVideoStream = i;
-		break;
+	for (int iStream = 0; iStream < pFormatCtx->nb_streams; ++iStream) {
+		if (pFormatCtx->streams[iStream]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+			iVideoStream = iStream;
+			break;
+		}
 	}
 
-	if(iVideoStream == -1) {
+	if (iVideoStream == -1) {
 		fprintf(stderr, "Unable to find a video stream in file %s.\n", fileName);
 		exit(1);
 	}
@@ -507,21 +485,23 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 	pCodecCtx = pVideoStream->codec;
 
 
-	// Find the decoder for the video stream
+	// Find the decoder for the video stream.
 	pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
-	if(pCodec == nullptr) {
-		fprintf(stderr, "Unsupported codec!\n");
-		exit(1);
-	}
-	// Open codec
-	if(avcodec_open2(pCodecCtx, pCodec, &optsDict)<0) {
-		fprintf(stderr, "Could not open codec.\n");
+	if (pCodec == nullptr) {
+		fprintf(stderr, "Unsupported codec for file %s!\n", fileName);
 		exit(1);
 	}
 
-	// Allocate video frame
+	// Open codec.
+	if(avcodec_open2(pCodecCtx, pCodec, &optsDict)<0) {
+		fprintf(stderr, "Could not open codec for file %s.\n", fileName);
+		exit(1);
+	}
+
+	// Allocate video frame.
 	pFrame = av_frame_alloc();
 
+	// Initialize the color model conversion/rescaling context.
 	swsCtx = sws_getContext
 		(
 			pCodecCtx->width,
@@ -536,17 +516,22 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 			nullptr
 		);
 
+	// Initialize the widht, height, duration, number of frames.
 	width = pCodecCtx->width;
 	height = pCodecCtx->height;
 	duration = pVideoStream->duration*av_q2d(pVideoStream->time_base);
 	nFrame = pVideoStream->nb_frames;
 
+	// Initialize the image buffer buffer.
 	ibb = new ImageBufferBuffer(width, height);
 
+	// Start the decode thread.
 	decodeThread = new std::thread(loadNextFrame);
 
+	// Free the string.
 	env->ReleaseStringUTFChars(jFileName, fileName);
 
+	// Initialize the delta pts using the average frame rate.
 	deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate)));
 }
 
@@ -575,7 +560,17 @@ JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieNumberOfFrames
 	return (jlong) nFrame;
 }
 
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_release
+JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieTimeInSeconds
+(JNIEnv *env, jobject thisObject) {
+	return (jdouble) iFrame*deltaPts*av_q2d(pVideoStream->time_base);
+}
+
+JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
+(JNIEnv *env, jobject thisObject) {
+	return (jlong) iFrame;
+}
+
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 (JNIEnv *env, jobject thisObject) {
 
 	// Set the quit flag for the docding thread.
