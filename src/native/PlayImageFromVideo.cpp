@@ -15,8 +15,7 @@ extern "C" {
 #include <condition_variable>
 #include <thread>
 #include <chrono>
-
-using namespace std::chrono;
+#include <algorithm>
 
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
@@ -29,38 +28,41 @@ using namespace std::chrono;
 
 class ImageBufferBuffer; // forward declaration for linker.
 
+// Basic information about the movie.
 int					width			= 0;
 int					height			= 0;
 int					nChannel		= 3;
-AVFormatContext		*pFormatCtx		= NULL;
+double				duration		= 0;
+long				nFrame			= 0;
+int64_t				iFrame			= 0; // Current frame number.
+
+AVFormatContext		*pFormatCtx		= nullptr;
 int					iVideoStream	= -1;
-AVStream			*pVideoStream	= NULL;
-AVCodecContext		*pCodecCtx		= NULL;
-AVCodec				*pCodec			= NULL;
-AVFrame				*pFrame			= NULL;
-AVFrame				*pFrameShow		= NULL;
+AVStream			*pVideoStream	= nullptr;
+AVCodecContext		*pCodecCtx		= nullptr;
+AVCodec				*pCodec			= nullptr;
+AVFrame				*pFrame			= nullptr;
+AVFrame				*pFrameShow		= nullptr;
 AVPacket			packet;
-AVDictionary		*optionsDict	= NULL;
-struct SwsContext   *sws_ctx		= NULL;
-std::thread			*decodingThread = NULL;
+AVDictionary		*optsDict		= nullptr;
+struct SwsContext   *swsCtx			= nullptr;
+std::thread			*decodeThread	= nullptr;
 bool				quit			= false;
-ImageBufferBuffer	*ibb			= NULL;
+ImageBufferBuffer	*ibb			= nullptr;
 
 // Playback speed and reverse playback.
 bool				reverse			= false;
 double				speed			= 1;
 bool				init			= true; // on reset set to true
-int64_t				last_read_pts	= 0; // on reset set to 0
-int64_t				delta_pts		= 0;
+int64_t				lastPts			= 0; // on reset set to 0
+int64_t				deltaPts		= 0;
 double				diff			= 0; // on reset set to 0
-high_resolution_clock::time_point last_time;
+std::chrono::high_resolution_clock::time_point lastTime;
 
 // Random seeking within the video.
-bool				seek_req		= false;
-int64_t				seek_time		= 0;
-int					seek_flags		= AVSEEK_FLAG_ANY;
-bool				seek_reverse	= false;
-int64_t				frame_no		= 0; // Have the current frame number.
+bool				seekReq			= false;
+int64_t				seekTime		= 0;
+int					seekFlags		= AVSEEK_FLAG_ANY;
 
 
 class ImageBuffer {
@@ -213,44 +215,42 @@ void loadNextFrame() {
 	while(!quit) {
 
 		// Random seeking within the video stream.
-		if (seek_req) {
+		if (seekReq) {
 			if (reverse) {
-				seek_flags |= AVSEEK_FLAG_BACKWARD;
+				seekFlags |= AVSEEK_FLAG_BACKWARD;
 			} else {
-				seek_flags &= ~AVSEEK_FLAG_BACKWARD;
+				seekFlags &= ~AVSEEK_FLAG_BACKWARD;
 			}
-			if (av_seek_frame(pFormatCtx, iVideoStream, seek_time, seek_flags) < 0) {
-				fprintf(stderr, "Random seek of %I64d time unsuccessful.\n", seek_time);
+			if (av_seek_frame(pFormatCtx, iVideoStream, seekTime, seekFlags) < 0) {
+				fprintf(stderr, "Random seek of %I64d time unsuccessful.\n", seekTime);
 			} else {
 				ibb->lock();
 				ibb->doFlush();
 				avcodec_flush_buffers(pCodecCtx);
 				init = true;
-				last_read_pts = 0;
+				lastPts = 0;
 				diff = 0;
 				ibb->unlock();
 			}
-			seek_req = false;
+			seekReq = false;
 		}
 		
 
 		// Need to seek forward by 2 x N_MAX_IMAGES.
 		if (reverse && ibb->writeFull() && do_reverse) {
 
-			seek_flags = AVSEEK_FLAG_ANY;
-			seek_flags |= AVSEEK_FLAG_FRAME;
-			seek_flags |= AVSEEK_FLAG_BACKWARD;
+			seekFlags |= AVSEEK_FLAG_BACKWARD;
 
-			frame_no -= 2*N_MAX_IMAGES;
-			seek_time = frame_no*delta_pts;
+			iFrame -= 2*N_MAX_IMAGES;
+			seekTime = iFrame*deltaPts;
 
-			if (frame_no < 0) {
+			if (iFrame < 0) {
 				// Reached the start of the file. TODO: Partial load into buffer.
 				break;
 			}
 
-			if (av_seek_frame(pFormatCtx, iVideoStream, seek_time, seek_flags) < 0) {
-				fprintf(stderr, "Reverse seek of %I64d time unsuccessful.\n", seek_time);
+			if (av_seek_frame(pFormatCtx, iVideoStream, seekTime, seekFlags) < 0) {
+				fprintf(stderr, "Reverse seek of %I64d time unsuccessful.\n", seekTime);
 			} else {
 				avcodec_flush_buffers(pCodecCtx);
 			}
@@ -273,7 +273,7 @@ void loadNextFrame() {
 			if(frameFinished) {
 				do_reverse = true;
 
-				frame_no++;
+				iFrame++;
 
 				// Get the next writeable buffer (this may block and can be unblocked with a flush)
 				AVFrame* pFrameBuffer = ibb->getWritePtr();
@@ -284,7 +284,7 @@ void loadNextFrame() {
 					// Convert the image from its native format into RGB.
 					sws_scale
 					(
-						sws_ctx,
+						swsCtx,
 						(uint8_t const * const *)pFrame->data,
 						pFrame->linesize,
 						0,
@@ -312,153 +312,209 @@ void loadNextFrame() {
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
 (JNIEnv *env, jobject thisObject, jfloat inSpeed) {	
 	
-	if (reverse != (inSpeed<0) ) {
+	if (reverse != (inSpeed < 0) ) {
 		reverse = inSpeed < 0;
 		ibb->setReverse(reverse);
-		seek_time = frame_no*3003;
-		seek_req = true;
+		Java_PlayImageFromVideo_setTime__J(env, thisObject, iFrame);
+
+		//iFrame = reverse ? std::max(iFrame, (int64_t)(2*N_MAX_IMAGES)) 
+		//	: std::min(iFrame, (int64_t)(nFrame-2*N_MAX_IMAGES)); // in frames
+		//seekTime = iFrame*deltaPts;
+
+		//seekReq = true;
 	}
 	
 	speed = fabs(inSpeed);
 }
 
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime
-(JNIEnv *env, jobject thisObject, jfloat time) { // time in seconds
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime__D
+(JNIEnv *env, jobject thisObject, jdouble time) { // time in seconds
 
-	seek_flags = AVSEEK_FLAG_ANY;
+	// Compute the upper/lower bound using the buffer size.
+	jdouble delta = 2*N_MAX_IMAGES*deltaPts*av_q2d(pVideoStream->time_base); // in seconds
+
+	// Apply upper and lower bound depending on forward/backward replay.
+	seekTime = reverse ? std::max(time, delta) : std::min(time, duration-delta); // in seconds
+
+	// Compute the new frame.
+	int64_t iFrameNew = (int64_t)(seekTime/(deltaPts*av_q2d(pVideoStream->time_base)));
+
+	// Convert the seekTime into time base.
+	seekTime /= av_q2d(pVideoStream->time_base); // in time base
+
+	// Set reverse.
+	reverse = iFrameNew < iFrame;
+
+	// Update the frame number.
+	iFrame = iFrameNew;
+
+	// Issue a seek request.
+	seekReq = true;
+}
+
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime__J
+(JNIEnv *env, jobject thisObject, jlong time) {
+
+	// If time is out of range given the buffer bring it into range.
+	int64_t iFrameNew = reverse ? std::max(time, (jlong)(2*N_MAX_IMAGES)) 
+		: std::min(time, (jlong)(nFrame-2*N_MAX_IMAGES)); // in frames
+
+	// Set reverse.
+	reverse = iFrameNew < iFrame; // in frames
+
+	// Set the new frame.
+	iFrame = iFrameNew; // in frames
 	
-	seek_time = time < 0 ? pVideoStream->duration-1 : (int64_t)(time/av_q2d(pVideoStream->time_base));
-	
-	seek_time = seek_time > pVideoStream->duration-1 ? pVideoStream->duration-1 : seek_time;
+	// Compute the seek time.
+	seekTime = iFrame*deltaPts; // in time base units.
 
-
-	frame_no = (int64_t)(time/(delta_pts*av_q2d(pVideoStream->time_base)));
-
-	seek_req = true;
-
-	/*
-	fprintf(stdout, "Time is %f sec and %I64d in stream time base units.\n", time, seek_time);
-
-	fprintf(stdout, "Duration from format context %I64d and from stream %I64d.\n", 
-		pFormatCtx->duration, pVideoStream->duration);
-
-	fprintf(stdout, "Time base of codec %f and of stream %f.\n",
-		av_q2d(pCodecCtx->time_base), av_q2d(pVideoStream->time_base));
-
-	fprintf(stdout, "Number of frames %I64d.\n", pVideoStream->nb_frames);
-	*/
+	// Issue a seek request.
+	seekReq = true;
 }
 
 
 JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
 (JNIEnv *env, jobject thisObject) {
+
+	// Construct a new direct byte buffer pointing to data from pFrameShow.
 	return env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
 									width*height*nChannel*sizeof(uint8_t));
 }
 
 JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 (JNIEnv *env, jobject thisObject) {
+	
+	// Counts the number of frames that this method requested (could be 0, 1, 2).
 	int nFrame = 0;
-	AVFrame *pFrameTmp = ibb->getReadPtr();	
 
+	// Get the next read pointer.
+	AVFrame *pFrameTmp = ibb->getReadPtr();
+
+	// We received a frame (no flushing).
 	if (pFrameTmp) {
+
+		// Retrieve the presentation time for this first frame.
+		uint64_t firstPts = pFrameTmp->pts;
+
+		// Increase the number of read frames by one.
 		nFrame++;
 
-		//fprintf(stdout,"pts diff = %I64d.\n", fabs(pFrameTmp->pts - last_read_pts));
-		//fflush(stdout);
+		// Compute the difference for the presentation time stamps.
+		double ptsDiff = init ? 0 : fabs(firstPts - lastPts)/speed*av_q2d(pVideoStream->time_base);
 
-		double pts_diff = init ? 0 : fabs(pFrameTmp->pts - last_read_pts)/speed*av_q2d(pVideoStream->time_base);
+		// Get the current time.
+		auto time = std::chrono::high_resolution_clock::now();
 
-		auto time = high_resolution_clock::now();
-		double time_diff = init ? 0 : duration_cast<microseconds>(time-last_time).count()/1000000.0;
+		// Compute the time difference.
+		double timeDiff = init ? 0 
+			: std::chrono::duration_cast<std::chrono::microseconds>(time-lastTime).count()/1000000.0;
 
-		diff += pts_diff - time_diff;
-		double delay = pts_diff;
+		// Compute the difference between times and pts.
+		diff += ptsDiff - timeDiff;
+
+		// Calculate the delay that this display thread is required to wait.
+		double delay = ptsDiff;
+
+		// If the frame is repeated split this delay in half.
 		if (pFrameTmp->repeat_pict) {
 			delay += delay/2;
 		}
-		double sync_threshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
+
+		// Compute the synchronization threshold (see ffplay.c)
+		double syncThreshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
+
+		// The time difference is within the no sync threshold.
 		if(fabs(diff) < AV_NOSYNC_THRESHOLD) {
-			if (diff <= -sync_threshold) {
+
+			// If our time difference is lower than the sync threshold, then skip a frame.
+			if (diff <= -syncThreshold) {
 				AVFrame *pFrameTmp2 = ibb->getReadPtr();
 				if (pFrameTmp2) {
 					pFrameTmp = pFrameTmp2;
 					nFrame++;
 				}
+
+			// If the time difference is within -syncThreshold ... +0 then show frame instantly.
 			} else if (diff < 0) {
 				delay = 0;
-			} else if (diff >= sync_threshold) {
+
+			// If the time difference is greater than the syncThreshold increase the delay.
+			} else if (diff >= syncThreshold) {
 				delay *= 2;
 			}
 		}
 
 		// Delay read to keep the desired frame rate.
 		if (delay>0) {
-			std::this_thread::sleep_for(milliseconds((int)(delay*1000+0.5)));
+			std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
 		}
 
-		// Update show pointer
+		// Update the pointer for the show frame.
 		pFrameShow = pFrameTmp;
 
-		// save for next time
-		delta_pts = abs(pFrameTmp->pts - last_read_pts);
-		last_read_pts = pFrameTmp->pts;
-		last_time = time;
+		// Save values for next call.
+		deltaPts = abs(pFrameTmp->pts - lastPts);
+		lastPts = firstPts; // Need to use the first pts.
+		lastTime = time;
 		init = false;
 	}
+
+	// Return the number of read frames (not neccesarily all are displayed).
 	return (jint) nFrame;
 }
 
 
-// Opens movie file and loads first frame.
+// Opens movie file.
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 (JNIEnv *env, jobject thisObject, jstring jFileName) {
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
 
-	// Register all formats and codecs
+	// Register all formats and codecs.
 	av_register_all();
 
-	// Open video file
-	if(avformat_open_input(&pFormatCtx, fileName, NULL, NULL)!=0) {
-		fprintf(stderr, "Couldn't open file.\n");
+	// Open the video file.
+	if(avformat_open_input(&pFormatCtx, fileName, nullptr, nullptr)!=0) {
+		fprintf(stderr, "Couldn't open file %s.\n", fileName);
 		exit(1);
 	}
 
-	// Retrieve stream information
-	if(avformat_find_stream_info(pFormatCtx, NULL)<0) {
-		fprintf(stderr, "Couldn't find stream information.\n");
+	// Retrieve the stream information.
+	if(avformat_find_stream_info(pFormatCtx, nullptr)<0) {
+		fprintf(stderr, "Couldn't find stream information for file %s.\n", fileName);
 		exit(1);
 	}
   
-	// Dump information about file onto standard error
+	// Dump information about file onto standard error.
 	av_dump_format(pFormatCtx, 0, fileName, 0);
 
-	// Find the first video stream
+	// Find the first video stream.
 	iVideoStream = -1;
 	for(int i = 0; i < pFormatCtx->nb_streams; i++)
-		if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO) {
-		iVideoStream=i;
+		if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+		iVideoStream = i;
 		break;
 	}
 
 	if(iVideoStream == -1) {
-		fprintf(stderr, "Didn't find a video stream.\n");
+		fprintf(stderr, "Unable to find a video stream in file %s.\n", fileName);
 		exit(1);
 	}
 
-	// Get a pointer to the codec context for the video stream
-	pCodecCtx = pFormatCtx->streams[iVideoStream]->codec;
-
+	// Get a poitner to the video stream.
 	pVideoStream = pFormatCtx->streams[iVideoStream];
+
+	// Get a pointer to the codec context for the video stream.
+	pCodecCtx = pVideoStream->codec;
+
 
 	// Find the decoder for the video stream
 	pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
-	if(pCodec == NULL) {
+	if(pCodec == nullptr) {
 		fprintf(stderr, "Unsupported codec!\n");
 		exit(1);
 	}
 	// Open codec
-	if(avcodec_open2(pCodecCtx, pCodec, &optionsDict)<0) {
+	if(avcodec_open2(pCodecCtx, pCodec, &optsDict)<0) {
 		fprintf(stderr, "Could not open codec.\n");
 		exit(1);
 	}
@@ -466,7 +522,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 	// Allocate video frame
 	pFrame = av_frame_alloc();
 
-	sws_ctx = sws_getContext
+	swsCtx = sws_getContext
 		(
 			pCodecCtx->width,
 			pCodecCtx->height,
@@ -475,24 +531,28 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 			pCodecCtx->height,
 			AV_PIX_FMT_RGB24,
 			SWS_BILINEAR,
-			NULL,
-			NULL,
-			NULL
+			nullptr,
+			nullptr,
+			nullptr
 		);
 
 	width = pCodecCtx->width;
 	height = pCodecCtx->height;
+	duration = pVideoStream->duration*av_q2d(pVideoStream->time_base);
+	nFrame = pVideoStream->nb_frames;
 
 	ibb = new ImageBufferBuffer(width, height);
 
-	decodingThread = new std::thread(loadNextFrame);
+	decodeThread = new std::thread(loadNextFrame);
 
 	env->ReleaseStringUTFChars(jFileName, fileName);
 
-	delta_pts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate)));
+	deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate)));
+}
 
-	//fprintf(stdout, "Average frame rate = %f.\n", av_q2d(pVideoStream->avg_frame_rate));
-	//fflush(stdout);
+JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieColorChannels
+(JNIEnv *env, jobject thisObject) {
+	return (jint) nChannel;
 }
 
 JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieHeight
@@ -505,6 +565,15 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieWidth
 	return (jint) width;
 }
 
+JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieDuration
+(JNIEnv *env, jobject thisObject) {
+	return (jdouble) duration;
+}
+
+JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieNumberOfFrames
+(JNIEnv *env, jobject thisObject) {
+	return (jlong) nFrame;
+}
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_release
 (JNIEnv *env, jobject thisObject) {
@@ -516,10 +585,10 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_release
 	ibb->doFlush();
 
 	// Join the decoding thread with this one.
-	decodingThread->join();
+	decodeThread->join();
 
 	// Free the decoding thread.
-	delete decodingThread;
+	delete decodeThread;
 	
 	// Free the image buffer buffer.
 	delete ibb;

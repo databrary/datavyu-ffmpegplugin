@@ -55,6 +55,14 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 
 /*
  * Class:     PlayImageFromVideo
+ * Method:    getMovieColorChannels
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieColorChannels
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlayImageFromVideo
  * Method:    getMovieHeight
  * Signature: ()I
  */
@@ -67,6 +75,22 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieHeight
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieWidth
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlayImageFromVideo
+ * Method:    getMovieDuration
+ * Signature: ()D
+ */
+JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieDuration
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlayImageFromVideo
+ * Method:    getMovieNumberOfFrames
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieNumberOfFrames
   (JNIEnv *, jobject);
 
 /*
@@ -88,10 +112,18 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
 /*
  * Class:     PlayImageFromVideo
  * Method:    setTime
- * Signature: (F)V
+ * Signature: (D)V
  */
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime
-  (JNIEnv *, jobject, jfloat);
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime__D
+  (JNIEnv *, jobject, jdouble);
+
+/*
+ * Class:     PlayImageFromVideo
+ * Method:    setTime
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTime__J
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

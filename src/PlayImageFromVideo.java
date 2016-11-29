@@ -28,13 +28,14 @@ public class PlayImageFromVideo extends Canvas {
 	ComponentColorModel cm 					= new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 	Hashtable<String, String> properties 	= new Hashtable<String, String>();
 	
-	int 			nChannel 	= 3;
-	int 			width 		= 0;
+	int 			nChannel 	= 0;
+	int 			width 		= 0; // Store width and height to allocate buffers without native calls.
 	int 			height 		= 0;
 	BufferedImage 	image 		= null;
 	ByteBuffer 		buffer 		= null;
 	byte[] 			data 		= null;
 	DataBufferByte 	dataBuffer 	= null;
+	boolean			loaded 		= false;
 	
 	/**
 	 * Get the frame buffer.
@@ -53,18 +54,39 @@ public class PlayImageFromVideo extends Canvas {
 	 * @param fileName The file name.
 	 */
 	protected native void loadMovie(String fileName);
+	
+	/**
+	 * Get the number of color channels for the movie.
+	 * @return The number of channels.
+	 */
+	public native int getMovieColorChannels();
 
 	/**
 	 * Get the height of the movie frames.
+	 * Returns 0 if no movie was loaded.
 	 * @return Height.
 	 */
-	protected native int getMovieHeight();
+	public native int getMovieHeight();
 	
 	/**
 	 * Get the width of the movie frames.
+	 * Returns 0 if no movie was loaded.
 	 * @return Width.
 	 */
-	protected native int getMovieWidth();
+	public native int getMovieWidth();
+	
+	/**
+	 * Get the duration of the movie in seconds.
+	 * Returns 0 if no movie was loaded.
+	 * @return Duration in SECONDS.
+	 */
+	public native double getMovieDuration();
+	
+	/**
+	 * Get the number of frames if known, otherwise 0.
+	 * @return Number of frames.
+	 */
+	public native long getMovieNumberOfFrames();
 	
 	/**
 	 * Release all resources that have been allocated when loading the move.
@@ -86,10 +108,17 @@ public class PlayImageFromVideo extends Canvas {
 	 * A negative value sets the video to the end. If the duration is set above the length
 	 * of the video the video is set to the end.
 	 */
-	public native void setTime(float time);
+	public native void setTime(double time);
+	
+	/**
+	 * Set the time within the movie through a frame number.
+	 * @param frameNo Frame number to set to.
+	 */
+	public native void setTime(long frameNo);
+	
 	
 	public void update(Graphics g){
-	    paint(g); // instead of resetting just paint directly 
+	    paint(g); // Instead of resetting, paint directly. 
 	}
 	
 	/**
@@ -113,27 +142,16 @@ public class PlayImageFromVideo extends Canvas {
 	 * @param fileName Name of the movie file.
 	 */
 	public void setMovie(String fileName) {
+		if (loaded) {
+			release();
+		}
 		loadMovie(fileName);
+		nChannel = getMovieColorChannels();
 		width = getMovieWidth();
 		height = getMovieHeight();
+		loaded = true;
 	}
-	
-	/**
-	 * Get the width of the frame.
-	 * @return Width.
-	 */
-	public int getFrameWidth() {
-		return width;
-	}
-	
-	/**
-	 * Get the height of the frame.
-	 * @return Height.
-	 */
-	public int getFrameHeight() {
-		return height;
-	}
-	
+		
 	public void paint(Graphics g) {
 		g.drawImage(image, 0, 0, null);
 	}	
@@ -146,35 +164,39 @@ public class PlayImageFromVideo extends Canvas {
 		//String fileName = "C:\\Users\\Florian\\test.mpg";
 		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
 		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
-		final PlayImageFromVideo display = new PlayImageFromVideo();
-		display.setMovie(fileName);
-		int width = display.getFrameWidth();
-		int height = display.getFrameHeight();
-		display.setTime(8f);
-		display.setPlaybackSpeed(-1f);
+		final PlayImageFromVideo player = new PlayImageFromVideo();
+		player.setMovie(fileName);
+		int width = player.getMovieWidth();
+		int height = player.getMovieHeight();
+		double duration = player.getMovieDuration();
+		long nFrameMovie = player.getMovieNumberOfFrames();
+		player.setTime(12.0);
+		//player.setPlaybackSpeed(1f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
-        f.add(display);
+        f.add(player);
         f.addWindowListener( new WindowAdapter() {
             public void windowClosing(WindowEvent ev) {
-            	display.release();
+            	player.release();
                 System.exit(0);
             }
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrameReq = 100; // Displayed number of frames.
+        int nFrameReq = 150; // played number of frames.
         int nFrameDec = 0; // Decoded number of frames.
         int nFrameSkip = 0; // Skipped number of frames.
         for (int iFrame = 0; iFrame < nFrameReq; ++iFrame) {
-        	int nFrame = display.getNextFrame();
+        	int nFrame = player.getNextFrame();
         	nFrameSkip += nFrame > 1 ? 1 : 0;
         	nFrameDec += nFrame;
-        	display.repaint();
+        	player.repaint();
         }
         long t1 = System.nanoTime();
 		System.out.println("width = " + width + " pixels.");
 		System.out.println("height = " + height + " pixels.");
+		System.out.println("duration = " + duration + " seconds.");
+		System.out.println("duration = " + nFrameMovie + " frames");
         System.out.println("Decoded rate = " +  ((double)nFrameDec)/(t1-t0)*1e9f + " frames per second.");
         System.out.println("Skipped " + nFrameSkip + " frames.");
 	}	
