@@ -28,58 +28,108 @@ public class PlayImageFromVideo extends Canvas {
 	ComponentColorModel cm 					= new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 	Hashtable<String, String> properties 	= new Hashtable<String, String>();
 	
-	int 			nChannel = 3;
-	int 			width;
-	int 			height;
-	BufferedImage 	image = null;
-	ByteBuffer 		buffer = null;
-	byte[] 			data = null;
-	DataBufferByte 	dataBuffer = null;
+	int 			nChannel 	= 3;
+	int 			width 		= 0;
+	int 			height 		= 0;
+	BufferedImage 	image 		= null;
+	ByteBuffer 		buffer 		= null;
+	byte[] 			data 		= null;
+	DataBufferByte 	dataBuffer 	= null;
 	
-	private native ByteBuffer getFrameBuffer();
+	/**
+	 * Get the frame buffer.
+	 * @return A frame buffer object.
+	 */
+	protected native ByteBuffer getFrameBuffer();
 	
-	private native int loadNextFrame(); // loop the video, or stop at the end?
+	/**
+	 * Load the next frame.
+	 * @return The number of frames loaded. This could be larger than one if frames are skipped.
+	 */
+	protected native int loadNextFrame(); // loop the video, or stop at the end?
 	
-	private native void loadMovie(String fileName);
+	/**
+	 * Load the movie with the file name.
+	 * @param fileName The file name.
+	 */
+	protected native void loadMovie(String fileName);
+
+	/**
+	 * Get the height of the movie frames.
+	 * @return Height.
+	 */
+	protected native int getMovieHeight();
 	
-	private native int getMovieHeight();
+	/**
+	 * Get the width of the movie frames.
+	 * @return Width.
+	 */
+	protected native int getMovieWidth();
 	
-	private native int getMovieWidth();
+	/**
+	 * Release all resources that have been allocated when loading the move.
+	 */
+	protected native void release();
 	
-	private native void release();
+	/**
+	 * Set the play back speed.
+	 * @param speed A floating point with the play back speed as factor of the original 
+	 * 				play back speed. For instance, for the value of -0.5x the video 
+	 * 				is played back at half the rate.
+	 * Tested for the range -+0.25x to -+ 4x. 
+	 */
+	public native void setPlaybackSpeed(float speed);
 	
-	public native void setPlaybackSpeed(float speed); // +-0.25x, +-0.5x, +-1x, +-2x, +-4x
-	
-	private native void setTime(float time); // time in sec  // negative value sets to end.
+	/**
+	 * Set the time within the movie.
+	 * @param time The time within the video in SECONDS.
+	 * A negative value sets the video to the end. If the duration is set above the length
+	 * of the video the video is set to the end.
+	 */
+	public native void setTime(float time);
 	
 	public void update(Graphics g){
 	    paint(g); // instead of resetting just paint directly 
 	}
 	
+	/**
+	 * Get the next frame. With the 
+	 * @return The number of frames loaded. This could be larger than one if frames are skipped.
+	 */
 	public int getNextFrame() {
-		int nFrame = loadNextFrame();
-		buffer = getFrameBuffer();
-		data = new byte[width*height*nChannel];		
-		buffer.get(data); // Unsure how to get rid of that copy!!
-		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
-		SampleModel sm = cm.createCompatibleSampleModel(width, height);
-		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-		image = new BufferedImage(cm, raster, false, properties);
-		return nFrame;
+		int nFrame = loadNextFrame(); // Load the next frame(s). May skip frames.
+		buffer = getFrameBuffer(); // Get the buffer.
+		data = new byte[width*height*nChannel];	// Allocate the bytes in java.
+		buffer.get(data); // Copy from the native buffer into the java buffer.
+		DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
+		SampleModel sm = cm.createCompatibleSampleModel(width, height); // Create sampling model.
+		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0)); // Create writable raster.
+		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
+		return nFrame; // Return the number of frames.
 	}
-	
-	public PlayImageFromVideo() {}
-	
+
+	/**
+	 * Set a movie with the file name for this player.
+	 * @param fileName Name of the movie file.
+	 */
 	public void setMovie(String fileName) {
 		loadMovie(fileName);
 		width = getMovieWidth();
 		height = getMovieHeight();
 	}
 	
+	/**
+	 * Get the width of the frame.
+	 * @return Width.
+	 */
 	public int getFrameWidth() {
 		return width;
 	}
 	
+	/**
+	 * Get the height of the frame.
+	 * @return Height.
+	 */
 	public int getFrameHeight() {
 		return height;
 	}
@@ -88,6 +138,10 @@ public class PlayImageFromVideo extends Canvas {
 		g.drawImage(image, 0, 0, null);
 	}	
 	
+	/**
+	 * An example program.
+	 * @param args Arguments for the program.
+	 */
 	public static void main(String[] args) {
 		//String fileName = "C:\\Users\\Florian\\test.mpg";
 		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
@@ -96,8 +150,8 @@ public class PlayImageFromVideo extends Canvas {
 		display.setMovie(fileName);
 		int width = display.getFrameWidth();
 		int height = display.getFrameHeight();
-		display.setTime(11f); // set to end
-		//display.setPlaybackSpeed(1f);
+		display.setTime(8f);
+		display.setPlaybackSpeed(-1f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
         f.add(display);
@@ -109,7 +163,7 @@ public class PlayImageFromVideo extends Canvas {
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrameReq = 50; // Displayed number of frames.
+        int nFrameReq = 100; // Displayed number of frames.
         int nFrameDec = 0; // Decoded number of frames.
         int nFrameSkip = 0; // Skipped number of frames.
         for (int iFrame = 0; iFrame < nFrameReq; ++iFrame) {
