@@ -24,33 +24,38 @@ public class PlayImageFromVideo extends Canvas {
 	
 	private static final long serialVersionUID = -6199180436635445511L;
 	
-	ColorSpace cs 							= ColorSpace.getInstance(ColorSpace.CS_sRGB);
-	ComponentColorModel cm 					= new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-	Hashtable<String, String> properties 	= new Hashtable<String, String>();
+	protected ColorSpace cs 						= ColorSpace.getInstance(ColorSpace.CS_sRGB);
+	protected ComponentColorModel cm 				= new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+	protected Hashtable<String, String> properties 	= new Hashtable<String, String>();
 	
-	int 			nChannel 	= 0;
-	int 			width 		= 0; // Store width and height to allocate buffers without native calls.
-	int 			height 		= 0;
-	BufferedImage 	image 		= null;
-	ByteBuffer 		buffer 		= null;
-	byte[] 			data 		= null;
-	DataBufferByte 	dataBuffer 	= null;
-	boolean			loaded 		= false;
+	protected int 				nChannel 	= 0;
+	protected int 				width 		= 0; // Store width and height to allocate buffers without native calls.
+	protected int 				height 		= 0;
+	protected BufferedImage 	image 		= null;
+	protected ByteBuffer 		buffer 		= null;
+	protected byte[] 			data 		= null;
+	protected DataBufferByte 	dataBuffer 	= null;
+	protected SampleModel 		sm 			= null;
+	protected boolean			loaded 		= false;
 	
 	/**
 	 * Get the frame buffer.
+	 * If no movie was loaded this method returns null.
 	 * @return A frame buffer object.
 	 */
 	protected native ByteBuffer getFrameBuffer();
 	
 	/**
 	 * Load the next frame.
+	 * If no movie was loaded this method returns -1.
 	 * @return The number of frames loaded. This could be larger than one if frames are skipped.
 	 */
 	protected native int loadNextFrame(); // loop the video, or stop at the end?
 	
 	/**
 	 * Load the movie with the file name.
+	 * If this method is called, multiple times, the under laying implementation
+	 * releases resources and re-allocates them.
 	 * @param fileName The file name.
 	 */
 	protected native void loadMovie(String fileName);
@@ -84,24 +89,29 @@ public class PlayImageFromVideo extends Canvas {
 	
 	/**
 	 * Get the number of frames if known, otherwise 0.
+	 * Returns 0 if no movie was loaded.
 	 * @return Number of frames.
 	 */
 	public native long getMovieNumberOfFrames();
 	
 	/**
 	 * Get the current time of the movie in seconds.
+	 * Returns 0 if no movie was loaded.
 	 * @return Current time in seconds.
 	 */
 	public native double getMovieTimeInSeconds();
 	
 	/**
 	 * Get the current time of the movie in frames.
+	 * Returns 0 if no movie was loaded.
 	 * @return Current time in frames.
 	 */
 	public native long getMovieTimeInFrames();
 	
 	/**
 	 * Release all resources that have been allocated when loading the move.
+	 * If this method is called when no movie was loaded no resources are
+	 * de-allocated.
 	 */
 	public native void releaseMovie();
 	
@@ -143,7 +153,6 @@ public class PlayImageFromVideo extends Canvas {
 		data = new byte[width*height*nChannel];	// Allocate the bytes in java.
 		buffer.get(data); // Copy from the native buffer into the java buffer.
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
-		SampleModel sm = cm.createCompatibleSampleModel(width, height); // Create sampling model.
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0)); // Create writable raster.
 		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
 		return nFrame; // Return the number of frames.
@@ -162,11 +171,26 @@ public class PlayImageFromVideo extends Canvas {
 		width = getMovieWidth();
 		height = getMovieHeight();
 		loaded = true;
+		sm = cm.createCompatibleSampleModel(width, height); // Create sampling model.
+		setBounds(0, 0, width, height);
 	}
 		
 	public void paint(Graphics g) {
 		g.drawImage(image, 0, 0, null);
-	}	
+	}
+	
+	public PlayImageFromVideo() {
+		// Initialize with an empty image.
+		nChannel = 3;
+		width = 640;
+		height = 480;
+		data = new byte[width*height*nChannel];	// Allocate the bytes in java.
+		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
+		sm = cm.createCompatibleSampleModel(width, height);
+		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
+		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
+		setBounds(0, 0, width, height);
+	}
 	
 	/**
 	 * An example program.
@@ -174,16 +198,16 @@ public class PlayImageFromVideo extends Canvas {
 	 */
 	public static void main(String[] args) {
 		//String fileName = "C:\\Users\\Florian\\test.mpg";
-		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
-		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
+		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
 		final PlayImageFromVideo player = new PlayImageFromVideo();
 		player.setMovie(fileName);
 		int width = player.getMovieWidth();
 		int height = player.getMovieHeight();
 		double duration = player.getMovieDuration();
 		long nFrameMovie = player.getMovieNumberOfFrames();
-		player.setTimeInSeconds(12.0);
-		player.setPlaybackSpeed(1f);
+		//player.setTimeInSeconds(1.0);
+		//player.setPlaybackSpeed(1f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
         f.add(player);
@@ -195,7 +219,7 @@ public class PlayImageFromVideo extends Canvas {
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrameReq = 150; // Played number of frames.
+        int nFrameReq = 50; // Played number of frames.
         int nFrameDec = 0; // Decoded number of frames.
         int nFrameSkip = 0; // Skipped number of frames.
         for (int iFrame = 0; iFrame < nFrameReq; ++iFrame) {

@@ -49,6 +49,7 @@ struct SwsContext   *swsCtx			= nullptr;
 std::thread			*decodeThread	= nullptr;
 bool				quit			= false;
 ImageBufferBuffer	*ibb			= nullptr;
+bool				loadedMovie		= false;
 
 // Playback speed and reverse playback.
 bool				reverse			= false;
@@ -310,9 +311,10 @@ void loadNextFrame() {
 }
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
-(JNIEnv *env, jobject thisObject, jfloat inSpeed) {	
+(JNIEnv *env, jobject thisObject, jfloat inSpeed) {
 	
-	if (reverse != (inSpeed < 0) ) {
+	// If this is called when no movie is loaded, then do not access ibb.
+	if (ibb && reverse != (inSpeed < 0) ) {
 		reverse = inSpeed < 0;
 		ibb->setReverse(reverse);
 		Java_PlayImageFromVideo_setTimeInFrames(env, thisObject, iFrame);
@@ -354,13 +356,17 @@ JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
 (JNIEnv *env, jobject thisObject) {
 
 	// Construct a new direct byte buffer pointing to data from pFrameShow.
-	return env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
-									width*height*nChannel*sizeof(uint8_t));
+	return loadedMovie ? env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
+									width*height*nChannel*sizeof(uint8_t))
+									: 0;
 }
 
 JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 (JNIEnv *env, jobject thisObject) {
 	
+	// No movie was loaded return -1.
+	if (!loadedMovie) return -1;
+
 	// Counts the number of frames that this method requested (could be 0, 1, 2).
 	int nFrame = 0;
 
@@ -444,6 +450,12 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 // Opens movie file.
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 (JNIEnv *env, jobject thisObject, jstring jFileName) {
+
+	// Release resources first before loading another movie.
+	if (loadedMovie) {
+		Java_PlayImageFromVideo_releaseMovie(env, thisObject);
+	}
+
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
 
 	// Register all formats and codecs.
@@ -525,14 +537,17 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 	// Initialize the image buffer buffer.
 	ibb = new ImageBufferBuffer(width, height);
 
+	// Initialize the delta pts using the average frame rate.
+	deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate)));
+
+	// Set the value for loaded move true.
+	loadedMovie = true;
+
 	// Start the decode thread.
 	decodeThread = new std::thread(loadNextFrame);
 
 	// Free the string.
 	env->ReleaseStringUTFChars(jFileName, fileName);
-
-	// Initialize the delta pts using the average frame rate.
-	deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate)));
 }
 
 JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieColorChannels
@@ -562,7 +577,7 @@ JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieNumberOfFrames
 
 JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieTimeInSeconds
 (JNIEnv *env, jobject thisObject) {
-	return (jdouble) iFrame*deltaPts*av_q2d(pVideoStream->time_base);
+	return loadedMovie ? (jdouble) iFrame*deltaPts*av_q2d(pVideoStream->time_base) : 0;
 }
 
 JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
@@ -573,24 +588,46 @@ JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 (JNIEnv *env, jobject thisObject) {
 
-	// Set the quit flag for the docding thread.
-	quit = true;
+	if (loadedMovie) {
+		// Set the quit flag for the docding thread.
+		quit = true;
 
-	// Flush the image buffer buffer (which unblocks all readers/writers).
-	ibb->doFlush();
+		// Flush the image buffer buffer (which unblocks all readers/writers).
+		ibb->doFlush();
 
-	// Join the decoding thread with this one.
-	decodeThread->join();
+		// Join the decoding thread with this one.
+		decodeThread->join();
 
-	// Free the decoding thread.
-	delete decodeThread;
-	
-	// Free the image buffer buffer.
-	delete ibb;
+		// Free the decoding thread.
+		delete decodeThread;
+		
+		// Free the image buffer buffer.
+		delete ibb;
+		ibb = nullptr;
 
-	// Free the YUV frame
-	av_free(pFrame);
+		// Free scaling context.
+		sws_freeContext(swsCtx);
 
-	// Close the video file
-	avformat_close_input(&pFormatCtx);
+		// Free the YUV frame
+		av_free(pFrame);
+
+		// Close the video file
+		avformat_close_input(&pFormatCtx);
+
+		// Set default values for movie information.
+		loadedMovie = false;
+		width = 0;
+		height = 0;
+		duration = 0;
+		nFrame = 0;
+		iFrame = 0;
+
+		// Set default values for playback speed.
+		init = true;
+		lastPts = 0;
+		deltaPts = 0;
+		diff = 0;
+
+		quit = false;
+	}
 }
