@@ -19,8 +19,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 
@@ -32,6 +30,15 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	private int speedSign = 1;
 	private float speedValue = 1;
 	private File lastDirectory = new File(System.getProperty("user.home"));
+	
+	private JRadioButton quarter;
+	private JRadioButton half;
+	private JRadioButton one;
+	private JRadioButton twice;
+	private JRadioButton four;
+	
+	private JRadioButton forward;
+	private JRadioButton backward;
 	
 	protected float getSpeed() { return speedSign*speedValue; }
 
@@ -75,6 +82,13 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	            player.setMovie(file.getAbsolutePath());
 	            // Load first frame.
 				player.getNextFrame();
+				
+				// Set default speed.
+				one.setSelected(true);
+				forward.setSelected(true);
+				speedSign = 1;
+				speedValue = 1;
+				player.setPlaybackSpeed(1);
 	            
 	            int width = player.getMovieWidth();
 	            int height = player.getMovieHeight();
@@ -189,11 +203,11 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		stop.addActionListener(new StopSelection());
 		
 		// Speed selection.
-		JRadioButton quarter = new JRadioButton("1/4x");
-		JRadioButton half = new JRadioButton("1/2x");
-		JRadioButton one = new JRadioButton("1x");
-		JRadioButton twice = new JRadioButton("2x");
-		JRadioButton four = new JRadioButton("4x");
+		quarter = new JRadioButton("1/4x");
+		half = new JRadioButton("1/2x");
+		one = new JRadioButton("1x");
+		twice = new JRadioButton("2x");
+		four = new JRadioButton("4x");
 		// Set default.
 		one.setSelected(true);
 		
@@ -232,8 +246,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		
 		// Direction selection.
 		ButtonGroup directionGroup = new ButtonGroup();
-		JRadioButton forward = new JRadioButton("+");
-		JRadioButton backward = new JRadioButton("-");
+		forward = new JRadioButton("+");
+		backward = new JRadioButton("-");
 		// set default.
 		forward.setSelected(true);
 		

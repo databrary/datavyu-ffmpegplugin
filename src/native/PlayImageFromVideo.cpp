@@ -317,7 +317,14 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
 	if (ibb && reverse != (inSpeed < 0) ) {
 		reverse = inSpeed < 0;
 		ibb->setReverse(reverse);
-		Java_PlayImageFromVideo_setTimeInFrames(env, thisObject, iFrame);
+
+		//iFrame = reverse ? std::max(iFrame, (int64_t)(2*N_MAX_IMAGES)) 
+		//	: std::min(iFrame, (int64_t)(nFrame-2*N_MAX_IMAGES)); // in frames
+		//seekTime = iFrame*deltaPts;
+		diff = 0;
+		seekReq = true;
+
+		//Java_PlayImageFromVideo_setTimeInFrames(env, thisObject, iFrame);
 	}
 	
 	speed = fabs(inSpeed);
@@ -428,7 +435,7 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 		}
 
 		// Delay read to keep the desired frame rate.
-		if (delay>0) {
+		if (delay > 0) {
 			std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
 		}
 
@@ -623,10 +630,17 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 		iFrame = 0;
 
 		// Set default values for playback speed.
+		reverse = false;
+		speed = 1;
 		init = true;
 		lastPts = 0;
 		deltaPts = 0;
 		diff = 0;
+
+		// Reset value for seek request.
+		seekReq = false;
+		seekTime = 0;
+		seekFlags = AVSEEK_FLAG_ANY;
 
 		quit = false;
 	}
