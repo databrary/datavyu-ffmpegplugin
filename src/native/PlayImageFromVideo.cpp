@@ -22,12 +22,12 @@ extern "C" {
 // cl PlayImageFromVideo.cpp /Fe"..\..\lib\PlayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
 #define N_MAX_IMAGES 32 // ATTENTION BUFFER SHOULD BE LARGER THAN FPS FOR REVERSE PLAYBACK!!!
-#define N_MAX_BUFFER 6
+//#define N_MAX_BUFFER 6
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0
 #define PTS_DELTA_THRESHOLD 3
 
-class ImageBufferBuffer; // forward declaration for linker.
+class ImageBuffer; // Forward declaration for linker.
 
 // Basic information about the movie.
 int					width			= 0;
@@ -49,7 +49,7 @@ AVDictionary		*optsDict		= nullptr;
 struct SwsContext   *swsCtx			= nullptr;
 std::thread			*decodeThread	= nullptr;
 bool				quit			= false;
-ImageBufferBuffer	*ibb			= nullptr;
+ImageBuffer			*ib				= nullptr;
 bool				loadedMovie		= false;
 
 // Playback speed and reverse playback.
@@ -64,18 +64,20 @@ std::chrono::high_resolution_clock::time_point lastTime;
 
 // Random seeking within the video.
 bool				seekReq			= false;
-int64_t				seekTime		= 0;
+int64_t				seekFrame		= 0;
 int					seekFlags		= AVSEEK_FLAG_ANY;
-
 
 class ImageBuffer {
 	AVFrame** data;
 	int nData;
 	int iRead;
 	int iWrite;
-	bool reverse;
+	int iDiff;
+	bool flush;
+	std::mutex mu;
+	std::condition_variable cv;
 public:
-	ImageBuffer(int width, int height) : nData(N_MAX_IMAGES), reverse(false) {
+	ImageBuffer(int width, int height) : nData(N_MAX_IMAGES), flush(false) {
 		data = new AVFrame*[nData];
 		for (int iData = 0; iData < nData; ++iData) {
 			AVFrame* pFrame = av_frame_alloc();
@@ -97,77 +99,10 @@ public:
 		}
 		delete [] data;
 	}
-	bool writeFull() const {
-		return iWrite == nData;
-	}
-	bool readEmpty() const {
-		return reverse ? iRead == 0 : iRead == nData;
-	}
 	void reset() {
-		iRead = reverse ? nData : 0;
-		iWrite = 0;
-	}
-	void setReverse(bool r) {
-		reverse = r;
-		reset();
-	}
-	AVFrame* getWritePtr() {
-		if (writeFull()) return nullptr;
-		AVFrame* pFrame = data[iWrite++];
-		return pFrame;
-	}
-	AVFrame* getReadPtr() {
-		if (readEmpty()) return nullptr;
-		AVFrame* pFrame = reverse ? data[--iRead] : data[iRead++];
-		return pFrame;
-	}
-};
-
-// A ring buffer where reader and writer never work on the same buffer 
-// to support reversed read/write.
-class ImageBufferBuffer {
-	ImageBuffer** data;
-	int nData;
-	int iRead;
-	int iWrite;
-	int iDiff;
-	bool flush;
-	bool locked;
-	std::mutex mu;
-	std::condition_variable cv;
-public:
-	ImageBufferBuffer(int width, int height) : nData(N_MAX_BUFFER), flush(false), locked(false) {
-		data = new ImageBuffer*[nData];
-		for (int iData = 0; iData < nData; ++iData) {
-			data[iData] = new ImageBuffer(width, height);
-		}
-		reset();
-	}
-	virtual ~ImageBufferBuffer() {
-		for (int iData = 0; iData < nData; ++iData) {
-			delete data[iData];
-		}
-		delete [] data;
-	}
-	void setReverse(bool r) {
-		for (int iData = 0; iData < nData; ++iData) {
-			data[iData]->setReverse(r);
-		}
-	}
-	void reset() {
-		for (int iData = 0; iData < nData; ++iData) {
-			data[iData]->reset();
-		}
 		iRead = 0;
 		iWrite = 0;
 		iDiff = 0;
-	}
-	void lock() {
-		locked = true;
-	}
-	void unlock() {
-		locked = false;
-		cv.notify_all();
 	}
 	void doFlush() {
 		flush = true;
@@ -175,22 +110,16 @@ public:
 		std::unique_lock<std::mutex> locker(mu);
 		reset();
 		locker.unlock();
-		flush = false;
+		flush = false;		
 	}
 	AVFrame* getReadPtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return (iDiff>0 && !locked) || flush;});
+		cv.wait(locker, [this](){return iDiff > 1 || flush;}); // > 1 to allow finish write
 		if (!flush) {
-			if (data[iRead]->readEmpty()) {
-				data[iRead]->reset();
-				iRead = (iRead+1) % nData;
-				iDiff--;
-			}
-			pFrame = data[iRead]->getReadPtr();
-		} else {
-			fprintf(stdout,"No read pointer but flush.\n");
-			fflush(stdout);
+			pFrame = data[iRead];
+			iRead = (iRead+1) % nData;
+			iDiff--;
 		}
 		locker.unlock();
 		cv.notify_all();
@@ -199,22 +128,21 @@ public:
 	AVFrame* getWritePtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return (iDiff<(nData-1) && !locked) || flush;});
+		cv.wait(locker, [this](){return iDiff < nData-1 || flush;});
 		if (!flush) {
-			if (data[iWrite]->writeFull()) {
-				iWrite = (iWrite+1) % nData;
-				iDiff++;
-			}
-			pFrame = data[iWrite]->getWritePtr();
+			pFrame = data[iWrite];
+			iWrite = (iWrite+1) % nData;
+			iDiff++;		
 		}
 		locker.unlock();
 		cv.notify_all();
 		return pFrame;
 	}
-	bool writeFull() const {
-		return data[iWrite]->writeFull();
+	bool writeFull() {
+		return false;
 	}
 };
+
 
 inline int64_t getShowFrame() {
 	return (pFrameShow != nullptr) ? *((int64_t*)pFrameShow->opaque) : 0;
@@ -228,37 +156,37 @@ void loadNextFrame() {
 
 		// Random seeking within the video stream.
 		if (seekReq) {
-			bool reverse = seekTime < iFrame*deltaPts;
+			bool reverse = seekFrame < iFrame;
 			reverseRefresh = reverse;
 			if (reverse) {
 				seekFlags |= AVSEEK_FLAG_BACKWARD;
 			} else {
 				seekFlags &= ~AVSEEK_FLAG_BACKWARD;
 			}
-			if (av_seek_frame(pFormatCtx, iVideoStream, seekTime, seekFlags) < 0) {
-				fprintf(stderr, "Random seek of %I64d time unsuccessful.\n", seekTime);
+			if (av_seek_frame(pFormatCtx, iVideoStream, seekFrame*deltaPts, seekFlags) < 0) {
+				fprintf(stderr, "Random seek of %I64d frame unsuccessful.\n", seekFrame);
 			} else {
-				ibb->lock();
-				ibb->setReverse(reversePlay);
-				ibb->doFlush();
+				//ib->lock();
+				//ib->setReverse(reversePlay);
+				ib->doFlush();
 				avcodec_flush_buffers(pCodecCtx);
-				ibb->unlock();
+				//ib->unlock();
 			}
 			seekReq = false;
+			iFrame = seekFrame;
 		}
 		
 
 		// Need to seek forward by 2 x N_MAX_IMAGES.
-		if (reversePlay && ibb->writeFull() && reverseRefresh) {
+		if (reversePlay && ib->writeFull() && reverseRefresh) {
 
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 
 			iFrame -= 2*N_MAX_IMAGES;
-			seekTime = iFrame*deltaPts;
 
 			if (iFrame >= 0) {
-				if (av_seek_frame(pFormatCtx, iVideoStream, seekTime, seekFlags) < 0) {
-					fprintf(stderr, "Reverse seek of %I64d time unsuccessful.\n", seekTime);
+				if (av_seek_frame(pFormatCtx, iVideoStream, iFrame*deltaPts, seekFlags) < 0) {
+					fprintf(stderr, "Reverse seek of %I64d frame unsuccessful.\n", iFrame);
 				} else {
 					avcodec_flush_buffers(pCodecCtx);
 				}
@@ -286,7 +214,7 @@ void loadNextFrame() {
 					reverseRefresh = true;
 
 					// Get the next writeable buffer (this may block and can be unblocked with a flush)
-					AVFrame* pFrameBuffer = ibb->getWritePtr();
+					AVFrame* pFrameBuffer = ib->getWritePtr();
 
 					// Did we get a frame buffer?
 					if (pFrameBuffer) {
@@ -349,14 +277,11 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInFrames
 (JNIEnv *env, jobject thisObject, jlong time) {
 
 	// If time is out of range given the buffer bring it into range.
-	int64_t iFrameNew = reversePlay ? std::max(time, (jlong)(2*N_MAX_IMAGES)) 
-		: std::min(time, (jlong)(nFrame-2*N_MAX_IMAGES)); // in frames
-
-	// Set the new frame.
-	iFrame = iFrameNew; // in frames
+	//int64_t iFrameNew = reversePlay ? std::max(time, (jlong)(2*N_MAX_IMAGES)) 
+	//	: std::min(time, (jlong)(nFrame-2*N_MAX_IMAGES)); // in frames
 	
-	// Compute the seek time.
-	seekTime = iFrame*deltaPts; // in time base units.
+	// Set the seek frame.
+	seekFrame = time; // in time base units.
 
 	// Issue a seek request.
 	seekReq = true;
@@ -382,7 +307,7 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 	int nFrame = 0;
 
 	// Get the next read pointer.
-	AVFrame *pFrameTmp = ibb->getReadPtr();
+	AVFrame *pFrameTmp = ib->getReadPtr();
 
 	// We received a frame (no flushing).
 	if (pFrameTmp) {
@@ -409,9 +334,12 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 		// Compute the difference between times and pts.
 		diff = init ? 0 : (diff + ptsDiff - timeDiff);
 
-		fprintf(stdout, "firstPts = %I64d, lastPts = %I64d, ptsDiff = %f, pts diff = %ld, deltaPts = %I64d, timeDiff = %f, diff = %f, init = %d.\n", 
-			firstPts, lastPts, ptsDiff, std::labs(firstPts - lastPts), deltaPts, timeDiff, diff, init);
-		fflush(stdout);
+		//fprintf(stdout, "firstPts = %I64d, lastPts = %I64d, ptsDiff = %f, pts diff = %ld, deltaPts = %I64d, timeDiff = %f, diff = %f, init = %d.\n", 
+		//	firstPts, lastPts, ptsDiff, std::labs(firstPts - lastPts), deltaPts, timeDiff, diff, init);
+		//fflush(stdout);
+		//fprintf(stdout, "Showing frame %I64d, repeat %d.\n", 
+		//	*((int64_t*)pFrameTmp->opaque), pFrameTmp->repeat_pict);
+		//fflush(stdout);
 
 		// Calculate the delay that this display thread is required to wait.
 		double delay = ptsDiff;
@@ -429,7 +357,7 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 
 			// If our time difference is lower than the sync threshold, then skip a frame.
 			if (diff <= -syncThreshold) {
-				AVFrame *pFrameTmp2 = ibb->getReadPtr();
+				AVFrame *pFrameTmp2 = ib->getReadPtr();
 				if (pFrameTmp2) {
 					pFrameTmp = pFrameTmp2;
 					nFrame++;
@@ -446,7 +374,7 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 		}
 
 		// Save values for next call.
-		deltaPts = init ? deltaPts : std::labs(firstPts - lastPts);
+		deltaPts = init ? (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate))) : std::labs(firstPts - lastPts);
 		lastPts = firstPts; // Need to use the first pts.
 		lastTime = time;
 
@@ -553,7 +481,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 	nFrame = pVideoStream->nb_frames;
 
 	// Initialize the image buffer buffer.
-	ibb = new ImageBufferBuffer(width, height);
+	ib = new ImageBuffer(width, height);
 
 	// Initialize the delta pts using the average frame rate.
 	deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate)));
@@ -595,7 +523,7 @@ JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieNumberOfFrames
 
 JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieTimeInSeconds
 (JNIEnv *env, jobject thisObject) {
-	return loadedMovie ? (jdouble) getShowFrame()*deltaPts*av_q2d(pVideoStream->time_base) : 0;
+	return (pFrameShow->pts - pVideoStream->start_time)*av_q2d(pVideoStream->time_base);
 }
 
 JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
@@ -611,7 +539,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 		quit = true;
 
 		// Flush the image buffer buffer (which unblocks all readers/writers).
-		ibb->doFlush();
+		ib->doFlush();
 
 		// Join the decoding thread with this one.
 		decodeThread->join();
@@ -620,8 +548,8 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 		delete decodeThread;
 		
 		// Free the image buffer buffer.
-		delete ibb;
-		ibb = nullptr;
+		delete ib;
+		ib = nullptr;
 
 		// Free scaling context.
 		sws_freeContext(swsCtx);
@@ -649,7 +577,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 
 		// Reset value for seek request.
 		seekReq = false;
-		seekTime = 0;
+		seekFrame = 0;
 		seekFlags = AVSEEK_FLAG_ANY;
 
 		quit = false;

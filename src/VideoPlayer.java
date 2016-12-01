@@ -52,9 +52,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		public void run() {
 			while (playing) {
 				player.getNextFrame();
-				long iFrame = player.getMovieTimeInFrames();
-				slider.setValue((int)iFrame);
-				frameNumber.setText(""+iFrame);
+				double time = player.getMovieTimeInSeconds();
+				slider.setValue((int)(1000*time));
+				frameNumber.setText(time + " sec");
 				player.repaint();
 			}
 		}
@@ -78,8 +78,6 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	class RewindSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// stop the player
-			//playing = false;
 			// rewind to start
 			player.setTimeInFrames(0);
 		}
@@ -99,8 +97,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
         
         int width = player.getMovieWidth();
         int height = player.getMovieHeight();
-        int nFrame = (int) player.getMovieNumberOfFrames();
-        slider.setModel(new DefaultBoundedRangeModel(0, 1, 0, nFrame));
+        double duration = player.getMovieDuration();
+        slider.setModel(new DefaultBoundedRangeModel(0, 1, 0, (int)(1000*duration)));
         
         //player.setMinimumSize(new Dimension(width,height));
         setMinimumSize(new Dimension(width+50, height+150));
@@ -108,7 +106,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
         
         System.out.println("Opened movie " + fileName);
         System.out.println("width = " + width + ", height = " + height);
-        //System.out.println("duration = " + nFrame + " frames.");
+        System.out.println("duration = " + duration + " seconds.");
 	}
 	
 	class OpenFileSelection implements ActionListener {
