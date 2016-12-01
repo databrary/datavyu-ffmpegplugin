@@ -115,7 +115,7 @@ public:
 	AVFrame* getReadPtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return iDiff > 1 || flush;}); // > 1 to allow finish write
+		cv.wait(locker, [this](){return iDiff > 0 || flush;}); // > 1 to allow finish write
 		if (!flush) {
 			pFrame = data[iRead];
 			iRead = (iRead+1) % nData;
@@ -125,18 +125,22 @@ public:
 		cv.notify_all();
 		return pFrame;
 	}
-	AVFrame* getWritePtr() {
+	AVFrame* reqWritePtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
 		cv.wait(locker, [this](){return iDiff < nData-1 || flush;});
 		if (!flush) {
 			pFrame = data[iWrite];
-			iWrite = (iWrite+1) % nData;
-			iDiff++;		
 		}
 		locker.unlock();
 		cv.notify_all();
 		return pFrame;
+	}
+	void cmplWritePtr() {
+		std::unique_lock<std::mutex> locker(mu);
+		iWrite = (iWrite+1) % nData;
+		iDiff++;		
+		locker.unlock();	
 	}
 	bool writeFull() {
 		return false;
@@ -214,7 +218,7 @@ void loadNextFrame() {
 					reverseRefresh = true;
 
 					// Get the next writeable buffer (this may block and can be unblocked with a flush)
-					AVFrame* pFrameBuffer = ib->getWritePtr();
+					AVFrame* pFrameBuffer = ib->reqWritePtr();
 
 					// Did we get a frame buffer?
 					if (pFrameBuffer) {
@@ -242,6 +246,8 @@ void loadNextFrame() {
 
 						// Reset frame container to initial state.
 						av_frame_unref(pFrame);
+
+						ib->cmplWritePtr();
 					}
 				}
 				// Free the packet that was allocated by av_read_frame.
