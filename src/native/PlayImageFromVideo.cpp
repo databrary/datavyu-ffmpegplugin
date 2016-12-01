@@ -180,7 +180,7 @@ public:
 	AVFrame* getReadPtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return (iDiff>1 && !locked) || flush;});
+		cv.wait(locker, [this](){return (iDiff>0 && !locked) || flush;});
 		if (!flush) {
 			if (data[iRead]->readEmpty()) {
 				data[iRead]->reset();
@@ -350,8 +350,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInFrames
 
 	// If time is out of range given the buffer bring it into range.
 	int64_t iFrameNew = reversePlay ? std::max(time, (jlong)(2*N_MAX_IMAGES)) 
-		: std::min(time, (jlong)(nFrame-4*N_MAX_IMAGES)); // in frames
-	// TODO: Check why we have the large minimum buffer at the end!!
+		: std::min(time, (jlong)(nFrame-2*N_MAX_IMAGES)); // in frames
 
 	// Set the new frame.
 	iFrame = iFrameNew; // in frames

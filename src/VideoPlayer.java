@@ -6,10 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.image.ImageFilter;
 import java.io.File;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -40,6 +40,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	private JRadioButton forward;
 	private JRadioButton backward;
 	
+	private JLabel frameNumber;
+	private JSlider slider;
+	
 	protected float getSpeed() { return speedSign*speedValue; }
 
 	private static final long serialVersionUID = -5139487296977249036L;
@@ -49,6 +52,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		public void run() {
 			while (playing) {
 				player.getNextFrame();
+				long iFrame = player.getMovieTimeInFrames();
+				slider.setValue((int)iFrame);
+				frameNumber.setText(""+iFrame);
 				player.repaint();
 			}
 		}
@@ -93,7 +99,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
         
         int width = player.getMovieWidth();
         int height = player.getMovieHeight();
-        //long nFrame = player.getMovieNumberOfFrames();
+        int nFrame = (int) player.getMovieNumberOfFrames();
+        slider.setModel(new DefaultBoundedRangeModel(0, 1, 0, nFrame));
         
         //player.setMinimumSize(new Dimension(width,height));
         setMinimumSize(new Dimension(width+50, height+150));
@@ -199,7 +206,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
         fileChooser.setAcceptAllFileFilterUsed(false);        
         fileChooser.setSelectedFile(lastDirectory);
         
-		JSlider slider = new JSlider();
+		slider = new JSlider();
 		
 		// Open file dialog.
 		JButton open = new JButton("Open File");
@@ -282,6 +289,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		
 		tools.add(new JLabel("Direction:"));
 		tools.add(directionPanel);
+		
+		frameNumber = new JLabel("0");
+		tools.add(frameNumber);
 		
 		add(tools, BorderLayout.NORTH);
 		add(player, BorderLayout.CENTER);
