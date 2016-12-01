@@ -69,6 +69,41 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		}
 	}
 	
+	class RewindSelection implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// stop the player
+			//playing = false;
+			// rewind to start
+			player.setTimeInFrames(0);
+		}
+	}
+	
+	protected void openFile(String fileName) {
+        player.setMovie(fileName);
+        // Load first frame.
+		player.getNextFrame();
+		
+		// Set default speed.
+		one.setSelected(true);
+		forward.setSelected(true);
+		speedSign = 1;
+		speedValue = 1;
+		player.setPlaybackSpeed(1);
+        
+        int width = player.getMovieWidth();
+        int height = player.getMovieHeight();
+        //long nFrame = player.getMovieNumberOfFrames();
+        
+        //player.setMinimumSize(new Dimension(width,height));
+        setMinimumSize(new Dimension(width+50, height+150));
+		repaint();
+        
+        System.out.println("Opened movie " + fileName);
+        System.out.println("width = " + width + ", height = " + height);
+        //System.out.println("duration = " + nFrame + " frames.");
+	}
+	
 	class OpenFileSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -79,28 +114,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	        if (val == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
 	            lastDirectory = new File(file.getAbsolutePath());
-	            player.setMovie(file.getAbsolutePath());
-	            // Load first frame.
-				player.getNextFrame();
-				
-				// Set default speed.
-				one.setSelected(true);
-				forward.setSelected(true);
-				speedSign = 1;
-				speedValue = 1;
-				player.setPlaybackSpeed(1);
-	            
-	            int width = player.getMovieWidth();
-	            int height = player.getMovieHeight();
-	            //long nFrame = player.getMovieNumberOfFrames();
-	            
-	            //player.setMinimumSize(new Dimension(width,height));
-	            setMinimumSize(new Dimension(width+50, height+150));
-				repaint();
-	            
-	            System.out.println("Opened movie " + file.getAbsolutePath());
-	            System.out.println("width = " + width + ", height = " + height);
-	            //System.out.println("duration = " + nFrame + " frames.");
+	            openFile(file.getAbsolutePath());
 	        }
 	        
 	        // Reset the file chooser for the next time it's shown.
@@ -191,16 +205,17 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		JButton open = new JButton("Open File");
 		JButton play = new JButton("Play");
 		JButton stop = new JButton("Stop");
-		//JButton rewind = new JButton("Rewind");
+		JButton rewind = new JButton("Rewind");
 		
 		tools.add(open);
 		tools.add(play);
 		tools.add(stop);
-		//tools.add(rewind);
+		tools.add(rewind);
 		
 		open.addActionListener(new OpenFileSelection());
 		play.addActionListener(new PlaySelection());
 		stop.addActionListener(new StopSelection());
+		rewind.addActionListener(new RewindSelection());
 		
 		// Speed selection.
 		quarter = new JRadioButton("1/4x");
@@ -271,6 +286,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		add(tools, BorderLayout.NORTH);
 		add(player, BorderLayout.CENTER);
 		add(slider, BorderLayout.SOUTH);
+		
+		openFile("C:\\Users\\Florian\\WalkingVideo.mov");
 	}
 	
 	
