@@ -206,8 +206,8 @@ public class PlayImageFromVideo extends Canvas {
 		int height = player.getMovieHeight();
 		double duration = player.getMovieDuration();
 		long nFrameMovie = player.getMovieNumberOfFrames();
-		//player.setTimeInSeconds(8.0);
-		player.setPlaybackSpeed(1f);
+		player.setTimeInSeconds(8.0);
+		player.setPlaybackSpeed(-1f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
         f.add(player);
