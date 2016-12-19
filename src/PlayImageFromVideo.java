@@ -200,6 +200,7 @@ public class PlayImageFromVideo extends Canvas {
 		//String fileName = "C:\\Users\\Florian\\test.mpg";
 		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
 		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
 		//String fileName = "C:\\Users\\Florian\\video_1080p.mp4";
 		//String fileName = "C:\\Users\\Florian\\video_h264ntscdvw.mp4";
 		final PlayImageFromVideo player = new PlayImageFromVideo();
@@ -209,7 +210,7 @@ public class PlayImageFromVideo extends Canvas {
 		double duration = player.getMovieDuration();
 		long nFrameMovie = player.getMovieNumberOfFrames();
 		player.setTimeInSeconds(8.0);
-		player.setPlaybackSpeed(-.25f);
+		player.setPlaybackSpeed(-.5f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
         f.add(player);

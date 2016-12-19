@@ -21,9 +21,8 @@ extern "C" {
 // vcvarsall.bat x64
 // cl PlayImageFromVideo.cpp /Fe"..\..\lib\PlayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
-#define N_MAX_IMAGES 8 // ATTENTION BUFFER SHOULD BE LARGER THAN FPS FOR REVERSE PLAYBACK!!!
-#define N_MIN_IMAGES 4
-//#define N_MAX_BUFFER 6
+#define N_MAX_IMAGES 16 // ATTENTION BUFFER SHOULD BE LARGER THAN FPS FOR REVERSE PLAYBACK!!!
+#define N_MIN_IMAGES 8
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0
 #define PTS_DELTA_THRESHOLD 3
@@ -37,14 +36,13 @@ int					nChannel		= 3;
 double				duration		= 0;
 long				nFrame			= 0;
 int64_t				lastWritePts	= 0;
-//int64_t				iFrame			= 0; // Current frame number.
 
 AVFormatContext		*pFormatCtx		= nullptr;
 int					iVideoStream	= -1;
 AVStream			*pVideoStream	= nullptr;
 AVCodecContext		*pCodecCtx		= nullptr;
 AVCodec				*pCodec			= nullptr;
-AVFrame				*pFrame			= nullptr; // use opaque pointer for frame no.
+AVFrame				*pFrame			= nullptr;
 AVFrame				*pFrameShow		= nullptr;
 AVPacket			packet;
 AVDictionary		*optsDict		= nullptr;
@@ -58,7 +56,6 @@ bool				loadedMovie		= false;
 std::mutex			playback;
 bool				reversePlay		= false;
 double				speed			= 1;
-//bool				init			= true; // on reset set to true
 int64_t				lastPts			= 0; // on reset set to 0
 int64_t				deltaPts		= 0;
 double				diff			= 0; // on reset set to 0
@@ -89,7 +86,6 @@ public:
 		data = new AVFrame*[nData];
 		for (int iData = 0; iData < nData; ++iData) {
 			AVFrame* pFrame = av_frame_alloc();
-			pFrame->opaque = new int64_t();
 			data[iData] = pFrame;
 			int nByte = avpicture_get_size(AV_PIX_FMT_RGB24, width, height);
 			uint8_t* bufferShow = (uint8_t*) av_malloc(nByte*sizeof(uint8_t));
@@ -101,8 +97,7 @@ public:
 	virtual ~ImageBuffer() {
 		for (int iData = 0; iData < nData; ++iData) {
 			AVFrame* pFrame = data[iData];
-			av_free(pFrame->data[0]); // free the buffer
-			delete pFrame->opaque;
+			av_free(pFrame->data[0]); // free data buffer
 			av_free(pFrame);
 		}
 		delete [] data;
@@ -133,11 +128,13 @@ public:
 		if (!flush) {
 			pFrame = data[iRead];
 
+			/*
 			printing.lock();
 				fprintf(stdout, "Read index = %d, read pts = %I64d (%I64d frames, delta pts %I64d).\n", 
 					iRead, pFrame->pts, pFrame->pts/deltaPts, deltaPts);
 				fflush(stdout);
 			printing.unlock();
+			*/
 
 			iRead = (iRead+1) % nData;
 			iDiff--;
@@ -161,11 +158,16 @@ public:
 	void cmplWritePtr() {
 		std::unique_lock<std::mutex> locker(mu);
 		if (reverse) {
+			
+			/*
 			printing.lock();
-				fprintf(stdout, "Write index = %d.\n", iReverse);
+				fprintf(stdout, "Write index = %d, pts = %I64d, iFrame = %d.\n", iReverse, 
+					data[reverse ? iReverse : iWrite]->pts,
+					data[reverse ? iReverse : iWrite]->pts/deltaPts);
 				fflush(stdout);
 			printing.unlock();
-
+			*/
+			
 			iReverse = (iReverse - 1 + nData) % nData;
 			nReverse--;
 			if (nReverse == 0) {
@@ -189,7 +191,7 @@ public:
 		std::unique_lock<std::mutex> locker(mu); // access to iDiff
 		cv.wait(locker, [this](){return iDiff < nData-N_MIN_IMAGES || flush;});
 		if (!flush && seekReq()) {
-			nReverse = (nData - iDiff);
+			nReverse = (nData - iDiff - 1);
 			delta = nBuffer + nReverse;
 			nBuffer = nReverse;
 			iReverse = (nReverse + iWrite-1 + nData) % nData;
@@ -283,7 +285,14 @@ void loadNextFrame() {
 					reverseRefresh = true;
 
 					// Set the presentation time stamp.
-					lastWritePts = packet.dts == AV_NOPTS_VALUE ? 0 : pFrame->pkt_pts;					
+					lastWritePts = packet.dts == AV_NOPTS_VALUE ? 0 : pFrame->pkt_pts;
+
+					/*
+					if (lastWritePts < seekPts) {
+						fprintf(stdout, "skip frame pts %I64d (%I64d frames), seek pts %I64d (%I64d frames).\n", 
+							lastWritePts, lastWritePts/deltaPts, seekPts, seekPts/deltaPts);
+						fflush(stdout);					
+					}*/
 
 					if (lastWritePts >= seekPts) {
 
@@ -602,7 +611,6 @@ JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieTimeInSeconds
 JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
 (JNIEnv *env, jobject thisObject) {
 	return (jlong) (pFrameShow->pts - pVideoStream->start_time)/deltaPts;
-	//return (jlong) getShowFrame();
 }
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
