@@ -47,15 +47,21 @@ public class VideoPlayer extends JPanel implements WindowListener {
 
 	private static final long serialVersionUID = -5139487296977249036L;
 	
+	protected void showNextFrame() {
+		player.getNextFrame();
+		double time = player.getMovieTimeInSeconds();
+		slider.setValue((int)(1000*time));
+		//frameNumber.setText((int)time + " sec");
+		long timeInStreamUnits = player.getMoveTimeInStreamUnits();
+		frameNumber.setText(timeInStreamUnits + " pts");
+		player.repaint();		
+	}
+	
 	class PlayerThread extends Thread {
 		@Override
 		public void run() {
 			while (playing) {
-				player.getNextFrame();
-				double time = player.getMovieTimeInSeconds();
-				slider.setValue((int)(1000*time));
-				frameNumber.setText((int)time + " sec");
-				player.repaint();
+				showNextFrame();
 			}
 		}
 	}
@@ -79,7 +85,14 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// rewind to start
-			player.setTimeInFrames(0);
+			player.setTimeInSeconds(0);
+		}
+	}
+	
+	class StepSelection implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showNextFrame();
 		}
 	}
 	
@@ -123,7 +136,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	        }
 	        
 	        // Reset the file chooser for the next time it's shown.
-	        fileChooser.setSelectedFile(lastDirectory);     	
+	        fileChooser.setSelectedFile(lastDirectory);
 		}
 	}
 	
@@ -137,7 +150,6 @@ public class VideoPlayer extends JPanel implements WindowListener {
 			}
 			player.setPlaybackSpeed(getSpeed());
 		}
-		
 	}
 	
 	class SpeedSignSelection implements ActionListener {
@@ -151,10 +163,11 @@ public class VideoPlayer extends JPanel implements WindowListener {
 				speedSign = -1;
 				break;
 			default:
-				System.err.println("Could no parse command: " + e.getActionCommand());
+				System.err.println("Could not parse command: " + e.getActionCommand());
 				speedSign = +1;
 			}
 			player.setPlaybackSpeed(getSpeed());
+			System.out.println("Set speed to: " + getSpeed());
 		}
 	}
 	
@@ -211,16 +224,19 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		JButton play = new JButton("Play");
 		JButton stop = new JButton("Stop");
 		JButton rewind = new JButton("Rewind");
+		JButton step = new JButton("Step");
 		
 		tools.add(open);
 		tools.add(play);
 		tools.add(stop);
 		tools.add(rewind);
+		tools.add(step);
 		
 		open.addActionListener(new OpenFileSelection());
 		play.addActionListener(new PlaySelection());
 		stop.addActionListener(new StopSelection());
 		rewind.addActionListener(new RewindSelection());
+		step.addActionListener(new StepSelection());
 		
 		// Speed selection.
 		quarter = new JRadioButton("1/4x");

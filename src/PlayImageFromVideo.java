@@ -109,6 +109,13 @@ public class PlayImageFromVideo extends Canvas {
 	public native long getMovieTimeInFrames();
 	
 	/**
+	 * Get the current time of the movie in the AV's stream time base.
+	 * Returns 0 if no movie was loaded.
+	 * @return Get time in stream's time base.
+	 */
+	public native long getMoveTimeInStreamUnits();
+	
+	/**
 	 * Release all resources that have been allocated when loading the move.
 	 * If this method is called when no movie was loaded no resources are
 	 * de-allocated.
@@ -209,8 +216,8 @@ public class PlayImageFromVideo extends Canvas {
 		int height = player.getMovieHeight();
 		double duration = player.getMovieDuration();
 		long nFrameMovie = player.getMovieNumberOfFrames();
-		player.setTimeInSeconds(8.0);
-		player.setPlaybackSpeed(-.5f);
+		player.setTimeInSeconds(4.0);
+		player.setPlaybackSpeed(-1f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);
         f.add(player);
@@ -222,7 +229,7 @@ public class PlayImageFromVideo extends Canvas {
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrameReq = 150; //388; // Played number of frames.
+        int nFrameReq = 150; // Played number of frames.
         int nFrameDec = 0; // Decoded number of frames.
         int nFrameSkip = 0; // Skipped number of frames.
         for (int iFrame = 0; iFrame < nFrameReq; ++iFrame) {
