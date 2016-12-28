@@ -21,8 +21,8 @@ extern "C" {
 // vcvarsall.bat x64
 // cl PlayImageFromVideo.cpp /Fe"..\..\lib\PlayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
-#define N_MAX_IMAGES 64 // ATTENTION BUFFER SHOULD BE LARGER THAN FPS FOR REVERSE PLAYBACK!!!
-#define N_MIN_IMAGES 32
+#define N_MAX_IMAGES 8 // ATTENTION BUFFER SHOULD BE LARGER THAN FPS FOR REVERSE PLAYBACK!!!
+#define N_MIN_IMAGES 4
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0
 #define PTS_DELTA_THRESHOLD 3
@@ -57,6 +57,7 @@ bool				reversePlay		= false;
 double				speed			= 1;
 int64_t				lastPts			= 0; // on reset set to 0
 int64_t				deltaPts		= 0;
+int64_t				avgDeltaPts		= 0; // on reset set to 0 (used for reverse seek)
 double				diff			= 0; // on reset set to 0
 std::chrono::high_resolution_clock::time_point lastTime;
 
@@ -172,27 +173,9 @@ public:
 			delta = nBuffer + nData - iDiff - 1;
 		}
 		locker.unlock();
-		//cv.notify_all();
-		return delta;
-	}
-	/*
-	int seekDelta() {
-		int delta = 0;
-		// Concurrent readers are ok.
-		// This is pessimistic the size could be larger later (after more reads).
-		std::unique_lock<std::mutex> locker(mu); // access to iDiff
-		cv.wait(locker, [this](){return iDiff < nData-N_MIN_IMAGES || flush;});
-		if (!flush && seekReq()) {
-			nReverse = (nData - iDiff - 1);
-			delta = nBuffer + nReverse;
-			nBuffer = nReverse;
-			iReverse = (nReverse + iWrite-1 + nData) % nData;
-		}
-		locker.unlock();
 		cv.notify_all();
 		return delta;
 	}
-	*/
 	void setSeekDelta(int delta) {
 		// Concurrent readers are ok.
 		// This is pessimistic the size could be larger later (after more reads).
@@ -240,21 +223,23 @@ void loadNextFrame() {
 		if (reversePlay && ib->seekReq() && reverseRefresh) {
 
 			// Find the number of frames that can still be read
-			int maxDelta = lastWritePts/deltaPts;
+			int maxDelta = lastWritePts/avgDeltaPts;
 
 			int delta = std::min(ib->seekDeltaReq(), maxDelta);
 
-			fprintf(stdout, "Max delta %d, delta req = %d, delta = %d.\n", 
-				maxDelta, ib->seekDeltaReq(), delta);
+			fprintf(stdout, "Max delta %d, delta req = %d, delta = %d, last write pts = %I64d, deltaPts = %I64d, start time = %I64d.\n", 
+				maxDelta, ib->seekDeltaReq(), delta, lastWritePts, deltaPts, pVideoStream->start_time);
 			fflush(stdout);
 
-			seekPts = lastWritePts - (delta-1)*deltaPts;
+			seekPts = lastWritePts - (delta-1)*avgDeltaPts;
 
-			if (seekPts < deltaPts) {
+			//if (seekPts <= deltaPts) {
+			if (lastWritePts <= pVideoStream->start_time) {
 				
 				fprintf(stdout, "Reached start of file, seek pts = %I64d.\n", seekPts);
 				fflush(stdout);
 				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				continue;
 
 			} else {
 				seekFlags |= AVSEEK_FLAG_BACKWARD;
@@ -291,8 +276,8 @@ void loadNextFrame() {
 					reverseRefresh = true;
 
 					// Set the presentation time stamp.
-					//lastWritePts = packet.dts == AV_NOPTS_VALUE ? 0 : (pFrame->pkt_pts - pVideoStream->start_time);
 					lastWritePts = packet.dts == AV_NOPTS_VALUE ? 0 : pFrame->pkt_pts;
+					//lastWritePts = packet.dts == AV_NOPTS_VALUE ? 0 : (pFrame->pkt_pts - pVideoStream->start_time);
 
 					/*
 					if (lastWritePts < seekPts) {
@@ -301,6 +286,7 @@ void loadNextFrame() {
 						fflush(stdout);					
 					}*/
 
+					// Skip frames until we are at or beyond of the seekPts time stamp.
 					if (lastWritePts >= seekPts) {
 					
 						// Get the next writeable buffer. This may block and can be unblocked with a flush.
@@ -349,7 +335,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
 			reversePlay = inSpeed < 0;
 			// Later we flush, so we need to go back by N_MAX_IMAGES.
 			Java_PlayImageFromVideo_setTimeInSeconds(env, thisObject, 
-				(lastWritePts-reversePlay*N_MAX_IMAGES*deltaPts)*av_q2d(pVideoStream->time_base));
+				lastWritePts*av_q2d(pVideoStream->time_base));
 		}
 
 		speed = fabs(inSpeed);
@@ -467,6 +453,9 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 			std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
 		}
 
+		fprintf(stdout,"Display frame %d with pts %I64d.\n",firstPts/avgDeltaPts,firstPts);
+		fflush(stdout);
+
 		// Update the pointer for the show frame.
 		pFrameShow = pFrameTmp;
 
@@ -567,8 +556,8 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 	// Initialize the image buffer buffer.
 	ib = new ImageBuffer(width, height);
 
-	// Initialize the delta pts using the average frame rate.
-	deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate)));
+	// Initialize the delta pts using the average frame rate and the average pts.
+	avgDeltaPts = deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate)));
 
 	// Set the value for loaded move true.
 	loadedMovie = true;
