@@ -52,8 +52,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		double time = player.getMovieTimeInSeconds();
 		slider.setValue((int)(1000*time));
 		//frameNumber.setText((int)time + " sec");
-		long timeInStreamUnits = player.getMoveTimeInStreamUnits();
-		frameNumber.setText(timeInStreamUnits + " pts");
+		//long timeInStreamUnits = player.getMoveTimeInStreamUnits();
+		long timeInFrames = player.getMovieTimeInFrames();
+		frameNumber.setText(timeInFrames + " frame");
 		player.repaint();		
 	}
 	
