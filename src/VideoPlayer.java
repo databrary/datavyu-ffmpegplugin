@@ -55,7 +55,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		//long timeInStreamUnits = player.getMoveTimeInStreamUnits();
 		long timeInFrames = player.getMovieTimeInFrames();
 		frameNumber.setText(timeInFrames + " frame");
-		player.repaint();		
+		player.repaint();
 	}
 	
 	class PlayerThread extends Thread {
