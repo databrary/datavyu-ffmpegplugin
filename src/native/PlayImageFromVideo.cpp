@@ -21,8 +21,8 @@ extern "C" {
 // vcvarsall.bat x64
 // cl PlayImageFromVideo.cpp /Fe"..\..\lib\PlayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
-#define N_MAX_IMAGES 8
-#define N_MIN_IMAGES 4
+#define N_MAX_IMAGES 16
+#define N_MIN_IMAGES 8
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0
 #define PTS_DELTA_THRESHOLD 3
@@ -111,6 +111,11 @@ class ImageBuffer {
 	 */
 	inline int nFree() const { return std::min(nData - nBefore, nData) - 1; }
 
+	/**
+	 * Returns true if we are in reverse and we have not started to reverse.
+	 */
+	inline bool notReversed() const { return iReverse == nReverse && nReverse > 0; }
+
 public:
 
 	/**
@@ -178,7 +183,8 @@ public:
 		reverse = !reverse;
 		std::pair<int,int> ret = reverse ? 
 			std::make_pair(nBefore+nAfter, nData-nBefore-1) : 
-			std::make_pair(iReverse < nReverse ? nData-nAfter+iReverse-1 : nAfter, 0);
+			std::make_pair(notReversed() ? 0 : nBefore+nAfter+iReverse+1, 0); // if we have not written in reverse yet return 0
+			//std::make_pair(iReverse < nReverse ? nData-nAfter+iReverse-1 : nAfter, 0);
 		
 		fprintf(stdout, "\nBefore toggle.\n");
 		print();
@@ -187,8 +193,9 @@ public:
 			iRead = (iRead - 2 + nData) % nData;
 			iWrite = (iRead - (nAfter-1) + nData) % nData;
 		} else {
+			iWrite = notReversed() ? iWrite : (iRead+nAfter) % nData;
 			iRead = (iRead + 2) % nData;
-			iWrite = iRead;
+			//iWrite = iRead;
 		}
 
 		int tmp = nAfter - 1;
@@ -396,10 +403,10 @@ void loadNextFrame() {
 				if(frameFinished) {
 
 					// Set the presentation time stamp.
-					lastWritePts = packet.dts == AV_NOPTS_VALUE ? 0 : pFrame->pkt_pts;
+					int64_t readPts = packet.dts == AV_NOPTS_VALUE ? 0 : pFrame->pkt_pts;
 
 					// Skip frames until we are at or beyond of the seekPts time stamp.
-					if (lastWritePts >= seekPts) {
+					if (readPts >= seekPts) {
 					
 						// Get the next writeable buffer. This may block and can be unblocked with a flush.
 						AVFrame* pFrameBuffer = ib->reqWritePtr();
@@ -419,7 +426,7 @@ void loadNextFrame() {
 								pFrameBuffer->linesize
 							);
 							pFrameBuffer->repeat_pict = pFrame->repeat_pict;
-							pFrameBuffer->pts = lastWritePts;
+							pFrameBuffer->pts = lastWritePts = readPts;
 							ib->cmplWritePtr();
 						}
 					}
