@@ -186,7 +186,7 @@ public:
 	std::pair<int,int> toggle() { // pair of delta, offset
 
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return reverse ? nBefore > 1 : nAfter > 1 || flush;});
+		cv.wait(locker, [this](){return nBefore > 1 || flush;}); // Must have 2 frames for reverse.
 		
 		// When toggeling we have these cases:
 		// Switching into backward replay:
@@ -257,7 +257,7 @@ public:
 	AVFrame* getReadPtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return nBefore > 0 || flush;});
+		cv.wait(locker, [this](){return nBefore > 2 || flush;}); // leave 2 frames for reverse!
 		if (!flush) {
 			pFrame = data[iRead];
 			iRead = (reverse ? (iRead - 1 + nData) : (iRead + 1)) % nData;
@@ -271,7 +271,7 @@ public:
 	AVFrame* reqWritePtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return nFree() > 2 || flush;}); // N_MIN_IMAGES >= 2 so we can reverse
+		cv.wait(locker, [this](){return nFree() > 1 || flush;});
 		if (!flush) {
 			pFrame = data[iWrite];
 		}
@@ -284,7 +284,7 @@ public:
 		if (!flush) {
 			iWrite = (iWrite + 1) % nData;
 			iReverse -= reverse;
-			nAfter -= (nBefore + nAfter) == nData; // || (reverse && iReverse>0);
+			nAfter -= (nBefore + nAfter) == nData;
 			nBefore += reverse ? (iReverse == 0) * nReverse : 1;
 		}
 
@@ -349,8 +349,8 @@ void loadNextFrame() {
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
 				fprintf(stderr, "Toggle seek of %I64d frames unsuccessful.\n", seekPts/avgDeltaPts);
 			} else {
-				fprintf(stdout, "Toggle seek of %I64d frames successful.\n", seekPts/avgDeltaPts);
-				fflush(stdout);
+				//fprintf(stdout, "Toggle seek of %I64d frames successful.\n", seekPts/avgDeltaPts);
+				//fflush(stdout);
 				avcodec_flush_buffers(pCodecCtx);
 			}			
 			toggle = false;			
@@ -376,8 +376,8 @@ void loadNextFrame() {
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
 				fprintf(stderr, "Reverse seek of %I64d pts or %I64d frames unsuccessful.\n", seekPts, seekPts/avgDeltaPts);
 			} else {
-				fprintf(stdout, "Reverse seek of %I64d pts or %I64d frames successful.\n", seekPts, seekPts/avgDeltaPts);
-				fflush(stdout);
+				//fprintf(stdout, "Reverse seek of %I64d pts or %I64d frames successful.\n", seekPts, seekPts/avgDeltaPts);
+				//fflush(stdout);
 				avcodec_flush_buffers(pCodecCtx);
 			}
 		}
@@ -393,8 +393,8 @@ void loadNextFrame() {
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
 				fprintf(stderr, "Random seek of %I64d frame unsuccessful.\n", seekPts/avgDeltaPts);
 			} else {
-				fprintf(stdout, "Random seek of %I64d frame successful.\n", seekPts/avgDeltaPts);
-				fflush(stdout);
+				//fprintf(stdout, "Random seek of %I64d frame successful.\n", seekPts/avgDeltaPts);
+				//fflush(stdout);
 				avcodec_flush_buffers(pCodecCtx);
 				lastWritePts = seekPts;
 			}
@@ -405,7 +405,7 @@ void loadNextFrame() {
 		int ret = av_read_frame(pFormatCtx, &packet);
 
 		if (ret < 0) {
-
+			// TODO: FIX the printing of the error code.
 			fprintf(stdout, "Error no of av_read_frame is %d.\n", ret);
 			fprintf(stdout, "Error %c, %c, %c, %c.\n",
 				static_cast<char>((ret >> 0) & 0xFF),
