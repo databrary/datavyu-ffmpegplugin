@@ -22,7 +22,7 @@ extern "C" {
 // cl PlayImageFromVideo.cpp /Fe"..\..\lib\PlayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
 #define N_MAX_IMAGES 16
-#define N_MIN_IMAGES 8
+#define N_MIN_IMAGES N_MAX_IMAGES/2
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0
 #define PTS_DELTA_THRESHOLD 3
@@ -91,6 +91,7 @@ class ImageBuffer {
 	int iReverse;				// Counter for number of reverse frames to be read.
 	bool flush;					// If true this buffer is flushed.
 	bool reverse;				// If true this buffer is in reverse mode.
+	int nMinImages;				// Minimum number of images for buffer allocation in reverse direction.
 	std::mutex mu;				// Mutex to control access of variables.
 	std::condition_variable cv; // Conditional variable to control acces of variables.
 
@@ -104,6 +105,7 @@ class ImageBuffer {
 		nAfter = 0;
 		nReverse = 0;
 		iReverse = 0;
+		nMinImages = N_MIN_IMAGES;
 	}
 
 	/**
@@ -158,6 +160,11 @@ public:
 	inline bool isReverse() const { return reverse; }
 
 	/**
+	 * Set the minimum number of images.
+	 */
+	void setNMinImages(int nMin) { nMinImages = nMin; }
+
+	/**
 	 * Flushes the buffer and sets it into its initial state same as after 
 	 * creating this obejct instance. The only difference is that data in the 
 	 * buffer has been written, but this data will never be shown.
@@ -176,26 +183,39 @@ public:
 	 * Returns a pair with delta and offset in frames.
 	 * The variable delta defines how many steps we need to 
 	 */
-	std::pair<int,int> toggle() { // pair contains delta, offset
+	std::pair<int,int> toggle() { // pair of delta, offset
+
 		std::unique_lock<std::mutex> locker(mu);
 		cv.wait(locker, [this](){return reverse ? nBefore > 1 : nAfter > 1 || flush;});
-
-		reverse = !reverse;
-		std::pair<int,int> ret = reverse ? 
-			std::make_pair(nBefore+nAfter, nData-nBefore-1) : 
-			std::make_pair(notReversed() ? 0 : nBefore+nAfter+iReverse+1, 0); // if we have not written in reverse yet return 0
-			//std::make_pair(iReverse < nReverse ? nData-nAfter+iReverse-1 : nAfter, 0);
 		
-		fprintf(stdout, "\nBefore toggle.\n");
-		print();
+		// When toggeling we have these cases:
+		// Switching into backward replay:
+		// * offset
+		//   We need to go backward by at least nBefore+nAfter in the stream to 
+		//   skip to the start of the reverse playback location in the stream.
+		// * delta
+		//   We can at most jump back in the buffer by nData-Before-1 and read 
+		//   this amount of frames into the buffer.
+		// Switching into forward replay:
+		// * offset
+		//   if we have not written in reverse yet then return 0
+		//   otherwise we need to seek forward by nBefore+nAfter+iReverse+1
+		// * delta
+		//   is always zero since we only advance by +1 frame in forward replay
+		reverse = !reverse;
+		std::pair<int,int> ret = reverse ?
+			std::make_pair(nBefore+nAfter, nData-nBefore-1) :
+			std::make_pair(nBefore+nAfter+iReverse, 0);
+		
+		//fprintf(stdout, "\nBefore toggle.\n");
+		//print();
 		
 		if (reverse) {
 			iRead = (iRead - 2 + nData) % nData;
 			iWrite = (iRead - (nAfter-1) + nData) % nData;
 		} else {
-			iWrite = notReversed() ? iWrite : (iRead+nAfter) % nData;
+			iWrite = notReversed() ? iWrite : (iRead+nAfter+1) % nData;
 			iRead = (iRead + 2) % nData;
-			//iWrite = iRead;
 		}
 
 		int tmp = nAfter - 1;
@@ -204,16 +224,17 @@ public:
 
 		nReverse = iReverse = 0;
 
-		fprintf(stdout, "After toggle.\n");
-		print();
+		//fprintf(stdout, "After toggle.\n");
+		//print();
 
+		nMinImages = N_MIN_IMAGES;
 		locker.unlock();
 		cv.notify_all();
 		return ret;
 	}
 	std::pair<int,int> seekBackward() {
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return (nData-nBefore) > N_MIN_IMAGES || flush;});
+		cv.wait(locker, [this](){return (nData-nBefore) > nMinImages || flush;});
 		std::pair<int,int> ret = std::make_pair(nReverse, nData-nBefore-1);
 		locker.unlock();
 		cv.notify_all();
@@ -250,7 +271,7 @@ public:
 	AVFrame* reqWritePtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return nFree() > N_MIN_IMAGES || flush;}); // N_MIN_IMAGES >= 2 so we can reverse
+		cv.wait(locker, [this](){return nFree() > 2 || flush;}); // N_MIN_IMAGES >= 2 so we can reverse
 		if (!flush) {
 			pFrame = data[iWrite];
 		}
@@ -267,8 +288,8 @@ public:
 			nBefore += reverse ? (iReverse == 0) * nReverse : 1;
 		}
 
-		fprintf(stdout, "Wrote frame:\n");
-		print();
+		//fprintf(stdout, "Wrote frame:\n");
+		//print();
 
 		locker.unlock();	
 		cv.notify_all();
@@ -303,24 +324,6 @@ void loadNextFrame() {
 		}
 		*/
 
-		// Random seek.
-		if (seekReq) {
-			bool reverse = seekPts < lastWritePts;
-			if (reverse) {
-				seekFlags |= AVSEEK_FLAG_BACKWARD;
-			} else {
-				seekFlags &= ~AVSEEK_FLAG_BACKWARD;
-			}
-			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				fprintf(stderr, "Random seek of %I64d frame unsuccessful.\n", seekPts/avgDeltaPts);
-			} else {
-				fprintf(stdout, "Random seek of %I64d frame successful.\n", seekPts/avgDeltaPts);
-				fflush(stdout);
-				avcodec_flush_buffers(pCodecCtx);
-			}
-			seekReq = false;
-		}
-
 		// Switch direction of playback.
 		if (toggle) {
 			std::pair<int,int> offsetDelta = ib->toggle();
@@ -338,10 +341,11 @@ void loadNextFrame() {
 				nShift = offset;
 			}
 
-			fprintf(stdout, "Last write frame %I64d, shift %d frames.\n", lastWritePts/avgDeltaPts, nShift);
-			fflush(stdout);
+			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 
-			seekPts = lastWritePts + nShift*avgDeltaPts;
+			//fprintf(stdout, "Last write frame %I64d, shift %d frames.\n", lastWritePts/avgDeltaPts, nShift);
+			//fflush(stdout);
+
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
 				fprintf(stderr, "Toggle seek of %I64d frames unsuccessful.\n", seekPts/avgDeltaPts);
 			} else {
@@ -349,9 +353,9 @@ void loadNextFrame() {
 				fflush(stdout);
 				avcodec_flush_buffers(pCodecCtx);
 			}			
-			toggle = false;
-		} 
-		
+			toggle = false;			
+		}
+
 		if (ib->seekReq()) {
 			// Find the number of frames that can still be read
 			int maxDelta = lastWritePts/avgDeltaPts;
@@ -362,13 +366,13 @@ void loadNextFrame() {
 			delta = std::min(offset+delta, maxDelta) - offset;
 			ib->setBackwardAfterSeek(delta);
 			
-			fprintf(stdout,"Backward seek with offset = %d and delta = %d.\n", offset, delta);
-			fflush(stdout);
+			//fprintf(stdout,"Backward seek with offset = %d and delta = %d.\n", offset, delta);
+			//fflush(stdout);
 
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			int nShift = -(offset + delta) + 1;
 
-			seekPts = lastWritePts + nShift*avgDeltaPts;
+			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
 				fprintf(stderr, "Reverse seek of %I64d pts or %I64d frames unsuccessful.\n", seekPts, seekPts/avgDeltaPts);
 			} else {
@@ -376,6 +380,25 @@ void loadNextFrame() {
 				fflush(stdout);
 				avcodec_flush_buffers(pCodecCtx);
 			}
+		}
+
+		// Random seek.
+		if (seekReq) {
+			bool reverse = seekPts < lastWritePts;
+			if (reverse) {
+				seekFlags |= AVSEEK_FLAG_BACKWARD;
+			} else {
+				seekFlags &= ~AVSEEK_FLAG_BACKWARD;
+			}
+			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
+				fprintf(stderr, "Random seek of %I64d frame unsuccessful.\n", seekPts/avgDeltaPts);
+			} else {
+				fprintf(stdout, "Random seek of %I64d frame successful.\n", seekPts/avgDeltaPts);
+				fflush(stdout);
+				avcodec_flush_buffers(pCodecCtx);
+				lastWritePts = seekPts;
+			}
+			seekReq = false;
 		}
 		
 		// Read frame.
@@ -445,6 +468,7 @@ void loadNextFrame() {
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
 (JNIEnv *env, jobject thisObject, jfloat inSpeed) {
 	if (loadedMovie) {
+		ib->setNMinImages(1);
 		toggle = ib->isReverse() != (inSpeed < 0);
 		speed = fabs(inSpeed);
 	}
@@ -552,8 +576,8 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 			std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
 		}
 
-		fprintf(stdout, "Display frame %I64d.\n", firstPts/avgDeltaPts);
-		fflush(stdout);
+		//fprintf(stdout, "Display frame %I64d.\n", firstPts/avgDeltaPts);
+		//fflush(stdout);
 
 		// Update the pointer for the show frame.
 		pFrameShow = pFrameTmp;
