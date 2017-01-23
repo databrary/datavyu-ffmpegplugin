@@ -109,11 +109,26 @@ public class PlayImageFromVideo extends Canvas {
 	public native long getMovieTimeInFrames();
 	
 	/**
-	 * Get the current time of the movie in the AV's stream time base.
-	 * Returns 0 if no movie was loaded.
-	 * @return Get time in stream's time base.
+	 * Resets movie either to the front or end of the file depending
+	 * on the playback direction.
 	 */
-	public native long getMoveTimeInStreamUnits();
+	public native void rewindMovie();
+	
+	/**
+	 * Reached the start when reading this file. At this point any further 
+	 * loadNextFrame() will return the same frame.
+	 * This is intended to be used to stop any active pulling of frames when
+	 * the start or end of the file is reached.
+	 * @return True if start of file is reached.
+	 */
+	public native boolean atStartForRead();
+	
+	/**
+	 * Reached the end when reading this file. At this point any further
+	 * loadNextFrame() will return the same frame.
+	 * @return True if the end of the file is reached.
+	 */
+	public native boolean atEndForRead();
 	
 	/**
 	 * Release all resources that have been allocated when loading the move.
@@ -216,7 +231,7 @@ public class PlayImageFromVideo extends Canvas {
 		int height = player.getMovieHeight();
 		double duration = player.getMovieDuration();
 		long nFrameMovie = player.getMovieNumberOfFrames();
-		//player.setTimeInSeconds(8);
+		player.setTimeInSeconds(8);
 		//player.setPlaybackSpeed(-1f);
 		Frame f = new Frame();
         f.setBounds(0, 0, width, height);

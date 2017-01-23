@@ -111,10 +111,26 @@ JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
 
 /*
  * Class:     PlayImageFromVideo
- * Method:    getMoveTimeInStreamUnits
- * Signature: ()J
+ * Method:    rewindMovie
+ * Signature: ()V
  */
-JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMoveTimeInStreamUnits
+JNIEXPORT void JNICALL Java_PlayImageFromVideo_rewindMovie
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlayImageFromVideo
+ * Method:    atStartForRead
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_PlayImageFromVideo_atStartForRead
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlayImageFromVideo
+ * Method:    atEndForRead
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_PlayImageFromVideo_atEndForRead
   (JNIEnv *, jobject);
 
 /*

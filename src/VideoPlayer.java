@@ -51,8 +51,6 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		player.getNextFrame();
 		double time = player.getMovieTimeInSeconds();
 		slider.setValue((int)(1000*time));
-		//frameNumber.setText((int)time + " sec");
-		//long timeInStreamUnits = player.getMoveTimeInStreamUnits();
 		long timeInFrames = player.getMovieTimeInFrames();
 		frameNumber.setText(timeInFrames + " frame");
 		player.repaint();
@@ -101,6 +99,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
         player.setMovie(fileName);
         // Load first frame.
 		player.getNextFrame();
+		long timeInFrames = player.getMovieTimeInFrames();
+		frameNumber.setText(timeInFrames + " frame");
+		
 		
 		// Set default speed.
 		one.setSelected(true);
