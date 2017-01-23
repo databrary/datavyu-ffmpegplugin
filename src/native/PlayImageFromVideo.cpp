@@ -38,17 +38,17 @@ double				duration		= 0; // Duration of the video in seconds.
 // Variables (most of them are pointers) to the video stream, video frames,...
 AVFormatContext		*pFormatCtx		= nullptr;	// Audio and video format context.
 int					iVideoStream	= -1;		// Index of the (1st) video stream.
-AVStream			*pVideoStream	= nullptr;	// Audio or video stream (here video stream).
+AVStream			*pVideoStream	= nullptr;	// Video stream.
 AVCodecContext		*pCodecCtx		= nullptr;	// Video codec context.
 AVCodec				*pCodec			= nullptr;	// Video codec.
 AVFrame				*pFrame			= nullptr;	// Video frame read from stream.
-AVFrame				*pFrameShow		= nullptr;	// Video frame displayed (points into buffer).
+AVFrame				*pFrameShow		= nullptr;	// Video frame displayed (wrapped by buffer).
 AVPacket			packet;						// Audio or video packet (here video packet).
 AVDictionary		*optsDict		= nullptr;	// Dictionary is a key-value store.
 struct SwsContext   *swsCtx			= nullptr;	// Scaling context from source to target image format and size.
-std::thread			*decodeThread	= nullptr;	// Thread that decodes frames and is started when opening a video.
+std::thread			*decodeThread	= nullptr;	// Decoding thread that decodes frames and is started when opening a video.
 bool				quit			= false;	// Quit the decoding thread.
-bool				loadedMovie		= false;	// Flag indicates that we loaded a movie. This is used to avoid access to uninitialized pointers.
+bool				loadedMovie		= false;	// Flag indicates that we loaded a movie. Used to protect uninitialized pointers.
 ImageBuffer			*ib				= nullptr;	// Pointer to the image buffer.
 
 // Variables to control playback speed and reverse playback.
@@ -72,12 +72,12 @@ int					seekFlags		= 0;
  * In backward mode frames are written in a block of at least N_MIN_IMAGES by 
  * jumping the amount of images to be written back and then writing the images 
  * in forward direction into the buffer. In the stream we need to jump 
- * appropriately. This buffer is thread-safe! Typically we have one producer,
- * one consumer, and one control thread. The control thread changes direction or
- * flushes the buffer.
+ * however many frames we wrote last plus the frames we intend to write. This 
+ * buffer is thread-safe! Typically we have one producer, one consumer, and one 
+ * control thread. The control thread changes direction or flushes the buffer.
  *
  * In all cases we ensure that 
- * - the frame displayed is not written.
+ * - the displayed frame is not written.
  * - we only write as many frames as there are spaces available.
  */
 class ImageBuffer {
@@ -88,15 +88,15 @@ class ImageBuffer {
 	int nBefore;				// Readable frames before read pointer (including current iRead position).
 	int nAfter;					// Readable frames after read pointer (excluding current iRead position).
 	int nReverse;				// Number of reverse frames in 0...nData-1 (one frame is displayed).
-	int iReverse;				// Counter for number of reverse frames to be read.
-	bool flush;					// If true this buffer is flushed.
-	bool reverse;				// If true this buffer is in reverse mode.
+	int iReverse;				// Counter for the number of reverse frames to be read.
+	bool flush;					// If true, this buffer is flushed.
+	bool reverse;				// If true, this buffer is in reverse mode.
 	int nMinImages;				// Minimum number of images for buffer allocation in reverse direction.
 	std::mutex mu;				// Mutex to control access of variables.
 	std::condition_variable cv; // Conditional variable to control acces of variables.
 
 	/**
-	 * Resets all index variables within the buffer.
+	 * Resets the buffer into the intial state.
 	 */
 	void reset() {
 		iRead = 0;
@@ -114,7 +114,8 @@ class ImageBuffer {
 	inline int nFree() const { return std::min(nData - nBefore, nData) - 1; }
 
 	/**
-	 * Returns true if we are in reverse and we have not started to reverse.
+	 * Returns true if we are in reverse and we have not written any frames in 
+	 * reverse.
 	 */
 	inline bool notReversed() const { return iReverse == nReverse && nReverse > 0; }
 
@@ -138,7 +139,7 @@ public:
 			avpicture_fill((AVPicture*)pFrame, bufferShow, AV_PIX_FMT_RGB24,
 				 width, height);
 		}
-		// Initialize the index variables within the buffer through a reset.
+		// Initialize the index variables in the buffer through a reset.
 		reset();
 	}
 
@@ -159,15 +160,21 @@ public:
 	 */
 	inline bool isReverse() const { return reverse; }
 
+	inline bool inReverse() const { return iReverse > 0; }
+
+	inline bool empty() const { return nBefore == 0; }
+
 	/**
-	 * Set the minimum number of images.
+	 * Set the minimum number of images required to reverse. Typically we set 
+	 * this to one before a change in direction from backward into forward 
+	 * direction.
 	 */
 	void setNMinImages(int nMin) { nMinImages = nMin; }
 
 	/**
-	 * Flushes the buffer and sets it into its initial state same as after 
-	 * creating this obejct instance. The only difference is that data in the 
-	 * buffer has been written, but this data will never be shown.
+	 * Flushes the buffer and sets it into its initial state. This state is the
+	 * same as after creating this obejct instance. The only difference is that 
+	 * the playback direction is not reset.
 	 */
 	void doFlush() {
 		flush = true;
@@ -180,13 +187,16 @@ public:
 
 	/**
 	 * Toggles the direction of replay.
-	 * Returns a pair with delta and offset in frames.
-	 * The variable delta defines how many steps we need to 
+	 * Returns a pair with offset and delta in frames.
+	 * - The offset is the amount we need to go back in the stream to get at the 
+	 *   beginning for backward or forward play.
+	 * - The delta is the maximum amount of frames we can jump backward.
 	 */
 	std::pair<int,int> toggle() { // pair of delta, offset
 
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return nBefore > 1 || flush;}); // Must have 2 frames for reverse.
+		//cv.wait(locker, [this](){return nBefore > 1 || flush;}); // Must have 2 frames for reverse.
+		cv.wait(locker, [this](){ return nAfter > 1 || flush; }); // Must have 2 frames behind for reverse.
 		
 		// When toggeling we have these cases:
 		// Switching into backward replay:
@@ -198,17 +208,16 @@ public:
 		//   this amount of frames into the buffer.
 		// Switching into forward replay:
 		// * offset
-		//   if we have not written in reverse yet then return 0
-		//   otherwise we need to seek forward by nBefore+nAfter+iReverse+1
+		//   We need to seek forward by nBefore+nAfter+iReverse+1.
 		// * delta
-		//   is always zero since we only advance by +1 frame in forward replay
+		//   is always zero since we only advance by +1 frame in forward replay.
 		reverse = !reverse;
 		std::pair<int,int> ret = reverse ?
 			std::make_pair(nBefore+nAfter, nData-nBefore-1) :
 			std::make_pair(nBefore+nAfter+iReverse, 0);
 		
-		//fprintf(stdout, "\nBefore toggle.\n");
-		//print();
+		fprintf(stdout, "\nBefore toggle.\n");
+		print();
 		
 		if (reverse) {
 			iRead = (iRead - 2 + nData) % nData;
@@ -218,15 +227,18 @@ public:
 			iRead = (iRead + 2) % nData;
 		}
 
+		// Swap nBefore and nAfter and decrement nBefore by one and increment 
+		// nAfter by one.
 		int tmp = nAfter - 1;
 		nAfter = nBefore + 1;
 		nBefore = tmp;
 
 		nReverse = iReverse = 0;
 
-		//fprintf(stdout, "After toggle.\n");
-		//print();
+		fprintf(stdout, "After toggle.\n");
+		print();
 
+		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
 		locker.unlock();
 		cv.notify_all();
@@ -257,7 +269,15 @@ public:
 	AVFrame* getReadPtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return nBefore > 2 || flush;}); // leave 2 frames for reverse!
+		// nAfter should be larger than > 2 but this should always hold.
+		cv.wait(locker, [this](){ return nBefore > 0 || flush;}); // leave 2 frames for reverse!
+		/*
+		cv.wait(locker, [this](){
+			fprintf(stdout,"reverse = %d, nBefore = %d, nAfter = %d.\n", 
+				reverse, nBefore, nAfter);
+			fflush(stdout);
+			return reverse ? nAfter > 1 : nBefore > 2 || flush;}); // leave 2 frames for reverse!
+			*/
 		if (!flush) {
 			pFrame = data[iRead];
 			iRead = (reverse ? (iRead - 1 + nData) : (iRead + 1)) % nData;
@@ -309,20 +329,21 @@ public:
 	}
 };
 
+
+bool atStartForWrite() {
+	return lastWritePts <= pVideoStream->start_time+avgDeltaPts && !ib->inReverse();
+}
+
+bool atStartForRead() {
+	return atStartForWrite() && ib->empty();
+}
+
+
 void loadNextFrame() {
 	int frameFinished;
 	bool reverseRefresh = true;
 
 	while (!quit) {
-
-		/*
-		if (lastWritePts < pVideoStream->start_time-avgDeltaPts) {
-			fprintf(stdout, "Reached start of file, seek pts = %I64d, last write pts = %I64d.\n", seekPts, lastWritePts);
-			fflush(stdout);
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			continue;
-		}
-		*/
 
 		// Switch direction of playback.
 		if (toggle) {
@@ -333,7 +354,7 @@ void loadNextFrame() {
 			// Even if we may not seek backward it is safest to get the prior keyframe.
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			if (ib->isReverse()) {
-				int maxDelta = lastWritePts/avgDeltaPts;
+				int maxDelta = (-pVideoStream->start_time+lastWritePts)/avgDeltaPts;
 				delta = std::min(offset+delta, maxDelta) - offset;
 				ib->setBackwardAfterToggle(delta);
 				nShift = -(offset + delta) + 1;
@@ -342,9 +363,6 @@ void loadNextFrame() {
 			}
 
 			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
-
-			//fprintf(stdout, "Last write frame %I64d, shift %d frames.\n", lastWritePts/avgDeltaPts, nShift);
-			//fflush(stdout);
 
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
 				fprintf(stderr, "Toggle seek of %I64d frames unsuccessful.\n", seekPts/avgDeltaPts);
@@ -356,15 +374,35 @@ void loadNextFrame() {
 			toggle = false;			
 		}
 
+		if (atStartForWrite()) {
+			ib->print();
+			fprintf(stdout, "Reached start of file, seek pts = %I64d, last write pts = %I64d.\n", seekPts, lastWritePts);
+			fflush(stdout);
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			continue;
+		}
+
 		if (ib->seekReq()) {
 			// Find the number of frames that can still be read
-			int maxDelta = lastWritePts/avgDeltaPts;
+			int maxDelta = (-pVideoStream->start_time+lastWritePts)/avgDeltaPts;
+
+			fprintf(stdout, "start time = %I64d, avgDeltaPts = %I64d.\n", pVideoStream->start_time, avgDeltaPts);
+			
+			fprintf(stdout, "lastWritePts = %I64d, maxDelta = %d.\n", lastWritePts, maxDelta);
+
 			std::pair<int,int> offsetDelta = ib->seekBackward();
 			
 			int offset = offsetDelta.first;
 			int delta = offsetDelta.second;
+
+			fprintf(stdout, "offset = %d, delta = %d.\n", offset, delta);
+
 			delta = std::min(offset+delta, maxDelta) - offset;
+
+			fprintf(stdout, "delta = %d used for seek.\n", delta);
+
 			ib->setBackwardAfterSeek(delta);
+
 			
 			//fprintf(stdout,"Backward seek with offset = %d and delta = %d.\n", offset, delta);
 			//fflush(stdout);
@@ -372,7 +410,13 @@ void loadNextFrame() {
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			int nShift = -(offset + delta) + 1;
 
+			fprintf(stdout, "nShift = %d.\n", nShift);
+
 			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
+
+			fprintf(stdout, "last write pts = %I64d.\n");
+			fflush(stdout);
+
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
 				fprintf(stderr, "Reverse seek of %I64d pts or %I64d frames unsuccessful.\n", seekPts, seekPts/avgDeltaPts);
 			} else {
@@ -503,6 +547,9 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 	// No movie was loaded return -1.
 	if (!loadedMovie) return -1;
 
+	// We reached the start of the movie in reverse playback
+	if (ib->isReverse() && atStartForRead()) return -1;
+
 	// Counts the number of frames that this method requested (could be 0, 1, 2).
 	int nFrame = 0;
 
@@ -522,7 +569,7 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 		bool init = std::labs(firstPts - lastPts) > PTS_DELTA_THRESHOLD*deltaPts;
 
 		// Compute the difference for the presentation time stamps.
-		double ptsDiff = init ? 0 : std::labs(firstPts - lastPts)/speed*av_q2d(pVideoStream->time_base);
+		double diffPts = init ? 0 : std::labs(firstPts - lastPts)/speed*av_q2d(pVideoStream->time_base);
 
 		// Get the current time.
 		auto time = std::chrono::high_resolution_clock::now();
@@ -532,10 +579,10 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 			: std::chrono::duration_cast<std::chrono::microseconds>(time-lastTime).count()/1000000.0;
 
 		// Compute the difference between times and pts.
-		diff = init ? 0 : (diff + ptsDiff - timeDiff);
+		diff = init ? 0 : (diff + diffPts - timeDiff);
 
 		// Calculate the delay that this display thread is required to wait.
-		double delay = ptsDiff;
+		double delay = diffPts;
 
 		// If the frame is repeated split this delay in half.
 		if (pFrameTmp->repeat_pict) {
@@ -577,6 +624,7 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 		}
 
 		//fprintf(stdout, "Display frame %I64d.\n", firstPts/avgDeltaPts);
+		//ib->print();
 		//fflush(stdout);
 
 		// Update the pointer for the show frame.

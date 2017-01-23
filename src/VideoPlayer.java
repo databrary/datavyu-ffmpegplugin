@@ -169,6 +169,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 			}
 			player.setPlaybackSpeed(getSpeed());
 			System.out.println("Set speed to: " + getSpeed());
+			//player.loadNextFrame();
+			//player.loadNextFrame();
 		}
 	}
 	
