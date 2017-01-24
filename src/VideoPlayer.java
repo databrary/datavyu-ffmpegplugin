@@ -24,6 +24,7 @@ import javax.swing.filechooser.FileFilter;
 
 
 public class VideoPlayer extends JPanel implements WindowListener {
+	private double startTime = 0; // keep start time to adjust slider to correct value.
 	private boolean playing = false;
 	private PlayImageFromVideo player = null;
 	private JFileChooser fileChooser = null;
@@ -50,9 +51,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	protected void showNextFrame() {
 		player.getNextFrame();
 		double time = player.getMovieTimeInSeconds();
-		slider.setValue((int)(1000*time));
-		long timeInFrames = player.getMovieTimeInFrames();
-		frameNumber.setText(timeInFrames + " frame");
+		slider.setValue((int)(1000*(-startTime+time)));
+		double timeInSeconds = player.getMovieTimeInSeconds();
+		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 + " seconds");
 		player.repaint();
 	}
 	
@@ -60,7 +61,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		@Override
 		public void run() {
 			while (playing) {
-				showNextFrame();
+				showNextFrame();					
 			}
 		}
 	}
@@ -83,15 +84,17 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	class RewindSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// rewind to start
-			player.setTimeInSeconds(0);
+			player.rewindMovie();
 		}
 	}
 	
 	class StepSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			showNextFrame();
+			// Only pull a frame if it is available.
+			if (!player.atStartForRead() && !player.atEndForRead()) {
+				showNextFrame();
+			}
 		}
 	}
 	
@@ -99,8 +102,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
         player.setMovie(fileName);
         // Load first frame.
 		player.getNextFrame();
-		long timeInFrames = player.getMovieTimeInFrames();
-		frameNumber.setText(timeInFrames + " frame");
+		double timeInSeconds = player.getMovieTimeInSeconds();
+		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 + " seconds");
 		
 		
 		// Set default speed.
@@ -113,6 +116,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
         int width = player.getMovieWidth();
         int height = player.getMovieHeight();
         double duration = player.getMovieDuration();
+        
+        startTime = player.getMovieStartTimeInSeconds();
+        
         slider.setModel(new DefaultBoundedRangeModel(0, 1, 0, (int)(1000*duration)));
         
         //player.setMinimumSize(new Dimension(width,height));

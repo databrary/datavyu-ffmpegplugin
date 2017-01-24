@@ -79,18 +79,26 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieWidth
 
 /*
  * Class:     PlayImageFromVideo
- * Method:    getMovieDuration
+ * Method:    getMovieStartTimeInSeconds
  * Signature: ()D
  */
-JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieDuration
+JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieStartTimeInSeconds
   (JNIEnv *, jobject);
 
 /*
  * Class:     PlayImageFromVideo
- * Method:    getMovieNumberOfFrames
- * Signature: ()J
+ * Method:    getMovieEndTimeInSeconds
+ * Signature: ()D
  */
-JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieNumberOfFrames
+JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieEndTimeInSeconds
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlayImageFromVideo
+ * Method:    getMovieDuration
+ * Signature: ()D
+ */
+JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieDuration
   (JNIEnv *, jobject);
 
 /*
@@ -103,18 +111,18 @@ JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieTimeInSeconds
 
 /*
  * Class:     PlayImageFromVideo
- * Method:    getMovieTimeInFrames
- * Signature: ()J
- */
-JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
-  (JNIEnv *, jobject);
-
-/*
- * Class:     PlayImageFromVideo
  * Method:    rewindMovie
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_rewindMovie
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlayImageFromVideo
+ * Method:    forwardPlayback
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_PlayImageFromVideo_forwardPlayback
   (JNIEnv *, jobject);
 
 /*
@@ -156,14 +164,6 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
  */
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInSeconds
   (JNIEnv *, jobject, jdouble);
-
-/*
- * Class:     PlayImageFromVideo
- * Method:    setTimeInFrames
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInFrames
-  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

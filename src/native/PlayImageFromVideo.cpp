@@ -50,6 +50,7 @@ std::thread			*decodeThread	= nullptr;	// Decoding thread that decodes frames an
 bool				quit			= false;	// Quit the decoding thread.
 bool				loadedMovie		= false;	// Flag indicates that we loaded a movie. Used to protect uninitialized pointers.
 ImageBuffer			*ib				= nullptr;	// Pointer to the image buffer.
+bool				eof				= false;	// The stream reached the end of the file.
 
 // Variables to control playback speed and reverse playback.
 bool				toggle			= false;
@@ -345,10 +346,18 @@ bool atStartForRead() {
 	return atStartForWrite() && ib->empty();
 }
 
-bool atEndForRead() {
-	return false;
+bool atEndForWrite() {
+	//fprintf(stdout, "lastWritePts = %I64d, start_time = %I64d, lastWritePts-start_time = %I64d, duration = %I64d.\n",
+	//	lastWritePts, pVideoStream->start_time, lastWritePts-pVideoStream->start_time, pVideoStream->duration);
+	//fflush(stdout);
+	// Duration is just an estimate and usually larger than the acutal number of frames.
+	// I measured 8 - 14 additional frames that duration specifies.
+	return !ib->isReverse() && eof; //lastWritePts-pVideoStream->start_time >= pVideoStream->duration;
 }
 
+bool atEndForRead() {
+	return !ib->isReverse() && eof && ib->empty();//lastPts-pVideoStream->start_time >= pVideoStream->duration;
+}
 
 void loadNextFrame() {
 	int frameFinished;
@@ -364,7 +373,7 @@ void loadNextFrame() {
 			} else {
 				fprintf(stdout, "Random seek of %I64d frame successful.\n", seekPts/avgDeltaPts);
 				fflush(stdout);
-
+				ib->doFlush();
 				avcodec_flush_buffers(pCodecCtx);
 				lastWritePts = seekPts;
 			}
@@ -400,9 +409,9 @@ void loadNextFrame() {
 			toggle = false;			
 		}
 
-		if (atStartForWrite()) {
+		if (atStartForWrite() || atEndForWrite()) {
 			//ib->print();
-			fprintf(stdout, "Reached start of file, seek pts = %I64d, last write pts = %I64d.\n", seekPts, lastWritePts);
+			fprintf(stdout, "Reached end/start of file, seek pts = %I64d, last write pts = %I64d.\n", seekPts, lastWritePts);
 			fflush(stdout);
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
@@ -455,7 +464,9 @@ void loadNextFrame() {
 		// Read frame.
 		int ret = av_read_frame(pFormatCtx, &packet);
 
-		if (ret < 0) {
+		eof = ret == AVERROR_EOF;
+
+		if (ret < 0 && !eof) {
 			fprintf(stdout, "Error:  %c, %c, %c, %c.\n",
 				static_cast<char>((-ret >> 0) & 0xFF),
 				static_cast<char>((-ret >> 8) & 0xFF),
@@ -529,13 +540,14 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInSeconds
 	seekReq = true;
 }
 
+/*
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInFrames
 (JNIEnv *env, jobject thisObject, jlong time) {
 	
 	lastWritePts = seekPts = time*avgDeltaPts;	
 	seekReq = true;
 }
-
+*/
 
 JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
 (JNIEnv *env, jobject thisObject) {
@@ -552,7 +564,7 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 	if (!loadedMovie) return -1;
 
 	// We reached the start of the movie in reverse playback
-	if (ib->isReverse() && atStartForRead()) return -1;
+	//if (ib->isReverse() && atStartForRead() || !ib->isReverse() && atEndForRead()) return -1;
 
 	// Counts the number of frames that this method requested (could be 0, 1, 2).
 	int nFrame = 0;
@@ -627,9 +639,9 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 			std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
 		}
 
-		fprintf(stdout, "Display frame %I64d or pts = %I64d.\n", firstPts/avgDeltaPts, firstPts);
+		//fprintf(stdout, "Display frame %I64d or pts = %I64d.\n", firstPts/avgDeltaPts, firstPts);
 		//ib->print();
-		fflush(stdout);
+		//fflush(stdout);
 
 		// Update the pointer for the show frame.
 		pFrameShow = pFrameTmp;
@@ -760,29 +772,58 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieWidth
 	return (jint) width;
 }
 
+JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieStartTimeInSeconds
+(JNIEnv *, jobject) {
+	return (jdouble) loadedMovie ? pVideoStream->start_time * av_q2d(pVideoStream->time_base) : 0;
+}
+
+JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieEndTimeInSeconds
+(JNIEnv *, jobject) {
+	return (jdouble) loadedMovie ? (pVideoStream->duration - pVideoStream->start_time) * av_q2d(pVideoStream->time_base) : 0;
+}
+
 JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieDuration
 (JNIEnv *env, jobject thisObject) {
 	return (jdouble) duration;
 }
 
+/*
 JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieNumberOfFrames
 (JNIEnv *env, jobject thisObject) {
-	return (jlong) 0; // TODO: FIXME
+	return (jlong) loadedMovie ? duration/av_q2d(pVideoStream->time_base)/avgDeltaPts : 0;
 }
+*/
 
 JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieTimeInSeconds
 (JNIEnv *env, jobject thisObject) {
 	return loadedMovie ? pFrameShow->pts*av_q2d(pVideoStream->time_base) : 0;
 }
 
+/*
 JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
 (JNIEnv *env, jobject thisObject) {
 	return loadedMovie ? (jlong) pFrameShow->pts/avgDeltaPts : 0;
 }
+*/
+
+JNIEXPORT jboolean JNICALL Java_PlayImageFromVideo_forwardPlayback
+(JNIEnv *, jobject) {
+	return loadedMovie ? (jboolean) !ib->isReverse() : true;
+}
 
 JNIEXPORT void JNICALL Java_PlayImageFromVideo_rewindMovie
 (JNIEnv *, jobject) {
-	// TODO: Implement me.
+	if (loadedMovie) {
+		if (ib->isReverse()) {
+			// TODO: Correct the seek point to the end of the file.
+			lastWritePts = seekPts = pVideoStream->duration;
+			seekReq = true;
+		} else {
+			// Seek to the start of the file.
+			lastWritePts = seekPts = pVideoStream->start_time;
+			seekReq = true;			
+		}
+	}
 }
 
 JNIEXPORT jboolean JNICALL Java_PlayImageFromVideo_atStartForRead
