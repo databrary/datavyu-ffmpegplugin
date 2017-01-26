@@ -202,8 +202,8 @@ public:
 	std::pair<int,int> toggle() { // pair of delta, offset
 
 		std::unique_lock<std::mutex> locker(mu);
-		//cv.wait(locker, [this](){return nBefore > 1 || flush;}); // Must have 2 frames for reverse.
-		cv.wait(locker, [this](){ return nAfter > 1 || flush; }); // Must have 2 frames behind for reverse.
+		cv.wait(locker, [this](){return nBefore > 1 || flush;}); // Must have 2 frames for reverse.
+		//cv.wait(locker, [this](){ return nAfter > 1 || flush; }); // Must have 2 frames behind for reverse.
 		
 		// When toggeling we have these cases:
 		// Switching into backward replay:
@@ -223,8 +223,8 @@ public:
 			std::make_pair(nBefore+nAfter, nData-nBefore-1) :
 			std::make_pair(nBefore+nAfter+iReverse, 0);
 		
-		//fprintf(stdout, "\nBefore toggle.\n");
-		//print();
+		fprintf(stdout, "\nBefore toggle.\n");
+		print();
 		
 		if (reverse) {
 			iRead = (iRead - 2 + nData) % nData;
@@ -242,8 +242,8 @@ public:
 
 		nReverse = iReverse = 0;
 
-		//fprintf(stdout, "After toggle.\n");
-		//print();
+		fprintf(stdout, "After toggle.\n");
+		print();
 
 		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
