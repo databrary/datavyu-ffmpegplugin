@@ -223,8 +223,8 @@ public:
 			std::make_pair(nBefore+nAfter, nData-nBefore-1) :
 			std::make_pair(nBefore+nAfter+iReverse, 0);
 		
-		fprintf(stdout, "\nBefore toggle.\n");
-		print();
+		//fprintf(stdout, "\nBefore toggle.\n");
+		//print();
 		
 		if (reverse) {
 			iRead = (iRead - 2 + nData) % nData;
@@ -242,8 +242,8 @@ public:
 
 		nReverse = iReverse = 0;
 
-		fprintf(stdout, "After toggle.\n");
-		print();
+		//fprintf(stdout, "After toggle.\n");
+		//print();
 
 		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
@@ -408,7 +408,7 @@ void loadNextFrame() {
 			}			
 			toggle = false;			
 		}
-
+/*
 		if (atStartForWrite() || atEndForWrite()) {
 			//ib->print();
 			fprintf(stdout, "Reached end/start of file, seek pts = %I64d, last write pts = %I64d.\n", seekPts, lastWritePts);
@@ -416,41 +416,24 @@ void loadNextFrame() {
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
 		}
-
+*/
 		if (ib->seekReq()) {
 			// Find the number of frames that can still be read
 			int maxDelta = (-pVideoStream->start_time+lastWritePts)/avgDeltaPts;
-
-			//fprintf(stdout, "start time = %I64d, avgDeltaPts = %I64d.\n", pVideoStream->start_time, avgDeltaPts);
-			
-			//fprintf(stdout, "lastWritePts = %I64d, maxDelta = %d.\n", lastWritePts, maxDelta);
 
 			std::pair<int,int> offsetDelta = ib->seekBackward();
 			
 			int offset = offsetDelta.first;
 			int delta = offsetDelta.second;
 
-			//fprintf(stdout, "offset = %d, delta = %d.\n", offset, delta);
-
 			delta = std::min(offset+delta, maxDelta) - offset;
 
-			//fprintf(stdout, "delta = %d used for seek.\n", delta);
-
 			ib->setBackwardAfterSeek(delta);
-
-			
-			//fprintf(stdout,"Backward seek with offset = %d and delta = %d.\n", offset, delta);
-			//fflush(stdout);
 
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			int nShift = -(offset + delta) + 1;
 
-			//fprintf(stdout, "nShift = %d.\n", nShift);
-
 			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
-
-			//fprintf(stdout, "last write pts = %I64d.\n");
-			//fflush(stdout);
 
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
 				fprintf(stderr, "Reverse seek of %I64d pts or %I64d frames unsuccessful.\n", seekPts, seekPts/avgDeltaPts);
@@ -466,13 +449,21 @@ void loadNextFrame() {
 
 		eof = ret == AVERROR_EOF;
 
+		if (atStartForWrite() || atEndForWrite()) {
+			//ib->print();
+			fprintf(stdout, "Reached end/start of file, seek pts = %I64d, last write pts = %I64d.\n", seekPts, lastWritePts);
+			fflush(stdout);
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			continue;
+		}
+
 		if (ret < 0 && !eof) {
-			fprintf(stdout, "Error:  %c, %c, %c, %c.\n",
+			fprintf(stderr, "Error:  %c, %c, %c, %c.\n",
 				static_cast<char>((-ret >> 0) & 0xFF),
 				static_cast<char>((-ret >> 8) & 0xFF),
 				static_cast<char>((-ret >> 16) & 0xFF),
 				static_cast<char>((-ret >> 24) & 0xFF));
-			fflush(stdout);
+			fflush(stderr);
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		} else {
 			// Is this a packet from the video stream?
@@ -485,7 +476,7 @@ void loadNextFrame() {
 				if(frameFinished) {
 
 					// Set the presentation time stamp.
-					int64_t readPts = packet.dts == AV_NOPTS_VALUE ? 0 : pFrame->pkt_pts;
+					int64_t readPts = pFrame->pkt_pts;
 
 					// Skip frames until we are at or beyond of the seekPts time stamp.
 					if (readPts >= seekPts) {
@@ -540,15 +531,6 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInSeconds
 	seekReq = true;
 }
 
-/*
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInFrames
-(JNIEnv *env, jobject thisObject, jlong time) {
-	
-	lastWritePts = seekPts = time*avgDeltaPts;	
-	seekReq = true;
-}
-*/
-
 JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
 (JNIEnv *env, jobject thisObject) {
 	// Construct a new direct byte buffer pointing to data from pFrameShow.
@@ -562,9 +544,6 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 	
 	// No movie was loaded return -1.
 	if (!loadedMovie) return -1;
-
-	// We reached the start of the movie in reverse playback
-	//if (ib->isReverse() && atStartForRead() || !ib->isReverse() && atEndForRead()) return -1;
 
 	// Counts the number of frames that this method requested (could be 0, 1, 2).
 	int nFrame = 0;
@@ -639,12 +618,12 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 			std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
 		}
 
-		//fprintf(stdout, "Display frame %I64d or pts = %I64d.\n", firstPts/avgDeltaPts, firstPts);
-		//ib->print();
-		//fflush(stdout);
-
 		// Update the pointer for the show frame.
 		pFrameShow = pFrameTmp;
+
+		//fprintf(stdout, "Display pts = %I64d or %I64d frames.\n", pFrameShow->pts, pFrameShow->pts/avgDeltaPts);
+		//ib->print();
+		//fflush(stdout);
 	}
 
 	// Return the number of read frames (not neccesarily all are displayed).
@@ -787,24 +766,10 @@ JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieDuration
 	return (jdouble) duration;
 }
 
-/*
-JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieNumberOfFrames
-(JNIEnv *env, jobject thisObject) {
-	return (jlong) loadedMovie ? duration/av_q2d(pVideoStream->time_base)/avgDeltaPts : 0;
-}
-*/
-
 JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieTimeInSeconds
 (JNIEnv *env, jobject thisObject) {
 	return loadedMovie ? pFrameShow->pts*av_q2d(pVideoStream->time_base) : 0;
 }
-
-/*
-JNIEXPORT jlong JNICALL Java_PlayImageFromVideo_getMovieTimeInFrames
-(JNIEnv *env, jobject thisObject) {
-	return loadedMovie ? (jlong) pFrameShow->pts/avgDeltaPts : 0;
-}
-*/
 
 JNIEXPORT jboolean JNICALL Java_PlayImageFromVideo_forwardPlayback
 (JNIEnv *, jobject) {
