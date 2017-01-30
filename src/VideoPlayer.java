@@ -8,6 +8,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 
+import javax.swing.BoundedRangeModel;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
@@ -19,6 +20,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 
@@ -98,6 +101,22 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		}
 	}
 	
+	class SliderSelection implements ChangeListener {
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			double sec = ((double)slider.getValue())/1000.0 + startTime;
+			if (slider.getValueIsAdjusting()) {
+				System.out.println("Seconds: " + sec);	
+				player.setTimeInSeconds(sec);
+				// Need to pull one frame because of revert.
+				player.getNextFrame();
+				// Can't show all the frames, random seeks. Only show when the user 
+				// presses step or play.
+				//showNextFrame();
+			}
+		}
+	}
+	
 	protected void openFile(String fileName) {
         player.setMovie(fileName);
         // Load first frame.
@@ -121,7 +140,6 @@ public class VideoPlayer extends JPanel implements WindowListener {
         
         slider.setModel(new DefaultBoundedRangeModel(0, 1, 0, (int)(1000*duration)));
         
-        //player.setMinimumSize(new Dimension(width,height));
         setMinimumSize(new Dimension(width+50, height+150));
 		repaint();
         
@@ -176,6 +194,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 			}
 			player.setPlaybackSpeed(getSpeed());
 			System.out.println("Set speed to: " + getSpeed());
+			// Need to pull two frames as workaround because toggle requires two frames to revert direction.
 			player.loadNextFrame();
 			player.loadNextFrame();
 		}
@@ -247,6 +266,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		stop.addActionListener(new StopSelection());
 		rewind.addActionListener(new RewindSelection());
 		step.addActionListener(new StepSelection());
+		slider.addChangeListener(new SliderSelection());
 		
 		// Speed selection.
 		quarter = new JRadioButton("1/4x");
@@ -322,6 +342,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		add(slider, BorderLayout.SOUTH);
 		
 		openFile("C:\\Users\\Florian\\WalkingVideo.mov");
+		//openFile("C:\\Users\\Florian\\SleepingBag.MP4");
+		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 	}
 	
 	

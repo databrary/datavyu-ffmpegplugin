@@ -21,7 +21,7 @@ extern "C" {
 // vcvarsall.bat x64
 // cl PlayImageFromVideo.cpp /Fe"..\..\lib\PlayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
-#define N_MAX_IMAGES 16
+#define N_MAX_IMAGES 32
 #define N_MIN_IMAGES N_MAX_IMAGES/2
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0
@@ -202,8 +202,8 @@ public:
 	std::pair<int,int> toggle() { // pair of delta, offset
 
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return nBefore > 1 || flush;}); // Must have 2 frames for reverse.
-		//cv.wait(locker, [this](){ return nAfter > 1 || flush; }); // Must have 2 frames behind for reverse.
+		// Currently, I check that there is 1 frame behind.
+		cv.wait(locker, [this](){return nAfter > 0 || flush;});
 		
 		// When toggeling we have these cases:
 		// Switching into backward replay:
@@ -276,15 +276,7 @@ public:
 	AVFrame* getReadPtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		// nAfter should be larger than > 2 but this should always hold.
-		cv.wait(locker, [this](){ return nBefore > 0 || flush;}); // leave 2 frames for reverse!
-		/*
-		cv.wait(locker, [this](){
-			fprintf(stdout,"reverse = %d, nBefore = %d, nAfter = %d.\n", 
-				reverse, nBefore, nAfter);
-			fflush(stdout);
-			return reverse ? nAfter > 1 : nBefore > 2 || flush;}); // leave 2 frames for reverse!
-			*/
+		cv.wait(locker, [this](){ return nBefore > 0 || flush;}); // must have 1 frame before!
 		if (!flush) {
 			pFrame = data[iRead];
 			iRead = (reverse ? (iRead - 1 + nData) : (iRead + 1)) % nData;
@@ -298,7 +290,9 @@ public:
 	AVFrame* reqWritePtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){return nFree() > 1 || flush;});
+		// This should also check that there are two frames left for reverse 
+		// but then the toggle from revere into forward takes two extra frames.
+		cv.wait(locker, [this](){return nFree() > 0 || flush;}); // must have 1 free space
 		if (!flush) {
 			pFrame = data[iWrite];
 		}
