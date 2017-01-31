@@ -108,27 +108,11 @@ public class PlayImageFromVideo extends Canvas {
 	public native double getMovieDuration();
 	
 	/**
-	 * Get the number of frames if known, otherwise 0.
-	 * ATTENTION: This is a best effort estimate by ffmpeg and does not match the actual 
-	 * number of frames you can pull from the movie. Usually that number is lower. 
-	 * Returns 0 if no movie was loaded.
-	 * @return Number of frames.
-	 */
-	//public native long getMovieNumberOfFrames();
-	
-	/**
 	 * Get the current time of the movie in seconds.
 	 * Returns 0 if no movie was loaded.
 	 * @return Current time in seconds.
 	 */
 	public native double getMovieTimeInSeconds();
-	
-	/**
-	 * Get the current time of the movie in frames.
-	 * Returns 0 if no movie was loaded.
-	 * @return Current time in frames.
-	 */
-	//public native long getMovieTimeInFrames();
 	
 	/**
 	 * Resets movie either to the front or end of the file depending
@@ -182,12 +166,6 @@ public class PlayImageFromVideo extends Canvas {
 	 */
 	public native void setTimeInSeconds(double time);
 	
-	/**
-	 * Set the time within the movie through a frame number.
-	 * @param frameNo Frame number to set to.
-	 */
-	//public native void setTimeInFrames(long frameNo);
-	
 	
 	public void update(Graphics g){
 	    paint(g); // Instead of resetting, paint directly. 
@@ -211,7 +189,7 @@ public class PlayImageFromVideo extends Canvas {
 		data = new byte[width*height*nChannel];	// Allocate the bytes in java.
 		buffer.get(data); // Copy from the native buffer into the java buffer.
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
-		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0)); // Create writable raster.
+		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
 		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
 		return nFrame; // Return the number of frames.
 	}
@@ -221,9 +199,9 @@ public class PlayImageFromVideo extends Canvas {
 	 * @param fileName Name of the movie file.
 	 */
 	public void setMovie(String fileName) {
-		if (loaded) {
-			releaseMovie();
-		}
+		//if (loaded) {
+		//	releaseMovie();
+		//}
 		loadMovie(fileName);
 		nChannel = getMovieColorChannels();
 		width = getMovieWidth();

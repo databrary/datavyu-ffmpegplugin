@@ -799,6 +799,9 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 (JNIEnv *env, jobject thisObject) {
 
 	if (loadedMovie) {
+		fprintf(stdout, "Free movie.\n");
+		fflush(stdout);
+
 		// Set the quit flag for the docding thread.
 		quit = true;
 
@@ -815,19 +818,35 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 		delete ib;
 		ib = nullptr;
 
+		// Free the dictionary.
+		av_dict_free(&optsDict);
+		optsDict = nullptr;
+
+		// Flush the buffers
+		avcodec_flush_buffers(pCodecCtx);
+
+		// Close codec context
+		avcodec_close(pCodecCtx);
+		pCodecCtx = nullptr;
+
 		// Free scaling context.
 		sws_freeContext(swsCtx);
+		swsCtx = nullptr;
 
 		// Free the YUV frame
 		av_free(pFrame);
+		pFrame = nullptr;
+		pFrameShow = nullptr;
 
 		// Close the video file
 		avformat_close_input(&pFormatCtx);
+		pFormatCtx = nullptr;
 
 		// Set default values for movie information.
 		loadedMovie = false;
 		width = 0;
 		height = 0;
+		//nChannel = 0;
 		duration = 0;
 		lastWritePts = 0;
 
@@ -837,12 +856,14 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 		lastPts = 0;
 		deltaPts = 0;
 		avgDeltaPts = 0;
+		lastWritePts = 0;
 		diff = 0;
+		eof = false;
 
 		// Reset value for seek request.
 		seekReq = false;
 		seekPts = 0;
-		seekFlags = AVSEEK_FLAG_ANY;
+		seekFlags = 0;
 
 		quit = false;
 	}

@@ -8,7 +8,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 
-import javax.swing.BoundedRangeModel;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
@@ -118,6 +117,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	}
 	
 	protected void openFile(String fileName) {
+		
         player.setMovie(fileName);
         // Load first frame.
 		player.getNextFrame();
@@ -341,9 +341,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		add(player, BorderLayout.CENTER);
 		add(slider, BorderLayout.SOUTH);
 		
-		openFile("C:\\Users\\Florian\\WalkingVideo.mov");
+		//openFile("C:\\Users\\Florian\\WalkingVideo.mov");
 		//openFile("C:\\Users\\Florian\\SleepingBag.MP4");
-		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
+		openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 	}
 	
 	
