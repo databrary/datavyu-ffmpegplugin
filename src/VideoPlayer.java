@@ -33,6 +33,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	private int speedSign = 1;
 	private float speedValue = 1;
 	private File lastDirectory = new File(System.getProperty("user.home"));
+	private Thread playerThread = null;
 	
 	private JRadioButton quarter;
 	private JRadioButton half;
@@ -63,7 +64,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		@Override
 		public void run() {
 			while (playing) {
-				showNextFrame();					
+				showNextFrame();				
 			}
 		}
 	}
@@ -72,7 +73,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			playing = true;
-			new PlayerThread().start();
+			playerThread = new PlayerThread();
+			playerThread.start();
 		}
 	}
 	
@@ -105,7 +107,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		public void stateChanged(ChangeEvent e) {
 			double sec = ((double)slider.getValue())/1000.0 + startTime;
 			if (slider.getValueIsAdjusting()) {
-				System.out.println("Seconds: " + sec);	
+				System.out.println("Seconds: " + sec);
+				// TODO: Make sure that the slider is not placed behind the end!!
+				// At the moment this is possible and the player.getNextFrame() method blocks the UI.
 				player.setTimeInSeconds(sec);
 				// Need to pull one frame because of revert.
 				player.getNextFrame();
@@ -118,34 +122,53 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	
 	protected void openFile(String fileName) {
 		
+		// Stop the player.
+		playing = false;
+		
+		// If we had another video playing ensure that the player has stopped before opening another file.
+		while (playerThread != null && playerThread.isAlive()) {
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException ie) {}
+		}
+	
+		// Assign a new movie file.
         player.setMovie(fileName);
-        // Load first frame.
-		player.getNextFrame();
+        
+        // Load and display first frame.
+        showNextFrame();
+
+        // Display the start time.
 		double timeInSeconds = player.getMovieTimeInSeconds();
 		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 + " seconds");
-		
-		
-		// Set default speed.
+				
+		// Set the default play back speed.
 		one.setSelected(true);
 		forward.setSelected(true);
 		speedSign = 1;
 		speedValue = 1;
 		player.setPlaybackSpeed(1);
         
+		// Get information about the video file.
         int width = player.getMovieWidth();
         int height = player.getMovieHeight();
         double duration = player.getMovieDuration();
         
+        // Get the start time for proper placing of the slider.
         startTime = player.getMovieStartTimeInSeconds();
-        
+
+        // Assign a range of 0 to 1 to the slider.
         slider.setModel(new DefaultBoundedRangeModel(0, 1, 0, (int)(1000*duration)));
-        
+
+        // Set the size for the video frame.
         setMinimumSize(new Dimension(width+50, height+150));
 		repaint();
         
         System.out.println("Opened movie " + fileName);
         System.out.println("width = " + width + ", height = " + height);
         System.out.println("duration = " + duration + " seconds.");
+        System.out.println("start time = " + player.getMovieStartTimeInSeconds() + " seconds.");
+        System.out.println("end time = " + player.getMovieEndTimeInSeconds() + " seconds.");
 	}
 	
 	class OpenFileSelection implements ActionListener {

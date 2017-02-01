@@ -66,6 +66,7 @@ std::chrono::high_resolution_clock::time_point lastTime;
 bool				seekReq			= false;
 int64_t				seekPts			= 0;
 int					seekFlags		= 0;
+//bool				findLast		= false; // Used for rewind to last frame.
 
 /**
  * This image buffer is a ring buffer with a forward mode and backward mode.
@@ -223,8 +224,8 @@ public:
 			std::make_pair(nBefore+nAfter, nData-nBefore-1) :
 			std::make_pair(nBefore+nAfter+iReverse, 0);
 		
-		fprintf(stdout, "\nBefore toggle.\n");
-		print();
+		//fprintf(stdout, "\nBefore toggle.\n");
+		//print();
 		
 		if (reverse) {
 			iRead = (iRead - 2 + nData) % nData;
@@ -242,8 +243,8 @@ public:
 
 		nReverse = iReverse = 0;
 
-		fprintf(stdout, "After toggle.\n");
-		print();
+		//fprintf(stdout, "After toggle.\n");
+		//print();
 
 		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
@@ -308,10 +309,6 @@ public:
 			nAfter -= (nBefore + nAfter) == nData;
 			nBefore += reverse ? (iReverse == 0) * nReverse : 1;
 		}
-
-		//fprintf(stdout, "Wrote frame:\n");
-		//print();
-
 		locker.unlock();	
 		cv.notify_all();
 	}
@@ -344,13 +341,15 @@ bool atEndForWrite() {
 	//fprintf(stdout, "lastWritePts = %I64d, start_time = %I64d, lastWritePts-start_time = %I64d, duration = %I64d.\n",
 	//	lastWritePts, pVideoStream->start_time, lastWritePts-pVideoStream->start_time, pVideoStream->duration);
 	//fflush(stdout);
+	// return lastWritePts-pVideoStream->start_time >= pVideoStream->duration;
 	// Duration is just an estimate and usually larger than the acutal number of frames.
 	// I measured 8 - 14 additional frames that duration specifies.
-	return !ib->isReverse() && eof; //lastWritePts-pVideoStream->start_time >= pVideoStream->duration;
+	return !ib->isReverse() && eof;
 }
 
 bool atEndForRead() {
-	return !ib->isReverse() && eof && ib->empty();//lastPts-pVideoStream->start_time >= pVideoStream->duration;
+	//return !ib->isReverse() && (lastPts-pVideoStream->start_time >= pVideoStream->duration) && ib->empty();
+	return !ib->isReverse() && eof && ib->empty();
 }
 
 void loadNextFrame() {
@@ -402,16 +401,12 @@ void loadNextFrame() {
 			}			
 			toggle = false;			
 		}
-/*
-		if (atStartForWrite() || atEndForWrite()) {
-			//ib->print();
-			fprintf(stdout, "Reached end/start of file, seek pts = %I64d, last write pts = %I64d.\n", seekPts, lastWritePts);
-			fflush(stdout);
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			continue;
-		}
-*/
+		
+		// Find next frame in reverse playback.
 		if (ib->seekReq()) {
+			//fprintf(stdout, "Find next frame in reverse playback.\n");
+			//fflush(stdout);
+
 			// Find the number of frames that can still be read
 			int maxDelta = (-pVideoStream->start_time+lastWritePts)/avgDeltaPts;
 
@@ -441,16 +436,30 @@ void loadNextFrame() {
 		// Read frame.
 		int ret = av_read_frame(pFormatCtx, &packet);
 
+		// Set eof before testing for end of file.
 		eof = ret == AVERROR_EOF;
 
+		// We went beyond the end with the seek request, linear scan back.
+		/*
+		if (eof && findLast) {
+			lastWritePts = seekPts = seekPts - avgDeltaPts;
+			seekReq = true;
+			fprintf(stdout, "New seek pts %d.\n", seekPts);
+			fflush(stdout);
+			continue;
+		} else {
+			findLast = false; // we found the last.
+		}
+		*/
+
 		if (atStartForWrite() || atEndForWrite()) {
-			//ib->print();
 			fprintf(stdout, "Reached end/start of file, seek pts = %I64d, last write pts = %I64d.\n", seekPts, lastWritePts);
 			fflush(stdout);
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
 		}
 
+		// Any error that is not eof.
 		if (ret < 0 && !eof) {
 			fprintf(stderr, "Error:  %c, %c, %c, %c.\n",
 				static_cast<char>((-ret >> 0) & 0xFF),
@@ -459,7 +468,10 @@ void loadNextFrame() {
 				static_cast<char>((-ret >> 24) & 0xFF));
 			fflush(stderr);
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+		// We got a frame! Let's decode it.
 		} else {
+
 			// Is this a packet from the video stream?
 			if (packet.stream_index == iVideoStream) {
 				
@@ -752,7 +764,7 @@ JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieStartTimeInSeconds
 
 JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieEndTimeInSeconds
 (JNIEnv *, jobject) {
-	return (jdouble) loadedMovie ? (pVideoStream->duration - pVideoStream->start_time) * av_q2d(pVideoStream->time_base) : 0;
+	return (jdouble) loadedMovie ? (pVideoStream->duration + pVideoStream->start_time) * av_q2d(pVideoStream->time_base) : 0;
 }
 
 JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieDuration
@@ -775,8 +787,9 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_rewindMovie
 	if (loadedMovie) {
 		if (ib->isReverse()) {
 			// TODO: Correct the seek point to the end of the file.
-			lastWritePts = seekPts = pVideoStream->duration;
-			seekReq = true;
+			//lastWritePts = seekPts = pVideoStream->duration;
+			//seekReq = true;
+			//findLast = true;
 		} else {
 			// Seek to the start of the file.
 			lastWritePts = seekPts = pVideoStream->start_time;
@@ -799,10 +812,8 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 (JNIEnv *env, jobject thisObject) {
 
 	if (loadedMovie) {
-		fprintf(stdout, "Free movie.\n");
-		fflush(stdout);
 
-		// Set the quit flag for the docding thread.
+		// Set the quit flag for the decoding thread.
 		quit = true;
 
 		// Flush the image buffer buffer (which unblocks all readers/writers).
@@ -846,7 +857,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 		loadedMovie = false;
 		width = 0;
 		height = 0;
-		//nChannel = 0;
+		nChannel = 3;
 		duration = 0;
 		lastWritePts = 0;
 
@@ -864,6 +875,7 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
 		seekReq = false;
 		seekPts = 0;
 		seekFlags = 0;
+		//findLast = false;
 
 		quit = false;
 	}
