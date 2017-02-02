@@ -10,7 +10,7 @@ extern "C" {
 	#include <libswscale/swscale.h>
 }
 
-#include "PlayImageFromVideo.h"
+#include "ImagePlayer.h"
 #include <mutex>
 #include <condition_variable>
 #include <thread>
@@ -19,7 +19,7 @@ extern "C" {
 #include <cstdlib>
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
-// cl PlayImageFromVideo.cpp /Fe"..\..\lib\PlayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
+// cl ImagePlayer.cpp /Fe"..\..\lib\ImagePlayer" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
 #define N_MAX_IMAGES 32
 #define N_MIN_IMAGES N_MAX_IMAGES/2
@@ -352,7 +352,7 @@ bool atEndForRead() {
 	return !ib->isReverse() && eof && ib->empty();
 }
 
-void loadNextFrame() {
+void readNextFrame() {
 	int frameFinished;
 	bool reverseRefresh = true;
 
@@ -521,7 +521,7 @@ void loadNextFrame() {
 	}
 }
 
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
+JNIEXPORT void JNICALL Java_ImagePlayer_setPlaybackSpeed
 (JNIEnv *env, jobject thisObject, jfloat inSpeed) {
 	if (loadedMovie) {
 		ib->setNMinImages(1);
@@ -530,14 +530,14 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_setPlaybackSpeed
 	}
 }
 
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_setTimeInSeconds
+JNIEXPORT void JNICALL Java_ImagePlayer_setTime
 (JNIEnv *env, jobject thisObject, jdouble time) { // time in seconds
 
 	lastWritePts = seekPts = ((int64_t)(time/(avgDeltaPts*av_q2d(pVideoStream->time_base))))*avgDeltaPts;
 	seekReq = true;
 }
 
-JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
+JNIEXPORT jobject JNICALL Java_ImagePlayer_getFrameBuffer
 (JNIEnv *env, jobject thisObject) {
 	// Construct a new direct byte buffer pointing to data from pFrameShow.
 	return loadedMovie ? env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
@@ -545,7 +545,7 @@ JNIEXPORT jobject JNICALL Java_PlayImageFromVideo_getFrameBuffer
 									: 0;
 }
 
-JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
+JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 (JNIEnv *env, jobject thisObject) {
 	
 	// No movie was loaded return -1.
@@ -638,12 +638,12 @@ JNIEXPORT jint JNICALL Java_PlayImageFromVideo_loadNextFrame
 
 
 // Opens movie file.
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
+JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 (JNIEnv *env, jobject thisObject, jstring jFileName) {
 
 	// Release resources first before loading another movie.
 	if (loadedMovie) {
-		Java_PlayImageFromVideo_releaseMovie(env, thisObject);
+		Java_ImagePlayer_release(env, thisObject);
 	}
 
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
@@ -736,56 +736,58 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_loadMovie
 	seekReq = true;
 
 	// Start the decode thread.
-	decodeThread = new std::thread(loadNextFrame);
+	decodeThread = new std::thread(readNextFrame);
 
 	// Free the string.
 	env->ReleaseStringUTFChars(jFileName, fileName);
 }
 
-JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieColorChannels
+JNIEXPORT jint JNICALL Java_ImagePlayer_getNumberOfChannels
 (JNIEnv *env, jobject thisObject) {
 	return (jint) nChannel;
 }
 
-JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieHeight
+JNIEXPORT jint JNICALL Java_ImagePlayer_getHeight
 (JNIEnv *env, jobject thisObject) {
 	return (jint) height;
 }
 
-JNIEXPORT jint JNICALL Java_PlayImageFromVideo_getMovieWidth
+JNIEXPORT jint JNICALL Java_ImagePlayer_getWidth
 (JNIEnv *env, jobject thisObject) {
 	return (jint) width;
 }
 
-JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieStartTimeInSeconds
+JNIEXPORT jdouble JNICALL Java_ImagePlayer_getStartTime
 (JNIEnv *, jobject) {
 	return (jdouble) loadedMovie ? pVideoStream->start_time * av_q2d(pVideoStream->time_base) : 0;
 }
 
-JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieEndTimeInSeconds
+JNIEXPORT jdouble JNICALL Java_ImagePlayer_getEndTime
 (JNIEnv *, jobject) {
 	return (jdouble) loadedMovie ? (pVideoStream->duration + pVideoStream->start_time) * av_q2d(pVideoStream->time_base) : 0;
 }
 
-JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieDuration
+JNIEXPORT jdouble JNICALL Java_ImagePlayer_getDuration
 (JNIEnv *env, jobject thisObject) {
 	return (jdouble) duration;
 }
 
-JNIEXPORT jdouble JNICALL Java_PlayImageFromVideo_getMovieTimeInSeconds
+JNIEXPORT jdouble JNICALL Java_ImagePlayer_getCurrentTime
 (JNIEnv *env, jobject thisObject) {
 	return loadedMovie ? pFrameShow->pts*av_q2d(pVideoStream->time_base) : 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_PlayImageFromVideo_forwardPlayback
-(JNIEnv *, jobject) {
+JNIEXPORT jboolean JNICALL Java_ImagePlayer_isForwardPlayback
+(JNIEnv *env, jobject) {
 	return loadedMovie ? (jboolean) !ib->isReverse() : true;
 }
 
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_rewindMovie
+JNIEXPORT void JNICALL Java_ImagePlayer_rewind
 (JNIEnv *, jobject) {
 	if (loadedMovie) {
 		if (ib->isReverse()) {
+			//fprintf(stdout, "In reverse during rewind. Do nothing here.\n");
+			//fflush(stdout);
 			// TODO: Correct the seek point to the end of the file.
 			//lastWritePts = seekPts = pVideoStream->duration;
 			//seekReq = true;
@@ -798,17 +800,17 @@ JNIEXPORT void JNICALL Java_PlayImageFromVideo_rewindMovie
 	}
 }
 
-JNIEXPORT jboolean JNICALL Java_PlayImageFromVideo_atStartForRead
+JNIEXPORT jboolean JNICALL Java_ImagePlayer_atStartForRead
 (JNIEnv *, jobject){
 	return loadedMovie ? atStartForRead() : false;
 }
 
-JNIEXPORT jboolean JNICALL Java_PlayImageFromVideo_atEndForRead
+JNIEXPORT jboolean JNICALL Java_ImagePlayer_atEndForRead
 (JNIEnv *, jobject) {
 	return loadedMovie ? atEndForRead() : false;
 }
 
-JNIEXPORT void JNICALL Java_PlayImageFromVideo_releaseMovie
+JNIEXPORT void JNICALL Java_ImagePlayer_release
 (JNIEnv *env, jobject thisObject) {
 
 	if (loadedMovie) {

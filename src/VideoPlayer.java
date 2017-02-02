@@ -28,7 +28,7 @@ import javax.swing.filechooser.FileFilter;
 public class VideoPlayer extends JPanel implements WindowListener {
 	private double startTime = 0; // keep start time to adjust slider to correct value.
 	private boolean playing = false;
-	private PlayImageFromVideo player = null;
+	private ImagePlayer player = null;
 	private JFileChooser fileChooser = null;
 	private int speedSign = 1;
 	private float speedValue = 1;
@@ -52,10 +52,10 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	private static final long serialVersionUID = -5139487296977249036L;
 	
 	protected void showNextFrame() {
-		player.getNextFrame();
-		double time = player.getMovieTimeInSeconds();
+		player.showNextFrame();
+		double time = player.getCurrentTime();
 		slider.setValue((int)(1000*(-startTime+time)));
-		double timeInSeconds = player.getMovieTimeInSeconds();
+		double timeInSeconds = player.getCurrentTime();
 		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 + " seconds");
 		player.repaint();
 	}
@@ -88,7 +88,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	class RewindSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			player.rewindMovie();
+			player.rewind();				
 		}
 	}
 	
@@ -96,7 +96,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// Only pull a frame if it is available.
-			if (!player.atStartForRead() && !player.atEndForRead()) {
+			if (player.hasNextFrame()) {
 				showNextFrame();
 			}
 		}
@@ -110,9 +110,13 @@ public class VideoPlayer extends JPanel implements WindowListener {
 				System.out.println("Seconds: " + sec);
 				// TODO: Make sure that the slider is not placed behind the end!!
 				// At the moment this is possible and the player.getNextFrame() method blocks the UI.
-				player.setTimeInSeconds(sec);
+				player.setTime(sec);
+				
 				// Need to pull one frame because of revert.
-				player.getNextFrame();
+				if (player.hasNextFrame()) {
+					player.showNextFrame();					
+				}
+				
 				// Can't show all the frames, random seeks. Only show when the user 
 				// presses step or play.
 				//showNextFrame();
@@ -133,13 +137,13 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		}
 	
 		// Assign a new movie file.
-        player.setMovie(fileName);
+        player.open(fileName);
         
         // Load and display first frame.
         showNextFrame();
 
         // Display the start time.
-		double timeInSeconds = player.getMovieTimeInSeconds();
+		double timeInSeconds = player.getCurrentTime();
 		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 + " seconds");
 				
 		// Set the default play back speed.
@@ -150,12 +154,12 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		player.setPlaybackSpeed(1);
         
 		// Get information about the video file.
-        int width = player.getMovieWidth();
-        int height = player.getMovieHeight();
-        double duration = player.getMovieDuration();
+        int width = player.getWidth();
+        int height = player.getHeight();
+        double duration = player.getDuration();
         
         // Get the start time for proper placing of the slider.
-        startTime = player.getMovieStartTimeInSeconds();
+        startTime = player.getStartTime();
 
         // Assign a range of 0 to 1 to the slider.
         slider.setModel(new DefaultBoundedRangeModel(0, 1, 0, (int)(1000*duration)));
@@ -167,8 +171,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
         System.out.println("Opened movie " + fileName);
         System.out.println("width = " + width + ", height = " + height);
         System.out.println("duration = " + duration + " seconds.");
-        System.out.println("start time = " + player.getMovieStartTimeInSeconds() + " seconds.");
-        System.out.println("end time = " + player.getMovieEndTimeInSeconds() + " seconds.");
+        System.out.println("start time = " + player.getStartTime() + " seconds.");
+        System.out.println("end time = " + player.getEndTime() + " seconds.");
 	}
 	
 	class OpenFileSelection implements ActionListener {
@@ -261,7 +265,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		
 		JToolBar tools = new JToolBar();
 		
-		player = new PlayImageFromVideo();
+		player = new ImagePlayer();
 		
 		fileChooser = new JFileChooser();
 		
@@ -382,7 +386,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		player.releaseMovie();
+		player.release();
 	}
 
 	@Override
