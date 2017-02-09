@@ -1,11 +1,13 @@
 #include <iostream>
 #include <string>
 #include <mutex>
-#include <fstream>
 #include "Logger.h"
 // compile cl Logger.cpp
 // Run Logger.exe
 int main(int argc, char** argv) {
+	//std::ofstream ofs;
+	//ofs.open("logger.txt", std::ofstream::out);
+	//StreamLogger logger(&ofs);
 	//StreamLogger logger(&std::cout);
 	FileLogger logger("logger.txt");
 	logger.setLevel(Logger::ALL);
@@ -16,5 +18,7 @@ int main(int argc, char** argv) {
 	logger.warn("This is a warning with decimal %f.", 1.5);
 	logger.debug("A debug message with another string %s.", "another one");
 	logger.info("Just so you know!");
+	logger.flush();
+	//ofs.close();
 	return 0;
 }

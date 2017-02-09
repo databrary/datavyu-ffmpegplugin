@@ -9,6 +9,7 @@
 #include <ctime>
 #include <deque>
 #include <cstdarg>
+#include <fstream>
 
 /**
  * This buffer wraps around a dqeue a thread-safe push_front and back, pop_back.
@@ -42,7 +43,7 @@ public:
 	 */
     bool push_front(const T& elem) {
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this](){return q.size() < nMax || doFlush;});
+        cv.wait(locker, [this](){return (q.size() < nMax) || doFlush;});
 		if (doFlush) return false;
         q.push_front(elem);
         locker.unlock();
@@ -56,7 +57,7 @@ public:
 	 */
     T pop_back() {
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this](){return q.size() > 0 || doFlush;});
+        cv.wait(locker, [this](){return (q.size() > 0) || doFlush;});
 		if (doFlush) return T();
         T back = q.back();
         q.pop_back(); 
@@ -95,6 +96,10 @@ public:
 	void flush() {
 		doFlush = true;
 		cv.notify_all();
+	}
+
+	void setDoFlush(bool flush) {
+		doFlush = flush;
 	}
 };
 
@@ -199,76 +204,159 @@ public:
 };
 
 class StreamLogger : public Logger {
+	/** 
+	 * This stream logger allows multiple threads to log messages into a thread
+	 * safe buffer. Another reader thread reads from the buffer and writes to 
+	 * the stream.
+	 */
 protected:
-	Buffer<std::string> buffer; // the thread safe buffer wout limit in size
-	std::thread reader;
-	std::ostream* os; // the output stream to be written to
-	std::thread writer; // takes from buffer and pushes it into the stream
-	bool writing; // controls writer.
-	std::string timeFormat; // Formatting of log messages.
-	unsigned int level; // current log level
-	void reading() {
-		//std::cout << "started reading from buffer.\n" << std::endl;
+	/** A thread safe buffer with a limit in size. */
+	Buffer<std::string> buffer;
+
+	/** Output stream for this logger. */
+	std::ostream* os;
+
+	/** This writer takes messages from the buffer and pushes to the stream. */
+	std::thread writer;
+
+	/** While true the writer thread writes. */
+	bool writing;
+
+	/** Formatting of the logging messages. */
+	std::string timeFormat;
+
+	/** Current log level. */
+	unsigned int level;
+
+	/** Writing loop. */
+	void writingLoop() {
 		while (writing) {
 			(*os) << buffer.pop_back();
-		}		
+		}
+	}
+
+	/** Start the writer thread. */
+	void startWriter() {
+		if (writing) {
+			writer = std::thread(&StreamLogger::writingLoop, this);		
+		}
 	}
 public:
-	StreamLogger(std::ostream* os, const std::string& timeFormat = "%Y-%m-%d %H:%M:%S", 
-		unsigned int level = INFO) : os(os), timeFormat(timeFormat), 
-		level(level), writing(true) {
-			reader = std::thread(&StreamLogger::reading, this);
+	/**
+	 * This logger logs into a stream.
+	 *	os -- Output stream.
+	 *	timeFormat -- Formatting of the output log message.
+	 *	level -- Log level for messages.
+	 */
+	StreamLogger(std::ostream* os, 
+		const std::string& timeFormat = "%Y-%m-%d %H:%M:%S", 
+		unsigned int level = INFO, bool writing = true) : os(os), 
+		timeFormat(timeFormat), level(level), writing(writing) {
+		startWriter();
 	}
+
+	/**
+	 * Destructor for the stream logger stops the writing thread, flushes any
+	 * outstanding messages into the stream, and frees the buffer.
+	 */
 	virtual ~StreamLogger() {
 		writing = false;
-		//std::cout << "destroy the logger.\n" << std::endl;
-		//std::cout << "the size of the buffer is: " << buffer.size() << std::endl;
 		flush();
-		//std::cout << "After flushing, the size of the buffer is: " << buffer.size() << std::endl;
 		buffer.flush();
-		reader.join();
+		writer.join();
 	}
+
+	/**
+	 * Log a message with a level.
+	 *	logLevel -- The level this messages is logged. The message only is 
+	 *				logged when logLevel >= level.
+	 *	msg -- The message string.
+	 *	args -- A variable number of arguments.
+	 */
 	void log(unsigned int logLevel, const char* msg, const va_list& args) {
 		if (logLevel >= level) {
 			char msgBuffer[256];
 			char timeBuffer[128];
 			std::vsprintf(msgBuffer, msg, args);
 			std::time_t t = std::time(NULL);
-			std::strftime(timeBuffer, sizeof(timeBuffer), timeFormat.c_str(), std::localtime(&t));
-			buffer.push_front(std::string(timeBuffer) + "  " + std::string(msgBuffer) + "\n");
+			std::strftime(timeBuffer, sizeof(timeBuffer), timeFormat.c_str(), 
+						  std::localtime(&t));
+			buffer.push_front(std::string(timeBuffer) + " - " 
+							+ std::string(msgBuffer) + "\n");
 		}		
 	}
+
+	/**
+	 * Log a message with the level.
+	 *	logLevel -- The level this messages is logged. The message only is 
+	 *				logged when logLevel >= level.
+	 *	msg -- The message string.
+	 *	... -- A variable number of arguments.
+	 */
 	void log(unsigned int logLevel, const char* msg, ...) {
 		va_list args;
 		va_start(args, msg);
 		log(logLevel, msg, args);
 		va_end(args);
 	}
+
+	/**
+	 * Flush the messages from the buffer into the stream.
+	 */
 	void flush() {
-		//std::cout << "the size of the buffer is: " << buffer.size() << std::endl;
+		// Give time for the writer to finish until empty.
 		while (buffer.nonEmpty()) {
-			//std::cout << "Emptying.\n";
-			(*os) << buffer.pop_back();
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
+		// Flush the stream.
 		(*os) << std::flush;
 	}
+
+	/**
+	 * Set the logging level.
+	 *	newLevel -- The new log level.
+	 */
 	void setLevel(unsigned int newLevel) { level = newLevel; }
+
+	/**
+	 * Get the logging level.
+	 *	Returns: The logging level.
+	 */
 	unsigned int getLevel() const { return level; }
 };
 
+
 class FileLogger : public StreamLogger {
+	/** 
+	 * This stream file logger allows multiple threads to log messages into a 
+	 * thread safe buffer. Another reader thread reads from the buffer and 
+	 * writes to the stream.
+	 */
 private:
+	/** The file output stream.*/
 	std::ofstream ofs;
+
 public:
+	/**
+	 * This logger logs into a file.
+	 *	fileName -- The file name.
+	 *	timeFormat -- Formatting of the output log message.
+	 *	level -- Log level for messages.
+	 */
 	FileLogger(const std::string& fileName, 
 		const std::string& timeFormat = "%Y-%m-%d %H:%M:%S", 
-		unsigned int level = INFO) : StreamLogger(nullptr, timeFormat, level), 
-		ofs(std::ofstream()) {
+		unsigned int level = INFO) : StreamLogger(nullptr, timeFormat, level, false) {
 		ofs.open(fileName, std::ofstream::out);
-		os = &ofs; // assign this file to the output stream.
+		os = &ofs; // Assigns this file to the output stream.
+		writing = true;
+		startWriter();
 	}
+
+	/**
+	 * Destruct the file logger. Flush the logger, close the file stream. Then
+	 * calls the destructor of the StreamLogger.
+	 */
 	virtual ~FileLogger() {
-		//std::cout << "Closing the file output stream.\n";
 		flush();
 		ofs.close();
 	}
