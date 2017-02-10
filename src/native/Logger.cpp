@@ -1,15 +1,16 @@
-#include <iostream>
-#include <string>
-#include <mutex>
 #include "Logger.h"
 // compile cl Logger.cpp
 // Run Logger.exe
+
+FileLogger logger("logger.txt");
+
+
 int main(int argc, char** argv) {
 	//std::ofstream ofs;
 	//ofs.open("logger.txt", std::ofstream::out);
 	//StreamLogger logger(&ofs);
 	//StreamLogger logger(&std::cout);
-	FileLogger logger("logger.txt");
+	//FileLogger logger("logger.txt");
 	logger.setLevel(Logger::ALL);
 	logger.log(Logger::INFO, "This is the first logging message");
 	logger.log(Logger::WARN, "You better get smaller than %d.", 5);

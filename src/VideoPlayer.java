@@ -26,40 +26,76 @@ import javax.swing.filechooser.FileFilter;
 
 
 public class VideoPlayer extends JPanel implements WindowListener {
-	private double startTime = 0; // keep start time to adjust slider to correct value.
+	
+	private static final long serialVersionUID = -5139487296977249036L;
+	
+	/** The start time is used to adjust slider to correct value. */
+	private double startTime = 0; 
+	
+	/** Used as indicator to play in the display thread. */ 
 	private boolean playing = false;
+	
+	/** The image player provides an interface to ffmpeg and displays images. */
 	private ImagePlayer player = null;
+	
+	/** Used to open files to be played. */
 	private JFileChooser fileChooser = null;
+	
+	/** The sign for the play back speed: + = forward and - = backward. */
 	private int speedSign = 1;
+	
+	/** The speed for play back. */
 	private float speedValue = 1;
+	
+	/** The directory last opened is used to initialize the file chooser. */
 	private File lastDirectory = new File(System.getProperty("user.home"));
+	
+	/** The player thread pulls frames and shows them. */
 	private Thread playerThread = null;
 	
+	/** A group of radio buttons controls the play back speed. */
 	private JRadioButton quarter;
 	private JRadioButton half;
 	private JRadioButton one;
 	private JRadioButton twice;
 	private JRadioButton four;
 	
+	/** A tuple of radio buttons controls the play back direction. */
 	private JRadioButton forward;
 	private JRadioButton backward;
 	
+	/** A label to display the frame number. */
 	private JLabel frameNumber;
+	
+	/** 
+	 * A slider displays the current frame and the user can drag the slider
+	 * to switch to a different frame. 
+	 */
 	private JSlider slider;
 	
-	protected float getSpeed() { return speedSign*speedValue; }
+	/**
+	 * Get the play back speed.
+	 * @return Play back speed.
+	 */
+	protected float getPlaybackSpeed() { return speedSign*speedValue; }
 
-	private static final long serialVersionUID = -5139487296977249036L;
-	
+	/**
+	 * Show the next frame. Invokes the same method on the image player and 
+	 * displays the current time.
+	 */
 	protected void showNextFrame() {
 		player.showNextFrame();
 		double time = player.getCurrentTime();
 		slider.setValue((int)(1000*(-startTime+time)));
 		double timeInSeconds = player.getCurrentTime();
-		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 + " seconds");
+		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 
+				+ " seconds");
 		player.repaint();
 	}
 	
+	/**
+	 * A private class that encapsulates the player thread.
+	 */
 	class PlayerThread extends Thread {
 		@Override
 		public void run() {
@@ -129,7 +165,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		// Stop the player.
 		playing = false;
 		
-		// If we had another video playing ensure that the player has stopped before opening another file.
+		// If we had another video playing ensure that the player has stopped 
+		// before opening another file.
 		while (playerThread != null && playerThread.isAlive()) {
 			try {
 				Thread.sleep(50);
@@ -144,7 +181,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 
         // Display the start time.
 		double timeInSeconds = player.getCurrentTime();
-		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 + " seconds");
+		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 
+				+ " seconds");
 				
 		// Set the default play back speed.
 		one.setSelected(true);
@@ -178,6 +216,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	class OpenFileSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			
 			// Show the file chooser.
 	        int val = fileChooser.showDialog(VideoPlayer.this, "Open");
 	        
@@ -188,7 +227,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	            openFile(file.getAbsolutePath());
 	        }
 	        
-	        // Reset the file chooser for the next time it's shown.
+	        // Set the file chooser's default directory for next time.
 	        fileChooser.setSelectedFile(lastDirectory);
 		}
 	}
@@ -199,9 +238,10 @@ public class VideoPlayer extends JPanel implements WindowListener {
 			try {
 				speedValue = Float.parseFloat(e.getActionCommand());				
 			} catch (NumberFormatException ex) {
-				System.err.println("Could not parse command: " + e.getActionCommand());
+				System.err.println("Could not parse command: " 
+							+ e.getActionCommand());
 			}
-			player.setPlaybackSpeed(getSpeed());
+			player.setPlaybackSpeed(getPlaybackSpeed());
 		}
 	}
 	
@@ -216,17 +256,24 @@ public class VideoPlayer extends JPanel implements WindowListener {
 				speedSign = -1;
 				break;
 			default:
-				System.err.println("Could not parse command: " + e.getActionCommand());
+				System.err.println("Could not parse command: " 
+									+ e.getActionCommand());
 				speedSign = +1;
 			}
-			player.setPlaybackSpeed(getSpeed());
-			System.out.println("Set speed to: " + getSpeed());
-			// Need to pull two frames as workaround because toggle requires two frames to revert direction.
-			player.loadNextFrame();
-			player.loadNextFrame();
+			player.setPlaybackSpeed(getPlaybackSpeed());
+			System.out.println("Set speed to: " + getPlaybackSpeed());
+			
+			// Need to pull two frames as workaround because toggle requires 
+			// two frames to revert direction.
+			if (player.hasNextFrame()) { player.loadNextFrame(); }
+			if (player.hasNextFrame()) { player.loadNextFrame(); }
 		}
 	}
 	
+	/**
+	 * An encapsulated class that ensures that filters files down to video files
+	 * based on known file extensions.
+	 */
 	class VideoFilter extends FileFilter {
 		
 		private String getFileExtension(File file) {
@@ -250,7 +297,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 			ext = ext.toLowerCase();
 						
 			// Filter out the available file formats.
-			return ext.equals("mp4") || ext.equals("mpg") || ext.equals("h264") || ext.equals("mov");
+			return ext.equals("mp4") || ext.equals("mpg") || ext.equals("h264") 
+					|| ext.equals("mov");
 		}
 		
 		@Override

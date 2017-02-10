@@ -10,6 +10,7 @@
 #include <deque>
 #include <cstdarg>
 #include <fstream>
+#include <atomic>
 
 /**
  * This buffer wraps around a dqeue a thread-safe push_front and back, pop_back.
@@ -24,7 +25,7 @@ private:
 	std::deque<T> q;
 
 	/** The maximum number of items in this buffer. */
-    const unsigned int nMax = 50;
+    const unsigned int nMax = 5000;
 
 	/** Boolean that indicates a flush. E.g. used for clean destroy of buffer.*/
 	bool doFlush = false;
@@ -33,7 +34,7 @@ private:
 	std::mutex mu;
 
 	/** Condition variable is used to avoid overflow and underflow. */
-	std::condition_variable cv;	
+	std::condition_variable cv;
 public:
 
 	/**
@@ -96,10 +97,6 @@ public:
 	void flush() {
 		doFlush = true;
 		cv.notify_all();
-	}
-
-	void setDoFlush(bool flush) {
-		doFlush = flush;
 	}
 };
 
@@ -220,7 +217,7 @@ protected:
 	std::thread writer;
 
 	/** While true the writer thread writes. */
-	bool writing;
+	std::atomic<bool> writing;
 
 	/** Formatting of the logging messages. */
 	std::string timeFormat;
@@ -235,13 +232,14 @@ protected:
 		}
 	}
 
+public:
 	/** Start the writer thread. */
 	void startWriter() {
 		if (writing) {
-			writer = std::thread(&StreamLogger::writingLoop, this);		
+			writer = std::thread(&StreamLogger::writingLoop, this);
 		}
 	}
-public:
+
 	/**
 	 * This logger logs into a stream.
 	 *	os -- Output stream.
@@ -306,7 +304,7 @@ public:
 	void flush() {
 		// Give time for the writer to finish until empty.
 		while (buffer.nonEmpty()) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 		// Flush the stream.
 		(*os) << std::flush;

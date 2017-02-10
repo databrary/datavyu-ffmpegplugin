@@ -16,32 +16,52 @@ import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
 
-public class ImagePlayer extends Canvas {	
+public class ImagePlayer extends Canvas {
+	
+	/** 
+	 * Make sure to place the ffmpeg libraries (dll's) in the java library
+	 * path. I use '.' as library path. 
+	 */
 	static {
-		// Make sure to place the ffmpeg libraries (dll's) in the java library 
-		// path. I use '.' as library path.
 		System.loadLibrary("./lib/ImagePlayer");
 	}
 	
 	private static final long serialVersionUID = -6199180436635445511L;
 	
+	/** RGB sample model. */
 	protected ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 	
+	/** Samples components without transparency using a byte format. */
 	protected ComponentColorModel cm = new ComponentColorModel(cs, 
 			false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 	
-	// These properties are used to create the buffered image.
+	/** These properties are used to create the buffered image. */
 	protected Hashtable<String, String> properties = 
 			new Hashtable<String, String>(); 
+
+	/** The number of channels, typically 3. */
+	protected int nChannel = 0;
 	
-	protected int nChannel = 0; // The number of channels, typically 3.
-	protected int width = 0; // The width of the image in pixels. 
-	protected int height = 0; // The height of the image in pixels.
-	protected BufferedImage image = null; // The image buffer to hold the image.
-	protected ByteBuffer buffer = null; // The byte buffer to hold the raw data.
-	protected byte[] data = null; // A copy of the raw data.
-	protected DataBufferByte dataBuffer = null; // Used by the image buffer.
-	protected SampleModel sm = null; // Used to create the buffered image.
+	/** The width of the image in pixels.  */
+	protected int width = 0;
+	
+	/** The height of the image in pixels. */
+	protected int height = 0;
+	
+	/** This image buffer holds the image. */
+	protected BufferedImage image = null;
+	
+	/** This byte buffer holds the raw data. */
+	protected ByteBuffer buffer = null;
+	
+	/** A copy of the raw data used to be wrapped by the data byte buffer. */
+	protected byte[] data = null;
+	
+	/** Used to buffer the image. */
+	protected DataBufferByte dataBuffer = null;
+	
+	/** Used to create the buffered image. */
+	protected SampleModel sm = null;
 	
 	/**
 	 * Get the frame buffer.

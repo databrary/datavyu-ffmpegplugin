@@ -1,7 +1,7 @@
 #include <jni.h>
-#include <stdio.h>
-#include <math.h>
-#include <assert.h>
+#include <cstdio>
+#include <cmath>
+#include <cassert>
 #include <vector>
 
 extern "C" {
@@ -10,6 +10,7 @@ extern "C" {
 	#include <libswscale/swscale.h>
 }
 
+#include "Logger.h"
 #include "ImagePlayer.h"
 #include <mutex>
 #include <condition_variable>
@@ -21,7 +22,7 @@ extern "C" {
 // vcvarsall.bat x64
 // cl ImagePlayer.cpp /Fe"..\..\lib\ImagePlayer" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
 
-#define N_MAX_IMAGES 32
+#define N_MAX_IMAGES 32 // May cause problems with very short videos (1 < sec)
 #define N_MIN_IMAGES N_MAX_IMAGES/2
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0
@@ -67,6 +68,9 @@ bool				seekReq			= false;
 int64_t				seekPts			= 0;
 int					seekFlags		= 0;
 //bool				findLast		= false; // Used for rewind to last frame.
+
+FileLogger			*pLogger		= nullptr;
+
 
 /**
  * This image buffer is a ring buffer with a forward mode and backward mode.
@@ -223,9 +227,9 @@ public:
 		std::pair<int,int> ret = reverse ?
 			std::make_pair(nBefore+nAfter, nData-nBefore-1) :
 			std::make_pair(nBefore+nAfter+iReverse, 0);
-		
-		//fprintf(stdout, "\nBefore toggle.\n");
-		//print();
+
+		pLogger->info("Before toggle.");
+		printLog();
 		
 		if (reverse) {
 			iRead = (iRead - 2 + nData) % nData;
@@ -243,8 +247,8 @@ public:
 
 		nReverse = iReverse = 0;
 
-		//fprintf(stdout, "After toggle.\n");
-		//print();
+		pLogger->info("After toggle.");
+		printLog();
 
 		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
@@ -315,15 +319,12 @@ public:
 	bool seekReq() {
 		return reverse && iReverse==0;
 	}
-	void print() {
-		fprintf(stdout, "iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverse = %d, iReverse = %d, reverse = %d.\n",
+	inline void printLog() {
+		pLogger->info("Before toggle: iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverse = %d, iReverse = %d, reverse = %d.",
 			iRead, iWrite, nBefore, nAfter, nReverse, iReverse, (int)reverse);
-		fprintf(stdout, "Frames: ");
 		for (int iData = 0; iData < nData; ++iData) {
-			fprintf(stdout, "%I64d, ", data[iData]->pts/avgDeltaPts);
+			pLogger->info("Buffer[%d] = %I64d.", iData, data[iData]->pts/avgDeltaPts);
 		}
-		fprintf(stdout, "\n");
-		fflush(stdout);
 	}
 };
 
@@ -362,10 +363,9 @@ void readNextFrame() {
 		if (seekReq) {
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				fprintf(stderr, "Random seek of %I64d frame unsuccessful.\n", seekPts/avgDeltaPts);
+				pLogger->error("Random seek of %I64d frame unsuccessful.", seekPts/avgDeltaPts);
 			} else {
-				fprintf(stdout, "Random seek of %I64d frame successful.\n", seekPts/avgDeltaPts);
-				fflush(stdout);
+				pLogger->info("Random seek of %I64d frame successful.", seekPts/avgDeltaPts);
 				ib->doFlush();
 				avcodec_flush_buffers(pCodecCtx);
 				lastWritePts = seekPts;
@@ -393,10 +393,9 @@ void readNextFrame() {
 			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				fprintf(stderr, "Toggle seek of %I64d frames unsuccessful.\n", seekPts/avgDeltaPts);
+				pLogger->error("Toggle seek of %I64d frame unsuccessful.", seekPts/avgDeltaPts);
 			} else {
-				//fprintf(stdout, "Toggle seek of %I64d frames successful.\n", seekPts/avgDeltaPts);
-				//fflush(stdout);
+				pLogger->info("Toggle seek of %I64d frames successful.", seekPts/avgDeltaPts);
 				avcodec_flush_buffers(pCodecCtx);
 			}			
 			toggle = false;			
@@ -425,10 +424,11 @@ void readNextFrame() {
 			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				fprintf(stderr, "Reverse seek of %I64d pts or %I64d frames unsuccessful.\n", seekPts, seekPts/avgDeltaPts);
+				pLogger->error("Reverse seek of %I64d pts or %I64d frames unsuccessful.", 
+					seekPts, seekPts/avgDeltaPts);
 			} else {
-				//fprintf(stdout, "Reverse seek of %I64d pts or %I64d frames successful.\n", seekPts, seekPts/avgDeltaPts);
-				//fflush(stdout);
+				pLogger->info("Reverse seek of %I64d pts or %I64d frames successful.", 
+					seekPts, seekPts/avgDeltaPts);
 				avcodec_flush_buffers(pCodecCtx);
 			}
 		}
@@ -453,20 +453,19 @@ void readNextFrame() {
 		*/
 
 		if (atStartForWrite() || atEndForWrite()) {
-			fprintf(stdout, "Reached end/start of file, seek pts = %I64d, last write pts = %I64d.\n", seekPts, lastWritePts);
-			fflush(stdout);
+			pLogger->info("Reached the start or end with seek pts = %I64d and last write pts = %I64d.", 
+				seekPts, lastWritePts);
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
 		}
 
 		// Any error that is not eof.
 		if (ret < 0 && !eof) {
-			fprintf(stderr, "Error:  %c, %c, %c, %c.\n",
+			pLogger->error("Error:  %c, %c, %c, %c.\n",
 				static_cast<char>((-ret >> 0) & 0xFF),
 				static_cast<char>((-ret >> 8) & 0xFF),
 				static_cast<char>((-ret >> 16) & 0xFF),
 				static_cast<char>((-ret >> 24) & 0xFF));
-			fflush(stderr);
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 		// We got a frame! Let's decode it.
@@ -507,6 +506,9 @@ void readNextFrame() {
 							pFrameBuffer->repeat_pict = pFrame->repeat_pict;
 							pFrameBuffer->pts = lastWritePts = readPts;
 							ib->cmplWritePtr();
+
+							//pLogger->info("Wrote frame %I64d or pts %I64d.", 
+							//	lastWritePts/avgDeltaPts, lastWritePts);
 						}
 					}
 
@@ -615,7 +617,9 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 		}
 
 		// Save values for next call.
-		deltaPts = init ? (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate))) : std::labs(firstPts - lastPts);
+		deltaPts = init ? (int64_t)(1.0/(av_q2d(pVideoStream->time_base)
+								*av_q2d(pVideoStream->avg_frame_rate))) 
+								: std::labs(firstPts - lastPts);
 		lastPts = firstPts; // Need to use the first pts.
 		lastTime = time;
 
@@ -627,9 +631,9 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 		// Update the pointer for the show frame.
 		pFrameShow = pFrameTmp;
 
-		//fprintf(stdout, "Display pts = %I64d or %I64d frames.\n", pFrameShow->pts, pFrameShow->pts/avgDeltaPts);
-		//ib->print();
-		//fflush(stdout);
+		// Log that we displayed a frame.
+		pLogger->info("Display frame %I64d or pts %I64d.", 
+			pFrameShow->pts/avgDeltaPts, pFrameShow->pts);
 	}
 
 	// Return the number of read frames (not neccesarily all are displayed).
@@ -648,18 +652,20 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
 
+	pLogger = new FileLogger("logger.txt");
+
 	// Register all formats and codecs.
 	av_register_all();
 
 	// Open the video file.
 	if (avformat_open_input(&pFormatCtx, fileName, nullptr, nullptr) != 0) {
-		fprintf(stderr, "Couldn't open file %s.\n", fileName);
+		pLogger->error("Could not open file: %s", fileName);
 		exit(1);
 	}
 
 	// Retrieve the stream information.
 	if (avformat_find_stream_info(pFormatCtx, nullptr) < 0) {
-		fprintf(stderr, "Couldn't find stream information for file %s.\n", fileName);
+		pLogger->error("Unable to find stream information for file %s.", fileName);
 		exit(1);
 	}
   
@@ -676,7 +682,7 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	}
 
 	if (iVideoStream == -1) {
-		fprintf(stderr, "Unable to find a video stream in file %s.\n", fileName);
+		pLogger->error("Unable to find a video stream in file %s.", fileName);
 		exit(1);
 	}
 
@@ -689,15 +695,18 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	// Find the decoder for the video stream.
 	pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
 	if (pCodec == nullptr) {
-		fprintf(stderr, "Unsupported codec for file %s!\n", fileName);
+		pLogger->error("Unsupported codec for file %s.", fileName);
 		exit(1);
 	}
 
 	// Open codec.
 	if(avcodec_open2(pCodecCtx, pCodec, &optsDict)<0) {
-		fprintf(stderr, "Could not open codec for file %s.\n", fileName);
+		pLogger->error("Unable to open codec for file %s.", fileName);
 		exit(1);
 	}
+	
+	// Log that opened a file.
+	pLogger->info("Opened file: %s", fileName);
 
 	// Allocate video frame.
 	pFrame = av_frame_alloc();
@@ -721,12 +730,16 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	width = pCodecCtx->width;
 	height = pCodecCtx->height;
 	duration = pVideoStream->duration*av_q2d(pVideoStream->time_base);
+	pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds.", 
+				  width, height, duration);
 
 	// Initialize the image buffer buffer.
 	ib = new ImageBuffer(width, height);
 
 	// Initialize the delta pts using the average frame rate and the average pts.
-	avgDeltaPts = deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)*av_q2d(pVideoStream->avg_frame_rate)));
+	avgDeltaPts = deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)
+										*av_q2d(pVideoStream->avg_frame_rate)));
+	pLogger->info("Average delta pts = %I64d.", avgDeltaPts);
 
 	// Set the value for loaded move true.
 	loadedMovie = true;
@@ -736,7 +749,8 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	seekReq = true;
 
 	// Start the decode thread.
-	decodeThread = new std::thread(readNextFrame);
+	decodeThread = new std::thread(readNextFrame);	
+	pLogger->info("Started decoding thread!");
 
 	// Free the string.
 	env->ReleaseStringUTFChars(jFileName, fileName);
@@ -759,12 +773,14 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_getWidth
 
 JNIEXPORT jdouble JNICALL Java_ImagePlayer_getStartTime
 (JNIEnv *, jobject) {
-	return (jdouble) loadedMovie ? pVideoStream->start_time * av_q2d(pVideoStream->time_base) : 0;
+	return (jdouble) loadedMovie ? pVideoStream->start_time 
+		* av_q2d(pVideoStream->time_base) : 0;
 }
 
 JNIEXPORT jdouble JNICALL Java_ImagePlayer_getEndTime
 (JNIEnv *, jobject) {
-	return (jdouble) loadedMovie ? (pVideoStream->duration + pVideoStream->start_time) * av_q2d(pVideoStream->time_base) : 0;
+	return (jdouble) loadedMovie ? (pVideoStream->duration 
+		+ pVideoStream->start_time) * av_q2d(pVideoStream->time_base) : 0;
 }
 
 JNIEXPORT jdouble JNICALL Java_ImagePlayer_getDuration
@@ -792,10 +808,12 @@ JNIEXPORT void JNICALL Java_ImagePlayer_rewind
 			//lastWritePts = seekPts = pVideoStream->duration;
 			//seekReq = true;
 			//findLast = true;
+			pLogger->info("Rewind to the end [DISABLED].");
 		} else {
 			// Seek to the start of the file.
 			lastWritePts = seekPts = pVideoStream->start_time;
-			seekReq = true;			
+			seekReq = true;
+			pLogger->info("Rewind to the start.");
 		}
 	}
 }
@@ -812,6 +830,13 @@ JNIEXPORT jboolean JNICALL Java_ImagePlayer_atEndForRead
 
 JNIEXPORT void JNICALL Java_ImagePlayer_release
 (JNIEnv *env, jobject thisObject) {
+
+	pLogger->info("Closing video and releasing resources.");
+
+	if (pLogger) {
+		delete pLogger;
+		pLogger = nullptr;
+	}
 
 	if (loadedMovie) {
 
