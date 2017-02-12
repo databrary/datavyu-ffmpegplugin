@@ -320,17 +320,19 @@ public:
 		return reverse && iReverse==0;
 	}
 	inline void printLog() {
-		pLogger->info("Before toggle: iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverse = %d, iReverse = %d, reverse = %d.",
+		pLogger->info("Before toggle: iRead = %d, iWrite = %d, nBefore = %d, "
+				"nAfter = %d, nReverse = %d, iReverse = %d, reverse = %d.",
 			iRead, iWrite, nBefore, nAfter, nReverse, iReverse, (int)reverse);
 		for (int iData = 0; iData < nData; ++iData) {
-			pLogger->info("Buffer[%d] = %I64d.", iData, data[iData]->pts/avgDeltaPts);
+			pLogger->info("Buffer[%d] = %I64d pts.", iData, data[iData]->pts);
 		}
 	}
 };
 
 // If writing reached the start of the file. This happens only in reverse mode.
 bool atStartForWrite() {
-	return ib->isReverse() && lastWritePts <= pVideoStream->start_time+avgDeltaPts && !ib->inReverse();
+	return ib->isReverse() && lastWritePts <= pVideoStream->start_time+avgDeltaPts 
+		&& !ib->inReverse();
 }
 
 // If reading reached the start of the file. This happens only in reverse mode.
@@ -363,9 +365,9 @@ void readNextFrame() {
 		if (seekReq) {
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				pLogger->error("Random seek of %I64d frame unsuccessful.", seekPts/avgDeltaPts);
+				pLogger->error("Random seek of %I64d pts unsuccessful.", seekPts);
 			} else {
-				pLogger->info("Random seek of %I64d frame successful.", seekPts/avgDeltaPts);
+				pLogger->info("Random seek of %I64d pts successful.", seekPts);
 				ib->doFlush();
 				avcodec_flush_buffers(pCodecCtx);
 				lastWritePts = seekPts;
@@ -393,9 +395,9 @@ void readNextFrame() {
 			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				pLogger->error("Toggle seek of %I64d frame unsuccessful.", seekPts/avgDeltaPts);
+				pLogger->error("Toggle seek of %I64d pts unsuccessful.", seekPts);
 			} else {
-				pLogger->info("Toggle seek of %I64d frames successful.", seekPts/avgDeltaPts);
+				pLogger->info("Toggle seek of %I64d pts successful.", seekPts);
 				avcodec_flush_buffers(pCodecCtx);
 			}			
 			toggle = false;			
@@ -424,11 +426,9 @@ void readNextFrame() {
 			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				pLogger->error("Reverse seek of %I64d pts or %I64d frames unsuccessful.", 
-					seekPts, seekPts/avgDeltaPts);
+				pLogger->error("Reverse seek of %I64d pts unsuccessful.", seekPts);
 			} else {
-				pLogger->info("Reverse seek of %I64d pts or %I64d frames successful.", 
-					seekPts, seekPts/avgDeltaPts);
+				pLogger->info("Reverse seek of %I64d pts successful.", seekPts);
 				avcodec_flush_buffers(pCodecCtx);
 			}
 		}
@@ -453,8 +453,8 @@ void readNextFrame() {
 		*/
 
 		if (atStartForWrite() || atEndForWrite()) {
-			pLogger->info("Reached the start or end with seek pts = %I64d and last write pts = %I64d.", 
-				seekPts, lastWritePts);
+			pLogger->info("Reached the start or end with seek pts = %I64d "
+				"and last write pts = %I64d.", seekPts, lastWritePts);
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
 		}
@@ -572,7 +572,8 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 		bool init = std::labs(firstPts - lastPts) > PTS_DELTA_THRESHOLD*deltaPts;
 
 		// Compute the difference for the presentation time stamps.
-		double diffPts = init ? 0 : std::labs(firstPts - lastPts)/speed*av_q2d(pVideoStream->time_base);
+		double diffPts = init ? 0 : std::labs(firstPts - lastPts)
+										/speed*av_q2d(pVideoStream->time_base);
 
 		// Get the current time.
 		auto time = std::chrono::high_resolution_clock::now();
@@ -632,8 +633,7 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 		pFrameShow = pFrameTmp;
 
 		// Log that we displayed a frame.
-		pLogger->info("Display frame %I64d or pts %I64d.", 
-			pFrameShow->pts/avgDeltaPts, pFrameShow->pts);
+		pLogger->info("Display frame %I64d pts.", pFrameShow->pts);
 	}
 
 	// Return the number of read frames (not neccesarily all are displayed).
@@ -831,13 +831,6 @@ JNIEXPORT jboolean JNICALL Java_ImagePlayer_atEndForRead
 JNIEXPORT void JNICALL Java_ImagePlayer_release
 (JNIEnv *env, jobject thisObject) {
 
-	pLogger->info("Closing video and releasing resources.");
-
-	if (pLogger) {
-		delete pLogger;
-		pLogger = nullptr;
-	}
-
 	if (loadedMovie) {
 
 		// Set the quit flag for the decoding thread.
@@ -905,5 +898,12 @@ JNIEXPORT void JNICALL Java_ImagePlayer_release
 		//findLast = false;
 
 		quit = false;
+	}
+
+	pLogger->info("Closed video and released resources.");
+
+	if (pLogger) {
+		delete pLogger;
+		pLogger = nullptr;
 	}
 }
