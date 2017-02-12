@@ -82,27 +82,52 @@ FileLogger			*pLogger		= nullptr;
  * buffer is thread-safe! Typically we have one producer, one consumer, and one 
  * control thread. The control thread changes direction or flushes the buffer.
  *
- * In all cases we ensure that 
+ * We ensure that 
  * - the displayed frame is not written.
  * - we only write as many frames as there are spaces available.
  */
 class ImageBuffer {
-	AVFrame** data;				// Pointer to the data elements.
-	int nData;					// Number of data elements in buffer.
-	int iRead;					// Read pointer in 0...nData-1. The read pointer is at the next read position.
-	int iWrite;					// Write pointer in 0...nData-1. The write poitner is at the next write position.
-	int nBefore;				// Readable frames before read pointer (including current iRead position).
-	int nAfter;					// Readable frames after read pointer (excluding current iRead position).
-	int nReverse;				// Number of reverse frames in 0...nData-1 (one frame is displayed).
-	int iReverse;				// Counter for the number of reverse frames to be read.
-	bool flush;					// If true, this buffer is flushed.
-	bool reverse;				// If true, this buffer is in reverse mode.
-	int nMinImages;				// Minimum number of images for buffer allocation in reverse direction.
-	std::mutex mu;				// Mutex to control access of variables.
-	std::condition_variable cv; // Conditional variable to control acces of variables.
+	/** Pointer to the data elements. */
+	AVFrame** data;
+
+	/** Number of data elements in buffer. */
+	int nData;
+
+	/** Read pointer in 0...nData-1. The read pointer is at the next read position. */
+	int iRead;
+
+	/** Write pointer in 0...nData-1. The write poitner is at the next write position. */
+	int iWrite;
+
+	/** Readable frames before read pointer (including current iRead position). */
+	int nBefore;
+
+	/** Readable frames after read pointer (excluding current iRead position). */
+	int nAfter;
+
+	/** Number of reverse frames in 0...nData-1 (one frame is displayed). */
+	int nReverse;
+
+	/** Counter for the number of reverse frames to be read. */
+	int iReverse;
+
+	/** If true, this buffer is flushed. */
+	bool flush;
+
+	/** If true, this buffer is in reverse mode. */
+	bool reverse;
+
+	/** Minimum number of images for buffer allocation in reverse direction. */
+	int nMinImages;
+
+	/** Mutex to control access of variables. */
+	std::mutex mu;
+
+	/** Conditional variable to control acces of variables. */
+	std::condition_variable cv;
 
 	/**
-	 * Resets the buffer into the intial state.
+	 * Resets the buffer to the intial state.
 	 */
 	void reset() {
 		iRead = 0;
@@ -115,15 +140,16 @@ class ImageBuffer {
 	}
 
 	/**
-	 * Returns the number of free items that can be written.
+	 * RETURNS the number of free items that can be written.
 	 */
 	inline int nFree() const { return std::min(nData - nBefore, nData) - 1; }
 
 	/**
-	 * Returns true if we are in reverse and we have not written any frames in 
+	 * RETURNS true if we are in reverse and we have not written any frames in 
 	 * reverse.
 	 */
-	inline bool notReversed() const { return iReverse == nReverse && nReverse > 0; }
+	inline bool notReversed() const { return iReverse == nReverse 
+											&& nReverse > 0; }
 
 public:
 
@@ -134,18 +160,21 @@ public:
 	 */
 	ImageBuffer(int width, int height) : nData(N_MAX_IMAGES), flush(false), 
 		reverse(false) {
-		// Initialize the data of the buffer.
+
+		// Initialize the buffer.
 		data = new AVFrame*[nData];
 		for (int iData = 0; iData < nData; ++iData) {
 			AVFrame* pFrame = av_frame_alloc();
 			data[iData] = pFrame;
+
 			// Create the data buffer and associate it with the buffer.
 			int nByte = avpicture_get_size(AV_PIX_FMT_RGB24, width, height);
 			uint8_t* bufferShow = (uint8_t*) av_malloc(nByte*sizeof(uint8_t));
 			avpicture_fill((AVPicture*)pFrame, bufferShow, AV_PIX_FMT_RGB24,
 				 width, height);
 		}
-		// Initialize the index variables in the buffer through a reset.
+
+		// Initialize the index variables in the buffer by invoking reset.
 		reset();
 	}
 
@@ -167,26 +196,26 @@ public:
 	inline bool isReverse() const { return reverse; }
 
 	/**
-	 * Is in reverse mode.
+	 * True if this buffer is currently reversing, writing into a block.
 	 */
 	inline bool inReverse() const { return iReverse > 0; }
 
 	/**
-	 * This buffer is emtpy if all loaded frames have been read.
+	 * This buffer is emtpy if all loaded frames are read.
 	 */
 	inline bool empty() const { return nBefore == 0; }
 
 	/**
-	 * Set the minimum number of images required to reverse. Typically we set 
-	 * this to one before a change in direction from backward into forward 
-	 * direction.
+	 * Set the minimum number of images required to reverse. Set this to one 
+	 * before changing direction from backward to forward. Set this to the 
+	 * block size when changning direction from forward to backward.
 	 */
 	void setNMinImages(int nMin) { nMinImages = nMin; }
 
 	/**
 	 * Flushes the buffer and sets it into its initial state. This state is the
-	 * same as after creating this obejct instance. The only difference is that 
-	 * the playback direction is not reset.
+	 * same as the one after creating this obejct instance with one exception:
+	 * The playback direction is not reset.
 	 */
 	void doFlush() {
 		flush = true;
@@ -199,18 +228,22 @@ public:
 
 	/**
 	 * Toggles the direction of replay.
-	 * Returns a pair with offset and delta in frames.
+	 *
+	 * RETURNS: A pair with offset and delta in frames.
+	 *
 	 * - The offset is the amount we need to go back in the stream to get at the 
-	 *   beginning for backward or forward play.
-	 * - The delta is the maximum amount of frames we can jump backward.
+	 *   beginning for backward or forward writing into the buffer.
+	 * - The delta is the maximum amount of frames we can jump backward given 
+	 *   the number of frames before/after the current frame.
 	 */
-	std::pair<int,int> toggle() { // pair of delta, offset
+	std::pair<int, int> toggle() { // pair of delta, offset
 
 		std::unique_lock<std::mutex> locker(mu);
-		// Currently, I check that there is 1 frame behind.
+
+		// Ensure there is at least one frame after the current frame.
 		cv.wait(locker, [this](){return nAfter > 0 || flush;});
 		
-		// When toggeling we have these cases:
+		// When toggeling we have the following cases:
 		// Switching into backward replay:
 		// * offset
 		//   We need to go backward by at least nBefore+nAfter in the stream to 
@@ -220,22 +253,30 @@ public:
 		//   this amount of frames into the buffer.
 		// Switching into forward replay:
 		// * offset
-		//   We need to seek forward by nBefore+nAfter+iReverse+1.
+		//   We need to seek forward by nBefore+nAfter+iReverse.
 		// * delta
 		//   is always zero since we only advance by +1 frame in forward replay.
 		reverse = !reverse;
 		std::pair<int,int> ret = reverse ?
-			std::make_pair(nBefore+nAfter, nData-nBefore-1) :
-			std::make_pair(nBefore+nAfter+iReverse, 0);
+			std::make_pair(nBefore + nAfter, nData - nBefore - 1) :
+			std::make_pair(nBefore + nAfter + iReverse, 0);
 
 		pLogger->info("Before toggle.");
 		printLog();
 		
 		if (reverse) {
+			// Go back by 2 frames from current, current is the next to display.
 			iRead = (iRead - 2 + nData) % nData;
+
+			// Write from the read location - (nAfter-1) frames.
 			iWrite = (iRead - (nAfter-1) + nData) % nData;
 		} else {
+			// If we are not in reverse make not change. If we are in reverse, 
+			// then set iWrite to iRead+nAfter+1. Don't write on nAfter which 
+			// becomes nBefore after the reversing.
 			iWrite = notReversed() ? iWrite : (iRead+nAfter+1) % nData;
+
+			// Go forward by two frames.
 			iRead = (iRead + 2) % nData;
 		}
 
@@ -245,6 +286,7 @@ public:
 		nAfter = nBefore + 1;
 		nBefore = tmp;
 
+		// Reset the reverse.
 		nReverse = iReverse = 0;
 
 		pLogger->info("After toggle.");
@@ -252,18 +294,36 @@ public:
 
 		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
+
+		// Done with exclusive region.
 		locker.unlock();
 		cv.notify_all();
 		return ret;
 	}
-	std::pair<int,int> seekBackward() {
+
+	/**
+	 * Get delta and offset when seeking backward.
+	 * This blocks if there is no space for at least nMinImages in the buffer.
+	 */
+	std::pair<int, int> seekBackward() { // pair of delta, offset
 		std::unique_lock<std::mutex> locker(mu);
+		
+		// Ensure we have at least a block of nMinImages to go backward.
 		cv.wait(locker, [this](){return (nData-nBefore) > nMinImages || flush;});
-		std::pair<int,int> ret = std::make_pair(nReverse, nData-nBefore-1);
+		
+		// The delta is nReverse and the offset is nData-nBefore-1.
+		std::pair<int, int> ret = std::make_pair(nReverse, nData-nBefore-1);
+
+		// Done with exclusive region.
 		locker.unlock();
 		cv.notify_all();
 		return ret;
 	}
+
+	/**
+	 * Set delta when seeking backward after a toggle event.
+	 * This changes iWrite, nAfter, nReverse, and iReverse.
+	 */
 	void setBackwardAfterToggle(int delta) {
 		std::unique_lock<std::mutex> locker(mu);
 		iWrite = (iWrite - delta + 1 + nData) % nData;
@@ -271,6 +331,11 @@ public:
 		nReverse = iReverse = delta;
 		locker.unlock();
 	}
+
+	/**
+	 * Set delta when seeking backward after a random seek.
+	 * This changes iWrite, nAfter, nReverse, and iReverse.
+	 */
 	void setBackwardAfterSeek(int delta) {
 		std::unique_lock<std::mutex> locker(mu);
 		iWrite = (iRead - nBefore - delta + 1 + nData) % nData;
@@ -278,10 +343,20 @@ public:
 		nReverse = iReverse = delta;
 		locker.unlock();
 	}
+
+	/**
+	 * Get the read pointer for the next frame. This method blocks if there is 
+	 * no next frame available.
+	 */
 	AVFrame* getReadPtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
-		cv.wait(locker, [this](){ return nBefore > 0 || flush;}); // must have 1 frame before!
+		
+		// There must have be one frame before!
+		cv.wait(locker, [this](){ return nBefore > 0 || flush;}); 
+		
+		// When not flushing show data[iRead] and increment iRead by one when in 
+		// forward mode or decrement iRead by one when in backward mode.
 		if (!flush) {
 			pFrame = data[iRead];
 			iRead = (reverse ? (iRead - 1 + nData) : (iRead + 1)) % nData;
@@ -292,12 +367,25 @@ public:
 		cv.notify_all();
 		return pFrame;
 	}
+
+	/**
+	 * Request a write pointer. Notice this request does not change the internal
+	 * pointers within the buffer. We separated reqWritePtr and cmplWritePtr
+	 * because we may request the same write pointer several times without 
+	 * wanting to change the internal pointers within the buffer.
+	 *
+	 * RETURNS A pointer to an AVFrame.
+	 */
 	AVFrame* reqWritePtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
+		
 		// This should also check that there are two frames left for reverse 
 		// but then the toggle from revere into forward takes two extra frames.
-		cv.wait(locker, [this](){return nFree() > 0 || flush;}); // must have 1 free space
+		// Can we at least write on frame?
+		cv.wait(locker, [this](){return nFree() > 0 || flush;});
+
+		// If we do not flush get the write position.
 		if (!flush) {
 			pFrame = data[iWrite];
 		}
@@ -305,8 +393,20 @@ public:
 		cv.notify_all();
 		return pFrame;
 	}
+
+	/**
+	 * Completes the request for a write pointer. This will adjust the internal 
+	 * pointers in the buffer to confirm the write.
+	 */
 	void cmplWritePtr() {
 		std::unique_lock<std::mutex> locker(mu);
+
+		// If not flushing iReverse is subtracted by one if reverse == true.
+		// nAfter is reduced if we have written all elements that is 
+		// nBefore+nAfter == Data.
+		// nBefore is inceased by 1 if not in reverse otherwise it is increased 
+		// by nReverse if we are done with writing the block that is when 
+		// iReverse == 0.
 		if (!flush) {
 			iWrite = (iWrite + 1) % nData;
 			iReverse -= reverse;
@@ -316,9 +416,18 @@ public:
 		locker.unlock();	
 		cv.notify_all();
 	}
+
+	/**
+	 * RETURNS true if this buffer requires a seek request to fill in another 
+	 * block of frames in reverse direction.
+	 */
 	bool seekReq() {
 		return reverse && iReverse==0;
 	}
+
+	/**
+	 * Print state and contents of the buffer to the logger.
+	 */
 	inline void printLog() {
 		pLogger->info("Before toggle: iRead = %d, iWrite = %d, nBefore = %d, "
 				"nAfter = %d, nReverse = %d, iReverse = %d, reverse = %d.",
@@ -329,32 +438,55 @@ public:
 	}
 };
 
-// If writing reached the start of the file. This happens only in reverse mode.
+/**
+ * True if writing reached the start of the file. This happens in reverse mode.
+ */
 bool atStartForWrite() {
 	return ib->isReverse() && lastWritePts <= pVideoStream->start_time+avgDeltaPts 
 		&& !ib->inReverse();
 }
 
-// If reading reached the start of the file. This happens only in reverse mode.
+/**
+ * True if reading reached the start of the file. This happens in reverse mode.
+ */
 bool atStartForRead() {
 	return atStartForWrite() && ib->empty();
 }
 
+/**
+ * True if writing reached the end of the file. This happens in forward mode.
+ */
 bool atEndForWrite() {
-	//fprintf(stdout, "lastWritePts = %I64d, start_time = %I64d, lastWritePts-start_time = %I64d, duration = %I64d.\n",
-	//	lastWritePts, pVideoStream->start_time, lastWritePts-pVideoStream->start_time, pVideoStream->duration);
-	//fflush(stdout);
 	// return lastWritePts-pVideoStream->start_time >= pVideoStream->duration;
 	// Duration is just an estimate and usually larger than the acutal number of frames.
 	// I measured 8 - 14 additional frames that duration specifies.
 	return !ib->isReverse() && eof;
 }
 
+/**
+ * True if reading reached the end of the file. This happens in forward mode.
+ */
 bool atEndForRead() {
-	//return !ib->isReverse() && (lastPts-pVideoStream->start_time >= pVideoStream->duration) && ib->empty();
+	// The duration is not a reliable estimate for the end a video file.
+	//return !ib->isReverse() 
+	//		&& (lastPts-pVideoStream->start_time >= pVideoStream->duration) 
+	//		&& ib->empty();
 	return !ib->isReverse() && eof && ib->empty();
 }
 
+/**
+ * Reads the next frame from the video stream and supports:
+ * - Random seek through the variable seekReq.
+ * - Toggeling the direction through the variable toggle.
+ * - Automatically fills the buffer for backward play.
+ *
+ * For a seek this jumps to the next earlier keyframe than the current frame.
+ * This method drops as many frames as there are between the keyframe and the
+ * requested seek frame.
+ * 
+ * Decodes multiple AVPacket into an AVFrame and writes this one to the buffer.
+ *
+ */
 void readNextFrame() {
 	int frameFinished;
 	bool reverseRefresh = true;
@@ -381,6 +513,9 @@ void readNextFrame() {
 			int offset = offsetDelta.first;
 			int delta = offsetDelta.second;
 			int nShift = 0;
+
+			pLogger->info("Toggle with offset %d and delta %d.", offset, delta);
+
 			// Even if we may not seek backward it is safest to get the prior keyframe.
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			if (ib->isReverse()) {
@@ -405,8 +540,6 @@ void readNextFrame() {
 		
 		// Find next frame in reverse playback.
 		if (ib->seekReq()) {
-			//fprintf(stdout, "Find next frame in reverse playback.\n");
-			//fflush(stdout);
 
 			// Find the number of frames that can still be read
 			int maxDelta = (-pVideoStream->start_time+lastWritePts)/avgDeltaPts;
@@ -417,6 +550,9 @@ void readNextFrame() {
 			int delta = offsetDelta.second;
 
 			delta = std::min(offset+delta, maxDelta) - offset;
+
+			pLogger->info("Seek frame for reverse playback with offset %d and "
+							"min delta %d.", offset, delta);
 
 			ib->setBackwardAfterSeek(delta);
 
@@ -439,7 +575,8 @@ void readNextFrame() {
 		// Set eof before testing for end of file.
 		eof = ret == AVERROR_EOF;
 
-		// We went beyond the end with the seek request, linear scan back.
+		// We went beyond the end with the seek request.
+		// Linear scan back toward the end.
 		/*
 		if (eof && findLast) {
 			lastWritePts = seekPts = seekPts - avgDeltaPts;
@@ -486,7 +623,8 @@ void readNextFrame() {
 					// Skip frames until we are at or beyond of the seekPts time stamp.
 					if (readPts >= seekPts) {
 					
-						// Get the next writeable buffer. This may block and can be unblocked with a flush.
+						// Get the next writeable buffer. 
+						// This may block and can be unblocked with a flush.
 						AVFrame* pFrameBuffer = ib->reqWritePtr();
 
 						// Did we get a frame buffer?
@@ -507,8 +645,7 @@ void readNextFrame() {
 							pFrameBuffer->pts = lastWritePts = readPts;
 							ib->cmplWritePtr();
 
-							//pLogger->info("Wrote frame %I64d or pts %I64d.", 
-							//	lastWritePts/avgDeltaPts, lastWritePts);
+							pLogger->info("Wrote pts %I64d.", lastWritePts);
 						}
 					}
 
@@ -633,15 +770,13 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 		pFrameShow = pFrameTmp;
 
 		// Log that we displayed a frame.
-		pLogger->info("Display frame %I64d pts.", pFrameShow->pts);
+		pLogger->info("Display pts %I64d.", pFrameShow->pts);
 	}
 
 	// Return the number of read frames (not neccesarily all are displayed).
 	return (jint) nFrame;
 }
 
-
-// Opens movie file.
 JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 (JNIEnv *env, jobject thisObject, jstring jFileName) {
 
@@ -706,7 +841,7 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	}
 	
 	// Log that opened a file.
-	pLogger->info("Opened file: %s", fileName);
+	pLogger->info("Opened file %s.", fileName);
 
 	// Allocate video frame.
 	pFrame = av_frame_alloc();
@@ -739,7 +874,7 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	// Initialize the delta pts using the average frame rate and the average pts.
 	avgDeltaPts = deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)
 										*av_q2d(pVideoStream->avg_frame_rate)));
-	pLogger->info("Average delta pts = %I64d.", avgDeltaPts);
+	pLogger->info("Average delta pts %I64d.", avgDeltaPts);
 
 	// Set the value for loaded move true.
 	loadedMovie = true;
