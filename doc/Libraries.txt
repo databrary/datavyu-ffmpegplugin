@@ -1,89 +1,108 @@
-Compiling and Downloading Libraries for datavyu
+Compiling FFmpeg libraries for datavyu on Windows 7
+---------------------------------------------------
 
-This guide assumes that you are using a 64 bit version of the JVM and ffmpeg dll’s.
+The datavyu video player requires the following DLLs:
+- avcodec-57.dll
+- avformat-57.dll
+- avutil-55.dll
+- swresample-2.dll
+- swscale-4.dll
 
-I. Libraries from zeranoe
-Download the following dll’s from zeranoe (https://ffmpeg.zeranoe.com/builds/) to support x264, which I have not gotten to compile properly under windows yet.
-The direct link is https://ffmpeg.zeranoe.com/builds/win64/shared/ffmpeg-20160607-git-49b0246-win64-shared.7z
-avcodec-57.dll
-avformat-57.dll
-avutil-55.dll
-swresample-2.dll
-There will be more dll’s but these are the ones you should add to your java library path. In my case I added them at root level of the datavyu project, because this is where the JVM executes and per default ‘.’ is in the java library path.
+These need to be added to your java library path. I added them at the root level 
+of the datavyu project. The JVM executes there and per default ‘.’ is in the 
+java library path.
 
+The following outlines the compilation of ffmpeg DLL's and executables using the
+Microsoft Visual Studio compiler.
 
-II. Compiled library and .lib files
-For this step you need to compile the ffmpeg source code and setup your windows environment properly. Here are the steps:
-
-The two installation guides that I used are:
+I found these installation guides useful:
+https://pracucci.com/compile-ffmpeg-on-windows-with-visual-studio-compiler.html
 https://trac.ffmpeg.org/wiki/CompilationGuide/MSVC
 http://ffmpeg.org/platform.html
+This is also where you may find help for some of the issues you may encounter.
 
-I’m using Windows 7.
-
-1. Install MVS 2015 (Community edition) from here
+1. Download MVS 2015 (Community edition) from 
 https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx
+and install it.
 
-1. Download the msys2 for 32 bit Windows (For me that was msys2-i686-20160205.exe). The 32 bit version compiles 64 bit code.
-http://msys2.github.io/
+2. Download the msys64 version 
+'msys2-x86_64-20161025.exe' from http://msys2.github.io/ and install this to C:
 
-2. Launch the msys shell and execute the following commands
-pacman -Sy pacman
-(updates the software)
-pacman -S mingw-w64-x86_64-yasm mingw-w64-x86_64-gcc mingw-w64-x86_64-SDL
-(adds mingw for 64 bits)
+3. Install build tools in msys64
+cd C:\msys64
+Execute msys2_shell.cmd
+Execute in the msys2 shell
+pacman -S make gcc diffutils
+Close the shell.
+To avoid a name conflict rename C:/msys64/usr/bin/link.exe into
+C:/msys64/usr/bin/link_old.exe. This ensures that your compile environment will 
+use the linker from the Microsoft Visual Studio.
 
-3. To setup the environment variables for 64 bit build run the following batch script windows command line tool ‘cmd’:
+4. Install YASM 
+Download 'Win64.exe' from http://yasm.tortall.net/Download.html.
+Create the folder C:\yasm. Rename the file yasm-1.3.0-win64.exe into yasm.exe.
+Place this renamed file into the folder C:\yasm. Add this folder to your path.
+
+5. Setup the environment variables for the 64 bit build 
+Run the following batch script in the windows command line tool ‘cmd’:
 cd “C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC”
 vcvarsall.bat x64
 The flag x64 sets the environment up for compilation of 64 bit versions.
 
-4. Run the mingw platform in msys in ‘cmd’ the windows command line. Notice that the environment variables carry over from the windows command line.
-C:\msys32\mingw64_shell.bat
-This should open the mingw platform.
+6. Switch to the msys shell.
+In the windows command line from the prior step navigate to C:\msys64.
+Run the command: msys2_shell.cmd -msys -use-full-path
+This ensures that the environment variables PATH and LIB carry over into the 
+msys shell. This opens a new msys shell in a separate window.
 
-You can check your environment variables that carried over from the windows command line tool through the commands:
-echo $PATH
-echo $LIB
+7. In the msys shell CHECK the compiler and linker:
+$ which cl
+/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC/BIN/amd64/cl
+$ which link
+/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC/BIN/amd64/link
+This ensures that your MVS compiler and linker are used.
 
-5. Download the git source code, e.g. use 
-git clone https://github.com/FFmpeg/FFmpeg.git
+8. Download the git source code (I used revision 3.2)
+Download the ZIP: https://github.com/FFmpeg/FFmpeg/archive/release/3.2.zip
+and unzip the file into the folder FFmpeg-release-3.2 in your user directory.
 
-6. Then go to the source location of ffmpeg (your path will be different)
-cd /c/Users/Florian/FFmpeg
+9. Configure for compilation of 64 bit DLLs.
+In the msys shell: cd /c/Users/Florian/FFmpeg-release-3.2/ or wherever you 
+downloaded the ffmpeg source.
+Run the command to configure the build:
+./configure --toolchain=msvc --enable-swscale --enable-asm --enable-yasm --target-os=win64 --arch=x86_64 --enable-shared --disable-static
 
-7. Prepare the compilation of an DLL through the configure command
-./configure --enable-swscale --enable-asm --enable-yasm --arch=x86_64 --disable-ffserver --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --disable-libopenjpeg --disable-iconv --disable-zlib --prefix=/c/ffmpeg --toolchain=msvc
+toolchain=msvc -- use the Microsoft Visual Studio compiler
+enable-swscale -- compile swscale DLL, we need this to rescale images
+enable-yasm -- YASM is a low level assembler
+target-os=win64 -- operating system to compile for is windows 64 bit
+arch=x86_64 -- compute architecture is x86 for 64 bit
+enable-shared -- compile shared libraries
 
-You can either disable yasm or install yasm!
-Some builds may need swscale. Here, we need swscale and enabled its build with the flag --enable-swscale
+A successful configuration ends with the lines:
+License: LGPL version 2.1 or later
+Creating config.mak, config.h, and doc/config.texi...
+config.asm is unchanged
+libavutil/avconfig.h is unchanged
+WARNING: pkg-config not found, library detection may fail.
+libavcodec/bsf_list.c is unchanged
+libavformat/protocol_list.c is unchanged
 
-install prefix            /usr/local
-source path               .
-C compiler                cl
-C library                 msvcrt
-ARCH                      x86 (generic)
-big-endian                no
-runtime cpu detection     yes
-yasm                      yes
-In the end of configuration, you might also see pkg-config not found issue that you can ignore. It will not affect compilation.
+You can ignore the pkg-config not found issue. It will not affect compilation.
 
-
-8. Compile the source code to produce DLLs:
+10. Compile the source code to produce DLLs:
 make –j 4
 
 The –j 4 flag indicates to use 4 threads for compilation. This speeds up the compilation process. You may want to set the number of threads even higher depending on your hardware.
 
 The successful compilation ends with:
-Creating library libavfilter/avfilter.lib and object libavfilter/avfilter.exp
-
-
-III. Copying additional .dll’s
-Copy the additional dll into your java library path (see I. for more details).
-swscale-4.dll
-
-
-IV. Compiling the dll for DisplayImageFromVideo (or DisplayImageFromJNI)
-The source files DisplayImageFromVideo.cpp  and DisplayImageFromJNI.cpp contain compile instructions.
-
-
+LD      libavdevice/avdevice-57.dll
+   Creating library libavdevice/avdevice.lib and object libavdevice/avdevice.exp
+LD      ffmpeg_g.exe
+LD      ffprobe_g.exe
+CP      ffprobe.exe
+STRIP   ffprobe.exe
+skipping strip ffprobe.exe
+CP      ffmpeg.exe
+STRIP   ffmpeg.exe
+skipping strip ffmpeg.exe
