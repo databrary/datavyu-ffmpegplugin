@@ -71,6 +71,13 @@ int64_t				seekPts			= 0;
 int					seekFlags		= 0;
 Logger				*pLogger		= nullptr;
 
+// Parameters for viewing window.
+int					widthView		= 0; // on reset 0
+int					heightView		= 0; // on reset 0
+int					x0View			= 0; // on reset 0
+int					y0View			= 0; // on reset 0
+bool				doView			= false; // on reset false
+
 /**
  * This image buffer is a ring buffer with a forward mode and backward mode.
  * In forward mode frames are written sequentially, one frame at a time.
@@ -686,10 +693,27 @@ JNIEXPORT void JNICALL Java_ImagePlayer_setTime
 
 JNIEXPORT jobject JNICALL Java_ImagePlayer_getFrameBuffer
 (JNIEnv *env, jobject thisObject) {
+	// No movie was loaded return nullptr.
+	if (!loadedMovie) return 0;
+
+	// We have a viewing window that needs to be supported.
+	if (doView) {
+		for (int iRow = 0; iRow < heightView; ++iRow) {
+			for (int iCol = 0; iCol < widthView; ++iCol) {
+				for (int iChannel = 0; iChannel < nChannel; ++iChannel) {
+					int iSrc = ((y0View+iRow)*width + x0View+iCol)*nChannel + iChannel;
+					int iDst = (iRow*widthView + iCol)*nChannel + iChannel;
+					pFrameShow->data[0][iDst] = pFrameShow->data[0][iSrc];
+				}
+			}
+		}
+		return env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
+									widthView*heightView*nChannel*sizeof(uint8_t));
+	}
+
 	// Construct a new direct byte buffer pointing to data from pFrameShow.
-	return loadedMovie ? env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
-									width*height*nChannel*sizeof(uint8_t))
-									: 0;
+	return env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
+									width*height*nChannel*sizeof(uint8_t));
 }
 
 JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
@@ -940,12 +964,12 @@ JNIEXPORT jdouble JNICALL Java_ImagePlayer_getCurrentTime
 }
 
 JNIEXPORT jboolean JNICALL Java_ImagePlayer_isForwardPlayback
-(JNIEnv *env, jobject) {
+(JNIEnv *env, jobject thisObject) {
 	return loadedMovie ? (jboolean) !ib->isReverse() : true;
 }
 
 JNIEXPORT void JNICALL Java_ImagePlayer_rewind
-(JNIEnv *, jobject) {
+(JNIEnv *env, jobject thisObject) {
 	if (loadedMovie) {
 		if (ib->isReverse()) {
 			// Seek to the end of the file.
@@ -964,13 +988,57 @@ JNIEXPORT void JNICALL Java_ImagePlayer_rewind
 }
 
 JNIEXPORT jboolean JNICALL Java_ImagePlayer_atStartForRead
-(JNIEnv *, jobject){
+(JNIEnv *env, jobject thisObject){
 	return loadedMovie ? atStartForRead() : false;
 }
 
 JNIEXPORT jboolean JNICALL Java_ImagePlayer_atEndForRead
-(JNIEnv *, jobject) {
+(JNIEnv *env, jobject thisObject) {
 	return loadedMovie ? atEndForRead() : false;
+}
+
+JNIEXPORT jboolean JNICALL Java_ImagePlayer_hasNextFrame
+(JNIEnv *env, jobject thisObject) {
+	return !(Java_ImagePlayer_isForwardPlayback(env, thisObject) && Java_ImagePlayer_atEndForRead(env, thisObject) 
+		|| !Java_ImagePlayer_isForwardPlayback(env, thisObject) && Java_ImagePlayer_atStartForRead(env, thisObject));
+}
+
+JNIEXPORT jboolean JNICALL Java_ImagePlayer_view
+(JNIEnv *env, jobject thisObject, jint x0, jint y0, jint w, jint h) {
+	// Done if we did not load any movie.
+	if (!loadedMovie) { 
+		return (jboolean) false; 
+	}
+
+	// Error if the start coordinates are out of range.
+	if (x0 < 0 || y0 < 0 || x0 >= width || y0 >= height) {
+		pLogger->error("Start position (x0, y0) = (%d, %d) pixels is out of range ",
+			"(%d, %d) ... (%d, %d) pixels.", x0, y0, 0, 0, width, height);
+		return (jboolean) false;
+	}
+
+	// Error if the width or height is too large.
+	if ((x0+w) > width || (y0+h) > height) {
+		pLogger->error("Width %d pixels > %d pixels or height %d pixels > %d pixels.",
+			w, h, width, height);
+		return (jboolean) false;
+	}
+
+	// We need to restrict the view if we do not use the original window of
+	// (0, 0) ... (width, height).
+	doView = x0 > 0 || y0 > 0 || w < width || h < height;
+
+	// Set the view variables.
+	x0View = x0;
+	y0View = y0;
+	widthView = w;
+	heightView = h;
+
+	// Log the new viewing window.
+	pLogger->info("Set view to (%d, %d) to (%d, %d).", x0, y0, x0+w, y0+h);
+
+	// Return the doView
+	return (jboolean) true;
 }
 
 JNIEXPORT void JNICALL Java_ImagePlayer_release
@@ -1040,6 +1108,13 @@ JNIEXPORT void JNICALL Java_ImagePlayer_release
 		seekReq = false;
 		seekPts = 0;
 		seekFlags = 0;
+
+		// Reset variables from viewing window.
+		widthView = 0;
+		heightView = 0;
+		x0View = 0;
+		y0View = 0;
+		doView = false;
 
 		quit = false;
 	}

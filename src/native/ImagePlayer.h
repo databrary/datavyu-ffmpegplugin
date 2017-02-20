@@ -165,6 +165,22 @@ JNIEXPORT void JNICALL Java_ImagePlayer_setPlaybackSpeed
 JNIEXPORT void JNICALL Java_ImagePlayer_setTime
   (JNIEnv *, jobject, jdouble);
 
+/*
+ * Class:     ImagePlayer
+ * Method:    hasNextFrame
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_ImagePlayer_hasNextFrame
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     ImagePlayer
+ * Method:    view
+ * Signature: (IIII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_ImagePlayer_view
+  (JNIEnv *, jobject, jint, jint, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

@@ -42,10 +42,10 @@ public class ImagePlayer extends Canvas {
 	/** The number of channels, typically 3. */
 	protected int nChannel = 0;
 	
-	/** The width of the image in pixels.  */
+	/** The width of the current image in pixels. Changes with view. */
 	protected int width = 0;
 	
-	/** The height of the image in pixels. */
+	/** The height of the current image in pixels. Changes with view. */
 	protected int height = 0;
 	
 	/** This image buffer holds the image. */
@@ -159,8 +159,6 @@ public class ImagePlayer extends Canvas {
 	/**
 	 * Resets the movie either to the front or end of the file depending
 	 * on the play back direction.
-	 * 
-	 * TODO: Implement rewind to go to the end of the file.
 	 */
 	public native void rewind();
 	
@@ -232,9 +230,47 @@ public class ImagePlayer extends Canvas {
 	 * 
 	 * @return True if there is a next frame otherwise false.
 	 */
-	public boolean hasNextFrame() {
-		return !(isForwardPlayback() && atEndForRead() 
-				|| !isForwardPlayback() && atStartForRead());
+	public native boolean hasNextFrame();
+	
+	/**
+	 * Restrict the view of the video to the rectangular area defined by
+	 * the corner points (x0, y0) and (x0+width, y0+height).
+	 * 
+	 * @param x0 The horizontally first coordinate in PIXELS.
+	 * @param y0 The vertically first coordinate in PIXELS. 
+	 * @param width The width of the viewing window in PIXELS.
+	 * @param height The height of the viewing window in PIXELS.
+	 * 
+	 * @return True if we could set the window.
+	 */
+	private native boolean view(int x0, int y0, int width, int height);
+	
+	/**
+	 * Set the viewing area to the rectangle area defined by the corner points
+	 * (x0, y0) and (x0+width, y0+height).
+	 * 
+	 * This method assumes that no showNextFrame is called!!!
+	 * 
+	 * @param x0 The horizontally first coordinate in PIXELS.
+	 * @param y0 The vertically first coordinate in PIXELS. 
+	 * @param width The width of the viewing window in PIXELS.
+	 * @param height The height of the viewing window in PIXELS.
+	 * 
+	 * @return True if we could set the window.
+	 */
+	public boolean setView(int x0, int y0, int width, int height) {
+		boolean viewOk = view(x0, y0, width, height);
+		
+		// If we were able to set the viewing area adjust the height, width,
+		// and sample model.
+		if (viewOk) {
+			this.width = width;
+			this.height = height;
+			
+			// Update the sample model with the new width and height.
+			sm = cm.createCompatibleSampleModel(width, height);
+		}		
+		return viewOk;
 	}
 	
 	/**

@@ -145,11 +145,11 @@ public class VideoPlayer extends JPanel implements WindowListener {
 			double sec = ((double)slider.getValue())/1000.0 + startTime;
 			if (slider.getValueIsAdjusting()) {
 				System.out.println("Seconds: " + sec);
-				// TODO: Make sure that the slider is not placed behind the end!!
-				// At the moment this is possible and the player.getNextFrame() method blocks the UI.
-				player.setTime(sec);				
+				player.setTime(sec);		
 				
+				// Pull frame that has been blocked and is not part of the new playback.
 				if (player.hasNextFrame()) { player.loadNextFrame(); }
+				
 				// Can't show all the frames, random seeks. Only show when the user 
 				// presses step or play.
 				//showNextFrame();
@@ -157,8 +157,38 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		}
 	}
 	
-	protected void openFile(String fileName) {
-		
+	class ViewSelection implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			// Make sure to stop the player before changing the window.
+			stopPlayer();
+			
+			// Set the view and bounds accordingly.
+			if (player.setView(70, 50, 300, 200)) {
+				player.setBounds(0, 0, 300, 200);				
+			}
+		}
+	}
+	
+	
+	class ResetViewSelection implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			// Make sure to stop the player before changing the window.
+			stopPlayer();
+			int w = player.getWidth();
+			int h = player.getHeight();
+			
+			// Reset the view and set bounds accordingly.
+			if (player.setView(0, 0, w, h)) {
+				player.setBounds(0, 0, w, h);				
+			}
+		}
+	}
+	
+	protected void stopPlayer() {
 		// Stop the player.
 		playing = false;
 		
@@ -168,7 +198,11 @@ public class VideoPlayer extends JPanel implements WindowListener {
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException ie) {}
-		}
+		}		
+	}
+	
+	protected void openFile(String fileName) {
+		stopPlayer();
 	
 		// Assign a new movie file.
         player.open(fileName);
@@ -326,12 +360,16 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		JButton stop = new JButton("Stop");
 		JButton rewind = new JButton("Rewind");
 		JButton step = new JButton("Step");
+		JButton view = new JButton("View");
+		JButton resetView = new JButton("ResetView");
 		
 		tools.add(open);
 		tools.add(play);
 		tools.add(stop);
 		tools.add(rewind);
 		tools.add(step);
+		tools.add(view);
+		tools.add(resetView);
 		
 		open.addActionListener(new OpenFileSelection());
 		play.addActionListener(new PlaySelection());
@@ -339,6 +377,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		rewind.addActionListener(new RewindSelection());
 		step.addActionListener(new StepSelection());
 		slider.addChangeListener(new SliderSelection());
+		view.addActionListener(new ViewSelection());
+		resetView.addActionListener(new ResetViewSelection());
 		
 		// Speed selection.
 		quarter = new JRadioButton("1/4x");
@@ -431,6 +471,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
+		stopPlayer();
 		player.release();
 	}
 
