@@ -12,15 +12,17 @@ extern "C" {
 
 #include "Logger.h"
 #include "ImagePlayer.h"
+#include <atomic>
 #include <mutex>
 #include <condition_variable>
 #include <thread>
 #include <chrono>
 #include <algorithm>
 #include <cstdlib>
+#include <sstream>
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
-// cl ImagePlayer.cpp /Fe"..\..\lib\ImagePlayer" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
+// cl ImagePlayer.cpp /Fe"..\..\lib\ImagePlayer" /I"C:\Users\Florian\FFmpeg-release-3.2" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswscale\swscale.lib"
 
 #define N_MAX_IMAGES 32 // May cause problems with very short videos (1 < sec)
 #define N_MIN_IMAGES N_MAX_IMAGES/2
@@ -68,9 +70,7 @@ bool				seekReq			= false;
 int64_t				seekPts			= 0;
 int					seekFlags		= 0;
 //bool				findLast		= false; // Used for rewind to last frame.
-
-FileLogger			*pLogger		= nullptr;
-
+Logger				*pLogger		= nullptr;
 
 /**
  * This image buffer is a ring buffer with a forward mode and backward mode.
@@ -100,10 +100,10 @@ class ImageBuffer {
 	int iWrite;
 
 	/** Readable frames before read pointer (including current iRead position). */
-	int nBefore;
+	std::atomic<int> nBefore;
 
 	/** Readable frames after read pointer (excluding current iRead position). */
-	int nAfter;
+	std::atomic<int> nAfter;
 
 	/** Number of reverse frames in 0...nData-1 (one frame is displayed). */
 	int nReverse;
@@ -240,8 +240,10 @@ public:
 
 		std::unique_lock<std::mutex> locker(mu);
 
-		// Ensure there is at least one frame after the current frame.
-		cv.wait(locker, [this](){return nAfter > 0 || flush;});
+		// Ensure there are at least two frames after the current frame.
+		cv.wait(locker, [this](){return nAfter > 1-reverse || flush;});
+
+		flush = true; // unblock the reader.
 		
 		// When toggeling we have the following cases:
 		// Switching into backward replay:
@@ -249,21 +251,21 @@ public:
 		//   We need to go backward by at least nBefore+nAfter in the stream to 
 		//   skip to the start of the reverse playback location in the stream.
 		// * delta
-		//   We can at most jump back in the buffer by nData-Before-1 and read 
-		//   this amount of frames into the buffer.
+		//   We can at most jump back in the buffer by Before and write this 
+		//	 amount of frames into the buffer.
 		// Switching into forward replay:
 		// * offset
 		//   We need to seek forward by nBefore+nAfter+iReverse.
 		// * delta
 		//   is always zero since we only advance by +1 frame in forward replay.
-		reverse = !reverse;
-		std::pair<int,int> ret = reverse ?
-			std::make_pair(nBefore + nAfter, nData - nBefore - 1) :
-			std::make_pair(nBefore + nAfter + iReverse, 0);
-
 		pLogger->info("Before toggle.");
 		printLog();
 		
+		reverse = !reverse;
+		std::pair<int,int> ret = reverse ?
+			std::make_pair(nBefore + nAfter, 1+nBefore-1) :
+			std::make_pair(nBefore + nAfter + iReverse, 0);
+
 		if (reverse) {
 			// Go back by 2 frames from current, current is the next to display.
 			iRead = (iRead - 2 + nData) % nData;
@@ -271,9 +273,9 @@ public:
 			// Write from the read location - (nAfter-1) frames.
 			iWrite = (iRead - (nAfter-1) + nData) % nData;
 		} else {
-			// If we are not in reverse make not change. If we are in reverse, 
-			// then set iWrite to iRead+nAfter+1. Don't write on nAfter which 
-			// becomes nBefore after the reversing.
+			// If we are not in reverse mode make no change. If we are in 
+			// reverse mode, then set iWrite to iRead+nAfter+1. Don't write on 
+			// nAfter which becomes nBefore after the reversing.
 			iWrite = notReversed() ? iWrite : (iRead+nAfter+1) % nData;
 
 			// Go forward by two frames.
@@ -295,6 +297,8 @@ public:
 		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
 
+		flush = false;
+
 		// Done with exclusive region.
 		locker.unlock();
 		cv.notify_all();
@@ -309,7 +313,7 @@ public:
 		std::unique_lock<std::mutex> locker(mu);
 		
 		// Ensure we have at least a block of nMinImages to go backward.
-		cv.wait(locker, [this](){return (nData-nBefore) > nMinImages || flush;});
+		cv.wait(locker, [this](){return (nData-nBefore-2) > nMinImages || flush;});
 		
 		// The delta is nReverse and the offset is nData-nBefore-1.
 		std::pair<int, int> ret = std::make_pair(nReverse, nData-nBefore-1);
@@ -383,7 +387,7 @@ public:
 		// This should also check that there are two frames left for reverse 
 		// but then the toggle from revere into forward takes two extra frames.
 		// Can we at least write on frame?
-		cv.wait(locker, [this](){return nFree() > 0 || flush;});
+		cv.wait(locker, [this](){return nFree() > 1 || flush;});
 
 		// If we do not flush get the write position.
 		if (!flush) {
@@ -429,12 +433,14 @@ public:
 	 * Print state and contents of the buffer to the logger.
 	 */
 	inline void printLog() {
-		pLogger->info("Before toggle: iRead = %d, iWrite = %d, nBefore = %d, "
+		pLogger->info("iRead = %d, iWrite = %d, nBefore = %d, "
 				"nAfter = %d, nReverse = %d, iReverse = %d, reverse = %d.",
 			iRead, iWrite, nBefore, nAfter, nReverse, iReverse, (int)reverse);
+		std::stringstream ss;
 		for (int iData = 0; iData < nData; ++iData) {
-			pLogger->info("Buffer[%d] = %I64d pts.", iData, data[iData]->pts);
+			ss << "(" << iData << ";" << data[iData]->pts/avgDeltaPts << "), ";
 		}
+		pLogger->info("Buffer: %s", ss.str().c_str());
 	}
 };
 
@@ -645,7 +651,8 @@ void readNextFrame() {
 							pFrameBuffer->pts = lastWritePts = readPts;
 							ib->cmplWritePtr();
 
-							pLogger->info("Wrote pts %I64d.", lastWritePts);
+							pLogger->info("Wrote pts %I64d.", lastWritePts/avgDeltaPts);
+							ib->printLog();
 						}
 					}
 
@@ -671,9 +678,10 @@ JNIEXPORT void JNICALL Java_ImagePlayer_setPlaybackSpeed
 
 JNIEXPORT void JNICALL Java_ImagePlayer_setTime
 (JNIEnv *env, jobject thisObject, jdouble time) { // time in seconds
-
-	lastWritePts = seekPts = ((int64_t)(time/(avgDeltaPts*av_q2d(pVideoStream->time_base))))*avgDeltaPts;
-	seekReq = true;
+	if (loadedMovie) {
+		lastWritePts = seekPts = ((int64_t)(time/(avgDeltaPts*av_q2d(pVideoStream->time_base))))*avgDeltaPts;
+		seekReq = true;	
+	}
 }
 
 JNIEXPORT jobject JNICALL Java_ImagePlayer_getFrameBuffer
@@ -770,7 +778,7 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 		pFrameShow = pFrameTmp;
 
 		// Log that we displayed a frame.
-		pLogger->info("Display pts %I64d.", pFrameShow->pts);
+		pLogger->info("Display pts %I64d.", pFrameShow->pts/avgDeltaPts);
 	}
 
 	// Return the number of read frames (not neccesarily all are displayed).
@@ -867,17 +875,15 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	duration = pVideoStream->duration*av_q2d(pVideoStream->time_base);
 	pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds.", 
 				  width, height, duration);
+	pLogger->info("Time base %2.5f.", av_q2d(pVideoStream->time_base));
 
-	// Initialize the image buffer buffer.
+	// Initialize the image buffer.
 	ib = new ImageBuffer(width, height);
 
 	// Initialize the delta pts using the average frame rate and the average pts.
 	avgDeltaPts = deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)
 										*av_q2d(pVideoStream->avg_frame_rate)));
 	pLogger->info("Average delta pts %I64d.", avgDeltaPts);
-
-	// Set the value for loaded move true.
-	loadedMovie = true;
 
 	// Seek to the start of the file.
 	lastWritePts = seekPts = pVideoStream->start_time;
@@ -886,6 +892,9 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	// Start the decode thread.
 	decodeThread = new std::thread(readNextFrame);	
 	pLogger->info("Started decoding thread!");
+
+	// Set the value for loaded move true.
+	loadedMovie = true;
 
 	// Free the string.
 	env->ReleaseStringUTFChars(jFileName, fileName);

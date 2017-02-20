@@ -416,9 +416,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		add(player, BorderLayout.CENTER);
 		add(slider, BorderLayout.SOUTH);
 		
-		//openFile("C:\\Users\\Florian\\WalkingVideo.mov");
+		openFile("C:\\Users\\Florian\\WalkingVideo.mov");
 		//openFile("C:\\Users\\Florian\\SleepingBag.MP4");
-		openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
+		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 	}
 	
 	

@@ -278,7 +278,7 @@ public:
 	 */
 	void log(unsigned int logLevel, const char* msg, const va_list& args) {
 		if (logLevel >= level) {
-			char msgBuffer[256];
+			char msgBuffer[2048];
 			char timeBuffer[128];
 			std::vsprintf(msgBuffer, msg, args);
 			std::time_t t = std::time(NULL);

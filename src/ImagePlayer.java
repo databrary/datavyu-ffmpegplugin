@@ -249,6 +249,9 @@ public class ImagePlayer extends Canvas {
 	 */
 	public int showNextFrame() {
 		int nFrame = loadNextFrame(); // Load the next frame(s). May skip frames.
+		if (nFrame == -1) {
+			return nFrame;
+		}
 		buffer = getFrameBuffer(); // Get the buffer.
 		data = new byte[width*height*nChannel];	// Allocate the bytes in java.
 		buffer.get(data); // Copy from the native buffer into the java buffer.
