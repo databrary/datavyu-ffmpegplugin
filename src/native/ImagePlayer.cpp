@@ -810,7 +810,7 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 }
 
 JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
-(JNIEnv *env, jobject thisObject, jstring jFileName) {
+(JNIEnv *env, jobject thisObject, jstring jFileName, jstring jVersion) {
 
 	// Release resources first before loading another movie.
 	if (loadedMovie) {
@@ -818,8 +818,10 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	}
 
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
+	const char *version = env->GetStringUTFChars(jVersion, 0);
 
 	pLogger = new FileLogger("logger.txt");
+	pLogger->info("Version: %s", version);
 	//pLogger = new StreamLogger(&std::cerr);
 
 	// Register all formats and codecs.
@@ -922,8 +924,9 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	// Set the value for loaded move true.
 	loadedMovie = true;
 
-	// Free the string.
+	// Free strings.
 	env->ReleaseStringUTFChars(jFileName, fileName);
+	env->ReleaseStringUTFChars(jVersion, version);
 }
 
 JNIEXPORT jint JNICALL Java_ImagePlayer_getNumberOfChannels
@@ -1037,7 +1040,7 @@ JNIEXPORT jboolean JNICALL Java_ImagePlayer_view
 	// Log the new viewing window.
 	pLogger->info("Set view to (%d, %d) to (%d, %d).", x0, y0, x0+w, y0+h);
 
-	// Return the doView
+	// Return true to indicate that the window has been adjusted.
 	return (jboolean) true;
 }
 

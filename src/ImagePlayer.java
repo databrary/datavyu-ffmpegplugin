@@ -95,7 +95,7 @@ public class ImagePlayer extends Canvas {
 	 * 
 	 * @param fileName The file name.
 	 */
-	protected native void openMovie(String fileName);
+	protected native void openMovie(String fileName, String version);
 	
 	/**
 	 * Get the number of color channels for the movie.
@@ -303,7 +303,8 @@ public class ImagePlayer extends Canvas {
 	 * @param fileName Name of the movie file.
 	 */
 	public void open(String fileName) {
-		openMovie(fileName);
+		// TODO: ADD the true version string here.		
+		openMovie(fileName, "0.0.1");
 		nChannel = getNumberOfChannels();
 		width = getWidth();
 		height = getHeight();
