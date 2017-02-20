@@ -60,7 +60,7 @@ bool				toggle			= false;
 double				speed			= 1;
 int64_t				lastPts			= 0; // on reset set to 0
 int64_t				deltaPts		= 0;
-int64_t				avgDeltaPts		= 0; // on reset set to 0 (used for reverse seek)
+int64_t				avgDeltaPts		= 1; // on reset set to 1 (used for reverse seek)
 int64_t				lastWritePts	= 0; // on reset set to 0 
 double				diff			= 0; // on reset set to 0
 std::chrono::high_resolution_clock::time_point lastTime;
@@ -69,7 +69,6 @@ std::chrono::high_resolution_clock::time_point lastTime;
 bool				seekReq			= false;
 int64_t				seekPts			= 0;
 int					seekFlags		= 0;
-//bool				findLast		= false; // Used for rewind to last frame.
 Logger				*pLogger		= nullptr;
 
 /**
@@ -112,7 +111,7 @@ class ImageBuffer {
 	int iReverse;
 
 	/** If true, this buffer is flushed. */
-	bool flush;
+	std::atomic<bool> flush;
 
 	/** If true, this buffer is in reverse mode. */
 	bool reverse;
@@ -241,10 +240,10 @@ public:
 		std::unique_lock<std::mutex> locker(mu);
 
 		// Ensure there are at least two frames after the current frame.
-		cv.wait(locker, [this](){return nAfter > 1-reverse || flush;});
+		// If we are in reverse then nAfter is at least 1, if we are in forward 
+		// mode then nAfter is at least 2.
+		cv.wait(locker, [this](){return nAfter > 1-reverse;});
 
-		flush = true; // unblock the reader.
-		
 		// When toggeling we have the following cases:
 		// Switching into backward replay:
 		// * offset
@@ -297,11 +296,10 @@ public:
 		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
 
-		flush = false;
-
 		// Done with exclusive region.
 		locker.unlock();
 		cv.notify_all();
+
 		return ret;
 	}
 
@@ -313,6 +311,7 @@ public:
 		std::unique_lock<std::mutex> locker(mu);
 		
 		// Ensure we have at least a block of nMinImages to go backward.
+		// Leave two frames for the backup when toggeling.
 		cv.wait(locker, [this](){return (nData-nBefore-2) > nMinImages || flush;});
 		
 		// The delta is nReverse and the offset is nData-nBefore-1.
@@ -386,7 +385,7 @@ public:
 		
 		// This should also check that there are two frames left for reverse 
 		// but then the toggle from revere into forward takes two extra frames.
-		// Can we at least write on frame?
+		// Keep at least two frames free!
 		cv.wait(locker, [this](){return nFree() > 1 || flush;});
 
 		// If we do not flush get the write position.
@@ -440,12 +439,14 @@ public:
 		for (int iData = 0; iData < nData; ++iData) {
 			ss << "(" << iData << ";" << data[iData]->pts/avgDeltaPts << "), ";
 		}
+		// Ensure that the buffer is large enough in the logger!
 		pLogger->info("Buffer: %s", ss.str().c_str());
 	}
 };
 
 /**
  * True if writing reached the start of the file. This happens in reverse mode.
+ * We are not at the end yet if we are in reverse (last condition).
  */
 bool atStartForWrite() {
 	return ib->isReverse() && lastWritePts <= pVideoStream->start_time+avgDeltaPts 
@@ -503,16 +504,18 @@ void readNextFrame() {
 		if (seekReq) {
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				pLogger->error("Random seek of %I64d pts unsuccessful.", seekPts);
+				pLogger->error("Random seek of %I64d pts, %I64d frames unsuccessful.", 
+					seekPts, seekPts/avgDeltaPts);
 			} else {
-				pLogger->info("Random seek of %I64d pts successful.", seekPts);
+				pLogger->info("Random seek of %I64d pts, %I64d frames successful.", 
+					seekPts, seekPts/avgDeltaPts);
 				ib->doFlush();
 				avcodec_flush_buffers(pCodecCtx);
 				lastWritePts = seekPts;
 			}
 			seekReq = false;
 		}
-		
+
 		// Switch direction of playback.
 		if (toggle) {
 			std::pair<int,int> offsetDelta = ib->toggle();
@@ -536,21 +539,33 @@ void readNextFrame() {
 			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				pLogger->error("Toggle seek of %I64d pts unsuccessful.", seekPts);
+				pLogger->error("Toggle seek of %I64d pts, %I64d frames unsuccessful.", 
+								seekPts, seekPts/avgDeltaPts);
 			} else {
-				pLogger->info("Toggle seek of %I64d pts successful.", seekPts);
+				pLogger->info("Toggle seek of %I64d pts, %I64d frames successful.", 
+								seekPts, seekPts/avgDeltaPts);
 				avcodec_flush_buffers(pCodecCtx);
 			}			
 			toggle = false;			
 		}
-		
+
+		// Check start or end before issuing seek request!
+		if (atStartForWrite() || atEndForWrite()) {
+			pLogger->info("Reached the start or end with seek %I64d pts, ",
+				"%I64d frames and last write %I64d pts, %I64d frames.", 
+				seekPts, seekPts/avgDeltaPts, lastWritePts, 
+				lastWritePts/avgDeltaPts);
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			continue;
+		}
+
 		// Find next frame in reverse playback.
 		if (ib->seekReq()) {
 
 			// Find the number of frames that can still be read
 			int maxDelta = (-pVideoStream->start_time+lastWritePts)/avgDeltaPts;
 
-			std::pair<int,int> offsetDelta = ib->seekBackward();
+			std::pair<int, int> offsetDelta = ib->seekBackward();
 			
 			int offset = offsetDelta.first;
 			int delta = offsetDelta.second;
@@ -568,9 +583,11 @@ void readNextFrame() {
 			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 
 			if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-				pLogger->error("Reverse seek of %I64d pts unsuccessful.", seekPts);
+				pLogger->error("Reverse seek of %I64d pts, %I64d frames unsuccessful.", 
+								seekPts, seekPts/avgDeltaPts);
 			} else {
-				pLogger->info("Reverse seek of %I64d pts successful.", seekPts);
+				pLogger->info("Reverse seek of %I64d pts, %I64d frames successful.", 
+								seekPts, seekPts/avgDeltaPts);
 				avcodec_flush_buffers(pCodecCtx);
 			}
 		}
@@ -578,29 +595,8 @@ void readNextFrame() {
 		// Read frame.
 		int ret = av_read_frame(pFormatCtx, &packet);
 
-		// Set eof before testing for end of file.
+		// Set eof for end of file.
 		eof = ret == AVERROR_EOF;
-
-		// We went beyond the end with the seek request.
-		// Linear scan back toward the end.
-		/*
-		if (eof && findLast) {
-			lastWritePts = seekPts = seekPts - avgDeltaPts;
-			seekReq = true;
-			fprintf(stdout, "New seek pts %d.\n", seekPts);
-			fflush(stdout);
-			continue;
-		} else {
-			findLast = false; // we found the last.
-		}
-		*/
-
-		if (atStartForWrite() || atEndForWrite()) {
-			pLogger->info("Reached the start or end with seek pts = %I64d "
-				"and last write pts = %I64d.", seekPts, lastWritePts);
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			continue;
-		}
 
 		// Any error that is not eof.
 		if (ret < 0 && !eof) {
@@ -651,7 +647,9 @@ void readNextFrame() {
 							pFrameBuffer->pts = lastWritePts = readPts;
 							ib->cmplWritePtr();
 
-							pLogger->info("Wrote pts %I64d.", lastWritePts/avgDeltaPts);
+							pLogger->info("Wrote %I64d pts, %I64d frames.", 
+											lastWritePts, 
+											lastWritePts/avgDeltaPts);
 							ib->printLog();
 						}
 					}
@@ -679,7 +677,9 @@ JNIEXPORT void JNICALL Java_ImagePlayer_setPlaybackSpeed
 JNIEXPORT void JNICALL Java_ImagePlayer_setTime
 (JNIEnv *env, jobject thisObject, jdouble time) { // time in seconds
 	if (loadedMovie) {
-		lastWritePts = seekPts = ((int64_t)(time/(avgDeltaPts*av_q2d(pVideoStream->time_base))))*avgDeltaPts;
+		lastWritePts = seekPts = ((int64_t)(time/(avgDeltaPts
+												*av_q2d(pVideoStream->time_base))))
+													*avgDeltaPts;
 		seekReq = true;	
 	}
 }
@@ -796,19 +796,21 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
 
 	pLogger = new FileLogger("logger.txt");
+	//pLogger = new StreamLogger(&std::cerr);
 
 	// Register all formats and codecs.
 	av_register_all();
 
 	// Open the video file.
 	if (avformat_open_input(&pFormatCtx, fileName, nullptr, nullptr) != 0) {
-		pLogger->error("Could not open file: %s", fileName);
+		pLogger->error("Could not open file %s.", fileName);
 		exit(1);
 	}
 
 	// Retrieve the stream information.
 	if (avformat_find_stream_info(pFormatCtx, nullptr) < 0) {
-		pLogger->error("Unable to find stream information for file %s.", fileName);
+		pLogger->error("Unable to find stream information for file %s.", 
+						fileName);
 		exit(1);
 	}
   
@@ -869,12 +871,12 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 			nullptr
 		);
 
-	// Initialize the widht, height, duration, number of frames.
+	// Initialize the widht, height, and duration.
 	width = pCodecCtx->width;
 	height = pCodecCtx->height;
 	duration = pVideoStream->duration*av_q2d(pVideoStream->time_base);
-	pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds.", 
-				  width, height, duration);
+	pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.", 
+				  width, height, duration, pVideoStream->duration);
 	pLogger->info("Time base %2.5f.", av_q2d(pVideoStream->time_base));
 
 	// Initialize the image buffer.
@@ -883,7 +885,7 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	// Initialize the delta pts using the average frame rate and the average pts.
 	avgDeltaPts = deltaPts = (int64_t)(1.0/(av_q2d(pVideoStream->time_base)
 										*av_q2d(pVideoStream->avg_frame_rate)));
-	pLogger->info("Average delta pts %I64d.", avgDeltaPts);
+	pLogger->info("Average delta %I64d pts.", avgDeltaPts);
 
 	// Seek to the start of the file.
 	lastWritePts = seekPts = pVideoStream->start_time;
@@ -946,18 +948,17 @@ JNIEXPORT void JNICALL Java_ImagePlayer_rewind
 (JNIEnv *, jobject) {
 	if (loadedMovie) {
 		if (ib->isReverse()) {
-			//fprintf(stdout, "In reverse during rewind. Do nothing here.\n");
-			//fflush(stdout);
-			// TODO: Correct the seek point to the end of the file.
-			//lastWritePts = seekPts = pVideoStream->duration;
-			//seekReq = true;
-			//findLast = true;
-			pLogger->info("Rewind to the end [DISABLED].");
+			// Seek to the end of the file.
+			lastWritePts = seekPts = pVideoStream->duration - 2*avgDeltaPts;
+			seekReq = true;
+			pLogger->info("Rewind to end %I64d pts, %I64d frames.", seekPts, 
+				seekPts/avgDeltaPts);
 		} else {
 			// Seek to the start of the file.
 			lastWritePts = seekPts = pVideoStream->start_time;
 			seekReq = true;
-			pLogger->info("Rewind to the start.");
+			pLogger->info("Rewind to start %I64d pts, %I64d frames.", seekPts,
+				seekPts/avgDeltaPts);
 		}
 	}
 }
@@ -1030,7 +1031,7 @@ JNIEXPORT void JNICALL Java_ImagePlayer_release
 		speed = 1;
 		lastPts = 0;
 		deltaPts = 0;
-		avgDeltaPts = 0;
+		avgDeltaPts = 1;
 		lastWritePts = 0;
 		diff = 0;
 		eof = false;
@@ -1039,7 +1040,6 @@ JNIEXPORT void JNICALL Java_ImagePlayer_release
 		seekReq = false;
 		seekPts = 0;
 		seekFlags = 0;
-		//findLast = false;
 
 		quit = false;
 	}

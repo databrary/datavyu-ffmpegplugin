@@ -120,6 +120,14 @@ protected:
 	 */
 	virtual void log(unsigned int logLevel, const char* msg, 
 					 const va_list& args) = 0;
+
+	std::string logLevelToStr(unsigned int logLevel) {
+		if (logLevel <= ERROR) {		return "ERRR";
+		} else if (logLevel <= DEBUG) {	return "DEBG";
+		} else if (logLevel <= WARN) {	return "WARN";
+		} else if (logLevel <= INFO) {	return "INFO";
+		} else {						return "MISC"; }
+	}
 public:
 	/** Logging level for all messages. */
 	const static unsigned int ALL = 0;
@@ -284,7 +292,8 @@ public:
 			std::time_t t = std::time(NULL);
 			std::strftime(timeBuffer, sizeof(timeBuffer), timeFormat.c_str(), 
 						  std::localtime(&t));
-			buffer.push_front(std::string(timeBuffer) + " - " 
+			buffer.push_front(std::string(timeBuffer) + " " 
+							+ logLevelToStr(logLevel) + " - "
 							+ std::string(msgBuffer) + "\n");
 		}		
 	}

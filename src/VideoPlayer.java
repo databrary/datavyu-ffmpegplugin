@@ -124,7 +124,8 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	class RewindSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			player.rewind();				
+			player.rewind();
+			if (player.hasNextFrame()) { player.loadNextFrame(); }
 		}
 	}
 	
@@ -146,13 +147,9 @@ public class VideoPlayer extends JPanel implements WindowListener {
 				System.out.println("Seconds: " + sec);
 				// TODO: Make sure that the slider is not placed behind the end!!
 				// At the moment this is possible and the player.getNextFrame() method blocks the UI.
-				player.setTime(sec);
+				player.setTime(sec);				
 				
-				// Need to pull one frame because of revert.
-				if (player.hasNextFrame()) {
-					player.showNextFrame();					
-				}
-				
+				if (player.hasNextFrame()) { player.loadNextFrame(); }
 				// Can't show all the frames, random seeks. Only show when the user 
 				// presses step or play.
 				//showNextFrame();
