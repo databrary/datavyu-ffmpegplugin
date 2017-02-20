@@ -140,6 +140,11 @@ public:
 	const static unsigned int OFF = 100;
 
 	/**
+	 * Default destructor.
+	 */
+	virtual ~Logger() {}
+
+	/**
 	 * Sets the logging level to the new level.
 	 *	newLevel -- The new logging level.
 	 */
@@ -258,8 +263,8 @@ public:
 	 * outstanding messages into the stream, and frees the buffer.
 	 */
 	virtual ~StreamLogger() {
+		flush(); // Uses the writer thread to empty the buffer.
 		writing = false;
-		flush();
 		buffer.flush();
 		writer.join();
 	}
