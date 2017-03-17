@@ -13,7 +13,7 @@ extern "C" {
 
 // Florian Raudies, 07/20/2016, Mountain View, CA.
 // vcvarsall.bat x64
-// cl PlaySoundTranscodedFromJNI.cpp /Fe"..\..\lib\PlaySoundTranscodedFromJNI" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg2\libswresample\swresample.lib"
+// cl PlaySoundTranscodedFromJNI.cpp /Fe"..\..\lib\PlaySoundTranscodedFromJNI" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswresample\swresample.lib"
 
 #define AUDIO_BUFFER_SIZE 1024
 #define MAX_AUDIO_FRAME_SIZE 192000
@@ -512,7 +512,7 @@ JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_loadAudio
 
     aOutCodecCtx->channels       = OUTPUT_CHANNELS;
     aOutCodecCtx->channel_layout = av_get_default_channel_layout(OUTPUT_CHANNELS);
-    aOutCodecCtx->sample_rate    = aInCodecCtx->sample_rate;
+    aOutCodecCtx->sample_rate    = aInCodecCtx->sample_rate; // TODO: Here is my problem. I need to resample.
     aOutCodecCtx->sample_fmt     = av_get_sample_fmt("u8");//aInCodec->sample_fmts[0];
     aOutCodecCtx->bit_rate       = OUTPUT_BIT_RATE;
 
@@ -533,6 +533,58 @@ JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_loadAudio
 	decodingThread = new std::thread(decodeLoop);
 
 	env->ReleaseStringUTFChars(jFileName, fileName);
+}
+
+JNIEXPORT jstring JNICALL Java_PlaySoundTranscodedFromJNI_getSampleFormat
+(JNIEnv *env, jobject thisObject) {
+	// sample formats http://ffmpeg.org/doxygen/trunk/group__lavu__sampfmts.html#gaf9a51ca15301871723577c730b5865c5
+	AVSampleFormat sampleFormat = aInCodecCtx->sample_fmt;
+	const char* name = av_get_sample_fmt_name(sampleFormat);
+	return env->NewStringUTF(name);
+}
+
+JNIEXPORT jstring JNICALL Java_PlaySoundTranscodedFromJNI_getCodecName
+(JNIEnv *env, jobject thisObject) {
+	const char* name = aInCodecCtx->codec->name;
+	return env->NewStringUTF(name);
+}
+
+JNIEXPORT jfloat JNICALL Java_PlaySoundTranscodedFromJNI_getSampleRate
+(JNIEnv *env, jobject thisObject) {
+	return aInCodecCtx->sample_rate;
+}
+
+JNIEXPORT jint JNICALL Java_PlaySoundTranscodedFromJNI_getSampleSizeInBits
+(JNIEnv *env, jobject thisObject) {
+	return aInCodecCtx->bits_per_coded_sample;
+}
+
+JNIEXPORT jint JNICALL Java_PlaySoundTranscodedFromJNI_getNumberOfChannels
+(JNIEnv *env, jobject thisObject) {
+	return aInCodecCtx->channels;
+}
+
+JNIEXPORT jint JNICALL Java_PlaySoundTranscodedFromJNI_getFrameSizeInBy
+(JNIEnv *env, jobject thisObject) {
+	AVSampleFormat sampleFormat = aInCodecCtx->sample_fmt;
+	return av_get_bytes_per_sample(sampleFormat);
+}
+
+JNIEXPORT jfloat JNICALL Java_PlaySoundTranscodedFromJNI_getFramesPerSecond
+(JNIEnv *env, jobject thisObject) {
+	//fprintf(stderr, "Framerate numerator %d.\n", aCodecCtx->framerate.num);
+	//fprintf(stderr, "Framerate denumerator %d.\n", aCodecCtx->framerate.den);
+	// see http://ffmpeg.org/doxygen/trunk/structAVRational.html
+	//return (float) av_q2d(aCodecCtx->framerate); 
+	// Makes only sense for video.
+	return aInCodecCtx->sample_rate;
+}
+
+JNIEXPORT jboolean JNICALL Java_PlaySoundTranscodedFromJNI_bigEndian
+(JNIEnv *env, jobject thisObject) {
+    short int number = 0x1;
+    char *numPtr = (char*)&number;
+    return (numPtr[0] != 1);
 }
 
 JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_release
@@ -557,4 +609,15 @@ JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_release
 	avformat_close_input(&pFormatCtx);
 
 	free(streamAudio);
+
+	/**TODO: Set these to nullptr
+
+	uint8_t			*streamAudio		= nullptr;
+	AVFormatContext *pFormatCtx			= nullptr;
+	AVCodecContext  *aInCodecCtx		= nullptr;
+	AVCodecContext	*aOutCodecCtx		= nullptr;
+	AVCodecContext	*aInCodecCtxOrig	= nullptr;
+	std::thread		*decodingThread		= nullptr;
+	SwrContext		*resample_context	= nullptr;
+	*/
 }

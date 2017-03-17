@@ -11,6 +11,7 @@ extern "C" {
 }
 
 #include "Logger.h"
+#include "AVLogger.h"
 #include "ImagePlayer.h"
 #include <atomic>
 #include <mutex>
@@ -20,6 +21,7 @@ extern "C" {
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
+
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
 // cl ImagePlayer.cpp /Fe"..\..\lib\ImagePlayer" /I"C:\Users\Florian\FFmpeg-release-3.2" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswscale\swscale.lib"
@@ -77,6 +79,7 @@ int					heightView		= 0; // on reset 0
 int					x0View			= 0; // on reset 0
 int					y0View			= 0; // on reset 0
 bool				doView			= false; // on reset false
+
 
 /**
  * This image buffer is a ring buffer with a forward mode and backward mode.
@@ -840,9 +843,6 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 		exit(1);
 	}
   
-	// Dump information about file onto standard error.
-	av_dump_format(pFormatCtx, 0, fileName, 0);
-
 	// Find the first video stream.
 	iVideoStream = -1;
 	for (int iStream = 0; iStream < pFormatCtx->nb_streams; ++iStream) {
@@ -871,13 +871,21 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	}
 
 	// Open codec.
-	if(avcodec_open2(pCodecCtx, pCodec, &optsDict)<0) {
+	if (avcodec_open2(pCodecCtx, pCodec, &optsDict)<0) {
 		pLogger->error("Unable to open codec for file %s.", fileName);
 		exit(1);
 	}
 	
 	// Log that opened a file.
 	pLogger->info("Opened file %s.", fileName);
+
+	// Dump information about file onto standard error.
+	std::string info = log_av_format(pFormatCtx, 0, fileName, 0);
+	std::istringstream lines(info);
+    std::string line;
+    while (std::getline(lines, line)) {
+		pLogger->info("%s", line.c_str());
+    }
 
 	// Allocate video frame.
 	pFrame = av_frame_alloc();

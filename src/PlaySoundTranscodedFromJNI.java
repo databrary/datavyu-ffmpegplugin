@@ -12,7 +12,9 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-//import javafx.scene.media.Media;
+// import javafx.scene.media.Media;
+// It looks like javafx 2.0 has only capabilities to play back sound directly
+// from a file http://docs.oracle.com/javafx/2/api/index.html, search AudioClip.
 
 // TODO: stop/restart, fast/slow play back, change the volume through gain control on data line
 // For faster/slower play back see this post
@@ -57,6 +59,22 @@ public class PlaySoundTranscodedFromJNI {
 	// use this frames per second (frame rate): 22050
 	
 	private native void loadAudio(String fileName); // does NOT load any frame into the audio buffer.
+	
+	private native String getSampleFormat();
+	
+	private native String getCodecName();
+	
+	private native float getSampleRate();
+	
+	private native int getSampleSizeInBits();
+	
+	private native int getNumberOfChannels();
+	
+	private native int getFrameSizeInBy();
+	
+	private native float getFramesPerSecond();
+	
+	private native boolean bigEndian();
 		
 	private native void release();	
 	
@@ -66,6 +84,8 @@ public class PlaySoundTranscodedFromJNI {
 		loadAudio(fileName);
 		buffer = getAudioBuffer(BUFFER_SIZE);		
 		isOpen = true;
+		//audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, 44100.0f, 8, 1, 1, 4800, false);
+		//audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, 48000.0f, 8, 1, 1, 48000, false);
 		audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, 22050.0f, 8, 1, 1, 22050, false);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
 		soundLine = (SourceDataLine) AudioSystem.getLine(info);
@@ -82,6 +102,15 @@ public class PlaySoundTranscodedFromJNI {
 		gainControl.setValue(-10.0f);
 		System.out.println("max volume: " + gainControl.getMaximum());
 		System.out.println("min volume: " + gainControl.getMinimum());
+		
+		System.out.println("Input audio format:");
+		System.out.println("Sample format: " + getSampleFormat());
+		System.out.println("Codec name: " + getCodecName());
+		System.out.println("Sample rate: " + getSampleRate());
+		System.out.println("Sample size in bits: " + getSampleSizeInBits());
+		System.out.println("Channels: " + getNumberOfChannels());
+		System.out.println("Frame size in bytes: " + getFrameSizeInBy());
+		System.out.println("Frames per second: " + getFramesPerSecond());
 		
 		sampleData = new byte[buffer.capacity()]; // could be too large, let's see.
 		playerThread = new PlayerThread();
@@ -136,6 +165,7 @@ public class PlaySoundTranscodedFromJNI {
 		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\dvm1.mpg";
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\Gah.mov";
+		//String fileName = "C:\\Users\\Florian\\OneThroughTen.wma";
 		PlaySoundTranscodedFromJNI player = new PlaySoundTranscodedFromJNI();
 		// Set up an audio input stream piped from the sound file.
 		try {
@@ -143,7 +173,7 @@ public class PlaySoundTranscodedFromJNI {
 			System.out.println("Opened audio file!");
 			player.play();
 			System.out.println("Started player thread!");
-			Thread.sleep(5000); // Play the file for 2 sec and then shut down.
+			Thread.sleep(15000); // Play the file for 15 sec and then shut down.
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();			
 		} catch (UnsupportedAudioFileException ex) {

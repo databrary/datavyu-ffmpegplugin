@@ -33,6 +33,70 @@ JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_loadAudio
 
 /*
  * Class:     PlaySoundTranscodedFromJNI
+ * Method:    getSampleFormat
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_PlaySoundTranscodedFromJNI_getSampleFormat
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlaySoundTranscodedFromJNI
+ * Method:    getCodecName
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_PlaySoundTranscodedFromJNI_getCodecName
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlaySoundTranscodedFromJNI
+ * Method:    getSampleRate
+ * Signature: ()F
+ */
+JNIEXPORT jfloat JNICALL Java_PlaySoundTranscodedFromJNI_getSampleRate
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlaySoundTranscodedFromJNI
+ * Method:    getSampleSizeInBits
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_PlaySoundTranscodedFromJNI_getSampleSizeInBits
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlaySoundTranscodedFromJNI
+ * Method:    getNumberOfChannels
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_PlaySoundTranscodedFromJNI_getNumberOfChannels
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlaySoundTranscodedFromJNI
+ * Method:    getFrameSizeInBy
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_PlaySoundTranscodedFromJNI_getFrameSizeInBy
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlaySoundTranscodedFromJNI
+ * Method:    getFramesPerSecond
+ * Signature: ()F
+ */
+JNIEXPORT jfloat JNICALL Java_PlaySoundTranscodedFromJNI_getFramesPerSecond
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlaySoundTranscodedFromJNI
+ * Method:    bigEndian
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_PlaySoundTranscodedFromJNI_bigEndian
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     PlaySoundTranscodedFromJNI
  * Method:    release
  * Signature: ()V
  */

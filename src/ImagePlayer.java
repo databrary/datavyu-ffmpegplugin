@@ -342,10 +342,11 @@ public class ImagePlayer extends Canvas {
 	public static void main(String[] args) {
 		//String fileName = "C:\\Users\\Florian\\test.mpg";
 		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
-		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
 		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
 		//String fileName = "C:\\Users\\Florian\\video_1080p.mp4";
 		//String fileName = "C:\\Users\\Florian\\video_h264ntscdvw.mp4";
+		String fileName = "C:\\Users\\Florian\\video_1080pmain42_5mbps.mp4";
 		final ImagePlayer player = new ImagePlayer();
 		player.open(fileName);
 		int width = player.getWidth();
@@ -364,7 +365,7 @@ public class ImagePlayer extends Canvas {
         } );        
         f.setVisible(true);
         long t0 = System.nanoTime();
-        int nFrameReq = 1; // Played number of frames.
+        int nFrameReq = 500; // Played number of frames.
         int nFrameDec = 0; // Decoded number of frames.
         int nFrameSkip = 0; // Skipped number of frames.
         for (int iFrame = 0; iFrame < nFrameReq; ++iFrame) {
