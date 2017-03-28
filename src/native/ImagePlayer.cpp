@@ -8,6 +8,7 @@ extern "C" {
 	#include <libavcodec/avcodec.h>
 	#include <libavformat/avformat.h>
 	#include <libswscale/swscale.h>
+	#include <libavutil/error.h> // error codes
 }
 
 #include "Logger.h"
@@ -812,8 +813,9 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 	return (jint) nFrame;
 }
 
-JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
+JNIEXPORT jint JNICALL Java_ImagePlayer_openMovie
 (JNIEnv *env, jobject thisObject, jstring jFileName, jstring jVersion) {
+	int errNo = 0;
 
 	// Release resources first before loading another movie.
 	if (loadedMovie) {
@@ -831,16 +833,16 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	av_register_all();
 
 	// Open the video file.
-	if (avformat_open_input(&pFormatCtx, fileName, nullptr, nullptr) != 0) {
+	if ((errNo = avformat_open_input(&pFormatCtx, fileName, nullptr, nullptr)) != 0) {
 		pLogger->error("Could not open file %s.", fileName);
-		exit(1);
+		return (jint) errNo;
 	}
 
 	// Retrieve the stream information.
-	if (avformat_find_stream_info(pFormatCtx, nullptr) < 0) {
+	if ((errNo = avformat_find_stream_info(pFormatCtx, nullptr)) < 0) {
 		pLogger->error("Unable to find stream information for file %s.", 
 						fileName);
-		exit(1);
+		return (jint) errNo;
 	}
   
 	// Find the first video stream.
@@ -854,7 +856,7 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 
 	if (iVideoStream == -1) {
 		pLogger->error("Unable to find a video stream in file %s.", fileName);
-		exit(1);
+		return (jint) AVERROR_INVALIDDATA;
 	}
 
 	// Get a poitner to the video stream.
@@ -867,13 +869,13 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
 	if (pCodec == nullptr) {
 		pLogger->error("Unsupported codec for file %s.", fileName);
-		exit(1);
+		return (jint) AVERROR_DECODER_NOT_FOUND;
 	}
 
 	// Open codec.
-	if (avcodec_open2(pCodecCtx, pCodec, &optsDict)<0) {
+	if ((errNo = avcodec_open2(pCodecCtx, pCodec, &optsDict)) < 0) {
 		pLogger->error("Unable to open codec for file %s.", fileName);
-		exit(1);
+		return (jint) errNo;
 	}
 	
 	// Log that opened a file.
@@ -935,6 +937,8 @@ JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
 	// Free strings.
 	env->ReleaseStringUTFChars(jFileName, fileName);
 	env->ReleaseStringUTFChars(jVersion, version);
+
+	return (jint) 0; // No error.
 }
 
 JNIEXPORT jint JNICALL Java_ImagePlayer_getNumberOfChannels

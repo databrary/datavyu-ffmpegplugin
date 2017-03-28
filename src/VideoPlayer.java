@@ -205,7 +205,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		stopPlayer();
 	
 		// Assign a new movie file.
-        player.open(fileName);
+        int errNo = player.open(fileName, "0.0.1");
         
         // Load and display first frame.
         showNextFrame();
@@ -242,6 +242,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
         System.out.println("duration = " + duration + " seconds.");
         System.out.println("start time = " + player.getStartTime() + " seconds.");
         System.out.println("end time = " + player.getEndTime() + " seconds.");
+        System.out.println("Encountered error number " + errNo + " (0 no error)");
 	}
 	
 	class OpenFileSelection implements ActionListener {

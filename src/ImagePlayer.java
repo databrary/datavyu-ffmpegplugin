@@ -94,8 +94,10 @@ public class ImagePlayer extends Canvas {
 	 * releases resources and re-allocates them.
 	 * 
 	 * @param fileName The file name.
+	 * @return An error no. This error no corresponds to the error codes defined
+	 * here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/libavutil/error.h
 	 */
-	protected native void openMovie(String fileName, String version);
+	protected native int openMovie(String fileName, String version);
 	
 	/**
 	 * Get the number of color channels for the movie.
@@ -301,16 +303,19 @@ public class ImagePlayer extends Canvas {
 	 * Sets a movie for this player.
 	 * 
 	 * @param fileName Name of the movie file.
+	 * @return Returns an error code. This error code is defined
+	 * here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/libavutil/error.h
 	 */
-	public void open(String fileName) {
+	public int open(String fileName, String version) {
 		// TODO: ADD the true version string here.		
-		openMovie(fileName, "0.0.1");
+		int errNo = openMovie(fileName, version);
 		nChannel = getNumberOfChannels();
 		width = getWidth();
 		height = getHeight();
 		// Create a sampling model for this movie file.
 		sm = cm.createCompatibleSampleModel(width, height);
 		setBounds(0, 0, width, height);
+		return errNo;
 	}
 		
 	public void paint(Graphics g) {
@@ -348,7 +353,11 @@ public class ImagePlayer extends Canvas {
 		//String fileName = "C:\\Users\\Florian\\video_h264ntscdvw.mp4";
 		String fileName = "C:\\Users\\Florian\\video_1080pmain42_5mbps.mp4";
 		final ImagePlayer player = new ImagePlayer();
-		player.open(fileName);
+		int errNo = player.open(fileName, "0.0.1");
+		if (errNo != 0) {
+			System.out.println("Encountered error numbe " + errNo 
+					+ " while opening the file: " + fileName);
+		}
 		int width = player.getWidth();
 		int height = player.getHeight();
 		double duration = player.getDuration();

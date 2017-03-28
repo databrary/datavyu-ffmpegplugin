@@ -48,9 +48,9 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 /*
  * Class:     ImagePlayer
  * Method:    openMovie
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)I
  */
-JNIEXPORT void JNICALL Java_ImagePlayer_openMovie
+JNIEXPORT jint JNICALL Java_ImagePlayer_openMovie
   (JNIEnv *, jobject, jstring, jstring);
 
 /*
