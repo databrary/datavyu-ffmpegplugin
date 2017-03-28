@@ -96,6 +96,7 @@ public class ImagePlayer extends Canvas {
 	 * @param fileName The file name.
 	 * @return An error no. This error no corresponds to the error codes defined
 	 * here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/libavutil/error.h
+	 * and here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/doc/errno.txt
 	 */
 	protected native int openMovie(String fileName, String version);
 	
@@ -305,6 +306,7 @@ public class ImagePlayer extends Canvas {
 	 * @param fileName Name of the movie file.
 	 * @return Returns an error code. This error code is defined
 	 * here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/libavutil/error.h
+	 * and here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/doc/errno.txt
 	 */
 	public int open(String fileName, String version) {
 		// TODO: ADD the true version string here.		
