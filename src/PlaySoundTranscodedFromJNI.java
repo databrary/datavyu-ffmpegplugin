@@ -41,7 +41,7 @@ public class PlaySoundTranscodedFromJNI {
 	private boolean isOpen = false;
 	private boolean doPlay = false;
 	private ByteBuffer buffer = null;
-	int BUFFER_SIZE = 8*1024;  // 8 KB
+	int BUFFER_SIZE = 1024*1024;  // 1024 KB
 	private SourceDataLine soundLine = null;
 	private AudioFormat audioFormat = null;
 	private byte[] sampleData = null;
@@ -84,13 +84,17 @@ public class PlaySoundTranscodedFromJNI {
 		loadAudio(fileName);
 		buffer = getAudioBuffer(BUFFER_SIZE);		
 		isOpen = true;
-		//audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, 44100.0f, 8, 1, 1, 4800, false);
+		float sampleRate = getSampleRate();
+		int frameRate = (int) getFramesPerSecond();
+		int frameSize = getFrameSizeInBy();
+		
+		audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, sampleRate, 8, 2, frameSize, 256000, false);
 		//audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, 48000.0f, 8, 1, 1, 48000, false);
-		audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, 22050.0f, 8, 1, 1, 22050, false);
+		//audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, 22050.0f, 8, 1, 1, 22050, false);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-		soundLine = (SourceDataLine) AudioSystem.getLine(info);
+		soundLine = (SourceDataLine) AudioSystem.getLine(info);			
 		soundLine.open(audioFormat);
-		soundLine.start();
+		soundLine.start();	
 		
 		// Get all controls for this data line.
 		Control controls[] = soundLine.getControls();
@@ -98,10 +102,10 @@ public class PlaySoundTranscodedFromJNI {
 			System.out.println(control);
 		}
 		// We noticed that it offers a gain control which we use to change the volume by -10dB.
-		FloatControl gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
-		gainControl.setValue(-10.0f);
-		System.out.println("max volume: " + gainControl.getMaximum());
-		System.out.println("min volume: " + gainControl.getMinimum());
+		//FloatControl gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
+		//gainControl.setValue(-10.0f);
+		//System.out.println("max volume: " + gainControl.getMaximum());
+		//System.out.println("min volume: " + gainControl.getMinimum());
 		
 		System.out.println("Input audio format:");
 		System.out.println("Sample format: " + getSampleFormat());
@@ -148,11 +152,11 @@ public class PlaySoundTranscodedFromJNI {
 	
 	public void close() {
 		doPlay = false;
-		playerThread.interrupt();
-		System.out.println("State of player thread: " + playerThread.getState());
+		//playerThread.interrupt();
+		//System.out.println("State of player thread: " + playerThread.getState());
 		release();
-		System.out.println("Player thread alive? " + playerThread.isAlive());
-		System.out.println("Player thread is deamon? " + playerThread.isDaemon());
+		//System.out.println("Player thread alive? " + playerThread.isAlive());
+		//System.out.println("Player thread is deamon? " + playerThread.isDaemon());
 		soundLine.drain();
 		soundLine.stop();
 		soundLine.close();
@@ -160,12 +164,22 @@ public class PlaySoundTranscodedFromJNI {
 	
 	// Nice overview:  https://docs.oracle.com/javase/tutorial/sound/sampled-overview.html
 	public static void main(String[] args) {
-		String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
+		//String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
 		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4";
 		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\dvm1.mpg";
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\Gah.mov";
 		//String fileName = "C:\\Users\\Florian\\OneThroughTen.wma";
+		//String fileName = "C:\\Users\\Florian\\audio_ilbc.mov";
+		//String fileName = "C:\\Users\\Florian\\audio_applelossless.mov";
+		//String fileName = "C:\\Users\\Florian\\audio_pcm.m2v";
+		//String fileName = "C:\\Users\\Florian\\audio_aacplus1.mp4";
+		//String fileName = "C:\\Users\\Florian\\example.mov";
+		//String fileName = "C:\\Users\\Florian\\Los_Parranderos.mp3";
+		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
+		//String fileName = "C:\\Users\\Florian\\audiocheck.net_hdsweep_1Hz_48000Hz_-3dBFS_30s.wav";
+		//String fileName = "C:\\Users\\Florian\\Alesis-Fusion-Clean-Guitar-C3.wav";
+		
 		PlaySoundTranscodedFromJNI player = new PlaySoundTranscodedFromJNI();
 		// Set up an audio input stream piped from the sound file.
 		try {
@@ -186,7 +200,7 @@ public class PlaySoundTranscodedFromJNI {
 			System.out.println("Stopping player.");
 			player.stop();
 			System.out.println("Closing player.");
-			player.close();
+			//player.close();
 			System.out.println("Closed player.");
 			// Now get that Java Sound event dispatcher thread to close (THIS WAS NOT THE PROBLEM)
 			// http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4365713

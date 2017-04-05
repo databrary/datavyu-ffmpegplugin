@@ -20,10 +20,9 @@ extern "C" {
 #define AUDIO_QUEUE_MAX_SIZE 128
 
 /** The output bit rate in kbit/s */
-#define OUTPUT_BIT_RATE 22050
-/** The number of output channels */
-#define OUTPUT_CHANNELS 1
-
+//#define OUTPUT_BIT_RATE 44100
+#define OUTPUT_CHANNELS 2
+#define OUTPUT_BIT_RATE 256000
 /**
  * Convert an error code into a text message.
  * @param error Error code to be converted
@@ -510,11 +509,13 @@ JNIEXPORT void JNICALL Java_PlaySoundTranscodedFromJNI_loadAudio
 		exit(AVERROR_EXIT);
     }
 
-    aOutCodecCtx->channels       = OUTPUT_CHANNELS;
-    aOutCodecCtx->channel_layout = av_get_default_channel_layout(OUTPUT_CHANNELS);
+	AVCodec *output_codec = avcodec_find_encoder(AV_CODEC_ID_PCM_U8);
+
+    aOutCodecCtx->channels       = aInCodecCtx->channels; //av_get_channel_layout_nb_channels(AV_CH_LAYOUT_MONO);
+    aOutCodecCtx->channel_layout = aInCodecCtx->channel_layout; //AV_CH_LAYOUT_MONO;
     aOutCodecCtx->sample_rate    = aInCodecCtx->sample_rate; // TODO: Here is my problem. I need to resample.
-    aOutCodecCtx->sample_fmt     = av_get_sample_fmt("u8");//aInCodec->sample_fmts[0];
-    aOutCodecCtx->bit_rate       = OUTPUT_BIT_RATE;
+    aOutCodecCtx->sample_fmt     = av_get_sample_fmt("u8"); //output_codec->sample_fmts[0]; //aInCodec->sample_fmts[0];
+    aOutCodecCtx->bit_rate       = OUTPUT_BIT_RATE; //aInCodecCtx->bit_rate; // OUTPUT_BIT_RATE;
 
     /** Open the encoder for the audio stream to use it later. */
     if ((error = avcodec_open2(aOutCodecCtx, aOutCodec, NULL))<0) {
