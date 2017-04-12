@@ -23,7 +23,7 @@ public class AudioPlayer {
 	}
 
 	/** Size of the buffer */
-	int BUFFER_SIZE = 1024*1024;  // 1 MB
+	int BUFFER_SIZE = 512*1024;  // 512 kB
 	
 	/** Used to control the player thread */
 	private boolean doPlay = false;
@@ -80,16 +80,44 @@ public class AudioPlayer {
 		
 	private native void release();
 	
-	public int open(String fileName) throws IOException, 
+	private Encoding getEncoding() {
+		String codecName = getCodecName().toLowerCase();
+		Encoding encoding = new Encoding(codecName);
+		switch (codecName) {
+			case "pcm_u8": case "pcm_u16le":
+				encoding = Encoding.PCM_UNSIGNED;
+				break;
+			case "pcm_s8": case "pcm_s16le":
+				encoding = Encoding.PCM_SIGNED;
+				break;
+		}
+		return encoding;
+	}
+	
+	public enum AudioType {
+	    MONO_TYPE, STEREO_TYPE
+	}
+	
+	private final static AudioFormat MONO_FORMAT = new AudioFormat(
+			Encoding.PCM_SIGNED, 0, 0, 1, 0, 0, false);
+	private final static AudioFormat STEREO_FORMAT = new AudioFormat(
+			Encoding.PCM_UNSIGNED, 0, 0, 2, 0, 0, false);
+	
+	public int open(String fileName, AudioType type) throws IOException, 
 			UnsupportedAudioFileException, LineUnavailableException {
-		
-		//AudioFormat audioFormat = new AudioFormat(Encoding.PCM_UNSIGNED, 0, 0, 2, 0, 0, false);
-		AudioFormat audioFormat = new AudioFormat(Encoding.PCM_SIGNED, 0, 0, 1, 0, 0, false);
-
+		AudioFormat audioFormat = MONO_FORMAT;
+		switch (type) {
+		case MONO_TYPE:
+			audioFormat = MONO_FORMAT;
+			break;
+		case STEREO_TYPE:
+			audioFormat = STEREO_FORMAT;
+			break;
+		}
+				
 		int errNo = 0;
 		if ((errNo = loadAudio(fileName, audioFormat)) != 0) {
 			System.err.println("Error " + errNo + " occured when opening audio stream.");
-			
 			return errNo; 
 		}
 		System.out.println("Audio format: " + audioFormat);
@@ -97,23 +125,11 @@ public class AudioPlayer {
 		buffer = getAudioBuffer(BUFFER_SIZE);	
 		sampleData = new byte[buffer.capacity()];
 		
-		float sampleRate = getSampleRate();
-		int frameRate = (int) getFramesPerSecond();
-		int frameSize = getFrameSizeInBy();
-		int channels = getNumberOfChannels();
-		int sampleSizeInBits = getSampleSizeInBits();
-		
-		System.out.println("Input audio format:");
-		System.out.println("Sample format: " + getSampleFormat());
-		System.out.println("Codec name: " + getCodecName());
-		System.out.println("Sample rate: " + getSampleRate());
-		System.out.println("Sample size in bits: " + getSampleSizeInBits());
-		System.out.println("Channels: " + getNumberOfChannels());
-		System.out.println("Frame size in bytes: " + getFrameSizeInBy());
-		System.out.println("Frames per second: " + getFramesPerSecond());
-		
-		//audioFormat = new AudioFormat(Encoding.PCM_SIGNED, sampleRate, 
-		//		sampleSizeInBits, channels, frameSize, frameRate, false);
+		// When using stereo need to multiply the frameSize by number of channels
+		audioFormat = new AudioFormat(getEncoding(), getSampleRate(), 
+				getSampleSizeInBits(), getNumberOfChannels(), 
+				getFrameSizeInBy()*getNumberOfChannels(), 
+				(int)getFramesPerSecond(), false);
 		
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
 		soundLine = (SourceDataLine) AudioSystem.getLine(info);			
@@ -138,6 +154,7 @@ public class AudioPlayer {
 	public boolean playNextFrame() {
 		boolean hasNext = false;
 		if ((hasNext = loadNextFrame())) {
+			System.out.println("Loaded next frame.");
 			// Copy data from the buffer into sample data
 			buffer.get(sampleData, 0, BUFFER_SIZE);
 			soundLine.write(sampleData, 0, BUFFER_SIZE);
@@ -161,17 +178,31 @@ public class AudioPlayer {
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\dvm1.mpg";
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\Gah.mov";
 		//String fileName = "C:\\Users\\Florian\\Los_Parranderos.mp3";
-		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
-		//String fileName = "C:\\Users\\Florian\\AudioCodecs\\audio_aac.mp4";
+		//String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
+		String dirName = "C:\\Users\\Florian\\AudioCodecs\\";
+		//String fileName = dirName + "audio_aac.mp4";
+		//String fileName = dirName + "audio_aacplus1.mp4";
+		//String fileName = dirName + "audio_aacplus2.mp4";
+		//String fileName = dirName + "audio_applelossless.mov";
+		//String fileName = dirName + "audio_ilbc.mov";
+		//String fileName = dirName + "audio_ima4t1.mov";
+		//String fileName = dirName + "audio_mp3.mp3";
+		//String fileName = dirName + "audio_mpeg2.mpg";
+		//String fileName = dirName + "audio_qualcomm_purevoice.mov";
+		String fileName = dirName + "audio_waveform.wav";
 		AudioPlayer player = new AudioPlayer();
+		AudioType type = AudioType.MONO_TYPE;
+		//AudioType type = AudioType.STEREO_TYPE;
 		// Set up an audio input stream piped from the sound file.
 		try {
-			int errNo = player.open(fileName); 
+			int errNo = player.open(fileName, type);
 			if (errNo != 0) {
-				System.err.println("Could not open audio file " + fileName 
+				System.err.println("Could not open audio file: " + fileName 
 						+ ", errNo: " + errNo);
 			} else {
-				while (player.playNextFrame()) {}				
+				while (player.playNextFrame()) {
+					System.out.println("Playing.");
+				}				
 			}			
 		} catch (UnsupportedAudioFileException ex) {
 			ex.printStackTrace();
@@ -182,7 +213,7 @@ public class AudioPlayer {
 		} finally {
 			System.out.println("Stopping player.");
 			System.out.println("Closing player.");
-			player.close();
+			//player.close();
 		}
 	}
 }

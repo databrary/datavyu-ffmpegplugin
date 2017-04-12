@@ -563,14 +563,14 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		return AVERROR_EXIT;
 	}
 
-	if ((errNo = avcodec_copy_context(aInCodecCtx, aInCodecCtxOrig))<0) {
+	if ((errNo = avcodec_copy_context(aInCodecCtx, aInCodecCtxOrig)) < 0) {
 		fprintf(stderr, "Could not copy codec context. Error: '%s'.\n",
                 fileName, get_error_text(errNo));
 		avformat_close_input(&pFormatCtx);
 		return errNo;
 	}
 
-	if ((errNo = avcodec_open2(aInCodecCtx, aInCodec, NULL))<0) {
+	if ((errNo = avcodec_open2(aInCodecCtx, aInCodec, NULL)) < 0) {
 		fprintf(stderr, "Could not open audio codec. Error: '%s'.\n",
                 get_error_text(errNo));
 		avformat_close_input(&pFormatCtx);
@@ -586,19 +586,24 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		return AVERROR_EXIT;
 	}
 
+	// Allocate the output codec context
     if (!(aOutCodecCtx = avcodec_alloc_context3(aOutCodec))) {
         fprintf(stderr, "Could not allocate an encoding output context\n");
 		avformat_close_input(&pFormatCtx);
 		return AVERROR_EXIT;
     }
+
+    // Set the sample format
+	aOutCodecCtx->sample_fmt = sampleFormat;
+
 	// Set channels, either from input audioFormat or from input codec
 	if (channels != 0) {
-		aOutCodecCtx->channels = av_get_channel_layout_nb_channels(channels);
-		aOutCodecCtx->channel_layout = channels;
+		aOutCodecCtx->channels = channels;
+		aOutCodecCtx->channel_layout = av_get_default_channel_layout(channels);
 	} else {
 		aOutCodecCtx->channels = aInCodecCtx->channels;
 		aOutCodecCtx->channel_layout = aInCodecCtx->channel_layout;
-		env->SetIntField(audioFormat, channelsId, aInCodecCtx->channel_layout);
+		env->SetIntField(audioFormat, channelsId, aInCodecCtx->channels);
 	}
 	// Set sample rate, either from input audioFormat or from input codec
 	if (sampleRate != 0) {
@@ -614,14 +619,9 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	    aOutCodecCtx->bit_rate = aInCodecCtx->bit_rate;
 		env->SetFloatField(audioFormat, frameRateId, aOutCodecCtx->bit_rate);
 	}
-    // Set the sample format
-	aOutCodecCtx->sample_fmt = sampleFormat;
-
-	fprintf(stderr, "Channels %d.\n", aOutCodecCtx->channels);
-	fprintf(stderr, "Sample rate %d.\n", aOutCodecCtx->sample_rate);
-	fprintf(stderr, "Frame rate %d.\n", aOutCodecCtx->bit_rate);
-	fprintf(stderr, "Sample format %s.\n", av_get_sample_fmt_name(aOutCodecCtx->sample_fmt));
-	fflush(stderr);
+	
+	// 
+	env->SetIntField(audioFormat, frameSizeId, av_get_bytes_per_sample(sampleFormat));
 
     /** Open the encoder for the audio stream to use it later. */
     if ((errNo = avcodec_open2(aOutCodecCtx, aOutCodec, NULL)) < 0) {
@@ -637,11 +637,8 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		return errNo;
 	}
 
-	// Set the bits per sample
+	// bits_per_coded_sample is only set after opening the audio codec context
 	env->SetIntField(audioFormat, sampleSizeInBitsId, aOutCodecCtx->bits_per_coded_sample);
-	
-	// 
-	env->SetIntField(audioFormat, frameSizeId, av_get_bytes_per_sample(sampleFormat));
 
 
 	decodingThread = new std::thread(decodeLoop);
