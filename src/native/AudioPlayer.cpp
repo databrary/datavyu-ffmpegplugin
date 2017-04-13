@@ -25,16 +25,12 @@ extern "C" {
 #define MAX_AUDIO_FRAME_SIZE 192000
 #define AUDIO_QUEUE_MAX_SIZE 128
 
-#define OUTPUT_CHANNELS 1
-#define OUTPUT_BIT_RATE 256000
-
 /**
  * Convert an error code into a text message.
  * @param error Error code to be converted
  * @return Corresponding error text (not thread-safe)
  */
-static const char *get_error_text(const int error)
-{
+static const char *get_error_text(const int error) {
     static char error_buffer[256];
     av_strerror(error, error_buffer, sizeof(error_buffer));
     return error_buffer;
@@ -55,6 +51,8 @@ int				flush			= 0;
 int				quit			= 0;
 int				nLen			= 0;
 int             iAudioStream	= -1;
+int				done			= 0;
+bool			loadedAudio		= false;
 
 uint8_t			*streamAudio		= nullptr;
 AVFormatContext *pFormatCtx			= nullptr;
@@ -68,6 +66,10 @@ static void packet_queue_init(PacketQueue *q) {
 	memset(q, 0, sizeof(PacketQueue));
 	q->mu = new std::mutex;
 	q->cv = new std::condition_variable;
+}
+
+static bool packet_queue_empty(PacketQueue *q) {
+	return q->nb_packets == 0;
 }
 
 static void packet_queue_flush(PacketQueue *q) {
@@ -281,14 +283,11 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 			data_size = 0;
 
 			if (got_frame) {
-				//fprintf(stderr, "Got data from packet queue.\n");
 				data_size = av_samples_get_buffer_size(NULL, 
 								aOutCodecCtx->channels,
 								frame.nb_samples,
 								aOutCodecCtx->sample_fmt,
 								1);
-				//fprintf(stderr, "\tFrame has %d samples.\n", frame.nb_samples);
-				//fprintf(stderr, "\t\tData size = %d.\n", data_size);
 
 				assert(data_size <= buf_size);
 
@@ -324,7 +323,6 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 				continue;
 			}
 			/* We have data, return it and come back for more later */
-			//fprintf(stderr, "decoded %d data from packet.\n", data_size);
 			return data_size;
 		}
 		if (pkt.data)
@@ -333,13 +331,12 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 		if (quit) {
 			return -1;
 		}
-
-		//fprintf(stderr, "  Calling packet_queue_get\n");
-		if (packet_queue_get(&audioq, &pkt) < 0) {
-			//fprintf(stderr, "No data in packet queue.\n");
+		if (done && packet_queue_empty(&audioq)) {
 			return -1;
 		}
-
+		if (packet_queue_get(&audioq, &pkt) < 0) {
+			return -1;
+		}
 		audio_pkt_data = pkt.data;
 		audio_pkt_size = pkt.size;
 	}
@@ -352,6 +349,7 @@ JNIEXPORT jobject JNICALL Java_AudioPlayer_getAudioBuffer
 	streamAudio = (uint8_t*) malloc(nByte);
 	if (!streamAudio) {
 		fprintf(stderr, "Failed to allocate stream audio buffer.\n");
+		return 0;
 	}
 	return env->NewDirectByteBuffer((void*) streamAudio, nByte*sizeof(uint8_t));
 }
@@ -370,20 +368,22 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
 	static unsigned int audio_buf_size = 0;
 	static unsigned int audio_buf_index = 0;
 
-	while (len > 0) {
-		//fprintf(stderr, "Length that still needs to be read is %d.\n", len);
+	// If we are at the end of the end of the file then do not load another 
+	// empty buffer
+	if (done && packet_queue_empty(&audioq)) {
+		return false;
+	}
 
-		if(audio_buf_index >= audio_buf_size) {
+	while (len > 0) {
+		// We still need to read len bytes
+		if (audio_buf_index >= audio_buf_size) {
 			/* We already sent all our data; get more */
 			audio_size = audio_decode_frame(aInCodecCtx, audio_buf, sizeof(audio_buf));
-
-			//fprintf(stderr, "\tThe audio size is %d.\n", audio_size);
 
 			if (audio_size < 0) {
 				/* If error, output silence */
 				audio_buf_size = 1024; // arbitrary?
-				//fprintf(stderr, "Set silience for %d bytes.\n", audio_buf_size);
-				memset(audio_buf, 0, audio_buf_size);
+				memset(audio_buf, 0, audio_buf_size); // set silience for the rest
 			} else {
 				audio_buf_size = audio_size;
 			}
@@ -400,9 +400,6 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
 		stream += len1;
 		audio_buf_index += len1;
 	}
-	//fprintf(stderr, "Audio buffer address: %x\n", streamAudio);
-	//fprintf(stderr, "Stream address: %x\n", stream);
-
 	return quit == 0;
 }
 
@@ -410,16 +407,21 @@ void decodeLoop() {
 	AVPacket packet;
 	while (!quit && av_read_frame(pFormatCtx, &packet) >= 0) {
 		if (packet.stream_index == iAudioStream) {
-			//fprintf(stderr, "Decoded packet for audio stream %d.\n",iAudioStream);
+			// Decode packet from audio stream
 			packet_queue_put(&audioq, &packet);
 		} else {
 			av_free_packet(&packet);
 		}
 	}
+	// We are done
+	done = 1;
 }
 
 JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 (JNIEnv *env, jobject thisObject, jstring jFileName, jobject audioFormat) {
+	if (loadedAudio) {
+		Java_AudioPlayer_release(env, thisObject);
+	}
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
 	int iStream;
 	AVCodec *aInCodec = nullptr;
@@ -544,6 +546,7 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 			break;
 		}
 	}
+
 	if (iAudioStream == -1) {
 		fprintf(stderr, "Could not find an audio stream.\n");
 		avformat_close_input(&pFormatCtx);
@@ -605,6 +608,7 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		aOutCodecCtx->channel_layout = aInCodecCtx->channel_layout;
 		env->SetIntField(audioFormat, channelsId, aInCodecCtx->channels);
 	}
+
 	// Set sample rate, either from input audioFormat or from input codec
 	if (sampleRate != 0) {
 		aOutCodecCtx->sample_rate = (int) sampleRate;
@@ -612,6 +616,7 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	    aOutCodecCtx->sample_rate = aInCodecCtx->sample_rate;
 		env->SetFloatField(audioFormat, sampleRateId, aOutCodecCtx->sample_rate);
 	}
+
 	// Set bit rate
 	if (frameRate != 0) {
 		aOutCodecCtx->bit_rate = (int) frameRate;
@@ -620,8 +625,9 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		env->SetFloatField(audioFormat, frameRateId, aOutCodecCtx->bit_rate);
 	}
 	
-	// 
-	env->SetIntField(audioFormat, frameSizeId, av_get_bytes_per_sample(sampleFormat));
+	// Set the frame size
+	env->SetIntField(audioFormat, frameSizeId, 
+					 av_get_bytes_per_sample(sampleFormat));
 
     /** Open the encoder for the audio stream to use it later. */
     if ((errNo = avcodec_open2(aOutCodecCtx, aOutCodec, NULL)) < 0) {
@@ -638,11 +644,13 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	}
 
 	// bits_per_coded_sample is only set after opening the audio codec context
-	env->SetIntField(audioFormat, sampleSizeInBitsId, aOutCodecCtx->bits_per_coded_sample);
-
+	env->SetIntField(audioFormat, sampleSizeInBitsId, 
+					 aOutCodecCtx->bits_per_coded_sample);
 
 	decodingThread = new std::thread(decodeLoop);
 	env->ReleaseStringUTFChars(jFileName, fileName);
+
+	loadedAudio = true;
 
 	return 0;
 }
@@ -650,7 +658,7 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 JNIEXPORT jstring JNICALL Java_AudioPlayer_getSampleFormat
 (JNIEnv *env, jobject thisObject) {
 	// sample formats http://ffmpeg.org/doxygen/trunk/group__lavu__sampfmts.html#gaf9a51ca15301871723577c730b5865c5
-	AVSampleFormat sampleFormat = aInCodecCtx->sample_fmt;
+	AVSampleFormat sampleFormat = aOutCodecCtx->sample_fmt;
 	const char* name = av_get_sample_fmt_name(sampleFormat);
 	return env->NewStringUTF(name);
 }
@@ -684,11 +692,6 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_getFrameSizeInBy
 
 JNIEXPORT jfloat JNICALL Java_AudioPlayer_getFramesPerSecond
 (JNIEnv *env, jobject thisObject) {
-	//fprintf(stderr, "Framerate numerator %d.\n", aCodecCtx->framerate.num);
-	//fprintf(stderr, "Framerate denumerator %d.\n", aCodecCtx->framerate.den);
-	// see http://ffmpeg.org/doxygen/trunk/structAVRational.html
-	//return (float) av_q2d(aCodecCtx->framerate); 
-	// Makes only sense for video.
 	return aOutCodecCtx->sample_rate;
 }
 
@@ -702,39 +705,32 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_bigEndian
 JNIEXPORT void JNICALL Java_AudioPlayer_release
 (JNIEnv *env, jobject thisObject) {
 	quit = 1;
+	done = 0;
 
-	fprintf(stdout, "Releasing audio resource.\n");
-	fflush(stdout);
+	if (loadedAudio) {
+		decodingThread->join();
+		delete decodingThread;
 
-	decodingThread->join();
-	delete decodingThread;
+		// If the audio queue has been initialized the free it up
+		packet_queue_destroy(&audioq);
 
-	fprintf(stdout, "Joined and deleted audio decoding thread.\n");
-	fflush(stdout);
+		// Close the codec
+		avcodec_close(aInCodecCtx);
+		avcodec_close(aInCodecCtxOrig);
+		avcodec_close(aOutCodecCtx);		
+		// Cleanup conversion context
+		swr_free(&resample_context);
+		// Close the video file
+		avformat_close_input(&pFormatCtx);
+		free(streamAudio);
 
-	packet_queue_destroy(&audioq);
-
-	// Close the codec
-	avcodec_close(aInCodecCtx);
-	avcodec_close(aInCodecCtxOrig);
-	avcodec_close(aOutCodecCtx);
-	
-	// Cleanup conversion context
-	swr_free(&resample_context);
-
-	// Close the video file
-	avformat_close_input(&pFormatCtx);
-
-	free(streamAudio);
-
-	/**TODO: Set these to nullptr
-
-	uint8_t			*streamAudio		= nullptr;
-	AVFormatContext *pFormatCtx			= nullptr;
-	AVCodecContext  *aInCodecCtx		= nullptr;
-	AVCodecContext	*aOutCodecCtx		= nullptr;
-	AVCodecContext	*aInCodecCtxOrig	= nullptr;
-	std::thread		*decodingThread		= nullptr;
-	SwrContext		*resample_context	= nullptr;
-	*/
+		aInCodecCtx = nullptr;
+		aInCodecCtxOrig = nullptr;
+		aOutCodecCtx = nullptr;
+		resample_context = nullptr;
+		pFormatCtx = nullptr;
+		streamAudio = nullptr;
+		decodingThread = nullptr;	
+	}
+	loadedAudio = false;
 }
