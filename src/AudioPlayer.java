@@ -31,7 +31,7 @@ public class AudioPlayer {
 	/** Byte buffer to get data from the native side */
 	private ByteBuffer buffer = null;
 	
-	/** Sample data buffer to copy from byte buffer to DataLine*/
+	/** Sample data buffer to copy from byte buffer to DataLine */
 	private byte[] sampleData = null;
 	
 	/** Sound line to play the audio data */
@@ -170,7 +170,7 @@ public class AudioPlayer {
 	private final static AudioFormat MONO_FORMAT = new AudioFormat(
 			Encoding.PCM_SIGNED, 0, 0, 1, 0, 0, false);
 	
-	/** The supported stereo format; blank values are from the audio */
+	/** The supported stereo format; blank values are from the input audio */
 	private final static AudioFormat STEREO_FORMAT = new AudioFormat(
 			Encoding.PCM_UNSIGNED, 0, 0, 2, 0, 0, false);
 
@@ -293,7 +293,7 @@ public class AudioPlayer {
 	 * 
 	 * @return The output audio format.
 	 */
-	public AudioFormat getOuptuAudioFormat() {
+	public AudioFormat getOutputAudioFormat() {
 		return outAudioFormat;
 	}
 	
@@ -322,8 +322,8 @@ public class AudioPlayer {
 		//String fileName = dirName + "audio_waveform.wav";
 		
 		AudioPlayer player = new AudioPlayer();
-		//AudioType type = AudioType.MONO_TYPE;
-		AudioType type = AudioType.STEREO_TYPE;
+		AudioType type = AudioType.MONO_TYPE;
+		//AudioType type = AudioType.STEREO_TYPE;
 		try {
 			int errNo = player.open(fileName, type);
 			System.out.println("Max volume: " + player.getMaxVolume() 
@@ -331,7 +331,7 @@ public class AudioPlayer {
 			System.out.println("Min volume: " + player.getMinVolume()
 					+ " decibel.");
 			System.out.println("Output audio format: " 
-					+ player.getOuptuAudioFormat());
+					+ player.getOutputAudioFormat());
 			
 			player.setVolume(-10f);
 			if (errNo != 0) {

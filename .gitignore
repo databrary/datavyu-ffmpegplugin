@@ -1,3 +1,4 @@
 *.dll
 *.log
+logger.txt
 bin/

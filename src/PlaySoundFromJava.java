@@ -19,7 +19,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class PlaySoundFromJava {
 	public static void main(String[] args) {
-		String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
+		//String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
+		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
 		SourceDataLine soundLine = null;
 		int BUFFER_SIZE = 8*1024;  // 8 KB
 		// Set up an audio input stream piped from the sound file.

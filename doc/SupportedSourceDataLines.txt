@@ -1,0 +1,45 @@
+interface SourceDataLine supporting format PCM_SIGNED 8000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 8000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 8000.0 Hz, 16 bit, mono, 2 bytes/frame, little-endian
+interface SourceDataLine supporting format PCM_SIGNED 11025.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 11025.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 11025.0 Hz, 16 bit, mono, 2 bytes/frame, little-endian
+interface SourceDataLine supporting format PCM_SIGNED 22050.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 22050.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 22050.0 Hz, 16 bit, mono, 2 bytes/frame, little-endian
+interface SourceDataLine supporting format PCM_SIGNED 32000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 32000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 32000.0 Hz, 16 bit, mono, 2 bytes/frame, little-endian
+interface SourceDataLine supporting format PCM_SIGNED 44000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 44000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 44000.0 Hz, 16 bit, mono, 2 bytes/frame, little-endian
+interface SourceDataLine supporting format PCM_SIGNED 48000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 48000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 48000.0 Hz, 16 bit, mono, 2 bytes/frame, little-endian
+interface SourceDataLine supporting format PCM_SIGNED 64000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 64000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 64000.0 Hz, 16 bit, mono, 2 bytes/frame, little-endian
+interface SourceDataLine supporting format PCM_SIGNED 88000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 88000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 88000.0 Hz, 16 bit, mono, 2 bytes/frame, little-endian
+interface SourceDataLine supporting format PCM_SIGNED 96000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 96000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_SIGNED 96000.0 Hz, 16 bit, mono, 2 bytes/frame, little-endian
+interface SourceDataLine supporting format PCM_UNSIGNED 8000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 8000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 11025.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 11025.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 22050.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 22050.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 32000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 32000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 44000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 44000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 48000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 48000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 64000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 64000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 88000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 88000.0 Hz, 8 bit, stereo, 2 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 96000.0 Hz, 8 bit, mono, 1 bytes/frame, 
+interface SourceDataLine supporting format PCM_UNSIGNED 96000.0 Hz, 8 bit, stereo, 2 bytes/frame, 

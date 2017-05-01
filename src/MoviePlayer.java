@@ -25,7 +25,7 @@ import javax.swing.filechooser.FileFilter;
 
 
 
-public class VideoPlayer extends JPanel implements WindowListener {
+public class MoviePlayer extends JPanel implements WindowListener {
 	
 	private static final long serialVersionUID = -5139487296977249036L;
 	
@@ -250,7 +250,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 		public void actionPerformed(ActionEvent e) {
 			
 			// Show the file chooser.
-	        int val = fileChooser.showDialog(VideoPlayer.this, "Open");
+	        int val = fileChooser.showDialog(MoviePlayer.this, "Open");
 	        
 	        // Process the results.
 	        if (val == JFileChooser.APPROVE_OPTION) {
@@ -340,7 +340,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
 	}
 	
 	
-	public VideoPlayer() {
+	public MoviePlayer() {
 		setLayout(new BorderLayout());
 		
 		JToolBar tools = new JToolBar();
@@ -496,7 +496,7 @@ public class VideoPlayer extends JPanel implements WindowListener {
          //Create and set up the window.
         JFrame frame = new JFrame("Video Player");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        VideoPlayer player = new VideoPlayer();
+        MoviePlayer player = new MoviePlayer();
         player.addWindowListener(frame);
         //Add content to the window.
         frame.add(player, BorderLayout.CENTER);

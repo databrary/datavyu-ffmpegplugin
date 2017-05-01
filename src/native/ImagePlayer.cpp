@@ -460,7 +460,8 @@ public:
  * We are not at the end yet if we are in reverse (last condition).
  */
 bool atStartForWrite() {
-	return ib->isReverse() && lastWritePts <= pVideoStream->start_time+avgDeltaPts 
+	return ib->isReverse() 
+		&& lastWritePts <= pVideoStream->start_time+avgDeltaPts 
 		&& !ib->inReverse();
 }
 
