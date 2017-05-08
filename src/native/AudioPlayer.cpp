@@ -1,8 +1,7 @@
 #include "AudioPlayer.h"
+#include "AudioBuffer.h"
 #include <stdio.h>
 #include <assert.h>
-#include <mutex> // std::mutex
-#include <condition_variable>  // std::condition_variable
 #include <thread> // std::thread
 
 extern "C" {
@@ -23,7 +22,6 @@ extern "C" {
 //  javap javax.sound.sampled.AudioFormat$Encoding
 
 #define MAX_AUDIO_FRAME_SIZE 192000
-#define AUDIO_QUEUE_MAX_SIZE 128
 
 /**
  * Convert an error code into a text message.
@@ -36,18 +34,6 @@ static const char *get_error_text(const int error) {
     return error_buffer;
 }
 
-typedef struct PacketQueue {
-  AVPacketList *first_pkt, *last_pkt;
-  int nb_packets;
-  int size;
-  bool getPkt; // false
-  std::mutex *mu;
-  std::condition_variable *cv;
-} PacketQueue;
-
-PacketQueue		audioq;
-
-int				flush			= 0;
 int				quit			= 0;
 int				nLen			= 0;
 int             iAudioStream	= -1;
@@ -61,103 +47,7 @@ AVCodecContext	*aOutCodecCtx		= nullptr;
 AVCodecContext	*aInCodecCtxOrig	= nullptr;
 std::thread		*decodingThread		= nullptr;
 SwrContext		*resample_context	= nullptr;
-
-static void packet_queue_init(PacketQueue *q) {
-	memset(q, 0, sizeof(PacketQueue));
-	q->mu = new std::mutex;
-	q->cv = new std::condition_variable;
-}
-
-static bool packet_queue_empty(PacketQueue *q) {
-	return q->nb_packets == 0;
-}
-
-static void packet_queue_flush(PacketQueue *q) {
-    AVPacketList *pkt, *pkt1;
-	flush = 1; // this releases the producer and the consumer
-	std::unique_lock<std::mutex> locker(*q->mu);
-    for (pkt = q->first_pkt; pkt; pkt = pkt1) {
-        pkt1 = pkt->next;
-        av_packet_unref(&pkt->pkt);
-        av_freep(&pkt);
-    }
-    q->last_pkt = NULL;
-    q->first_pkt = NULL;
-    q->nb_packets = 0;
-    q->size = 0;
-	flush = 0;
-	locker.unlock();
-}
-
-static void packet_queue_destroy(PacketQueue *q) {
-    packet_queue_flush(q);
-	delete q->mu;
-	delete q->cv;
-}
-
-// multi threaded consumer/producer model
-// http://codereview.stackexchange.com/questions/84109/a-multi-threaded-producer-consumer-with-c11
-int packet_queue_put(PacketQueue *q, AVPacket *pkt) {
-	AVPacketList *pkt1;
-	if(av_dup_packet(pkt) < 0) { return -1; }
-	pkt1 = (AVPacketList*) av_malloc(sizeof(AVPacketList));
-	if (!pkt1) { return -1; }
-
-	pkt1->pkt = *pkt;
-	pkt1->next = NULL;
-
-	std::unique_lock<std::mutex> locker(*q->mu);
-	q->cv->wait(locker, [q](){return (q->nb_packets < AUDIO_QUEUE_MAX_SIZE) || (flush==1);});
-
-	if (flush == 1) {
-		av_free(pkt1);
-	} else {
-		if (!q->last_pkt)
-			q->first_pkt = pkt1;
-		else
-			q->last_pkt->next = pkt1;
-
-		q->last_pkt = pkt1;
-		q->nb_packets++;
-		q->size += pkt1->pkt.size;	
-	}
-
-	locker.unlock();
-	q->cv->notify_one();
-	
-	return 0;
-}
-
-static int packet_queue_get(PacketQueue *q, AVPacket *pkt) {
-	AVPacketList *pkt1;
-	int ret = 0;
-
-	if (quit) { return -1; }
-
-	std::unique_lock<std::mutex> locker(*q->mu);
-    q->cv->wait(locker, [q](){return (q->nb_packets > 0) || (flush==1);});
-
-	if (flush == 1) {
-		ret = -1; // puts silence
-	} else {
-		pkt1 = q->first_pkt;
-		q->first_pkt = pkt1->next;
-
-		if (!q->first_pkt)
-			q->last_pkt = NULL;
-
-		q->nb_packets--;
-		q->size -= pkt1->pkt.size;
-		*pkt = pkt1->pkt;
-		av_free(pkt1);
-		ret = 1;	
-	}
-
-	locker.unlock();
-	q->cv->notify_one();
-
-	return ret;
-}
+AudioBuffer		*audioBuffer		= nullptr;
 
 
 static int init_resampler(AVCodecContext *input_codec_context,
@@ -331,10 +221,10 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 		if (quit) {
 			return -1;
 		}
-		if (done && packet_queue_empty(&audioq)) {
+		if (done && audioBuffer->empty()) {
 			return -1;
 		}
-		if (packet_queue_get(&audioq, &pkt) < 0) {
+		if (audioBuffer->get(&pkt) < 0) {
 			return -1;
 		}
 		audio_pkt_data = pkt.data;
@@ -356,12 +246,8 @@ JNIEXPORT jobject JNICALL Java_AudioPlayer_getAudioBuffer
 
 JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
 (JNIEnv *env, jobject thisObject) {
-	//fprintf(stderr, "Loading next audio frame.\n");
-
 	int len = nLen; // get length of buffer
 	uint8_t *stream = streamAudio; // get a write pointer.
-
-	//AVCodecContext *aInCodecCtx = (AVCodecContext *)userdata;
 	int len1, audio_size;  
 
 	static uint8_t audio_buf[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
@@ -370,7 +256,7 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
 
 	// If we are at the end of the end of the file then do not load another 
 	// empty buffer
-	if (done && packet_queue_empty(&audioq)) {
+	if (done && audioBuffer->empty()) {
 		return false;
 	}
 
@@ -408,7 +294,7 @@ void decodeLoop() {
 	while (!quit && av_read_frame(pFormatCtx, &packet) >= 0) {
 		if (packet.stream_index == iAudioStream) {
 			// Decode packet from audio stream
-			packet_queue_put(&audioq, &packet);
+			audioBuffer->put(&packet);
 		} else {
 			av_free_packet(&packet);
 		}
@@ -580,7 +466,9 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		return errNo;
 	}
 
-	packet_queue_init(&audioq);
+	//packet_queue_init(&audioq);
+
+	audioBuffer = new AudioBuffer();
 
 	// create the output codec (alternative is stero: AV_CODEC_ID_PCM_U8)
 	if (!(aOutCodec = avcodec_find_encoder(codecId))) {
@@ -704,6 +592,9 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_bigEndian
 
 JNIEXPORT void JNICALL Java_AudioPlayer_release
 (JNIEnv *env, jobject thisObject) {
+
+	audioBuffer->stop();
+
 	quit = 1;
 	done = 0;
 
@@ -712,7 +603,8 @@ JNIEXPORT void JNICALL Java_AudioPlayer_release
 		delete decodingThread;
 
 		// If the audio queue has been initialized the free it up
-		packet_queue_destroy(&audioq);
+		delete audioBuffer;
+		//packet_queue_destroy(&audioq);
 
 		// Close the codec
 		avcodec_close(aInCodecCtx);
@@ -730,7 +622,7 @@ JNIEXPORT void JNICALL Java_AudioPlayer_release
 		resample_context = nullptr;
 		pFormatCtx = nullptr;
 		streamAudio = nullptr;
-		decodingThread = nullptr;	
+		decodingThread = nullptr;
 	}
 	loadedAudio = false;
 }
