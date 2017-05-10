@@ -29,8 +29,6 @@ extern "C" {
 #define AV_NOSYNC_THRESHOLD 10.0
 #define PTS_DELTA_THRESHOLD 3
 
-//class ImageBuffer; // Forward declaration of the image buffer class for the linker.
-
 // Basic information about the movie.
 int					width			= 0; // Width of the image in pixels.
 int					height			= 0; // Height of the image in pixels.

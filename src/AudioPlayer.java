@@ -197,13 +197,13 @@ public class AudioPlayer {
 		case STEREO_TYPE:
 			audioFormat = STEREO_FORMAT;
 			break;
-		}
+		}	
 		
 		// Open the audio file using the native library
 		int errNo = 0;
 		if ((errNo = loadAudio(fileName, audioFormat)) != 0) {
 			System.err.println("Error " + errNo + " occured when opening audio stream.");
-			return errNo; 
+			return errNo;
 		}
 
 		// Allocate the audio buffer from the native side and a backup local one

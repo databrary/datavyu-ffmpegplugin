@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <thread> // std::thread
+#include <string>
 
 extern "C" {
 	#include <libavcodec/avcodec.h>
@@ -49,6 +50,15 @@ std::thread		*decodingThread		= nullptr;
 SwrContext		*resample_context	= nullptr;
 AudioBuffer		*audioBuffer		= nullptr;
 
+struct AudioFormat {
+	std::string encodingName;
+	bool bigEndian;
+	float sampleRate;
+	int sampleSizeInBits;
+	int channels;
+	float frameSize;
+	float frameRate;
+};
 
 static int init_resampler(AVCodecContext *input_codec_context,
                           AVCodecContext *output_codec_context,
@@ -303,17 +313,8 @@ void decodeLoop() {
 	done = 1;
 }
 
-JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
-(JNIEnv *env, jobject thisObject, jstring jFileName, jobject audioFormat) {
-	if (loadedAudio) {
-		Java_AudioPlayer_release(env, thisObject);
-	}
-	const char *fileName = env->GetStringUTFChars(jFileName, 0);
-	int iStream;
-	AVCodec *aInCodec = nullptr;
-	AVCodec *aOutCodec = nullptr;
-	int errNo = 0;
-	const char *encodingName = nullptr;
+int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
+	// Variables to pull from the jobject
 	jclass audioFormatClass = nullptr;
 	jfieldID encodingId = nullptr;
 	jobject encoding = nullptr;
@@ -321,22 +322,15 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	jfieldID encodingNameId = nullptr;
 	jstring jEncodingName = nullptr;
 	jfieldID bigEndianId = nullptr;
-	bool bigEndian = false;
 	jfieldID sampleRateId = nullptr;
-	float sampleRate = 0;
 	jfieldID sampleSizeInBitsId = nullptr;
-	int sampleSizeInBits = 0;
 	jfieldID channelsId = nullptr;
-	int channels = 0;
 	jfieldID frameSizeId = nullptr;
-	float frameSize = 0;
 	jfieldID frameRateId = nullptr;
-	float frameRate = 0;
-	AVCodecID codecId;
-	AVSampleFormat sampleFormat;
-	// Get a reference to this object's class
+
 	audioFormatClass = env->GetObjectClass(audioFormat);
-	// Get the encoding
+
+	// Get the audio format
 	encodingId = env->GetFieldID(audioFormatClass, 
 					"encoding", "Ljavax/sound/sampled/AudioFormat$Encoding;");
 	if (encodingId == nullptr) {
@@ -349,6 +343,100 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		return (jint) AVERROR_INVALIDDATA;
 	}
 	encodingClass = env->GetObjectClass(encoding);
+
+	// Set the encoding name
+	encodingNameId = env->GetFieldID(encodingClass, "name", "Ljava/lang/String;");
+	if (encodingNameId == nullptr) {
+		fprintf(stderr, "Could not find 'name' in AudioFormat$Encoding");
+		return (jint) AVERROR_INVALIDDATA;
+	}
+	jEncodingName = env->NewString((const jchar*)af.encodingName.c_str(), af.encodingName.size());
+	env->SetObjectField(audioFormat, encodingNameId, jEncodingName);
+	env->ReleaseStringChars(jEncodingName, (const jchar*)af.encodingName.c_str());
+
+	// Set endianess
+	bigEndianId = env->GetFieldID(audioFormatClass, "bigEndian", "Z");
+	if (bigEndianId == nullptr) {
+		fprintf(stderr, "Could not find attribute 'bigEndian' in AudioEncoding.\n");
+		return (jint) AVERROR_INVALIDDATA;		
+	}
+	env->SetBooleanField(audioFormat, bigEndianId, (jboolean) af.bigEndian);
+
+	// Set sample rate
+	sampleRateId = env->GetFieldID(audioFormatClass, "sampleRate", "F");
+	if (sampleRateId == nullptr) {
+		fprintf(stderr, "Could not find attribute 'sampleRate' in AudioEncoding.\n");
+		return (jint) AVERROR_INVALIDDATA;
+	}
+	env->SetFloatField(audioFormat, sampleRateId, (jfloat) af.sampleRate);
+
+	// Set sample size in bits
+	sampleSizeInBitsId = env->GetFieldID(audioFormatClass, "sampleSizeInBits", "I");
+	if (sampleSizeInBitsId == nullptr) {
+		fprintf(stderr, "Could not find attribute 'sampleSizeInBits' in AudioEncoding.\n");
+		return (jint) AVERROR_INVALIDDATA;
+	}
+	env->SetIntField(audioFormat, frameSizeId, (jint) af.sampleSizeInBits);
+	
+	// Set the number of channels
+	channelsId = env->GetFieldID(audioFormatClass, "channels", "I");
+	if (channelsId == nullptr) {
+		fprintf(stderr, "Could not find attribute 'channelsId' in AudioEncoding.\n");
+		return (jint) AVERROR_INVALIDDATA;
+	}
+	env->SetIntField(audioFormat, channelsId, (jint) af.channels);
+
+	// Set the frame size in Bytes
+	frameSizeId = env->GetFieldID(audioFormatClass, "frameSize", "I");
+	if (frameSizeId == nullptr) {
+		fprintf(stderr, "Could not find attribute 'frameSize' in AudioEncoding.\n");
+		return (jint) AVERROR_INVALIDDATA;
+	}
+	env->SetIntField(audioFormat, frameSizeId, (jint) af.frameSize);
+
+	// Set the frame rate in Hertz
+	frameRateId = env->GetFieldID(audioFormatClass, "frameRate", "F");
+	if (frameRateId == nullptr) {
+		fprintf(stderr, "Could not find attribute 'frameRate' in AudioEncoding.\n");
+		return (jint) AVERROR_INVALIDDATA;
+	}
+	env->SetFloatField(audioFormat, frameRateId, (jfloat) af.frameRate);
+	return 0; // No error
+}
+
+int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
+	// Variables to pull from the jobject
+	jclass audioFormatClass = nullptr;
+	jfieldID encodingId = nullptr;
+	jobject encoding = nullptr;
+	jclass encodingClass = nullptr;
+	jfieldID encodingNameId = nullptr;
+	const char* encodingName = nullptr;
+	jstring jEncodingName = nullptr;
+	jfieldID bigEndianId = nullptr;
+	jfieldID sampleRateId = nullptr;
+	jfieldID sampleSizeInBitsId = nullptr;
+	jfieldID channelsId = nullptr;
+	jfieldID frameSizeId = nullptr;
+	jfieldID frameRateId = nullptr;
+
+	audioFormatClass = env->GetObjectClass(audioFormat);
+	// Get the audio format
+	encodingId = env->GetFieldID(audioFormatClass, 
+					"encoding", "Ljavax/sound/sampled/AudioFormat$Encoding;");
+
+	if (encodingId == nullptr) {
+		fprintf(stderr, "Could not find 'encoding' attribute in AudioFormat.\n");
+		return (jint) AVERROR_INVALIDDATA;
+	}
+	encoding = env->GetObjectField(audioFormat, encodingId);
+	if (encoding == nullptr) {
+		fprintf(stderr, "Could not find value for 'encoding' attribute in AudioEncoding.\n");
+		return (jint) AVERROR_INVALIDDATA;
+	}
+	encodingClass = env->GetObjectClass(encoding);
+
+	// Get the encoding name
 	encodingNameId = env->GetFieldID(encodingClass, "name", "Ljava/lang/String;");
 	if (encodingNameId == nullptr) {
 		fprintf(stderr, "Could not find 'name' in AudioFormat$Encoding");
@@ -356,53 +444,89 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	}
 	jEncodingName = (jstring) env->GetObjectField(encoding, encodingNameId);
 	encodingName = env->GetStringUTFChars(jEncodingName, 0);
-	if (strcmp("PCM_UNSIGNED", encodingName) == 0) {
-		sampleFormat = AV_SAMPLE_FMT_U8;
-	} else if (strcmp("PCM_SIGNED", encodingName) == 0) {
-		sampleFormat = AV_SAMPLE_FMT_S16;
-	} else {
-		fprintf(stderr, "Encoding %s is not supported.\n", encodingName);
-		return (jint) AVERROR_INVALIDDATA;
-	}
+	af->encodingName = std::string(encodingName, env->GetStringLength(jEncodingName));
+	env->ReleaseStringUTFChars(jEncodingName, encodingName);
+
+	// Get endianess
 	bigEndianId = env->GetFieldID(audioFormatClass, "bigEndian", "Z");
-	bigEndian = (bool) env->GetBooleanField(audioFormat, bigEndianId);
-	codecId = av_get_pcm_codec(sampleFormat, bigEndian); // AV_CODEC_ID_PCM_U8, AV_CODEC_ID_PCM_S16LE
+	if (bigEndianId == nullptr) {
+		fprintf(stderr, "Could not find attribute 'bigEndian' in AudioEncoding.\n");
+		return (jint) AVERROR_INVALIDDATA;		
+	}
+	af->bigEndian = (bool) env->GetBooleanField(audioFormat, bigEndianId);
+
 	// Get sample rate
 	sampleRateId = env->GetFieldID(audioFormatClass, "sampleRate", "F");
 	if (sampleRateId == nullptr) {
 		fprintf(stderr, "Could not find attribute 'sampleRate' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	sampleRate = (float) env->GetFloatField(audioFormat, sampleRateId);
+	af->sampleRate = (float) env->GetFloatField(audioFormat, sampleRateId);
+
 	// Get sample size in bits
 	sampleSizeInBitsId = env->GetFieldID(audioFormatClass, "sampleSizeInBits", "I");
 	if (sampleSizeInBitsId == nullptr) {
 		fprintf(stderr, "Could not find attribute 'sampleSizeInBits' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	sampleSizeInBits = (int) env->GetIntField(audioFormat, sampleSizeInBitsId);
+	af->sampleSizeInBits = (int) env->GetIntField(audioFormat, sampleSizeInBitsId);
+	
 	// Get the number of channels
 	channelsId = env->GetFieldID(audioFormatClass, "channels", "I");
 	if (channelsId == nullptr) {
 		fprintf(stderr, "Could not find attribute 'channelsId' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	channels = (int) env->GetIntField(audioFormat, channelsId);
-	// Get the frame size in B
+	af->channels = (int) env->GetIntField(audioFormat, channelsId);
+
+	// Get the frame size in Bytes
 	frameSizeId = env->GetFieldID(audioFormatClass, "frameSize", "I");
 	if (frameSizeId == nullptr) {
 		fprintf(stderr, "Could not find attribute 'frameSize' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	frameSize = (int) env->GetIntField(audioFormat, frameSizeId);
-	// Get the frame rate in Hz
+	af->frameSize = (int) env->GetIntField(audioFormat, frameSizeId);
+
+	// Get the frame rate in Hertz
 	frameRateId = env->GetFieldID(audioFormatClass, "frameRate", "F");
 	if (frameRateId == nullptr) {
 		fprintf(stderr, "Could not find attribute 'frameRate' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	frameRate = env->GetFloatField(audioFormat, frameRateId);
-	
+	af->frameRate = env->GetFloatField(audioFormat, frameRateId);
+	return 0; // No error
+}
+
+
+JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
+(JNIEnv *env, jobject thisObject, jstring jFileName, jobject audioFormat) {
+	if (loadedAudio) {
+		Java_AudioPlayer_release(env, thisObject);
+	}
+	const char *fileName = env->GetStringUTFChars(jFileName, 0);
+	int iStream;
+	AVCodec *aInCodec = nullptr;
+	AVCodec *aOutCodec = nullptr;
+	int errNo = 0;
+	struct AudioFormat af;
+
+	if ((errNo = get_audio_format(env, &af, audioFormat)) < 0) {
+		return errNo;
+	}
+
+	AVCodecID codecId;
+	AVSampleFormat sampleFormat;
+	if (strcmp("PCM_UNSIGNED", af.encodingName.c_str()) == 0) {
+		sampleFormat = AV_SAMPLE_FMT_U8;
+	} else if (strcmp("PCM_SIGNED", af.encodingName.c_str()) == 0) {
+		sampleFormat = AV_SAMPLE_FMT_S16;
+	} else {
+		fprintf(stderr, "Encoding %s is not supported.\n", af.encodingName.c_str());
+		return (jint) AVERROR_INVALIDDATA;
+	}
+	codecId = av_get_pcm_codec(sampleFormat, af.bigEndian); // AV_CODEC_ID_PCM_U8, AV_CODEC_ID_PCM_S16LE
+
+
 	// Register all formats and codecs
 	av_register_all();
 
@@ -488,34 +612,33 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	aOutCodecCtx->sample_fmt = sampleFormat;
 
 	// Set channels, either from input audioFormat or from input codec
-	if (channels != 0) {
-		aOutCodecCtx->channels = channels;
-		aOutCodecCtx->channel_layout = av_get_default_channel_layout(channels);
+	if (af.channels != 0) {
+		aOutCodecCtx->channels = af.channels;
+		aOutCodecCtx->channel_layout = av_get_default_channel_layout(af.channels);
 	} else {
 		aOutCodecCtx->channels = aInCodecCtx->channels;
 		aOutCodecCtx->channel_layout = aInCodecCtx->channel_layout;
-		env->SetIntField(audioFormat, channelsId, aInCodecCtx->channels);
+		af.channels = aInCodecCtx->channels;
 	}
 
 	// Set sample rate, either from input audioFormat or from input codec
-	if (sampleRate != 0) {
-		aOutCodecCtx->sample_rate = (int) sampleRate;
+	if (af.sampleRate != 0) {
+		aOutCodecCtx->sample_rate = (int) af.sampleRate;
 	} else {
 	    aOutCodecCtx->sample_rate = aInCodecCtx->sample_rate;
-		env->SetFloatField(audioFormat, sampleRateId, aOutCodecCtx->sample_rate);
+		af.sampleRate = aInCodecCtx->sample_rate;
 	}
 
 	// Set bit rate
-	if (frameRate != 0) {
-		aOutCodecCtx->bit_rate = (int) frameRate;
+	if (af.frameRate != 0) {
+		aOutCodecCtx->bit_rate = (int) af.frameRate;
 	} else {
 	    aOutCodecCtx->bit_rate = aInCodecCtx->bit_rate;
-		env->SetFloatField(audioFormat, frameRateId, aOutCodecCtx->bit_rate);
+		af.sampleRate = aInCodecCtx->bit_rate;
 	}
 	
 	// Set the frame size
-	env->SetIntField(audioFormat, frameSizeId, 
-					 av_get_bytes_per_sample(sampleFormat));
+	af.frameSize = av_get_bytes_per_sample(sampleFormat);
 
     /** Open the encoder for the audio stream to use it later. */
     if ((errNo = avcodec_open2(aOutCodecCtx, aOutCodec, NULL)) < 0) {
@@ -532,15 +655,18 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	}
 
 	// bits_per_coded_sample is only set after opening the audio codec context
-	env->SetIntField(audioFormat, sampleSizeInBitsId, 
-					 aOutCodecCtx->bits_per_coded_sample);
+	af.sampleSizeInBits = aOutCodecCtx->bits_per_coded_sample;
+
+	if ((errNo = set_audio_format(env, audioFormat, af)) < 0) {
+		return errNo;
+	}
 
 	decodingThread = new std::thread(decodeLoop);
 	env->ReleaseStringUTFChars(jFileName, fileName);
 
 	loadedAudio = true;
 
-	return 0;
+	return 0; // No error
 }
 
 JNIEXPORT jstring JNICALL Java_AudioPlayer_getSampleFormat
