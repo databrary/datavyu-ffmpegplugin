@@ -73,6 +73,7 @@ public class MovieCanvas extends Canvas {
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
 		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
+		repaint();
 		return nFrame; // Return the number of frames.
 	}	
 	

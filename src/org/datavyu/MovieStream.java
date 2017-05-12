@@ -28,10 +28,11 @@ public class MovieStream implements VideoStream, AudioStream {
 	int nChannels = 0;
 	double startTime = 0;
 	double endTime = 0;
-	protected ByteBuffer imageBuffer;
-	protected ByteBuffer audioBuffer;
+	protected ByteBuffer imageBuffer = null;
+	protected ByteBuffer audioBuffer = null;
 	AudioFormat outAudioFormat = null;
 	ColorSpace colorSpace = null;
+	boolean isOpen = false;
 	
 	private native double getStartTime0();
 	
@@ -92,8 +93,15 @@ public class MovieStream implements VideoStream, AudioStream {
 	@Override
 	public native void reset();
 	
+	public native void close0() throws IOException;
+	
 	@Override
-	public native void close() throws IOException;
+	public void close() throws IOException {
+		if (isOpen) {
+			close0();
+		}
+		isOpen = false;
+	}
 	
 	@Override
 	public int getAudioBufferSize() {
@@ -157,6 +165,9 @@ public class MovieStream implements VideoStream, AudioStream {
 
 	public void open(String fileName, String version, ColorSpace reqColorSpace, 
 			AudioFormat reqAudioFormat) throws IOException {
+		if (isOpen) {
+			close();
+		}
 		int error = 0;
 		if (reqColorSpace != ColorSpace.getInstance(ColorSpace.CS_sRGB)) {
 			throw new IOException("Color space " + reqColorSpace + " not supported!");
@@ -185,6 +196,7 @@ public class MovieStream implements VideoStream, AudioStream {
 				getSampleSizeInBits(), getNumberOfChannels(), 
 				getFrameSize() * getNumberOfChannels(), 
 				(int) getFrameRate(), false);
+		isOpen = true;
 	}
 
 	private native int getNumberOfChannels0();
@@ -284,7 +296,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		    	@Override
 		    	public void run() {
 		    		while (movieStream.availableAudioFrame()) {
-			    		audioSound.playNextFrame();		    			
+			    		audioSound.playNextFrame();    			
 		    		}
 		    	}	
 	    	}	        
