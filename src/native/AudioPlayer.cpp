@@ -350,9 +350,9 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 		fprintf(stderr, "Could not find 'name' in AudioFormat$Encoding");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	jEncodingName = env->NewString((const jchar*)af.encodingName.c_str(), af.encodingName.size());
+	jEncodingName = env->NewStringUTF(af.encodingName.c_str());
 	env->SetObjectField(audioFormat, encodingNameId, jEncodingName);
-	env->ReleaseStringChars(jEncodingName, (const jchar*)af.encodingName.c_str());
+	//env->ReleaseStringUTFChars(jEncodingName, af.encodingName.c_str()); no free because it is in af.encodingName
 
 	// Set endianess
 	bigEndianId = env->GetFieldID(audioFormatClass, "bigEndian", "Z");
@@ -509,11 +509,9 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	AVCodec *aOutCodec = nullptr;
 	int errNo = 0;
 	struct AudioFormat af;
-
 	if ((errNo = get_audio_format(env, &af, audioFormat)) < 0) {
 		return errNo;
 	}
-
 	AVCodecID codecId;
 	AVSampleFormat sampleFormat;
 	if (strcmp("PCM_UNSIGNED", af.encodingName.c_str()) == 0) {
@@ -525,7 +523,6 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		return (jint) AVERROR_INVALIDDATA;
 	}
 	codecId = av_get_pcm_codec(sampleFormat, af.bigEndian); // AV_CODEC_ID_PCM_U8, AV_CODEC_ID_PCM_S16LE
-
 
 	// Register all formats and codecs
 	av_register_all();
@@ -589,9 +586,6 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		avformat_close_input(&pFormatCtx);
 		return errNo;
 	}
-
-	//packet_queue_init(&audioq);
-
 	audioBuffer = new AudioBuffer();
 
 	// create the output codec (alternative is stero: AV_CODEC_ID_PCM_U8)
