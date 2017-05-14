@@ -29,7 +29,7 @@ extern "C" {
  * @param error Error code to be converted
  * @return Corresponding error text (not thread-safe)
  */
-static const char *get_error_text(const int error) {
+static const char *getErrorText(const int error) {
     static char error_buffer[256];
     av_strerror(error, error_buffer, sizeof(error_buffer));
     return error_buffer;
@@ -41,14 +41,14 @@ int             iAudioStream	= -1;
 int				done			= 0;
 bool			loadedAudio		= false;
 
-uint8_t			*streamAudio		= nullptr;
-AVFormatContext *pFormatCtx			= nullptr;
-AVCodecContext  *aInCodecCtx		= nullptr;
-AVCodecContext	*aOutCodecCtx		= nullptr;
-AVCodecContext	*aInCodecCtxOrig	= nullptr;
-std::thread		*decodingThread		= nullptr;
-SwrContext		*resample_context	= nullptr;
-AudioBuffer		*audioBuffer		= nullptr;
+uint8_t			*pAudioBufferData		= nullptr;
+AVFormatContext *pAudioFormatCtx		= nullptr;
+AVCodecContext  *pAudioInCodecCtx		= nullptr;
+AVCodecContext	*pAudioOutCodecCtx		= nullptr;
+AVCodecContext	*pAudioInCodecCtxOrig	= nullptr;
+std::thread		*decodeAudio			= nullptr;
+SwrContext		*pResampleCtx			= nullptr;
+AudioBuffer		*pAudioBuffer			= nullptr;
 
 struct AudioFormat {
 	std::string encodingName;
@@ -60,9 +60,9 @@ struct AudioFormat {
 	float frameRate;
 };
 
-static int init_resampler(AVCodecContext *input_codec_context,
-                          AVCodecContext *output_codec_context,
-                          SwrContext **resample_context) {
+static int initResampler(AVCodecContext *inCodecCtx,
+                          AVCodecContext *outCodecCtx,
+                          SwrContext **pResampleCtx) {
     int errNo;
 
     /**
@@ -72,15 +72,15 @@ static int init_resampler(AVCodecContext *input_codec_context,
      * are assumed for simplicity (they are sometimes not detected
      * properly by the demuxer and/or decoder).
      */
-    *resample_context = swr_alloc_set_opts(NULL,
-                                          av_get_default_channel_layout(output_codec_context->channels),
-                                          output_codec_context->sample_fmt,
-                                          output_codec_context->sample_rate,
-                                          av_get_default_channel_layout(input_codec_context->channels),
-                                          input_codec_context->sample_fmt,
-                                          input_codec_context->sample_rate,
-                                          0, NULL);
-    if (!*resample_context) {
+    *pResampleCtx = swr_alloc_set_opts(NULL,
+                                       av_get_default_channel_layout(outCodecCtx->channels),
+                                       outCodecCtx->sample_fmt,
+                                       outCodecCtx->sample_rate,
+                                       av_get_default_channel_layout(inCodecCtx->channels),
+                                       inCodecCtx->sample_fmt,
+                                       inCodecCtx->sample_rate,
+                                       0, NULL);
+    if (!*pResampleCtx) {
         fprintf(stderr, "Could not allocate resample context\n");
         return AVERROR(ENOMEM);
     }
@@ -89,13 +89,13 @@ static int init_resampler(AVCodecContext *input_codec_context,
     * not greater than the number of samples to be converted.
     * If the sample rates differ, this case has to be handled differently
     */
-    assert(output_codec_context->sample_rate == input_codec_context->sample_rate);
+    assert(outCodecCtx->sample_rate == inCodecCtx->sample_rate);
 
     /** Open the resampler with the specified parameters. */
-    if ((errNo = swr_init(*resample_context)) < 0) {
+    if ((errNo = swr_init(*pResampleCtx)) < 0) {
 		fprintf(stderr, "Unable to open resample context. Error: '%s'.\n",
-				get_error_text(errNo));
-        swr_free(resample_context);
+				getErrorText(errNo));
+        swr_free(pResampleCtx);
         return errNo;
     }
     return 0;
@@ -104,11 +104,11 @@ static int init_resampler(AVCodecContext *input_codec_context,
 /**
  * Initialize a temporary storage for the specified number of audio samples.
  * The conversion requires temporary storage due to the different formats.
- * The number of audio samples to be allocated is specified in frame_size.
+ * The number of audio samples to be allocated is specified in frameSize.
  */
-static int init_converted_samples(uint8_t ***converted_input_samples,
-                                  AVCodecContext *output_codec_context,
-                                  int frame_size) {
+static int initConvertedSamples(uint8_t ***convertedInSamples,
+                                  AVCodecContext *outCodecCtx,
+                                  int frameSize) {
     int errNo;
 
     /**
@@ -116,8 +116,8 @@ static int init_converted_samples(uint8_t ***converted_input_samples,
      * Each pointer will later point to the audio samples of the corresponding
      * channels (although it may be NULL for interleaved formats).
      */
-    if (!(*converted_input_samples = (uint8_t**)calloc(output_codec_context->channels,
-                                            sizeof(**converted_input_samples)))) {
+    if (!(*convertedInSamples = (uint8_t**)calloc(outCodecCtx->channels,
+                                            sizeof(**convertedInSamples)))) {
         fprintf(stderr, "Could not allocate converted input sample pointers.\n");
         return 1;
     }
@@ -126,14 +126,14 @@ static int init_converted_samples(uint8_t ***converted_input_samples,
      * Allocate memory for the samples of all channels in one consecutive
      * block for convenience.
      */
-    if ((errNo = av_samples_alloc(*converted_input_samples, NULL,
-                                  output_codec_context->channels,
-                                  frame_size,
-                                  output_codec_context->sample_fmt, 0)) < 0) {
+    if ((errNo = av_samples_alloc(*convertedInSamples, NULL,
+                                  outCodecCtx->channels,
+                                  frameSize,
+                                  outCodecCtx->sample_fmt, 0)) < 0) {
 		fprintf(stderr, "Could not allocate converted input samples. Error: '%s')\n",
-						get_error_text(errNo));
-        av_freep(&(*converted_input_samples)[0]);
-        free(*converted_input_samples);
+						getErrorText(errNo));
+        av_freep(&(*convertedInSamples)[0]);
+        free(*convertedInSamples);
         return 1;
     }
     return 0;
@@ -142,88 +142,89 @@ static int init_converted_samples(uint8_t ***converted_input_samples,
 /**
  * Convert the input audio samples into the output sample format.
  * The conversion happens on a per-frame basis, the size of which is specified
- * by frame_size.
+ * by frameSize.
  */
-static int convert_samples(const uint8_t **input_data, uint8_t **converted_data, 
-						   const int frame_size, SwrContext *resample_context) {
+static int convertSamples(const uint8_t **inData, uint8_t **convertedData, 
+						   const int frameSize, SwrContext *pResampleCtx) {
     int errNo;
     /** Convert samples using the resampler context. */
-    if ((errNo = swr_convert(resample_context,
-                             converted_data, frame_size,
-                             input_data    , frame_size)) < 0) {
+    if ((errNo = swr_convert(pResampleCtx,
+                             convertedData, frameSize,
+                             inData, frameSize)) < 0) {
         fprintf(stderr, "Could not convert input samples. Error '%s')\n",
-                get_error_text(errNo));
+                getErrorText(errNo));
         return 1;
     }
     return 0;
 }
 
-// decodes packet from queue into audio_buf
-int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_size) {
+// decodes packet from queue into audioByteBuffer
+int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer, int bufferSize) {
 	static AVPacket pkt;
-	static uint8_t *audio_pkt_data = NULL;
-	static int audio_pkt_size = 0;
+	static uint8_t *pAudioPktData = nullptr;
+	static int audioPktSize = 0;
 	static AVFrame frame;
-	uint8_t **converted_input_samples = NULL;
-	int len1, data_size = 0;
+	uint8_t **convertedInSamples = nullptr;
+	int len1, dataSize = 0;
 	int errNo;
 
 	for(;;) {
-		while (audio_pkt_size > 0) {
-			int got_frame = 0;
-			len1 = avcodec_decode_audio4(aInCodecCtx, &frame, &got_frame, &pkt);
+		while (audioPktSize > 0) {
+			int gotFrame = 0;
+			len1 = avcodec_decode_audio4(pAudioInCodecCtx, &frame, &gotFrame, &pkt);
 			if (len1 < 0) {
 				/* if error, skip frame */
-				audio_pkt_size = 0;
+				audioPktSize = 0;
 				break;
 			}
 			
-			audio_pkt_data += len1;
-			audio_pkt_size -= len1;
-			data_size = 0;
+			pAudioPktData += len1;
+			audioPktSize -= len1;
+			dataSize = 0;
 
-			if (got_frame) {
-				data_size = av_samples_get_buffer_size(NULL, 
-								aOutCodecCtx->channels,
+			if (gotFrame) {
+				dataSize = av_samples_get_buffer_size(NULL,
+								pAudioOutCodecCtx->channels,
 								frame.nb_samples,
-								aOutCodecCtx->sample_fmt,
+								pAudioOutCodecCtx->sample_fmt,
 								1);
 
-				assert(data_size <= buf_size);
+				assert(dataSize <= bufferSize);
 
-				if ((errNo = init_converted_samples(&converted_input_samples, 
-											aOutCodecCtx, frame.nb_samples)) < 0) {
+				if ((errNo = initConvertedSamples(&convertedInSamples, 
+													pAudioOutCodecCtx, 
+													frame.nb_samples)) < 0) {
 					// clean-up
-					if (converted_input_samples) {
-						av_freep(&converted_input_samples[0]);
-						free(converted_input_samples);					
+					if (convertedInSamples) {
+						av_freep(&convertedInSamples[0]);
+						free(convertedInSamples);					
 					}
 					return errNo;
 				}
 
-				if ((errNo = convert_samples((const uint8_t**)frame.extended_data, 
-											converted_input_samples, 
-											frame.nb_samples, resample_context)) < 0) {
+				if ((errNo = convertSamples((const uint8_t**)frame.extended_data, 
+											 convertedInSamples, 
+											 frame.nb_samples, pResampleCtx)) < 0) {
 					// clean-up
-					if (converted_input_samples) {
-						av_freep(&converted_input_samples[0]);
-						free(converted_input_samples);					
+					if (convertedInSamples) {
+						av_freep(&convertedInSamples[0]);
+						free(convertedInSamples);					
 					}
 					return errNo;
 				}
 
-				memcpy(audio_buf, converted_input_samples[0], data_size);
+				memcpy(audioByteBuffer, convertedInSamples[0], dataSize);
 
-				av_freep(&converted_input_samples[0]);
-				free(converted_input_samples);
+				av_freep(&convertedInSamples[0]);
+				free(convertedInSamples);
 			}
 
-			if (data_size <= 0) {
+			if (dataSize <= 0) {
 				/* No data yet, get more frames */
 				continue;
 			}
 			/* We have data, return it and come back for more later */
-			return data_size;
+			return dataSize;
 		}
 		if (pkt.data)
 			av_free_packet(&pkt);
@@ -231,14 +232,14 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 		if (quit) {
 			return -1;
 		}
-		if (done && audioBuffer->empty()) {
+		if (done && pAudioBuffer->empty()) {
 			return -1;
 		}
-		if (audioBuffer->get(&pkt) < 0) {
+		if (pAudioBuffer->get(&pkt) < 0) {
 			return -1;
 		}
-		audio_pkt_data = pkt.data;
-		audio_pkt_size = pkt.size;
+		pAudioPktData = pkt.data;
+		audioPktSize = pkt.size;
 	}
 }
 
@@ -246,65 +247,65 @@ int audio_decode_frame(AVCodecContext *aInCodecCtx, uint8_t *audio_buf, int buf_
 JNIEXPORT jobject JNICALL Java_AudioPlayer_getAudioBuffer
 (JNIEnv *env, jobject thisObject, jint nByte) {
 	nLen = nByte;
-	streamAudio = (uint8_t*) malloc(nByte);
-	if (!streamAudio) {
+	pAudioBufferData = (uint8_t*) malloc(nByte);
+	if (!pAudioBufferData) {
 		fprintf(stderr, "Failed to allocate stream audio buffer.\n");
 		return 0;
 	}
-	return env->NewDirectByteBuffer((void*) streamAudio, nByte*sizeof(uint8_t));
+	return env->NewDirectByteBuffer((void*) pAudioBufferData, nByte*sizeof(uint8_t));
 }
 
 JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
 (JNIEnv *env, jobject thisObject) {
 	int len = nLen; // get length of buffer
-	uint8_t *stream = streamAudio; // get a write pointer.
-	int len1, audio_size;  
+	uint8_t *stream = pAudioBufferData; // get a write pointer.
+	int len1, audioSize;  
 
-	static uint8_t audio_buf[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
-	static unsigned int audio_buf_size = 0;
-	static unsigned int audio_buf_index = 0;
+	static uint8_t audioByteBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
+	static unsigned int audioBufferSize = 0;
+	static unsigned int audioBufferIndex = 0;
 
 	// If we are at the end of the end of the file then do not load another 
 	// empty buffer
-	if (done && audioBuffer->empty()) {
+	if (done && pAudioBuffer->empty()) {
 		return false;
 	}
 
 	while (len > 0) {
 		// We still need to read len bytes
-		if (audio_buf_index >= audio_buf_size) {
+		if (audioBufferIndex >= audioBufferSize) {
 			/* We already sent all our data; get more */
-			audio_size = audio_decode_frame(aInCodecCtx, audio_buf, sizeof(audio_buf));
+			audioSize = audioDecodeFrame(pAudioInCodecCtx, audioByteBuffer, sizeof(audioByteBuffer));
 
-			if (audio_size < 0) {
+			if (audioSize < 0) {
 				/* If error, output silence */
-				audio_buf_size = 1024; // arbitrary?
-				memset(audio_buf, 0, audio_buf_size); // set silience for the rest
+				audioBufferSize = 1024; // arbitrary?
+				memset(audioByteBuffer, 0, audioBufferSize); // set silience for the rest
 			} else {
-				audio_buf_size = audio_size;
+				audioBufferSize = audioSize;
 			}
-			audio_buf_index = 0;
+			audioBufferIndex = 0;
 		}
-		len1 = audio_buf_size - audio_buf_index;
+		len1 = audioBufferSize - audioBufferIndex;
 		
 		if (len1 > len) {
 			len1 = len;
 		}
 
-		memcpy(stream, (uint8_t *)audio_buf + audio_buf_index, len1);
+		memcpy(stream, (uint8_t *)audioByteBuffer + audioBufferIndex, len1);
 		len -= len1;
 		stream += len1;
-		audio_buf_index += len1;
+		audioBufferIndex += len1;
 	}
 	return quit == 0;
 }
 
 void decodeLoop() {
 	AVPacket packet;
-	while (!quit && av_read_frame(pFormatCtx, &packet) >= 0) {
+	while (!quit && av_read_frame(pAudioFormatCtx, &packet) >= 0) {
 		if (packet.stream_index == iAudioStream) {
 			// Decode packet from audio stream
-			audioBuffer->put(&packet);
+			pAudioBuffer->put(&packet);
 		} else {
 			av_free_packet(&packet);
 		}
@@ -313,7 +314,7 @@ void decodeLoop() {
 	done = 1;
 }
 
-int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
+int set_audio_format(JNIEnv *env, jobject jAudioFormat, const AudioFormat& audioFormat) {
 	// Variables to pull from the jobject
 	jclass audioFormatClass = nullptr;
 	jfieldID encodingId = nullptr;
@@ -328,7 +329,7 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 	jfieldID frameSizeId = nullptr;
 	jfieldID frameRateId = nullptr;
 
-	audioFormatClass = env->GetObjectClass(audioFormat);
+	audioFormatClass = env->GetObjectClass(jAudioFormat);
 
 	// Get the audio format
 	encodingId = env->GetFieldID(audioFormatClass, 
@@ -337,7 +338,7 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 		fprintf(stderr, "Could not find 'encoding' attribute in AudioFormat.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	encoding = env->GetObjectField(audioFormat, encodingId);
+	encoding = env->GetObjectField(jAudioFormat, encodingId);
 	if (encoding == nullptr) {
 		fprintf(stderr, "Could not find value for 'encoding' attribute in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
@@ -350,9 +351,9 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 		fprintf(stderr, "Could not find 'name' in AudioFormat$Encoding");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	jEncodingName = env->NewStringUTF(af.encodingName.c_str());
-	env->SetObjectField(audioFormat, encodingNameId, jEncodingName);
-	//env->ReleaseStringUTFChars(jEncodingName, af.encodingName.c_str()); no free because it is in af.encodingName
+	jEncodingName = env->NewStringUTF(audioFormat.encodingName.c_str());
+	env->SetObjectField(jAudioFormat, encodingNameId, jEncodingName);
+	//env->ReleaseStringUTFChars(jEncodingName, audioFormat.encodingName.c_str()); no free because it is in audioFormat.encodingName
 
 	// Set endianess
 	bigEndianId = env->GetFieldID(audioFormatClass, "bigEndian", "Z");
@@ -360,7 +361,7 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 		fprintf(stderr, "Could not find attribute 'bigEndian' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;		
 	}
-	env->SetBooleanField(audioFormat, bigEndianId, (jboolean) af.bigEndian);
+	env->SetBooleanField(jAudioFormat, bigEndianId, (jboolean) audioFormat.bigEndian);
 
 	// Set sample rate
 	sampleRateId = env->GetFieldID(audioFormatClass, "sampleRate", "F");
@@ -368,7 +369,7 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 		fprintf(stderr, "Could not find attribute 'sampleRate' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	env->SetFloatField(audioFormat, sampleRateId, (jfloat) af.sampleRate);
+	env->SetFloatField(jAudioFormat, sampleRateId, (jfloat) audioFormat.sampleRate);
 
 	// Set sample size in bits
 	sampleSizeInBitsId = env->GetFieldID(audioFormatClass, "sampleSizeInBits", "I");
@@ -376,7 +377,7 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 		fprintf(stderr, "Could not find attribute 'sampleSizeInBits' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	env->SetIntField(audioFormat, frameSizeId, (jint) af.sampleSizeInBits);
+	env->SetIntField(jAudioFormat, frameSizeId, (jint) audioFormat.sampleSizeInBits);
 	
 	// Set the number of channels
 	channelsId = env->GetFieldID(audioFormatClass, "channels", "I");
@@ -384,7 +385,7 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 		fprintf(stderr, "Could not find attribute 'channelsId' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	env->SetIntField(audioFormat, channelsId, (jint) af.channels);
+	env->SetIntField(jAudioFormat, channelsId, (jint) audioFormat.channels);
 
 	// Set the frame size in Bytes
 	frameSizeId = env->GetFieldID(audioFormatClass, "frameSize", "I");
@@ -392,7 +393,7 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 		fprintf(stderr, "Could not find attribute 'frameSize' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	env->SetIntField(audioFormat, frameSizeId, (jint) af.frameSize);
+	env->SetIntField(jAudioFormat, frameSizeId, (jint) audioFormat.frameSize);
 
 	// Set the frame rate in Hertz
 	frameRateId = env->GetFieldID(audioFormatClass, "frameRate", "F");
@@ -400,11 +401,11 @@ int set_audio_format(JNIEnv *env, jobject audioFormat, const AudioFormat& af) {
 		fprintf(stderr, "Could not find attribute 'frameRate' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	env->SetFloatField(audioFormat, frameRateId, (jfloat) af.frameRate);
+	env->SetFloatField(jAudioFormat, frameRateId, (jfloat) audioFormat.frameRate);
 	return 0; // No error
 }
 
-int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
+int get_audio_format(JNIEnv *env, AudioFormat* audioFormat, const jobject& jAudioFormat) {
 	// Variables to pull from the jobject
 	jclass audioFormatClass = nullptr;
 	jfieldID encodingId = nullptr;
@@ -420,7 +421,7 @@ int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
 	jfieldID frameSizeId = nullptr;
 	jfieldID frameRateId = nullptr;
 
-	audioFormatClass = env->GetObjectClass(audioFormat);
+	audioFormatClass = env->GetObjectClass(jAudioFormat);
 	// Get the audio format
 	encodingId = env->GetFieldID(audioFormatClass, 
 					"encoding", "Ljavax/sound/sampled/AudioFormat$Encoding;");
@@ -429,7 +430,7 @@ int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
 		fprintf(stderr, "Could not find 'encoding' attribute in AudioFormat.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	encoding = env->GetObjectField(audioFormat, encodingId);
+	encoding = env->GetObjectField(jAudioFormat, encodingId);
 	if (encoding == nullptr) {
 		fprintf(stderr, "Could not find value for 'encoding' attribute in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
@@ -444,7 +445,7 @@ int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
 	}
 	jEncodingName = (jstring) env->GetObjectField(encoding, encodingNameId);
 	encodingName = env->GetStringUTFChars(jEncodingName, 0);
-	af->encodingName = std::string(encodingName, env->GetStringLength(jEncodingName));
+	audioFormat->encodingName = std::string(encodingName, env->GetStringLength(jEncodingName));
 	env->ReleaseStringUTFChars(jEncodingName, encodingName);
 
 	// Get endianess
@@ -453,7 +454,7 @@ int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
 		fprintf(stderr, "Could not find attribute 'bigEndian' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;		
 	}
-	af->bigEndian = (bool) env->GetBooleanField(audioFormat, bigEndianId);
+	audioFormat->bigEndian = (bool) env->GetBooleanField(jAudioFormat, bigEndianId);
 
 	// Get sample rate
 	sampleRateId = env->GetFieldID(audioFormatClass, "sampleRate", "F");
@@ -461,7 +462,7 @@ int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
 		fprintf(stderr, "Could not find attribute 'sampleRate' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	af->sampleRate = (float) env->GetFloatField(audioFormat, sampleRateId);
+	audioFormat->sampleRate = (float) env->GetFloatField(jAudioFormat, sampleRateId);
 
 	// Get sample size in bits
 	sampleSizeInBitsId = env->GetFieldID(audioFormatClass, "sampleSizeInBits", "I");
@@ -469,7 +470,7 @@ int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
 		fprintf(stderr, "Could not find attribute 'sampleSizeInBits' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	af->sampleSizeInBits = (int) env->GetIntField(audioFormat, sampleSizeInBitsId);
+	audioFormat->sampleSizeInBits = (int) env->GetIntField(jAudioFormat, sampleSizeInBitsId);
 	
 	// Get the number of channels
 	channelsId = env->GetFieldID(audioFormatClass, "channels", "I");
@@ -477,7 +478,7 @@ int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
 		fprintf(stderr, "Could not find attribute 'channelsId' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	af->channels = (int) env->GetIntField(audioFormat, channelsId);
+	audioFormat->channels = (int) env->GetIntField(jAudioFormat, channelsId);
 
 	// Get the frame size in Bytes
 	frameSizeId = env->GetFieldID(audioFormatClass, "frameSize", "I");
@@ -485,7 +486,7 @@ int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
 		fprintf(stderr, "Could not find attribute 'frameSize' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	af->frameSize = (int) env->GetIntField(audioFormat, frameSizeId);
+	audioFormat->frameSize = (int) env->GetIntField(jAudioFormat, frameSizeId);
 
 	// Get the frame rate in Hertz
 	frameRateId = env->GetFieldID(audioFormatClass, "frameRate", "F");
@@ -493,13 +494,13 @@ int get_audio_format(JNIEnv *env, AudioFormat* af, const jobject& audioFormat) {
 		fprintf(stderr, "Could not find attribute 'frameRate' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	af->frameRate = env->GetFloatField(audioFormat, frameRateId);
+	audioFormat->frameRate = env->GetFloatField(jAudioFormat, frameRateId);
 	return 0; // No error
 }
 
 
 JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
-(JNIEnv *env, jobject thisObject, jstring jFileName, jobject audioFormat) {
+(JNIEnv *env, jobject thisObject, jstring jFileName, jobject jAudioFormat) {
 	if (loadedAudio) {
 		Java_AudioPlayer_release(env, thisObject);
 	}
@@ -508,47 +509,47 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	AVCodec *aInCodec = nullptr;
 	AVCodec *aOutCodec = nullptr;
 	int errNo = 0;
-	struct AudioFormat af;
-	if ((errNo = get_audio_format(env, &af, audioFormat)) < 0) {
+	struct AudioFormat audioFormat;
+	if ((errNo = get_audio_format(env, &audioFormat, jAudioFormat)) < 0) {
 		return errNo;
 	}
 	AVCodecID codecId;
 	AVSampleFormat sampleFormat;
-	if (strcmp("PCM_UNSIGNED", af.encodingName.c_str()) == 0) {
+	if (strcmp("PCM_UNSIGNED", audioFormat.encodingName.c_str()) == 0) {
 		sampleFormat = AV_SAMPLE_FMT_U8;
-	} else if (strcmp("PCM_SIGNED", af.encodingName.c_str()) == 0) {
+	} else if (strcmp("PCM_SIGNED", audioFormat.encodingName.c_str()) == 0) {
 		sampleFormat = AV_SAMPLE_FMT_S16;
 	} else {
-		fprintf(stderr, "Encoding %s is not supported.\n", af.encodingName.c_str());
+		fprintf(stderr, "Encoding %s is not supported.\n", audioFormat.encodingName.c_str());
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	codecId = av_get_pcm_codec(sampleFormat, af.bigEndian); // AV_CODEC_ID_PCM_U8, AV_CODEC_ID_PCM_S16LE
+	codecId = av_get_pcm_codec(sampleFormat, audioFormat.bigEndian); // AV_CODEC_ID_PCM_U8, AV_CODEC_ID_PCM_S16LE
 
 	// Register all formats and codecs
 	av_register_all();
 
 	// Open video file
-	if ((errNo = avformat_open_input(&pFormatCtx, fileName, NULL, NULL)) < 0) {
+	if ((errNo = avformat_open_input(&pAudioFormatCtx, fileName, NULL, NULL)) < 0) {
 		fprintf(stderr, "Could not open input file '%s'. Error: '%s'.\n",
-                fileName, get_error_text(errNo));
+                fileName, getErrorText(errNo));
 		return errNo;
 	}
 
 	// Retrieve stream information
-	if ((errNo = avformat_find_stream_info(pFormatCtx, NULL)) < 0) {
+	if ((errNo = avformat_find_stream_info(pAudioFormatCtx, NULL)) < 0) {
 		fprintf(stderr, "Could not find stream information. Error: '%s'.\n",
-                fileName, get_error_text(errNo));
-		avformat_close_input(&pFormatCtx);
+                fileName, getErrorText(errNo));
+		avformat_close_input(&pAudioFormatCtx);
 		return errNo;
 	}
 
 	// Dump information about file onto standard error
-	av_dump_format(pFormatCtx, 0, fileName, 0);
+	av_dump_format(pAudioFormatCtx, 0, fileName, 0);
 
 	// Find the first audio stream
 	iAudioStream = -1;
-	for (iStream = 0; iStream < pFormatCtx->nb_streams; iStream++) {
-		if (pFormatCtx->streams[iStream]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
+	for (iStream = 0; iStream < pAudioFormatCtx->nb_streams; iStream++) {
+		if (pAudioFormatCtx->streams[iStream]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
 			iAudioStream = iStream;
 			break;
 		}
@@ -556,106 +557,106 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 
 	if (iAudioStream == -1) {
 		fprintf(stderr, "Could not find an audio stream.\n");
-		avformat_close_input(&pFormatCtx);
+		avformat_close_input(&pAudioFormatCtx);
 		return AVERROR_EXIT;
 	}
 
-	aInCodecCtxOrig = pFormatCtx->streams[iAudioStream]->codec;
-	if (!(aInCodec = avcodec_find_decoder(aInCodecCtxOrig->codec_id))) {
+	pAudioInCodecCtxOrig = pAudioFormatCtx->streams[iAudioStream]->codec;
+	if (!(aInCodec = avcodec_find_decoder(pAudioInCodecCtxOrig->codec_id))) {
 		fprintf(stderr, "Could not find input codec!\n");
-		avformat_close_input(&pFormatCtx);
+		avformat_close_input(&pAudioFormatCtx);
 		return AVERROR_EXIT;
 	}
 
-	if (!(aInCodecCtx = avcodec_alloc_context3(aInCodec))) {
+	if (!(pAudioInCodecCtx = avcodec_alloc_context3(aInCodec))) {
 		fprintf(stderr, "Could not allocate a decoding context.\n");
-		avformat_close_input(&pFormatCtx);
+		avformat_close_input(&pAudioFormatCtx);
 		return AVERROR_EXIT;
 	}
 
-	if ((errNo = avcodec_copy_context(aInCodecCtx, aInCodecCtxOrig)) < 0) {
+	if ((errNo = avcodec_copy_context(pAudioInCodecCtx, pAudioInCodecCtxOrig)) < 0) {
 		fprintf(stderr, "Could not copy codec context. Error: '%s'.\n",
-                fileName, get_error_text(errNo));
-		avformat_close_input(&pFormatCtx);
+                fileName, getErrorText(errNo));
+		avformat_close_input(&pAudioFormatCtx);
 		return errNo;
 	}
 
-	if ((errNo = avcodec_open2(aInCodecCtx, aInCodec, NULL)) < 0) {
+	if ((errNo = avcodec_open2(pAudioInCodecCtx, aInCodec, NULL)) < 0) {
 		fprintf(stderr, "Could not open audio codec. Error: '%s'.\n",
-                get_error_text(errNo));
-		avformat_close_input(&pFormatCtx);
+                getErrorText(errNo));
+		avformat_close_input(&pAudioFormatCtx);
 		return errNo;
 	}
-	audioBuffer = new AudioBuffer();
+	pAudioBuffer = new AudioBuffer();
 
 	// create the output codec (alternative is stero: AV_CODEC_ID_PCM_U8)
 	if (!(aOutCodec = avcodec_find_encoder(codecId))) {
 		fprintf(stderr, "Could not create output codec.");
-		avformat_close_input(&pFormatCtx);
+		avformat_close_input(&pAudioFormatCtx);
 		return AVERROR_EXIT;
 	}
 
 	// Allocate the output codec context
-    if (!(aOutCodecCtx = avcodec_alloc_context3(aOutCodec))) {
+    if (!(pAudioOutCodecCtx = avcodec_alloc_context3(aOutCodec))) {
         fprintf(stderr, "Could not allocate an encoding output context\n");
-		avformat_close_input(&pFormatCtx);
+		avformat_close_input(&pAudioFormatCtx);
 		return AVERROR_EXIT;
     }
 
     // Set the sample format
-	aOutCodecCtx->sample_fmt = sampleFormat;
+	pAudioOutCodecCtx->sample_fmt = sampleFormat;
 
-	// Set channels, either from input audioFormat or from input codec
-	if (af.channels != 0) {
-		aOutCodecCtx->channels = af.channels;
-		aOutCodecCtx->channel_layout = av_get_default_channel_layout(af.channels);
+	// Set channels, either from input jAudioFormat or from input codec
+	if (audioFormat.channels != 0) {
+		pAudioOutCodecCtx->channels = audioFormat.channels;
+		pAudioOutCodecCtx->channel_layout = av_get_default_channel_layout(audioFormat.channels);
 	} else {
-		aOutCodecCtx->channels = aInCodecCtx->channels;
-		aOutCodecCtx->channel_layout = aInCodecCtx->channel_layout;
-		af.channels = aInCodecCtx->channels;
+		pAudioOutCodecCtx->channels = pAudioInCodecCtx->channels;
+		pAudioOutCodecCtx->channel_layout = pAudioInCodecCtx->channel_layout;
+		audioFormat.channels = pAudioInCodecCtx->channels;
 	}
 
-	// Set sample rate, either from input audioFormat or from input codec
-	if (af.sampleRate != 0) {
-		aOutCodecCtx->sample_rate = (int) af.sampleRate;
+	// Set sample rate, either from input jAudioFormat or from input codec
+	if (audioFormat.sampleRate != 0) {
+		pAudioOutCodecCtx->sample_rate = (int) audioFormat.sampleRate;
 	} else {
-	    aOutCodecCtx->sample_rate = aInCodecCtx->sample_rate;
-		af.sampleRate = aInCodecCtx->sample_rate;
+	    pAudioOutCodecCtx->sample_rate = pAudioInCodecCtx->sample_rate;
+		audioFormat.sampleRate = pAudioInCodecCtx->sample_rate;
 	}
 
 	// Set bit rate
-	if (af.frameRate != 0) {
-		aOutCodecCtx->bit_rate = (int) af.frameRate;
+	if (audioFormat.frameRate != 0) {
+		pAudioOutCodecCtx->bit_rate = (int) audioFormat.frameRate;
 	} else {
-	    aOutCodecCtx->bit_rate = aInCodecCtx->bit_rate;
-		af.sampleRate = aInCodecCtx->bit_rate;
+	    pAudioOutCodecCtx->bit_rate = pAudioInCodecCtx->bit_rate;
+		audioFormat.sampleRate = pAudioInCodecCtx->bit_rate;
 	}
 	
 	// Set the frame size
-	af.frameSize = av_get_bytes_per_sample(sampleFormat);
+	audioFormat.frameSize = av_get_bytes_per_sample(sampleFormat);
 
     /** Open the encoder for the audio stream to use it later. */
-    if ((errNo = avcodec_open2(aOutCodecCtx, aOutCodec, NULL)) < 0) {
+    if ((errNo = avcodec_open2(pAudioOutCodecCtx, aOutCodec, NULL)) < 0) {
 		fprintf(stderr, "Could not open output codec. Error: '%s'.\n",
-                get_error_text(errNo));
-		avformat_close_input(&pFormatCtx);
+                getErrorText(errNo));
+		avformat_close_input(&pAudioFormatCtx);
         return errNo;
     }
 
     /** Initialize the resampler to be able to convert audio sample formats. */
-    if ((errNo = init_resampler(aInCodecCtx, aOutCodecCtx, &resample_context)) < 0) {
-		avformat_close_input(&pFormatCtx);
+    if ((errNo = initResampler(pAudioInCodecCtx, pAudioOutCodecCtx, &pResampleCtx)) < 0) {
+		avformat_close_input(&pAudioFormatCtx);
 		return errNo;
 	}
 
 	// bits_per_coded_sample is only set after opening the audio codec context
-	af.sampleSizeInBits = aOutCodecCtx->bits_per_coded_sample;
+	audioFormat.sampleSizeInBits = pAudioOutCodecCtx->bits_per_coded_sample;
 
-	if ((errNo = set_audio_format(env, audioFormat, af)) < 0) {
+	if ((errNo = set_audio_format(env, jAudioFormat, audioFormat)) < 0) {
 		return errNo;
 	}
 
-	decodingThread = new std::thread(decodeLoop);
+	decodeAudio = new std::thread(decodeLoop);
 	env->ReleaseStringUTFChars(jFileName, fileName);
 
 	loadedAudio = true;
@@ -666,41 +667,41 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 JNIEXPORT jstring JNICALL Java_AudioPlayer_getSampleFormat
 (JNIEnv *env, jobject thisObject) {
 	// sample formats http://ffmpeg.org/doxygen/trunk/group__lavu__sampfmts.html#gaf9a51ca15301871723577c730b5865c5
-	AVSampleFormat sampleFormat = aOutCodecCtx->sample_fmt;
+	AVSampleFormat sampleFormat = pAudioOutCodecCtx->sample_fmt;
 	const char* name = av_get_sample_fmt_name(sampleFormat);
 	return env->NewStringUTF(name);
 }
 
 JNIEXPORT jstring JNICALL Java_AudioPlayer_getCodecName
 (JNIEnv *env, jobject thisObject) {
-	const char* name = aOutCodecCtx->codec->name;
+	const char* name = pAudioOutCodecCtx->codec->name;
 	return env->NewStringUTF(name);
 }
 
 JNIEXPORT jfloat JNICALL Java_AudioPlayer_getSampleRate
 (JNIEnv *env, jobject thisObject) {
-	return aOutCodecCtx->sample_rate;
+	return pAudioOutCodecCtx->sample_rate;
 }
 
 JNIEXPORT jint JNICALL Java_AudioPlayer_getSampleSizeInBits
 (JNIEnv *env, jobject thisObject) {
-	return aOutCodecCtx->bits_per_coded_sample;
+	return pAudioOutCodecCtx->bits_per_coded_sample;
 }
 
 JNIEXPORT jint JNICALL Java_AudioPlayer_getNumberOfChannels
 (JNIEnv *env, jobject thisObject) {
-	return aOutCodecCtx->channels;
+	return pAudioOutCodecCtx->channels;
 }
 
 JNIEXPORT jint JNICALL Java_AudioPlayer_getFrameSizeInBy
 (JNIEnv *env, jobject thisObject) {
-	AVSampleFormat sampleFormat = aOutCodecCtx->sample_fmt;
+	AVSampleFormat sampleFormat = pAudioOutCodecCtx->sample_fmt;
 	return av_get_bytes_per_sample(sampleFormat);
 }
 
 JNIEXPORT jfloat JNICALL Java_AudioPlayer_getFramesPerSecond
 (JNIEnv *env, jobject thisObject) {
-	return aOutCodecCtx->sample_rate;
+	return pAudioOutCodecCtx->sample_rate;
 }
 
 JNIEXPORT jboolean JNICALL Java_AudioPlayer_bigEndian
@@ -713,36 +714,36 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_bigEndian
 JNIEXPORT void JNICALL Java_AudioPlayer_release
 (JNIEnv *env, jobject thisObject) {
 
-	audioBuffer->stop();
+	pAudioBuffer->stop();
 
 	quit = 1;
 	done = 0;
 
 	if (loadedAudio) {
-		decodingThread->join();
-		delete decodingThread;
+		decodeAudio->join();
+		delete decodeAudio;
 
 		// If the audio queue has been initialized the free it up
-		delete audioBuffer;
+		delete pAudioBuffer;
 		//packet_queue_destroy(&audioq);
 
 		// Close the codec
-		avcodec_close(aInCodecCtx);
-		avcodec_close(aInCodecCtxOrig);
-		avcodec_close(aOutCodecCtx);		
+		avcodec_close(pAudioInCodecCtx);
+		avcodec_close(pAudioInCodecCtxOrig);
+		avcodec_close(pAudioOutCodecCtx);		
 		// Cleanup conversion context
-		swr_free(&resample_context);
+		swr_free(&pResampleCtx);
 		// Close the video file
-		avformat_close_input(&pFormatCtx);
-		free(streamAudio);
+		avformat_close_input(&pAudioFormatCtx);
+		free(pAudioBufferData);
 
-		aInCodecCtx = nullptr;
-		aInCodecCtxOrig = nullptr;
-		aOutCodecCtx = nullptr;
-		resample_context = nullptr;
-		pFormatCtx = nullptr;
-		streamAudio = nullptr;
-		decodingThread = nullptr;
+		pAudioInCodecCtx = nullptr;
+		pAudioInCodecCtxOrig = nullptr;
+		pAudioOutCodecCtx = nullptr;
+		pResampleCtx = nullptr;
+		pAudioFormatCtx = nullptr;
+		pAudioBufferData = nullptr;
+		decodeAudio = nullptr;
 	}
 	loadedAudio = false;
 }
