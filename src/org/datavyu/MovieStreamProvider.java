@@ -51,7 +51,7 @@ public class MovieStreamProvider extends MovieStream {
 		@Override
 		public void run() {
 			while (running) {
-				byte[] buffer = new byte[getWidth()*getHeight()*getNumberOfChannels()];
+				byte[] buffer = new byte[getWidth()*getHeight()*getNumberOfColorChannels()];
 				readImageFrame(buffer); // blocks if no frame is available
 				synchronized (videoListeners) {
 					for (StreamListener listener : videoListeners) {
@@ -88,14 +88,18 @@ public class MovieStreamProvider extends MovieStream {
 		running = true;
 	}
 	
-	public synchronized void addAudioStreamListener(
+	public void addAudioStreamListener(
 			StreamListener streamListener) {
-		audioListeners.add(streamListener);
+		synchronized (audioListeners) {
+			audioListeners.add(streamListener);
+		}
 	}
 	
-	public synchronized void addVideoStreamListener(
+	public void addVideoStreamListener(
 			StreamListener streamListener) {
-		videoListeners.add(streamListener);
+		synchronized (videoListeners) {
+			videoListeners.add(streamListener);			
+		}
 	}
 	
 	@Override
@@ -191,7 +195,7 @@ public class MovieStreamProvider extends MovieStream {
 				public void streamOpened() {
 					int width = movieStreamProvider.getWidth();
 					int height = movieStreamProvider.getHeight();
-					nChannel = movieStreamProvider.getNumberOfChannels();
+					nChannel = movieStreamProvider.getNumberOfColorChannels();
 					cm = new ComponentColorModel(reqColorSpace, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 					sm = cm.createCompatibleSampleModel(width, height);
 					// Initialize an empty image

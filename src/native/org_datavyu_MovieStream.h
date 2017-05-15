@@ -71,10 +71,10 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_reset
 
 /*
  * Class:     org_datavyu_MovieStream
- * Method:    close
+ * Method:    close0
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close
+JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
   (JNIEnv *, jobject);
 
 /*
@@ -143,6 +143,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_getSampleSizeInBits
 
 /*
  * Class:     org_datavyu_MovieStream
+ * Method:    getNumberOfSoundChannels
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_getNumberOfSoundChannels
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_datavyu_MovieStream
  * Method:    getFrameSize
  * Signature: ()I
  */
@@ -175,10 +183,10 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_open0
 
 /*
  * Class:     org_datavyu_MovieStream
- * Method:    getNumberOfChannels0
+ * Method:    getNumberOfColorChannels0
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_getNumberOfChannels0
+JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_getNumberOfColorChannels0
   (JNIEnv *, jobject);
 
 /*

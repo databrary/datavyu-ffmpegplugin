@@ -1,14 +1,15 @@
-extern "C" {
-	#include <libavcodec/avcodec.h>
-	#include <libavformat/avformat.h>
-}
-
 #include "Logger.h"
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
 #include <cstdlib>
 #include <algorithm>
+#include <sstream>
+
+extern "C" {
+	#include <libavcodec/avcodec.h>
+	#include <libavformat/avformat.h>
+}
 
 #define N_MAX_IMAGES 32 // May cause problems with very short videos (1 < sec)
 #define N_MIN_IMAGES N_MAX_IMAGES/2
@@ -106,7 +107,8 @@ public:
 	 * height -- Integer height in pixels.
 	 */
 	ImageBuffer(int width, int height, int64_t avgDeltaPts, Logger* pLogger) 
-		: nData(N_MAX_IMAGES), flush(false), reverse(false), pLogger(pLogger) {
+		: nData(N_MAX_IMAGES), flush(false), reverse(false), 
+		avgDeltaPts(avgDeltaPts), pLogger(pLogger) {
 
 		// Initialize the buffer.
 		data = new AVFrame*[nData];
