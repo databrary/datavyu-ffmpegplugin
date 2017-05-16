@@ -35,17 +35,16 @@ static const char *getErrorText(const int error) {
     return error_buffer;
 }
 
-int				quit			= 0;
-int				nLen			= 0;
-int             iAudioStream	= -1;
-int				done			= 0;
-bool			loadedAudio		= false;
+int				quit				= 0;
+int				lenAudioBufferData	= 0;
+int             iAudioStream		= -1;
+int				doneDecoding		= 0;
+bool			loadedMovie			= false;
 
 uint8_t			*pAudioBufferData		= nullptr;
-AVFormatContext *pAudioFormatCtx		= nullptr;
+AVFormatContext *pFormatCtx				= nullptr;
 AVCodecContext  *pAudioInCodecCtx		= nullptr;
 AVCodecContext	*pAudioOutCodecCtx		= nullptr;
-AVCodecContext	*pAudioInCodecCtxOrig	= nullptr;
 std::thread		*decodeAudio			= nullptr;
 SwrContext		*pResampleCtx			= nullptr;
 AudioBuffer		*pAudioBuffer			= nullptr;
@@ -159,27 +158,28 @@ static int convertSamples(const uint8_t **inData, uint8_t **convertedData,
 }
 
 // decodes packet from queue into audioByteBuffer
-int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer, int bufferSize) {
+int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer, 
+					 int bufferSize) {
 	static AVPacket pkt;
 	static uint8_t *pAudioPktData = nullptr;
 	static int audioPktSize = 0;
 	static AVFrame frame;
 	uint8_t **convertedInSamples = nullptr;
-	int len1, dataSize = 0;
+	int dataLen, dataSize = 0;
 	int errNo;
 
 	for(;;) {
 		while (audioPktSize > 0) {
 			int gotFrame = 0;
-			len1 = avcodec_decode_audio4(pAudioInCodecCtx, &frame, &gotFrame, &pkt);
-			if (len1 < 0) {
+			dataLen = avcodec_decode_audio4(pAudioInCodecCtx, &frame, &gotFrame, &pkt);
+			if (dataLen < 0) {
 				/* if error, skip frame */
 				audioPktSize = 0;
 				break;
 			}
 			
-			pAudioPktData += len1;
-			audioPktSize -= len1;
+			pAudioPktData += dataLen;
+			audioPktSize -= dataLen;
 			dataSize = 0;
 
 			if (gotFrame) {
@@ -232,7 +232,7 @@ int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer,
 		if (quit) {
 			return -1;
 		}
-		if (done && pAudioBuffer->empty()) {
+		if (doneDecoding && pAudioBuffer->empty()) {
 			return -1;
 		}
 		if (pAudioBuffer->get(&pkt) < 0) {
@@ -246,7 +246,7 @@ int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer,
 // allocate buffer.
 JNIEXPORT jobject JNICALL Java_AudioPlayer_getAudioBuffer
 (JNIEnv *env, jobject thisObject, jint nByte) {
-	nLen = nByte;
+	lenAudioBufferData = nByte;
 	pAudioBufferData = (uint8_t*) malloc(nByte);
 	if (!pAudioBufferData) {
 		fprintf(stderr, "Failed to allocate stream audio buffer.\n");
@@ -257,9 +257,9 @@ JNIEXPORT jobject JNICALL Java_AudioPlayer_getAudioBuffer
 
 JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
 (JNIEnv *env, jobject thisObject) {
-	int len = nLen; // get length of buffer
-	uint8_t *stream = pAudioBufferData; // get a write pointer.
-	int len1, audioSize;  
+	int len = lenAudioBufferData; // get length of buffer
+	uint8_t *data = pAudioBufferData; // get a write pointer.
+	int decodeLen, audioSize;  
 
 	static uint8_t audioByteBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
 	static unsigned int audioBufferSize = 0;
@@ -267,7 +267,7 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
 
 	// If we are at the end of the end of the file then do not load another 
 	// empty buffer
-	if (done && pAudioBuffer->empty()) {
+	if (doneDecoding && pAudioBuffer->empty()) {
 		return false;
 	}
 
@@ -286,23 +286,23 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
 			}
 			audioBufferIndex = 0;
 		}
-		len1 = audioBufferSize - audioBufferIndex;
+		decodeLen = audioBufferSize - audioBufferIndex;
 		
-		if (len1 > len) {
-			len1 = len;
+		if (decodeLen > len) {
+			decodeLen = len;
 		}
 
-		memcpy(stream, (uint8_t *)audioByteBuffer + audioBufferIndex, len1);
-		len -= len1;
-		stream += len1;
-		audioBufferIndex += len1;
+		memcpy(data, (uint8_t *)audioByteBuffer + audioBufferIndex, decodeLen);
+		len -= decodeLen;
+		data += decodeLen;
+		audioBufferIndex += decodeLen;
 	}
 	return quit == 0;
 }
 
 void decodeLoop() {
 	AVPacket packet;
-	while (!quit && av_read_frame(pAudioFormatCtx, &packet) >= 0) {
+	while (!quit && av_read_frame(pFormatCtx, &packet) >= 0) {
 		if (packet.stream_index == iAudioStream) {
 			// Decode packet from audio stream
 			pAudioBuffer->put(&packet);
@@ -310,11 +310,12 @@ void decodeLoop() {
 			av_free_packet(&packet);
 		}
 	}
-	// We are done
-	done = 1;
+	// We are doneDecoding
+	doneDecoding = 1;
 }
 
-int set_audio_format(JNIEnv *env, jobject jAudioFormat, const AudioFormat& audioFormat) {
+int setAudioFormat(JNIEnv *env, jobject jAudioFormat, 
+				   const AudioFormat& audioFormat) {
 	// Variables to pull from the jobject
 	jclass audioFormatClass = nullptr;
 	jfieldID encodingId = nullptr;
@@ -405,7 +406,7 @@ int set_audio_format(JNIEnv *env, jobject jAudioFormat, const AudioFormat& audio
 	return 0; // No error
 }
 
-int get_audio_format(JNIEnv *env, AudioFormat* audioFormat, const jobject& jAudioFormat) {
+int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat, const jobject& jAudioFormat) {
 	// Variables to pull from the jobject
 	jclass audioFormatClass = nullptr;
 	jfieldID encodingId = nullptr;
@@ -501,7 +502,7 @@ int get_audio_format(JNIEnv *env, AudioFormat* audioFormat, const jobject& jAudi
 
 JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 (JNIEnv *env, jobject thisObject, jstring jFileName, jobject jAudioFormat) {
-	if (loadedAudio) {
+	if (loadedMovie) {
 		Java_AudioPlayer_release(env, thisObject);
 	}
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
@@ -510,7 +511,7 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	AVCodec *aOutCodec = nullptr;
 	int errNo = 0;
 	struct AudioFormat audioFormat;
-	if ((errNo = get_audio_format(env, &audioFormat, jAudioFormat)) < 0) {
+	if ((errNo = getAudioFormat(env, &audioFormat, jAudioFormat)) < 0) {
 		return errNo;
 	}
 	AVCodecID codecId;
@@ -529,27 +530,27 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	av_register_all();
 
 	// Open video file
-	if ((errNo = avformat_open_input(&pAudioFormatCtx, fileName, NULL, NULL)) < 0) {
+	if ((errNo = avformat_open_input(&pFormatCtx, fileName, NULL, NULL)) < 0) {
 		fprintf(stderr, "Could not open input file '%s'. Error: '%s'.\n",
                 fileName, getErrorText(errNo));
 		return errNo;
 	}
 
 	// Retrieve stream information
-	if ((errNo = avformat_find_stream_info(pAudioFormatCtx, NULL)) < 0) {
+	if ((errNo = avformat_find_stream_info(pFormatCtx, NULL)) < 0) {
 		fprintf(stderr, "Could not find stream information. Error: '%s'.\n",
                 fileName, getErrorText(errNo));
-		avformat_close_input(&pAudioFormatCtx);
+		avformat_close_input(&pFormatCtx);
 		return errNo;
 	}
 
 	// Dump information about file onto standard error
-	av_dump_format(pAudioFormatCtx, 0, fileName, 0);
+	av_dump_format(pFormatCtx, 0, fileName, 0);
 
 	// Find the first audio stream
 	iAudioStream = -1;
-	for (iStream = 0; iStream < pAudioFormatCtx->nb_streams; iStream++) {
-		if (pAudioFormatCtx->streams[iStream]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
+	for (iStream = 0; iStream < pFormatCtx->nb_streams; iStream++) {
+		if (pFormatCtx->streams[iStream]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
 			iAudioStream = iStream;
 			break;
 		}
@@ -557,34 +558,21 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 
 	if (iAudioStream == -1) {
 		fprintf(stderr, "Could not find an audio stream.\n");
-		avformat_close_input(&pAudioFormatCtx);
+		avformat_close_input(&pFormatCtx);
 		return AVERROR_EXIT;
 	}
 
-	pAudioInCodecCtxOrig = pAudioFormatCtx->streams[iAudioStream]->codec;
-	if (!(aInCodec = avcodec_find_decoder(pAudioInCodecCtxOrig->codec_id))) {
+	pAudioInCodecCtx = pFormatCtx->streams[iAudioStream]->codec;
+	if (!(aInCodec = avcodec_find_decoder(pAudioInCodecCtx->codec_id))) {
 		fprintf(stderr, "Could not find input codec!\n");
-		avformat_close_input(&pAudioFormatCtx);
+		avformat_close_input(&pFormatCtx);
 		return AVERROR_EXIT;
-	}
-
-	if (!(pAudioInCodecCtx = avcodec_alloc_context3(aInCodec))) {
-		fprintf(stderr, "Could not allocate a decoding context.\n");
-		avformat_close_input(&pAudioFormatCtx);
-		return AVERROR_EXIT;
-	}
-
-	if ((errNo = avcodec_copy_context(pAudioInCodecCtx, pAudioInCodecCtxOrig)) < 0) {
-		fprintf(stderr, "Could not copy codec context. Error: '%s'.\n",
-                fileName, getErrorText(errNo));
-		avformat_close_input(&pAudioFormatCtx);
-		return errNo;
 	}
 
 	if ((errNo = avcodec_open2(pAudioInCodecCtx, aInCodec, NULL)) < 0) {
 		fprintf(stderr, "Could not open audio codec. Error: '%s'.\n",
                 getErrorText(errNo));
-		avformat_close_input(&pAudioFormatCtx);
+		avformat_close_input(&pFormatCtx);
 		return errNo;
 	}
 	pAudioBuffer = new AudioBuffer();
@@ -592,14 +580,14 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 	// create the output codec (alternative is stero: AV_CODEC_ID_PCM_U8)
 	if (!(aOutCodec = avcodec_find_encoder(codecId))) {
 		fprintf(stderr, "Could not create output codec.");
-		avformat_close_input(&pAudioFormatCtx);
+		avformat_close_input(&pFormatCtx);
 		return AVERROR_EXIT;
 	}
 
 	// Allocate the output codec context
     if (!(pAudioOutCodecCtx = avcodec_alloc_context3(aOutCodec))) {
         fprintf(stderr, "Could not allocate an encoding output context\n");
-		avformat_close_input(&pAudioFormatCtx);
+		avformat_close_input(&pFormatCtx);
 		return AVERROR_EXIT;
     }
 
@@ -639,27 +627,27 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
     if ((errNo = avcodec_open2(pAudioOutCodecCtx, aOutCodec, NULL)) < 0) {
 		fprintf(stderr, "Could not open output codec. Error: '%s'.\n",
                 getErrorText(errNo));
-		avformat_close_input(&pAudioFormatCtx);
+		avformat_close_input(&pFormatCtx);
         return errNo;
     }
 
     /** Initialize the resampler to be able to convert audio sample formats. */
     if ((errNo = initResampler(pAudioInCodecCtx, pAudioOutCodecCtx, &pResampleCtx)) < 0) {
-		avformat_close_input(&pAudioFormatCtx);
+		avformat_close_input(&pFormatCtx);
 		return errNo;
 	}
 
 	// bits_per_coded_sample is only set after opening the audio codec context
 	audioFormat.sampleSizeInBits = pAudioOutCodecCtx->bits_per_coded_sample;
 
-	if ((errNo = set_audio_format(env, jAudioFormat, audioFormat)) < 0) {
+	if ((errNo = setAudioFormat(env, jAudioFormat, audioFormat)) < 0) {
 		return errNo;
 	}
 
 	decodeAudio = new std::thread(decodeLoop);
 	env->ReleaseStringUTFChars(jFileName, fileName);
 
-	loadedAudio = true;
+	loadedMovie = true;
 
 	return 0; // No error
 }
@@ -717,9 +705,9 @@ JNIEXPORT void JNICALL Java_AudioPlayer_release
 	pAudioBuffer->stop();
 
 	quit = 1;
-	done = 0;
+	doneDecoding = 0;
 
-	if (loadedAudio) {
+	if (loadedMovie) {
 		decodeAudio->join();
 		delete decodeAudio;
 
@@ -729,21 +717,19 @@ JNIEXPORT void JNICALL Java_AudioPlayer_release
 
 		// Close the codec
 		avcodec_close(pAudioInCodecCtx);
-		avcodec_close(pAudioInCodecCtxOrig);
 		avcodec_close(pAudioOutCodecCtx);		
 		// Cleanup conversion context
 		swr_free(&pResampleCtx);
 		// Close the video file
-		avformat_close_input(&pAudioFormatCtx);
+		avformat_close_input(&pFormatCtx);
 		free(pAudioBufferData);
 
 		pAudioInCodecCtx = nullptr;
-		pAudioInCodecCtxOrig = nullptr;
 		pAudioOutCodecCtx = nullptr;
 		pResampleCtx = nullptr;
-		pAudioFormatCtx = nullptr;
+		pFormatCtx = nullptr;
 		pAudioBufferData = nullptr;
 		decodeAudio = nullptr;
 	}
-	loadedAudio = false;
+	loadedMovie = false;
 }
