@@ -77,26 +77,24 @@ public class MovieStreamProvider extends MovieStream {
 		super.open(fileName, version, reqColorSpace, reqAudioFormat);
 		audio = new AudioListenerThread();
 		video = new VideoListenerThread();
-		audio.start();
-		video.start();
 		for (StreamListener listener : audioListeners) {
 			listener.streamOpened();
 		}
 		for (StreamListener listener : videoListeners) {
 			listener.streamOpened();
 		}
+		audio.start();
+		video.start();
 		running = true;
 	}
 	
-	public void addAudioStreamListener(
-			StreamListener streamListener) {
+	public void addAudioStreamListener(StreamListener streamListener) {
 		synchronized (audioListeners) {
 			audioListeners.add(streamListener);
 		}
 	}
 	
-	public void addVideoStreamListener(
-			StreamListener streamListener) {
+	public void addVideoStreamListener(StreamListener streamListener) {
 		synchronized (videoListeners) {
 			videoListeners.add(streamListener);			
 		}
@@ -230,11 +228,11 @@ public class MovieStreamProvider extends MovieStream {
 				
 				@Override
 				public void streamClosed() {
-					// Anything to clean-up maybe show white image?
+					// Anything to clean-up? Maybe show a white image.
 				}
 			});
 		} catch (IOException io) {
-			
+			io.printStackTrace();
 		}
 	}
 }

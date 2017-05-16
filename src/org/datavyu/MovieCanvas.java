@@ -51,12 +51,12 @@ public class MovieCanvas extends Canvas {
 	 * @param movieStream Assumes this is an open movie stream.
 	 */
 	public MovieCanvas(MovieStream movieStream) {
-		cs = movieStream.getColorSpace();
 		this.movieStream = movieStream;
+		cs = movieStream.getColorSpace();
 		int width = movieStream.getWidth();
 		int height = movieStream.getHeight();
 		cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-		nChannel = movieStream.getNumberOfChannels();		
+		nChannel = movieStream.getNumberOfColorChannels();	
 		sm = cm.createCompatibleSampleModel(width, height);
 		data = new byte[width*height*nChannel];	// Allocate the bytes in java.
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
@@ -69,7 +69,7 @@ public class MovieCanvas extends Canvas {
 		int width = movieStream.getWidth(); // width and height could have changed due to the view
 		int height = movieStream.getHeight();
 		data = new byte[width*height*nChannel];	// Allocate the bytes in java.
-		int nFrame = movieStream.readImageFrame(data);
+		int nFrame = movieStream.readImageFrame(data);		
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
 		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.

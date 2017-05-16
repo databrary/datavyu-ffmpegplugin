@@ -6,7 +6,7 @@ public interface VideoStream extends TimeStream {
 	
 	public ColorSpace getColorSpace();
 	
-	public int getNumberOfChannels();
+	public int getNumberOfColorChannels();
 	
 	public int getHeight();
 	

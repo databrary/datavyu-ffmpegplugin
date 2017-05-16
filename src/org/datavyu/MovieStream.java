@@ -134,6 +134,8 @@ public class MovieStream implements VideoStream, AudioStream {
 	private native float getSampleRate();
 
 	private native int getSampleSizeInBits();
+	
+	private native int getNumberOfSoundChannels();
 
 	private native int getFrameSize();
 	
@@ -168,12 +170,12 @@ public class MovieStream implements VideoStream, AudioStream {
 		if (isOpen) {
 			close();
 		}
-		int error = 0;
+		int error = 0;		
 		if (reqColorSpace != ColorSpace.getInstance(ColorSpace.CS_sRGB)) {
 			throw new IOException("Color space " + reqColorSpace + " not supported!");
-		} else if (! (reqAudioFormat.getChannels()==1 
+		} else if (!(reqAudioFormat.getChannels()==1 
 				&& reqAudioFormat.getEncoding()==Encoding.PCM_SIGNED) 
-				|| ! (reqAudioFormat.getChannels()==2 
+				&& !(reqAudioFormat.getChannels()==2 
 				&& reqAudioFormat.getEncoding()==Encoding.PCM_UNSIGNED)) {
 			throw new IOException("Requested audio format " + reqAudioFormat 
 					+ " not supported!");
@@ -187,26 +189,26 @@ public class MovieStream implements VideoStream, AudioStream {
 		startTime = getStartTime0();
 		width = getWidth0();
 		height = getHeight0();
-		nChannels = getNumberOfChannels0();
+		nChannels = getNumberOfColorChannels0();
 		startTime = getStartTime0();
 		endTime = getEndTime0();
 		audioBuffer = getAudioBuffer(AUDIO_BUFFER_SIZE);		
 		// When using stereo need to multiply the frameSize by number of channels
-		outAudioFormat = new AudioFormat(getEncoding(), getSampleRate(), 
-				getSampleSizeInBits(), getNumberOfChannels(), 
-				getFrameSize() * getNumberOfChannels(), 
-				(int) getFrameRate(), false);
+		//outAudioFormat = new AudioFormat(getEncoding(), getSampleRate(), 
+		//		getSampleSizeInBits(), getNumberOfSoundChannels(), 
+		//		getFrameSize() * getNumberOfSoundChannels(), 
+		//		(int) getFrameRate(), false);
 		isOpen = true;
 	}
 
-	private native int getNumberOfChannels0();
+	private native int getNumberOfColorChannels0();
 	
 	private native int getHeight0();
 	
 	private native int getWidth0();
 	
 	@Override
-	public int getNumberOfChannels() {
+	public int getNumberOfColorChannels() {
 		return nChannels;
 	}
 
@@ -246,7 +248,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		if ((nFrame = loadNextImageFrame()) > 0) {
 			// If we loaded at least one image frame display that one
 			imageBuffer = getFrameBuffer();
-			imageBuffer.get(buffer, 0, imageBuffer.capacity());			
+			imageBuffer.get(buffer, 0, imageBuffer.capacity());
 		}
 		return nFrame;
 	}
@@ -260,20 +262,18 @@ public class MovieStream implements VideoStream, AudioStream {
 		try {
 			movieStream.open(fileName, version, reqColorSpace, reqAudioFormat);
 			movieStream.setSpeed(1f);
-			// Audio and video are synchronized in the native code and follow 
-			// the speed. Audio will only playback at 1x for now. 
-			final AudioSound audioSound = new AudioSound(movieStream);
+			//final AudioSound audioSound = new AudioSound(movieStream);
 			final MovieCanvas movieCanvas = new MovieCanvas(movieStream);
 			int width = movieStream.getWidth();
 			int height = movieStream.getHeight();
-			Frame f = new Frame();
+			final Frame f = new Frame();
 	        f.setBounds(0, 0, width, height);
 	        f.add(movieCanvas);
 	        f.addWindowListener( new WindowAdapter() {
 	            public void windowClosing(WindowEvent ev) {
 	            	try {
 						movieStream.close();
-						audioSound.close();
+						//audioSound.close();
 					} catch (IOException io) {
 						io.printStackTrace();
 					}
@@ -286,7 +286,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	    		@Override
 	    		public void run() {
 	    			while (movieStream.availableImageFrame()) {
-	    				movieCanvas.showNextFrame();
+	    				movieCanvas.showNextFrame();	    				
 	    			}
 	    		}
 	    	}	    	
@@ -296,15 +296,15 @@ public class MovieStream implements VideoStream, AudioStream {
 		    	@Override
 		    	public void run() {
 		    		while (movieStream.availableAudioFrame()) {
-			    		audioSound.playNextFrame();    			
+			    		//audioSound.playNextFrame();    			
 		    		}
 		    	}	
 	    	}	        
-	    	new AudioPlayerThread().start();			
+	    	//new AudioPlayerThread().start();
 		} catch (IOException io) {
 			System.err.println(io.getLocalizedMessage());
-		} catch (LineUnavailableException lu) {
-			System.err.println(lu.getLocalizedMessage());
-		}
+		} //catch (LineUnavailableException lu) {
+		//	System.err.println(lu.getLocalizedMessage());
+		//}
 	}
 }

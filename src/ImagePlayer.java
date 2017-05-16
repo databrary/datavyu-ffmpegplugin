@@ -349,15 +349,15 @@ public class ImagePlayer extends Canvas {
 	public static void main(String[] args) {
 		//String fileName = "C:\\Users\\Florian\\test.mpg";
 		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4"; // put your video file here
-		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
 		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
 		//String fileName = "C:\\Users\\Florian\\video_1080p.mp4";
 		//String fileName = "C:\\Users\\Florian\\video_h264ntscdvw.mp4";
-		String fileName = "C:\\Users\\Florian\\video_1080pmain42_5mbps.mp4";
+		//String fileName = "C:\\Users\\Florian\\video_1080pmain42_5mbps.mp4";
 		final ImagePlayer player = new ImagePlayer();
 		int errNo = player.open(fileName, "0.0.1");
 		if (errNo != 0) {
-			System.out.println("Encountered error numbe " + errNo 
+			System.out.println("Encountered error number " + errNo 
 					+ " while opening the file: " + fileName);
 		}
 		int width = player.getWidth();
