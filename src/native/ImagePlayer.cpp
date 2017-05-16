@@ -39,17 +39,16 @@ double				duration		= 0; // Duration of the video in seconds.
 AVFormatContext		*pFormatCtx		= nullptr;	// Audio and video format context.
 int					iVideoStream	= -1;		// Index of the (1st) video stream.
 AVStream			*pVideoStream	= nullptr;	// Video stream.
-AVCodecContext		*pCodecCtx		= nullptr;	// Video codec context.
-AVCodec				*pCodec			= nullptr;	// Video codec.
-AVFrame				*pFrame			= nullptr;	// Video frame read from stream.
-AVFrame				*pFrameShow		= nullptr;	// Video frame displayed (wrapped by buffer).
-AVPacket			packet;						// Audio or video packet (here video packet).
-AVDictionary		*optsDict		= nullptr;	// Dictionary is a key-value store.
-struct SwsContext   *swsCtx			= nullptr;	// Scaling context from source to target image format and size.
-std::thread			*decodeThread	= nullptr;	// Decoding thread that decodes frames and is started when opening a video.
+AVCodecContext		*pVideoCodecCtx	= nullptr;	// Video codec context.
+AVCodec				*pVideoCodec	= nullptr;	// Video codec.
+AVFrame				*pVideoFrame	= nullptr;	// Video frame read from stream.
+AVFrame				*pVideoFrameShow= nullptr;	// Video frame displayed (wrapped by buffer).
+AVDictionary		*pOptsDict		= nullptr;	// Dictionary is a key-value store.
+struct SwsContext   *pSwsImageCtx	= nullptr;	// Scaling context from source to target image format and size.
+std::thread			*decodeFrame	= nullptr;	// Decoding thread that decodes frames and is started when opening a video.
 bool				quit			= false;	// Quit the decoding thread.
 bool				loadedMovie		= false;	// Flag indicates that we loaded a movie. Used to protect uninitialized pointers.
-ImageBuffer			*ib				= nullptr;	// Pointer to the image buffer.
+ImageBuffer			*pImageBuffer	= nullptr;	// Pointer to the image buffer.
 bool				eof				= false;	// The stream reached the end of the file.
 
 // Variables to control playback speed and reverse playback.
@@ -80,16 +79,16 @@ bool				doView			= false; // on reset false
  * We are not at the end yet if we are in reverse (last condition).
  */
 bool atStartForWrite() {
-	return ib->isReverse() 
+	return pImageBuffer->isReverse() 
 		&& lastWritePts <= pVideoStream->start_time+avgDeltaPts 
-		&& !ib->inReverse();
+		&& !pImageBuffer->inReverse();
 }
 
 /**
  * True if reading reached the start of the file. This happens in reverse mode.
  */
 bool atStartForRead() {
-	return atStartForWrite() && ib->empty();
+	return atStartForWrite() && pImageBuffer->empty();
 }
 
 /**
@@ -99,7 +98,7 @@ bool atEndForWrite() {
 	// return lastWritePts-pVideoStream->start_time >= pVideoStream->duration;
 	// Duration is just an estimate and usually larger than the acutal number of frames.
 	// I measured 8 - 14 additional frames that duration specifies.
-	return !ib->isReverse() && eof;
+	return !pImageBuffer->isReverse() && eof;
 }
 
 /**
@@ -107,10 +106,7 @@ bool atEndForWrite() {
  */
 bool atEndForRead() {
 	// The duration is not a reliable estimate for the end a video file.
-	//return !ib->isReverse() 
-	//		&& (lastPts-pVideoStream->start_time >= pVideoStream->duration) 
-	//		&& ib->empty();
-	return !ib->isReverse() && eof && ib->empty();
+	return !pImageBuffer->isReverse() && eof && pImageBuffer->empty();
 }
 
 /**
@@ -129,7 +125,7 @@ bool atEndForRead() {
 void readNextFrame() {
 	int frameFinished;
 	bool reverseRefresh = true;
-
+	AVPacket packet;
 	while (!quit) {
 
 		// Random seek.
@@ -141,8 +137,8 @@ void readNextFrame() {
 			} else {
 				pLogger->info("Random seek of %I64d pts, %I64d frames successful.", 
 					seekPts, seekPts/avgDeltaPts);
-				ib->doFlush();
-				avcodec_flush_buffers(pCodecCtx);
+				pImageBuffer->doFlush();
+				avcodec_flush_buffers(pVideoCodecCtx);
 				lastWritePts = seekPts;
 			}
 			seekReq = false;
@@ -150,7 +146,7 @@ void readNextFrame() {
 
 		// Switch direction of playback.
 		if (toggle) {
-			std::pair<int,int> offsetDelta = ib->toggle();
+			std::pair<int,int> offsetDelta = pImageBuffer->toggle();
 			int offset = offsetDelta.first;
 			int delta = offsetDelta.second;
 			int nShift = 0;
@@ -159,10 +155,10 @@ void readNextFrame() {
 
 			// Even if we may not seek backward it is safest to get the prior keyframe.
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
-			if (ib->isReverse()) {
+			if (pImageBuffer->isReverse()) {
 				int maxDelta = (-pVideoStream->start_time+lastWritePts)/avgDeltaPts;
 				delta = std::min(offset+delta, maxDelta) - offset;
-				ib->setBackwardAfterToggle(delta);
+				pImageBuffer->setBackwardAfterToggle(delta);
 				nShift = -(offset + delta) + 1;
 			} else {
 				nShift = offset;
@@ -176,7 +172,7 @@ void readNextFrame() {
 			} else {
 				pLogger->info("Toggle seek of %I64d pts, %I64d frames successful.", 
 								seekPts, seekPts/avgDeltaPts);
-				avcodec_flush_buffers(pCodecCtx);
+				avcodec_flush_buffers(pVideoCodecCtx);
 			}			
 			toggle = false;			
 		}
@@ -192,12 +188,12 @@ void readNextFrame() {
 		}
 
 		// Find next frame in reverse playback.
-		if (ib->seekReq()) {
+		if (pImageBuffer->seekReq()) {
 
 			// Find the number of frames that can still be read
 			int maxDelta = (-pVideoStream->start_time+lastWritePts)/avgDeltaPts;
 
-			std::pair<int, int> offsetDelta = ib->seekBackward();
+			std::pair<int, int> offsetDelta = pImageBuffer->seekBackward();
 			
 			int offset = offsetDelta.first;
 			int delta = offsetDelta.second;
@@ -207,7 +203,7 @@ void readNextFrame() {
 			pLogger->info("Seek frame for reverse playback with offset %d and "
 							"min delta %d.", offset, delta);
 
-			ib->setBackwardAfterSeek(delta);
+			pImageBuffer->setBackwardAfterSeek(delta);
 
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			int nShift = -(offset + delta) + 1;
@@ -220,7 +216,7 @@ void readNextFrame() {
 			} else {
 				pLogger->info("Reverse seek of %I64d pts, %I64d frames successful.", 
 								seekPts, seekPts/avgDeltaPts);
-				avcodec_flush_buffers(pCodecCtx);
+				avcodec_flush_buffers(pVideoCodecCtx);
 			}
 		}
 
@@ -246,20 +242,20 @@ void readNextFrame() {
 			if (packet.stream_index == iVideoStream) {
 				
 				// Decode the video frame.
-				avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+				avcodec_decode_video2(pVideoCodecCtx, pVideoFrame, &frameFinished, &packet);
 				
 				// Did we get a full video frame?
 				if(frameFinished) {
 
 					// Set the presentation time stamp.
-					int64_t readPts = pFrame->pkt_pts;
+					int64_t readPts = pVideoFrame->pkt_pts;
 
 					// Skip frames until we are at or beyond of the seekPts time stamp.
 					if (readPts >= seekPts) {
 					
 						// Get the next writeable buffer. 
 						// This may block and can be unblocked with a flush.
-						AVFrame* pFrameBuffer = ib->reqWritePtr();
+						AVFrame* pFrameBuffer = pImageBuffer->reqWritePtr();
 
 						// Did we get a frame buffer?
 						if (pFrameBuffer) {
@@ -267,27 +263,27 @@ void readNextFrame() {
 							// Convert the image from its native format into RGB.
 							sws_scale
 							(
-								swsCtx,
-								(uint8_t const * const *)pFrame->data,
-								pFrame->linesize,
+								pSwsImageCtx,
+								(uint8_t const * const *)pVideoFrame->data,
+								pVideoFrame->linesize,
 								0,
-								pCodecCtx->height,
+								pVideoCodecCtx->height,
 								pFrameBuffer->data,
 								pFrameBuffer->linesize
 							);
-							pFrameBuffer->repeat_pict = pFrame->repeat_pict;
+							pFrameBuffer->repeat_pict = pVideoFrame->repeat_pict;
 							pFrameBuffer->pts = lastWritePts = readPts;
-							ib->cmplWritePtr();
+							pImageBuffer->cmplWritePtr();
 
 							pLogger->info("Wrote %I64d pts, %I64d frames.", 
 											lastWritePts, 
 											lastWritePts/avgDeltaPts);
-							ib->printLog();
+							pImageBuffer->printLog();
 						}
 					}
 
 					// Reset frame container to initial state.
-					av_frame_unref(pFrame);
+					av_frame_unref(pVideoFrame);
 				}
 
 				// Free the packet that was allocated by av_read_frame.
@@ -300,8 +296,8 @@ void readNextFrame() {
 JNIEXPORT void JNICALL Java_ImagePlayer_setPlaybackSpeed
 (JNIEnv *env, jobject thisObject, jfloat inSpeed) {
 	if (loadedMovie) {
-		ib->setNMinImages(1);
-		toggle = ib->isReverse() != (inSpeed < 0);
+		pImageBuffer->setNMinImages(1);
+		toggle = pImageBuffer->isReverse() != (inSpeed < 0);
 		speed = fabs(inSpeed);
 	}
 }
@@ -328,16 +324,16 @@ JNIEXPORT jobject JNICALL Java_ImagePlayer_getFrameBuffer
 				for (int iChannel = 0; iChannel < nChannel; ++iChannel) {
 					int iSrc = ((y0View+iRow)*width + x0View+iCol)*nChannel + iChannel;
 					int iDst = (iRow*widthView + iCol)*nChannel + iChannel;
-					pFrameShow->data[0][iDst] = pFrameShow->data[0][iSrc];
+					pVideoFrameShow->data[0][iDst] = pVideoFrameShow->data[0][iSrc];
 				}
 			}
 		}
-		return env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
+		return env->NewDirectByteBuffer((void*) pVideoFrameShow->data[0], 
 									widthView*heightView*nChannel*sizeof(uint8_t));
 	}
 
-	// Construct a new direct byte buffer pointing to data from pFrameShow.
-	return env->NewDirectByteBuffer((void*) pFrameShow->data[0], 
+	// Construct a new direct byte buffer pointing to data from pVideoFrameShow.
+	return env->NewDirectByteBuffer((void*) pVideoFrameShow->data[0], 
 									width*height*nChannel*sizeof(uint8_t));
 }
 
@@ -351,13 +347,13 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 	int nFrame = 0;
 
 	// Get the next read pointer.
-	AVFrame *pFrameTmp = ib->getReadPtr();
+	AVFrame *pVideoFrameTmp = pImageBuffer->getReadPtr();
 
 	// We received a frame (no flushing).
-	if (pFrameTmp) {
+	if (pVideoFrameTmp) {
 
 		// Retrieve the presentation time for this first frame.
-		uint64_t firstPts = pFrameTmp->pts;
+		uint64_t firstPts = pVideoFrameTmp->pts;
 
 		// Increase the number of read frames by one.
 		nFrame++;
@@ -383,7 +379,7 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 		double delay = diffPts;
 
 		// If the frame is repeated split this delay in half.
-		if (pFrameTmp->repeat_pict) {
+		if (pVideoFrameTmp->repeat_pict) {
 			delay += delay/2;
 		}
 
@@ -395,9 +391,9 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 
 			// If our time difference is lower than the sync threshold, then skip a frame.
 			if (diff <= -syncThreshold) {
-				AVFrame *pFrameTmp2 = ib->getReadPtr();
-				if (pFrameTmp2) {
-					pFrameTmp = pFrameTmp2;
+				AVFrame *pVideoFrameTmp2 = pImageBuffer->getReadPtr();
+				if (pVideoFrameTmp2) {
+					pVideoFrameTmp = pVideoFrameTmp2;
 					nFrame++;
 				}
 
@@ -424,10 +420,10 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 		}
 
 		// Update the pointer for the show frame.
-		pFrameShow = pFrameTmp;
+		pVideoFrameShow = pVideoFrameTmp;
 
 		// Log that we displayed a frame.
-		pLogger->info("Display pts %I64d.", pFrameShow->pts/avgDeltaPts);
+		pLogger->info("Display pts %I64d.", pVideoFrameShow->pts/avgDeltaPts);
 	}
 
 	// Return the number of read frames (not neccesarily all are displayed).
@@ -484,17 +480,17 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_openMovie
 	pVideoStream = pFormatCtx->streams[iVideoStream];
 
 	// Get a pointer to the codec context for the video stream.
-	pCodecCtx = pVideoStream->codec;
+	pVideoCodecCtx = pVideoStream->codec;
 
 	// Find the decoder for the video stream.
-	pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
-	if (pCodec == nullptr) {
+	pVideoCodec = avcodec_find_decoder(pVideoCodecCtx->codec_id);
+	if (pVideoCodec == nullptr) {
 		pLogger->error("Unsupported codec for file %s.", fileName);
 		return (jint) AVERROR_DECODER_NOT_FOUND;
 	}
 
 	// Open codec.
-	if ((errNo = avcodec_open2(pCodecCtx, pCodec, &optsDict)) < 0) {
+	if ((errNo = avcodec_open2(pVideoCodecCtx, pVideoCodec, &pOptsDict)) < 0) {
 		pLogger->error("Unable to open codec for file %s.", fileName);
 		return (jint) errNo;
 	}
@@ -511,16 +507,16 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_openMovie
     }
 
 	// Allocate video frame.
-	pFrame = av_frame_alloc();
+	pVideoFrame = av_frame_alloc();
 
 	// Initialize the color model conversion/rescaling context.
-	swsCtx = sws_getContext
+	pSwsImageCtx = sws_getContext
 		(
-			pCodecCtx->width,
-			pCodecCtx->height,
-			pCodecCtx->pix_fmt,
-			pCodecCtx->width,
-			pCodecCtx->height,
+			pVideoCodecCtx->width,
+			pVideoCodecCtx->height,
+			pVideoCodecCtx->pix_fmt,
+			pVideoCodecCtx->width,
+			pVideoCodecCtx->height,
 			AV_PIX_FMT_RGB24,
 			SWS_BILINEAR,
 			nullptr,
@@ -529,8 +525,8 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_openMovie
 		);
 
 	// Initialize the widht, height, and duration.
-	width = pCodecCtx->width;
-	height = pCodecCtx->height;
+	width = pVideoCodecCtx->width;
+	height = pVideoCodecCtx->height;
 	duration = pVideoStream->duration*av_q2d(pVideoStream->time_base);
 	pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.", 
 				  width, height, duration, pVideoStream->duration);
@@ -542,14 +538,14 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_openMovie
 	pLogger->info("Average delta %I64d pts.", avgDeltaPts);
 
 	// Initialize the image buffer.
-	ib = new ImageBuffer(width, height, avgDeltaPts, pLogger);
+	pImageBuffer = new ImageBuffer(width, height, avgDeltaPts, pLogger);
 
 	// Seek to the start of the file.
 	lastWritePts = seekPts = pVideoStream->start_time;
 	seekReq = true;
 
 	// Start the decode thread.
-	decodeThread = new std::thread(readNextFrame);	
+	decodeFrame = new std::thread(readNextFrame);	
 	pLogger->info("Started decoding thread!");
 
 	// Set the value for loaded move true.
@@ -596,18 +592,18 @@ JNIEXPORT jdouble JNICALL Java_ImagePlayer_getDuration
 
 JNIEXPORT jdouble JNICALL Java_ImagePlayer_getCurrentTime
 (JNIEnv *env, jobject thisObject) {
-	return loadedMovie ? pFrameShow->pts*av_q2d(pVideoStream->time_base) : 0;
+	return loadedMovie ? pVideoFrameShow->pts*av_q2d(pVideoStream->time_base) : 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_ImagePlayer_isForwardPlayback
 (JNIEnv *env, jobject thisObject) {
-	return loadedMovie ? (jboolean) !ib->isReverse() : true;
+	return loadedMovie ? (jboolean) !pImageBuffer->isReverse() : true;
 }
 
 JNIEXPORT void JNICALL Java_ImagePlayer_rewind
 (JNIEnv *env, jobject thisObject) {
 	if (loadedMovie) {
-		if (ib->isReverse()) {
+		if (pImageBuffer->isReverse()) {
 			// Seek to the end of the file.
 			lastWritePts = seekPts = pVideoStream->duration - 2*avgDeltaPts;
 			seekReq = true;
@@ -686,37 +682,37 @@ JNIEXPORT void JNICALL Java_ImagePlayer_release
 		quit = true;
 
 		// Flush the image buffer buffer (which unblocks all readers/writers).
-		ib->doFlush();
+		pImageBuffer->doFlush();
 
 		// Join the decoding thread with this one.
-		decodeThread->join();
+		decodeFrame->join();
 
 		// Free the decoding thread.
-		delete decodeThread;
+		delete decodeFrame;
 		
 		// Free the image buffer buffer.
-		delete ib;
-		ib = nullptr;
+		delete pImageBuffer;
+		pImageBuffer = nullptr;
 
 		// Free the dictionary.
-		av_dict_free(&optsDict);
-		optsDict = nullptr;
+		av_dict_free(&pOptsDict);
+		pOptsDict = nullptr;
 
 		// Flush the buffers
-		avcodec_flush_buffers(pCodecCtx);
+		avcodec_flush_buffers(pVideoCodecCtx);
 
 		// Close codec context
-		avcodec_close(pCodecCtx);
-		pCodecCtx = nullptr;
+		avcodec_close(pVideoCodecCtx);
+		pVideoCodecCtx = nullptr;
 
 		// Free scaling context.
-		sws_freeContext(swsCtx);
-		swsCtx = nullptr;
+		sws_freeContext(pSwsImageCtx);
+		pSwsImageCtx = nullptr;
 
 		// Free the YUV frame
-		av_free(pFrame);
-		pFrame = nullptr;
-		pFrameShow = nullptr;
+		av_free(pVideoFrame);
+		pVideoFrame = nullptr;
+		pVideoFrameShow = nullptr;
 
 		// Close the video file
 		avformat_close_input(&pFormatCtx);
