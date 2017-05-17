@@ -60,8 +60,8 @@ struct AudioFormat {
 };
 
 static int initResampler(AVCodecContext *inCodecCtx,
-                          AVCodecContext *outCodecCtx,
-                          SwrContext **pResampleCtx) {
+                         AVCodecContext *outCodecCtx,
+                         SwrContext **pResampleCtx) {
     int errNo;
 
     /**
@@ -106,8 +106,8 @@ static int initResampler(AVCodecContext *inCodecCtx,
  * The number of audio samples to be allocated is specified in frameSize.
  */
 static int initConvertedSamples(uint8_t ***convertedInSamples,
-                                  AVCodecContext *outCodecCtx,
-                                  int frameSize) {
+                                AVCodecContext *outCodecCtx,
+                                int frameSize) {
     int errNo;
 
     /**
@@ -702,12 +702,13 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_bigEndian
 JNIEXPORT void JNICALL Java_AudioPlayer_release
 (JNIEnv *env, jobject thisObject) {
 
-	pAudioBuffer->stop();
-
-	quit = 1;
-	doneDecoding = 0;
 
 	if (loadedMovie) {
+		pAudioBuffer->stop();
+
+		quit = 1;
+		doneDecoding = 0;
+
 		decodeAudio->join();
 		delete decodeAudio;
 

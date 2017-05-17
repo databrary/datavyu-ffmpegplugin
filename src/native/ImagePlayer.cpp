@@ -285,10 +285,9 @@ void readNextFrame() {
 					// Reset frame container to initial state.
 					av_frame_unref(pVideoFrame);
 				}
-
-				// Free the packet that was allocated by av_read_frame.
-				av_free_packet(&packet);
 			}
+			// Free the packet that was allocated by av_read_frame.
+			av_free_packet(&packet);
 		}
 	}
 }
@@ -751,9 +750,8 @@ JNIEXPORT void JNICALL Java_ImagePlayer_release
 		quit = false;
 	}
 
-	pLogger->info("Closed video and released resources.");
-
 	if (pLogger) {
+		pLogger->info("Closed video and released resources.");
 		delete pLogger;
 		pLogger = nullptr;
 	}
