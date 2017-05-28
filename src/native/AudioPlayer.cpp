@@ -354,7 +354,6 @@ int setAudioFormat(JNIEnv *env, jobject jAudioFormat,
 	}
 	jEncodingName = env->NewStringUTF(audioFormat.encodingName.c_str());
 	env->SetObjectField(jAudioFormat, encodingNameId, jEncodingName);
-	//env->ReleaseStringUTFChars(jEncodingName, audioFormat.encodingName.c_str()); no free because it is in audioFormat.encodingName
 
 	// Set endianess
 	bigEndianId = env->GetFieldID(audioFormatClass, "bigEndian", "Z");
@@ -378,7 +377,7 @@ int setAudioFormat(JNIEnv *env, jobject jAudioFormat,
 		fprintf(stderr, "Could not find attribute 'sampleSizeInBits' in AudioEncoding.\n");
 		return (jint) AVERROR_INVALIDDATA;
 	}
-	env->SetIntField(jAudioFormat, frameSizeId, (jint) audioFormat.sampleSizeInBits);
+	env->SetIntField(jAudioFormat, sampleSizeInBitsId, (jint) audioFormat.sampleSizeInBits);
 	
 	// Set the number of channels
 	channelsId = env->GetFieldID(audioFormatClass, "channels", "I");
