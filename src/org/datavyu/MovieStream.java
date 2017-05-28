@@ -194,10 +194,10 @@ public class MovieStream implements VideoStream, AudioStream {
 		endTime = getEndTime0();
 		audioBuffer = getAudioBuffer(AUDIO_BUFFER_SIZE);		
 		// When using stereo need to multiply the frameSize by number of channels
-		//outAudioFormat = new AudioFormat(getEncoding(), getSampleRate(), 
-		//		getSampleSizeInBits(), getNumberOfSoundChannels(), 
-		//		getFrameSize() * getNumberOfSoundChannels(), 
-		//		(int) getFrameRate(), false);
+		outAudioFormat = new AudioFormat(getEncoding(), getSampleRate(), 
+				getSampleSizeInBits(), getNumberOfSoundChannels(), 
+				getFrameSize() * getNumberOfSoundChannels(), 
+				(int) getFrameRate(), false);
 		isOpen = true;
 	}
 
@@ -255,14 +255,15 @@ public class MovieStream implements VideoStream, AudioStream {
 	
 	public static void main(String[] args) {
 		final MovieStream movieStream = new MovieStream();
-		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
 		String version = "0.1.0.0";
 		ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
 		try {
 			movieStream.open(fileName, version, reqColorSpace, reqAudioFormat);
 			movieStream.setSpeed(1f);
-			//final AudioSound audioSound = new AudioSound(movieStream);
+			final AudioSound audioSound = new AudioSound(movieStream);
 			final MovieCanvas movieCanvas = new MovieCanvas(movieStream);
 			int width = movieStream.getWidth();
 			int height = movieStream.getHeight();
@@ -291,20 +292,22 @@ public class MovieStream implements VideoStream, AudioStream {
 	    		}
 	    	}	    	
 	    	// Create a thread to play the audio
-	    	new ImagePlayerThread().start();	    	
+	    	new ImagePlayerThread().start();
+	    	System.out.println("Started image player.");
 	    	class AudioPlayerThread extends Thread {
 		    	@Override
 		    	public void run() {
 		    		while (movieStream.availableAudioFrame()) {
-			    		//audioSound.playNextFrame();    			
+			    		audioSound.playNextFrame();
 		    		}
-		    	}	
-	    	}	        
-	    	//new AudioPlayerThread().start();
+		    	}
+	    	}
+	    	new AudioPlayerThread().start();
+	    	System.out.println("Stared audio player.");
 		} catch (IOException io) {
 			System.err.println(io.getLocalizedMessage());
-		} //catch (LineUnavailableException lu) {
-		//	System.err.println(lu.getLocalizedMessage());
-		//}
+		} catch (LineUnavailableException lu) {
+			System.err.println(lu.getLocalizedMessage());
+		}
 	}
 }

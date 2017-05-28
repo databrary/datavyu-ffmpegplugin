@@ -57,7 +57,8 @@ public:
   }
   int put(AVPacket *pkt) {
 	AVPacketList *pkt1;
-	if(av_dup_packet(pkt) < 0) { return -1; }
+	if (quit == 1) { return -1; }
+	if (av_dup_packet(pkt) < 0) { return -1; }
 	pkt1 = (AVPacketList*) av_malloc(sizeof(AVPacketList));
 	if (!pkt1) { return -1; }
 	pkt1->pkt = *pkt;
