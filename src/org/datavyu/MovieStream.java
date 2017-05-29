@@ -245,11 +245,13 @@ public class MovieStream implements VideoStream, AudioStream {
 	public int readImageFrame(byte[] buffer)
 			throws IndexOutOfBoundsException {
 		int nFrame = 0;
+		// Check if we loaded at least one image frame
 		if ((nFrame = loadNextImageFrame()) > 0) {
-			// If we loaded at least one image frame display that one
+			// Load the image frame into the buffer
 			imageBuffer = getFrameBuffer();
 			imageBuffer.get(buffer, 0, imageBuffer.capacity());
 		}
+		// Return the number of loaded image frames
 		return nFrame;
 	}
 	
@@ -262,7 +264,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
 		try {
 			movieStream.open(fileName, version, reqColorSpace, reqAudioFormat);
-			movieStream.setSpeed(.5f);
+			//movieStream.setSpeed(1f);
 			final AudioSound audioSound = new AudioSound(movieStream);
 			final MovieCanvas movieCanvas = new MovieCanvas(movieStream);
 			int width = movieStream.getWidth();
@@ -274,7 +276,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	            public void windowClosing(WindowEvent ev) {
 	            	try {
 						movieStream.close();
-						//audioSound.close();
+						audioSound.close();
 					} catch (IOException io) {
 						io.printStackTrace();
 					}

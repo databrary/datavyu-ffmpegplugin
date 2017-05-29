@@ -1,5 +1,4 @@
 For the MovieStream native implementation:
--- Try replace av_gettimte through c++ get time
 -- Support only video play back and only sound play back for cases where there 
    is no audio stream or video stream
 -- Disable audio when the speed is not 1x
