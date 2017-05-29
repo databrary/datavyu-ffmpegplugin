@@ -262,7 +262,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
 		try {
 			movieStream.open(fileName, version, reqColorSpace, reqAudioFormat);
-			movieStream.setSpeed(1f);
+			movieStream.setSpeed(.5f);
 			final AudioSound audioSound = new AudioSound(movieStream);
 			final MovieCanvas movieCanvas = new MovieCanvas(movieStream);
 			int width = movieStream.getWidth();
@@ -293,7 +293,6 @@ public class MovieStream implements VideoStream, AudioStream {
 	    	}	    	
 	    	// Create a thread to play the audio
 	    	new ImagePlayerThread().start();
-	    	System.out.println("Started image player.");
 	    	class AudioPlayerThread extends Thread {
 		    	@Override
 		    	public void run() {
@@ -303,7 +302,6 @@ public class MovieStream implements VideoStream, AudioStream {
 		    	}
 	    	}
 	    	new AudioPlayerThread().start();
-	    	System.out.println("Stared audio player.");
 		} catch (IOException io) {
 			System.err.println(io.getLocalizedMessage());
 		} catch (LineUnavailableException lu) {

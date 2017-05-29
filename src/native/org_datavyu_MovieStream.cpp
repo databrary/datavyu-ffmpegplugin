@@ -22,6 +22,7 @@ extern "C" {
 	#include <libswscale/swscale.h> // sampling of image
 	#include <libswresample/swresample.h> // resampling of audio
 	#include <libavutil/error.h> // error codes
+	#include <libavutil/time.h> // av_gettime
 }
 
 // Florian Raudies, Mountain View, CA.
@@ -32,6 +33,8 @@ extern "C" {
 #define AV_NOSYNC_THRESHOLD 10.0
 #define PTS_DELTA_THRESHOLD 3
 #define MAX_AUDIO_FRAME_SIZE 192000
+#define SAMPLE_CORRECTION_PERCENT_MAX 10
+#define AUDIO_DIFF_AVG_NB 20
 
 /*******************************************************************************
  * Basic information about the movie.
@@ -124,6 +127,23 @@ SwrContext *pResampleCtx = nullptr;
 
 /** Buffer for the audio data. */
 AudioBuffer	*pAudioBuffer = nullptr;
+
+double audioTime = 0;
+
+AVStream *pAudioStream = nullptr;
+
+static unsigned int audioBufferSize = 0;
+
+static unsigned int audioBufferIndex = 0;
+
+/* used for AV difference average computation */
+double audio_diff_cum = 0;
+
+double audio_diff_avg_coef = 0;
+
+double audio_diff_threshold = 0;
+
+int audio_diff_avg_count = 0;
 
 
 /*******************************************************************************
@@ -221,6 +241,78 @@ static const char *getErrorText(const int error) {
     static char error_buffer[256];
     av_strerror(error, error_buffer, sizeof(error_buffer));
     return error_buffer;
+}
+
+double getAudioTime() {
+	double pts;
+	int hw_buf_size, bytes_per_sec, n;
+	pts = audioTime; /* maintained in the audio thread */
+	hw_buf_size = audioBufferSize - audioBufferIndex; //is->audio_buf_size - is->audio_buf_index;
+	n = pAudioOutCodecCtx->channels * 2;
+	bytes_per_sec = pAudioOutCodecCtx->sample_rate * n;
+	if (bytes_per_sec) {
+		pts -= (double)hw_buf_size / bytes_per_sec;
+	}
+	return pts;
+}
+
+/* Add or subtract samples to get a better sync, return new audio buffer size */
+int synchronizeAudio(short *samples, int samples_size, double pts) {
+	int n;
+	double ref_time;
+
+	n = 2 * pAudioOutCodecCtx->channels;
+
+	double diff, avg_diff;
+	int wanted_size, min_size, max_size;
+
+	// Get the current time.
+	//auto time = std::chrono::high_resolution_clock::now();
+	//ref_time = std::chrono::duration_cast<std::chrono::microseconds>(time.time_since_epoch()).count()/1000000.0;
+	ref_time = av_gettime()/1000000.0;
+	diff = getAudioTime() - ref_time;
+	if (diff < AV_NOSYNC_THRESHOLD) {
+		// accumulate the diffs
+		audio_diff_cum = diff + audio_diff_avg_coef * audio_diff_cum;
+		if (audio_diff_avg_count < AUDIO_DIFF_AVG_NB) {
+			audio_diff_avg_count++;
+		} else {
+			avg_diff = audio_diff_cum * (1.0 - audio_diff_avg_coef);
+			if (fabs(avg_diff) >= audio_diff_threshold) {
+				wanted_size = samples_size + ((int)(diff * pAudioOutCodecCtx->sample_rate) * n);
+				min_size = samples_size * ((100 - SAMPLE_CORRECTION_PERCENT_MAX) / 100);
+				max_size = samples_size * ((100 + SAMPLE_CORRECTION_PERCENT_MAX) / 100);
+				if (wanted_size < min_size) {
+					wanted_size = min_size;
+				} else if (wanted_size > max_size) {
+					wanted_size = max_size;
+				}
+				if (wanted_size < samples_size) {
+					/* remove samples */
+					samples_size = wanted_size;
+				} else if (wanted_size > samples_size) {
+					uint8_t *samples_end, *q;
+					int nb;
+
+					/* add samples by copying final sample*/
+					nb = (samples_size - wanted_size);
+					samples_end = (uint8_t *)samples + samples_size - n;
+					q = samples_end + n;
+					while (nb > 0) {
+						memcpy(q, samples_end, n);
+						q += n;
+						nb -= n;
+					}
+					samples_size = wanted_size;
+				}
+			}
+		}
+	} else {
+		/* difference is TOO big; reset diff stuff */
+		audio_diff_avg_count = 0;
+		audio_diff_cum = 0;
+	}
+	return samples_size;
 }
 
 static int initResampler(AVCodecContext *inCodecCtx, AVCodecContext *outCodecCtx,
@@ -322,7 +414,7 @@ static int convertSamples(const uint8_t **inData, uint8_t **convertedData,
 
 // decodes packet from queue into audioByteBuffer
 int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer, 
-					 int bufferSize) {
+					 int bufferSize, double* pPts) {
 	static AVPacket pkt;
 	static uint8_t *pAudioPktData = nullptr;
 	static int audioPktSize = 0;
@@ -386,6 +478,10 @@ int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer,
 				/* No data yet, get more frames */
 				continue;
 			}
+
+			*pPts = audioTime;
+			audioTime += (double)dataSize / (double)(2 * pAudioOutCodecCtx->channels * pAudioOutCodecCtx->sample_rate);
+
 			/* We have data, return it and come back for more later */
 			return dataSize;
 		}
@@ -403,6 +499,10 @@ int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer,
 		}
 		pAudioPktData = pkt.data;
 		audioPktSize = pkt.size;
+
+		if (pkt.pts != AV_NOPTS_VALUE) {
+			audioTime = av_q2d(pAudioStream->time_base)* pkt.pts;
+		}
 	}
 }
 
@@ -1003,8 +1103,7 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_loadNextAudioFrame
 	int decodeLen, audioSize;
 
 	static uint8_t audioByteBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
-	static unsigned int audioBufferSize = 0;
-	static unsigned int audioBufferIndex = 0;
+	double pts;
 
 	// If we are at the end of the end of the file then do not load another 
 	// empty buffer
@@ -1016,14 +1115,14 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_loadNextAudioFrame
 		// We still need to read len bytes
 		if (audioBufferIndex >= audioBufferSize) {
 			/* We already sent all our data; get more */
-			audioSize = audioDecodeFrame(pAudioInCodecCtx, audioByteBuffer, sizeof(audioByteBuffer));
+			audioSize = audioDecodeFrame(pAudioInCodecCtx, audioByteBuffer, sizeof(audioByteBuffer), &pts);
 
 			if (audioSize < 0) {
 				/* If error, output silence */
 				audioBufferSize = 1024; // arbitrary?
 				memset(audioByteBuffer, 0, audioBufferSize); // set silience for the rest
 			} else {
-				audioBufferSize = audioSize;
+				audioBufferSize = audioSize = synchronizeAudio((int16_t *)audioByteBuffer, audioSize, pts);
 			}
 			audioBufferIndex = 0;
 		}
@@ -1231,8 +1330,8 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_open0
 	// *************************************************************************
 	// Work on audio
 	// *************************************************************************
-	AVCodec *aInCodec = nullptr;
 	AVCodec *aOutCodec = nullptr;
+	AVCodec *aInCodec = nullptr;
 
 	struct AudioFormat audioFormat;
 	if ((errNo = getAudioFormat(env, &audioFormat, jAudioFormat)) < 0) {
@@ -1250,7 +1349,10 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_open0
 	}
 	AVCodecID codecId = av_get_pcm_codec(sampleFormat, audioFormat.bigEndian); // AV_CODEC_ID_PCM_U8, AV_CODEC_ID_PCM_S16LE
 
-	pAudioInCodecCtx = pFormatCtx->streams[iAudioStream]->codec;
+	pAudioStream = pFormatCtx->streams[iAudioStream];
+
+	pAudioInCodecCtx = pAudioStream->codec;
+
 	if (!(aInCodec = avcodec_find_decoder(pAudioInCodecCtx->codec_id))) {
 		fprintf(stderr, "Could not find input codec!\n");
 		avformat_close_input(&pFormatCtx);
