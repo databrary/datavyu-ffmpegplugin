@@ -39,12 +39,11 @@ public class AudioSound {
 	 * @param audioStream assumes that the audio stream is open
 	 * @throws LineUnavailableException 
 	 */
-	public AudioSound(AudioStream audioStream) throws LineUnavailableException {
+	public AudioSound(AudioStream audioStream) throws LineUnavailableException {		
 		this.audioStream = audioStream;
-		outAudioFormat = audioStream.getOutputAudioFormat();
 		bufferSize = audioStream.getAudioBufferSize();
 		sampleData = new byte[bufferSize];
-		
+				
 		// When using stereo need to multiply the frameSize by number of channels
 		outAudioFormat = audioStream.getOutputAudioFormat();
 		
@@ -55,12 +54,13 @@ public class AudioSound {
 		soundLine.start();
 
 		// Get the gain (volume) control for the sound line
-		gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);		
+		gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
 	}
 	
 	public void playNextFrame() {
-		audioStream.readAudioFrame(sampleData);
-		soundLine.write(sampleData, 0, bufferSize);
+		if (audioStream.readAudioFrame(sampleData) > 0) {
+			soundLine.write(sampleData, 0, bufferSize);			
+		}
 	}
 	
 	/**

@@ -6,6 +6,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
@@ -33,6 +35,10 @@ public class MovieStream implements VideoStream, AudioStream {
 	AudioFormat outAudioFormat = null;
 	ColorSpace colorSpace = null;
 	boolean isOpen = false;
+	
+	public native boolean hasImageStream();
+	
+	public native boolean hasAudioStream();
 	
 	private native double getStartTime0();
 	
@@ -120,7 +126,8 @@ public class MovieStream implements VideoStream, AudioStream {
 	public int readAudioFrame(byte[] buffer) {
 		if (loadNextAudioFrame()) {
 			audioBuffer.get(buffer, 0, AUDIO_BUFFER_SIZE);
-			audioBuffer.rewind();		
+			audioBuffer.rewind();
+			return 1;
 		}
 		return 0;
 	}
@@ -167,9 +174,6 @@ public class MovieStream implements VideoStream, AudioStream {
 
 	public void open(String fileName, String version, ColorSpace reqColorSpace, 
 			AudioFormat reqAudioFormat) throws IOException {
-		if (isOpen) {
-			close();
-		}
 		int error = 0;		
 		if (reqColorSpace != ColorSpace.getInstance(ColorSpace.CS_sRGB)) {
 			throw new IOException("Color space " + reqColorSpace + " not supported!");
@@ -182,8 +186,8 @@ public class MovieStream implements VideoStream, AudioStream {
 		} else if ((error = open0(fileName, version, reqAudioFormat)) != 0) {
 			throw new IOException("Error " + error + " occured while " 
 					+ "opening " + fileName + ".");
-		}
-		// TODO: get all the information about the video/audio and cache it here
+		}		
+		// Get all the information about the video/audio and cache it here
 		colorSpace = reqColorSpace;
 		duration = getDuration0();
 		startTime = getStartTime0();
@@ -192,7 +196,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		nChannels = getNumberOfColorChannels0();
 		startTime = getStartTime0();
 		endTime = getEndTime0();
-		audioBuffer = getAudioBuffer(AUDIO_BUFFER_SIZE);		
+		audioBuffer = getAudioBuffer(AUDIO_BUFFER_SIZE);
 		// When using stereo need to multiply the frameSize by number of channels
 		outAudioFormat = new AudioFormat(getEncoding(), getSampleRate(), 
 				getSampleSizeInBits(), getNumberOfSoundChannels(), 
@@ -258,52 +262,70 @@ public class MovieStream implements VideoStream, AudioStream {
 	public static void main(String[] args) {
 		final MovieStream movieStream = new MovieStream();
 		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
-		String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
+		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
+		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
 		String version = "0.1.0.0";
 		ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
 		try {
 			movieStream.open(fileName, version, reqColorSpace, reqAudioFormat);
+			List<Thread> threads = new ArrayList<>(2);
 			//movieStream.setSpeed(1f);
-			final AudioSound audioSound = new AudioSound(movieStream);
-			final MovieCanvas movieCanvas = new MovieCanvas(movieStream);
-			int width = movieStream.getWidth();
-			int height = movieStream.getHeight();
-			final Frame f = new Frame();
-	        f.setBounds(0, 0, width, height);
-	        f.add(movieCanvas);
-	        f.addWindowListener( new WindowAdapter() {
-	            public void windowClosing(WindowEvent ev) {
-	            	try {
-						movieStream.close();
-						audioSound.close();
-					} catch (IOException io) {
-						io.printStackTrace();
-					}
-	                System.exit(0);
-	            }
-	        } );        
-	        f.setVisible(true);
-	        // Create a thread to play the images
-	    	class ImagePlayerThread extends Thread {
-	    		@Override
-	    		public void run() {
-	    			while (movieStream.availableImageFrame()) {
-	    				movieCanvas.showNextFrame();	    				
-	    			}
-	    		}
-	    	}	    	
-	    	// Create a thread to play the audio
-	    	new ImagePlayerThread().start();
-	    	class AudioPlayerThread extends Thread {
-		    	@Override
-		    	public void run() {
-		    		while (movieStream.availableAudioFrame()) {
-			    		audioSound.playNextFrame();
+			if (movieStream.hasImageStream()) {
+				final Frame f = new Frame();
+				final MovieCanvas movieCanvas = new MovieCanvas(movieStream);
+				int width = movieStream.getWidth();
+				int height = movieStream.getHeight();
+		        f.setBounds(0, 0, width, height);
+		        f.add(movieCanvas);
+		        f.addWindowListener( new WindowAdapter() {
+		            public void windowClosing(WindowEvent ev) {
+		            	try {
+							movieStream.close();
+						} catch (IOException io) {
+							io.printStackTrace();
+						}
+		                System.exit(0);
+		            }
+		        } );
+		        f.setVisible(true);
+		        // Create a thread to play the images
+		    	class ImagePlayerThread extends Thread {
+		    		@Override
+		    		public void run() {
+		    			while (movieStream.availableImageFrame()) {
+		    				movieCanvas.showNextFrame();	    				
+		    			}
 		    		}
+		    	}	    	
+		    	// Create a thread to play the audio
+		    	threads.add(new ImagePlayerThread());
+			}
+			if (movieStream.hasAudioStream()) {
+				final AudioSound audioSound = new AudioSound(movieStream);
+		    	class AudioPlayerThread extends Thread {
+			    	@Override
+			    	public void run() {
+			    		while (movieStream.availableAudioFrame()) {
+				    		audioSound.playNextFrame();
+			    		}			    		
+			    		audioSound.close();
+			    	}
 		    	}
-	    	}
-	    	new AudioPlayerThread().start();
+		    	threads.add(new AudioPlayerThread());
+			}
+			// Start all threads
+			for (Thread thread : threads) { thread.start(); }
+			// Wait for all threads to be finished
+			for (Thread thread : threads) {
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 		} catch (IOException io) {
 			System.err.println(io.getLocalizedMessage());
 		} catch (LineUnavailableException lu) {

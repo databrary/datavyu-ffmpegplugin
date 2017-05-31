@@ -13,7 +13,7 @@ extern "C" {
 class AudioBuffer {
   AVPacketList *first_pkt, *last_pkt;
   int nb_packets;
-  int size;
+  //int size;
   bool getPkt; // false
   std::mutex *mu;
   std::condition_variable *cv;
@@ -22,7 +22,7 @@ class AudioBuffer {
 public:
   AudioBuffer() {
 	  first_pkt = last_pkt = nullptr;
-	  nb_packets = size = 0;
+	  nb_packets = 0; //size = 0;
 	  getPkt = false;
 	  quit = 0;
 	  mu = new std::mutex;
@@ -45,9 +45,12 @@ public:
     last_pkt = nullptr;
     first_pkt = nullptr;
     nb_packets = 0;
-    size = 0;
+    //size = 0;
 	do_flush = 0;
 	locker.unlock();
+  }
+  inline int size() const {
+	return nb_packets;
   }
   inline bool empty() const {
 	return nb_packets == 0;
@@ -76,7 +79,7 @@ public:
 
 		last_pkt = pkt1;
 		nb_packets++;
-		size += pkt1->pkt.size;	
+		//size += pkt1->pkt.size;	
 	}
 	locker.unlock();
 	cv->notify_one();
@@ -101,7 +104,7 @@ public:
 			last_pkt = nullptr;
 
 		nb_packets--;
-		size -= pkt1->pkt.size;
+		//size -= pkt1->pkt.size;
 		*pkt = pkt1->pkt;
 		av_free(pkt1);
 		ret = 1;	

@@ -255,10 +255,10 @@ JNIEXPORT jobject JNICALL Java_AudioPlayer_getAudioBuffer
 	return env->NewDirectByteBuffer((void*) pAudioBufferData, nByte*sizeof(uint8_t));
 }
 
-JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
-(JNIEnv *env, jobject thisObject) {
+JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame(JNIEnv *env, jobject thisObject) {
+
 	int len = lenAudioBufferData; // get length of buffer
-	uint8_t *data = pAudioBufferData; // get a write pointer.
+	uint8_t *data = pAudioBufferData; // get a write pointer
 	int decodeLen, audioSize;  
 
 	static uint8_t audioByteBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
@@ -267,7 +267,7 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame
 
 	// If we are at the end of the end of the file then do not load another 
 	// empty buffer
-	if (doneDecoding && pAudioBuffer->empty()) {
+	if (doneDecoding || pAudioBuffer->empty()) {
 		return false;
 	}
 
