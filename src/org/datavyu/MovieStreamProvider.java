@@ -37,11 +37,13 @@ public class MovieStreamProvider extends MovieStream {
 		public void run() {
 			byte[] buffer = new byte[getAudioBufferSize()];
 			while (running) {
-				readAudioFrame(buffer); // blocks if no frame is available
-				synchronized (audioListeners) {
-					for (StreamListener listener : audioListeners) {
-						listener.streamData(buffer);
-					}					
+				if (availableAudioFrame()) {
+					readAudioFrame(buffer); // blocks if no frame is available
+					synchronized (audioListeners) {
+						for (StreamListener listener : audioListeners) {
+							listener.streamData(buffer);
+						}					
+					}
 				}
 			}			
 		}
@@ -51,11 +53,13 @@ public class MovieStreamProvider extends MovieStream {
 		@Override
 		public void run() {
 			while (running) {
-				byte[] buffer = new byte[getWidth()*getHeight()*getNumberOfColorChannels()];
-				readImageFrame(buffer); // blocks if no frame is available
-				synchronized (videoListeners) {
-					for (StreamListener listener : videoListeners) {
-						listener.streamData(buffer);
+				if (availableImageFrame()) {
+					byte[] buffer = new byte[getWidth()*getHeight()*getNumberOfColorChannels()];
+					readImageFrame(buffer); // blocks if no frame is available
+					synchronized (videoListeners) {
+						for (StreamListener listener : videoListeners) {
+							listener.streamData(buffer);
+						}					
 					}					
 				}
 			}
@@ -74,7 +78,7 @@ public class MovieStreamProvider extends MovieStream {
 		if (running) {
 			close();
 		}
-		super.open(fileName, version, reqColorSpace, reqAudioFormat);
+		super.open(fileName, version, reqColorSpace, reqAudioFormat);		
 		audio = new AudioListenerThread();
 		video = new VideoListenerThread();
 		for (StreamListener listener : audioListeners) {
@@ -124,14 +128,12 @@ public class MovieStreamProvider extends MovieStream {
 	
 	public static void main(String[] args) {
 		final MovieStreamProvider movieStreamProvider = new MovieStreamProvider();
-		String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
+		String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
 		String version = "0.1.0.0";
 		final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
-		int width = movieStreamProvider.getWidth();
-		int height = movieStreamProvider.getHeight();
 		final Frame f = new Frame();
-        f.setBounds(0, 0, width, height);
         f.addWindowListener( new WindowAdapter() {
             public void windowClosing(WindowEvent ev) {
             	try {
@@ -142,17 +144,13 @@ public class MovieStreamProvider extends MovieStream {
                 System.exit(0);
             }
         } );        
-        f.setVisible(true);		
-		try {
-			movieStreamProvider.open(fileName, version, reqColorSpace, reqAudioFormat);
-			movieStreamProvider.setSpeed(1f);
-			
+		try {			
 			// Add the audio output
 			movieStreamProvider.addAudioStreamListener(new StreamListener() {
 				private SourceDataLine soundLine = null;				
 				
 				@Override
-				public void streamOpened() {
+				public void streamOpened() {					
 					AudioFormat audioFormat = movieStreamProvider.getOutputAudioFormat();
 					try {
 						// Get the data line
@@ -219,7 +217,6 @@ public class MovieStreamProvider extends MovieStream {
 				public void streamData(byte[] data) {
 					int width = movieStreamProvider.getWidth(); // width and height could have changed due to the view
 					int height = movieStreamProvider.getHeight();
-					data = new byte[width*height*nChannel];	// Allocate the bytes in java.
 					DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
 					WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
 					image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
@@ -230,7 +227,12 @@ public class MovieStreamProvider extends MovieStream {
 				public void streamClosed() {
 					// Anything to clean-up? Maybe show a white image.
 				}
-			});
+			});			
+			movieStreamProvider.open(fileName, version, reqColorSpace, reqAudioFormat);
+			int width = movieStreamProvider.getWidth();
+			int height = movieStreamProvider.getHeight();
+	        f.setBounds(0, 0, width, height);
+	        f.setVisible(true);
 		} catch (IOException io) {
 			io.printStackTrace();
 		}
