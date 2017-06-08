@@ -95,10 +95,10 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 
 /*
  * Class:     org_datavyu_MovieStream
- * Method:    availableAudioFrame
+ * Method:    availableAudioData
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_availableAudioFrame
+JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_availableAudioData
   (JNIEnv *, jobject);
 
 /*
@@ -111,10 +111,10 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_availableImageFrame
 
 /*
  * Class:     org_datavyu_MovieStream
- * Method:    loadNextAudioFrame
+ * Method:    loadNextAudioData
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_loadNextAudioFrame
+JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_loadNextAudioData
   (JNIEnv *, jobject);
 
 /*

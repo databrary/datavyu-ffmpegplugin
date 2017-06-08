@@ -37,8 +37,8 @@ public class MovieStreamProvider extends MovieStream {
 		public void run() {
 			byte[] buffer = new byte[getAudioBufferSize()];
 			while (running) {
-				if (availableAudioFrame()) {
-					readAudioFrame(buffer); // blocks if no frame is available
+				if (availableAudioData()) {
+					readAudioData(buffer); // blocks if no frame is available
 					synchronized (audioListeners) {
 						for (StreamListener listener : audioListeners) {
 							listener.streamData(buffer);

@@ -893,7 +893,8 @@ void readNextFrame() {
 		endOfFile = ret == AVERROR_EOF;
 
 		// No sound
-		playSound = ret >= 0;
+		//playSound = ret >= 0;
+		ret >= 0;
 
 		// Any error that is not endOfFile.
 		if (ret < 0 && !endOfFile) {
@@ -958,7 +959,8 @@ void readNextFrame() {
 				// Free the packet that was allocated by av_read_frame.
 				av_free_packet(&packet);
 
-			} else if (hasAudioStream() && packet.stream_index == iAudioStream) {
+			} else if (hasAudioStream() && playSound 
+				&& packet.stream_index == iAudioStream) {
 				// Decode packet from audio stream
 				pAudioBuffer->put(&packet); // packet is freed when consumed
 			} else {
@@ -1016,11 +1018,22 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setTime0
 
 JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setPlaybackSpeed0
 (JNIEnv* env, jobject thisObject, jfloat jSpeed) {
-	// TODO: May have to adjust differently for audio
+
 	if (hasImageStream() || hasAudioStream()) {
 		pImageBuffer->setNMinImages(1);
 		toggle = pImageBuffer->isReverse() != (jSpeed < 0);
 		speed = fabs(jSpeed);
+		// If we have audio need to turn off at playback other than 1x
+		if (hasAudioStream()) {
+			bool speedOne = fabs(speed-1.0) <= std::numeric_limits<float>::epsilon();
+			// If we switch from playing sound to not play sound or vice versa 
+			if (!playSound && speedOne || playSound && !speedOne) {
+				pAudioBuffer->flush();
+				avcodec_flush_buffers(pAudioInCodecCtx);
+				avcodec_flush_buffers(pAudioOutCodecCtx);			
+			}
+			playSound = speedOne;		
+		}
 	}
 }
 
@@ -1149,6 +1162,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		audioDiffThreshold = 0;
 		audioDiffAvgCount = 0;
 		audioPts = 0;
+		playSound = false;
 
 		quit = false;
 	}
@@ -1160,10 +1174,11 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 	}
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_availableAudioFrame
+JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_availableAudioData
 (JNIEnv* env, jobject thisObject) {
-	return hasAudioStream() ? !(endOfFile && pAudioBuffer->empty()) && playSound
-		: false;
+	//return hasAudioStream() ? !(endOfFile && pAudioBuffer->empty()) && playSound
+	//	: false;
+	return hasAudioStream() ? !endOfFile : false;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_availableImageFrame
@@ -1172,12 +1187,12 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_availableImageFrame
 							|| !isForwardPlayback() && atStartForRead()) : false;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_loadNextAudioFrame
+JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_loadNextAudioData
 (JNIEnv* env, jobject thisObject) {
 
 	// If we do not have an audio stream, we are done decoding, or the audio 
 	// buffer is empty, return false to indicate that we did not load data
-	if (!hasAudioStream() || !playSound || pAudioBuffer->empty()) {
+	if (!hasAudioStream() || endOfFile || pAudioBuffer->empty()) {
 		return false;
 	}
 
@@ -1522,6 +1537,8 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_open0
 			return errNo;
 		}
 	}
+
+	playSound = hasAudioStream();
 
 	// Seek to the start of the file (must have an image or audio stream).
 	lastWritePts = seekPts = hasImageStream() ? pImageStream->start_time : 0; // assume 0 is the start time for the audio stream

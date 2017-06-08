@@ -115,16 +115,16 @@ public class MovieStream implements VideoStream, AudioStream {
 	}
 	
 	@Override
-	public native boolean availableAudioFrame();
+	public native boolean availableAudioData();
 	
 	@Override
 	public native boolean availableImageFrame();
 		
-	private native boolean loadNextAudioFrame();
+	private native boolean loadNextAudioData();
 
 	@Override
-	public int readAudioFrame(byte[] buffer) {
-		if (loadNextAudioFrame()) {
+	public int readAudioData(byte[] buffer) {
+		if (loadNextAudioData()) {
 			audioBuffer.get(buffer, 0, AUDIO_BUFFER_SIZE);
 			audioBuffer.rewind();
 			return 1;
@@ -246,8 +246,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	private native int loadNextImageFrame();
 		
 	@Override
-	public int readImageFrame(byte[] buffer)
-			throws IndexOutOfBoundsException {
+	public int readImageFrame(byte[] buffer) {
 		int nFrame = 0;
 		// Check if we loaded at least one image frame
 		if ((nFrame = loadNextImageFrame()) > 0) {
@@ -262,22 +261,22 @@ public class MovieStream implements VideoStream, AudioStream {
 	public static void main(String[] args) {
 		final MovieStream movieStream = new MovieStream();
 		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
-		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
-		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
+		String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
+		//String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
 		String version = "0.1.0.0";
 		ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
 		try {
 			movieStream.open(fileName, version, reqColorSpace, reqAudioFormat);
 			List<Thread> threads = new ArrayList<>(2);
-			//movieStream.setSpeed(1f);
+			//movieStream.setSpeed(2f);
 			if (movieStream.hasImageStream()) {
 				final Frame f = new Frame();
-				final MovieCanvas movieCanvas = new MovieCanvas(movieStream);
+				final VideoDisplay videoDisplay = new VideoDisplay(movieStream);
 				int width = movieStream.getWidth();
 				int height = movieStream.getHeight();
 		        f.setBounds(0, 0, width, height);
-		        f.add(movieCanvas);
+		        f.add(videoDisplay);
 		        f.addWindowListener( new WindowAdapter() {
 		            public void windowClosing(WindowEvent ev) {
 		            	try {
@@ -294,7 +293,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		    		@Override
 		    		public void run() {
 		    			while (movieStream.availableImageFrame()) {
-		    				movieCanvas.showNextFrame();	    				
+		    				videoDisplay.showNextFrame();	    				
 		    			}
 		    		}
 		    	}	    	
@@ -306,8 +305,8 @@ public class MovieStream implements VideoStream, AudioStream {
 		    	class AudioPlayerThread extends Thread {
 			    	@Override
 			    	public void run() {
-			    		while (movieStream.availableAudioFrame()) {
-				    		audioSound.playNextFrame();
+			    		while (movieStream.availableAudioData()) {
+				    		audioSound.playNextData();
 			    		}			    		
 			    		audioSound.close();
 			    	}

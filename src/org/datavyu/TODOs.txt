@@ -1,5 +1,4 @@
 For the MovieStream native implementation:
 -- Support only video play back and only sound play back for cases where there 
    is no audio stream or video stream
--- Disable audio when the speed is not 1x
 -- Implement viewing window

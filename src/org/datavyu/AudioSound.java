@@ -8,6 +8,13 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.AudioFormat.Encoding;
 
+/**
+ * Interfaces the audio stream with the access control of the sound system as 
+ * provided through the javax.sound framework. 
+ * 
+ * @author Florian Raudies, Mountain View, CA.
+ *
+ */
 public class AudioSound {
 	
 	/** The supported mono format; blank values are from the input audio */
@@ -30,35 +37,45 @@ public class AudioSound {
 	/** Audio format for the output */
 	AudioFormat outAudioFormat = null;
 	
+	/** The audio buffer size */
 	private int bufferSize = 0;
-	
+
+	/** The audio stream from where we pull data */
 	AudioStream audioStream = null;
 	
 	/**
+	 * Create the audio sound with an audio stream. This assumes that the audio
+	 * stream is OPEN to get the proper buffer size in bytes.
 	 * 
-	 * @param audioStream assumes that the audio stream is open
-	 * @throws LineUnavailableException 
+	 * @param audioStream The audio stream that provides the audio frames that 
+	 *		  are played back.
+	 * 
+	 * @throws LineUnavailableException If the audio format is not supported by 
+	 * 		   the javax.sound framework this exception is thrown. 
 	 */
 	public AudioSound(AudioStream audioStream) throws LineUnavailableException {		
 		this.audioStream = audioStream;
+		// Create a buffer for the audio frames
 		bufferSize = audioStream.getAudioBufferSize();
 		sampleData = new byte[bufferSize];
-				
 		// When using stereo need to multiply the frameSize by number of channels
 		outAudioFormat = audioStream.getOutputAudioFormat();
-		
-		// Get the data line
+		// Get the data line and sound line
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, outAudioFormat);
-		soundLine = (SourceDataLine) AudioSystem.getLine(info);			
+		soundLine = (SourceDataLine) AudioSystem.getLine(info);
 		soundLine.open(outAudioFormat);
 		soundLine.start();
-
 		// Get the gain (volume) control for the sound line
 		gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
 	}
 	
-	public void playNextFrame() {
-		if (audioStream.readAudioFrame(sampleData) > 0) {
+	/**
+	 * Plays the next audio frame by pulling the byte data from the audio stream
+	 * and writing it to a sound line.
+	 */
+	public void playNextData() {
+		// Read the audio frame into the sample data buffer
+		if (audioStream.readAudioData(sampleData) > 0) {
 			soundLine.write(sampleData, 0, bufferSize);			
 		}
 	}
@@ -90,6 +107,9 @@ public class AudioSound {
 		return gainControl.getMinimum();
 	}
 	
+	/**
+	 * Drains, stops, and closes the sound line.
+	 */
 	public void close() {
 		soundLine.drain();
 		soundLine.stop();
