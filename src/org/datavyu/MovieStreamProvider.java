@@ -1,29 +1,14 @@
 package org.datavyu;
 
-import java.awt.Canvas;
 import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
 
 public class MovieStreamProvider extends MovieStream {
 	private List<StreamListener> audioListeners;
@@ -54,7 +39,8 @@ public class MovieStreamProvider extends MovieStream {
 		public void run() {
 			while (running) {
 				if (availableImageFrame()) {
-					byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
+					byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
+					                         *getNumberOfColorChannels()];
 					readImageFrame(buffer); // blocks if no frame is available
 					synchronized (videoListeners) {
 						for (StreamListener listener : videoListeners) {
@@ -78,17 +64,21 @@ public class MovieStreamProvider extends MovieStream {
 		if (running) {
 			close();
 		}
-		super.open(fileName, version, reqColorSpace, reqAudioFormat);		
-		audio = new AudioListenerThread();
-		video = new VideoListenerThread();
-		for (StreamListener listener : audioListeners) {
-			listener.streamOpened();
+		super.open(fileName, version, reqColorSpace, reqAudioFormat);	
+		if (hasAudioStream()) {
+			audio = new AudioListenerThread();
+			for (StreamListener listener : audioListeners) {
+				listener.streamOpened();
+			}
 		}
-		for (StreamListener listener : videoListeners) {
-			listener.streamOpened();
+		if (hasVideoStream()) {
+			video = new VideoListenerThread();
+			for (StreamListener listener : videoListeners) {
+				listener.streamOpened();
+			}
 		}
-		audio.start();
-		video.start();
+		if (hasAudioStream()) { audio.start(); }
+		if (hasVideoStream()) { video.start(); }			
 		running = true;
 	}
 	
@@ -106,19 +96,27 @@ public class MovieStreamProvider extends MovieStream {
 	
 	@Override
 	public void close() throws IOException {
+		System.out.println("Calling close.");
 		if (running) {
 			try {
-				audio.interrupt();
-				video.interrupt();
-				audio.join();
-				video.join();				
-				for (StreamListener listener : audioListeners) {
-					listener.streamClosed();
-				}
-				for (StreamListener listener : videoListeners) {
-					listener.streamClosed();
-				}
 				running = false;
+				System.out.println("Stop running.");
+				if (hasAudioStream()) { audio.interrupt(); }
+				if (hasVideoStream()) { video.interrupt(); }
+				if (hasAudioStream()) {
+					for (StreamListener listener : audioListeners) {
+						listener.streamClosed();
+					}					
+					System.out.println("Joining audio thread.");
+					audio.join();
+				}
+				if (hasVideoStream()) {
+					for (StreamListener listener : videoListeners) {
+						listener.streamClosed();
+					}					
+					System.out.println("Joining video thread.");
+					video.join();
+				}
 				super.close();
 			} catch (InterruptedException ie) {
 				System.err.println("Could not close movie stream.");
@@ -128,8 +126,8 @@ public class MovieStreamProvider extends MovieStream {
 	
 	public static void main(String[] args) {
 		final MovieStreamProvider movieStreamProvider = new MovieStreamProvider();
-		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
-		String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
+		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
+		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
 		String version = "0.1.0.0";
 		final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
@@ -145,89 +143,13 @@ public class MovieStreamProvider extends MovieStream {
             }
         } );        
 		try {			
-			// Add the audio output
-			movieStreamProvider.addAudioStreamListener(new StreamListener() {
-				private SourceDataLine soundLine = null;				
-				
-				@Override
-				public void streamOpened() {					
-					AudioFormat audioFormat = movieStreamProvider.getAudioFormat();
-					try {
-						// Get the data line
-						DataLine.Info info = new DataLine.Info(
-								SourceDataLine.class, audioFormat);
-						soundLine = (SourceDataLine) AudioSystem.getLine(info);			
-						soundLine.open(audioFormat);
-						soundLine.start();						
-					} catch (LineUnavailableException lu) {
-						System.err.println("Could not open line for audio "
-								+ "format: " + audioFormat);
-					}					
-				}
-				
-				@Override
-				public void streamData(byte[] data) {
-					soundLine.write(data, 0, data.length);
-				}
-				
-				@Override
-				public void streamClosed() {
-					soundLine.drain();
-					soundLine.stop();
-					soundLine.close();
-				}
-			});
-			
-			// Add the image output
-			movieStreamProvider.addVideoStreamListener(new StreamListener() {
-				private ComponentColorModel cm = null;
-				private SampleModel sm = null;
-				private Hashtable<String, String> properties = new Hashtable<String, String>();
-				private BufferedImage image = null;
-				private int nChannel = 0;
-				private Canvas imageDisplay = null;
-				
-				@Override
-				public void streamOpened() {
-					int width = movieStreamProvider.getWidthOfView();
-					int height = movieStreamProvider.getHeightOfView();
-					nChannel = movieStreamProvider.getNumberOfColorChannels();
-					cm = new ComponentColorModel(reqColorSpace, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-					sm = cm.createCompatibleSampleModel(width, height);
-					// Initialize an empty image
-					DataBufferByte dataBuffer = new DataBufferByte(new byte[width*height*nChannel], width*height);
-					WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-					image = new BufferedImage(cm, raster, false, properties);
-					imageDisplay = new Canvas() {
-						private static final long serialVersionUID = 5471924216942753555L;
-
-						@Override
-			        	public void paint(Graphics g) {
-			        		g.drawImage(image, 0, 0, null);
-			        	}
-						public void update(Graphics g){
-						    paint(g);
-						}			
-			        };
-					// Add canvas with the buffered image to the frame
-			        f.add(imageDisplay);					
-				}
-				
-				@Override
-				public void streamData(byte[] data) {
-					int width = movieStreamProvider.getWidthOfView(); // width and height could have changed due to the view
-					int height = movieStreamProvider.getHeightOfView();
-					DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
-					WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
-					image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
-					imageDisplay.repaint();
-				}
-				
-				@Override
-				public void streamClosed() {
-					// Anything to clean-up? Maybe show a white image.
-				}
-			});			
+			// Add the audio sound listener
+			movieStreamProvider.addAudioStreamListener(
+					new AudioSoundStreamListener(movieStreamProvider));
+			// Add video display
+			movieStreamProvider.addVideoStreamListener(
+					new VideoDisplayStreamListener(movieStreamProvider, f, reqColorSpace));
+			// Open the movie stream provider
 			movieStreamProvider.open(fileName, version, reqColorSpace, reqAudioFormat);
 			int width = movieStreamProvider.getWidthOfView();
 			int height = movieStreamProvider.getHeightOfView();

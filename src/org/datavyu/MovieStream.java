@@ -76,7 +76,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * 
 	 * @return True if there is an image stream; otherwise false.
 	 */
-	public native boolean hasImageStream();
+	public native boolean hasVideoStream();
 	
 	/**
 	 * Find out if this movie stream contains an audio stream.
@@ -493,7 +493,7 @@ public class MovieStream implements VideoStream, AudioStream {
 			movieStream.open(fileName, version, reqColorSpace, reqAudioFormat);
 			List<Thread> threads = new ArrayList<>(2);
 			//movieStream.setSpeed(2f);
-			if (movieStream.hasImageStream()) {
+			if (movieStream.hasVideoStream()) {
 				final Frame f = new Frame();
 				final VideoDisplay videoDisplay = new VideoDisplay(movieStream);
 				int width = movieStream.getWidthOfStream();

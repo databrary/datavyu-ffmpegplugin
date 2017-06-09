@@ -706,7 +706,7 @@ int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat,
 /**
  * True if the current video file has an image stream.
  */
-inline bool hasImageStream() { return iImageStream > -1; }
+inline bool hasVideoStream() { return iImageStream > -1; }
 
 /**
  * True if the current video file has an audio stream.
@@ -779,7 +779,7 @@ void readNextFrame() {
 		if (seekReq) {
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			// Seek in the image stream
-			if (hasImageStream()) {
+			if (hasVideoStream()) {
 				if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
 					pLogger->error("Random seek of %I64d pts or %I64d frames in image stream unsuccessful.", 
 						seekPts, seekPts/avgDeltaPts);
@@ -811,7 +811,7 @@ void readNextFrame() {
 		}
 
 		// Switch direction of playback.
-		if (hasImageStream() && toggle) {
+		if (hasVideoStream() && toggle) {
 			std::pair<int, int> offsetDelta = pImageBuffer->toggle();
 			int offset = offsetDelta.first;
 			int delta = offsetDelta.second;
@@ -844,7 +844,7 @@ void readNextFrame() {
 		}
 
 		// Check start or end before issuing seek request!
-		if (hasImageStream() && (atStartForWrite() || atEndForWrite())) {
+		if (hasVideoStream() && (atStartForWrite() || atEndForWrite())) {
 			pLogger->info("Reached the start or end with seek %I64d pts, ",
 				"%I64d frames and last write %I64d pts, %I64d frames.", 
 				seekPts, seekPts/avgDeltaPts, lastWritePts, 
@@ -854,7 +854,7 @@ void readNextFrame() {
 		}
 
 		// Find next frame in reverse playback.
-		if (hasImageStream() && pImageBuffer->seekReq()) {
+		if (hasVideoStream() && pImageBuffer->seekReq()) {
 
 			// Find the number of frames that can still be read
 			int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;
@@ -909,7 +909,7 @@ void readNextFrame() {
 		} else {
 
 			// Is this a packet from the video stream?
-			if (hasImageStream() && packet.stream_index == iImageStream) {
+			if (hasVideoStream() && packet.stream_index == iImageStream) {
 				
 				// Decode the video frame.
 				avcodec_decode_video2(pImageCodecCtx, pImageFrame, &frameFinished, &packet);
@@ -970,9 +970,9 @@ void readNextFrame() {
 	}
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_hasImageStream
+JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_hasVideoStream
 (JNIEnv* env, jobject thisObject) {
-	return hasImageStream();
+	return hasVideoStream();
 }
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_hasAudioStream
@@ -982,14 +982,14 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_hasAudioStream
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_MovieStream_getStartTime0
 (JNIEnv* env, jobject thisObject) {
-	return (jdouble) hasImageStream() ? 
+	return (jdouble) hasVideoStream() ? 
 		pImageStream->start_time * av_q2d(pImageStream->time_base) 
 	  : pAudioStream->start_time * av_q2d(pAudioStream->time_base);
 }
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_MovieStream_getEndTime0
 (JNIEnv* env, jobject thisObject) {
-	return (jdouble) hasImageStream() ? 
+	return (jdouble) hasVideoStream() ? 
 		(pImageStream->duration + pImageStream->start_time) * av_q2d(pImageStream->time_base) 
 	  : (pAudioStream->duration + pAudioStream->start_time) * av_q2d(pAudioStream->time_base);
 }
@@ -1001,14 +1001,14 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_MovieStream_getDuration0
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_MovieStream_getCurrentTime
 (JNIEnv* env, jobject thisObject) {
-	return (jdouble) hasImageStream() ? 
+	return (jdouble) hasVideoStream() ? 
 		pImageFrameShow->pts*av_q2d(pImageStream->time_base) 
 	  : audioPts*av_q2d(pAudioStream->time_base);
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setTime0
 (JNIEnv* env, jobject thisObject, jdouble jTime) {
-	if (hasImageStream() || hasAudioStream()) {
+	if (hasVideoStream() || hasAudioStream()) {
 		lastWritePts = seekPts = ((int64_t)(jTime/(avgDeltaPts
 												*av_q2d(pImageStream->time_base))))
 													*avgDeltaPts;
@@ -1019,7 +1019,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setTime0
 JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setPlaybackSpeed0
 (JNIEnv* env, jobject thisObject, jfloat jSpeed) {
 
-	if (hasImageStream() || hasAudioStream()) {
+	if (hasVideoStream() || hasAudioStream()) {
 		pImageBuffer->setNMinImages(1);
 		toggle = pImageBuffer->isReverse() != (jSpeed < 0);
 		speed = fabs(jSpeed);
@@ -1039,7 +1039,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setPlaybackSpeed0
 
 JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_reset
 (JNIEnv* env, jobject thisObject) {
-	if (hasImageStream() || hasAudioStream()) {
+	if (hasVideoStream() || hasAudioStream()) {
 		if (pImageBuffer->isReverse()) {
 			// Seek to the end of the file.
 			lastWritePts = seekPts = pImageStream->duration - 2*avgDeltaPts;
@@ -1059,7 +1059,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_reset
 JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 (JNIEnv* env, jobject thisObject) {
 
-	if (hasImageStream() || hasAudioStream()) {
+	if (hasVideoStream() || hasAudioStream()) {
 
 		// Set the quit flag for the decoding thread.
 		quit = true;
@@ -1069,7 +1069,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		}
 
 		// Flush the image buffer buffer (which unblocks all readers/writers).
-		if (hasImageStream()) {
+		if (hasVideoStream()) {
 			pImageBuffer->doFlush();		
 		}
 
@@ -1079,7 +1079,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		// Free the decoding thread.
 		delete decodeFrame;
 		
-		if (hasImageStream()) {
+		if (hasVideoStream()) {
 			// Free the image buffer buffer.
 			delete pImageBuffer;
 			pImageBuffer = nullptr;
@@ -1183,7 +1183,7 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_availableAudioData
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_availableImageFrame
 (JNIEnv* env, jobject thisObject) {
-	return hasImageStream() ? !(isForwardPlayback() && atEndForRead() 
+	return hasVideoStream() ? !(isForwardPlayback() && atEndForRead() 
 							|| !isForwardPlayback() && atStartForRead()) : false;
 }
 
@@ -1300,7 +1300,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_open0
 	int errNo = 0;
 
 	// Release resources first before loading another movie.
-	if (hasImageStream() || hasAudioStream()) {
+	if (hasVideoStream() || hasAudioStream()) {
 		Java_org_datavyu_MovieStream_close0(env, thisObject);
 	}
 
@@ -1347,7 +1347,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_open0
 		}
 	}
 
-	if (hasImageStream()) {
+	if (hasVideoStream()) {
 		pLogger->info("Found image stream with id %d.", iImageStream);	
 	} else {
 		pLogger->info("Could not find an image stream.");
@@ -1368,13 +1368,13 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_open0
 		pLogger->info("Could not find an audio stream.");
 	}
 
-	if (!hasImageStream() && !hasAudioStream()) {
+	if (!hasVideoStream() && !hasAudioStream()) {
 		pLogger->error("Could not find an image stream or audio stream.");
 		avformat_close_input(&pFormatCtx);
 		return AVERROR_INVALIDDATA;	
 	}
 
-	if (hasImageStream()) {
+	if (hasVideoStream()) {
 		// Get a poitner to the video stream.
 		pImageStream = pFormatCtx->streams[iImageStream];
 
@@ -1541,7 +1541,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_open0
 	playSound = hasAudioStream();
 
 	// Seek to the start of the file (must have an image or audio stream).
-	lastWritePts = seekPts = hasImageStream() ? pImageStream->start_time : 0; // assume 0 is the start time for the audio stream
+	lastWritePts = seekPts = hasVideoStream() ? pImageStream->start_time : 0; // assume 0 is the start time for the audio stream
 	seekReq = true;
 
 	// Start the decode thread.
@@ -1576,7 +1576,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_getWidth0
 JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_view
 (JNIEnv* env, jobject thisObject, jint jx0, jint jy0, jint jwidth, jint jheight) {
 	// Done if we did not load any movie.
-	if (!hasImageStream()) {
+	if (!hasVideoStream()) {
 		return (jboolean) false; 
 	}
 
@@ -1615,7 +1615,7 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_view
 JNIEXPORT jobject JNICALL Java_org_datavyu_MovieStream_getFrameBuffer
 (JNIEnv* env, jobject thisObject) {
 	// No movie was loaded return nullptr.
-	if (!hasImageStream()) return 0;
+	if (!hasVideoStream()) return 0;
 
 	// We have a viewing window that needs to be supported.
 	if (doView) {
@@ -1640,7 +1640,7 @@ JNIEXPORT jobject JNICALL Java_org_datavyu_MovieStream_getFrameBuffer
 JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_loadNextImageFrame
 (JNIEnv* env, jobject thisObject) {
 	// No image stream is present return -1.
-	if (!hasImageStream()) return -1;
+	if (!hasVideoStream()) return -1;
 
 	// Counts the number of frames that this method requested (could be 0, 1, 2).
 	int nFrame = 0;

@@ -15,10 +15,10 @@ extern "C" {
 #define org_datavyu_MovieStream_AUDIO_BUFFER_SIZE 65536L
 /*
  * Class:     org_datavyu_MovieStream
- * Method:    hasImageStream
+ * Method:    hasVideoStream
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_hasImageStream
+JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_hasVideoStream
   (JNIEnv *, jobject);
 
 /*
