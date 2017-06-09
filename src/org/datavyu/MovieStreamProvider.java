@@ -54,7 +54,7 @@ public class MovieStreamProvider extends MovieStream {
 		public void run() {
 			while (running) {
 				if (availableImageFrame()) {
-					byte[] buffer = new byte[getWidth()*getHeight()*getNumberOfColorChannels()];
+					byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
 					readImageFrame(buffer); // blocks if no frame is available
 					synchronized (videoListeners) {
 						for (StreamListener listener : videoListeners) {
@@ -151,7 +151,7 @@ public class MovieStreamProvider extends MovieStream {
 				
 				@Override
 				public void streamOpened() {					
-					AudioFormat audioFormat = movieStreamProvider.getOutputAudioFormat();
+					AudioFormat audioFormat = movieStreamProvider.getAudioFormat();
 					try {
 						// Get the data line
 						DataLine.Info info = new DataLine.Info(
@@ -189,8 +189,8 @@ public class MovieStreamProvider extends MovieStream {
 				
 				@Override
 				public void streamOpened() {
-					int width = movieStreamProvider.getWidth();
-					int height = movieStreamProvider.getHeight();
+					int width = movieStreamProvider.getWidthOfView();
+					int height = movieStreamProvider.getHeightOfView();
 					nChannel = movieStreamProvider.getNumberOfColorChannels();
 					cm = new ComponentColorModel(reqColorSpace, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 					sm = cm.createCompatibleSampleModel(width, height);
@@ -215,8 +215,8 @@ public class MovieStreamProvider extends MovieStream {
 				
 				@Override
 				public void streamData(byte[] data) {
-					int width = movieStreamProvider.getWidth(); // width and height could have changed due to the view
-					int height = movieStreamProvider.getHeight();
+					int width = movieStreamProvider.getWidthOfView(); // width and height could have changed due to the view
+					int height = movieStreamProvider.getHeightOfView();
 					DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
 					WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
 					image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
@@ -229,8 +229,8 @@ public class MovieStreamProvider extends MovieStream {
 				}
 			});			
 			movieStreamProvider.open(fileName, version, reqColorSpace, reqAudioFormat);
-			int width = movieStreamProvider.getWidth();
-			int height = movieStreamProvider.getHeight();
+			int width = movieStreamProvider.getWidthOfView();
+			int height = movieStreamProvider.getHeightOfView();
 	        f.setBounds(0, 0, width, height);
 	        f.setVisible(true);
 		} catch (IOException io) {

@@ -35,7 +35,7 @@ public class AudioSound {
 	FloatControl gainControl = null;
 	
 	/** Audio format for the output */
-	AudioFormat outAudioFormat = null;
+	AudioFormat audioFormat = null;
 	
 	/** The audio buffer size */
 	private int bufferSize = 0;
@@ -59,11 +59,11 @@ public class AudioSound {
 		bufferSize = audioStream.getAudioBufferSize();
 		sampleData = new byte[bufferSize];
 		// When using stereo need to multiply the frameSize by number of channels
-		outAudioFormat = audioStream.getOutputAudioFormat();
+		audioFormat = audioStream.getAudioFormat();
 		// Get the data line and sound line
-		DataLine.Info info = new DataLine.Info(SourceDataLine.class, outAudioFormat);
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
 		soundLine = (SourceDataLine) AudioSystem.getLine(info);
-		soundLine.open(outAudioFormat);
+		soundLine.open(audioFormat);
 		soundLine.start();
 		// Get the gain (volume) control for the sound line
 		gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);

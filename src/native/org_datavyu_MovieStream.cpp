@@ -1575,7 +1575,41 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_getWidth0
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_view
 (JNIEnv* env, jobject thisObject, jint jx0, jint jy0, jint jwidth, jint jheight) {
-	return (jboolean) false;
+	// Done if we did not load any movie.
+	if (!hasImageStream()) {
+		return (jboolean) false; 
+	}
+
+	// Error if the start coordinates are out of range.
+	if (jx0 < 0 || jy0 < 0 || jx0 >= width || jy0 >= height) {
+		pLogger->error("Start position (x0, y0) = (%d, %d) pixels is out of range ",
+			"(%d, %d) ... (%d, %d) pixels.", jx0, jy0, 0, 0, width, height);
+		return (jboolean) false;
+	}
+
+	// Error if the width or height is too large.
+	if ((jx0+jwidth) > width || (jy0+jheight) > height) {
+		pLogger->error("Width %d pixels > %d pixels or height %d pixels > %d pixels.",
+			jwidth, width, jheight, height);
+		return (jboolean) false;
+	}
+
+	// We need to restrict the view if we do not use the original window of
+	// (0, 0) ... (width, height).
+	doView = jx0 > 0 || jy0 > 0 || jwidth < width || jheight < height;
+
+	// Set the view variables.
+	x0View = jx0;
+	y0View = jy0;
+	widthView = jwidth;
+	heightView = jheight;
+
+	// Log the new viewing window.
+	pLogger->info("Set view to (%d, %d) to (%d, %d).", jx0, jy0, jx0+jwidth, 
+		jy0+jheight);
+
+	// Return true to indicate that the window has been adjusted.
+	return (jboolean) true;
 }
 
 JNIEXPORT jobject JNICALL Java_org_datavyu_MovieStream_getFrameBuffer

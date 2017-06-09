@@ -65,8 +65,8 @@ public class VideoDisplay extends Canvas {
 		// Get the color space from the movie stream
 		cs = movieStream.getColorSpace();
 		// Get the width, height, number of channels in the stream
-		int width = movieStream.getWidth();
-		int height = movieStream.getHeight();
+		int width = movieStream.getWidthOfView();
+		int height = movieStream.getHeightOfView();
 		nChannel = movieStream.getNumberOfColorChannels();	
 		// Construct the component model that interprets bytes in the channels
 		cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE, 
@@ -94,8 +94,8 @@ public class VideoDisplay extends Canvas {
 	 */
 	public int showNextFrame() {
 		// Get the width and height which could have changed due to the view
-		int width = movieStream.getWidth(); 
-		int height = movieStream.getHeight();
+		int width = movieStream.getWidthOfView(); 
+		int height = movieStream.getHeightOfView();
 		// Re-allocate data buffer for the new width and height
 		data = new byte[width*height*nChannel];
 		// Read the data from the movie stream

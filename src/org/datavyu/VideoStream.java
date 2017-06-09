@@ -28,18 +28,32 @@ public interface VideoStream extends TimeStream {
 	public int getNumberOfColorChannels();
 
 	/**
-	 * Get the height of the image.
+	 * Get the height of the current view.
 	 * 
-	 * @return The height of the image in pixels.
+	 * @return The height of the view in pixels.
 	 */
-	public int getHeight();
+	public int getHeightOfView();
 
 	/**
-	 * Get the width of the image.
+	 * Get the width of the current view.
+	 * 
+	 * @return The width of the view in pixels.
+	 */
+	public int getWidthOfView();
+	
+	/**
+	 * Get the width of the images in the video stream.
 	 * 
 	 * @return The width of the image in pixels.
 	 */
-	public int getWidth();
+	public int getWidthOfStream();
+	
+	/**
+	 * Get the height of the image in the video stream.
+	 * 
+	 * @return The height of the image in pixels. 
+	 */
+	public int getHeightOfStream();
 
 	/**
 	 * Set the view or viewing window within the image stream. This allows us to
