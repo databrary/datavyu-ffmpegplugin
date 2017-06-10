@@ -349,17 +349,21 @@ public class MovieStream implements VideoStream, AudioStream {
 		colorSpace = reqColorSpace;
 		duration = getDuration0();
 		startTime = getStartTime0();
-		widthOfView = widthOfStream = getWidth0();
-		heightOfView = heightOfStream = getHeight0();		
-		nChannels = getNumberOfColorChannels0();
+		if (hasVideoStream()) {
+			widthOfView = widthOfStream = getWidth0();
+			heightOfView = heightOfStream = getHeight0();		
+			nChannels = getNumberOfColorChannels0();			
+		}
 		startTime = getStartTime0();
 		endTime = getEndTime0();
-		audioBuffer = getAudioBuffer(AUDIO_BUFFER_SIZE);
-		// When using stereo need to multiply the frameSize by number of channels
-		audioFormat = new AudioFormat(getEncoding(), getSampleRate(), 
-				getSampleSizeInBits(), getNumberOfSoundChannels(), 
-				getFrameSize() * getNumberOfSoundChannels(), 
-				(int) getFrameRate(), false);
+		if (hasAudioStream()) {
+			audioBuffer = getAudioBuffer(AUDIO_BUFFER_SIZE);
+			// When using stereo need to multiply the frameSize by number of channels
+			audioFormat = new AudioFormat(getEncoding(), getSampleRate(), 
+					getSampleSizeInBits(), getNumberOfSoundChannels(), 
+					getFrameSize() * getNumberOfSoundChannels(), 
+					(int) getFrameRate(), false);			
+		}
 		isOpen = true;
 	}
 
@@ -482,7 +486,8 @@ public class MovieStream implements VideoStream, AudioStream {
 		// Create the movie stream
 		final MovieStream movieStream = new MovieStream();
 		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
-		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
+		//String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
+		String fileName = "C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov";
 		String version = "0.1.0.0";
 		// The requested color space RGB
 		ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);

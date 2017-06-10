@@ -22,7 +22,9 @@ public class MovieStreamProvider extends MovieStream {
 		public void run() {
 			byte[] buffer = new byte[getAudioBufferSize()];
 			while (running) {
+				System.out.println("The audio play back loop is running.");
 				if (availableAudioData()) {
+					System.out.println("Receiving audio data...");
 					readAudioData(buffer); // blocks if no frame is available
 					synchronized (audioListeners) {
 						for (StreamListener listener : audioListeners) {
@@ -30,7 +32,8 @@ public class MovieStreamProvider extends MovieStream {
 						}					
 					}
 				}
-			}			
+			}
+			System.out.println("Audio play back loop ended.");
 		}
 	}
 	
@@ -64,7 +67,7 @@ public class MovieStreamProvider extends MovieStream {
 		if (running) {
 			close();
 		}
-		super.open(fileName, version, reqColorSpace, reqAudioFormat);	
+		super.open(fileName, version, reqColorSpace, reqAudioFormat);
 		if (hasAudioStream()) {
 			audio = new AudioListenerThread();
 			for (StreamListener listener : audioListeners) {
@@ -101,9 +104,10 @@ public class MovieStreamProvider extends MovieStream {
 			try {
 				running = false;
 				System.out.println("Stop running.");
-				if (hasAudioStream()) { audio.interrupt(); }
-				if (hasVideoStream()) { video.interrupt(); }
+				//if (hasAudioStream()) { audio.interrupt(); }
+				//if (hasVideoStream()) { video.interrupt(); }
 				if (hasAudioStream()) {
+					audio.interrupt();
 					for (StreamListener listener : audioListeners) {
 						listener.streamClosed();
 					}					
@@ -111,13 +115,16 @@ public class MovieStreamProvider extends MovieStream {
 					audio.join();
 				}
 				if (hasVideoStream()) {
+					video.interrupt();
 					for (StreamListener listener : videoListeners) {
 						listener.streamClosed();
 					}					
 					System.out.println("Joining video thread.");
 					video.join();
 				}
+				System.out.println("Closed on java side.");
 				super.close();
+				System.out.println("Closed on native side.");
 			} catch (InterruptedException ie) {
 				System.err.println("Could not close movie stream.");
 			}
@@ -128,6 +135,7 @@ public class MovieStreamProvider extends MovieStream {
 		final MovieStreamProvider movieStreamProvider = new MovieStreamProvider();
 		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
 		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
+		//String fileName = "C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov";
 		String version = "0.1.0.0";
 		final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
