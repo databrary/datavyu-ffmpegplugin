@@ -777,6 +777,7 @@ void readNextFrame() {
 
 		// Random seek.
 		if (seekReq) {
+			endOfFile = false;
 			seekFlags |= AVSEEK_FLAG_BACKWARD;
 			// Seek in the image stream
 			if (hasVideoStream()) {
@@ -886,86 +887,93 @@ void readNextFrame() {
 			}
 		}
 
-		// Read frame.
-		int ret = av_read_frame(pFormatCtx, &packet);
+		fprintf(stdout, "Read frame in decoding thread.\n");
+		fflush(stdout);
 
-		// Set endOfFile for end of file.
-		endOfFile = ret == AVERROR_EOF;
+		if (!endOfFile) {
 
-		// No sound
-		//playSound = ret >= 0;
-		ret >= 0;
+			// Read frame.
+			int ret = av_read_frame(pFormatCtx, &packet);
 
-		// Any error that is not endOfFile.
-		if (ret < 0 && !endOfFile) {
-			pLogger->error("Error:  %c, %c, %c, %c.\n",
-				static_cast<char>((-ret >> 0) & 0xFF),
-				static_cast<char>((-ret >> 8) & 0xFF),
-				static_cast<char>((-ret >> 16) & 0xFF),
-				static_cast<char>((-ret >> 24) & 0xFF));
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			// Set endOfFile for end of file.
+			endOfFile = ret == AVERROR_EOF;
+		
+			// Any error that is not endOfFile.
+			if (ret < 0 && !endOfFile) {
+				pLogger->error("Error:  %c, %c, %c, %c.\n",
+					static_cast<char>((-ret >> 0) & 0xFF),
+					static_cast<char>((-ret >> 8) & 0xFF),
+					static_cast<char>((-ret >> 16) & 0xFF),
+					static_cast<char>((-ret >> 24) & 0xFF));
+				std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-		// We got a frame! Let's decode it.
-		} else {
+			// We got a frame! Let's decode it.
+			} else {
 
-			// Is this a packet from the video stream?
-			if (hasVideoStream() && packet.stream_index == iImageStream) {
-				
-				// Decode the video frame.
-				avcodec_decode_video2(pImageCodecCtx, pImageFrame, &frameFinished, &packet);
-				
-				// Did we get a full video frame?
-				if(frameFinished) {
-
-					// Set the presentation time stamp.
-					int64_t readPts = pImageFrame->pkt_pts;
-
-					// Skip frames until we are at or beyond of the seekPts time stamp.
-					if (readPts >= seekPts) {
+				// Is this a packet from the video stream?
+				if (hasVideoStream() && packet.stream_index == iImageStream) {
 					
-						// Get the next writeable buffer. 
-						// This may block and can be unblocked with a flush.
-						AVFrame* pFrameBuffer = pImageBuffer->reqWritePtr();
+					// Decode the video frame.
+					avcodec_decode_video2(pImageCodecCtx, pImageFrame, &frameFinished, &packet);
+					
+					// Did we get a full video frame?
+					if(frameFinished) {
 
-						// Did we get a frame buffer?
-						if (pFrameBuffer) {
+						// Set the presentation time stamp.
+						int64_t readPts = pImageFrame->pkt_pts;
 
-							// Convert the image from its native format into RGB.
-							sws_scale
-							(
-								pSwsImageCtx,
-								(uint8_t const * const *)pImageFrame->data,
-								pImageFrame->linesize,
-								0,
-								pImageCodecCtx->height,
-								pFrameBuffer->data,
-								pFrameBuffer->linesize
-							);
-							pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
-							pFrameBuffer->pts = lastWritePts = readPts;
-							pImageBuffer->cmplWritePtr();
+						// Skip frames until we are at or beyond of the seekPts time stamp.
+						if (readPts >= seekPts) {
+						
+							// Get the next writeable buffer. 
+							// This may block and can be unblocked with a flush.
+							AVFrame* pFrameBuffer = pImageBuffer->reqWritePtr();
 
-							pLogger->info("Wrote %I64d pts, %I64d frames.", 
-											lastWritePts, 
-											lastWritePts/avgDeltaPts);
-							pImageBuffer->printLog();
+							// Did we get a frame buffer?
+							if (pFrameBuffer) {
+
+								// Convert the image from its native format into RGB.
+								sws_scale
+								(
+									pSwsImageCtx,
+									(uint8_t const * const *)pImageFrame->data,
+									pImageFrame->linesize,
+									0,
+									pImageCodecCtx->height,
+									pFrameBuffer->data,
+									pFrameBuffer->linesize
+								);
+								pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
+								pFrameBuffer->pts = lastWritePts = readPts;
+								pImageBuffer->cmplWritePtr();
+
+								pLogger->info("Wrote %I64d pts, %I64d frames.", 
+												lastWritePts, 
+												lastWritePts/avgDeltaPts);
+								pImageBuffer->printLog();
+							}
 						}
+
+						// Reset frame container to initial state.
+						av_frame_unref(pImageFrame);
 					}
 
-					// Reset frame container to initial state.
-					av_frame_unref(pImageFrame);
+					// Free the packet that was allocated by av_read_frame.
+					av_free_packet(&packet);
+
+				} else if (hasAudioStream() && playSound 
+					&& packet.stream_index == iAudioStream) {
+					// Decode packet from audio stream
+					pAudioBuffer->put(&packet); // packet is freed when consumed
+				} else {
+					av_free_packet(&packet);
 				}
-
-				// Free the packet that was allocated by av_read_frame.
-				av_free_packet(&packet);
-
-			} else if (hasAudioStream() && playSound 
-				&& packet.stream_index == iAudioStream) {
-				// Decode packet from audio stream
-				pAudioBuffer->put(&packet); // packet is freed when consumed
-			} else {
-				av_free_packet(&packet);
 			}
+		} else {
+			fprintf(stdout, "Reached end of file.\n");
+			fflush(stdout);
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 	}
 }
@@ -1060,21 +1068,34 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 (JNIEnv* env, jobject thisObject) {
 
 	if (hasVideoStream() || hasAudioStream()) {
+		fprintf(stdout, "Closing audio/video stream natively.\n");
+		fflush(stdout);
 
 		// Set the quit flag for the decoding thread.
 		quit = true;
 
 		if (hasAudioStream()) {
+			fprintf(stdout, "Before stopping the audio buffer.\n");
+			fflush(stdout);
 			pAudioBuffer->stop();
+			//pAudioBuffer->flush();
+			fprintf(stdout, "Stopped audio buffer.\n");
+			fflush(stdout);
 		}
 
 		// Flush the image buffer buffer (which unblocks all readers/writers).
 		if (hasVideoStream()) {
-			pImageBuffer->doFlush();		
+			pImageBuffer->doFlush();
 		}
 
 		// Join the decoding thread with this one.
+		fprintf(stdout, "Before joining the frame decoding thread.\n");
+		fflush(stdout);
+
 		decodeFrame->join();
+
+		fprintf(stdout, "After joining the frame decoding thread.\n");
+		fflush(stdout);
 
 		// Free the decoding thread.
 		delete decodeFrame;
@@ -1106,6 +1127,9 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		}
 
 		if (hasAudioStream()) {
+			fprintf(stdout, "Cleaning up the audio stream.\n");
+			fflush(stdout);
+
 			delete pAudioBuffer;
 			avcodec_flush_buffers(pAudioInCodecCtx);
 			avcodec_flush_buffers(pAudioOutCodecCtx);
@@ -1165,7 +1189,12 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		playSound = false;
 
 		quit = false;
+		fprintf(stdout, "Closed video/audio stream & reset variables.\n");
+		fflush(stdout);
 	}
+
+	fprintf(stdout, "Closing the logger.\n");
+	fflush(stdout);
 
 	if (pLogger) {
 		pLogger->info("Closed video and released resources.");

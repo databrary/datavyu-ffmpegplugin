@@ -486,8 +486,8 @@ public class MovieStream implements VideoStream, AudioStream {
 		// Create the movie stream
 		final MovieStream movieStream = new MovieStream();
 		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
-		//String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
-		String fileName = "C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov";
+		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
+		//String fileName = "C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov";
 		String version = "0.1.0.0";
 		// The requested color space RGB
 		ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);

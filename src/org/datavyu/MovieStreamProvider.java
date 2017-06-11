@@ -22,7 +22,7 @@ public class MovieStreamProvider extends MovieStream {
 		public void run() {
 			byte[] buffer = new byte[getAudioBufferSize()];
 			while (running) {
-				System.out.println("The audio play back loop is running.");
+				//System.out.println("The audio play back loop is running.");
 				if (availableAudioData()) {
 					System.out.println("Receiving audio data...");
 					readAudioData(buffer); // blocks if no frame is available
