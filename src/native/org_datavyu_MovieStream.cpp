@@ -887,9 +887,6 @@ void readNextFrame() {
 			}
 		}
 
-		fprintf(stdout, "Read frame in decoding thread.\n");
-		fflush(stdout);
-
 		if (!endOfFile) {
 
 			// Read frame.
@@ -970,9 +967,6 @@ void readNextFrame() {
 				}
 			}
 		} else {
-			fprintf(stdout, "Reached end of file.\n");
-			fflush(stdout);
-
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 	}
@@ -1067,20 +1061,13 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_reset
 JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 (JNIEnv* env, jobject thisObject) {
 
-	if (hasVideoStream() || hasAudioStream()) {
-		fprintf(stdout, "Closing audio/video stream natively.\n");
-		fflush(stdout);
-
+	if (hasVideoStream() || hasAudioStream()) 
+	{
 		// Set the quit flag for the decoding thread.
 		quit = true;
 
 		if (hasAudioStream()) {
-			fprintf(stdout, "Before stopping the audio buffer.\n");
-			fflush(stdout);
 			pAudioBuffer->stop();
-			//pAudioBuffer->flush();
-			fprintf(stdout, "Stopped audio buffer.\n");
-			fflush(stdout);
 		}
 
 		// Flush the image buffer buffer (which unblocks all readers/writers).
@@ -1089,13 +1076,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		}
 
 		// Join the decoding thread with this one.
-		fprintf(stdout, "Before joining the frame decoding thread.\n");
-		fflush(stdout);
-
 		decodeFrame->join();
-
-		fprintf(stdout, "After joining the frame decoding thread.\n");
-		fflush(stdout);
 
 		// Free the decoding thread.
 		delete decodeFrame;
@@ -1127,9 +1108,6 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		}
 
 		if (hasAudioStream()) {
-			fprintf(stdout, "Cleaning up the audio stream.\n");
-			fflush(stdout);
-
 			delete pAudioBuffer;
 			avcodec_flush_buffers(pAudioInCodecCtx);
 			avcodec_flush_buffers(pAudioOutCodecCtx);
@@ -1189,12 +1167,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		playSound = false;
 
 		quit = false;
-		fprintf(stdout, "Closed video/audio stream & reset variables.\n");
-		fflush(stdout);
 	}
-
-	fprintf(stdout, "Closing the logger.\n");
-	fflush(stdout);
 
 	if (pLogger) {
 		pLogger->info("Closed video and released resources.");

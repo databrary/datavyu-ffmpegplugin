@@ -1,4 +1,4 @@
 For the MovieStream native implementation:
--- Support only video play back and only sound play back for cases where there 
-   is no audio stream or video stream
--- Implement viewing window
+-- Test viewing window
+-- Test forward/backward, switching speed for a video with audio signal
+-- Test -4x, +4x.
