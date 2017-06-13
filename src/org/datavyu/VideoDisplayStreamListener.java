@@ -49,6 +49,9 @@ public class VideoDisplayStreamListener implements StreamListener {
 	
 	/** The container to which we can add the image display */
 	private Container container = null;
+	
+	/** Constraints for how to add to the container */
+	private Object constraints = null;
 
 	/**
 	 * Creates a video display through a stream listener.
@@ -60,8 +63,17 @@ public class VideoDisplayStreamListener implements StreamListener {
 	public VideoDisplayStreamListener(MovieStream movieStream, 
 			Container container, ColorSpace colorSpace) {
 		this.movieStream = movieStream;
-		this.colorSpace = colorSpace;
 		this.container = container;
+		this.constraints = null;
+		this.colorSpace = colorSpace;
+	}
+	
+	public VideoDisplayStreamListener(MovieStream movieStream, 
+			Container container, Object constraints, ColorSpace colorSpace) {
+		this.movieStream = movieStream;
+		this.container = container;
+		this.constraints = constraints;
+		this.colorSpace = colorSpace;
 	}
 
 	@Override
@@ -86,7 +98,11 @@ public class VideoDisplayStreamListener implements StreamListener {
 			    paint(g);
 			}
         };
-        container.add(imageDisplay);
+        if (constraints != null) {
+        	container.add(imageDisplay, constraints);
+        } else {
+            container.add(imageDisplay);        	
+        }
 	}
 
 	@Override
@@ -96,9 +112,19 @@ public class VideoDisplayStreamListener implements StreamListener {
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
 		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
-		imageDisplay.repaint();		
+		//imageDisplay.repaint();
+		container.repaint();
 	}
 
 	@Override
 	public void streamClosed() { /* Nothing to do here */ }
+	
+	@Override
+	public void streamStarted() {
+		// display the current frame
+		imageDisplay.repaint();	
+	}
+	
+	@Override
+	public void streamStopped() { /* Nothing to do here */ }
 }

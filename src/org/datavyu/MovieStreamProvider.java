@@ -113,20 +113,69 @@ public class MovieStreamProvider extends MovieStream {
 		}
 		super.open(fileName, version, reqColorSpace, reqAudioFormat);
 		if (hasAudioStream()) {
-			audio = new AudioListenerThread();
 			for (StreamListener listener : audioListeners) {
 				listener.streamOpened();
 			}
 		}
 		if (hasVideoStream()) {
-			video = new VideoListenerThread();
 			for (StreamListener listener : videoListeners) {
 				listener.streamOpened();
 			}
 		}
+	}
+	
+	public void start() {
+		if (hasAudioStream()) {
+			audio = new AudioListenerThread();
+			synchronized (audioListeners) {
+				for (StreamListener listener : audioListeners) {
+					listener.streamStarted();
+				}				
+			}
+		}
+		if (hasVideoStream()) {
+			video = new VideoListenerThread();
+			synchronized (videoListeners) {
+				for (StreamListener listener : videoListeners) {
+					listener.streamStarted();
+				}		
+			}
+		}
 		running = true;
 		if (hasAudioStream()) { audio.start(); }
-		if (hasVideoStream()) { video.start(); }			
+		if (hasVideoStream()) { video.start(); }		
+	}
+	
+	public void stop() {
+		running = false;
+		if (hasAudioStream()) {
+			audio.interrupt();
+			try {
+				audio.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			synchronized (audioListeners) {
+				for (StreamListener listener : audioListeners) {
+					listener.streamStopped();
+				}
+			}
+		}
+		if (hasVideoStream()) {
+			video.interrupt();
+			try {
+				video.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			synchronized (videoListeners) {
+				for (StreamListener listener : videoListeners) {
+					listener.streamStopped();
+				}
+			}
+		}
 	}
 	
 	/**
@@ -145,6 +194,7 @@ public class MovieStreamProvider extends MovieStream {
 			// If this stream provider is already running open the listener
 			if (running) {
 				streamListener.streamOpened();
+				streamListener.streamStarted();
 			}
 		}
 	}
@@ -165,6 +215,7 @@ public class MovieStreamProvider extends MovieStream {
 			// If this stream provider is already running open the listener
 			if (running) {
 				streamListener.streamOpened();
+				streamListener.streamStarted();
 			}
 		}
 	}
@@ -172,28 +223,9 @@ public class MovieStreamProvider extends MovieStream {
 	@Override
 	public void close() throws IOException {
 		if (running) {
-			try {
-				running = false;
-				if (hasAudioStream()) {
-					audio.interrupt();
-					for (StreamListener listener : audioListeners) {
-						listener.streamClosed();
-					}
-					audio.join();
-				}
-				if (hasVideoStream()) {
-					video.interrupt();
-					for (StreamListener listener : videoListeners) {
-						listener.streamClosed();
-					}
-					video.join();
-				}
-				super.close();
-			} catch (InterruptedException ie) {
-				System.err.println("Could not close movie stream." 
-						+ ie.getStackTrace());
-			}
+			stop();
 		}
+		super.close();
 	}
 	
 	public static void main(String[] args) {
@@ -214,7 +246,7 @@ public class MovieStreamProvider extends MovieStream {
 				}
                 System.exit(0);
             }
-        } );        
+        } );
 		try {			
 			// Add the audio sound listener
 			movieStreamProvider.addAudioStreamListener(
@@ -224,6 +256,7 @@ public class MovieStreamProvider extends MovieStream {
 					new VideoDisplayStreamListener(movieStreamProvider, f, reqColorSpace));
 			// Open the movie stream provider
 			movieStreamProvider.open(fileName, version, reqColorSpace, reqAudioFormat);
+			movieStreamProvider.start();
 			int width = movieStreamProvider.getWidthOfView();
 			int height = movieStreamProvider.getHeightOfView();
 	        f.setBounds(0, 0, width, height);

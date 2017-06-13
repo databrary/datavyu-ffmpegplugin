@@ -39,7 +39,6 @@ public class AudioSoundStreamListener implements StreamListener {
 					audioFormat);
 			soundLine = (SourceDataLine) AudioSystem.getLine(info);			
 			soundLine.open(audioFormat);
-			soundLine.start();						
 		} catch (LineUnavailableException lu) {
 			System.err.println("Could not open line for audio format: " 
 					+ audioFormat);
@@ -56,5 +55,15 @@ public class AudioSoundStreamListener implements StreamListener {
 		soundLine.drain();
 		soundLine.stop();
 		soundLine.close();
+	}
+	
+	@Override
+	public void streamStopped() {
+		soundLine.stop();
+	}
+	
+	@Override
+	public void streamStarted() {
+		soundLine.start();		
 	}
 }

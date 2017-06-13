@@ -24,4 +24,14 @@ public interface StreamListener {
 	 * This method is called when the stream is closed.
 	 */
 	public void streamClosed();
+	
+	/**
+	 * This method is called if the stream is stopped.
+	 */
+	public void streamStopped();
+	
+	/**
+	 * This method is called when the stream is started.
+	 */
+	public void streamStarted();
 }

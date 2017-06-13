@@ -98,6 +98,9 @@ double imageDiffCum = 0;
 /** The system clock's last time. */
 std::chrono::high_resolution_clock::time_point imageLastTime;
 
+/** The current presentation time stamp for the video. */
+double videoTime = 0;
+
 
 /*******************************************************************************
  * Status in the movie file.
@@ -178,7 +181,7 @@ double audioDiffThreshold = 0;
 int audioDiffAvgCount = 0;
 
 /** Current presentation time stamp for the audio stream. */
-double audioPts = 0;
+//double audioPts = 0;
 
 /** This boolean is set if we do not play sound. */
 bool playSound = false;
@@ -415,7 +418,7 @@ static int convertSamples(const uint8_t **inData, uint8_t **convertedData,
  * Decodes packet from queue into audioByte
  */
 int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioBuffer, 
-					 int bufferSize, double* pPts) {
+					 int bufferSize/*, double* pPts*/) {
 	static AVPacket pkt;
 	static uint8_t *pAudioPktData = nullptr;
 	static int audioPktSize = 0;
@@ -481,7 +484,7 @@ int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioBuffer,
 				continue;
 			}
 
-			audioPts = *pPts = audioTime;			
+			//audioPts = *pPts = audioTime;
 			audioTime += (double)dataSize / (double)(2 * pAudioOutCodecCtx->channels * pAudioOutCodecCtx->sample_rate);
 
 			/* We have data, return it and come back for more later */
@@ -1003,9 +1006,10 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_MovieStream_getDuration0
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_MovieStream_getCurrentTime
 (JNIEnv* env, jobject thisObject) {
-	return (jdouble) hasVideoStream() ? 
+	return (jdouble) hasVideoStream() ? videoTime : audioTime;	
+	/*return (jdouble) hasVideoStream() ? 
 		pImageFrameShow->pts*av_q2d(pImageStream->time_base) 
-	  : audioPts*av_q2d(pAudioStream->time_base);
+	  : audioPts*av_q2d(pAudioStream->time_base);*/
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setTime0
@@ -1133,6 +1137,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		nChannel = 3;
 		duration = 0;
 		lastWritePts = 0;
+		videoTime = 0;
 
 		// Set default values for playback speed.
 		toggle = false;
@@ -1163,7 +1168,8 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 		audioDiffAvgCoef = AUDIO_AVG_COEF;
 		audioDiffThreshold = 0;
 		audioDiffAvgCount = 0;
-		audioPts = 0;
+		//audioPts = 0;
+		audioTime = 0;
 		playSound = false;
 
 		quit = false;
@@ -1202,13 +1208,14 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_loadNextAudioData
 	uint8_t *data = pAudioBufferData; // get a write pointer.
 	int decodeLen, audioSize;
 	static uint8_t audioBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
-	double pts;
+	//double pts;
 
 	while (len > 0) {
 		// We still need to read len bytes
 		if (iAudioData >= nAudioData) {
 			/* We already sent all our data; get more */
-			audioSize = audioDecodeFrame(pAudioInCodecCtx, audioBuffer, sizeof(audioBuffer), &pts);
+			audioSize = audioDecodeFrame(pAudioInCodecCtx, audioBuffer, sizeof(audioBuffer));
+			//audioSize = audioDecodeFrame(pAudioInCodecCtx, audioBuffer, sizeof(audioBuffer), &pts);
 
 			if (audioSize < 0) {
 				/* If error, output silence */
@@ -1725,6 +1732,8 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_loadNextImageFrame
 
 		// Log that we displayed a frame.
 		pLogger->info("Display pts %I64d.", pImageFrameShow->pts/avgDeltaPts);
+
+		videoTime = pImageFrameShow->pts * av_q2d(pImageStream->time_base);
 	}
 
 	// Return the number of read frames (not neccesarily all are displayed).
