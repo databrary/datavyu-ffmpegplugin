@@ -72,7 +72,7 @@ public class VideoDisplay extends Canvas {
 		cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE, 
 				DataBuffer.TYPE_BYTE);
 		// Create a sampling model for the given width and height of the image
-		sm = cm.createCompatibleSampleModel(width, height);
+		sm = cm.createCompatibleSampleModel(width, height);		
 		// Allocate the data buffer for the width, height, channels in bytes
 		data = new byte[width*height*nChannel];	
 		// Wrap the byte buffer in a data buffer
@@ -100,6 +100,8 @@ public class VideoDisplay extends Canvas {
 		data = new byte[width*height*nChannel];
 		// Read the data from the movie stream
 		int nFrame = movieStream.readImageFrame(data);		
+		// Create a sampling model for the given width and height of the image
+		sm = cm.createCompatibleSampleModel(width, height);
 		// Create a data buffer for the new width and height with the data
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
 		// Create the writable raster that wraps the new data buffer

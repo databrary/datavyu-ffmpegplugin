@@ -177,17 +177,19 @@ public class MovieStreamProvider extends MovieStream {
 				}
 			}			
 			if (hasAudioStream()) {
-				audio.interrupt();
-				try {
-					audio.join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}				
-				synchronized (audioListeners) {
-					for (StreamListener listener : audioListeners) {
-						listener.streamStopped();
-					}
+				if (audio != null) {
+					audio.interrupt();
+					try {
+						audio.join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}				
+					synchronized (audioListeners) {
+						for (StreamListener listener : audioListeners) {
+							listener.streamStopped();
+						}
+					}					
 				}
 			}
 		}

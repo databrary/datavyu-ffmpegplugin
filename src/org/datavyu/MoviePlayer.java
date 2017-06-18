@@ -185,9 +185,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 				movieStreamProvider.setView(70, 50, 300, 200);
 			} catch (IndexOutOfBoundsException iob) {
 				System.err.println("Could not set view: " + iob.getMessage());
-				iob.printStackTrace();
 			} finally {
-				movieStreamProvider.start();			
+				movieStreamProvider.start();
 			}
 		}
 	}

@@ -437,8 +437,8 @@ public class MovieStream implements VideoStream, AudioStream {
 					+ "is ouside the bounds [0, " + getWidthOfStream() + "] x [0, " 
 					+ getHeightOfStream() + "]");
 		} else {
-			heightOfView = height;
 			widthOfView = width;
+			heightOfView = height;
 			view(x0, y0, width, height);
 		}
 	}
@@ -478,15 +478,16 @@ public class MovieStream implements VideoStream, AudioStream {
 	}
 	
 	/**
-	 * This is an example on how to use the API.
+	 * This is an example on how to use the API. Only closes cleanly if the 
+	 * video / audio has played until the end.
 	 * 
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
 		// Create the movie stream
 		final MovieStream movieStream = new MovieStream();
-		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
-		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
+		String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
+		//String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
 		//String fileName = "C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov";
 		String version = "0.1.0.0";
 		// The requested color space RGB
@@ -552,7 +553,6 @@ public class MovieStream implements VideoStream, AudioStream {
 					e.printStackTrace();
 				}
 			}
-			
 		} catch (IOException io) {
 			System.err.println(io.getLocalizedMessage());
 		} catch (LineUnavailableException lu) {

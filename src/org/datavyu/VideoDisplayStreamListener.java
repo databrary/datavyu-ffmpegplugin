@@ -26,9 +26,6 @@ public class VideoDisplayStreamListener implements StreamListener {
 	/** The color component model */
 	private ComponentColorModel cm = null;
 	
-	/** The sample model */
-	private SampleModel sm = null;
-	
 	/** The properties */
 	private Hashtable<String, String> properties = new Hashtable<String, String>();
 	
@@ -47,12 +44,6 @@ public class VideoDisplayStreamListener implements StreamListener {
 	/** The color space for this the data provided */
 	private ColorSpace colorSpace = null;
 	
-	/** The container to which we can add the image display */
-	private Container container = null;
-	
-	/** Constraints for how to add to the container */
-	private Object constraints = null;
-	
 	/** 
 	 * The stream has stopped and no updates to the image should be made 
 	 * We had to introduce this flag because the java event manager is lacking 
@@ -64,41 +55,16 @@ public class VideoDisplayStreamListener implements StreamListener {
 	 * the this video listener. 
 	 */
 	private boolean stopped = true;
-
-	/**
-	 * Creates a video display through a stream listener.
-	 * 
-	 * @param movieStream The underlying movie stream that provides data.
-	 * @param container The container we add the image display.
-	 * @param colorSpace The color space for the image data.
-	 */
-	public VideoDisplayStreamListener(MovieStream movieStream, 
-			Container container, ColorSpace colorSpace) {
-		this.movieStream = movieStream;
-		this.container = container;
-		this.constraints = null;
-		this.colorSpace = colorSpace;
-	}
 	
-	public VideoDisplayStreamListener(MovieStream movieStream, 
-			Container container, Object constraints, ColorSpace colorSpace) {
-		this.movieStream = movieStream;
-		this.container = container;
-		this.constraints = constraints;
-		this.colorSpace = colorSpace;
-	}
-
-	@Override
-	public void streamOpened() {
-		int width = movieStream.getWidthOfView();
-		int height = movieStream.getHeightOfView();
-		nChannel = movieStream.getNumberOfColorChannels();
-		cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-		sm = cm.createCompatibleSampleModel(width, height);
-		// Initialize an empty image
-		DataBufferByte dataBuffer = new DataBufferByte(new byte[width*height*nChannel], width*height);
-		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-		image = new BufferedImage(cm, raster, false, properties);
+	/**
+	 * Initialized the image display and adds it to the supplied container with 
+	 * the supplied constraint. If the constraint is null it uses the add method
+	 * on the container without constraint.
+	 * 
+	 * @param container The container that the display is added to
+	 * @param constraint The constraint used when adding
+	 */
+	private void initImageDisplay(Container container, Object constraints) {
 		imageDisplay = new Canvas() {
 			private static final long serialVersionUID = 5471924216942753555L;
 
@@ -117,14 +83,58 @@ public class VideoDisplayStreamListener implements StreamListener {
         	container.add(imageDisplay, constraints);
         } else {
             container.add(imageDisplay);        	
-        }
-        stopped = false; // stop displaying
+        }		
+	}
+
+	/**
+	 * Creates a video display through a stream listener. The display is added
+	 * to the container.
+	 * 
+	 * @param movieStream The underlying movie stream that provides data.
+	 * @param container The container we add the image display.
+	 * @param colorSpace The color space for the image data.
+	 */
+	public VideoDisplayStreamListener(MovieStream movieStream, 
+			Container container, ColorSpace colorSpace) {
+		this(movieStream, container, null, colorSpace);
+	}
+	
+	/**
+	 * Creates a video display through a stream listener. The display is added 
+	 * to the container using the constraint.
+	 * 
+	 * @param movieStream
+	 * @param container
+	 * @param constraints
+	 * @param colorSpace
+	 */
+	public VideoDisplayStreamListener(MovieStream movieStream, 
+			Container container, Object constraints, ColorSpace colorSpace) {
+		this.movieStream = movieStream;
+		this.colorSpace = colorSpace;
+		initImageDisplay(container, constraints);
+	}
+
+	@Override
+	public void streamOpened() {
+		int width = movieStream.getWidthOfView();
+		int height = movieStream.getHeightOfView();		
+		nChannel = movieStream.getNumberOfColorChannels();
+		cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+		SampleModel sm = cm.createCompatibleSampleModel(width, height);
+		// Initialize an empty image
+		DataBufferByte dataBuffer = new DataBufferByte(new byte[width*height*nChannel], width*height);
+		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
+		image = new BufferedImage(cm, raster, false, properties);
+        stopped = false; // display
 	}
 
 	@Override
 	public void streamData(byte[] data) {
-		int width = movieStream.getWidthOfView(); // width and height could have changed due to the view
+		// Width and height could have changed due to the view
+		int width = movieStream.getWidthOfView(); 
 		int height = movieStream.getHeightOfView();
+		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
 		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.

@@ -1,6 +1,16 @@
 For the MovieStream native implementation:
 -- Debug stopping of images -- there is an additional frame displayed (DONE)
--- Debug stopping of audio signal -- it does continue to play for about 500 ms
--- Test viewing window
--- Test forward/backward, switching speed for a video with audio signal
--- Test -4x, +4x.
+-- Debug stopping of audio signal -- it does continue to play for about 250 ms
+   Can't be fixed because it is in the java implementation
+-- Debug crash when re-opening video: Fixed added component to container when
+   stream open event; instead add it to the constructor of the 
+   VideoDisplayStreamListener.
+-- Test viewing window; Crashed with exception in WritableRaster; had to 
+   re-initialize the SampleModel in the streamData method of the 
+   VideoDisplayStreamListener. 
+-- Test forward/backward, switching speed for a video with audio signal, 
+   including testing of -4x, +4x.  Noticed that sound plays in a loop! Best 
+   solution stop the audio thread!  (Natively the audio is stopped).
+   
+-- Add update of slider
+-- Add slider to select time in stream
