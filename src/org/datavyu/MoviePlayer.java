@@ -140,15 +140,14 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			movieStreamProvider.reset();
-			// TODO: May have to pull one frame to display
-			//player.rewind();
-			//if (player.hasNextFrame()) { player.loadNextFrame(); }
 		}
 	}
 	
 	class StepSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			movieStreamProvider.stop();
+			
 			// TODO: Implement stepping
 			// Only pull a frame if it is available.
 			//if (player.hasNextFrame()) {
@@ -289,8 +288,13 @@ public class MoviePlayer extends JPanel implements WindowListener {
 				System.err.println("Could not parse command: " 
 							+ e.getActionCommand());
 			}
-			movieStreamProvider.setSpeed(getPlaybackSpeed());			
-			//player.setPlaybackSpeed(getPlaybackSpeed());
+			float speed = getPlaybackSpeed();
+			if (Math.abs(speed - 1.0) <= Math.ulp(1.0)) {
+				movieStreamProvider.startAudio();
+			} else {
+				movieStreamProvider.stopAudio();
+			}
+			movieStreamProvider.setSpeed(speed);
 		}
 	}
 	

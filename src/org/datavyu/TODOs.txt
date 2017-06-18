@@ -11,6 +11,7 @@ For the MovieStream native implementation:
 -- Test forward/backward, switching speed for a video with audio signal, 
    including testing of -4x, +4x.  Noticed that sound plays in a loop! Best 
    solution stop the audio thread!  (Natively the audio is stopped).
+   Play back speeds are working. Muted audio play back when running not at 1x.
    
 -- Add update of slider
 -- Add slider to select time in stream

@@ -27,7 +27,10 @@ public class MovieStreamProvider extends MovieStream {
 	private List<StreamListener> videoListeners;
 	
 	/** Indicates that BOTH the audio and video listener are running */
-	private boolean running;
+	//private boolean running;
+	private boolean runAudio;
+	
+	private boolean runVideo;
 	
 	/** This thread instance fulfills all audio play back */
 	private Thread audio;
@@ -45,7 +48,7 @@ public class MovieStreamProvider extends MovieStream {
 			// Allocate the buffer for the audio data
 			byte[] buffer = new byte[getAudioBufferSize()];
 			// Start the play back loop
-			while (running) {
+			while (runAudio) {
 				// If there is audio data available
 				if (availableAudioData()) {
 					// Read audio data -- blocks if none is available
@@ -97,7 +100,7 @@ public class MovieStreamProvider extends MovieStream {
 		@Override
 		public void run() {
 			// Start the play back loop
-			while (running) {
+			while (runVideo) {
 				// If there is image frame available
 				if (!nextImageFrame()) {
 					// Throttle this loop when we have no available data
@@ -113,13 +116,15 @@ public class MovieStreamProvider extends MovieStream {
 	public MovieStreamProvider() {
 		audioListeners = new LinkedList<StreamListener>();
 		videoListeners = new LinkedList<StreamListener>();
-		running = false;
+		//running = false;
+		runAudio = false;
+		runVideo = false;
 	}
 	
 	@Override
 	public void open(String fileName, String version, ColorSpace reqColorSpace, 
 			AudioFormat reqAudioFormat) throws IOException {
-		if (running) {
+		if (runVideo || runAudio) {
 			close();
 		}
 		super.open(fileName, version, reqColorSpace, reqAudioFormat);
@@ -135,64 +140,104 @@ public class MovieStreamProvider extends MovieStream {
 		}
 	}
 	
-	public void start() {
-		if (hasAudioStream()) {
+	/**
+	 * Start playing audio.  Audio is only started if the movie has an audio 
+	 * stream and audio is not playing already.  Calls stream started on all 
+	 * audio listeners. Thread safe.
+	 */
+	public void startAudio() {
+		if (hasAudioStream() && !runAudio) {
+			runAudio = true;
 			audio = new AudioListenerThread();
 			synchronized (audioListeners) {
 				for (StreamListener listener : audioListeners) {
 					listener.streamStarted();
 				}				
 			}
-		}
-		if (hasVideoStream()) {
+			audio.start();
+		}		
+	}
+
+	/**
+	 * Start playing video images. Images are only played if the movie has a 
+	 * video stream and is not playing already.  Calls stream started on all 
+	 * video listeners. Thread safe.
+	 */
+	public void startVideo() {
+		if (hasVideoStream() && !runVideo) {
+			runVideo = true;
 			video = new VideoListenerThread();
 			synchronized (videoListeners) {
 				for (StreamListener listener : videoListeners) {
 					listener.streamStarted();
 				}		
 			}
+			video.start();
 		}
-		running = true;
-		if (hasAudioStream()) { audio.start(); }
-		if (hasVideoStream()) { video.start(); }		
 	}
 	
-	public void stop() {
-		if (running) {
-			running = false;
-			if (hasVideoStream()) {
-				if (video != null) {
-					video.interrupt();
-					try {
-						video.join();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}				
-				}
-				synchronized (videoListeners) {
-					for (StreamListener listener : videoListeners) {
-						listener.streamStopped();
-					}
-				}
-			}			
-			if (hasAudioStream()) {
-				if (audio != null) {
-					audio.interrupt();
-					try {
-						audio.join();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}				
-					synchronized (audioListeners) {
-						for (StreamListener listener : audioListeners) {
-							listener.streamStopped();
-						}
-					}					
+	/**
+	 * Start the audio and video playing if there is an audio stream and a video 
+	 * stream.  Calls stream started on all stream listeners. Thread safe.
+	 */
+	public void start() {
+		startAudio();
+		startVideo();
+	}
+	
+	/**
+	 * Stops playing the video if a video is running and there is a video 
+	 * stream.  Calls stream stopped on all video listeners.
+	 */
+	public void stopVideo() {
+		if (runVideo && hasVideoStream()) {
+			runVideo = false;
+			if (video != null) {
+				video.interrupt();
+				try {
+					video.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}				
+			}
+			synchronized (videoListeners) {
+				for (StreamListener listener : videoListeners) {
+					listener.streamStopped();
 				}
 			}
-		}
+		}		
+	}
+	
+	/**
+	 * Stops playing the audio if a audio is running and there is an audio 
+	 * stream.  Calls stream stopped on all audio listeners.
+	 */
+	public void stopAudio() {
+		if (runAudio && hasAudioStream()) {
+			runAudio = false;
+			if (audio != null) {
+				audio.interrupt();
+				try {
+					audio.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}				
+				synchronized (audioListeners) {
+					for (StreamListener listener : audioListeners) {
+						listener.streamStopped();
+					}
+				}					
+			}			
+		}		
+	}
+	
+	/**
+	 * Stops playing the video if a video is running and there is a video 
+	 * stream.  Calls stream stopped on all video listeners. 
+	 */
+	public void stop() {
+		stopVideo();
+		stopAudio();		
 	}
 	
 	/**
@@ -209,7 +254,7 @@ public class MovieStreamProvider extends MovieStream {
 			// Add the listener to the list
 			audioListeners.add(streamListener);
 			// If this stream provider is already running open the listener
-			if (running) {
+			if (runAudio) {
 				streamListener.streamOpened();
 				streamListener.streamStarted();
 			}
@@ -230,7 +275,7 @@ public class MovieStreamProvider extends MovieStream {
 			// Add the listener to the list
 			videoListeners.add(streamListener);
 			// If this stream provider is already running open the listener
-			if (running) {
+			if (runVideo) {
 				streamListener.streamOpened();
 				streamListener.streamStarted();
 			}
@@ -239,9 +284,12 @@ public class MovieStreamProvider extends MovieStream {
 	
 	@Override
 	public void close() throws IOException {
-		if (running) {
+		stop();
+		/*
+		if (runAudio || runVideo) {
 			stop();
 		}
+		*/
 		super.close();
 	}
 	
