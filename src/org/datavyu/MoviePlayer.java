@@ -212,16 +212,34 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		}
 	}
 	
+	private void showNextImageFrame() {
+        movieStreamProvider.nextImageFrame();
+		double time = movieStreamProvider.getCurrentTime();
+		slider.setValue((int)(1000*(-startTime+time)));
+		frameNumber.setText(Math.round(time*1000.0)/1000.0 + " seconds");
+	}
+	
 	
 	protected void openFile(String fileName) {
 		movieStreamProvider.stop();
 	
 		// Assign a new movie file.
 		try {
-	        movieStreamProvider.open(fileName, "0.0.1", reqColorSpace, 
-	        		reqAudioFormat);
+			// Note that the input audio format will be manipulated by the open
+			// method
+			AudioFormat input = new AudioFormat(
+					reqAudioFormat.getEncoding(), 
+					reqAudioFormat.getSampleRate(),
+					reqAudioFormat.getSampleSizeInBits(),
+					reqAudioFormat.getChannels(),
+					reqAudioFormat.getFrameSize(),
+					reqAudioFormat.getFrameRate(),
+					reqAudioFormat.isBigEndian());
+			// Open the stream
+	        movieStreamProvider.open(fileName, "0.0.1", reqColorSpace, input);
 	        // Load and display first frame.
 	        //showNextFrame();
+	        showNextImageFrame();
 
 	        // Display the start time.
 			double timeInSeconds = movieStreamProvider.getCurrentTime();
@@ -248,7 +266,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	        		(int)(1000*duration)));
 
 	        // Set the size for the video frame.
-	        setMinimumSize(new Dimension(width+50, height+150));
+	        setPreferredSize(new Dimension(width+50, height+50));
 			repaint();
 	        
 	        System.out.println("Opened movie " + fileName);
@@ -497,15 +515,15 @@ public class MoviePlayer extends JPanel implements WindowListener {
      * event-dispatching thread.
      */
     private static void createAndShowGUI() {
-         //Create and set up the window.
+        // Create and set up the window
         JFrame frame = new JFrame("Video Player");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MoviePlayer player = new MoviePlayer();
         player.addWindowListener(frame);
-        //Add content to the window.
+        // Add content to the window
         frame.add(player, BorderLayout.CENTER);
  
-        //Display the window.
+        // Display the window
         frame.pack();
         frame.setVisible(true);
     }
@@ -514,8 +532,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
         /* Turn off metal's use of bold fonts */
         UIManager.put("swing.boldMetal", Boolean.FALSE);
          
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
+        // Schedule a job for the event-dispatching thread:
+        // creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI();

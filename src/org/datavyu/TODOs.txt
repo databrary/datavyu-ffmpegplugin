@@ -1,4 +1,6 @@
 For the MovieStream native implementation:
+-- Debug stopping of images -- there is an additional frame displayed (DONE)
+-- Debug stopping of audio signal -- it does continue to play for about 500 ms
 -- Test viewing window
 -- Test forward/backward, switching speed for a video with audio signal
 -- Test -4x, +4x.

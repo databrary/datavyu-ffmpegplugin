@@ -65,6 +65,29 @@ public class MovieStreamProvider extends MovieStream {
 			}
 		}
 	}
+	
+	/**
+	 * Consumes the next image frame if there is one.
+	 * 
+	 * @return True if an image frame was consumed; otherwise false.
+	 */
+	protected boolean nextImageFrame() {
+		if (availableImageFrame()) {
+			// Allocate space for a byte buffer
+			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
+			                         *getNumberOfColorChannels()];
+			// Read the next image frame -- blocks if none is available
+			readImageFrame(buffer);
+			// Fulfill all listeners
+			synchronized (videoListeners) {
+				for (StreamListener listener : videoListeners) {
+					listener.streamData(buffer);
+				}					
+			}					
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * This thread reads the binary video data from the movie stream and
@@ -76,19 +99,7 @@ public class MovieStreamProvider extends MovieStream {
 			// Start the play back loop
 			while (running) {
 				// If there is image frame available
-				if (availableImageFrame()) {
-					// Allocate space for a byte buffer
-					byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
-					                         *getNumberOfColorChannels()];
-					// Read the next image frame -- blocks if none is available
-					readImageFrame(buffer);
-					// Fulfill all listeners
-					synchronized (videoListeners) {
-						for (StreamListener listener : videoListeners) {
-							listener.streamData(buffer);
-						}					
-					}					
-				} else {
+				if (!nextImageFrame()) {
 					// Throttle this loop when we have no available data
 					try { Thread.sleep(250); } catch (InterruptedException ie) {}					
 				}
@@ -147,32 +158,36 @@ public class MovieStreamProvider extends MovieStream {
 	}
 	
 	public void stop() {
-		running = false;
-		if (hasAudioStream()) {
-			audio.interrupt();
-			try {
-				audio.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			synchronized (audioListeners) {
-				for (StreamListener listener : audioListeners) {
-					listener.streamStopped();
+		if (running) {
+			running = false;
+			if (hasVideoStream()) {
+				if (video != null) {
+					video.interrupt();
+					try {
+						video.join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}				
 				}
-			}
-		}
-		if (hasVideoStream()) {
-			video.interrupt();
-			try {
-				video.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			synchronized (videoListeners) {
-				for (StreamListener listener : videoListeners) {
-					listener.streamStopped();
+				synchronized (videoListeners) {
+					for (StreamListener listener : videoListeners) {
+						listener.streamStopped();
+					}
+				}
+			}			
+			if (hasAudioStream()) {
+				audio.interrupt();
+				try {
+					audio.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
+				synchronized (audioListeners) {
+					for (StreamListener listener : audioListeners) {
+						listener.streamStopped();
+					}
 				}
 			}
 		}

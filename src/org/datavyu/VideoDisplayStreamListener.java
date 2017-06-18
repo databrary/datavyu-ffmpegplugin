@@ -52,6 +52,18 @@ public class VideoDisplayStreamListener implements StreamListener {
 	
 	/** Constraints for how to add to the container */
 	private Object constraints = null;
+	
+	/** 
+	 * The stream has stopped and no updates to the image should be made 
+	 * We had to introduce this flag because the java event manager is lacking 
+	 * and another frame is displayed with considerable lag after the stopping 
+	 * occurred triggered by the java event manager which is not real-time.
+	 * 
+	 * The idea of stopped is that we prevent the java event manager from 
+	 * updating a frame that should not be displayed anymore because we stopped
+	 * the this video listener. 
+	 */
+	private boolean stopped = true;
 
 	/**
 	 * Creates a video display through a stream listener.
@@ -92,7 +104,10 @@ public class VideoDisplayStreamListener implements StreamListener {
 
 			@Override
         	public void paint(Graphics g) {
-        		g.drawImage(image, 0, 0, null);
+				// If not stopped display the next image
+				if (!stopped) {
+	        		g.drawImage(image, 0, 0, null);					
+				}
         	}
 			public void update(Graphics g){
 			    paint(g);
@@ -103,6 +118,7 @@ public class VideoDisplayStreamListener implements StreamListener {
         } else {
             container.add(imageDisplay);        	
         }
+        stopped = false; // stop displaying
 	}
 
 	@Override
@@ -112,19 +128,22 @@ public class VideoDisplayStreamListener implements StreamListener {
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
 		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
-		//imageDisplay.repaint();
-		container.repaint();
+		imageDisplay.repaint();
 	}
 
 	@Override
-	public void streamClosed() { /* Nothing to do here */ }
-	
-	@Override
-	public void streamStarted() {
-		// display the current frame
-		imageDisplay.repaint();	
+	public void streamClosed() { 
+		stopped = true;
 	}
 	
 	@Override
-	public void streamStopped() { /* Nothing to do here */ }
+	public void streamStarted() {
+		stopped = false; // start displaying
+		imageDisplay.repaint(); // display the current frame
+	}
+	
+	@Override
+	public void streamStopped() {
+		stopped = true; // stop displaying
+	}
 }
