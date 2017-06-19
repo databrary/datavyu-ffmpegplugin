@@ -83,7 +83,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	 * Get the play back speed.
 	 * @return Play back speed.
 	 */
-	protected float getPlaybackSpeed() { return speedSign*speedValue; }
+	//protected float getPlaybackSpeed() { return speedSign*speedValue; }
 	
 	/**
 	 * An encapsulated class that ensures that filters files down to video files
@@ -125,7 +125,12 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	class PlaySelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			movieStreamProvider.start();
+			// Must set is stepping to false BEFORE calling playsAtForward1x 
+			isStepping = false; 
+			// Play sound only if we are in forward direction
+			if (playsAtForward1x()) { movieStreamProvider.startAudio(); }
+			// Play video
+			movieStreamProvider.startVideo();
 		}
 	}
 	
@@ -143,16 +148,22 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		}
 	}
 	
+	private boolean isStepping = false;
+	
 	class StepSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			movieStreamProvider.stop();
-			
-			// TODO: Implement stepping
-			// Only pull a frame if it is available.
-			//if (player.hasNextFrame()) {
-			//	showNextFrame();
-			//}
+			if (!isStepping) {
+				// Set natively no sound (otherwise the audio buffer will block the video stream)
+				movieStreamProvider.setPlaySound(false); 
+				// Stops all stream providers
+				movieStreamProvider.stop();
+				// Enables stepping to display the frames without starting the video thread
+				movieStreamProvider.startVideoListeners();
+				// We are stepping, setStepping
+				isStepping = true;
+			}
+			movieStreamProvider.nextImageFrame();
 		}
 	}
 	
@@ -194,7 +205,6 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	class ResetViewSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			
 			try {
 				// Stop the player before changing the window
 				movieStreamProvider.stop();
@@ -215,16 +225,13 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		double time = movieStreamProvider.getCurrentTime();
 		slider.setValue((int)(1000*(-startTime+time)));
 		frameNumber.setText(Math.round(time*1000.0)/1000.0 + " seconds");
-	}
-	
+	}	
 	
 	protected void openFile(String fileName) {
 		movieStreamProvider.stop();
-	
 		// Assign a new movie file.
 		try {
-			// Note that the input audio format will be manipulated by the open
-			// method
+			// The input audio format will be manipulated by the open method!
 			AudioFormat input = new AudioFormat(
 					reqAudioFormat.getEncoding(), 
 					reqAudioFormat.getSampleRate(),
@@ -233,6 +240,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 					reqAudioFormat.getFrameSize(),
 					reqAudioFormat.getFrameRate(),
 					reqAudioFormat.isBigEndian());
+			
 			// Open the stream
 	        movieStreamProvider.open(fileName, "0.0.1", reqColorSpace, input);
 	        // Load and display first frame.
@@ -273,10 +281,28 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	        System.out.println("start time = " + startTime + " seconds.");
 	        System.out.println("end time = " + movieStreamProvider.getEndTime() 
 	        		+ " seconds.");
+	        System.out.println("Has video stream  = " 
+	        		+ movieStreamProvider.hasVideoStream());
+	        System.out.println("Has audio stream = " 
+	        		+ movieStreamProvider.hasAudioStream());
 	        
 		} catch (IOException io) {
 			io.printStackTrace();
 		}        
+	}
+	
+	private boolean playsAtForward1x() {
+		return Math.abs(speedValue - 1.0) <= Math.ulp(1.0) && speedSign == 1 
+				&& !isStepping;
+	}
+	
+	private void setSpeed(float speedValue, int speedSign) {
+		if (playsAtForward1x()) {
+			movieStreamProvider.startAudio();
+		} else {
+			movieStreamProvider.stopAudio();
+		}
+		movieStreamProvider.setSpeed(speedSign * speedValue);
 	}
 	
 	class SpeedValueSelection implements ActionListener {
@@ -288,13 +314,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 				System.err.println("Could not parse command: " 
 							+ e.getActionCommand());
 			}
-			float speed = getPlaybackSpeed();
-			if (Math.abs(speed - 1.0) <= Math.ulp(1.0)) {
-				movieStreamProvider.startAudio();
-			} else {
-				movieStreamProvider.stopAudio();
-			}
-			movieStreamProvider.setSpeed(speed);
+			setSpeed(speedValue, speedSign);
 		}
 	}
 	
@@ -313,12 +333,11 @@ public class MoviePlayer extends JPanel implements WindowListener {
 									+ e.getActionCommand());
 				speedSign = +1;
 			}
-			movieStreamProvider.setSpeed(getPlaybackSpeed());
-			System.out.println("Set speed to: " + getPlaybackSpeed());
-			// TODO: Need to pull two frames as workaround because toggle requires 
+			setSpeed(speedValue, speedSign);
+			// Need to pull two frames as workaround because toggle requires 
 			// two frames to revert direction.
-			//if (player.hasNextFrame()) { player.loadNextFrame(); }
-			//if (player.hasNextFrame()) { player.loadNextFrame(); }
+			movieStreamProvider.dropImageFrame();
+			movieStreamProvider.dropImageFrame();
 		}
 	}
 	

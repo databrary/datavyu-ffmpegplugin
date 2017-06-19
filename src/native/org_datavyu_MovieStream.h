@@ -191,6 +191,14 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_bigEndian
 
 /*
  * Class:     org_datavyu_MovieStream
+ * Method:    setPlaySound
+ * Signature: (Z)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_setPlaySound
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     org_datavyu_MovieStream
  * Method:    open0
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljavax/sound/sampled/AudioFormat;)I
  */

@@ -180,9 +180,6 @@ double audioDiffThreshold = 0;
 /** Holds the average audio difference count. */
 int audioDiffAvgCount = 0;
 
-/** Current presentation time stamp for the audio stream. */
-//double audioPts = 0;
-
 /** This boolean is set if we do not play sound. */
 bool playSound = false;
 
@@ -1031,7 +1028,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setPlaybackSpeed0
 		speed = fabs(jSpeed);
 		// If we have audio need to turn off at playback other than 1x
 		if (hasAudioStream()) {
-			bool speedOne = fabs(speed-1.0) <= std::numeric_limits<float>::epsilon();
+			bool speedOne = fabs(jSpeed-1.0) <= std::numeric_limits<float>::epsilon();
 			// If we switch from playing sound to not play sound or vice versa 
 			if (!playSound && speedOne || playSound && !speedOne) {
 				pAudioBuffer->flush();
@@ -1302,6 +1299,14 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_bigEndian
     char *numPtr = (char*)&number;
 	return hasAudioStream() ? (numPtr[0] != 1) : false;
 }
+
+JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_setPlaySound
+(JNIEnv *env, jobject thisObject, jboolean play) {
+	bool original = playSound;
+	playSound = play;
+	return original;
+}
+
 
 JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_open0
 (JNIEnv* env, jobject thisObject, jstring jFileName, jstring jVersion, 

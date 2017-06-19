@@ -12,6 +12,7 @@ For the MovieStream native implementation:
    including testing of -4x, +4x.  Noticed that sound plays in a loop! Best 
    solution stop the audio thread!  (Natively the audio is stopped).
    Play back speeds are working. Muted audio play back when running not at 1x.
+-- Work on stepping mechanism, especially on the toggle in the direction.
    
 -- Add update of slider
 -- Add slider to select time in stream

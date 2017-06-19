@@ -282,6 +282,16 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * @return True for big endian and false for little endian.
 	 */
 	private native boolean bigEndian();
+	
+	/**
+	 * Set the boolean that determines whether sound should be played or not.
+	 * 
+	 * @param playSound If set to false no sound will be pulled if set to true 
+	 * sound will pulled out of the stream.
+	 * 
+	 * @return The original state of playing before updating.
+	 */
+	public native boolean setPlaySound(boolean playSound);
 
 	/**
 	 * Get the encoding for the audio stream.
