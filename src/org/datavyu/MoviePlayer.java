@@ -80,12 +80,6 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	private JSlider slider;
 	
 	/**
-	 * Get the play back speed.
-	 * @return Play back speed.
-	 */
-	//protected float getPlaybackSpeed() { return speedSign*speedValue; }
-	
-	/**
 	 * An encapsulated class that ensures that filters files down to video files
 	 * based on known file extensions.
 	 */
@@ -100,7 +94,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		@Override
 		public boolean accept(File f) {
 			
-			// If this file is a directory display it. 
+			// If this file is a directory display it.
 			if (f.isDirectory()) {
 				return true;
 			}
@@ -155,12 +149,12 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		public void actionPerformed(ActionEvent e) {
 			if (!isStepping) {
 				// Set natively no sound (otherwise the audio buffer will block the video stream)
-				movieStreamProvider.setPlaySound(false); 
+				movieStreamProvider.setPlaySound(false);
 				// Stops all stream providers
 				movieStreamProvider.stop();
 				// Enables stepping to display the frames without starting the video thread
 				movieStreamProvider.startVideoListeners();
-				// We are stepping, setStepping
+				// We are stepping, set isStepping
 				isStepping = true;
 			}
 			movieStreamProvider.nextImageFrame();
@@ -300,9 +294,12 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		if (playsAtForward1x()) {
 			movieStreamProvider.startAudio();
 		} else {
+			System.out.println("Stopping audio.");
 			movieStreamProvider.stopAudio();
+			System.out.println("Audio stopped.");
 		}
 		movieStreamProvider.setSpeed(speedSign * speedValue);
+		System.out.println("Set speed.");
 	}
 	
 	class SpeedValueSelection implements ActionListener {
@@ -480,7 +477,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 				new VideoDisplayStreamListener(movieStreamProvider, this, 
 						BorderLayout.CENTER, reqColorSpace));
 		
-		openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");		
+		openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
+		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
 	}
 	
     void addWindowListener(Window w) {

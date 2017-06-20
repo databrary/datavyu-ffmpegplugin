@@ -105,7 +105,7 @@ public class MovieStreamProvider extends MovieStream {
 			// Read the next image frame -- blocks if none is available
 			readImageFrame(buffer);
 			// Fulfill all listeners
-			//System.out.println("Updating the listeners.");			
+			//System.out.println("Updating the listeners.");		
 			//System.out.flush();
 			synchronized (videoListeners) {
 				for (StreamListener listener : videoListeners) {

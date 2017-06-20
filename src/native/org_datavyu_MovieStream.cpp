@@ -181,7 +181,7 @@ double audioDiffThreshold = 0;
 int audioDiffAvgCount = 0;
 
 /** This boolean is set if we do not play sound. */
-bool playSound = false;
+std::atomic<bool> playSound = false;
 
 /*******************************************************************************
  * Variables that control random seeking.
@@ -813,6 +813,8 @@ void readNextFrame() {
 
 		// Switch direction of playback.
 		if (hasVideoStream() && toggle) {
+			endOfFile = false;
+
 			std::pair<int, int> offsetDelta = pImageBuffer->toggle();
 			int offset = offsetDelta.first;
 			int delta = offsetDelta.second;
@@ -845,6 +847,7 @@ void readNextFrame() {
 		}
 
 		// Check start or end before issuing seek request!
+		/*
 		if (hasVideoStream() && (atStartForWrite() || atEndForWrite())) {
 			pLogger->info("Reached the start or end with seek %I64d pts, ",
 				"%I64d frames and last write %I64d pts, %I64d frames.", 
@@ -853,9 +856,11 @@ void readNextFrame() {
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
 		}
+		*/
 
 		// Find next frame in reverse playback.
 		if (hasVideoStream() && pImageBuffer->seekReq()) {
+			endOfFile = false;
 
 			// Find the number of frames that can still be read
 			int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;

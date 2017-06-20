@@ -13,6 +13,15 @@ For the MovieStream native implementation:
    solution stop the audio thread!  (Natively the audio is stopped).
    Play back speeds are working. Muted audio play back when running not at 1x.
 -- Work on stepping mechanism, especially on the toggle in the direction.
+   Implemented stepping.  There still seems to be dead-lock situation when 
+   pressing a certain combination of keys.  Need to investigate further!
+   Found bug in the native code; need to reset endOfFile = false when seeking to
+   a random place or when seeking backward when playing in backward direction.
+   That solved the bug with/out audio. Still need to resolve why audio blocks in
+   java.
+   
    
 -- Add update of slider
+
+
 -- Add slider to select time in stream
