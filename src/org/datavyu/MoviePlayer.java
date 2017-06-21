@@ -14,7 +14,6 @@ import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -214,12 +213,13 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		}
 	}
 	
+	/*
 	private void showNextImageFrame() {
         movieStreamProvider.nextImageFrame();
 		double time = movieStreamProvider.getCurrentTime();
 		slider.setValue((int)(1000*(-startTime+time)));
 		frameNumber.setText(Math.round(time*1000.0)/1000.0 + " seconds");
-	}	
+	}	*/
 	
 	protected void openFile(String fileName) {
 		movieStreamProvider.stop();
@@ -238,8 +238,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			// Open the stream
 	        movieStreamProvider.open(fileName, "0.0.1", reqColorSpace, input);
 	        // Load and display first frame.
-	        //showNextFrame();
-	        showNextImageFrame();
+	        movieStreamProvider.nextImageFrame();
+	        //showNextImageFrame();
 
 	        // Display the start time.
 			double timeInSeconds = movieStreamProvider.getCurrentTime();
@@ -260,10 +260,6 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	        
 	        // Get the start time for proper placing of the slider.
 	        startTime = movieStreamProvider.getStartTime();
-
-	        // Assign a range of 0 to 1 to the slider.
-	        slider.setModel(new DefaultBoundedRangeModel(0, 1, 0, 
-	        		(int)(1000*duration)));
 
 	        // Set the size for the video frame.
 	        setPreferredSize(new Dimension(width+50, height+50));
@@ -476,6 +472,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		movieStreamProvider.addVideoStreamListener(
 				new VideoDisplayStreamListener(movieStreamProvider, this, 
 						BorderLayout.CENTER, reqColorSpace));
+		movieStreamProvider.addVideoStreamListener(
+				new SliderStreamListener(slider, movieStreamProvider));
 		
 		openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");

@@ -113,7 +113,7 @@ bool quit = false;
 bool loadedMovie = false;
 
 /** The stream reached the end of the file. */
-bool endOfFile = false;
+std::atomic<bool> endOfFile = false;
 
 /** Toggles the direction of playback. */
 bool toggle	= false;

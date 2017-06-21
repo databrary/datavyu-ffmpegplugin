@@ -94,19 +94,13 @@ public class MovieStreamProvider extends MovieStream {
 	 * @return True if an image frame was consumed; otherwise false.
 	 */
 	protected boolean nextImageFrame() {
-		//System.out.println("Getting the next image frame.");
-		//System.out.flush();
 		if (availableImageFrame()) {
 			// Allocate space for a byte buffer
 			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
 			                         *getNumberOfColorChannels()];
-			//System.out.println("Reading image frame.");
-			//System.out.flush();
 			// Read the next image frame -- blocks if none is available
 			readImageFrame(buffer);
 			// Fulfill all listeners
-			//System.out.println("Updating the listeners.");		
-			//System.out.flush();
 			synchronized (videoListeners) {
 				for (StreamListener listener : videoListeners) {
 					listener.streamData(buffer);

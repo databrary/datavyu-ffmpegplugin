@@ -19,9 +19,5 @@ For the MovieStream native implementation:
    a random place or when seeking backward when playing in backward direction.
    That solved the bug with/out audio. Still need to resolve why audio blocks in
    java.
-   
-   
--- Add update of slider
-
-
+-- Add update of slider. Done.
 -- Add slider to select time in stream
