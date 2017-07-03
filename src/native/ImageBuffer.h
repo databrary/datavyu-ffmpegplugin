@@ -54,7 +54,7 @@ class ImageBuffer {
 	int iReverse;
 
 	/** If true, this buffer is flushed. */
-	std::atomic<bool> flush;
+	std::atomic<bool> flushing;
 
 	/** If true, this buffer is in reverse mode. */
 	bool reverse;
@@ -107,7 +107,7 @@ public:
 	 * height -- Integer height in pixels.
 	 */
 	ImageBuffer(int width, int height, int64_t avgDeltaPts, Logger* pLogger) 
-		: nData(N_MAX_IMAGES), flush(false), reverse(false), 
+		: nData(N_MAX_IMAGES), flushing(false), reverse(false), 
 		avgDeltaPts(avgDeltaPts), pLogger(pLogger) {
 
 		// Initialize the buffer.
@@ -166,13 +166,13 @@ public:
 	 * same as the one after creating this obejct instance with one exception:
 	 * The playback direction is not reset.
 	 */
-	void doFlush() {
-		flush = true;
+	void flush() {
+		flushing = true;
 		cv.notify_all();
 		std::unique_lock<std::mutex> locker(mu);
 		reset();
 		locker.unlock();
-		flush = false;
+		flushing = false;
 	}
 
 	/**
@@ -262,7 +262,7 @@ public:
 		
 		// Ensure we have at least a block of nMinImages to go backward.
 		// Leave two frames for the backup when toggeling.
-		cv.wait(locker, [this](){return (nData-nBefore-2) > nMinImages || flush;});
+		cv.wait(locker, [this](){return (nData-nBefore-2) > nMinImages || flushing;});
 		
 		// The delta is nReverse and the offset is nData-nBefore-1.
 		std::pair<int, int> ret = std::make_pair(nReverse, nData-nBefore-1);
@@ -298,19 +298,19 @@ public:
 	}
 
 	/**
-	 * Get the read pointer for the next frame. This method blocks if there is 
+	 * Get the get pointer for the next frame. This method blocks if there is 
 	 * no next frame available.
 	 */
-	AVFrame* getReadPtr() {
+	AVFrame* getGetPtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
 		
 		// There must have be one frame before!
-		cv.wait(locker, [this](){ return nBefore > 0 || flush;}); 
+		cv.wait(locker, [this](){ return nBefore > 0 || flushing;}); 
 		
 		// When not flushing show data[iRead] and increment iRead by one when in 
 		// forward mode or decrement iRead by one when in backward mode.
-		if (!flush) {
+		if (!flushing) {
 			pFrame = data[iRead];
 			iRead = (reverse ? (iRead - 1 + nData) : (iRead + 1)) % nData;
 			nBefore--;
@@ -322,24 +322,24 @@ public:
 	}
 
 	/**
-	 * Request a write pointer. Notice this request does not change the internal
+	 * Request a put pointer. Notice this request does not change the internal
 	 * pointers within the buffer. We separated reqWritePtr and cmplWritePtr
 	 * because we may request the same write pointer several times without 
 	 * wanting to change the internal pointers within the buffer.
 	 *
 	 * RETURNS A pointer to an AVFrame.
 	 */
-	AVFrame* reqWritePtr() {
+	AVFrame* requestPutPtr() {
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
 		
 		// This should also check that there are two frames left for reverse 
 		// but then the toggle from revere into forward takes two extra frames.
 		// Keep at least two frames free!
-		cv.wait(locker, [this](){return nFree() > 1 || flush;});
+		cv.wait(locker, [this](){return nFree() > 1 || flushing;});
 
 		// If we do not flush get the write position.
-		if (!flush) {
+		if (!flushing) {
 			pFrame = data[iWrite];
 		}
 		locker.unlock();
@@ -348,10 +348,10 @@ public:
 	}
 
 	/**
-	 * Completes the request for a write pointer. This will adjust the internal 
+	 * Completes the put for a write pointer. This will adjust the internal 
 	 * pointers in the buffer to confirm the write.
 	 */
-	void cmplWritePtr() {
+	void completePutPtr() {
 		std::unique_lock<std::mutex> locker(mu);
 
 		// If not flushing iReverse is subtracted by one if reverse == true.
@@ -360,7 +360,7 @@ public:
 		// nBefore is inceased by 1 if not in reverse otherwise it is increased 
 		// by nReverse if we are done with writing the block that is when 
 		// iReverse == 0.
-		if (!flush) {
+		if (!flushing) {
 			iWrite = (iWrite + 1) % nData;
 			iReverse -= reverse;
 			nAfter -= (nBefore + nAfter) == nData;
@@ -375,7 +375,7 @@ public:
 	 * block of frames in reverse direction.
 	 */
 	bool seekReq() {
-		return reverse && iReverse==0;
+		return reverse && iReverse == 0;
 	}
 
 	/**
@@ -391,21 +391,5 @@ public:
 		}
 		// Ensure that the buffer is large enough in the logger!
 		pLogger->info("Buffer: %s", ss.str().c_str());
-	}
-
-	/**
-	 * Print state and contents of the buffer to the logger.
-	 */
-	inline void print() {
-		fprintf(stderr, "iRead = %d, iWrite = %d, nBefore = %d, "
-				"nAfter = %d, nReverse = %d, iReverse = %d, reverse = %d.\n",
-			iRead, iWrite, nBefore, nAfter, nReverse, iReverse, (int)reverse);
-		std::stringstream ss;
-		for (int iData = 0; iData < nData; ++iData) {
-			ss << "(" << iData << ";" << data[iData]->pts/avgDeltaPts << "), ";
-		}
-		// Ensure that the buffer is large enough in the logger!
-		fprintf(stderr, "Buffer: %s\n", ss.str().c_str());
-		fflush(stderr);
 	}
 };

@@ -45,7 +45,6 @@ public class MovieStreamProvider extends MovieStream {
 	class AudioListenerThread extends Thread {
 		@Override
 		public void run() {
-			System.out.println("Starting audio thread.");			
 			// Allocate the buffer for the audio data
 			byte[] buffer = new byte[getAudioBufferSize()];
 			// Start the play back loop
@@ -53,9 +52,7 @@ public class MovieStreamProvider extends MovieStream {
 				// If there is audio data available
 				if (availableAudioData()) {
 					// Read audio data -- blocks if none is available
-					System.out.println("Reading audio data.");
 					readAudioData(buffer);
-					System.out.println("Read audio data.");
 					// Fulfill all listeners
 					// This is lock allows to add listeners
 					synchronized (audioListeners) {
@@ -69,27 +66,24 @@ public class MovieStreamProvider extends MovieStream {
 					try { Thread.sleep(250); } catch (InterruptedException ie) {}
 				}
 			}
-			System.out.println("Stopping audio thread.");
 		}
 	}
 	
 	/**
 	 * Consumes the next image frame without forwarding it to the listeners.
 	 * 
-	 * @return
+	 * @return True if at least one frame was read; otherwise false. 
 	 */
 	protected boolean dropImageFrame() {
+		int nFrame = 0;
 		if (availableImageFrame()) {
 			// Allocate space for a byte buffer
 			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
 			                         *getNumberOfColorChannels()];
-			//System.out.println("Reading image frame.");
-			//System.out.flush();
 			// Read the next image frame -- blocks if none is available
-			readImageFrame(buffer);
-			return true;
+			nFrame = readImageFrame(buffer);
 		}		
-		return false;
+		return nFrame > 0;
 	}
 	
 	/**
@@ -103,10 +97,7 @@ public class MovieStreamProvider extends MovieStream {
 			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
 			                         *getNumberOfColorChannels()];
 			// Read the next image frame -- blocks if none is available
-			System.out.println("Reading image frame.");
 			readImageFrame(buffer);
-			System.out.println("Read image frame.");
-			System.out.flush();
 			// Fulfill all listeners
 			synchronized (videoListeners) {
 				for (StreamListener listener : videoListeners) {
@@ -202,6 +193,13 @@ public class MovieStreamProvider extends MovieStream {
 		}
 	}
 	
+	/**
+	 * Starts the video listener to enable updates to all registered stream 
+	 * listeners for the video.
+	 * 
+	 * This is used to enable stepping when not using the internal video player
+	 * thread that pulls and displays images.
+	 */
 	protected void startVideoListeners() {
 		synchronized (videoListeners) {
 			for (StreamListener listener : videoListeners) {

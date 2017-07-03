@@ -15,13 +15,13 @@ class AudioBuffer {
   int n_packets;
   std::mutex *mu;
   std::condition_variable *cv;
-  int quit;
+  bool draining;
   std::atomic<bool> flushing;
 public:
   AudioBuffer() {
 	  first_pkt = last_pkt = nullptr;
 	  n_packets = 0;
-	  quit = 0;
+	  draining = false;
 	  mu = new std::mutex;
 	  cv = new std::condition_variable;
   }
@@ -51,12 +51,12 @@ public:
   inline bool empty() const {
 	return n_packets == 0;
   }
-  void stop() {
-	quit = 1;
+  void drain() {
+	draining = true;
   }
   int put(AVPacket *pkt) {
 	AVPacketList *pkt1;
-	if (quit == 1) { return -1; }
+	if (draining) { return -1; }
 	if (av_dup_packet(pkt) < 0) { return -1; }
 	pkt1 = (AVPacketList*) av_malloc(sizeof(AVPacketList));
 	if (!pkt1) { return -1; }
@@ -84,7 +84,7 @@ public:
 	AVPacketList *pkt1;
 	int ret = 0;
 
-	if (quit) { return -1; }
+	if (draining) { return -1; }
 
 	std::unique_lock<std::mutex> locker(*mu);
     cv->wait(locker, [this](){return (n_packets > 0) || flushing;});
@@ -112,8 +112,8 @@ public:
   }
 
   inline void print() {
-	fprintf(stderr, "Number of packets %d, quit %d, flushing %d.\n", n_packets,
-			quit, flushing);
+	fprintf(stderr, "Number of packets %d, draining %d, flushing %d.\n", 
+					n_packets, draining, flushing);
 	fflush(stderr);
   }
 };

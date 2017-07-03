@@ -43,33 +43,33 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	/** The movie stream for this movie player */
 	private MovieStreamProvider movieStreamProvider;
 	
-	/** The start time is used to adjust slider to correct value. */
+	/** The start time is used to adjust slider to correct value */
 	private double startTime = 0; 
 	
-	/** Used to open files to be played. */
+	/** Used to open video files */
 	private JFileChooser fileChooser = null;
 	
-	/** The sign for the play back speed: + = forward and - = backward. */
+	/** The sign for the play back speed: + = forward and - = backward */
 	private int speedSign = 1;
 	
-	/** The speed for play back. */
+	/** The speed for play back */
 	private float speedValue = 1;
 	
 	/** The directory last opened is used to initialize the file chooser. */
 	private File lastDirectory = new File(System.getProperty("user.home"));
 
-	/** A group of radio buttons controls the play back speed. */
+	/** A group of radio buttons controls the play back speed */
 	private JRadioButton quarter;
 	private JRadioButton half;
 	private JRadioButton one;
 	private JRadioButton twice;
 	private JRadioButton four;
 	
-	/** A tuple of radio buttons controls the play back direction. */
+	/** A tuple of radio buttons controls the play back direction */
 	private JRadioButton forward;
 	private JRadioButton backward;
 	
-	/** A label to display the frame number. */
+	/** A label to display the frame number */
 	private JLabel frameNumber;
 	
 	/** 
@@ -229,14 +229,9 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			
 			// Open the stream
 	        movieStreamProvider.open(fileName, "0.0.1", reqColorSpace, input);
+	        
 	        // Load and display first frame.
 	        movieStreamProvider.nextImageFrame();
-	        //showNextImageFrame();
-
-	        // Display the start time.
-			double timeInSeconds = movieStreamProvider.getCurrentTime();
-			frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 
-					+ " seconds");
 					
 			// Set the default play back speed.
 			one.setSelected(true);
@@ -273,24 +268,35 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		}        
 	}
 	
+	/**
+	 * Returns true if values are set for the video to be played back at 1x 
+	 * speed.
+	 *  
+	 * @return True if we play forward at 1x; otherwise false.
+	 */
 	private boolean playsAtForward1x() {
 		return Math.abs(speedValue - 1.0) <= Math.ulp(1.0) && speedSign == 1 
 				&& !isStepping;
 	}
 	
+	/**
+	 * Set the play back speed for this movie player. Notice that depending on
+	 * the play back speed this may stop the audio play back.
+	 * 
+	 * @param speedValue The speed value for the play back speed.
+	 * @param speedSign The sign for the play back speed.
+	 */
 	private void setSpeed(float speedValue, int speedSign) {
-		// Need to set speed first so that the reverse is set correctly
+		
+		// Need to set speed first so that the reverse is set correctly!!!
 		movieStreamProvider.setSpeed(speedSign * speedValue);
+		
+		// Then we can start/stop the audio
 		if (playsAtForward1x()) {
-			System.out.println("Starting audio.");
 			movieStreamProvider.startAudio();
-			System.out.println("Audio started");
 		} else {
-			System.out.println("Stopping audio.");
 			movieStreamProvider.stopAudio();
-			System.out.println("Audio stopped.");
 		}
-		System.out.println("Set speed.");
 	}
 	
 	class SpeedValueSelection implements ActionListener {
@@ -321,15 +327,13 @@ public class MoviePlayer extends JPanel implements WindowListener {
 									+ e.getActionCommand());
 				speedSign = +1;
 			}
+			
 			setSpeed(speedValue, speedSign);
+			
 			// Need to pull two frames as workaround because toggle requires 
-			// two frames to revert direction.
-			
+			// two frames to revert direction.			
 			movieStreamProvider.dropImageFrame();
 			movieStreamProvider.dropImageFrame();
-			
-			System.out.println("Speed sign action done.");
-			System.out.flush();
 		}
 	}
 	
