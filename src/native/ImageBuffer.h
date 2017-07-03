@@ -157,7 +157,7 @@ public:
 	/**
 	 * Set the minimum number of images required to reverse. Set this to one 
 	 * before changing direction from backward to forward. Set this to the 
-	 * block size when changning direction from forward to backward.
+	 * block size when changing direction from forward to backward.
 	 */
 	void setNMinImages(int nMin) { nMinImages = nMin; }
 
@@ -391,5 +391,21 @@ public:
 		}
 		// Ensure that the buffer is large enough in the logger!
 		pLogger->info("Buffer: %s", ss.str().c_str());
+	}
+
+	/**
+	 * Print state and contents of the buffer to the logger.
+	 */
+	inline void print() {
+		fprintf(stderr, "iRead = %d, iWrite = %d, nBefore = %d, "
+				"nAfter = %d, nReverse = %d, iReverse = %d, reverse = %d.\n",
+			iRead, iWrite, nBefore, nAfter, nReverse, iReverse, (int)reverse);
+		std::stringstream ss;
+		for (int iData = 0; iData < nData; ++iData) {
+			ss << "(" << iData << ";" << data[iData]->pts/avgDeltaPts << "), ";
+		}
+		// Ensure that the buffer is large enough in the logger!
+		fprintf(stderr, "Buffer: %s\n", ss.str().c_str());
+		fflush(stderr);
 	}
 };

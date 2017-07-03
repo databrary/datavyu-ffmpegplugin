@@ -116,7 +116,7 @@ bool loadedMovie = false;
 std::atomic<bool> endOfFile = false;
 
 /** Toggles the direction of playback. */
-bool toggle	= false;
+std::atomic<bool> toggle = false;
 
 /** Controls the speed of playback as factor of the original playback speed. */
 double speed = 1;
@@ -266,7 +266,7 @@ double getAudioTime() {
 }
 
 /* Add or subtract samples to get a better sync, return new audio buffer size */
-int synchronizeAudio(short *samples, int nSamples, double pts) {
+int synchronizeAudio(short *samples, int nSamples) {
 	double diffPts, avgDiffPts;
 	int nWanted, nMin, nMax;
 	int nBytePerSample = 2 * pAudioOutCodecCtx->channels;
@@ -775,6 +775,9 @@ void readNextFrame() {
 
 	while (!quit) {
 
+		fprintf(stderr, "At start of decoding loop.\n");
+		fflush(stderr);
+
 		// Random seek.
 		if (seekReq) {
 			endOfFile = false;
@@ -795,6 +798,9 @@ void readNextFrame() {
 
 			// Seek in the audio stream
 			if (hasAudioStream()) {
+				fprintf(stderr, "Decode audio frame.\n");
+				fflush(stderr);
+
 				if (av_seek_frame(pFormatCtx, iAudioStream, seekPts, seekFlags) < 0) {
 					pLogger->error("Random seek of %I64d pts or %I64d frames in audio stream unsuccessful.", 
 						seekPts, seekPts/avgDeltaPts);
@@ -814,6 +820,8 @@ void readNextFrame() {
 		// Switch direction of playback.
 		if (hasVideoStream() && toggle) {
 			endOfFile = false;
+			fprintf(stderr, "\n\n toggle \n\n");
+			fflush(stderr);
 
 			std::pair<int, int> offsetDelta = pImageBuffer->toggle();
 			int offset = offsetDelta.first;
@@ -907,7 +915,7 @@ void readNextFrame() {
 					static_cast<char>((-ret >> 8) & 0xFF),
 					static_cast<char>((-ret >> 16) & 0xFF),
 					static_cast<char>((-ret >> 24) & 0xFF));
-				std::this_thread::sleep_for(std::chrono::milliseconds(500));
+				std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
 			// We got a frame! Let's decode it.
 			} else {
@@ -919,7 +927,7 @@ void readNextFrame() {
 					avcodec_decode_video2(pImageCodecCtx, pImageFrame, &frameFinished, &packet);
 					
 					// Did we get a full video frame?
-					if(frameFinished) {
+					if (frameFinished) {
 
 						// Set the presentation time stamp.
 						int64_t readPts = pImageFrame->pkt_pts;
@@ -929,6 +937,10 @@ void readNextFrame() {
 						
 							// Get the next writeable buffer. 
 							// This may block and can be unblocked with a flush.
+
+							fprintf(stderr, "Requesting write ptr.\n");
+							fflush(stderr);
+
 							AVFrame* pFrameBuffer = pImageBuffer->reqWritePtr();
 
 							// Did we get a frame buffer?
@@ -966,13 +978,16 @@ void readNextFrame() {
 				} else if (hasAudioStream() && playSound 
 					&& packet.stream_index == iAudioStream) {
 					// Decode packet from audio stream
+					fprintf(stderr, "Putting audio packet.\n");
+					fflush(stderr);
+
 					pAudioBuffer->put(&packet); // packet is freed when consumed
 				} else {
 					av_free_packet(&packet);
 				}
 			}
 		} else {
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			std::this_thread::sleep_for(std::chrono::milliseconds(250));
 		}
 	}
 }
@@ -1027,12 +1042,32 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setTime0
 JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setPlaybackSpeed0
 (JNIEnv* env, jobject thisObject, jfloat jSpeed) {
 
+	fprintf(stderr, "Setting speed to %f.\n", jSpeed);
+	fflush(stderr);
+
 	if (hasVideoStream() || hasAudioStream()) {
-		pImageBuffer->setNMinImages(1);
+
+		// If we are in backward and switch into forward
+		if (pImageBuffer->isReverse() && jSpeed > 0) {
+			pImageBuffer->setNMinImages(N_MIN_IMAGES);
+		}
+		
+		// If we are in forward and switch into backward
+		if (!pImageBuffer->isReverse() && jSpeed < 0) {
+			pImageBuffer->setNMinImages(1);
+		}
+		//pImageBuffer->setNMinImages(1);
+
 		toggle = pImageBuffer->isReverse() != (jSpeed < 0);
+
+		fprintf(stderr, "Toggle is %d.\n", toggle);
+		fflush(stderr);
+
 		speed = fabs(jSpeed);
 		// If we have audio need to turn off at playback other than 1x
 		if (hasAudioStream()) {
+			fprintf(stderr, "Before flushing audio buffer.\n");
+			fflush(stderr);
 			bool speedOne = fabs(jSpeed-1.0) <= std::numeric_limits<float>::epsilon();
 			// If we switch from playing sound to not play sound or vice versa 
 			if (!playSound && speedOne || playSound && !speedOne) {
@@ -1040,7 +1075,9 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_setPlaybackSpeed0
 				avcodec_flush_buffers(pAudioInCodecCtx);
 				avcodec_flush_buffers(pAudioOutCodecCtx);			
 			}
-			playSound = speedOne;		
+			playSound = speedOne;
+			fprintf(stderr, "After flushing the audio buffer.\n");
+			fflush(stderr);
 		}
 	}
 }
@@ -1210,22 +1247,19 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_MovieStream_loadNextAudioData
 	uint8_t *data = pAudioBufferData; // get a write pointer.
 	int decodeLen, audioSize;
 	static uint8_t audioBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
-	//double pts;
 
 	while (len > 0) {
 		// We still need to read len bytes
 		if (iAudioData >= nAudioData) {
 			/* We already sent all our data; get more */
 			audioSize = audioDecodeFrame(pAudioInCodecCtx, audioBuffer, sizeof(audioBuffer));
-			//audioSize = audioDecodeFrame(pAudioInCodecCtx, audioBuffer, sizeof(audioBuffer), &pts);
 
 			if (audioSize < 0) {
 				/* If error, output silence */
 				nAudioData = 1024; // arbitrary?
 				memset(audioBuffer, 0, nAudioData); // set silience for the rest
 			} else {
-				nAudioData = audioSize;
-				//nAudioData = audioSize = synchronizeAudio((int16_t *)audioBuffer, audioSize, pts);
+				nAudioData = audioSize = synchronizeAudio((int16_t *)audioBuffer, audioSize);
 			}
 			iAudioData = 0;
 		}
@@ -1658,6 +1692,9 @@ JNIEXPORT jobject JNICALL Java_org_datavyu_MovieStream_getFrameBuffer
 
 JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_loadNextImageFrame
 (JNIEnv* env, jobject thisObject) {
+
+	pImageBuffer->print();
+
 	// No image stream is present return -1.
 	if (!hasVideoStream()) return -1;
 
@@ -1705,7 +1742,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_MovieStream_loadNextImageFrame
 		double syncThreshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
 
 		// The time difference is within the no sync threshold.
-		if(fabs(imageDiffCum) < AV_NOSYNC_THRESHOLD) {
+		if (fabs(imageDiffCum) < AV_NOSYNC_THRESHOLD) {
 
 			// If our time difference is lower than the sync threshold, then skip a frame.
 			if (imageDiffCum <= -syncThreshold) {

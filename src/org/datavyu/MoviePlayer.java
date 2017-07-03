@@ -213,14 +213,6 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		}
 	}
 	
-	/*
-	private void showNextImageFrame() {
-        movieStreamProvider.nextImageFrame();
-		double time = movieStreamProvider.getCurrentTime();
-		slider.setValue((int)(1000*(-startTime+time)));
-		frameNumber.setText(Math.round(time*1000.0)/1000.0 + " seconds");
-	}	*/
-	
 	protected void openFile(String fileName) {
 		movieStreamProvider.stop();
 		// Assign a new movie file.
@@ -287,14 +279,17 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	}
 	
 	private void setSpeed(float speedValue, int speedSign) {
+		// Need to set speed first so that the reverse is set correctly
+		movieStreamProvider.setSpeed(speedSign * speedValue);
 		if (playsAtForward1x()) {
+			System.out.println("Starting audio.");
 			movieStreamProvider.startAudio();
+			System.out.println("Audio started");
 		} else {
 			System.out.println("Stopping audio.");
 			movieStreamProvider.stopAudio();
 			System.out.println("Audio stopped.");
 		}
-		movieStreamProvider.setSpeed(speedSign * speedValue);
 		System.out.println("Set speed.");
 	}
 	
@@ -329,8 +324,12 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			setSpeed(speedValue, speedSign);
 			// Need to pull two frames as workaround because toggle requires 
 			// two frames to revert direction.
+			
 			movieStreamProvider.dropImageFrame();
 			movieStreamProvider.dropImageFrame();
+			
+			System.out.println("Speed sign action done.");
+			System.out.flush();
 		}
 	}
 	

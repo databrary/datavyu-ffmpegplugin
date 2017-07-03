@@ -480,8 +480,11 @@ public class MovieStream implements VideoStream, AudioStream {
 		// Check if we loaded at least one image frame
 		if ((nFrame = loadNextImageFrame()) > 0) {
 			// Load the image frame into the buffer
+			System.out.println("Getting frame buffer.");
 			imageBuffer = getFrameBuffer();
+			System.out.println("Got frame buffer.");
 			imageBuffer.get(buffer, 0, imageBuffer.capacity());
+			System.out.println("Copied data into image buffer.");
 		}
 		// Return the number of loaded image frames
 		return nFrame;

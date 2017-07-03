@@ -21,3 +21,4 @@ For the MovieStream native implementation:
    java.
 -- Add update of slider. Done.
 -- Add slider to select time in stream
+-- Document AudioBuffer.h, org.datavyu.MoviePlayer

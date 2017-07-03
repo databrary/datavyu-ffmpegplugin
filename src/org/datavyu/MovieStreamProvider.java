@@ -45,14 +45,17 @@ public class MovieStreamProvider extends MovieStream {
 	class AudioListenerThread extends Thread {
 		@Override
 		public void run() {
+			System.out.println("Starting audio thread.");			
 			// Allocate the buffer for the audio data
 			byte[] buffer = new byte[getAudioBufferSize()];
 			// Start the play back loop
-			while (runAudio) {
+			while (runAudio) {				
 				// If there is audio data available
 				if (availableAudioData()) {
 					// Read audio data -- blocks if none is available
+					System.out.println("Reading audio data.");
 					readAudioData(buffer);
+					System.out.println("Read audio data.");
 					// Fulfill all listeners
 					// This is lock allows to add listeners
 					synchronized (audioListeners) {
@@ -66,6 +69,7 @@ public class MovieStreamProvider extends MovieStream {
 					try { Thread.sleep(250); } catch (InterruptedException ie) {}
 				}
 			}
+			System.out.println("Stopping audio thread.");
 		}
 	}
 	
@@ -99,7 +103,10 @@ public class MovieStreamProvider extends MovieStream {
 			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
 			                         *getNumberOfColorChannels()];
 			// Read the next image frame -- blocks if none is available
+			System.out.println("Reading image frame.");
 			readImageFrame(buffer);
+			System.out.println("Read image frame.");
+			System.out.flush();
 			// Fulfill all listeners
 			synchronized (videoListeners) {
 				for (StreamListener listener : videoListeners) {

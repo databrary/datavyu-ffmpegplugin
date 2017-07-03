@@ -12,18 +12,15 @@ extern "C" {
 
 class AudioBuffer {
   AVPacketList *first_pkt, *last_pkt;
-  int nb_packets;
-  //int size;
-  bool getPkt; // false
+  int n_packets;
   std::mutex *mu;
   std::condition_variable *cv;
   int quit;
-  int do_flush;
+  std::atomic<bool> flushing;
 public:
   AudioBuffer() {
 	  first_pkt = last_pkt = nullptr;
-	  nb_packets = 0; //size = 0;
-	  getPkt = false;
+	  n_packets = 0;
 	  quit = 0;
 	  mu = new std::mutex;
 	  cv = new std::condition_variable;
@@ -35,25 +32,24 @@ public:
   }
   void flush() {
     AVPacketList *pkt, *pkt1;
-	do_flush = 1; // this releases the producer and the consumer
+	flushing = true; // releases the producer and the consumer, but only after a notify_all
 	std::unique_lock<std::mutex> locker(*mu);
     for (pkt = first_pkt; pkt; pkt = pkt1) {
         pkt1 = pkt->next;
         av_packet_unref(&pkt->pkt);
         av_freep(&pkt);
     }
-    last_pkt = nullptr;
-    first_pkt = nullptr;
-    nb_packets = 0;
-    //size = 0;
-	do_flush = 0;
+    last_pkt = first_pkt = nullptr;
+    n_packets = 0;
+	flushing = false;
 	locker.unlock();
+	cv->notify_one();
   }
   inline int size() const {
-	return nb_packets;
+	return n_packets;
   }
   inline bool empty() const {
-	return nb_packets == 0;
+	return n_packets == 0;
   }
   void stop() {
 	quit = 1;
@@ -67,19 +63,18 @@ public:
 	pkt1->pkt = *pkt;
 	pkt1->next = nullptr;
 	std::unique_lock<std::mutex> locker(*mu);
-	cv->wait(locker, [this](){return (nb_packets < AUDIO_QUEUE_MAX_SIZE) 
-		|| (do_flush == 1);});
-	if (do_flush == 1) {
+	cv->wait(locker, [this](){return (n_packets < AUDIO_QUEUE_MAX_SIZE) 
+									|| flushing;});
+	if (flushing) {
 		av_free(pkt1);
 	} else {
-		if (!last_pkt)
+		if (!last_pkt) {
 			first_pkt = pkt1;
-		else
+		} else {
 			last_pkt->next = pkt1;
-
+		}
 		last_pkt = pkt1;
-		nb_packets++;
-		//size += pkt1->pkt.size;	
+		n_packets++;
 	}
 	locker.unlock();
 	cv->notify_one();
@@ -92,19 +87,19 @@ public:
 	if (quit) { return -1; }
 
 	std::unique_lock<std::mutex> locker(*mu);
-    cv->wait(locker, [this](){return (nb_packets > 0) || (do_flush == 1);});
+    cv->wait(locker, [this](){return (n_packets > 0) || flushing;});
 
-	if (do_flush == 1) {
-		ret = -1; // puts silence
+	if (flushing) {
+		ret = -1; // outputs silence
 	} else {
 		pkt1 = first_pkt;
 		first_pkt = pkt1->next;
 
-		if (!first_pkt)
+		if (!first_pkt) {
 			last_pkt = nullptr;
+		}
 
-		nb_packets--;
-		//size -= pkt1->pkt.size;
+		n_packets--;
 		*pkt = pkt1->pkt;
 		av_free(pkt1);
 		ret = 1;	
@@ -114,5 +109,11 @@ public:
 	cv->notify_one();
 
 	return ret;	
+  }
+
+  inline void print() {
+	fprintf(stderr, "Number of packets %d, quit %d, flushing %d.\n", n_packets,
+			quit, flushing);
+	fflush(stderr);
   }
 };
