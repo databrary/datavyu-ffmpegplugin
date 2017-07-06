@@ -19,6 +19,9 @@ For the MovieStream native implementation:
    a random place or when seeking backward when playing in backward direction.
    That solved the bug with/out audio. Still need to resolve why audio blocks in
    java.
--- Add update of slider. Done.
+-- Add update of slider. DONE.
+-- Add update of text that displays the time. DONE.
 -- Add slider to select time in stream
 -- Document AudioBuffer.h, org.datavyu.MoviePlayer
+-- Flush audio signal in java buffer when we jumped within the stream, but not
+   if we are stopping and continuing the player

@@ -21,6 +21,11 @@ public class SliderStreamListener implements StreamListener {
 	
 	/** The start time of the movie stream */
 	private double startTime;
+	
+	/** The stream has been stopped. We keep the state here to control the 
+	 *  display. 
+	 */
+	private boolean stopped;
 
 	/**
 	 * Create a slider stream listener to update a JSlider.
@@ -31,6 +36,7 @@ public class SliderStreamListener implements StreamListener {
 	public SliderStreamListener(JSlider slider, MovieStream movieStream) {
 		this.slider = slider;
 		this.movieStream = movieStream;
+		this.stopped = true;
 	}
 	
 	/**
@@ -41,6 +47,12 @@ public class SliderStreamListener implements StreamListener {
 	private int getStreamTime() {
 		return (int)(1000*(-startTime+movieStream.getCurrentTime()));
 	}
+	
+	private void updateSliderTime() {
+		if (!stopped) {
+			slider.setValue(getStreamTime());
+		}
+	}
 
 	@Override
 	public void streamOpened() {
@@ -48,23 +60,27 @@ public class SliderStreamListener implements StreamListener {
         slider.setModel(new DefaultBoundedRangeModel(0, 1, 0, 
         		(int)(1000*movieStream.getDuration())));
         // Set the current time to the slider
-		slider.setValue(getStreamTime());
+		stopped = false;
+		updateSliderTime();
 	}
 
 	@Override
 	public void streamData(byte[] data) {
-		slider.setValue(getStreamTime());
+		updateSliderTime();
 	}
 
 	@Override
 	public void streamClosed() { /* not used */ }
 
 	@Override
-	public void streamStopped() { /* not used */ }
+	public void streamStopped() {
+		stopped = true;
+	}
 
 	@Override
 	public void streamStarted() {
-		slider.setValue(getStreamTime());
+		stopped = false;
+		updateSliderTime();
 	}
 
 }

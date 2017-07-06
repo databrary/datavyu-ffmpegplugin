@@ -477,6 +477,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 						BorderLayout.CENTER, reqColorSpace));
 		movieStreamProvider.addVideoStreamListener(
 				new SliderStreamListener(slider, movieStreamProvider));
+		movieStreamProvider.addVideoStreamListener(
+				new LabelStreamListener(frameNumber, movieStreamProvider));
 		
 		openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
