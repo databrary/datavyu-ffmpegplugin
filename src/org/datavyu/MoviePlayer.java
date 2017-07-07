@@ -141,6 +141,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		}
 	}
 	
+	/** Set to true if this player is in stepping mode */
 	private boolean isStepping = false;
 	
 	class StepSelection implements ActionListener {
@@ -160,21 +161,34 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		}
 	}
 	
+	
+	/** Time of the last update */
+	private static double lastUpdateTime = System.currentTimeMillis();
+	
 	class SliderSelection implements ChangeListener {
+		
+		private final static double DELTA_TIME = 1000;
+		
 		@Override
 		public void stateChanged(ChangeEvent e) {
-			double sec = ((double)slider.getValue())/1000.0 + startTime;
 			if (slider.getValueIsAdjusting()) {
-				System.out.println("Seconds: " + sec);
-				//player.setTime(sec);
-				movieStreamProvider.seek(sec);
+				double sec = ((double)slider.getValue())/1000.0 + startTime;
+				double currentTime = System.currentTimeMillis();
+				System.out.println("Current time in milli seconds: " + currentTime);
 				
-				// Pull frame that has been blocked and is not part of the new playback.
-				//if (player.hasNextFrame()) { player.loadNextFrame(); }
-				
-				// Can't show all the frames, random seeks. Only show when the user 
-				// presses step or play.
-				//showNextFrame();
+				// Can't show all the frames, random seeks
+				if (currentTime - lastUpdateTime > DELTA_TIME) {
+					System.out.println("Repaint with " 
+							+ "lastUpdateTime = " + lastUpdateTime 
+							+ ", currentTime = " + currentTime
+							+ ", diffTime = " + (currentTime - lastUpdateTime));
+					movieStreamProvider.seek(sec);
+					movieStreamProvider.dropImageFrame();
+					movieStreamProvider.startVideoListeners();
+					movieStreamProvider.nextImageFrame();
+					// TODO: lastUpdateTime does not seem to be updated!
+					lastUpdateTime = currentTime;
+				}
 			}
 		}
 	}
@@ -475,8 +489,10 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		movieStreamProvider.addVideoStreamListener(
 				new VideoDisplayStreamListener(movieStreamProvider, this, 
 						BorderLayout.CENTER, reqColorSpace));
+		// Add slider update
 		movieStreamProvider.addVideoStreamListener(
 				new SliderStreamListener(slider, movieStreamProvider));
+		// Add text update
 		movieStreamProvider.addVideoStreamListener(
 				new LabelStreamListener(frameNumber, movieStreamProvider));
 		

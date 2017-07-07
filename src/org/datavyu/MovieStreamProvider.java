@@ -270,8 +270,8 @@ public class MovieStreamProvider extends MovieStream {
 	 */
 	public void stop() {
 		stopVideo();
-		stopAudio();		
-	}
+		stopAudio();
+	}	
 	
 	/**
 	 * Adds an audio stream listener. If this stream provider is already running

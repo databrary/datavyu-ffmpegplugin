@@ -24,10 +24,10 @@ private:
 	/** A deque with operations push_front, back, and pop_back. */
 	std::deque<T> q;
 
-	/** The maximum number of items in this buffer. */
+	/** Maximum number of items in the buffer. */
     const unsigned int nMax = 5000;
 
-	/** Boolean that indicates a flush. E.g. used for clean destroy of buffer.*/
+	/** Boolean that indicates a flush used for to cleanly destroy of buffer.*/
 	bool doFlush = false;
 
 	/** Mutex used for exclusive access of the deque. */
@@ -54,7 +54,7 @@ public:
 
 	/**
 	 * Pops element from the back of the deque.
-	 *	Returns: The element or T() if no flushed.
+	 *	Returns: The element or T() if flushed.
 	 */
     T pop_back() {
         std::unique_lock<std::mutex> locker(mu);
@@ -71,24 +71,16 @@ public:
 	 * Checks if the deque is not empty.
 	 *	Returns: True if the deque has at least one element otherwise false.
 	 */
-	bool nonEmpty() {
-		bool isNonEmpty = false;
-		//std::unique_lock<std::mutex> locker(mu);
-		isNonEmpty = q.size() > 0;
-		//locker.unlock();
-		return isNonEmpty;
+	bool nonEmpty() const {
+		return q.size() > 0;
 	}
 
 	/**
 	 * Retrieves the size of the deque.
 	 *	Return: The size of the deque.
 	 */
-	int size() {
-		int nElem = 0;
-		//std::unique_lock<std::mutex> locker(mu);
-		nElem = q.size();
-		//locker.unlock();
-		return nElem;
+	int size() const {
+		return q.size();
 	}
 
 	/**

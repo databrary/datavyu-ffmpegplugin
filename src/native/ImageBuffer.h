@@ -11,7 +11,10 @@ extern "C" {
 	#include <libavformat/avformat.h>
 }
 
-#define N_MAX_IMAGES 32 // May cause problems with very short videos (1 < sec)
+/** Maximum number of images in the buffer. Won't work for videos < 32 frames */
+#define N_MAX_IMAGES 32
+
+/** Minimum number of images for allocation in reverse direction */
 #define N_MIN_IMAGES N_MAX_IMAGES/2
 
 /**
@@ -155,9 +158,9 @@ public:
 	inline bool empty() const { return nBefore == 0; }
 
 	/**
-	 * Set the minimum number of images required to reverse. Set this to one 
-	 * before changing direction from backward to forward. Set this to the 
-	 * block size when changing direction from forward to backward.
+	 * Set the minimum number of images required to reverse. Set this to 1 
+	 * before changing direction from backward to forward. Set this to 
+	 * N_MIN_IMAGES when changing direction from forward to backward.
 	 */
 	void setNMinImages(int nMin) { nMinImages = nMin; }
 
@@ -185,7 +188,7 @@ public:
 	 * - The delta is the maximum amount of frames we can jump backward given 
 	 *   the number of frames before/after the current frame.
 	 */
-	std::pair<int, int> toggle() { // pair of delta, offset
+	std::pair<int, int> toggle() { // (delta, offset)
 
 		std::unique_lock<std::mutex> locker(mu);
 
@@ -255,9 +258,9 @@ public:
 
 	/**
 	 * Get delta and offset when seeking backward.
-	 * This blocks if there is no space for at least nMinImages in the buffer.
+	 * Blocks if there is no space for at least nMinImages in the buffer.
 	 */
-	std::pair<int, int> seekBackward() { // pair of delta, offset
+	std::pair<int, int> seekBackward() { // (delta, offset)
 		std::unique_lock<std::mutex> locker(mu);
 		
 		// Ensure we have at least a block of nMinImages to go backward.
@@ -305,7 +308,7 @@ public:
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
 		
-		// There must have be one frame before!
+		// There must be 1 frame before!
 		cv.wait(locker, [this](){ return nBefore > 0 || flushing;}); 
 		
 		// When not flushing show data[iRead] and increment iRead by one when in 
@@ -323,9 +326,9 @@ public:
 
 	/**
 	 * Request a put pointer. Notice this request does not change the internal
-	 * pointers within the buffer. We separated reqWritePtr and cmplWritePtr
+	 * pointers within the buffer. We separated requestPutPtr and completePutPtr
 	 * because we may request the same write pointer several times without 
-	 * wanting to change the internal pointers within the buffer.
+	 * wanting to change the internal pointers of the buffer.
 	 *
 	 * RETURNS A pointer to an AVFrame.
 	 */
@@ -333,9 +336,8 @@ public:
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
 		
-		// This should also check that there are two frames left for reverse 
-		// but then the toggle from revere into forward takes two extra frames.
-		// Keep at least two frames free!
+		// This checks that there are 2 frames left for reverse with toggle from 
+		// revere into forward taking two extra frames. Keep >= 2 frames free!
 		cv.wait(locker, [this](){return nFree() > 1 || flushing;});
 
 		// If we do not flush get the write position.
@@ -356,7 +358,7 @@ public:
 
 		// If not flushing iReverse is subtracted by one if reverse == true.
 		// nAfter is reduced if we have written all elements that is 
-		// nBefore+nAfter == Data.
+		// nBefore + nAfter == Data.
 		// nBefore is inceased by 1 if not in reverse otherwise it is increased 
 		// by nReverse if we are done with writing the block that is when 
 		// iReverse == 0.

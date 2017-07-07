@@ -1091,7 +1091,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_MovieStream_close0
 
 		// Drain the audio buffer that means no packets can be get or put
 		if (hasAudioStream()) {
-			pAudioBuffer->drain();
+			pAudioBuffer->flush();
 		}
 
 		// Flush the image buffer buffer which unblocks all readers/writers

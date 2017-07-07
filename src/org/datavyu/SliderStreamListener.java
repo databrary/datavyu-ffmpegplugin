@@ -70,7 +70,7 @@ public class SliderStreamListener implements StreamListener {
 	}
 
 	@Override
-	public void streamClosed() { /* not used */ }
+	public void streamClosed() { /* nothing to do here */ }
 
 	@Override
 	public void streamStopped() {
@@ -82,5 +82,4 @@ public class SliderStreamListener implements StreamListener {
 		stopped = false;
 		updateSliderTime();
 	}
-
 }
