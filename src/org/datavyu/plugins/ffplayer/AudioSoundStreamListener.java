@@ -1,4 +1,4 @@
-package org.datavyu;
+package org.datavyu.plugins.ffplayer;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;

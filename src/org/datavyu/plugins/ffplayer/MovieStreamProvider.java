@@ -1,4 +1,4 @@
-package org.datavyu;
+package org.datavyu.plugins.ffplayer;
 
 import java.awt.Frame;
 import java.awt.color.ColorSpace;

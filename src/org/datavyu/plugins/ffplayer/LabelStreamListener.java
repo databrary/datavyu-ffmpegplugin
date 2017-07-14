@@ -1,4 +1,4 @@
-package org.datavyu;
+package org.datavyu.plugins.ffplayer;
 
 import javax.swing.JLabel;
 

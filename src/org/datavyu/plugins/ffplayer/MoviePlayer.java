@@ -1,4 +1,4 @@
-package org.datavyu;
+package org.datavyu.plugins.ffplayer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
