@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffplayer;
+package org.datavyu.plugins.ffmpegplayer;
 
 /**
  * The stream listener interface provides 

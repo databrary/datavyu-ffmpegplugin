@@ -1,4 +1,4 @@
-#include "org_datavyu_plugins_ffplayer_MovieStream.h"
+#include "org_datavyu_plugins_ffmpegplayer_MovieStream.h"
 #include "ImageBuffer.h"
 #include "AudioBuffer.h"
 #include "Logger.h"
@@ -25,7 +25,7 @@ extern "C" {
 
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
-// cl org_datavyu_plugins_ffplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream" /I"C:\Users\Florian\FFmpeg-release-3.2" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswresample\swresample.lib"
+// cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream" /I"C:\Users\Florian\FFmpeg-release-3.2" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswresample\swresample.lib"
 // use dumpbin /ALL MovieStream.lib to list the function symbols
 
 #define AV_SYNC_THRESHOLD 0.01
@@ -974,24 +974,24 @@ void readNextFrame() {
 	}
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_hasVideoStream
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasVideoStream
 (JNIEnv* env, jobject thisObject) {
 	return hasVideoStream();
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_hasAudioStream
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasAudioStream
 (JNIEnv* env, jobject thisObject) {
 	return hasAudioStream();
 }
 
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getStartTime0
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getStartTime0
 (JNIEnv* env, jobject thisObject) {
 	return (jdouble) hasVideoStream() ? 
 		pImageStream->start_time * av_q2d(pImageStream->time_base) 
 	  : pAudioStream->start_time * av_q2d(pAudioStream->time_base);
 }
 
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getEndTime0
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getEndTime0
 (JNIEnv* env, jobject thisObject) {
 	return (jdouble) hasVideoStream() ? 
 		(pImageStream->duration + pImageStream->start_time) 
@@ -1000,17 +1000,17 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getEndTi
 			* av_q2d(pAudioStream->time_base);
 }
 
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getDuration0
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getDuration0
 (JNIEnv* env, jobject thisObject) {
 	return (jdouble) duration;
 }
 
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getCurrentTime
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCurrentTime
 (JNIEnv* env, jobject thisObject) {
 	return (jdouble) hasVideoStream() ? videoTime : audioTime;	
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_setTime0
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setTime0
 (JNIEnv* env, jobject thisObject, jdouble jTime) {
 	if (hasVideoStream() || hasAudioStream()) {
 		lastWritePts = seekPts = ((int64_t)(jTime/(avgDeltaPts
@@ -1020,7 +1020,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_setTime0
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_setPlaybackSpeed0
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaybackSpeed0
 (JNIEnv* env, jobject thisObject, jfloat jSpeed) {
 
 	if (hasVideoStream() || hasAudioStream()) {
@@ -1058,7 +1058,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_setPlayback
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_reset
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_reset
 (JNIEnv* env, jobject thisObject) {
 
 	// If we have a video or an audio stream
@@ -1081,7 +1081,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_reset
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_close0
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0
 (JNIEnv* env, jobject thisObject) {
 
 	// If we have a video or an audio stream
@@ -1203,18 +1203,18 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_close0
 	}
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_availableAudioData
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableAudioData
 (JNIEnv* env, jobject thisObject) {
 	return hasAudioStream() ? !endOfFile : false;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_availableImageFrame
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableImageFrame
 (JNIEnv* env, jobject thisObject) {
 	return hasVideoStream() ? !(isForwardPlayback() && atEndForRead() 
 							|| !isForwardPlayback() && atStartForRead()) : false;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_loadNextAudioData
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextAudioData
 (JNIEnv* env, jobject thisObject) {
 
 	// If we do not have an audio stream, we are done decoding, or the audio 
@@ -1257,7 +1257,7 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_loadNex
 	return !quit;
 }
 
-JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getAudioBuffer
+JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAudioBuffer
 (JNIEnv *env, jobject thisObject, jint jSize) {
 	if (!hasAudioStream()) { return 0; } // null
 	nAudioBuffer = jSize;
@@ -1270,7 +1270,7 @@ JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getAudio
 	return env->NewDirectByteBuffer((void*) pAudioBufferData, jSize*sizeof(uint8_t));
 }
 
-JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getSampleFormat
+JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleFormat
 (JNIEnv* env, jobject thisObject) {
 	if (!hasAudioStream()) { return 0; } // null
 	// sample formats http://ffmpeg.org/doxygen/trunk/group__lavu__sampfmts.html#gaf9a51ca15301871723577c730b5865c5
@@ -1279,47 +1279,47 @@ JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getSampl
 	return env->NewStringUTF(name);
 }
 
-JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getCodecName
+JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCodecName
 (JNIEnv* env, jobject thisObject) {
 	if (!hasAudioStream()) { return 0; }
 	const char* name = pAudioOutCodecCtx->codec->name;
 	return env->NewStringUTF(name);
 }
 
-JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getSampleRate
+JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleRate
 (JNIEnv* env, jobject thisObject) {
 	return hasAudioStream() ? pAudioOutCodecCtx->sample_rate : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getSampleSizeInBits
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleSizeInBits
 (JNIEnv* env, jobject thisObject) {
 	return hasAudioStream() ? pAudioOutCodecCtx->bits_per_coded_sample : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getNumberOfSoundChannels
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfSoundChannels
 (JNIEnv* env, jobject thisObject) {
 	return hasAudioStream() ? pAudioOutCodecCtx->channels : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getFrameSize
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameSize
 (JNIEnv* env, jobject thisObject) {
 	AVSampleFormat sampleFormat = pAudioOutCodecCtx->sample_fmt;
 	return hasAudioStream() ? av_get_bytes_per_sample(sampleFormat) : 0;
 }
 
-JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getFrameRate
+JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameRate
 (JNIEnv* env, jobject thisObject) {
 	return hasAudioStream() ? pAudioOutCodecCtx->sample_rate : 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_bigEndian
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_bigEndian
 (JNIEnv* env, jobject thisObject) {
     short int number = 0x1;
     char *numPtr = (char*)&number;
 	return hasAudioStream() ? (numPtr[0] != 1) : false;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_setPlaySound
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaySound
 (JNIEnv *env, jobject thisObject, jboolean play) {
 	bool original = playSound;
 	playSound = play;
@@ -1327,14 +1327,14 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_setPlay
 }
 
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_open0
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_open0
 (JNIEnv* env, jobject thisObject, jstring jFileName, jstring jVersion, 
  jobject jAudioFormat) {
 	int errNo = 0;
 
 	// Release resources first before loading another movie.
 	if (hasVideoStream() || hasAudioStream()) {
-		Java_org_datavyu_plugins_ffplayer_MovieStream_close0(env, thisObject);
+		Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0(env, thisObject);
 	}
 
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
@@ -1594,22 +1594,22 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_open0
 	return (jint) 0; // No error.
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getNumberOfColorChannels0
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfColorChannels0
 (JNIEnv* env, jobject thisObject) {
 	return (jint) nChannel;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getHeight0
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getHeight0
 (JNIEnv* env, jobject thisObject) {
 	return (jint) height;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getWidth0
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getWidth0
 (JNIEnv* env, jobject thisObject) {
 	return (jint) width;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_view
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_view
 (JNIEnv* env, jobject thisObject, jint jx0, jint jy0, jint jwidth, jint jheight) {
 	// Done if we did not load any movie.
 	if (!hasVideoStream()) {
@@ -1648,7 +1648,7 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_view
 	return (jboolean) true;
 }
 
-JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getFrameBuffer
+JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameBuffer
 (JNIEnv* env, jobject thisObject) {
 	// No movie was loaded return nullptr.
 	if (!hasVideoStream()) return 0;
@@ -1673,7 +1673,7 @@ JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_getFrame
 									width*height*nChannel*sizeof(uint8_t));
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffplayer_MovieStream_loadNextImageFrame
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextImageFrame
 (JNIEnv* env, jobject thisObject) {
 
 	// No image stream is present return -1

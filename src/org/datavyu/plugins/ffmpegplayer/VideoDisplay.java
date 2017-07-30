@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffplayer;
+package org.datavyu.plugins.ffmpegplayer;
 
 import java.awt.Canvas;
 import java.awt.Graphics;
