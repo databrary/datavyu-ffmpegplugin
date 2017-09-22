@@ -2,3 +2,5 @@
 *.log
 logger.txt
 bin/
+*.iml
+/.idea/
