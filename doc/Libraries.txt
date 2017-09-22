@@ -1,0 +1,108 @@
+Compiling FFmpeg libraries for datavyu on Windows 7
+---------------------------------------------------
+
+The datavyu video player requires the following DLLs:
+- avcodec-57.dll
+- avformat-57.dll
+- avutil-55.dll
+- swresample-2.dll
+- swscale-4.dll
+
+These need to be added to your java library path. I added them at the root level 
+of the datavyu project. The JVM executes there and per default ‘.’ is in the 
+java library path.
+
+The following outlines the compilation of ffmpeg DLL's and executables using the
+Microsoft Visual Studio compiler.
+
+I found these installation guides useful:
+https://pracucci.com/compile-ffmpeg-on-windows-with-visual-studio-compiler.html
+https://trac.ffmpeg.org/wiki/CompilationGuide/MSVC
+http://ffmpeg.org/platform.html
+This is also where you may find help for some of the issues you may encounter.
+
+1. Download MVS 2015 (Community edition) from 
+https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx
+and install it.
+
+2. Download the msys64 version 
+'msys2-x86_64-20161025.exe' from http://msys2.github.io/ and install this to C:
+
+3. Install build tools in msys64
+cd C:\msys64
+Execute msys2_shell.cmd
+Execute in the msys2 shell
+pacman -S make gcc diffutils
+Close the shell.
+To avoid a name conflict rename C:/msys64/usr/bin/link.exe into
+C:/msys64/usr/bin/link_old.exe. This ensures that your compile environment will 
+use the linker from the Microsoft Visual Studio.
+
+4. Install YASM 
+Download 'Win64.exe' from http://yasm.tortall.net/Download.html.
+Create the folder C:\yasm. Rename the file yasm-1.3.0-win64.exe into yasm.exe.
+Place this renamed file into the folder C:\yasm. Add this folder to your path.
+
+5. Setup the environment variables for the 64 bit build 
+Run the following batch script in the windows command line tool ‘cmd’:
+cd “C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC”
+vcvarsall.bat x64
+The flag x64 sets the environment up for compilation of 64 bit versions.
+
+6. Switch to the msys shell.
+In the windows command line from the prior step navigate to C:\msys64.
+Run the command: msys2_shell.cmd -msys -use-full-path
+This ensures that the environment variables PATH and LIB carry over into the 
+msys shell. This opens a new msys shell in a separate window.
+
+7. In the msys shell CHECK the compiler and linker:
+$ which cl
+/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC/BIN/amd64/cl
+$ which link
+/c/Program Files (x86)/Microsoft Visual Studio 14.0/VC/BIN/amd64/link
+This ensures that your MVS compiler and linker are used.
+
+8. Download the git source code (I used revision 3.2)
+Download the ZIP: https://github.com/FFmpeg/FFmpeg/archive/release/3.2.zip
+and unzip the file into the folder FFmpeg-release-3.2 in your user directory.
+
+9. Configure for compilation of 64 bit DLLs.
+In the msys shell: cd /c/Users/Florian/FFmpeg-release-3.2/ or wherever you 
+downloaded the ffmpeg source.
+Run the command to configure the build:
+./configure --toolchain=msvc --enable-swscale --enable-asm --enable-yasm --target-os=win64 --arch=x86_64 --enable-shared --disable-static
+
+toolchain=msvc -- use the Microsoft Visual Studio compiler
+enable-swscale -- compile swscale DLL, we need this to rescale images
+enable-yasm -- YASM is a low level assembler
+target-os=win64 -- operating system to compile for is windows 64 bit
+arch=x86_64 -- compute architecture is x86 for 64 bit
+enable-shared -- compile shared libraries
+
+A successful configuration ends with the lines:
+License: LGPL version 2.1 or later
+Creating config.mak, config.h, and doc/config.texi...
+config.asm is unchanged
+libavutil/avconfig.h is unchanged
+WARNING: pkg-config not found, library detection may fail.
+libavcodec/bsf_list.c is unchanged
+libavformat/protocol_list.c is unchanged
+
+You can ignore the pkg-config not found issue. It will not affect compilation.
+
+10. Compile the source code to produce DLLs:
+make –j 4
+
+The –j 4 flag indicates to use 4 threads for compilation. This speeds up the compilation process. You may want to set the number of threads even higher depending on your hardware.
+
+The successful compilation ends with:
+LD      libavdevice/avdevice-57.dll
+   Creating library libavdevice/avdevice.lib and object libavdevice/avdevice.exp
+LD      ffmpeg_g.exe
+LD      ffprobe_g.exe
+CP      ffprobe.exe
+STRIP   ffprobe.exe
+skipping strip ffprobe.exe
+CP      ffmpeg.exe
+STRIP   ffmpeg.exe
+skipping strip ffmpeg.exe

@@ -1,0 +1,12 @@
+Error
+libavutil/avutil-55.dll : fatal error LNK1120: 1 unresolved externals
+library.mak:102: recipe for target 'libavutil/avutil-55.dll' failed
+make: *** [libavutil/avutil-55.dll] Error 96
+Fix
+From https://trac.ffmpeg.org/ticket/5546
+Added --target-os=win64 to my config
+make distclean
+make clean
+./configure ...
+
+
