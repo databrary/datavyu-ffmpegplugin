@@ -3,4 +3,4 @@
 logger.txt
 bin/
 *.iml
-/.idea/
+.idea/*

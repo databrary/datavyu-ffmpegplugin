@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/datavyu.iml" filepath="$PROJECT_DIR$/datavyu.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/datavyu-ffmpegplugin.iml" filepath="$PROJECT_DIR$/.idea/datavyu-ffmpegplugin.iml" />
     </modules>
   </component>
 </project>
