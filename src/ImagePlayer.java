@@ -36,8 +36,7 @@ public class ImagePlayer extends Canvas {
 			false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
 	
 	/** These properties are used to create the buffered image. */
-	protected Hashtable<String, String> properties = 
-			new Hashtable<String, String>(); 
+	protected Hashtable<String, String> properties = new Hashtable<>();
 
 	/** The number of channels, typically 3. */
 	protected int nChannel = 0;
@@ -56,9 +55,6 @@ public class ImagePlayer extends Canvas {
 	
 	/** A copy of the raw data used to be wrapped by the data byte buffer. */
 	protected byte[] data = null;
-	
-	/** Used to buffer the image. */
-	protected DataBufferByte dataBuffer = null;
 	
 	/** Used to create the buffered image. */
 	protected SampleModel sm = null;

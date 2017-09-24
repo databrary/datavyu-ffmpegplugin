@@ -23,7 +23,7 @@ extern "C" {
 
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
-// cl ImagePlayer.cpp /Fe"..\..\lib\ImagePlayer" /I"C:\Users\Florian\FFmpeg-release-3.2" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswscale\swscale.lib"
+// cl ImagePlayer.cpp /Fe"..\..\lib\ImagePlayer" /I"C:\Users\Florian\FFmpeg-release-3.3" /I"C:\Program Files\Java\jdk1.8.0_144\include" /I"C:\Program Files\Java\jdk1.8.0_144\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib"
 
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0
@@ -137,7 +137,7 @@ void readNextFrame() {
 			} else {
 				pLogger->info("Random seek of %I64d pts, %I64d frames successful.", 
 					seekPts, seekPts/avgDeltaPts);
-				pImageBuffer->doFlush();
+				pImageBuffer->flush();
 				avcodec_flush_buffers(pVideoCodecCtx);
 				lastWritePts = seekPts;
 			}
@@ -255,7 +255,7 @@ void readNextFrame() {
 					
 						// Get the next writeable buffer. 
 						// This may block and can be unblocked with a flush.
-						AVFrame* pFrameBuffer = pImageBuffer->reqWritePtr();
+						AVFrame* pFrameBuffer = pImageBuffer->requestPutPtr();
 
 						// Did we get a frame buffer?
 						if (pFrameBuffer) {
@@ -273,7 +273,7 @@ void readNextFrame() {
 							);
 							pFrameBuffer->repeat_pict = pVideoFrame->repeat_pict;
 							pFrameBuffer->pts = lastWritePts = readPts;
-							pImageBuffer->cmplWritePtr();
+							pImageBuffer->completePutPtr();
 
 							pLogger->info("Wrote %I64d pts, %I64d frames.", 
 											lastWritePts, 
@@ -346,7 +346,7 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 	int nFrame = 0;
 
 	// Get the next read pointer.
-	AVFrame *pVideoFrameTmp = pImageBuffer->getReadPtr();
+	AVFrame *pVideoFrameTmp = pImageBuffer->getGetPtr();
 
 	// We received a frame (no flushing).
 	if (pVideoFrameTmp) {
@@ -390,7 +390,7 @@ JNIEXPORT jint JNICALL Java_ImagePlayer_loadNextFrame
 
 			// If our time difference is lower than the sync threshold, then skip a frame.
 			if (diff <= -syncThreshold) {
-				AVFrame *pVideoFrameTmp2 = pImageBuffer->getReadPtr();
+				AVFrame *pVideoFrameTmp2 = pImageBuffer->getGetPtr();
 				if (pVideoFrameTmp2) {
 					pVideoFrameTmp = pVideoFrameTmp2;
 					nFrame++;
@@ -681,7 +681,7 @@ JNIEXPORT void JNICALL Java_ImagePlayer_release
 		quit = true;
 
 		// Flush the image buffer buffer (which unblocks all readers/writers).
-		pImageBuffer->doFlush();
+		pImageBuffer->flush();
 
 		// Join the decoding thread with this one.
 		decodeFrame->join();
