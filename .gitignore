@@ -4,3 +4,5 @@ logger.txt
 bin/
 *.iml
 .idea/*
+target/*
+out/*

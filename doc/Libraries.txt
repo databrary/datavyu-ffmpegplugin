@@ -9,7 +9,7 @@ The datavyu video player requires the following DLLs:
 - swscale-4.dll
 
 These need to be added to your java library path. I added them at the root level 
-of the datavyu project. The JVM executes there and per default ‘.’ is in the 
+of the datavyu project. The JVM executes there and per default '.' is in the
 java library path.
 
 The following outlines the compilation of ffmpeg DLL's and executables using the
@@ -26,7 +26,7 @@ https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx
 and install it.
 
 2. Download the msys64 version 
-'msys2-x86_64-20161025.exe' from http://msys2.github.io/ and install this to C:
+'msys2-x86_64-20161025.exe' from http://msys2.github.io/ and install it into C:
 
 3. Install build tools in msys64
 cd C:\msys64
@@ -70,7 +70,7 @@ and unzip the file into the folder FFmpeg-release-3.2 in your user directory.
 In the msys shell: cd /c/Users/Florian/FFmpeg-release-3.2/ or wherever you 
 downloaded the ffmpeg source.
 Run the command to configure the build:
-./configure --toolchain=msvc --enable-swscale --enable-asm --enable-yasm --target-os=win64 --arch=x86_64 --enable-shared --disable-static
+./configure --toolchain=msvc --enable-swscale --enable-asm --enable-yasm --target-os=win64 --arch=x86_64 --enable-shared --disable-static --disable-ffserver --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-ffmpeg
 
 toolchain=msvc -- use the Microsoft Visual Studio compiler
 enable-swscale -- compile swscale DLL, we need this to rescale images
@@ -78,6 +78,14 @@ enable-yasm -- YASM is a low level assembler
 target-os=win64 -- operating system to compile for is windows 64 bit
 arch=x86_64 -- compute architecture is x86 for 64 bit
 enable-shared -- compile shared libraries
+
+From release 3.3 onward I added these flags:
+--disable-ffserver --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-ffmpeg
+to disable the compile of the various executables. We are only interested in the dll's anyways.
+
+The error that I ran into was with a wrong include order of windows.h and winsock2.h. E.g. search for:
+winsock2.h(2171): error C2375: 'socket': redefinition; different linkag
+
 
 A successful configuration ends with the lines:
 License: LGPL version 2.1 or later
