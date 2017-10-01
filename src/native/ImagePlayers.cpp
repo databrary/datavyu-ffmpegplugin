@@ -30,9 +30,6 @@ extern "C" {
 #define AV_NOSYNC_THRESHOLD 10.0
 #define PTS_DELTA_THRESHOLD 3
 
-
-Logger *pLogger = nullptr; //new FileLogger("logger.txt");
-
 class ImagePlayer {
 
     // TODO: Control visibility
@@ -142,6 +139,10 @@ public:
     // True if we use a viewing window -- set to false on reset
     bool doView;
 
+    // Logger per video file use the filename for the log file -- flush and empty on rest
+    Logger *pLogger;
+
+
     /**
      * Constructor for an image player set the defaults
      */
@@ -178,7 +179,8 @@ public:
         heightView(0),
         x0View(0),
         y0View(0),
-        doView(false) { /* nothing to do here */ }
+        doView(false),
+        pLogger(nullptr) { /* nothing to do here */ }
 
     static int getId() {
         return ++id;
@@ -242,15 +244,11 @@ public:
             if (seekReq) {
                 seekFlags |= AVSEEK_FLAG_BACKWARD;
                 if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-                    if (pLogger != nullptr) {
-                        pLogger->error("Random seek of %I64d pts, %I64d frames unsuccessful.",
-                            seekPts, seekPts/avgDeltaPts);
-                    }
+                    pLogger->error("Random seek of %I64d pts, %I64d frames unsuccessful.",
+                        seekPts, seekPts/avgDeltaPts);
                 } else {
-                    if (pLogger != nullptr) {
-                        pLogger->info("Random seek of %I64d pts, %I64d frames successful.",
-                            seekPts, seekPts/avgDeltaPts);
-                    }
+                    pLogger->info("Random seek of %I64d pts, %I64d frames successful.",
+                        seekPts, seekPts/avgDeltaPts);
                     pImageBuffer->flush();
                     avcodec_flush_buffers(pVideoCodecCtx);
                     lastWritePts = seekPts;
@@ -265,9 +263,7 @@ public:
                 int delta = offsetDelta.second;
                 int nShift = 0;
 
-                if (pLogger != nullptr) {
-                    pLogger->info("Toggle with offset %d and delta %d.", offset, delta);
-                }
+                pLogger->info("Toggle with offset %d and delta %d.", offset, delta);
 
                 // Even if we may not seek backward it is safest to get the prior keyframe.
                 seekFlags |= AVSEEK_FLAG_BACKWARD;
@@ -283,15 +279,11 @@ public:
                 lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 
                 if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-                    if (pLogger != nullptr) {
-                        pLogger->error("Toggle seek of %I64d pts, %I64d frames unsuccessful.",
-                                        seekPts, seekPts/avgDeltaPts);
-                    }
+                    pLogger->error("Toggle seek of %I64d pts, %I64d frames unsuccessful.",
+                                    seekPts, seekPts/avgDeltaPts);
                 } else {
-                    if (pLogger != nullptr) {
-                        pLogger->info("Toggle seek of %I64d pts, %I64d frames successful.",
-                                        seekPts, seekPts/avgDeltaPts);
-                    }
+                    pLogger->info("Toggle seek of %I64d pts, %I64d frames successful.",
+                                    seekPts, seekPts/avgDeltaPts);
                     avcodec_flush_buffers(pVideoCodecCtx);
                 }
                 toggle = false;
@@ -299,12 +291,10 @@ public:
 
             // Check start or end before issuing seek request!
             if (atStartForWrite() || atEndForWrite()) {
-                if (pLogger != nullptr) {
-                    pLogger->info("Reached the start or end with seek %I64d pts, ",
-                        "%I64d frames and last write %I64d pts, %I64d frames.",
-                        seekPts, seekPts/avgDeltaPts, lastWritePts,
-                        lastWritePts/avgDeltaPts);
-                }
+                pLogger->info("Reached the start or end with seek %I64d pts, ",
+                    "%I64d frames and last write %I64d pts, %I64d frames.",
+                    seekPts, seekPts/avgDeltaPts, lastWritePts,
+                    lastWritePts/avgDeltaPts);
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 continue;
             }
@@ -322,9 +312,7 @@ public:
 
                 delta = std::min(offset+delta, maxDelta) - offset;
 
-                if (pLogger != nullptr) {
-                    pLogger->info("Seek frame for reverse playback with offset %d and min delta %d.", offset, delta);
-                }
+                pLogger->info("Seek frame for reverse playback with offset %d and min delta %d.", offset, delta);
 
                 pImageBuffer->setBackwardAfterSeek(delta);
 
@@ -334,15 +322,11 @@ public:
                 lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
 
                 if (av_seek_frame(pFormatCtx, iVideoStream, seekPts, seekFlags) < 0) {
-                    if (pLogger != nullptr) {
-                        pLogger->error("Reverse seek of %I64d pts, %I64d frames unsuccessful.",
-                                        seekPts, seekPts/avgDeltaPts);
-                    }
+                    pLogger->error("Reverse seek of %I64d pts, %I64d frames unsuccessful.",
+                                    seekPts, seekPts/avgDeltaPts);
                 } else {
-                    if (pLogger != nullptr) {
-                        pLogger->info("Reverse seek of %I64d pts, %I64d frames successful.",
-                                        seekPts, seekPts/avgDeltaPts);
-                    }
+                    pLogger->info("Reverse seek of %I64d pts, %I64d frames successful.",
+                                    seekPts, seekPts/avgDeltaPts);
                     avcodec_flush_buffers(pVideoCodecCtx);
                 }
             }
@@ -355,13 +339,11 @@ public:
 
             // Any error that is not eof.
             if (ret < 0 && !eof) {
-                if (pLogger != nullptr) {
-                    pLogger->error("Error:  %c, %c, %c, %c.\n",
-                        static_cast<char>((-ret >> 0) & 0xFF),
-                        static_cast<char>((-ret >> 8) & 0xFF),
-                        static_cast<char>((-ret >> 16) & 0xFF),
-                        static_cast<char>((-ret >> 24) & 0xFF));
-                }
+                pLogger->error("Error:  %c, %c, %c, %c.\n",
+                    static_cast<char>((-ret >> 0) & 0xFF),
+                    static_cast<char>((-ret >> 8) & 0xFF),
+                    static_cast<char>((-ret >> 16) & 0xFF),
+                    static_cast<char>((-ret >> 24) & 0xFF));
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
             // We got a frame! Let's decode it.
@@ -374,7 +356,7 @@ public:
                     avcodec_decode_video2(pVideoCodecCtx, pVideoFrame, &frameFinished, &packet);
 
                     // Did we get a full video frame?
-                    if(frameFinished) {
+                    if (frameFinished) {
 
                         // Set the presentation time stamp.
                         int64_t readPts = pVideoFrame->pkt_pts;
@@ -403,11 +385,9 @@ public:
                                 pFrameBuffer->repeat_pict = pVideoFrame->repeat_pict;
                                 pFrameBuffer->pts = lastWritePts = readPts;
                                 pImageBuffer->completePutPtr();
-                                if (pLogger != nullptr) {
-                                    pLogger->info("Wrote %I64d pts, %I64d frames.",
-                                                    lastWritePts,
-                                                    lastWritePts/avgDeltaPts);
-                                }
+                                pLogger->info("Wrote %I64d pts, %I64d frames.",
+                                                lastWritePts,
+                                                lastWritePts/avgDeltaPts);
                                 pImageBuffer->printLog();
                             }
                         }
@@ -509,7 +489,7 @@ public:
             double syncThreshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
 
             // The time difference is within the no sync threshold.
-            if(fabs(diff) < AV_NOSYNC_THRESHOLD) {
+            if (fabs(diff) < AV_NOSYNC_THRESHOLD) {
 
                 // If our time difference is lower than the sync threshold, then skip a frame.
                 if (diff <= -syncThreshold) {
@@ -545,9 +525,7 @@ public:
             pVideoFrameShow = pVideoFrameTmp;
 
             // Log that we displayed a frame.
-            if (pLogger != nullptr) {
-                pLogger->info("Display pts %I64d.", pVideoFrameShow->pts/avgDeltaPts);
-            }
+            pLogger->info("Display pts %I64d.", pVideoFrameShow->pts/avgDeltaPts);
         }
 
         // Return the number of read frames (not neccesarily all are displayed).
@@ -576,16 +554,12 @@ public:
                 // Seek to the end of the file.
                 lastWritePts = seekPts = pVideoStream->duration - 2*avgDeltaPts;
                 seekReq = true;
-                if (pLogger != nullptr) {
-                    pLogger->info("Rewind to end %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
-                }
+                pLogger->info("Rewind to end %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
             } else {
                 // Seek to the start of the file.
                 lastWritePts = seekPts = pVideoStream->start_time;
                 seekReq = true;
-                if (pLogger != nullptr) {
-                    pLogger->info("Rewind to start %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
-                }
+                pLogger->info("Rewind to start %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
             }
         }
     }
@@ -601,19 +575,15 @@ public:
 
         // Error if the start coordinates are out of range.
         if (x0 < 0 || y0 < 0 || x0 >= width || y0 >= height) {
-            if (pLogger != nullptr) {
-                pLogger->error("Start position (x0, y0) = (%d, %d) pixels is out of range ",
-                    "(%d, %d) ... (%d, %d) pixels.", x0, y0, 0, 0, width, height);
-            }
+            pLogger->error("Start position (x0, y0) = (%d, %d) pixels is out of range ",
+                "(%d, %d) ... (%d, %d) pixels.", x0, y0, 0, 0, width, height);
             return (jboolean) false;
         }
 
         // Error if the width or height is too large.
         if ((x0+w) > width || (y0+h) > height) {
-            if (pLogger != nullptr) {
-                pLogger->error("Width %d pixels > %d pixels or height %d pixels > %d pixels.",
-                    w, h, width, height);
-            }
+            pLogger->error("Width %d pixels > %d pixels or height %d pixels > %d pixels.",
+                w, h, width, height);
             return (jboolean) false;
         }
 
@@ -628,9 +598,7 @@ public:
         heightView = h;
 
         // Log the new viewing window.
-        if (pLogger != nullptr) {
-            pLogger->info("Set view to (%d, %d) to (%d, %d).", x0, y0, x0+w, y0+h);
-        }
+        pLogger->info("Set view to (%d, %d) to (%d, %d).", x0, y0, x0+w, y0+h);
 
         // Return true to indicate that the window has been adjusted.
         return (jboolean) true;
@@ -710,6 +678,12 @@ public:
             doView = false;
 
             quit = false;
+
+            if (pLogger) {
+                pLogger->info("Closed logger.");
+                delete pLogger;
+                pLogger = nullptr;
+            }
         }
     }
 };
@@ -721,59 +695,42 @@ ImagePlayer* getPlayer(int playerId) {
     return idToPlayer.find(playerId) != idToPlayer.end() ? idToPlayer[playerId] : nullptr;
 }
 
-JNIEXPORT jint JNICALL Java_ImagePlayers_openLogger(JNIEnv *env, jclass thisClass, jstring jVersion) {
-	const char *version = env->GetStringUTFChars(jVersion, 0);
-    //pLogger = new FileLogger("logger.txt");
-    pLogger = new StreamLogger(&std::cerr);
-	pLogger->info("Version: %s", version);
-	env->ReleaseStringUTFChars(jVersion, version);
-	return 0;
-}
-
-JNIEXPORT void JNICALL Java_ImagePlayers_closeLogger(JNIEnv *env, jclass thisClass) {
-    if (pLogger) {
-        pLogger->info("Closed logger.");
-        delete pLogger;
-        pLogger = nullptr;
-    }
-}
-
-JNIEXPORT jintArray JNICALL Java_ImagePlayers_openMovie0(JNIEnv *env, jclass thisClass, jstring jFileName) {
+JNIEXPORT jintArray JNICALL Java_ImagePlayers_openMovie0(JNIEnv *env, jclass thisClass, jstring jFileName,
+                                                         jstring jVersion) {
 	int errNo = 0;
     jintArray returnArray = env->NewIntArray(2);
     jint *returnValues = env->GetIntArrayElements(returnArray, NULL);
 
-	// Release resources first before loading another movie.
-	//Java_ImagePlayers_release0(env, thisClass, jPlayerId);
+	const char *fileName = env->GetStringUTFChars(jFileName, 0);
+	const char *version = env->GetStringUTFChars(jVersion, 0);
 
+    // We won't close any player in this case -- to allow opening the same video multiple times
     int playerId = ImagePlayer::getId();
-
-    fprintf(stdout, "Creating player with id: %d.\n", playerId);
-
     returnValues[0] = 0;
     returnValues[1] = playerId;
 	ImagePlayer* player = new ImagePlayer();
-
-	const char *fileName = env->GetStringUTFChars(jFileName, 0);
+    std::string logFileName = std::string(fileName, strlen(fileName));
+    logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
+    player->pLogger = new FileLogger(logFileName);
+    //player->pLogger = new StreamLogger(&std::cerr);
+	player->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs
 	av_register_all();
 
 	// Open the video file.
 	if ((errNo = avformat_open_input(&player->pFormatCtx, fileName, nullptr, nullptr)) != 0) {
-	    if (pLogger != nullptr) {
-            pLogger->error("Could not open file %s.", fileName);
-	    }
+        player->pLogger->error("Could not open file %s.", fileName);
 	    returnValues[0] = errNo;
+	    env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 		return returnArray;
 	}
 
 	// Retrieve the stream information.
 	if ((errNo = avformat_find_stream_info(player->pFormatCtx, nullptr)) < 0) {
-	    if (pLogger != nullptr) {
-            pLogger->error("Unable to find stream information for file %s.", fileName);
-	    }
+        player->pLogger->error("Unable to find stream information for file %s.", fileName);
 	    returnValues[0] = errNo;
+	    env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 		return returnArray;
 	}
 
@@ -789,10 +746,9 @@ JNIEXPORT jintArray JNICALL Java_ImagePlayers_openMovie0(JNIEnv *env, jclass thi
 
 
 	if (iVideoStream == -1) {
-	    if (pLogger != nullptr) {
-            pLogger->error("Unable to find a video stream in file %s.", fileName);
-	    }
+        player->pLogger->error("Unable to find a video stream in file %s.", fileName);
 	    returnValues[0] = AVERROR_INVALIDDATA;
+	    env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 		return returnArray;
 	}
 
@@ -805,35 +761,30 @@ JNIEXPORT jintArray JNICALL Java_ImagePlayers_openMovie0(JNIEnv *env, jclass thi
 	// Find the decoder for the video stream.
 	player->pVideoCodec = avcodec_find_decoder(player->pVideoCodecCtx->codec_id);
 	if (player->pVideoCodec == nullptr) {
-	    if (pLogger != nullptr) {
-            pLogger->error("Unsupported codec for file %s.", fileName);
-	    }
+        player->pLogger->error("Unsupported codec for file %s.", fileName);
 	    returnValues[0] = AVERROR_DECODER_NOT_FOUND;
+	    env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 		return returnArray;
 	}
 
 	// Open codec.
 	if ((errNo = avcodec_open2(player->pVideoCodecCtx, player->pVideoCodec, &player->pOptsDict)) < 0) {
-	    if (pLogger != nullptr) {
-            pLogger->error("Unable to open codec for file %s.", fileName);
-	    }
+        player->pLogger->error("Unable to open codec for file %s.", fileName);
 	    returnValues[0] = errNo;
+	    env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 		return returnArray;
 	}
 
-	if (pLogger != nullptr) {
+    // Log that opened a file.
+    player->pLogger->info("Opened file %s.", fileName);
 
-    	// Log that opened a file.
-    	pLogger->info("Opened file %s.", fileName);
-
-        // Dump information about file onto standard error.
-        std::string info = log_av_format(player->pFormatCtx, 0, fileName, 0);
-        std::istringstream lines(info);
-        std::string line;
-        while (std::getline(lines, line)) {
-            pLogger->info("%s", line.c_str());
-        }
-	}
+    // Dump information about file onto standard error.
+    std::string info = log_av_format(player->pFormatCtx, 0, fileName, 0);
+    std::istringstream lines(info);
+    std::string line;
+    while (std::getline(lines, line)) {
+        player->pLogger->info("%s", line.c_str());
+    }
 
 	// Allocate video frame.
 	player->pVideoFrame = av_frame_alloc();
@@ -857,21 +808,17 @@ JNIEXPORT jintArray JNICALL Java_ImagePlayers_openMovie0(JNIEnv *env, jclass thi
 	player->width = player->pVideoCodecCtx->width;
 	player->height = player->pVideoCodecCtx->height;
 	player->duration = player->pVideoStream->duration*av_q2d(player->pVideoStream->time_base);
-	if (pLogger != nullptr) {
-        pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.",
-                      player->width, player->height, player->duration, player->pVideoStream->duration);
-        pLogger->info("Time base %2.5f.", av_q2d(player->pVideoStream->time_base));
-	}
+    player->pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.",
+                          player->width, player->height, player->duration, player->pVideoStream->duration);
+    player->pLogger->info("Time base %2.5f.", av_q2d(player->pVideoStream->time_base));
 
 	// Initialize the delta pts using the average frame rate and the average pts.
 	player->avgDeltaPts = player->deltaPts = (int64_t)(1.0/(av_q2d(player->pVideoStream->time_base)
 										                    *av_q2d(player->pVideoStream->avg_frame_rate)));
-    if (pLogger != nullptr) {
-        pLogger->info("Average delta %I64d pts.", player->avgDeltaPts);
-    }
+    player->pLogger->info("Average delta %I64d pts.", player->avgDeltaPts);
 
 	// Initialize the image buffer.
-	player->pImageBuffer = new ImageBuffer(player->width, player->height, player->avgDeltaPts, pLogger);
+	player->pImageBuffer = new ImageBuffer(player->width, player->height, player->avgDeltaPts, player->pLogger);
 
 	// Seek to the start of the file.
 	player->lastWritePts = player->seekPts = player->pVideoStream->start_time;
@@ -879,21 +826,22 @@ JNIEXPORT jintArray JNICALL Java_ImagePlayers_openMovie0(JNIEnv *env, jclass thi
 
 	// Start the decode thread.
 	player->pDecodeFrame = new std::thread(&ImagePlayer::readNextFrame, *player);
-	if (pLogger != nullptr) {
-        pLogger->info("Started decoding thread!");
-	}
+    player->pLogger->info("Started decoding thread!");
 
 	// Set the value for loaded move true.
 	player->loadedMovie = true;
 
 	// Free strings.
 	env->ReleaseStringUTFChars(jFileName, fileName);
+	env->ReleaseStringUTFChars(jVersion, version);
 
 	// Add player to the map
 	idToPlayer[playerId] = player;
+
+	// Free array of return values (this also triggers the write-back to the jintArray)
     env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 
-	return returnArray; // No error.
+	return returnArray; // No error
 }
 
 JNIEXPORT jobject JNICALL Java_ImagePlayers_getFrameBuffer0(JNIEnv *env, jclass thisClass, jint playerId) {

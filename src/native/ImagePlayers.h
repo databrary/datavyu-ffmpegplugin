@@ -32,26 +32,10 @@ extern "C" {
 /*
  * Class:     ImagePlayers
  * Method:    openMovie0
- * Signature: (Ljava/lang/String;)[I
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)[I
  */
 JNIEXPORT jintArray JNICALL Java_ImagePlayers_openMovie0
-  (JNIEnv *, jclass, jstring);
-
-/*
- * Class:     ImagePlayers
- * Method:    openLogger
- * Signature: (Ljava/lang/String;)I
- */
-JNIEXPORT jint JNICALL Java_ImagePlayers_openLogger
-  (JNIEnv *, jclass, jstring);
-
-/*
- * Class:     ImagePlayers
- * Method:    closeLogger
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_ImagePlayers_closeLogger
-  (JNIEnv *, jclass);
+  (JNIEnv *, jclass, jstring, jstring);
 
 /*
  * Class:     ImagePlayers

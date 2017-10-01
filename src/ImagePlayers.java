@@ -4,6 +4,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,11 +69,7 @@ public class ImagePlayers extends Canvas {
 	 * here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/libavutil/error.h
 	 * and here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/doc/errno.txt
 	 */
-	static native int[] openMovie0(String fileName);
-
-	static native int openLogger(String version);
-
-	static native void closeLogger();
+	static native int[] openMovie0(String fileName, String version);
 
 	static native ByteBuffer getFrameBuffer0(int playerId);
 
@@ -364,15 +361,16 @@ public class ImagePlayers extends Canvas {
 	 * here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/libavutil/error.h
 	 * and here: https://github.com/FFmpeg/FFmpeg/blob/release/3.2/doc/errno.txt
 	 */
-	public static ImagePlayers openMovie(String fileName) {
-		int[] errNoAndPlayerId = openMovie0(fileName);
+	public static ImagePlayers openMovie(String fileName, String version) throws IOException {
+		int[] errNoAndPlayerId = openMovie0(fileName, version);
 		int errNo = errNoAndPlayerId[0];
 		int playerId = errNoAndPlayerId[1];
 		int nChannel = getNumberOfChannels0(playerId);
 		int width = getWidth0(playerId);
 		int height = getHeight0(playerId);
-		// TODO: Do the error handling here
-		if (errNo != 0) return null;
+		if (errNo != 0) {
+		    throw new IOException("Error " + errNo + " occurred when opening " + fileName);
+        }
 		return new ImagePlayers(playerId, nChannel, width, height);
 	}
 
@@ -430,14 +428,18 @@ public class ImagePlayers extends Canvas {
 	 */
 	public static void main(String[] args) {
 		String folderName = "C:\\Users\\Florian";
-        // TODO: ADD the true version string here.
-        ImagePlayers.openLogger("0.0.1");
+        //List<String> fileNames = Arrays.asList(new String[]{"WalkingVideo.mov"});
         List<String> fileNames = Arrays.asList(new String[]{"WalkingVideo.mov", "TurkishManGaitClip_KEATalk.mov"});
 		int nPlayers = fileNames.size();
 		List<Thread> playerThreads = new ArrayList<>(nPlayers);
 		for (int iPlayers = 0; iPlayers < nPlayers; ++iPlayers) {
-			ImagePlayers player = openMovie(new File(folderName, fileNames.get(iPlayers)).toString());
-			playerThreads.add(new PlayerThread(player, new Frame()));
+            // TODO: ADD the true version string here.
+            try {
+                ImagePlayers player = openMovie(new File(folderName, fileNames.get(iPlayers)).toString(), "0.0.1");
+                playerThreads.add(new PlayerThread(player, new Frame()));
+            } catch (IOException io) {
+                System.err.println(io);
+            }
 		}
 		for (int iPlayers = 0; iPlayers < nPlayers; ++iPlayers) {
 			playerThreads.get(iPlayers).start();
