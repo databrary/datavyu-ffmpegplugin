@@ -11,9 +11,19 @@ extern "C" {
 	#include <libswresample/swresample.h>
 }
 
-// Florian Raudies, 04/09/2017, Mountain View, CA.
+// Florian Raudies, 10/01/2017, Mountain View, CA.
 // vcvarsall.bat x64
-// cl AudioPlayer.cpp /Fe"..\..\lib\AudioPlayer" /I"C:\Users\Florian\FFmpeg-release-3.2" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswresample\swresample.lib"
+/*
+cl AudioPlayer.cpp /Fe"..\..\lib\AudioPlayer"^
+ /I"C:\Users\Florian\FFmpeg-release-3.3"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include\win32"^
+ /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libswresample\swresample.lib"
+*/
 // To view the function handles in the dll use the command line argument:
 //	dumpbin /exports ..\..\lib\AudioPlayer.dll
 // To find out about the compiled class methods from java use the tool javap in 
@@ -65,7 +75,7 @@ static int initResampler(AVCodecContext *inCodecCtx,
     int errNo;
 
     /**
-     * Create a resampler context for the conversion.
+     * Create a re-sampler context for the conversion.
      * Set the conversion parameters.
      * Default channel layouts based on the number of channels
      * are assumed for simplicity (they are sometimes not detected
@@ -92,8 +102,7 @@ static int initResampler(AVCodecContext *inCodecCtx,
 
     /** Open the resampler with the specified parameters. */
     if ((errNo = swr_init(*pResampleCtx)) < 0) {
-		fprintf(stderr, "Unable to open resample context. Error: '%s'.\n",
-				getErrorText(errNo));
+		fprintf(stderr, "Unable to open resample context. Error: '%s'.\n", getErrorText(errNo));
         swr_free(pResampleCtx);
         return errNo;
     }
@@ -105,9 +114,7 @@ static int initResampler(AVCodecContext *inCodecCtx,
  * The conversion requires temporary storage due to the different formats.
  * The number of audio samples to be allocated is specified in frameSize.
  */
-static int initConvertedSamples(uint8_t ***convertedInSamples,
-                                AVCodecContext *outCodecCtx,
-                                int frameSize) {
+static int initConvertedSamples(uint8_t ***convertedInSamples, AVCodecContext *outCodecCtx, int frameSize) {
     int errNo;
 
     /**
@@ -150,8 +157,7 @@ static int convertSamples(const uint8_t **inData, uint8_t **convertedData,
     if ((errNo = swr_convert(pResampleCtx,
                              convertedData, frameSize,
                              inData, frameSize)) < 0) {
-        fprintf(stderr, "Could not convert input samples. Error '%s')\n",
-                getErrorText(errNo));
+        fprintf(stderr, "Could not convert input samples. Error '%s')\n", getErrorText(errNo));
         return 1;
     }
     return 0;
@@ -168,7 +174,7 @@ int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer,
 	int dataLen, dataSize = 0;
 	int errNo;
 
-	for(;;) {
+	for (;;) {
 		while (audioPktSize > 0) {
 			int gotFrame = 0;
 			dataLen = avcodec_decode_audio4(pAudioInCodecCtx, &frame, &gotFrame, &pkt);
@@ -703,7 +709,7 @@ JNIEXPORT void JNICALL Java_AudioPlayer_release
 
 
 	if (loadedMovie) {
-		pAudioBuffer->stop();
+		pAudioBuffer->flush();
 
 		quit = 1;
 		doneDecoding = 0;

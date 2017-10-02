@@ -18,28 +18,28 @@ public interface TimeStream {
 	 * 
 	 * @return The start time in seconds.
 	 */
-	public double getStartTime();
+	double getStartTime();
 
 	/**
 	 * Get the end time of the stream.
 	 * 
 	 * @return The end time in seconds.
 	 */
-	public double getEndTime();
+	double getEndTime();
 
 	/**
 	 * Get the duration of the stream.
 	 * 
 	 * @return The duration in seconds.
 	 */
-	public double getDuration();
+	double getDuration();
 
 	/**
 	 * Get the current time position within the stream.
 	 * 
 	 * @return The current time in seconds.
 	 */
-	public double getCurrentTime();
+	double getCurrentTime();
 
 	/**
 	 * Seek a time within the stream.
@@ -49,7 +49,7 @@ public interface TimeStream {
 	 * @throws IndexOutOfBoundsException if the time is outside the range of 
 	 * start time and end time.
 	 */
-	public void seek(double time) throws IndexOutOfBoundsException; // set time to continue play back
+	void seek(double time) throws IndexOutOfBoundsException; // set time to continue play back
 
 	/**
 	 * Set the play back speed as multiple of the native play back and also 
@@ -63,19 +63,19 @@ public interface TimeStream {
 	 * arbitrarily fast. If the implementing class does not support a value it 
 	 * throws this exception.
 	 */
-	public void setSpeed(float speed) throws IndexOutOfBoundsException; // play back speed for the movie
+	void setSpeed(float speed) throws IndexOutOfBoundsException; // play back speed for the movie
 	
 	/**
 	 * Rewinds the stream to the starting position. In forward play back the 
 	 * starting position is the start time. In backward play back the starting
 	 * position is the end time.
 	 */
-	public void reset();
+	void reset();
 	
 	/**
 	 * Closes the stream and frees all associated resources.
 	 * 
 	 * @throws IOException if the resources cannot be cleanly shut down.
 	 */
-	public void close() throws IOException;
+	void close() throws IOException;
 }

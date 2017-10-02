@@ -16,10 +16,7 @@ import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
 /**
- * Display the video frames read and converted into the correct color model with ffmpeg in c/c++. 
- * @author Florian Raudies
- * @date 06/27/2016
- *
+ * Display the video frames read and converted into the correct color model with ffmpeg in c/c++
  */
 public class DisplayImageFromVideo extends Canvas {
 	
@@ -30,15 +27,19 @@ public class DisplayImageFromVideo extends Canvas {
 	
 	private static final long serialVersionUID = -6199180436635445511L;
 	
-	ColorSpace cs 							= ColorSpace.getInstance(ColorSpace.CS_sRGB);
-	ComponentColorModel cm 					= new ComponentColorModel(cs, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-	Hashtable<String, String> properties 	= new Hashtable<String, String>();
+	private ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+
+	private ComponentColorModel cm = new ComponentColorModel(cs, false, false,
+															 Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+	private Hashtable<String, String> properties = new Hashtable<>();
 	
-	int 			nChannel = 3;
-	BufferedImage 	image = null;
-	ByteBuffer 		buffer = null;
-	byte[] 			data = null;
-	DataBufferByte 	dataBuffer = null;
+	private int nChannel = 3;
+
+	private BufferedImage image = null;
+
+	private ByteBuffer buffer = null;
+
+	private byte[] data = null;
 	
 	private native ByteBuffer getFrameBuffer();
 	
@@ -67,9 +68,9 @@ public class DisplayImageFromVideo extends Canvas {
 		image = new BufferedImage(cm, raster, false, properties);
 	}
 	
-	public DisplayImageFromVideo() {}
+	private DisplayImageFromVideo() {}
 	
-	public void setImgeBuffer(int width, int height) {
+	private void setImgeBuffer(int width, int height) {
 		buffer = getFrameBuffer();
 		System.out.println("This buffer has the capacity " + buffer.capacity() + " bytes.");
 		data = new byte[width*height*nChannel];

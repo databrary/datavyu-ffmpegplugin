@@ -4,7 +4,12 @@
 
 // Florian Raudies, 05/30/2016, Mountain View, CA.
 // vcvarsall.bat x64
-// cl DisplayImageFromJNI.cpp /Fe"..\..\lib\DisplayImageFromJNI" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes -MD -LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib"
+/*
+cl DisplayImageFromJNI.cpp /Fe"..\..\lib\DisplayImageFromJNI"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include\win32"^
+ /showIncludes -MD -LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib"
+*/
 
 typedef unsigned char BYTE;
 

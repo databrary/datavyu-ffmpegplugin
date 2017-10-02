@@ -20,7 +20,7 @@ public class AudioPlayer {
 	}
 
 	/** Size of the buffer */
-	int BUFFER_SIZE = 64*1024;  // 64 kB
+	private int BUFFER_SIZE = 64*1024;  // 64 kB
 	
 	/** Used to control the player thread */
 	private boolean doPlay = false;
@@ -38,10 +38,10 @@ public class AudioPlayer {
 	private SourceDataLine soundLine = null;
 	
 	/** Gain control for the underlying data line */
-	FloatControl gainControl = null;
+	private FloatControl gainControl = null;
 	
 	/** Audio format for the output */
-	AudioFormat outAudioFormat = null;
+	private AudioFormat outAudioFormat = null;
 	
 	/**
 	 * Initialize and get a pointer to the audio buffer with the size of nByte.
@@ -200,9 +200,9 @@ public class AudioPlayer {
 		}	
 		
 		// Open the audio file using the native library
-		int errNo = 0;
+		int errNo;
 		if ((errNo = loadAudio(fileName, audioFormat)) != 0) {
-			System.err.println("Error " + errNo + " occured when opening audio stream.");
+			System.err.println("Error " + errNo + " occurred when opening audio stream.");
 			return errNo;
 		}
 
@@ -234,6 +234,7 @@ public class AudioPlayer {
 	 * 
 	 * @param volume The volume in Decibel.
 	 */
+	@SuppressWarnings("WeakerAccess") // interface method
 	public void setVolume(float volume) {
 		gainControl.setValue(volume);
 	}
@@ -243,6 +244,7 @@ public class AudioPlayer {
 	 * 
 	 * @return The maximum volume in Decibel.
 	 */
+	@SuppressWarnings("WeakerAccess") // interface method
 	public float getMaxVolume() {
 		return gainControl.getMaximum();
 	}
@@ -252,6 +254,7 @@ public class AudioPlayer {
 	 * 
 	 * @return The minimum valume in Decibel.
 	 */
+	@SuppressWarnings("WeakerAccess") // interface method
 	public float getMinVolume() {
 		return gainControl.getMinimum();
 	}
@@ -262,6 +265,7 @@ public class AudioPlayer {
 	 * 
 	 * @return True if there was a next frame otherwise false.
 	 */
+	@SuppressWarnings("WeakerAccess") // interface method
 	public boolean playNextFrame() {
 		boolean hasNext = false;
 		if ((hasNext = loadNextFrame())) {
@@ -326,17 +330,13 @@ public class AudioPlayer {
 		//AudioType type = AudioType.STEREO_TYPE;
 		try {
 			int errNo = player.open(fileName, type);
-			System.out.println("Max volume: " + player.getMaxVolume() 
-					+ " decibel.");
-			System.out.println("Min volume: " + player.getMinVolume()
-					+ " decibel.");
-			System.out.println("Output audio format: " 
-					+ player.getOutputAudioFormat());
+			System.out.println("Max volume: " + player.getMaxVolume() + " decibel.");
+			System.out.println("Min volume: " + player.getMinVolume() + " decibel.");
+			System.out.println("Output audio format: " + player.getOutputAudioFormat());
 			
 			player.setVolume(-10f);
 			if (errNo != 0) {
-				System.err.println("Could not open audio file: " + fileName 
-						+ ", errNo: " + errNo);
+				System.err.println("Could not open audio file: " + fileName + ", errNo: " + errNo);
 			} else {
 				while (player.playNextFrame()) {}				
 			}

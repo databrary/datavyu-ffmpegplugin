@@ -39,12 +39,10 @@ public class PlaySoundFromJNI {
 	}
 	
 	private PlayerThread playerThread = null;
-	private boolean isOpen = false;
 	private boolean doPlay = false;
 	private ByteBuffer buffer = null;
-	int BUFFER_SIZE = 8*1024;  // 8 KB
+	private int BUFFER_SIZE = 8*1024;  // 8 KB
 	private SourceDataLine soundLine = null;
-	private AudioFormat audioFormat = null;
 	private byte[] sampleData = null;
 	
 	private native ByteBuffer getAudioBuffer(int nByte); // provides pointer to stream.
@@ -89,8 +87,7 @@ public class PlaySoundFromJNI {
 			UnsupportedAudioFileException, LineUnavailableException {
 		
 		loadAudio(fileName);
-		buffer = getAudioBuffer(BUFFER_SIZE);		
-		isOpen = true;
+		buffer = getAudioBuffer(BUFFER_SIZE);
 		// Create the audio format.
 		float sampleRate = getSampleRate()*2;
 		int sampleSizeInBits = getSampleSizeInBits();
@@ -99,7 +96,7 @@ public class PlaySoundFromJNI {
 		float frameRate = getFramesPerSecond();
 		boolean bigEndian = bigEndian();
 		Encoding encoding = getEncoding();
-		audioFormat = new AudioFormat(encoding, sampleRate, sampleSizeInBits, 
+		AudioFormat audioFormat = new AudioFormat(encoding, sampleRate, sampleSizeInBits,
 				channels, frameSize, frameRate, bigEndian);
 		System.out.println("The audio format is: " + audioFormat);
 		
@@ -158,22 +155,13 @@ public class PlaySoundFromJNI {
 		System.out.println("State of player thread: " + playerThread.getState());
 		release();
 		System.out.println("Player thread alive? " + playerThread.isAlive());
-		System.out.println("Player thread is deamon? " + playerThread.isDaemon());
+		System.out.println("Player thread is daemon? " + playerThread.isDaemon());
 		soundLine.drain();
 		soundLine.stop();
 		soundLine.close();
 	}
 	
 	public static void main(String[] args) {
-		/*
-		System.out.print("Audio file types supported by javax.sound: ");
-		AudioFileFormat.Type audioTypes[] = AudioSystem.getAudioFileTypes();
-		for (AudioFileFormat.Type type : audioTypes) {
-			System.out.print(type + ", ");
-		}
-		System.out.println();
-		*/
-		
 		//String fileName = "C:\\Users\\Florian\\TakeKeys.wav";
 		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\Gah.mov";
@@ -186,13 +174,7 @@ public class PlaySoundFromJNI {
 			player.play();
 			System.out.println("Started player thread!");
 			Thread.sleep(8000); // Play the file for 2 sec and then shut down.
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();			
-		} catch (UnsupportedAudioFileException ex) {
-			ex.printStackTrace();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} catch (LineUnavailableException ex) {
+		} catch (InterruptedException | UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
 			ex.printStackTrace();
 		} finally {
 			System.out.println("Stopping player.");

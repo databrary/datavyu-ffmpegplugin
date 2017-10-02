@@ -11,9 +11,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 
 /**
- * Open a wav file and replay the sound in java using a direct data line.
- * @author Florian Raudies
- * @date 06/27/2016
+ * Open a wav file and replay the sound in java using a direct data line
+ *
  * Code example from https://www.ntu.edu.sg/home/ehchua/programming/java/J8c_PlayingSound.html
  */
 
@@ -48,11 +47,7 @@ public class PlaySoundFromJava {
 					soundLine.write(sampleData, 0, nBytes);
 				}
 			}
-		} catch (UnsupportedAudioFileException ex) {
-			ex.printStackTrace();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} catch (LineUnavailableException ex) {
+		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
 			ex.printStackTrace();
 		} finally {
 			soundLine.drain();

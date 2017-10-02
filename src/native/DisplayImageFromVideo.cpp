@@ -8,9 +8,19 @@ extern "C" {
 }
 #include "DisplayImageFromVideo.h"
 
-// Florian Raudies, 06/09/2016, Mountain View, CA.
+// Florian Raudies, 10/01/2017, Mountain View, CA.
 // vcvarsall.bat x64
-// cl DisplayImageFromVideo.cpp /Fe"..\..\lib\DisplayImageFromVideo" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\libswscale\swscale.lib"
+/*
+cl DisplayImageFromVideo.cpp /Fe"..\..\lib\DisplayImageFromVideo"^
+ /I"C:\Users\Florian\FFmpeg-release-3.3"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include\win32"^
+ /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib"
+*/
 
 int					width		= 0;
 int					height		= 0;

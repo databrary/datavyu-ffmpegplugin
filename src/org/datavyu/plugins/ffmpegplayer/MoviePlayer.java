@@ -13,16 +13,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSlider;
-import javax.swing.JToolBar;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
@@ -57,20 +48,10 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	
 	/** The directory last opened is used to initialize the file chooser. */
 	private File lastDirectory = new File(System.getProperty("user.home"));
-
-	/** A group of radio buttons controls the play back speed */
-	private JRadioButton quarter;
-	private JRadioButton half;
+	
+	/** Radio buttons for forward and speed one */
 	private JRadioButton one;
-	private JRadioButton twice;
-	private JRadioButton four;
-	
-	/** A tuple of radio buttons controls the play back direction */
 	private JRadioButton forward;
-	private JRadioButton backward;
-	
-	/** A label to display the frame number */
-	private JLabel frameNumber;
 	
 	/** 
 	 * A slider displays the current frame and the user can drag the slider
@@ -227,7 +208,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		}
 	}
 	
-	protected void openFile(String fileName) {
+	private void openFile(String fileName) {
 		movieStreamProvider.stop();
 		// Assign a new movie file.
 		try {
@@ -410,11 +391,11 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		resetView.addActionListener(new ResetViewSelection());
 		
 		// Speed selection.
-		quarter = new JRadioButton("1/4x");
-		half = new JRadioButton("1/2x");
+		JRadioButton quarter = new JRadioButton("1/4x");
+		JRadioButton half = new JRadioButton("1/2x");
 		one = new JRadioButton("1x");
-		twice = new JRadioButton("2x");
-		four = new JRadioButton("4x");
+		JRadioButton twice = new JRadioButton("2x");
+		JRadioButton four = new JRadioButton("4x");
 		// Set default.
 		one.setSelected(true);
 		
@@ -454,7 +435,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		// Direction selection.
 		ButtonGroup directionGroup = new ButtonGroup();
 		forward = new JRadioButton("+");
-		backward = new JRadioButton("-");
+		JRadioButton backward = new JRadioButton("-");
 		// set default.
 		forward.setSelected(true);
 		
@@ -474,8 +455,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		
 		tools.add(new JLabel("Direction:"));
 		tools.add(directionPanel);
-		
-		frameNumber = new JLabel("0");
+
+		JLabel frameNumber = new JLabel("0");
 		tools.add(frameNumber);
 				
 		add(tools, BorderLayout.NORTH);
@@ -500,14 +481,13 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
 	}
 	
-    void addWindowListener(Window w) {
+    private void addWindowListener(Window w) {
         w.addWindowListener(this);
     }
 
 	@Override
 	public void windowOpened(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+		/* Nothing here */
 	}
 
 	@Override
@@ -521,32 +501,27 @@ public class MoviePlayer extends JPanel implements WindowListener {
 
 	@Override
 	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+		/* Nothing here */
 	}
 
 	@Override
 	public void windowIconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+		/* Nothing here */
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+		/* Nothing here */
 	}
 
 	@Override
 	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+		/* Nothing here */
 	}
 
 	@Override
 	public void windowDeactivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+		/* Nothing here */
 	}
 	
 	/**
@@ -556,7 +531,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
     private static void createAndShowGUI() {
         // Create and set up the window
         JFrame frame = new JFrame("Video Player");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         MoviePlayer player = new MoviePlayer();
         player.addWindowListener(frame);
         // Add content to the window
@@ -573,10 +548,6 @@ public class MoviePlayer extends JPanel implements WindowListener {
          
         // Schedule a job for the event-dispatching thread:
         // creating and showing this application's GUI.
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI();
-            }
-        });
+		javax.swing.SwingUtilities.invokeLater(()->createAndShowGUI());
     }
 }

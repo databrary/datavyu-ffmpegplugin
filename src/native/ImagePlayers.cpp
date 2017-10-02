@@ -24,7 +24,17 @@ extern "C" {
 
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
-// cl ImagePlayers.cpp /Fe"..\..\lib\ImagePlayers" /I"C:\Users\Florian\FFmpeg-release-3.3" /I"C:\Program Files\Java\jdk1.8.0_144\include" /I"C:\Program Files\Java\jdk1.8.0_144\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib"
+/*
+cl ImagePlayers.cpp /Fe"..\..\lib\ImagePlayers"^
+ /I"C:\Users\Florian\FFmpeg-release-3.3"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include\win32"^
+ /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib"
+*/
 
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0

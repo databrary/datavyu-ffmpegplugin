@@ -21,10 +21,10 @@ import javax.sound.sampled.AudioFormat;
 public class MovieStreamProvider extends MovieStream {
 	
 	/** The list of audio listeners */
-	private List<StreamListener> audioListeners;
+	private final List<StreamListener> audioListeners;
 	
 	/** The list of video listeners */
-	private List<StreamListener> videoListeners;
+	private final List<StreamListener> videoListeners;
 	
 	/** Indicates that audio listeners are running */
 	private boolean runAudio;
@@ -74,7 +74,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * 
 	 * @return True if at least one frame was read; otherwise false. 
 	 */
-	protected boolean dropImageFrame() {
+	boolean dropImageFrame() {
 		int nFrame = 0;
 		if (availableImageFrame()) {
 			// Allocate space for a byte buffer
@@ -91,7 +91,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * 
 	 * @return True if an image frame was consumed; otherwise false.
 	 */
-	protected boolean nextImageFrame() {
+	boolean nextImageFrame() {
 		if (availableImageFrame()) {
 			// Allocate space for a byte buffer
 			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
@@ -130,9 +130,9 @@ public class MovieStreamProvider extends MovieStream {
 	/**
 	 * Creates a movie stream provider.
 	 */
-	public MovieStreamProvider() {
-		audioListeners = new LinkedList<StreamListener>();
-		videoListeners = new LinkedList<StreamListener>();
+	MovieStreamProvider() {
+		audioListeners = new LinkedList<>();
+		videoListeners = new LinkedList<>();
 		runAudio = false;
 		runVideo = false;
 	}
@@ -161,7 +161,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * stream and audio is not playing already.  Calls stream started on all 
 	 * audio listeners. Thread safe.
 	 */
-	public void startAudio() {
+	void startAudio() {
 		setPlaySound(true);
 		if (hasAudioStream() && !runAudio) {
 			runAudio = true;
@@ -180,7 +180,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * video stream and is not playing already.  Calls stream started on all 
 	 * video listeners. Thread safe.
 	 */
-	public void startVideo() {
+	void startVideo() {
 		if (hasVideoStream() && !runVideo) {
 			runVideo = true;
 			video = new VideoListenerThread();
@@ -200,7 +200,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * This is used to enable stepping when not using the internal video player
 	 * thread that pulls and displays images.
 	 */
-	protected void startVideoListeners() {
+	void startVideoListeners() {
 		synchronized (videoListeners) {
 			for (StreamListener listener : videoListeners) {
 				listener.streamStarted();
@@ -221,7 +221,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * Stops playing the video if a video is running and there is a video 
 	 * stream.  Calls stream stopped on all video listeners.
 	 */
-	public void stopVideo() {
+	void stopVideo() {
 		if (runVideo && hasVideoStream()) {
 			runVideo = false;
 			if (video != null) {
@@ -244,7 +244,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * Stops playing the audio if a audio is running and there is an audio 
 	 * stream.  Calls stream stopped on all audio listeners.
 	 */
-	public void stopAudio() {
+	void stopAudio() {
 		setPlaySound(false);
 		if (runAudio && hasAudioStream()) {
 			runAudio = false;
@@ -280,7 +280,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * 
 	 * @param streamListener The stream listener that is added.
 	 */
-	public void addAudioStreamListener(StreamListener streamListener) {
+	void addAudioStreamListener(StreamListener streamListener) {
 		// A lock on the list of audio listeners to avoid concurrent access with 
 		// the thread that is feeding data
 		synchronized (audioListeners) {
@@ -301,7 +301,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * 
 	 * @param streamListener The stream listener that is added.
 	 */
-	public void addVideoStreamListener(StreamListener streamListener) {
+	void addVideoStreamListener(StreamListener streamListener) {
 		// A lock on the list of video listeners to avoid concurrent access with
 		// the thread that is feeding data
 		synchronized (videoListeners) {

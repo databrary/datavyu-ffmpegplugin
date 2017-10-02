@@ -14,7 +14,8 @@ import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.LineUnavailableException;
 
 public class MovieStream implements VideoStream, AudioStream {
-	/** 
+
+	/*
 	 * Load the native library that interfaces to ffmpeg. This load assumes
 	 * that dependent dll's are within the the JVM's classpath. In our example 
 	 * this is the directory above the directory 'src'.
@@ -24,52 +25,49 @@ public class MovieStream implements VideoStream, AudioStream {
 	}
 
 	/** The minimum play back speed */
-	public final static float MIN_SPEED = -4f;
+	private final static float MIN_SPEED = -16f;
 	
 	/** The maximum play back speed */
-	public final static float MAX_SPEED = +4f;
+	private final static float MAX_SPEED = +16f;
 	
 	/** The size of the audio buffer */
-	public final static int AUDIO_BUFFER_SIZE = 64*1024; // 64 kB
+	private final static int AUDIO_BUFFER_SIZE = 64*1024; // 64 kB
 	
 	/** The duration of the video/audio. Initialized at opening. */
 	protected double duration = 0;
 	
 	/** The width of the image in the stream. Changes with the file. */
-	protected int widthOfStream = 0;
+	private int widthOfStream = 0;
 	
 	/** The height of the image in the stream. Changes with the file. */
-	protected int heightOfStream = 0;
+	private int heightOfStream = 0;
 	
 	/** The width of the current view. Changes with the view. */
-	protected int widthOfView = 0;
+	private int widthOfView = 0;
 	
 	/** The height of the current view. Changes with the view. */
-	protected int heightOfView = 0;
+	private int heightOfView = 0;
 	
 	/** The number of channels. Initialized at opening. */
-	protected int nChannels = 0;
+	private int nChannels = 0;
 	
 	/** The start time of the audio/video streams. Initialized at opening. */
-	protected double startTime = 0;
+	private double startTime = 0;
 	
 	/** The end time of the audio/video streams. Initialized at opening. */
-	protected double endTime = 0;
-	
-	/** The byte buffer for the images. Initialized at opening. */
-	protected ByteBuffer imageBuffer = null;
+	private double endTime = 0;
 	
 	/** The byte buffer for the audio. Initialized at opening. */
-	protected ByteBuffer audioBuffer = null;
+	private ByteBuffer audioBuffer = null;
 	
 	/** The audio format of the audio stream. Initialized at opening. */
 	protected AudioFormat audioFormat = null;
 	
 	/** The color space of the image stream. Initialized at opening. */
-	protected ColorSpace colorSpace = null;
+	private ColorSpace colorSpace = null;
 	
 	/** Indicates that a image/audio stream is open. */
-	boolean isOpen = false;
+	private boolean isOpen = false;
 	
 	/**
 	 * Find out if this movie stream contains an image stream.
@@ -159,11 +157,9 @@ public class MovieStream implements VideoStream, AudioStream {
 	@Override
 	public void setSpeed(float speed) throws IndexOutOfBoundsException {
 		if (Math.abs(speed) < Math.ulp(1f)) {
-			throw new IndexOutOfBoundsException("Speed " + speed 
-					+ " is not allowed.");
+			throw new IndexOutOfBoundsException("Speed " + speed + " is not allowed.");
 		} else if (speed < MIN_SPEED || speed > MAX_SPEED) {
-			throw new IndexOutOfBoundsException("Speed " + speed + "[" 
-					+ MIN_SPEED + ", " + MAX_SPEED + "]");
+			throw new IndexOutOfBoundsException("Speed " + speed + "[" + MIN_SPEED + ", " + MAX_SPEED + "]");
 		} else {
 			setPlaybackSpeed0(speed);
 		}		
@@ -342,7 +338,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	 */
 	public void open(String fileName, String version, ColorSpace reqColorSpace, 
 			AudioFormat reqAudioFormat) throws IOException {
-		int error = 0;		
+		int error;
 		if (reqColorSpace != ColorSpace.getInstance(ColorSpace.CS_sRGB)) {
 			throw new IOException("Color space " + reqColorSpace + " not supported!");
 		} else if (!(reqAudioFormat.getChannels()==1 
@@ -476,11 +472,11 @@ public class MovieStream implements VideoStream, AudioStream {
 		
 	@Override
 	public int readImageFrame(byte[] buffer) {
-		int nFrame = 0;
+		int nFrame;
 		// Check if we loaded at least one image frame
 		if ((nFrame = loadNextImageFrame()) > 0) {
 			// Load the image frame into the buffer
-			imageBuffer = getFrameBuffer();
+			ByteBuffer imageBuffer = getFrameBuffer();
 			imageBuffer.get(buffer, 0, imageBuffer.capacity());
 		}
 		// Return the number of loaded image frames
@@ -563,10 +559,8 @@ public class MovieStream implements VideoStream, AudioStream {
 					e.printStackTrace();
 				}
 			}
-		} catch (IOException io) {
-			System.err.println(io.getLocalizedMessage());
-		} catch (LineUnavailableException lu) {
-			System.err.println(lu.getLocalizedMessage());
-		}
+		} catch (IOException | LineUnavailableException io) {
+            System.err.println(io.getLocalizedMessage());
+        }
 	}
 }

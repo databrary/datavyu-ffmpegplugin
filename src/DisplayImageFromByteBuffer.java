@@ -17,17 +17,14 @@ import java.util.Hashtable;
 
 /**
  * Display an image from an pinned byte buffer inside java.
- * 
- * @author Florian Raudies
- * @date 05/30/2016
  */
 public class DisplayImageFromByteBuffer extends Canvas {
 
 	private static final long serialVersionUID = 3011662036905343969L;
-	ByteBuffer buffer = null;
-	BufferedImage image = null;
-	int blockSize = 50;
-	int nChannel = 3;
+	private ByteBuffer buffer = null;
+	private BufferedImage image = null;
+	private int blockSize = 50;
+	private int nChannel = 3;
 	
 	public DisplayImageFromByteBuffer(int width, int height) {
 		buffer = ByteBuffer.allocateDirect(width*height*nChannel);

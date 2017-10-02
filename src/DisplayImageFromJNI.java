@@ -16,10 +16,7 @@ import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
 /**
- * Display a byte buffer that has been created in c/c++ inside a java Canvas.
- * 
- * @author Florian Raudies
- * @date 06/27/2016
+ * Display a byte buffer that has been created in c/c++ inside a java Canvas
  */
 public class DisplayImageFromJNI extends Canvas {
 	
@@ -28,8 +25,8 @@ public class DisplayImageFromJNI extends Canvas {
 	}
 	
 	private static final long serialVersionUID = -1946946053851857166L;
-	BufferedImage image = null;
-	int nChannel = 3;
+	private BufferedImage image = null;
+	private int nChannel = 3;
 	
 	// This returns a pinned byte buffer that is outside of Java garbage collection.
 	private native ByteBuffer getByteBuffer(int width, int height, int nChannel);

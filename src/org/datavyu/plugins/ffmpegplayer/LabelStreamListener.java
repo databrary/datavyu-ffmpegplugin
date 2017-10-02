@@ -20,7 +20,7 @@ public class LabelStreamListener implements StreamListener {
 	/** Indicates that we have stopped (or not started) this listener. */
 	private boolean stopped;
 	
-	public LabelStreamListener(JLabel label, MovieStream movieStream) {
+	LabelStreamListener(JLabel label, MovieStream movieStream) {
 		this.label = label;
 		this.movieStream = movieStream;
 		this.stopped = true;

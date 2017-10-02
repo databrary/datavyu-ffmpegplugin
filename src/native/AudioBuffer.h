@@ -4,6 +4,7 @@ extern "C" {
 	#include <libswresample/swresample.h>
 }
 
+#include <atomic>
 #include <mutex>
 #include <condition_variable>
 
@@ -26,8 +27,7 @@ class AudioBuffer {
 	/** Number of packets in the linked list. */
 	int n_packets;
 
-	/** Mutex to protect queue when concurrently putting and concurrently 
-	    getting. */
+	/** Mutex to protect queue when concurrently putting and concurrent gets */
 	std::mutex *mu;
 
 	/** Condition variable to protect queue. */
@@ -73,7 +73,7 @@ public:
 			av_packet_unref(&pkt->pkt);
 			av_freep(&pkt);
 		}
-		// Resets the interal values
+		// Resets the internal values
 		last_pkt = first_pkt = nullptr;
 		n_packets = 0;
 		locker.unlock();

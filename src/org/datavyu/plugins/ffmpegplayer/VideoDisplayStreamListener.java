@@ -62,7 +62,7 @@ public class VideoDisplayStreamListener implements StreamListener {
 	 * on the container without constraint.
 	 * 
 	 * @param container The container that the display is added to
-	 * @param constraint The constraint used when adding
+	 * @param constraints The constraint used when adding
 	 */
 	private void initImageDisplay(Container container, Object constraints) {
 		imageDisplay = new Canvas() {
@@ -103,10 +103,10 @@ public class VideoDisplayStreamListener implements StreamListener {
 	 * Creates a video display through a stream listener. The display is added 
 	 * to the container using the constraint.
 	 * 
-	 * @param movieStream
-	 * @param container
-	 * @param constraints
-	 * @param colorSpace
+	 * @param movieStream The underlying movie stream that provides data.
+	 * @param container The container we add the image display.
+	 * @param constraints Constraint where to add this video display into the container.
+	 * @param colorSpace The color space for the image data.
 	 */
 	public VideoDisplayStreamListener(MovieStream movieStream, 
 			Container container, Object constraints, ColorSpace colorSpace) {

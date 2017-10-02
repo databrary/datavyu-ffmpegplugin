@@ -7,16 +7,15 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
 /**
- * Display an image using the writable raster in java.
- * @author Florian Raudies
- * @date 06/27/2016
+ * Display an image using the writable raster in java
  */
 public class DisplayImageWithRaster extends Canvas {
 
 	private static final long serialVersionUID = 4847026109565928971L;
+
 	private BufferedImage image;
 	
-	public DisplayImageWithRaster(int width, int height) {
+	private DisplayImageWithRaster(int width, int height) {
 		// Fill the buffered image.
 		//image = new BufferedImage(100, 80, BufferedImage.TYPE_BYTE_INDEXED);
 		image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);

@@ -10,9 +10,18 @@ extern "C" {
 	#include <libavformat/avformat.h>
 }
 
-// Florian Raudies, 07/14/2016, Mountain View, CA.
+// Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
-// cl PlaySoundFromJNI.cpp /Fe"..\..\lib\PlaySoundFromJNI" /I"C:\Users\Florian\FFmpeg" /I"C:\Program Files\Java\jdk1.8.0_91\include" /I"C:\Program Files\Java\jdk1.8.0_91\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_91\lib\jawt.lib" "C:\Users\Florian\FFmpeg2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg2\libavutil\avutil.lib"
+/*
+cl PlaySoundFromJNI.cpp /Fe"..\..\lib\PlaySoundFromJNI"^
+ /I"C:\Users\Florian\FFmpeg-release-3.3"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include\win32"^
+ /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib"
+*/
 
 #define AUDIO_BUFFER_SIZE 1024
 #define MAX_AUDIO_FRAME_SIZE 192000
@@ -26,6 +35,7 @@ typedef struct PacketQueue {
   std::mutex *mu;
   std::condition_variable *cv;
 } PacketQueue;
+
 PacketQueue		audioq;
 int				flush = 0;
 int				quit = 0;

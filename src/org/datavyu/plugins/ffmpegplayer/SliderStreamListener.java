@@ -22,9 +22,7 @@ public class SliderStreamListener implements StreamListener {
 	/** The start time of the movie stream */
 	private double startTime;
 	
-	/** The stream has been stopped. We keep the state here to control the 
-	 *  display. 
-	 */
+	/** The stream has been stopped. We keep the state here to control the display */
 	private boolean stopped;
 
 	/**
@@ -37,6 +35,7 @@ public class SliderStreamListener implements StreamListener {
 		this.slider = slider;
 		this.movieStream = movieStream;
 		this.stopped = true;
+		this.startTime = 0;
 	}
 	
 	/**

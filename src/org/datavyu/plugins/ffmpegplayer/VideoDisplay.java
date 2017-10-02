@@ -59,7 +59,7 @@ public class VideoDisplay extends Canvas {
 	 * 
 	 * @param movieStream ASSUMES this is an OPEN movie stream.
 	 */
-	public VideoDisplay(MovieStream movieStream) {
+	VideoDisplay(MovieStream movieStream) {
 		// Set the movie stream
 		this.movieStream = movieStream;
 		// Get the color space from the movie stream
@@ -92,7 +92,7 @@ public class VideoDisplay extends Canvas {
 	 * @return The number of frames, typically one, but this could be larger 
 	 * than one if we skipped a frame.
 	 */
-	public int showNextFrame() {
+	int showNextFrame() {
 		// Get the width and height which could have changed due to the view
 		int width = movieStream.getWidthOfView(); 
 		int height = movieStream.getHeightOfView();

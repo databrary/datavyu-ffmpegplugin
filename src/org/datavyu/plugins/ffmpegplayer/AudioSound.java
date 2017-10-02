@@ -32,16 +32,13 @@ public class AudioSound {
 	private SourceDataLine soundLine = null;
 	
 	/** Gain control for the underlying data line */
-	FloatControl gainControl = null;
-	
-	/** Audio format for the output */
-	AudioFormat audioFormat = null;
+	private FloatControl gainControl = null;
 	
 	/** The audio buffer size */
 	private int bufferSize = 0;
 
 	/** The audio stream from where we pull data */
-	AudioStream audioStream = null;
+	private AudioStream audioStream = null;
 	
 	/**
 	 * Create the audio sound with an audio stream. This assumes that the audio
@@ -53,13 +50,13 @@ public class AudioSound {
 	 * @throws LineUnavailableException If the audio format is not supported by 
 	 * 		   the javax.sound framework this exception is thrown. 
 	 */
-	public AudioSound(AudioStream audioStream) throws LineUnavailableException {		
+	public AudioSound(AudioStream audioStream) throws LineUnavailableException {
 		this.audioStream = audioStream;
 		// Create a buffer for the audio frames
 		bufferSize = audioStream.getAudioBufferSize();
 		sampleData = new byte[bufferSize];
 		// When using stereo need to multiply the frameSize by number of channels
-		audioFormat = audioStream.getAudioFormat();
+		AudioFormat audioFormat = audioStream.getAudioFormat();
 		// Get the data line and sound line
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
 		soundLine = (SourceDataLine) AudioSystem.getLine(info);

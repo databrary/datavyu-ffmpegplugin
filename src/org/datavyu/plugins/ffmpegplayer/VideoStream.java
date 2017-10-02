@@ -18,42 +18,42 @@ public interface VideoStream extends TimeStream {
 	 * 
 	 * @return ColorSpace of this image stream.
 	 */
-	public ColorSpace getColorSpace();
+	ColorSpace getColorSpace();
 
 	/**
 	 * Get the number of color channels.
 	 * 
 	 * @return The number of color channels.
 	 */
-	public int getNumberOfColorChannels();
+	int getNumberOfColorChannels();
 
 	/**
 	 * Get the height of the current view.
 	 * 
 	 * @return The height of the view in pixels.
 	 */
-	public int getHeightOfView();
+	int getHeightOfView();
 
 	/**
 	 * Get the width of the current view.
 	 * 
 	 * @return The width of the view in pixels.
 	 */
-	public int getWidthOfView();
+	int getWidthOfView();
 	
 	/**
 	 * Get the width of the images in the video stream.
 	 * 
 	 * @return The width of the image in pixels.
 	 */
-	public int getWidthOfStream();
+	int getWidthOfStream();
 	
 	/**
 	 * Get the height of the image in the video stream.
 	 * 
 	 * @return The height of the image in pixels. 
 	 */
-	public int getHeightOfStream();
+	int getHeightOfStream();
 
 	/**
 	 * Set the view or viewing window within the image stream. This allows us to
@@ -69,8 +69,7 @@ public interface VideoStream extends TimeStream {
 	 * @throws IndexOutOfBoundsException If the specified window extends beyond 
 	 * the boundaries of the existing image size this exception is thrown.
 	 */
-	public void setView(int x0, int y0, int width, int height) 
-			throws IndexOutOfBoundsException;
+	void setView(int x0, int y0, int width, int height) throws IndexOutOfBoundsException;
 	
 	/**
 	 * Reads the next image frame from the stream. Blocks if there is now such 
@@ -86,13 +85,13 @@ public interface VideoStream extends TimeStream {
 	 * 		   to catch up with the set speed. For instance, if the method 
 	 * 		   returns 2 that means that one frame was skipped.
 	 */
-	public int readImageFrame(byte[] buffer); // reads next image
+	int readImageFrame(byte[] buffer); // reads next image
 	
 	/**
 	 * Provides information about availability of image frames.
 	 * 
 	 * @return True if there are more available image frames, otherwise false.
 	 */
-	public boolean availableImageFrame();
+	boolean availableImageFrame();
 	
 }

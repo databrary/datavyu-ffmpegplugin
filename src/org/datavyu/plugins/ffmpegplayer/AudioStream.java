@@ -23,26 +23,26 @@ public interface AudioStream extends TimeStream {
 	 * @param buffer The buffer where to put the data.
 	 * @return
 	 */
-	public int readAudioData(byte[] buffer);
+	int readAudioData(byte[] buffer);
 
 	/**
 	 * Get the audio format for the read data.
 	 * 
 	 * @return The audio format.
 	 */
-	public AudioFormat getAudioFormat();
+	AudioFormat getAudioFormat();
 
 	/**
 	 * Get the size of the audio buffer in bytes.
 	 * 
 	 * @return The size of the buffer in bytes.
 	 */
-	public int getAudioBufferSize();
+	int getAudioBufferSize();
 
 	/**
 	 * Find if there is any audio data available in the stream.
 	 * 
 	 * @return True if there is data available; otherwise false.
 	 */
-	public boolean availableAudioData();
+	boolean availableAudioData();
 }
