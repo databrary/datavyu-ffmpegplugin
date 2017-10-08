@@ -18,10 +18,10 @@ public class MovieStream implements VideoStream, AudioStream {
 	/*
 	 * Load the native library that interfaces to ffmpeg. This load assumes
 	 * that dependent dll's are within the the JVM's classpath. In our example 
-	 * this is the directory above the directory 'src'.
+	 * this is the directory above the directory '.'.
 	 */
 	static {
-		System.loadLibrary("./lib/MovieStream");
+		System.loadLibrary("MovieStream");
 	}
 
 	/** The stream id for this movie stream */
@@ -637,7 +637,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		// The requested color space RGB
 		ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
 		// The requested audio format is MONO
-		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
+		AudioFormat reqAudioFormat = AudioSound.getNewMonoFormat();
 		// Try opening the stream and attach an image/audio stream
 		try {
 			movieStream.open(fileName, version, reqColorSpace, reqAudioFormat);

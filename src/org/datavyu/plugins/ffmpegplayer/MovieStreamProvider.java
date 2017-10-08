@@ -335,14 +335,7 @@ public class MovieStreamProvider extends MovieStream {
         public MoviePlayer(String movieFileName, String version) throws IOException {
             movieStreamProvider = new MovieStreamProvider();
             final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-            AudioFormat reqAudioFormat = new AudioFormat(
-                    AudioSound.MONO_FORMAT.getEncoding(),
-                    AudioSound.MONO_FORMAT.getSampleRate(),
-                    AudioSound.MONO_FORMAT.getSampleSizeInBits(),
-                    AudioSound.MONO_FORMAT.getChannels(),
-                    AudioSound.MONO_FORMAT.getFrameSize(),
-                    AudioSound.MONO_FORMAT.getFrameRate(),
-                    AudioSound.MONO_FORMAT.isBigEndian());
+            AudioFormat reqAudioFormat = AudioSound.getNewMonoFormat();
             frame = new Frame();
             frame.addWindowListener( new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {

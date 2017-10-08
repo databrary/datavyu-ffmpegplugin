@@ -6,7 +6,8 @@
 
     <groupId>datavyu</groupId>
     <artifactId>ffmpeg-plugin</artifactId>
-    <version>0.6</version>
+    <version>0.7-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <build>
         <resources>
@@ -17,5 +18,32 @@
                 </includes>
             </resource>
         </resources>
+
+        <sourceDirectory>src</sourceDirectory>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <debug>false</debug>
+                    <optimize>true</optimize>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>org.datavyu.plugins.ffmpegplayer</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

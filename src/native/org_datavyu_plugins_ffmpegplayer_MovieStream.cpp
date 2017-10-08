@@ -30,8 +30,8 @@ extern "C" {
 // To create the header file run 'javah -d native org.datavyu.plugins.ffmpegplayer.MovieStream' from the directory 'src'
 
 /*
-release 3.3
-cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream"^
+release 3.3 (writes dll to ../../MovieStream)
+cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\MovieStream"^
  /I"C:\Users\Florian\FFmpeg-release-3.3"^
  /I"C:\Program Files\Java\jdk1.8.0_144\include"^
  /I"C:\Program Files\Java\jdk1.8.0_144\include\win32"^
@@ -41,8 +41,6 @@ cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream"^
  "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib"^
  "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib"^
  "C:\Users\Florian\FFmpeg-release-3.3\libswresample\swresample.lib"
-
-cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream" /I"C:\Users\Florian\FFmpeg-release-3.3" /I"C:\Program Files\Java\jdk1.8.0_144\include" /I"C:\Program Files\Java\jdk1.8.0_144\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg-release-3.3\libswresample\swresample.lib"
 */
 
 /*

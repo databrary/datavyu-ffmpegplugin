@@ -29,7 +29,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			ColorSpace.CS_sRGB);
 	
 	/** The requested audio format */
-	private final AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
+	private final AudioFormat reqAudioFormat = AudioSound.getNewMonoFormat();
 	
 	/** The movie stream for this movie player */
 	private MovieStreamProvider movieStreamProvider;

@@ -1,10 +1,6 @@
 package org.datavyu.plugins.ffmpegplayer;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.*;
 
 /**
  * This class implements a stream listener for the audio stream. It receives the 
@@ -20,6 +16,9 @@ public class AudioSoundStreamListener implements StreamListener {
 	
 	/** The sound line to write the data */
 	private SourceDataLine soundLine = null;
+
+	/** Gain control for volume on sound line */
+	private FloatControl gainControl = null;
 
 	/**
 	 * Create an audio stream listener that plays the sound.
@@ -39,6 +38,7 @@ public class AudioSoundStreamListener implements StreamListener {
 					audioFormat);
 			soundLine = (SourceDataLine) AudioSystem.getLine(info);			
 			soundLine.open(audioFormat);
+			gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
 		} catch (LineUnavailableException lu) {
 			System.err.println("Could not open line for audio format: " 
 					+ audioFormat);
@@ -66,4 +66,11 @@ public class AudioSoundStreamListener implements StreamListener {
 	public void streamStarted() {
 		soundLine.start();		
 	}
+
+	@SuppressWarnings("unused") // API method
+    public void setVolume(float volume) {
+        if (gainControl != null) {
+            gainControl.setValue(volume);
+        }
+    }
 }

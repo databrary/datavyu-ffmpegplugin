@@ -18,11 +18,11 @@ import javax.sound.sampled.AudioFormat.Encoding;
 public class AudioSound {
 	
 	/** The supported mono format; blank values are from the input audio */
-	public final static AudioFormat MONO_FORMAT = new AudioFormat(
+	private final static AudioFormat MONO_FORMAT = new AudioFormat(
 			Encoding.PCM_SIGNED, 0, 0, 1, 0, 0, false);
 	
 	/** The supported stereo format; blank values are from the input audio */
-	public final static AudioFormat STEREO_FORMAT = new AudioFormat(
+	private final static AudioFormat STEREO_FORMAT = new AudioFormat(
 			Encoding.PCM_UNSIGNED, 0, 0, 2, 0, 0, false);
 	
 	/** Sample data buffer to copy from byte buffer to DataLine */
@@ -65,7 +65,39 @@ public class AudioSound {
 		// Get the gain (volume) control for the sound line
 		gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
 	}
-	
+
+	/**
+	 * Get new audio format for mono playback.
+	 *
+	 * @return AudioFormat for mono playback.
+	 */
+	public static AudioFormat getNewMonoFormat() {
+		return new AudioFormat(
+				MONO_FORMAT.getEncoding(),
+				MONO_FORMAT.getSampleRate(),
+				MONO_FORMAT.getSampleSizeInBits(),
+				MONO_FORMAT.getChannels(),
+				MONO_FORMAT.getFrameSize(),
+				MONO_FORMAT.getFrameRate(),
+				MONO_FORMAT.isBigEndian());
+	}
+
+	/**
+	 * Get new audio format for stereo playback.
+	 *
+	 * @return AudioFormat for stereo playback.
+	 */
+	public static AudioFormat getNewStereoFormat() {
+		return new AudioFormat(
+				STEREO_FORMAT.getEncoding(),
+				STEREO_FORMAT.getSampleRate(),
+				STEREO_FORMAT.getSampleSizeInBits(),
+				STEREO_FORMAT.getChannels(),
+				STEREO_FORMAT.getFrameSize(),
+				STEREO_FORMAT.getFrameRate(),
+				STEREO_FORMAT.isBigEndian());
+	}
+
 	/**
 	 * Plays the next audio frame by pulling the byte data from the audio stream
 	 * and writing it to a sound line.
