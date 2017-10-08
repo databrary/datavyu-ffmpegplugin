@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <sstream>
+#include <map>
 
 extern "C" {
 	#include <libavcodec/avcodec.h> // codecs
@@ -26,11 +27,37 @@ extern "C" {
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
 
-// release 3.3
-// cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream" /I"C:\Users\Florian\FFmpeg-release-3.3" /I"C:\Program Files\Java\jdk1.8.0_144\include" /I"C:\Program Files\Java\jdk1.8.0_144\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg-release-3.3\libswresample\swresample.lib"
+// To create the header file run 'javah -d native org.datavyu.plugins.ffmpegplayer.MovieStream' from the directory 'src'
 
-// release 3.2
-// cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream" /I"C:\Users\Florian\FFmpeg-release-3.2" /I"C:\Program Files\Java\jdk1.8.0_144\include" /I"C:\Program Files\Java\jdk1.8.0_144\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.2\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg-release-3.2\libswresample\swresample.lib"
+/*
+release 3.3
+cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream"^
+ /I"C:\Users\Florian\FFmpeg-release-3.3"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include\win32"^
+ /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.3\libswresample\swresample.lib"
+
+cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream" /I"C:\Users\Florian\FFmpeg-release-3.3" /I"C:\Program Files\Java\jdk1.8.0_144\include" /I"C:\Program Files\Java\jdk1.8.0_144\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg-release-3.3\libswresample\swresample.lib"
+*/
+
+/*
+release 3.2
+cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream"^
+ /I"C:\Users\Florian\FFmpeg-release-3.2"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include"^
+ /I"C:\Program Files\Java\jdk1.8.0_144\include\win32"^
+ /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.2\libavcodec\avcodec.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.2\libavformat\avformat.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.2\libavutil\avutil.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.2\libswscale\swscale.lib"^
+ "C:\Users\Florian\FFmpeg-release-3.2\libswresample\swresample.lib"
+*/
 
 // use dumpbin /ALL MovieStream.lib to list the function symbols
 
@@ -43,194 +70,12 @@ extern "C" {
 #define AUDIO_AVG_COEF exp(log(0.01 / AUDIO_DIFF_AVG_NB))
 #define WAIT_TIMEOUT_IN_MSEC 250
 
-/*******************************************************************************
- * Basic information about the movie
- ******************************************************************************/
-
-/** Width of the image in pixels */
-int width = 0; 
-
-/** Height of the image in pixels */
-int height = 0;
-
-/** Number of color channels */
-int	nChannel = 3;
-
-/** Duration of the video in seconds */
-double duration = 0;
-
-
-/*******************************************************************************
- * Variables to playback the image stream within the video file
- ******************************************************************************/
-
-/** Audio and video format context */
-AVFormatContext	*pFormatCtx = nullptr;
-
-/** Index of the 1st video stream */
-int	iImageStream = -1;
-
-/** Image stream */
-AVStream *pImageStream = nullptr;
-
-/** Image codec context */
-AVCodecContext *pImageCodecCtx = nullptr;
-
-/** Image codec */
-AVCodec *pImageCodec = nullptr;
-
-/** Image frame read from stream */
-AVFrame *pImageFrame = nullptr;
-
-/** Image frame displayed (wrapped by buffer) */
-AVFrame *pImageFrameShow = nullptr;				
-
-/** Dictionary is a key-value store */
-AVDictionary *pOptsDict = nullptr;
-
-/** Scaling context from source to target image format and size */
-struct SwsContext *pSwsImageCtx	= nullptr;
-
-/** Pointer to the image buffer */
-ImageBuffer *pImageBuffer = nullptr;
-
-/** Last present time stamp. Set to 0 on reset */
-int64_t imageLastPts = 0;
-
-/** Difference between time stamps. Set to 0 on reset */
-int64_t	imageDeltaPts = 0;
-
-/** Accumulated difference. Set to 0 on reset */
-double imageDiffCum = 0;
-
-/** The system clock's last time */
-std::chrono::high_resolution_clock::time_point imageLastTime;
-
-/** The current presentation time stamp for the video */
-double videoTime = 0;
-
-
-/*******************************************************************************
- * Status in the movie file.
- ******************************************************************************/
-
-/** Quit the decoding thread */
-bool quit = false;
-
-/** Flag indicates that we loaded a movie */
-bool loadedMovie = false;
-
-/** The stream reached the end of the file */
-std::atomic<bool> endOfFile = false;
-
-/** Toggles the direction of playback */
-std::atomic<bool> toggle = false;
-
-/** Controls the speed of playback as factor of the original playback speed */
-double speed = 1;
-
-/** Last written time stamp. Set to 0 on reset */
-int64_t	lastWritePts = 0;
-
-/** Average of time stamp intervals. Set to 1 on reset. Used for reverse seek */
-int64_t	avgDeltaPts = 1;
-
-/** Decoding thread that decodes frames and is started when opening a video */
-std::thread	*decodeFrame = nullptr;
-
-
-/*******************************************************************************
- * Variables to playback the audio stream.
- ******************************************************************************/
-
-/** Index of the 1st audio stream */
-int	iAudioStream = -1;
-
-/** The audio input codec context (before transcoding) */
-AVCodecContext *pAudioInCodecCtx = nullptr;
-
-/** The audio output codec context (after transcoding) */
-AVCodecContext *pAudioOutCodecCtx = nullptr;
-
-/** Context for resampling of the audio signal */
-SwrContext *pResampleCtx = nullptr;
-
-/** Audio stream */
-AVStream *pAudioStream = nullptr;
-
-/** Time as progressed in the audio stream; measured through packets */
-double audioTime = 0;
-
-/** Buffer for the audio packet data */
-AudioBuffer	*pAudioBuffer = nullptr;
-
-/** The audio buffer data. This pointer is shared with the java buffer */
-uint8_t	*pAudioBufferData = nullptr;
-
-/** Number of bytes in the audio buffer. Set to 0 on reset */
-unsigned int nAudioBuffer = 0;
-
-/** Number of data in the audio buffer. Set to 0 on reset */
-unsigned int nAudioData = 0;
-
-/** Index of audio data in bytes. Set to 0 on reset */
-unsigned int iAudioData = 0;
-
-/** Used to compute the average difference for the audio */
-double audioDiffCum = 0;
-
-/** Holds the average coefficient for teh audio difference */
-double audioDiffAvgCoef = AUDIO_AVG_COEF;
-
-/** Holds the audio difference threshold. Set when opening the audio buffer */
-double audioDiffThreshold = 0;
-
-/** Holds the average audio difference count */
-int audioDiffAvgCount = 0;
-
-/** This boolean is set if we do not play sound */
-std::atomic<bool> playSound = false;
-
-/*******************************************************************************
- * Variables that control random seeking.
- ******************************************************************************/
-/** Flag to initiate a random seek request */
-bool seekReq = false;
-
-/** The time stamp that should be present after a random seek */
-int64_t seekPts = 0;
-
-/** Flag that indicates the direction of seeking: Forward or backward */
-int seekFlags = 0;
-
-/** Logger */
-Logger *pLogger = nullptr;
-
-
-/*******************************************************************************
- * Parameters for the viewing window.
- ******************************************************************************/
-
-/** Width of the viewing window. Set to 0 on reset */
-int	widthView = 0;
-
-/** Height of the viewing window. Set to 0 on reset */
-int	heightView = 0;
-
-/** Horizontal starting position of the viewing window. Set to 0 on reset */
-int	x0View = 0;
-
-/** Vertical starting position of the viewing window. Set to 0 on reset */
-int	y0View = 0;
-
-/** True if a viewing window is set, otherwise false. Set to false on reset */
-bool doView	= false;
-
 
 /*******************************************************************************
  * Structure that holds the parameters for the audio format.
  ******************************************************************************/
 struct AudioFormat {
+
 	/** The name of the encoding */
 	std::string encodingName;
 
@@ -253,274 +98,11 @@ struct AudioFormat {
 	float frameRate;
 };
 
-
-static const char *getErrorText(const int error) {
-    static char error_buffer[256];
-    av_strerror(error, error_buffer, sizeof(error_buffer));
-    return error_buffer;
-}
-
 /**
- * Get the time passed from the audio.
- */
-double getAudioTime() {
-	double pts = audioTime; // Maintained by the audio thread
-	int hw_buf_size = nAudioData - iAudioData;
-	int bytes_per_sec = pAudioOutCodecCtx->sample_rate * pAudioOutCodecCtx->channels * 2;
-	if (bytes_per_sec) {
-		pts -= (double)hw_buf_size / bytes_per_sec;
-	}
-	return pts;
-}
-
-/**
- * Synchronize the audio to the system clock by adding (repeating last sample)
- * or removing (truncating last samples) from the audio buffer.
- */
-int synchronizeAudio(short *samples, int nSamples) {
-	double diffPts, avgDiffPts;
-	int nWanted, nMin, nMax;
-	int nBytePerSample = 2 * pAudioOutCodecCtx->channels;
-
-	// Get the time difference
-	diffPts = getAudioTime() - (double)std::chrono::system_clock::to_time_t(
-										std::chrono::system_clock::now());
-	if (diffPts < AV_NOSYNC_THRESHOLD) {
-		
-		// Accumulate the difference
-		audioDiffCum = diffPts + audioDiffAvgCoef * audioDiffCum;
-		if (audioDiffAvgCount < AUDIO_DIFF_AVG_NB) {
-			audioDiffAvgCount++;
-		} else {
-			avgDiffPts = audioDiffCum * (1.0 - audioDiffAvgCoef);
-			if (fabs(avgDiffPts) >= audioDiffThreshold) {
-				nWanted = nSamples + ((int)(diffPts * pAudioOutCodecCtx->sample_rate) * nBytePerSample);
-				nMin = nSamples * ((100 - SAMPLE_CORRECTION_PERCENT_MAX) / 100);
-				nMax = nSamples * ((100 + SAMPLE_CORRECTION_PERCENT_MAX) / 100);
-				// Clip nWanted to the range [nMin, nMax]
-				if (nWanted < nMin) {
-					nWanted = nMin;
-				} else if (nWanted > nMax) {
-					nWanted = nMax;
-				}
-				// Remove samples from the end
-				if (nWanted < nSamples) {
-					nSamples = nWanted;
-				// Repeat the final sample
-				} else if (nWanted > nSamples) {
-					uint8_t *samples_end, *q;
-					int nb = (nSamples - nWanted);
-					samples_end = (uint8_t *)samples + nSamples - nBytePerSample;
-					q = samples_end + nBytePerSample;
-					while (nb > 0) {
-						memcpy(q, samples_end, nBytePerSample);
-						q += nBytePerSample;
-						nb -= nBytePerSample;
-					}
-					nSamples = nWanted;
-				}
-			}
-		}
-	} else {
-		// The difference is TOO big, reset
-		audioDiffAvgCount = 0;
-		audioDiffCum = 0;
-	}
-	return nSamples;
-}
-
-/**
- * Initialize the resampler context for the audio signal.  This resampler is 
- * transcoding the audio signals.
- */
-static int initResampler(AVCodecContext *inCodecCtx, AVCodecContext *outCodecCtx,
-                         SwrContext **pResampleCtx) {
-    int errNo;
-	// Create a resampler context by setting the conversion parameters
-    *pResampleCtx = swr_alloc_set_opts(NULL,
-                                       av_get_default_channel_layout(outCodecCtx->channels),
-                                       outCodecCtx->sample_fmt,
-                                       outCodecCtx->sample_rate,
-                                       av_get_default_channel_layout(inCodecCtx->channels),
-                                       inCodecCtx->sample_fmt,
-                                       inCodecCtx->sample_rate,
-                                       0, NULL);
-    if (!*pResampleCtx) {
-        pLogger->error("Could not allocate resample context");
-        return AVERROR(ENOMEM);
-    }
-
-	// Only work if the sample rates are th same; otherwise we need to use 
-	// filters:
-	// https://github.com/FFmpeg/FFmpeg/blob/master/doc/examples/filtering_audio.c
-    assert(outCodecCtx->sample_rate == inCodecCtx->sample_rate);
-
-    // Open the resampler
-    if ((errNo = swr_init(*pResampleCtx)) < 0) {
-		pLogger->error("Unable to open resample context. Error: '%s'.",
-			getErrorText(errNo));
-        swr_free(pResampleCtx);
-        return errNo;
-    }
-
-    return 0;
-}
-
-/**
- * Initialize a temporary storage for the specified number of audio samples.
- * The conversion requires temporary storage due to the different formats.
- * The number of audio samples to be allocated is specified in frameSize
- */
-static int initConvertedSamples(uint8_t ***convertedInSamples,
-                                AVCodecContext *outCodecCtx,
-                                int frameSize) {
-    int errNo;
-
-    // Allocate a pointer per audio channel. Each pointer points to the audio 
-	// samples of the corresponding channels. It may point to NULL for 
-	// interleaved formats
-    if (!(*convertedInSamples = (uint8_t**)calloc(outCodecCtx->channels,
-                                            sizeof(**convertedInSamples)))) {
-        pLogger->error("Could not allocate converted input sample pointers.");
-        return 1;
-    }
-
-	// Allocate memory for the samples of all channels in one consecutive block 
-	// for convenience
-	if ((errNo = av_samples_alloc(*convertedInSamples, NULL,
-                                  outCodecCtx->channels,
-                                  frameSize,
-                                  outCodecCtx->sample_fmt, 0)) < 0) {
-		pLogger->error("Could not allocate converted input samples. Error: '%s'.",
-						getErrorText(errNo));
-        av_freep(&(*convertedInSamples)[0]);
-        free(*convertedInSamples);
-        return errNo;
-    }
-    return 0;
-}
-
-/**
- * Convert the input audio samples into the output sample format.
- * This conversion happens per frame. The size is specified by frameSize.
- */
-static int convertSamples(const uint8_t **inData, uint8_t **convertedData, 
-						  const int frameSize, SwrContext *pResampleCtx) {
-    int errNo;
-    // Convert samples using the resampler context.
-    if ((errNo = swr_convert(pResampleCtx,
-                             convertedData, frameSize,
-                             inData, frameSize)) < 0) {
-        pLogger->error("Could not convert input samples. Error '%s'.",
-			getErrorText(errNo));
-        return errNo;
-    }
-    return 0;
-}
-
-/**
- * Decodes packet from queue into the audioBuffer.
- */
-int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioBuffer, 
-					 int bufferSize) {
-	static AVPacket pkt;
-	static uint8_t *pAudioPktData = nullptr;
-	static int audioPktSize = 0;
-	static AVFrame frame;
-	uint8_t **convertedInSamples = nullptr;
-	int dataLen, dataSize = 0;
-	int errNo;
-
-	for (;;) {
-		while (audioPktSize > 0) {
-			int gotFrame = 0;
-			dataLen = avcodec_decode_audio4(pAudioInCodecCtx, &frame, 
-											&gotFrame, &pkt);
-
-			// If an error occured skip the frame
-			if (dataLen < 0) {
-				audioPktSize = 0; 
-				break;
-			}
-			
-			pAudioPktData += dataLen;
-			audioPktSize -= dataLen;
-			dataSize = 0;
-
-			if (gotFrame) {
-				dataSize = av_samples_get_buffer_size(NULL,
-								pAudioOutCodecCtx->channels,
-								frame.nb_samples,
-								pAudioOutCodecCtx->sample_fmt,
-								1);
-
-				assert(dataSize <= bufferSize);
-
-				if ((errNo = initConvertedSamples(&convertedInSamples, 
-													pAudioOutCodecCtx, 
-													frame.nb_samples)) < 0) {
-					// clean-up
-					if (convertedInSamples) {
-						av_freep(&convertedInSamples[0]);
-						free(convertedInSamples);					
-					}
-					return errNo;
-				}
-
-				if ((errNo = convertSamples((const uint8_t**)frame.extended_data, 
-											 convertedInSamples, 
-											 frame.nb_samples, pResampleCtx)) < 0) {
-					// clean-up
-					if (convertedInSamples) {
-						av_freep(&convertedInSamples[0]);
-						free(convertedInSamples);					
-					}
-					return errNo;
-				}
-
-				memcpy(audioBuffer, convertedInSamples[0], dataSize);
-
-				av_freep(&convertedInSamples[0]);
-				free(convertedInSamples);
-			}
-
-			// No data yet. Get more frames
-			if (dataSize <= 0) {
-				continue;
-			}
-
-			audioTime += (double)dataSize / (double)(2 * pAudioOutCodecCtx->channels * pAudioOutCodecCtx->sample_rate);
-
-			// We have data, return it and come back for more later
-			return dataSize;
-		}
-		if (pkt.data)
-			av_free_packet(&pkt);
-
-		if (quit) {
-			return -1;
-		}
-		if (pAudioBuffer->empty()) {
-			return -1;
-		}
-		if (pAudioBuffer->get(&pkt) < 0) {
-			return -1;
-		}
-		pAudioPktData = pkt.data;
-		audioPktSize = pkt.size;
-
-		if (pkt.pts != AV_NOPTS_VALUE) {
-			audioTime = av_q2d(pAudioStream->time_base)* pkt.pts;
-		}
-	}
-}
-
-/**
- * Uses the audio format struct to set the corresponding values for this audio 
+ * Uses the audio format struct to set the corresponding values for this audio
  * format in the java object.
  */
-int setAudioFormat(JNIEnv *env, jobject jAudioFormat, 
-				   const AudioFormat& audioFormat) {
+int setAudioFormat(JNIEnv *env, jobject jAudioFormat, const AudioFormat& audioFormat, Logger *pLogger) {
 
 	// Variables to pull from the jobject
 	jclass audioFormatClass = nullptr;
@@ -539,8 +121,7 @@ int setAudioFormat(JNIEnv *env, jobject jAudioFormat,
 	audioFormatClass = env->GetObjectClass(jAudioFormat);
 
 	// Get the audio format
-	encodingId = env->GetFieldID(audioFormatClass, 
-					"encoding", "Ljavax/sound/sampled/AudioFormat$Encoding;");
+	encodingId = env->GetFieldID(audioFormatClass, "encoding", "Ljavax/sound/sampled/AudioFormat$Encoding;");
 	if (encodingId == nullptr) {
 		pLogger->error("Could not find 'encoding' attribute in 'AudioFormat'.");
 		return (jint) AVERROR_INVALIDDATA;
@@ -566,7 +147,7 @@ int setAudioFormat(JNIEnv *env, jobject jAudioFormat,
 	bigEndianId = env->GetFieldID(audioFormatClass, "bigEndian", "Z");
 	if (bigEndianId == nullptr) {
 		pLogger->error("Could not find attribute 'bigEndian' in 'AudioEncoding'.");
-		return (jint) AVERROR_INVALIDDATA;		
+		return (jint) AVERROR_INVALIDDATA;
 	}
 	env->SetBooleanField(jAudioFormat, bigEndianId, (jboolean) audioFormat.bigEndian);
 
@@ -585,7 +166,7 @@ int setAudioFormat(JNIEnv *env, jobject jAudioFormat,
 		return (jint) AVERROR_INVALIDDATA;
 	}
 	env->SetIntField(jAudioFormat, sampleSizeInBitsId, (jint) audioFormat.sampleSizeInBits);
-	
+
 	// Set the number of channels
 	channelsId = env->GetFieldID(audioFormatClass, "channels", "I");
 	if (channelsId == nullptr) {
@@ -616,8 +197,7 @@ int setAudioFormat(JNIEnv *env, jobject jAudioFormat,
 /**
  * Get the audio format struct from the java object audio format.
  */
-int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat, 
-				   const jobject& jAudioFormat) {
+int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat, const jobject& jAudioFormat, Logger *pLogger) {
 
 	// Variables to pull from the jobject
 	jclass audioFormatClass = nullptr;
@@ -637,8 +217,7 @@ int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat,
 	audioFormatClass = env->GetObjectClass(jAudioFormat);
 
 	// Get the audio format
-	encodingId = env->GetFieldID(audioFormatClass, 
-					"encoding", "Ljavax/sound/sampled/AudioFormat$Encoding;");
+	encodingId = env->GetFieldID(audioFormatClass, "encoding", "Ljavax/sound/sampled/AudioFormat$Encoding;");
 
 	if (encodingId == nullptr) {
 		pLogger->error("Could not find 'encoding' attribute in 'AudioFormat'.");
@@ -666,7 +245,7 @@ int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat,
 	bigEndianId = env->GetFieldID(audioFormatClass, "bigEndian", "Z");
 	if (bigEndianId == nullptr) {
 		pLogger->error("Could not find attribute 'bigEndian' in 'AudioEncoding'.");
-		return (jint) AVERROR_INVALIDDATA;		
+		return (jint) AVERROR_INVALIDDATA;
 	}
 	audioFormat->bigEndian = (bool) env->GetBooleanField(jAudioFormat, bigEndianId);
 
@@ -685,7 +264,7 @@ int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat,
 		return (jint) AVERROR_INVALIDDATA;
 	}
 	audioFormat->sampleSizeInBits = (int) env->GetIntField(jAudioFormat, sampleSizeInBitsId);
-	
+
 	// Get the number of channels
 	channelsId = env->GetFieldID(audioFormatClass, "channels", "I");
 	if (channelsId == nullptr) {
@@ -712,738 +291,1372 @@ int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat,
 	return 0; // No error
 }
 
-/**
- * True if the current video file has an image stream; otherwise false
- */
-inline bool hasVideoStream() { return iImageStream > -1; }
-
-/**
- * True if the current video file has an audio stream; otherwise false
- */
-inline bool hasAudioStream() { return iAudioStream > -1; }
-
-/**
- * This only is true for the reverse mode and if writing reached the start of 
- * the file. In reverse we are not yet at the start if we are 'inReverse'.
- */
-bool atStartForWrite() {
-	return pImageBuffer->isReverse() 
-		&& lastWritePts <= pImageStream->start_time+avgDeltaPts 
-		&& !pImageBuffer->inReverse();
+static const char *getErrorText(const int error) {
+    static char error_buffer[256];
+    av_strerror(error, error_buffer, sizeof(error_buffer));
+    return error_buffer;
 }
 
-/**
- * True if reading reached the start of the file. This happens in reverse mode.
- */
-bool atStartForRead() {
-	return atStartForWrite() && pImageBuffer->empty();
+/*****************************************************************************************
+ * Movie stream class that encapsulates functionality for the playback of a movie stream.
+ ****************************************************************************************/
+class MovieStream {
+
+public:
+    /** Id counter for the streams that are opened */
+    static int id;
+
+    /** Basic Information */
+
+    /** Width of the image in pixels */
+    int width;
+
+    /** Height of the image in pixels */
+    int height;
+
+    /** Number of color channels */
+    int	nChannel;
+
+    /** Duration of the video in seconds */
+    double duration;
+
+
+    /**  Variables to playback the image stream within the video file */
+
+    /** Audio and video format context */
+    AVFormatContext	*pFormatCtx;
+
+    /** Index of the 1st video stream */
+    int	iImageStream;
+
+    /** Image stream */
+    AVStream *pImageStream;
+
+    /** Image codec context */
+    AVCodecContext *pImageCodecCtx;
+
+    /** Image codec */
+    AVCodec *pImageCodec;
+
+    /** Image frame read from stream */
+    AVFrame *pImageFrame;
+
+    /** Image frame displayed (wrapped by buffer) */
+    AVFrame *pImageFrameShow;
+
+    /** Dictionary is a key-value store */
+    AVDictionary *pOptsDict;
+
+    /** Scaling context from source to target image format and size */
+    struct SwsContext *pSwsImageCtx;
+
+    /** Pointer to the image buffer */
+    ImageBuffer *pImageBuffer;
+
+    /** Last present time stamp. Set to 0 on reset */
+    int64_t imageLastPts;
+
+    /** Difference between time stamps. Set to 0 on reset */
+    int64_t	imageDeltaPts;
+
+    /** Accumulated difference. Set to 0 on reset */
+    double imageDiffCum;
+
+    /** The system clock's last time */
+    std::chrono::high_resolution_clock::time_point imageLastTime;
+
+    /** The current presentation time stamp for the video */
+    double videoTime;
+
+
+    /** Status in the movie file. */
+
+    /** Quit the decoding thread */
+    bool quit;
+
+    /** Flag indicates that we loaded a movie */
+    bool loadedMovie;
+
+    /** The stream reached the end of the file */
+    std::atomic<bool> endOfFile;
+
+    /** Toggles the direction of playback */
+    std::atomic<bool> toggle;
+
+    /** Controls the speed of playback as factor of the original playback speed */
+    double speed;
+
+    /** Last written time stamp. Set to 0 on reset */
+    int64_t	lastWritePts;
+
+    /** Average of time stamp intervals. Set to 1 on reset. Used for reverse seek */
+    int64_t	avgDeltaPts;
+
+    /** Decoding thread that decodes frames and is started when opening a video */
+    std::thread	*pDecodeFrame;
+
+
+    /** Variables to playback the audio stream. */
+    /** Index of the 1st audio stream */
+    int	iAudioStream;
+
+    /** The audio input codec context (before transcoding) */
+    AVCodecContext *pAudioInCodecCtx;
+
+    /** The audio output codec context (after transcoding) */
+    AVCodecContext *pAudioOutCodecCtx;
+
+    /** Context for resampling of the audio signal */
+    SwrContext *pResampleCtx;
+
+    /** Audio stream */
+    AVStream *pAudioStream;
+
+    /** Time as progressed in the audio stream; measured through packets */
+    double audioTime;
+
+    /** Buffer for the audio packet data */
+    AudioBuffer	*pAudioBuffer;
+
+    /** The audio buffer data. This pointer is shared with the java buffer */
+    uint8_t	*pAudioBufferData;
+
+    /** Number of bytes in the audio buffer. Set to 0 on reset */
+    unsigned int nAudioBuffer;
+
+    /** Number of data in the audio buffer. Set to 0 on reset */
+    unsigned int nAudioData;
+
+    /** Index of audio data in bytes. Set to 0 on reset */
+    unsigned int iAudioData;
+
+    /** Used to compute the average difference for the audio */
+    double audioDiffCum;
+
+    /** Holds the average coefficient for teh audio difference */
+    double audioDiffAvgCoef;
+
+    /** Holds the audio difference threshold. Set when opening the audio buffer */
+    double audioDiffThreshold;
+
+    /** Holds the average audio difference count */
+    int audioDiffAvgCount;
+
+    /** This boolean is set if we do not play sound */
+    std::atomic<bool> playSound;
+
+
+    /**  Variables that control random seeking. */
+
+    /** Flag to initiate a random seek request */
+    bool seekReq;
+
+    /** The time stamp that should be present after a random seek */
+    int64_t seekPts;
+
+    /** Flag that indicates the direction of seeking: Forward or backward */
+    int seekFlags;
+
+    /** Logger */
+    Logger *pLogger;
+
+
+    /** Parameters for the viewing window. */
+
+    /** Width of the viewing window. Set to 0 on reset */
+    int	widthView;
+
+    /** Height of the viewing window. Set to 0 on reset */
+    int	heightView;
+
+    /** Horizontal starting position of the viewing window. Set to 0 on reset */
+    int	x0View;
+
+    /** Vertical starting position of the viewing window. Set to 0 on reset */
+    int	y0View;
+
+    /** True if a viewing window is set, otherwise false. Set to false on reset */
+    bool doView;
+
+
+    MovieStream() :
+        width(0),
+        height(0),
+        nChannel(3),
+        duration(0),
+        pFormatCtx(nullptr),
+        iImageStream(-1),
+        pImageStream(nullptr),
+        pImageCodecCtx(nullptr),
+        pImageCodec(nullptr),
+        pImageFrame(nullptr),
+        pImageFrameShow(nullptr),
+        pOptsDict(nullptr),
+        pSwsImageCtx(nullptr),
+        pImageBuffer(nullptr),
+        imageLastPts(0),
+        imageDeltaPts(0),
+        imageDiffCum(0),
+        videoTime(0),
+        quit(false),
+        loadedMovie(false),
+        endOfFile(false),
+        toggle(false),
+        speed(1),
+        lastWritePts(0),
+        avgDeltaPts(1),
+        pDecodeFrame(nullptr),
+        iAudioStream(-1),
+        pAudioInCodecCtx(nullptr),
+        pAudioOutCodecCtx(nullptr),
+        pResampleCtx(nullptr),
+        pAudioStream(nullptr),
+        audioTime(0),
+        pAudioBuffer(nullptr),
+        pAudioBufferData(nullptr),
+        nAudioBuffer(0),
+        nAudioData(0),
+        iAudioData(0),
+        audioDiffCum(0),
+        audioDiffAvgCoef(AUDIO_AVG_COEF),
+        audioDiffThreshold(0),
+        audioDiffAvgCount(0),
+        playSound(false),
+        seekReq(false),
+        seekPts(0),
+        seekFlags(0),
+        pLogger(nullptr),
+        widthView(0),
+        heightView(0),
+        x0View(0),
+        y0View(0),
+        doView(false) { /* nothing to do here */ }
+
+    static int getId() {
+        return ++id;
+    }
+
+    /**
+     * Get the time passed from the audio.
+     */
+    double getAudioTime() const {
+        double pts = audioTime; // Maintained by the audio thread
+        int hw_buf_size = nAudioData - iAudioData;
+        int bytes_per_sec = pAudioOutCodecCtx->sample_rate * pAudioOutCodecCtx->channels * 2;
+        if (bytes_per_sec) {
+            pts -= (double)hw_buf_size / bytes_per_sec;
+        }
+        return pts;
+    }
+
+    /**
+     * Synchronize the audio to the system clock by adding (repeating last sample)
+     * or removing (truncating last samples) from the audio buffer.
+     */
+    int synchronizeAudio(short *samples, int nSamples) {
+        double diffPts, avgDiffPts;
+        int nWanted, nMin, nMax;
+        int nBytePerSample = 2 * pAudioOutCodecCtx->channels;
+
+        // Get the time difference
+        diffPts = getAudioTime() - (double)std::chrono::system_clock::to_time_t(
+                                            std::chrono::system_clock::now());
+        if (diffPts < AV_NOSYNC_THRESHOLD) {
+
+            // Accumulate the difference
+            audioDiffCum = diffPts + audioDiffAvgCoef * audioDiffCum;
+            if (audioDiffAvgCount < AUDIO_DIFF_AVG_NB) {
+                audioDiffAvgCount++;
+            } else {
+                avgDiffPts = audioDiffCum * (1.0 - audioDiffAvgCoef);
+                if (fabs(avgDiffPts) >= audioDiffThreshold) {
+                    nWanted = nSamples + ((int)(diffPts * pAudioOutCodecCtx->sample_rate) * nBytePerSample);
+                    nMin = nSamples * ((100 - SAMPLE_CORRECTION_PERCENT_MAX) / 100);
+                    nMax = nSamples * ((100 + SAMPLE_CORRECTION_PERCENT_MAX) / 100);
+                    // Clip nWanted to the range [nMin, nMax]
+                    if (nWanted < nMin) {
+                        nWanted = nMin;
+                    } else if (nWanted > nMax) {
+                        nWanted = nMax;
+                    }
+                    // Remove samples from the end
+                    if (nWanted < nSamples) {
+                        nSamples = nWanted;
+                    // Repeat the final sample
+                    } else if (nWanted > nSamples) {
+                        uint8_t *samples_end, *q;
+                        int nb = (nSamples - nWanted);
+                        samples_end = (uint8_t *)samples + nSamples - nBytePerSample;
+                        q = samples_end + nBytePerSample;
+                        while (nb > 0) {
+                            memcpy(q, samples_end, nBytePerSample);
+                            q += nBytePerSample;
+                            nb -= nBytePerSample;
+                        }
+                        nSamples = nWanted;
+                    }
+                }
+            }
+        } else {
+            // The difference is TOO big, reset
+            audioDiffAvgCount = 0;
+            audioDiffCum = 0;
+        }
+        return nSamples;
+    }
+
+    /**
+     * Initialize the re-sampler context for the audio signal.  This re-sampler is
+     * transcoding the audio signals.
+     */
+    static int initResampler(AVCodecContext *inCodecCtx, AVCodecContext *outCodecCtx, SwrContext **pResampleCtx,
+                             Logger* pLogger) {
+        int errNo;
+        // Create a re-sampler context by setting the conversion parameters
+        *pResampleCtx = swr_alloc_set_opts(NULL,
+                                           av_get_default_channel_layout(outCodecCtx->channels),
+                                           outCodecCtx->sample_fmt,
+                                           outCodecCtx->sample_rate,
+                                           av_get_default_channel_layout(inCodecCtx->channels),
+                                           inCodecCtx->sample_fmt,
+                                           inCodecCtx->sample_rate,
+                                           0, NULL);
+        if (!*pResampleCtx) {
+            pLogger->error("Could not allocate resample context");
+            return AVERROR(ENOMEM);
+        }
+
+        // Only work if the sample rates are th same; otherwise we need to use filters:
+        // https://github.com/FFmpeg/FFmpeg/blob/master/doc/examples/filtering_audio.c
+        assert(outCodecCtx->sample_rate == inCodecCtx->sample_rate);
+
+        // Open the re-sampler
+        if ((errNo = swr_init(*pResampleCtx)) < 0) {
+            pLogger->error("Unable to open resample context. Error: '%s'.", getErrorText(errNo));
+            swr_free(pResampleCtx);
+            return errNo;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Initialize a temporary storage for the specified number of audio samples.
+     * The conversion requires temporary storage due to the different formats.
+     * The number of audio samples to be allocated is specified in frameSize
+     */
+    static int initConvertedSamples(uint8_t ***convertedInSamples, AVCodecContext *outCodecCtx, int frameSize,
+                                    Logger* pLogger) {
+        int errNo;
+
+        // Allocate a pointer per audio channel. Each pointer points to the audio
+        // samples of the corresponding channels. It may point to NULL for
+        // interleaved formats
+        if (!(*convertedInSamples = (uint8_t**)calloc(outCodecCtx->channels, sizeof(**convertedInSamples)))) {
+            pLogger->error("Could not allocate converted input sample pointers.");
+            return 1;
+        }
+
+        // Allocate memory for the samples of all channels in one consecutive block
+        // for convenience
+        if ((errNo = av_samples_alloc(*convertedInSamples, NULL,
+                                      outCodecCtx->channels,
+                                      frameSize,
+                                      outCodecCtx->sample_fmt, 0)) < 0) {
+            pLogger->error("Could not allocate converted input samples. Error: '%s'.", getErrorText(errNo));
+            av_freep(&(*convertedInSamples)[0]);
+            free(*convertedInSamples);
+            return errNo;
+        }
+        return 0;
+    }
+
+    /**
+     * Convert the input audio samples into the output sample format.
+     * This conversion happens per frame. The size is specified by frameSize.
+     */
+    static int convertSamples(const uint8_t **inData, uint8_t **convertedData, const int frameSize,
+                              SwrContext *pResampleCtx, Logger* pLogger) {
+        int errNo;
+        // Convert samples using the resampler context.
+        if ((errNo = swr_convert(pResampleCtx,
+                                 convertedData, frameSize,
+                                 inData, frameSize)) < 0) {
+            pLogger->error("Could not convert input samples. Error '%s'.", getErrorText(errNo));
+            return errNo;
+        }
+        return 0;
+    }
+
+    /**
+     * Decodes packet from queue into the audioBuffer.
+     */
+    int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioBuffer, int bufferSize) {
+        static AVPacket pkt;
+        static uint8_t *pAudioPktData = nullptr;
+        static int audioPktSize = 0;
+        static AVFrame frame;
+        uint8_t **convertedInSamples = nullptr;
+        int dataLen, dataSize = 0;
+        int errNo;
+
+        for (;;) {
+            while (audioPktSize > 0) {
+                int gotFrame = 0;
+                dataLen = avcodec_decode_audio4(pAudioInCodecCtx, &frame, &gotFrame, &pkt);
+
+                // If an error occured skip the frame
+                if (dataLen < 0) {
+                    audioPktSize = 0;
+                    break;
+                }
+
+                pAudioPktData += dataLen;
+                audioPktSize -= dataLen;
+                dataSize = 0;
+
+                if (gotFrame) {
+                    dataSize = av_samples_get_buffer_size(NULL,
+                                    pAudioOutCodecCtx->channels,
+                                    frame.nb_samples,
+                                    pAudioOutCodecCtx->sample_fmt,
+                                    1);
+
+                    assert(dataSize <= bufferSize);
+
+                    if ((errNo = MovieStream::initConvertedSamples(&convertedInSamples,
+                                                                   pAudioOutCodecCtx,
+                                                                   frame.nb_samples,
+                                                                   pLogger)) < 0) {
+                        // clean-up
+                        if (convertedInSamples) {
+                            av_freep(&convertedInSamples[0]);
+                            free(convertedInSamples);
+                        }
+                        return errNo;
+                    }
+
+                    if ((errNo = MovieStream::convertSamples((const uint8_t**)frame.extended_data,
+                                                             convertedInSamples,
+                                                             frame.nb_samples, pResampleCtx,
+                                                             pLogger)) < 0) {
+                        // clean-up
+                        if (convertedInSamples) {
+                            av_freep(&convertedInSamples[0]);
+                            free(convertedInSamples);
+                        }
+                        return errNo;
+                    }
+
+                    memcpy(audioBuffer, convertedInSamples[0], dataSize);
+
+                    av_freep(&convertedInSamples[0]);
+                    free(convertedInSamples);
+                }
+
+                // No data yet. Get more frames
+                if (dataSize <= 0) {
+                    continue;
+                }
+
+                audioTime += (double)dataSize / (double)(2 * pAudioOutCodecCtx->channels * pAudioOutCodecCtx->sample_rate);
+
+                // We have data, return it and come back for more later
+                return dataSize;
+            }
+            if (pkt.data)
+                av_free_packet(&pkt);
+
+            if (quit) {
+                return -1;
+            }
+            if (pAudioBuffer->empty()) {
+                return -1;
+            }
+            if (pAudioBuffer->get(&pkt) < 0) {
+                return -1;
+            }
+            pAudioPktData = pkt.data;
+            audioPktSize = pkt.size;
+
+            if (pkt.pts != AV_NOPTS_VALUE) {
+                audioTime = av_q2d(pAudioStream->time_base)* pkt.pts;
+            }
+        }
+    }
+
+    /**
+     * True if the current video file has an image stream; otherwise false
+     */
+    bool hasVideoStream() const { return iImageStream > -1; }
+
+    /**
+     * True if the current video file has an audio stream; otherwise false
+     */
+    bool hasAudioStream() const { return iAudioStream > -1; }
+
+    /**
+     * This only is true for the reverse mode and if writing reached the start of
+     * the file. In reverse we are not yet at the start if we are 'inReverse'.
+     */
+    bool atStartForWrite() const {
+        return pImageBuffer->isReverse()
+            && lastWritePts <= pImageStream->start_time+avgDeltaPts
+            && !pImageBuffer->inReverse();
+    }
+
+    /**
+     * True if reading reached the start of the file. This happens in reverse mode.
+     */
+    bool atStartForRead() const {
+        return atStartForWrite() && pImageBuffer->empty();
+    }
+
+    /**
+     * This only happens in forward mode. True if writing reached the end of the
+     * file.
+     */
+    bool atEndForWrite() const {
+        return !pImageBuffer->isReverse() && endOfFile;
+    }
+
+    /**
+     * This only happens in forward mode. True if reading reached the end of the
+     * file.
+     */
+    bool atEndForRead() const {
+        // The duration is not a reliable estimate for the end a video file
+        return !pImageBuffer->isReverse() && endOfFile && pImageBuffer->empty();
+    }
+
+    /**
+     * True if we are in forward playback
+     */
+    bool isForwardPlayback() const {
+        return loadedMovie ? !pImageBuffer->isReverse() : true;
+    }
+
+    /**
+     * Reads the next frame from the video stream and supports:
+     * - Random seek through the variable seekReq.
+     * - Toggeling the direction through the variable toggle.
+     * - Automatically fills the buffer for backward play.
+     *
+     * For a seek this jumps to the next earlier keyframe than the current frame.
+     * This method drops as many frames as there are between the keyframe and the
+     * requested seek frame.
+     *
+     * Decodes multiple AVPacket into an AVFrame and writes this one to the buffer.
+     *
+     */
+    void readNextFrame() {
+        int frameFinished;
+        bool reverseRefresh = true;
+        AVPacket packet;
+
+        while (!quit) {
+
+            // Random seek
+            if (seekReq) {
+
+                endOfFile = false;
+                seekFlags |= AVSEEK_FLAG_BACKWARD;
+
+                // Seek in the image stream
+                if (hasVideoStream()) {
+                    if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
+                        pLogger->error("Random seek of %I64d pts or %I64d frames in"
+                            " image stream unsuccessful.", seekPts, seekPts/avgDeltaPts);
+                    } else {
+                        pLogger->info("Random seek of %I64d pts or %I64d frames in"
+                            " image stream successful.", seekPts, seekPts/avgDeltaPts);
+                        pImageBuffer->flush();
+                        avcodec_flush_buffers(pImageCodecCtx);
+                        lastWritePts = seekPts;
+                    }
+                }
+
+                // Seek in the audio stream
+                if (hasAudioStream()) {
+                    if (av_seek_frame(pFormatCtx, iAudioStream, seekPts, seekFlags) < 0) {
+                        pLogger->error("Random seek of %I64d pts or %I64d frames in"
+                            " audio stream unsuccessful.", seekPts, seekPts/avgDeltaPts);
+                    } else {
+                        pLogger->info("Random seek of %I64d pts or %I64d frames in"
+                            " audio stream successful.", seekPts, seekPts/avgDeltaPts);
+                        pAudioBuffer->flush();
+                        avcodec_flush_buffers(pAudioInCodecCtx);
+                        avcodec_flush_buffers(pAudioOutCodecCtx);
+                        lastWritePts = seekPts;
+                    }
+                }
+
+                seekReq = false;
+            }
+
+            // Switch direction of playback
+            if (hasVideoStream() && toggle) {
+                endOfFile = false;
+                std::pair<int, int> offsetDelta = pImageBuffer->toggle();
+                int offset = offsetDelta.first;
+                int delta = offsetDelta.second;
+                int nShift = 0;
+
+                pLogger->info("Toggle with offset %d and delta %d.", offset, delta);
+
+                // Even if we may not seek backward it is safer to get the prior keyframe
+                seekFlags |= AVSEEK_FLAG_BACKWARD;
+                if (pImageBuffer->isReverse()) {
+                    int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;
+                    delta = std::min(offset+delta, maxDelta) - offset;
+                    pImageBuffer->setBackwardAfterToggle(delta);
+                    nShift = -(offset + delta) + 1;
+                } else {
+                    nShift = offset;
+                }
+
+                lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
+
+                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
+                    pLogger->error("Toggle seek of %I64d pts, %I64d frames unsuccessful.",
+                                    seekPts, seekPts/avgDeltaPts);
+                } else {
+                    pLogger->info("Toggle seek of %I64d pts, %I64d frames successful.",
+                                    seekPts, seekPts/avgDeltaPts);
+                    avcodec_flush_buffers(pImageCodecCtx);
+                }
+
+                // Done with toggle of direction, set toggle to false
+                toggle = false;
+            }
+
+            // Find next frame in reverse playback
+            if (hasVideoStream() && pImageBuffer->seekReq()) {
+                endOfFile = false;
+
+                // Find the number of frames that can still be toward the start of
+                // the file
+                int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;
+
+                std::pair<int, int> offsetDelta = pImageBuffer->seekBackward();
+
+                int offset = offsetDelta.first;
+                int delta = offsetDelta.second;
+
+                delta = std::min(offset+delta, maxDelta) - offset;
+
+                pLogger->info("Seek frame for reverse playback with offset %d and "
+                                "min delta %d.", offset, delta);
+
+                pImageBuffer->setBackwardAfterSeek(delta);
+
+                seekFlags |= AVSEEK_FLAG_BACKWARD;
+                int nShift = -(offset + delta) + 1;
+
+                lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
+
+                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
+                    pLogger->error("Reverse seek of %I64d pts, %I64d frames unsuccessful.",
+                                    seekPts, seekPts/avgDeltaPts);
+                } else {
+                    pLogger->info("Reverse seek of %I64d pts, %I64d frames successful.",
+                                    seekPts, seekPts/avgDeltaPts);
+                    avcodec_flush_buffers(pImageCodecCtx);
+                }
+            }
+
+            if (!endOfFile) {
+
+                // Read frame
+                int ret = av_read_frame(pFormatCtx, &packet);
+
+                // Set endOfFile for end of file
+                endOfFile = ret == AVERROR_EOF;
+
+                // Any error that is not endOfFile
+                if (ret < 0 && !endOfFile) {
+                    pLogger->error("Error:  %c, %c, %c, %c.\n",
+                        static_cast<char>((-ret >> 0) & 0xFF),
+                        static_cast<char>((-ret >> 8) & 0xFF),
+                        static_cast<char>((-ret >> 16) & 0xFF),
+                        static_cast<char>((-ret >> 24) & 0xFF));
+                    std::this_thread::sleep_for(
+                        std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
+
+                // We got a frame! Let's decode it
+                } else {
+
+                    // Is this a packet from the video stream?
+                    if (hasVideoStream() && packet.stream_index == iImageStream) {
+
+                        // Decode the video frame
+                        avcodec_decode_video2(pImageCodecCtx, pImageFrame, &frameFinished, &packet);
+
+                        // Did we get a full video frame?
+                        if (frameFinished) {
+
+                            // Set the presentation time stamp (PTS)
+                            int64_t readPts = pImageFrame->pkt_pts;
+
+                            // Skip frames until we are at or beyond seekPts
+                            if (readPts >= seekPts) {
+
+                                // Get the next writeable buffer. This may block and
+                                // can be unblocked by flushing
+                                AVFrame* pFrameBuffer = pImageBuffer->requestPutPtr();
+
+                                // Did we get a frame buffer?
+                                if (pFrameBuffer) {
+
+                                    // Convert the image from its native color
+                                    // format into the RGB color format
+                                    sws_scale(
+                                        pSwsImageCtx,
+                                        (uint8_t const * const *)pImageFrame->data,
+                                        pImageFrame->linesize,
+                                        0,
+                                        pImageCodecCtx->height,
+                                        pFrameBuffer->data,
+                                        pFrameBuffer->linesize);
+                                    pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
+                                    pFrameBuffer->pts = lastWritePts = readPts;
+                                    pImageBuffer->completePutPtr();
+
+                                    pLogger->info("Wrote %I64d pts, %I64d frames.",
+                                                    lastWritePts,
+                                                    lastWritePts/avgDeltaPts);
+                                    pImageBuffer->printLog();
+                                }
+                            }
+
+                            // Reset frame container to initial state
+                            av_frame_unref(pImageFrame);
+                        }
+
+                        // Free the packet that was allocated by av_read_frame
+                        av_free_packet(&packet);
+
+                    } else if (hasAudioStream() && playSound
+                        && packet.stream_index == iAudioStream) {
+
+                        // Decode packet from audio stream
+                        pAudioBuffer->put(&packet); // packet is freed when consumed
+                    } else {
+                        av_free_packet(&packet);
+                    }
+                }
+            // We are at the end of file and throttle this loop through a delay
+            } else {
+                std::this_thread::sleep_for(
+                    std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
+            }
+        }
+    }
+
+    double getStartTime() const {
+    	return hasVideoStream() ? pImageStream->start_time * av_q2d(pImageStream->time_base)
+    	                        : pAudioStream->start_time * av_q2d(pAudioStream->time_base);
+    }
+
+    double getEndTime() const {
+        return hasVideoStream() ? (pImageStream->duration + pImageStream->start_time) * av_q2d(pImageStream->time_base)
+                                : (pAudioStream->duration + pAudioStream->start_time) * av_q2d(pAudioStream->time_base);
+    }
+
+    double getDuration() const {
+        return duration;
+    }
+
+    double getCurrentTime() const { return hasVideoStream() ? videoTime : audioTime; }
+
+    void setTime(double time) {
+        if (hasVideoStream() || hasAudioStream()) {
+            lastWritePts = seekPts = ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts;
+            seekReq = true;
+        }
+    }
+
+    void setPlaybackSpeed(float inSpeed) {
+
+        if (hasVideoStream() || hasAudioStream()) {
+
+            // If we are in backward and switch into forward
+            if (pImageBuffer->isReverse() && inSpeed > 0) {
+                pImageBuffer->setNMinImages(N_MIN_IMAGES);
+            }
+
+            // If we are in forward and switch into backward
+            if (!pImageBuffer->isReverse() && inSpeed < 0) {
+                pImageBuffer->setNMinImages(1);
+            }
+
+            toggle = pImageBuffer->isReverse() != (inSpeed < 0);
+
+            speed = fabs(inSpeed);
+
+            // If we have audio need to turn off at playback other than 1x
+            if (hasAudioStream()) {
+
+                // Do we have speedOne?
+                bool speedOne = fabs(inSpeed-1.0) <= std::numeric_limits<float>::epsilon();
+
+                // If we switch from playing sound to not play sound or vice versa
+                if (!playSound && speedOne || playSound && !speedOne) {
+                    pAudioBuffer->flush();
+                    avcodec_flush_buffers(pAudioInCodecCtx);
+                    avcodec_flush_buffers(pAudioOutCodecCtx);
+                }
+
+                // If we have speed one than we play sound (otherwise not)
+                playSound = speedOne;
+            }
+        }
+    }
+
+    void reset() {
+    	// If we have a video or an audio stream
+    	if (hasVideoStream() || hasAudioStream()) {
+
+    		if (pImageBuffer->isReverse()) {
+    			// Seek to the end of the file
+    			lastWritePts = seekPts = pImageStream->duration - 2*avgDeltaPts;
+    			seekReq = true;
+    			pLogger->info("Rewind to end %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
+
+    		} else {
+    			// Seek to the start of the file
+    			lastWritePts = seekPts = pImageStream->start_time;
+    			seekReq = true;
+    			pLogger->info("Rewind to start %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
+    		}
+    	}
+    }
+
+    bool availableAudioData() const {
+    	return hasAudioStream() ? !endOfFile : false;
+    }
+
+    bool availableImageFrame() const {
+    	return hasVideoStream() ? !(isForwardPlayback() && atEndForRead()
+    							|| !isForwardPlayback() && atStartForRead()) : false;
+    }
+
+    int loadNextImageFrame() {
+
+        // No image stream is present return -1
+        if (!hasVideoStream()) return -1;
+
+        // Counts the number of frames that this method requested (could be 0, 1, 2)
+        int nFrame = 0;
+
+        // Get the next read pointer
+        AVFrame *pVideoFrameTmp = pImageBuffer->getGetPtr();
+
+        // We received a frame -- no flushing
+        if (pVideoFrameTmp) {
+
+            // Retrieve the presentation time for this first frame
+            uint64_t firstPts = pVideoFrameTmp->pts;
+
+            // Increase the number of read frames by one
+            nFrame++;
+
+            // Initialize if the pts difference is above threshold as a result of a seek
+            bool init = std::labs(firstPts - imageLastPts) > PTS_DELTA_THRESHOLD*imageDeltaPts;
+
+            // Compute the difference for the presentation time stamps
+            double diffPts = init ? 0 : std::labs(firstPts - imageLastPts)
+                                            /speed*av_q2d(pImageStream->time_base);
+
+            // Get the current time
+            auto time = std::chrono::high_resolution_clock::now();
+
+            // Compute the time difference
+            double timeDiff = init ? 0
+                : std::chrono::duration_cast<std::chrono::microseconds>(time-imageLastTime).count()/1000000.0;
+
+            // Compute the difference between times and pts
+            imageDiffCum = init ? 0 : (imageDiffCum + diffPts - timeDiff);
+
+            // Calculate the delay that this display thread is required to wait.
+            double delay = diffPts;
+
+            // If the frame is repeated split this delay in half.
+            if (pVideoFrameTmp->repeat_pict) {
+                delay += delay/2;
+            }
+
+            // Compute the synchronization threshold (see ffplay.c)
+            double syncThreshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
+
+            // The time difference is within the no sync threshold.
+            if (fabs(imageDiffCum) < AV_NOSYNC_THRESHOLD) {
+
+                // If our time difference is lower than the sync threshold, then skip a frame.
+                if (imageDiffCum <= -syncThreshold) {
+                    AVFrame *pVideoFrameTmp2 = pImageBuffer->getGetPtr();
+                    if (pVideoFrameTmp2) {
+                        pVideoFrameTmp = pVideoFrameTmp2;
+                        nFrame++;
+                    }
+
+                // If the time difference is within -syncThreshold ... +0 then show frame instantly.
+                } else if (imageDiffCum < 0) {
+                    delay = 0;
+
+                // If the time difference is greater than the syncThreshold increase the delay.
+                } else if (imageDiffCum >= syncThreshold) {
+                    delay *= 2;
+                }
+            }
+
+            // Save values for next call.
+            imageDeltaPts = init ? (int64_t)(1.0/(av_q2d(pImageStream->time_base)
+                                    *av_q2d(pImageStream->avg_frame_rate)))
+                                    : std::labs(firstPts - imageLastPts);
+            imageLastPts = firstPts; // Need to use the first pts.
+            imageLastTime = time;
+
+            // Delay read to keep the desired frame rate.
+            if (delay > 0) {
+                std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
+            }
+
+            // Update the pointer for the show frame.
+            pImageFrameShow = pVideoFrameTmp;
+
+            // Log that we displayed a frame.
+            pLogger->info("Display pts %I64d.", pImageFrameShow->pts/avgDeltaPts);
+
+            videoTime = pImageFrameShow->pts * av_q2d(pImageStream->time_base);
+        }
+
+        // Return the number of read frames (not neccesarily all are displayed).
+        return nFrame;
+    }
+
+    bool loadNextAudioData() {
+
+        // If we do not have an audio stream, we are done decoding, or the audio
+        // buffer is empty, return false to indicate that we did not load data
+        if (!hasAudioStream() || endOfFile || pAudioBuffer->empty()) {
+            return false;
+        }
+
+        int len = nAudioBuffer; // get length of buffer
+        uint8_t *data = pAudioBufferData; // get a write pointer.
+        int decodeLen, audioSize;
+        static uint8_t audioBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
+
+        while (len > 0) {
+            // We still need to read len bytes
+            if (iAudioData >= nAudioData) {
+                /* We already sent all our data; get more */
+                audioSize = audioDecodeFrame(pAudioInCodecCtx, audioBuffer, sizeof(audioBuffer));
+
+                if (audioSize < 0) {
+                    /* If error, output silence */
+                    nAudioData = 1024; // arbitrary?
+                    memset(audioBuffer, 0, nAudioData); // set silience for the rest
+                } else {
+                    nAudioData = audioSize = synchronizeAudio((int16_t *)audioBuffer, audioSize);
+                }
+                iAudioData = 0;
+            }
+            decodeLen = nAudioData - iAudioData;
+
+            if (decodeLen > len) {
+                decodeLen = len;
+            }
+
+            memcpy(data, (uint8_t *)audioBuffer + iAudioData, decodeLen);
+            len -= decodeLen;
+            data += decodeLen;
+            iAudioData += decodeLen;
+        }
+        return !quit;
+    }
+
+    void close() {
+
+    	// If we have a video or an audio stream
+    	if (hasVideoStream() || hasAudioStream()) {
+
+    		// Set the quit flag for the decoding thread
+    		quit = true;
+
+    		// Drain the audio buffer that means no packets can be get or put
+    		if (hasAudioStream()) {
+    			pAudioBuffer->flush();
+    		}
+
+    		// Flush the image buffer buffer which unblocks all readers/writers
+    		if (hasVideoStream()) {
+    			pImageBuffer->flush();
+    		}
+
+    		// Join and free the decoding thread
+    		pDecodeFrame->join();
+    		delete pDecodeFrame;
+
+    		// If we have a video stream
+    		if (hasVideoStream()) {
+    			// Free the image buffer buffer and reset pointer
+    			delete pImageBuffer;
+    			pImageBuffer = nullptr;
+
+    			// Free the dictionary and reset pointer
+    			av_dict_free(&pOptsDict);
+    			pOptsDict = nullptr;
+
+    			// Flush the buffers
+    			avcodec_flush_buffers(pImageCodecCtx);
+
+    			// Close codec context and reset pointer
+    			avcodec_close(pImageCodecCtx);
+    			pImageCodecCtx = nullptr;
+
+    			// Free scaling context and reset pointer
+    			sws_freeContext(pSwsImageCtx);
+    			pSwsImageCtx = nullptr;
+
+    			// Free the YUV frame and reset pointers
+    			av_free(pImageFrame);
+    			pImageFrame = nullptr;
+    			pImageFrameShow = nullptr;
+    		}
+
+    		// If we have an audio stream
+    		if (hasAudioStream()) {
+    			// Delete the audio buffer
+    			delete pAudioBuffer;
+    			avcodec_flush_buffers(pAudioInCodecCtx);
+    			avcodec_flush_buffers(pAudioOutCodecCtx);
+    			avcodec_close(pAudioInCodecCtx);
+    			avcodec_close(pAudioOutCodecCtx);
+    			swr_free(&pResampleCtx);
+    			free(pAudioBufferData);
+
+    			pAudioInCodecCtx = nullptr;
+    			pAudioOutCodecCtx = nullptr;
+    			pResampleCtx = nullptr;
+    			pAudioBufferData = nullptr;
+    		}
+
+    		// Close the video file AFTER closing all codecs!!!
+    		avformat_close_input(&pFormatCtx);
+    		pFormatCtx = nullptr;
+
+    		// Set default values for movie information.
+    		loadedMovie = false;
+    		width = 0;
+    		height = 0;
+    		nChannel = 3;
+    		duration = 0;
+    		lastWritePts = 0;
+    		videoTime = 0;
+
+    		// Set default values for playback speed.
+    		toggle = false;
+    		speed = 1;
+    		imageLastPts = 0;
+    		imageDeltaPts = 0;
+    		avgDeltaPts = 1;
+    		lastWritePts = 0;
+    		imageDiffCum = 0;
+    		endOfFile = false;
+
+    		// Reset value for seek request.
+    		seekReq = false;
+    		seekPts = 0;
+    		seekFlags = 0;
+
+    		// Reset variables from viewing window.
+    		widthView = 0;
+    		heightView = 0;
+    		x0View = 0;
+    		y0View = 0;
+    		doView = false;
+
+    		// Set default values for the audio buffer.
+    		nAudioData = 0;
+    		iAudioData = 0;
+    		audioDiffCum = 0;
+    		audioDiffAvgCoef = AUDIO_AVG_COEF;
+    		audioDiffThreshold = 0;
+    		audioDiffAvgCount = 0;
+    		audioTime = 0;
+    		playSound = false;
+
+    		quit = false;
+    	}
+
+    	if (pLogger) {
+    		pLogger->info("Closed video and released resources.");
+    		delete pLogger;
+    		pLogger = nullptr;
+    	}
+    }
+
+    jobject getAudioBuffer(JNIEnv *env, jint jSize) {
+        if (!hasAudioStream()) { return 0; } // null
+        nAudioBuffer = jSize;
+        audioDiffThreshold = 2.0 * nAudioBuffer / pAudioOutCodecCtx->sample_rate;
+        pAudioBufferData = (uint8_t*) malloc(jSize);
+        if (!pAudioBufferData) {
+            pLogger->error("Failed to allocate audio buffer.");
+            return 0; // null
+        }
+        return env->NewDirectByteBuffer((void*) pAudioBufferData, jSize*sizeof(uint8_t));
+    }
+
+    jstring getSampleFormat(JNIEnv* env) const {
+        if (!hasAudioStream()) { return 0; } // null
+        // sample formats http://ffmpeg.org/doxygen/trunk/group__lavu__sampfmts.html#gaf9a51ca15301871723577c730b5865c5
+        AVSampleFormat sampleFormat = pAudioOutCodecCtx->sample_fmt;
+        const char* name = av_get_sample_fmt_name(sampleFormat);
+        return env->NewStringUTF(name);
+    }
+
+    jstring getCodecName(JNIEnv* env) const {
+    	if (!hasAudioStream()) { return 0; }
+    	const char* name = pAudioOutCodecCtx->codec->name;
+    	return env->NewStringUTF(name);
+    }
+
+    float getSampleRate() const {
+        return hasAudioStream() ? pAudioOutCodecCtx->sample_rate : 0;
+    }
+
+    int getSampleSizeInBits() const {
+        return hasAudioStream() ? pAudioOutCodecCtx->bits_per_coded_sample : 0;
+    }
+
+    int getNumberOfSoundChannels() const {
+    	return hasAudioStream() ? pAudioOutCodecCtx->channels : 0;
+    }
+
+    int getFrameSize() const {
+    	AVSampleFormat sampleFormat = pAudioOutCodecCtx->sample_fmt;
+    	return hasAudioStream() ? av_get_bytes_per_sample(sampleFormat) : 0;
+    }
+
+    float getFrameRate() const {
+    	return hasAudioStream() ? pAudioOutCodecCtx->sample_rate : 0;
+    }
+
+    bool bigEndian() {
+        short int number = 0x1;
+        char *numPtr = (char*)&number;
+    	return hasAudioStream() ? (numPtr[0] != 1) : false;
+    }
+
+    bool setPlaySound(bool play) {
+    	bool original = playSound;
+    	playSound = play;
+    	return original;
+    }
+
+    int getNumberOfColorChannels() const { return nChannel; }
+
+    int getHeight() const { return height; }
+
+    int getWidth() const { return width; }
+
+    bool view(int x0, int y0, int inWidth, int inHeight) {
+        // Done if we did not load any movie.
+        if (!hasVideoStream()) {
+            return false;
+        }
+
+        // Error if the start coordinates are out of range.
+        if (x0 < 0 || y0 < 0 || x0 >= width || y0 >= height) {
+            pLogger->error("Start position (x0, y0) = (%d, %d) pixels is out of range ",
+                "(%d, %d) ... (%d, %d) pixels.", x0, y0, 0, 0, width, height);
+            return false;
+        }
+
+        // Error if the width or height is too large.
+        if ((x0+inWidth) > width || (y0+inHeight) > height) {
+            pLogger->error("x0 + width %d pixels > %d pixels or y0 + height %d pixels > %d pixels.",
+                inWidth, width, inHeight, height);
+            return false;
+        }
+
+        // We need to restrict the view if we do not use the original window of
+        // (0, 0) ... (width, height).
+        doView = x0 > 0 || y0 > 0 || (x0+inWidth) < width || (y0+inHeight) < height;
+
+        // Set the view variables.
+        x0View = x0;
+        y0View = y0;
+        widthView = inWidth;
+        heightView = inHeight;
+
+        // Log the new viewing window.
+        pLogger->info("Set view to (%d, %d) to (%d, %d).", x0, y0, x0+inWidth, y0+inHeight);
+
+        // Return true to indicate that the window has been adjusted.
+        return true;
+    }
+
+    jobject getFrameBuffer(JNIEnv* env) {
+        // No movie was loaded return nullptr.
+        if (!hasVideoStream()) return 0;
+
+        // We have a viewing window that needs to be supported.
+        if (doView) {
+            for (int iRow = 0; iRow < heightView; ++iRow) {
+                for (int iCol = 0; iCol < widthView; ++iCol) {
+                    for (int iChannel = 0; iChannel < nChannel; ++iChannel) {
+                        int iSrc = ((y0View+iRow)*width + x0View+iCol)*nChannel + iChannel;
+                        int iDst = (iRow*widthView + iCol)*nChannel + iChannel;
+                        pImageFrameShow->data[0][iDst] = pImageFrameShow->data[0][iSrc];
+                    }
+                }
+            }
+            return env->NewDirectByteBuffer((void*) pImageFrameShow->data[0],
+                                        widthView*heightView*nChannel*sizeof(uint8_t));
+        }
+
+        // Construct a new direct byte buffer pointing to data from pImageFrameShow.
+        return env->NewDirectByteBuffer((void*) pImageFrameShow->data[0],
+                                        width*height*nChannel*sizeof(uint8_t));
+    }
+
+};
+
+int MovieStream::id = -1;
+std::map<int, MovieStream*> idToMovieStream;
+
+MovieStream* getMovieStream(int streamId) {
+    return idToMovieStream.find(streamId) != idToMovieStream.end() ? idToMovieStream[streamId] : nullptr;
 }
 
-/**
- * This only happens in forward mode. True if writing reached the end of the 
- * file.
- */
-bool atEndForWrite() {
-	return !pImageBuffer->isReverse() && endOfFile;
-}
+JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_open0(JNIEnv *env, jclass thisClass,
+    jstring jFileName, jstring jVersion, jobject jAudioFormat) {
 
-/**
- * This only happens in forward mode. True if reading reached the end of the 
- * file.
- */
-bool atEndForRead() {
-	// The duration is not a reliable estimate for the end a video file
-	return !pImageBuffer->isReverse() && endOfFile && pImageBuffer->empty();
-}
-
-/**
- * True if we are in forward playback
- */
-bool isForwardPlayback() {
-	return loadedMovie ? !pImageBuffer->isReverse() : true;
-}
-
-/**
- * Reads the next frame from the video stream and supports:
- * - Random seek through the variable seekReq.
- * - Toggeling the direction through the variable toggle.
- * - Automatically fills the buffer for backward play.
- *
- * For a seek this jumps to the next earlier keyframe than the current frame.
- * This method drops as many frames as there are between the keyframe and the
- * requested seek frame.
- * 
- * Decodes multiple AVPacket into an AVFrame and writes this one to the buffer.
- *
- */
-void readNextFrame() {
-	int frameFinished;
-	bool reverseRefresh = true;
-	AVPacket packet;
-
-	while (!quit) {
-
-		// Random seek
-		if (seekReq) {
-
-			endOfFile = false;
-			seekFlags |= AVSEEK_FLAG_BACKWARD;
-
-			// Seek in the image stream
-			if (hasVideoStream()) {
-				if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
-					pLogger->error("Random seek of %I64d pts or %I64d frames in"
-						" image stream unsuccessful.", seekPts, seekPts/avgDeltaPts);
-				} else {
-					pLogger->info("Random seek of %I64d pts or %I64d frames in"
-						" image stream successful.", seekPts, seekPts/avgDeltaPts);
-					pImageBuffer->flush();
-					avcodec_flush_buffers(pImageCodecCtx);
-					lastWritePts = seekPts;
-				}			
-			}
-
-			// Seek in the audio stream
-			if (hasAudioStream()) {
-				if (av_seek_frame(pFormatCtx, iAudioStream, seekPts, seekFlags) < 0) {
-					pLogger->error("Random seek of %I64d pts or %I64d frames in"
-						" audio stream unsuccessful.", seekPts, seekPts/avgDeltaPts);
-				} else {
-					pLogger->info("Random seek of %I64d pts or %I64d frames in"
-						" audio stream successful.", seekPts, seekPts/avgDeltaPts);
-					pAudioBuffer->flush();
-					avcodec_flush_buffers(pAudioInCodecCtx);
-					avcodec_flush_buffers(pAudioOutCodecCtx);
-					lastWritePts = seekPts;
-				}
-			}
-
-			seekReq = false;
-		}
-
-		// Switch direction of playback
-		if (hasVideoStream() && toggle) {
-			endOfFile = false;
-			std::pair<int, int> offsetDelta = pImageBuffer->toggle();
-			int offset = offsetDelta.first;
-			int delta = offsetDelta.second;
-			int nShift = 0;
-
-			pLogger->info("Toggle with offset %d and delta %d.", offset, delta);
-
-			// Even if we may not seek backward it is safer to get the prior keyframe
-			seekFlags |= AVSEEK_FLAG_BACKWARD;
-			if (pImageBuffer->isReverse()) {
-				int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;
-				delta = std::min(offset+delta, maxDelta) - offset;
-				pImageBuffer->setBackwardAfterToggle(delta);
-				nShift = -(offset + delta) + 1;
-			} else {
-				nShift = offset;
-			}
-
-			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
-
-			if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
-				pLogger->error("Toggle seek of %I64d pts, %I64d frames unsuccessful.", 
-								seekPts, seekPts/avgDeltaPts);
-			} else {
-				pLogger->info("Toggle seek of %I64d pts, %I64d frames successful.", 
-								seekPts, seekPts/avgDeltaPts);
-				avcodec_flush_buffers(pImageCodecCtx);
-			}
-
-			// Done with toggle of direction, set toggle to false
-			toggle = false;			
-		}
-
-		// Find next frame in reverse playback
-		if (hasVideoStream() && pImageBuffer->seekReq()) {
-			endOfFile = false;
-
-			// Find the number of frames that can still be toward the start of 
-			// the file
-			int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;
-
-			std::pair<int, int> offsetDelta = pImageBuffer->seekBackward();
-			
-			int offset = offsetDelta.first;
-			int delta = offsetDelta.second;
-
-			delta = std::min(offset+delta, maxDelta) - offset;
-
-			pLogger->info("Seek frame for reverse playback with offset %d and "
-							"min delta %d.", offset, delta);
-
-			pImageBuffer->setBackwardAfterSeek(delta);
-
-			seekFlags |= AVSEEK_FLAG_BACKWARD;
-			int nShift = -(offset + delta) + 1;
-
-			lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
-
-			if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
-				pLogger->error("Reverse seek of %I64d pts, %I64d frames unsuccessful.", 
-								seekPts, seekPts/avgDeltaPts);
-			} else {
-				pLogger->info("Reverse seek of %I64d pts, %I64d frames successful.", 
-								seekPts, seekPts/avgDeltaPts);
-				avcodec_flush_buffers(pImageCodecCtx);
-			}
-		}
-
-		if (!endOfFile) {
-
-			// Read frame
-			int ret = av_read_frame(pFormatCtx, &packet);
-
-			// Set endOfFile for end of file
-			endOfFile = ret == AVERROR_EOF;
-		
-			// Any error that is not endOfFile
-			if (ret < 0 && !endOfFile) {
-				pLogger->error("Error:  %c, %c, %c, %c.\n",
-					static_cast<char>((-ret >> 0) & 0xFF),
-					static_cast<char>((-ret >> 8) & 0xFF),
-					static_cast<char>((-ret >> 16) & 0xFF),
-					static_cast<char>((-ret >> 24) & 0xFF));
-				std::this_thread::sleep_for(
-					std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
-
-			// We got a frame! Let's decode it
-			} else {
-
-				// Is this a packet from the video stream?
-				if (hasVideoStream() && packet.stream_index == iImageStream) {
-					
-					// Decode the video frame
-					avcodec_decode_video2(pImageCodecCtx, pImageFrame, &frameFinished, &packet);
-					
-					// Did we get a full video frame?
-					if (frameFinished) {
-
-						// Set the presentation time stamp (PTS)
-						int64_t readPts = pImageFrame->pkt_pts;
-
-						// Skip frames until we are at or beyond seekPts
-						if (readPts >= seekPts) {
-						
-							// Get the next writeable buffer. This may block and 
-							// can be unblocked by flushing
-							AVFrame* pFrameBuffer = pImageBuffer->requestPutPtr();
-
-							// Did we get a frame buffer?
-							if (pFrameBuffer) {
-
-								// Convert the image from its native color 
-								// format into the RGB color format
-								sws_scale(
-									pSwsImageCtx,
-									(uint8_t const * const *)pImageFrame->data,
-									pImageFrame->linesize,
-									0,
-									pImageCodecCtx->height,
-									pFrameBuffer->data,
-									pFrameBuffer->linesize);
-								pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
-								pFrameBuffer->pts = lastWritePts = readPts;
-								pImageBuffer->completePutPtr();
-
-								pLogger->info("Wrote %I64d pts, %I64d frames.", 
-												lastWritePts, 
-												lastWritePts/avgDeltaPts);
-								pImageBuffer->printLog();
-							}
-						}
-
-						// Reset frame container to initial state
-						av_frame_unref(pImageFrame);
-					}
-
-					// Free the packet that was allocated by av_read_frame
-					av_free_packet(&packet);
-
-				} else if (hasAudioStream() && playSound 
-					&& packet.stream_index == iAudioStream) {
-
-					// Decode packet from audio stream
-					pAudioBuffer->put(&packet); // packet is freed when consumed
-				} else {
-					av_free_packet(&packet);
-				}
-			}
-		// We are at the end of file and throttle this loop through a delay
-		} else {
-			std::this_thread::sleep_for(
-				std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
-		}
-	}
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasVideoStream
-(JNIEnv* env, jobject thisObject) {
-	return hasVideoStream();
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasAudioStream
-(JNIEnv* env, jobject thisObject) {
-	return hasAudioStream();
-}
-
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getStartTime0
-(JNIEnv* env, jobject thisObject) {
-	return (jdouble) hasVideoStream() ? 
-		pImageStream->start_time * av_q2d(pImageStream->time_base) 
-	  : pAudioStream->start_time * av_q2d(pAudioStream->time_base);
-}
-
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getEndTime0
-(JNIEnv* env, jobject thisObject) {
-	return (jdouble) hasVideoStream() ? 
-		(pImageStream->duration + pImageStream->start_time) 
-			* av_q2d(pImageStream->time_base) 
-	  : (pAudioStream->duration + pAudioStream->start_time) 
-			* av_q2d(pAudioStream->time_base);
-}
-
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getDuration0
-(JNIEnv* env, jobject thisObject) {
-	return (jdouble) duration;
-}
-
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCurrentTime
-(JNIEnv* env, jobject thisObject) {
-	return (jdouble) hasVideoStream() ? videoTime : audioTime;	
-}
-
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setTime0
-(JNIEnv* env, jobject thisObject, jdouble jTime) {
-	if (hasVideoStream() || hasAudioStream()) {
-		lastWritePts = seekPts = ((int64_t)(jTime/(avgDeltaPts
-												*av_q2d(pImageStream->time_base))))
-													*avgDeltaPts;
-		seekReq = true;	
-	}
-}
-
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaybackSpeed0
-(JNIEnv* env, jobject thisObject, jfloat jSpeed) {
-
-	if (hasVideoStream() || hasAudioStream()) {
-
-		// If we are in backward and switch into forward
-		if (pImageBuffer->isReverse() && jSpeed > 0) {
-			pImageBuffer->setNMinImages(N_MIN_IMAGES);
-		}
-		
-		// If we are in forward and switch into backward
-		if (!pImageBuffer->isReverse() && jSpeed < 0) {
-			pImageBuffer->setNMinImages(1);
-		}
-
-		toggle = pImageBuffer->isReverse() != (jSpeed < 0);
-
-		speed = fabs(jSpeed);
-
-		// If we have audio need to turn off at playback other than 1x
-		if (hasAudioStream()) {
-
-			// Do we have speedOne?
-			bool speedOne = fabs(jSpeed-1.0) <= std::numeric_limits<float>::epsilon();
-
-			// If we switch from playing sound to not play sound or vice versa 
-			if (!playSound && speedOne || playSound && !speedOne) {
-				pAudioBuffer->flush();
-				avcodec_flush_buffers(pAudioInCodecCtx);
-				avcodec_flush_buffers(pAudioOutCodecCtx);			
-			}
-
-			// If we have speed one than we play sound (otherwise not)
-			playSound = speedOne;
-		}
-	}
-}
-
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_reset
-(JNIEnv* env, jobject thisObject) {
-
-	// If we have a video or an audio stream
-	if (hasVideoStream() || hasAudioStream()) {
-
-		if (pImageBuffer->isReverse()) {
-			// Seek to the end of the file
-			lastWritePts = seekPts = pImageStream->duration - 2*avgDeltaPts;
-			seekReq = true;
-			pLogger->info("Rewind to end %I64d pts, %I64d frames.", seekPts, 
-				seekPts/avgDeltaPts);
-
-		} else {
-			// Seek to the start of the file
-			lastWritePts = seekPts = pImageStream->start_time;
-			seekReq = true;
-			pLogger->info("Rewind to start %I64d pts, %I64d frames.", seekPts,
-				seekPts/avgDeltaPts);
-		}
-	}
-}
-
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0
-(JNIEnv* env, jobject thisObject) {
-
-	// If we have a video or an audio stream
-	if (hasVideoStream() || hasAudioStream()) {
-
-		// Set the quit flag for the decoding thread
-		quit = true;
-
-		// Drain the audio buffer that means no packets can be get or put
-		if (hasAudioStream()) {
-			pAudioBuffer->flush();
-		}
-
-		// Flush the image buffer buffer which unblocks all readers/writers
-		if (hasVideoStream()) {
-			pImageBuffer->flush();
-		}
-
-		// Join and free the decoding thread
-		decodeFrame->join();
-		delete decodeFrame;
-
-		// If we have a video stream
-		if (hasVideoStream()) {
-			// Free the image buffer buffer and reset pointer
-			delete pImageBuffer;
-			pImageBuffer = nullptr;
-
-			// Free the dictionary and reset pointer
-			av_dict_free(&pOptsDict);
-			pOptsDict = nullptr;
-
-			// Flush the buffers
-			avcodec_flush_buffers(pImageCodecCtx);
-
-			// Close codec context and reset pointer
-			avcodec_close(pImageCodecCtx);
-			pImageCodecCtx = nullptr;
-
-			// Free scaling context and reset pointer
-			sws_freeContext(pSwsImageCtx);
-			pSwsImageCtx = nullptr;
-
-			// Free the YUV frame and reset pointers
-			av_free(pImageFrame);
-			pImageFrame = nullptr;
-			pImageFrameShow = nullptr;		
-		}
-
-		// If we have an audio stream
-		if (hasAudioStream()) {
-			// Delete the audio buffer
-			delete pAudioBuffer;
-			avcodec_flush_buffers(pAudioInCodecCtx);
-			avcodec_flush_buffers(pAudioOutCodecCtx);
-			avcodec_close(pAudioInCodecCtx);
-			avcodec_close(pAudioOutCodecCtx);
-			swr_free(&pResampleCtx);
-			free(pAudioBufferData);
-
-			pAudioInCodecCtx = nullptr;
-			pAudioOutCodecCtx = nullptr;
-			pResampleCtx = nullptr;
-			pAudioBufferData = nullptr;		
-		}
-
-		// Close the video file AFTER closing all codecs!!!
-		avformat_close_input(&pFormatCtx);
-		pFormatCtx = nullptr;
-
-		// Set default values for movie information.
-		loadedMovie = false;
-		width = 0;
-		height = 0;
-		nChannel = 3;
-		duration = 0;
-		lastWritePts = 0;
-		videoTime = 0;
-
-		// Set default values for playback speed.
-		toggle = false;
-		speed = 1;
-		imageLastPts = 0;
-		imageDeltaPts = 0;
-		avgDeltaPts = 1;
-		lastWritePts = 0;
-		imageDiffCum = 0;
-		endOfFile = false;
-
-		// Reset value for seek request.
-		seekReq = false;
-		seekPts = 0;
-		seekFlags = 0;
-
-		// Reset variables from viewing window.
-		widthView = 0;
-		heightView = 0;
-		x0View = 0;
-		y0View = 0;
-		doView = false;
-
-		// Set default values for the audio buffer.
-		nAudioData = 0;
-		iAudioData = 0;
-		audioDiffCum = 0;
-		audioDiffAvgCoef = AUDIO_AVG_COEF;
-		audioDiffThreshold = 0;
-		audioDiffAvgCount = 0;
-		audioTime = 0;
-		playSound = false;
-
-		quit = false;
-	}
-
-	if (pLogger) {
-		pLogger->info("Closed video and released resources.");
-		delete pLogger;
-		pLogger = nullptr;
-	}
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableAudioData
-(JNIEnv* env, jobject thisObject) {
-	return hasAudioStream() ? !endOfFile : false;
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableImageFrame
-(JNIEnv* env, jobject thisObject) {
-	return hasVideoStream() ? !(isForwardPlayback() && atEndForRead() 
-							|| !isForwardPlayback() && atStartForRead()) : false;
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextAudioData
-(JNIEnv* env, jobject thisObject) {
-
-	// If we do not have an audio stream, we are done decoding, or the audio 
-	// buffer is empty, return false to indicate that we did not load data
-	if (!hasAudioStream() || endOfFile || pAudioBuffer->empty()) {
-		return false;
-	}
-
-	int len = nAudioBuffer; // get length of buffer
-	uint8_t *data = pAudioBufferData; // get a write pointer.
-	int decodeLen, audioSize;
-	static uint8_t audioBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
-
-	while (len > 0) {
-		// We still need to read len bytes
-		if (iAudioData >= nAudioData) {
-			/* We already sent all our data; get more */
-			audioSize = audioDecodeFrame(pAudioInCodecCtx, audioBuffer, sizeof(audioBuffer));
-
-			if (audioSize < 0) {
-				/* If error, output silence */
-				nAudioData = 1024; // arbitrary?
-				memset(audioBuffer, 0, nAudioData); // set silience for the rest
-			} else {
-				nAudioData = audioSize = synchronizeAudio((int16_t *)audioBuffer, audioSize);
-			}
-			iAudioData = 0;
-		}
-		decodeLen = nAudioData - iAudioData;
-		
-		if (decodeLen > len) {
-			decodeLen = len;
-		}
-
-		memcpy(data, (uint8_t *)audioBuffer + iAudioData, decodeLen);
-		len -= decodeLen;
-		data += decodeLen;
-		iAudioData += decodeLen;
-	}
-	return !quit;
-}
-
-JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAudioBuffer
-(JNIEnv *env, jobject thisObject, jint jSize) {
-	if (!hasAudioStream()) { return 0; } // null
-	nAudioBuffer = jSize;
-	audioDiffThreshold = 2.0 * nAudioBuffer / pAudioOutCodecCtx->sample_rate;
-	pAudioBufferData = (uint8_t*) malloc(jSize);
-	if (!pAudioBufferData) {
-		pLogger->error("Failed to allocate audio buffer.");
-		return 0; // null
-	}
-	return env->NewDirectByteBuffer((void*) pAudioBufferData, jSize*sizeof(uint8_t));
-}
-
-JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleFormat
-(JNIEnv* env, jobject thisObject) {
-	if (!hasAudioStream()) { return 0; } // null
-	// sample formats http://ffmpeg.org/doxygen/trunk/group__lavu__sampfmts.html#gaf9a51ca15301871723577c730b5865c5
-	AVSampleFormat sampleFormat = pAudioOutCodecCtx->sample_fmt;
-	const char* name = av_get_sample_fmt_name(sampleFormat);
-	return env->NewStringUTF(name);
-}
-
-JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCodecName
-(JNIEnv* env, jobject thisObject) {
-	if (!hasAudioStream()) { return 0; }
-	const char* name = pAudioOutCodecCtx->codec->name;
-	return env->NewStringUTF(name);
-}
-
-JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleRate
-(JNIEnv* env, jobject thisObject) {
-	return hasAudioStream() ? pAudioOutCodecCtx->sample_rate : 0;
-}
-
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleSizeInBits
-(JNIEnv* env, jobject thisObject) {
-	return hasAudioStream() ? pAudioOutCodecCtx->bits_per_coded_sample : 0;
-}
-
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfSoundChannels
-(JNIEnv* env, jobject thisObject) {
-	return hasAudioStream() ? pAudioOutCodecCtx->channels : 0;
-}
-
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameSize
-(JNIEnv* env, jobject thisObject) {
-	AVSampleFormat sampleFormat = pAudioOutCodecCtx->sample_fmt;
-	return hasAudioStream() ? av_get_bytes_per_sample(sampleFormat) : 0;
-}
-
-JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameRate
-(JNIEnv* env, jobject thisObject) {
-	return hasAudioStream() ? pAudioOutCodecCtx->sample_rate : 0;
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_bigEndian
-(JNIEnv* env, jobject thisObject) {
-    short int number = 0x1;
-    char *numPtr = (char*)&number;
-	return hasAudioStream() ? (numPtr[0] != 1) : false;
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaySound
-(JNIEnv *env, jobject thisObject, jboolean play) {
-	bool original = playSound;
-	playSound = play;
-	return original;
-}
-
-
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_open0
-(JNIEnv* env, jobject thisObject, jstring jFileName, jstring jVersion, 
- jobject jAudioFormat) {
 	int errNo = 0;
-
-	// Release resources first before loading another movie.
-	if (hasVideoStream() || hasAudioStream()) {
-		Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0(env, thisObject);
-	}
+    jintArray returnArray = env->NewIntArray(2);
+    jint *returnValues = env->GetIntArrayElements(returnArray, NULL);
 
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
 	const char *version = env->GetStringUTFChars(jVersion, 0);
 
-	pLogger = new FileLogger("logger.txt");
-	pLogger->info("Version: %s", version);
-	//pLogger = new StreamLogger(&std::cerr);
+    int streamId = MovieStream::getId();
+    returnValues[0] = 0;
+    returnValues[1] = streamId;
+	MovieStream* movieStream = new MovieStream();
+    std::string logFileName = std::string(fileName, strlen(fileName));
+    logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
+    movieStream->pLogger = new FileLogger(logFileName);
+    //player->pLogger = new StreamLogger(&std::cerr);
+	movieStream->pLogger->info("Version: %s", version);
 
-	// Register all formats and codecs.
+	// Register all formats and codecs
 	av_register_all();
 
 	// Open the video file.
-	if ((errNo = avformat_open_input(&pFormatCtx, fileName, nullptr, nullptr)) != 0) {
-		pLogger->error("Could not open file %s.", fileName);
-		return (jint) errNo;
+	if ((errNo = avformat_open_input(&movieStream->pFormatCtx, fileName, nullptr, nullptr)) != 0) {
+		movieStream->pLogger->error("Could not open file %s.", fileName);
+		returnValues[0] = errNo;
+		env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+		return returnArray;
 	}
 
 	// Retrieve the stream information.
-	if ((errNo = avformat_find_stream_info(pFormatCtx, nullptr)) < 0) {
-		pLogger->error("Unable to find stream information for file %s.", 
-						fileName);
-		return (jint) errNo;
+	if ((errNo = avformat_find_stream_info(movieStream->pFormatCtx, nullptr)) < 0) {
+		movieStream->pLogger->error("Unable to find stream information for file %s.", fileName);
+		returnValues[0] = errNo;
+		env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+		return returnArray;
 	}
 
 	// Log that opened a file.
-	pLogger->info("Opened file %s.", fileName);
+	movieStream->pLogger->info("Opened file %s.", fileName);
 
 	// Dump information about file onto standard error.
-	std::string info = log_av_format(pFormatCtx, 0, fileName, 0);
+	std::string info = log_av_format(movieStream->pFormatCtx, 0, fileName, 0);
 	std::istringstream lines(info);
     std::string line;
     while (std::getline(lines, line)) {
-		pLogger->info("%s", line.c_str());
+		movieStream->pLogger->info("%s", line.c_str());
     }
   
 	// Find the first video stream.
-	iImageStream = -1;
-	for (int iStream = 0; iStream < pFormatCtx->nb_streams; ++iStream) {
-		if (pFormatCtx->streams[iStream]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
-			iImageStream = iStream;
+	movieStream->iImageStream = -1;
+	for (int iStream = 0; iStream < movieStream->pFormatCtx->nb_streams; ++iStream) {
+		if (movieStream->pFormatCtx->streams[iStream]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+			movieStream->iImageStream = iStream;
 			break;
 		}
 	}
 
-	if (hasVideoStream()) {
-		pLogger->info("Found image stream with id %d.", iImageStream);	
+	if (movieStream->hasVideoStream()) {
+		movieStream->pLogger->info("Found image stream with id %d.", movieStream->iImageStream);
 	} else {
-		pLogger->info("Could not find an image stream.");
+		movieStream->pLogger->info("Could not find an image stream.");
 	}
 
 	// Find the first audio stream
-	iAudioStream = -1;
-	for (int iStream = 0; iStream < pFormatCtx->nb_streams; iStream++) {
-		if (pFormatCtx->streams[iStream]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
-			iAudioStream = iStream;
+	movieStream->iAudioStream = -1;
+	for (int iStream = 0; iStream < movieStream->pFormatCtx->nb_streams; iStream++) {
+		if (movieStream->pFormatCtx->streams[iStream]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+			movieStream->iAudioStream = iStream;
 			break;
 		}
 	}
 
-	if (hasAudioStream()) {
-		pLogger->info("Found audio stream with id %d.", iAudioStream);
+	if (movieStream->hasAudioStream()) {
+		movieStream->pLogger->info("Found audio stream with id %d.", movieStream->iAudioStream);
 	} else {
-		pLogger->info("Could not find an audio stream.");
+		movieStream->pLogger->info("Could not find an audio stream.");
 	}
 
-	if (!hasVideoStream() && !hasAudioStream()) {
-		pLogger->error("Could not find an image stream or audio stream.");
-		avformat_close_input(&pFormatCtx);
-		return AVERROR_INVALIDDATA;	
+	if (!movieStream->hasVideoStream() && !movieStream->hasAudioStream()) {
+		movieStream->pLogger->error("Could not find an image stream or audio stream.");
+		avformat_close_input(&movieStream->pFormatCtx);
+		returnValues[0] = AVERROR_INVALIDDATA;
+		env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+		return returnArray;
 	}
 
-	if (hasVideoStream()) {
+	if (movieStream->hasVideoStream()) {
 		// Get a poitner to the video stream.
-		pImageStream = pFormatCtx->streams[iImageStream];
+		movieStream->pImageStream = movieStream->pFormatCtx->streams[movieStream->iImageStream];
 
 		// Get a pointer to the codec context for the video stream.
-		pImageCodecCtx = pImageStream->codec;
+		movieStream->pImageCodecCtx = movieStream->pImageStream->codec;
 
 		// Find the decoder for the video stream.
-		pImageCodec = avcodec_find_decoder(pImageCodecCtx->codec_id);
-		if (pImageCodec == nullptr) {
-			pLogger->error("Unsupported codec for file %s.", fileName);
-			return (jint) AVERROR_DECODER_NOT_FOUND;
+		movieStream->pImageCodec = avcodec_find_decoder(movieStream->pImageCodecCtx->codec_id);
+		if (movieStream->pImageCodec == nullptr) {
+			movieStream->pLogger->error("Unsupported codec for file %s.", fileName);
+			returnValues[0] = AVERROR_DECODER_NOT_FOUND;
+            env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+            return returnArray;
 		}
 
 		// Open codec.
-		if ((errNo = avcodec_open2(pImageCodecCtx, pImageCodec, &pOptsDict)) < 0) {
-			pLogger->error("Unable to open codec for file %s.", fileName);
-			return (jint) errNo;
+		if ((errNo = avcodec_open2(movieStream->pImageCodecCtx, movieStream->pImageCodec,
+		                           &movieStream->pOptsDict)) < 0) {
+			movieStream->pLogger->error("Unable to open codec for file %s.", fileName);
+			returnValues[0] = errNo;
+            env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+            return returnArray;
 		}
 
 		// Allocate video frame.
-		pImageFrame = av_frame_alloc();
+		movieStream->pImageFrame = av_frame_alloc();
 
 		// Initialize the color model conversion/rescaling context.
-		pSwsImageCtx = sws_getContext
+		movieStream->pSwsImageCtx = sws_getContext
 			(
-				pImageCodecCtx->width,
-				pImageCodecCtx->height,
-				pImageCodecCtx->pix_fmt,
-				pImageCodecCtx->width,
-				pImageCodecCtx->height,
+				movieStream->pImageCodecCtx->width,
+				movieStream->pImageCodecCtx->height,
+				movieStream->pImageCodecCtx->pix_fmt,
+				movieStream->pImageCodecCtx->width,
+				movieStream->pImageCodecCtx->height,
 				AV_PIX_FMT_RGB24,
 				SWS_BILINEAR,
 				nullptr,
@@ -1451,33 +1664,39 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_open0
 				nullptr
 			);
 
-		// Initialize the widht, height, and duration.
-		width = pImageCodecCtx->width;
-		height = pImageCodecCtx->height;
-		duration = pImageStream->duration*av_q2d(pImageStream->time_base);
-		pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.", 
-					  width, height, duration, pImageStream->duration);
-		pLogger->info("Time base %2.5f.", av_q2d(pImageStream->time_base));
+		// Initialize the width, height, and duration.
+		movieStream->width = movieStream->pImageCodecCtx->width;
+		movieStream->height = movieStream->pImageCodecCtx->height;
+		movieStream->duration = movieStream->pImageStream->duration * av_q2d(movieStream->pImageStream->time_base);
+		movieStream->pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.",
+					               movieStream->width, movieStream->height, movieStream->duration,
+					               movieStream->pImageStream->duration);
+		movieStream->pLogger->info("Time base %2.5f.", av_q2d(movieStream->pImageStream->time_base));
 
 		// Initialize the delta pts using the average frame rate and the average pts.
-		avgDeltaPts = imageDeltaPts = (int64_t)(1.0/(av_q2d(pImageStream->time_base)
-											*av_q2d(pImageStream->avg_frame_rate)));
-		pLogger->info("Average delta %I64d pts.", avgDeltaPts);
+		movieStream->avgDeltaPts = movieStream->imageDeltaPts = (int64_t)(1.0/
+		        (av_q2d(movieStream->pImageStream->time_base)*av_q2d(movieStream->pImageStream->avg_frame_rate)));
+		movieStream->pLogger->info("Average delta %I64d pts.", movieStream->avgDeltaPts);
 
 		// Initialize the image buffer.
-		pImageBuffer = new ImageBuffer(width, height, avgDeltaPts, pLogger);
+		movieStream->pImageBuffer = new ImageBuffer(movieStream->width,
+		                                            movieStream->height,
+		                                            movieStream->avgDeltaPts,
+		                                            movieStream->pLogger);
 	}
 
 	// *************************************************************************
 	// Work on audio
 	// *************************************************************************
-	if (hasAudioStream()) {
+	if (movieStream->hasAudioStream()) {
 		AVCodec *aOutCodec = nullptr;
 		AVCodec *aInCodec = nullptr;
 
 		struct AudioFormat audioFormat;
-		if ((errNo = getAudioFormat(env, &audioFormat, jAudioFormat)) < 0) {
-			return errNo;
+		if ((errNo = getAudioFormat(env, &audioFormat, jAudioFormat, movieStream->pLogger)) < 0) {
+			returnValues[0] = errNo;
+            env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+            return returnArray;
 		}
 
 		AVSampleFormat sampleFormat;
@@ -1486,290 +1705,324 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_open0
 		} else if (strcmp("PCM_SIGNED", audioFormat.encodingName.c_str()) == 0) {
 			sampleFormat = AV_SAMPLE_FMT_S16;
 		} else {
-			pLogger->error("Encoding %s is not supported.\n", 
-							audioFormat.encodingName.c_str());
-			return (jint) AVERROR_INVALIDDATA;
+			movieStream->pLogger->error("Encoding %s is not supported.\n", audioFormat.encodingName.c_str());
+			returnValues[0] = AVERROR_INVALIDDATA;
+            env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+            return returnArray;
 		}
+
 		// Supported codecs are: AV_CODEC_ID_PCM_U8 and AV_CODEC_ID_PCM_S16LE.
 		AVCodecID codecId = av_get_pcm_codec(sampleFormat, audioFormat.bigEndian);
 
-		pAudioStream = pFormatCtx->streams[iAudioStream];
+		movieStream->pAudioStream = movieStream->pFormatCtx->streams[movieStream->iAudioStream];
 
-		pAudioInCodecCtx = pAudioStream->codec;
+		movieStream->pAudioInCodecCtx = movieStream->pAudioStream->codec;
 
-		if (!(aInCodec = avcodec_find_decoder(pAudioInCodecCtx->codec_id))) {
-			pLogger->error("Could not find input codec!\n");
-			avformat_close_input(&pFormatCtx);
-			return AVERROR_EXIT;
+		if (!(aInCodec = avcodec_find_decoder(movieStream->pAudioInCodecCtx->codec_id))) {
+			movieStream->pLogger->error("Could not find input codec!\n");
+			avformat_close_input(&movieStream->pFormatCtx);
+			returnValues[0] = AVERROR_EXIT;
+            env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+            return returnArray;
 		}
 
-		if ((errNo = avcodec_open2(pAudioInCodecCtx, aInCodec, NULL)) < 0) {
-			pLogger->error("Could not open audio codec. Error message: '%s'.\n",
-							getErrorText(errNo));
-			avformat_close_input(&pFormatCtx);
-			return errNo;
+		if ((errNo = avcodec_open2(movieStream->pAudioInCodecCtx, aInCodec, NULL)) < 0) {
+			movieStream->pLogger->error("Could not open audio codec. Error message: '%s'.\n", getErrorText(errNo));
+			avformat_close_input(&movieStream->pFormatCtx);
+			returnValues[0] = errNo;
+            env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+            return returnArray;
 		}
-		pAudioBuffer = new AudioBuffer();
+		movieStream->pAudioBuffer = new AudioBuffer();
 
 		// create the output codec (alternative is stero: AV_CODEC_ID_PCM_U8)
 		if (!(aOutCodec = avcodec_find_encoder(codecId))) {
-			pLogger->error("Could not create output codec.");
-			avformat_close_input(&pFormatCtx);
-			return AVERROR_EXIT;
+			movieStream->pLogger->error("Could not create output codec.");
+			avformat_close_input(&movieStream->pFormatCtx);
+			returnValues[0] = AVERROR_EXIT;
+			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+			return returnArray;
 		}
 
 		// Allocate the output codec context
-		if (!(pAudioOutCodecCtx = avcodec_alloc_context3(aOutCodec))) {
-			pLogger->error("Could not allocate an encoding output context.\n");
-			avformat_close_input(&pFormatCtx);
-			return AVERROR_EXIT;
+		if (!(movieStream->pAudioOutCodecCtx = avcodec_alloc_context3(aOutCodec))) {
+			movieStream->pLogger->error("Could not allocate an encoding output context.\n");
+			avformat_close_input(&movieStream->pFormatCtx);
+			returnValues[0] = AVERROR_EXIT;
+			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+			return returnArray;
 		}
 
 		// Set the sample format
-		pAudioOutCodecCtx->sample_fmt = sampleFormat;
+		movieStream->pAudioOutCodecCtx->sample_fmt = sampleFormat;
 
 		// Set channels, either from input jAudioFormat or from input codec
 		if (audioFormat.channels != 0) {
-			pAudioOutCodecCtx->channels = audioFormat.channels;
-			pAudioOutCodecCtx->channel_layout = av_get_default_channel_layout(
-														audioFormat.channels);
+			movieStream->pAudioOutCodecCtx->channels = audioFormat.channels;
+			movieStream->pAudioOutCodecCtx->channel_layout = av_get_default_channel_layout(audioFormat.channels);
 		} else {
-			pAudioOutCodecCtx->channels = pAudioInCodecCtx->channels;
-			pAudioOutCodecCtx->channel_layout = pAudioInCodecCtx->channel_layout;
-			audioFormat.channels = pAudioInCodecCtx->channels;
+			movieStream->pAudioOutCodecCtx->channels = movieStream->pAudioInCodecCtx->channels;
+			movieStream->pAudioOutCodecCtx->channel_layout = movieStream->pAudioInCodecCtx->channel_layout;
+			audioFormat.channels = movieStream->pAudioInCodecCtx->channels;
 		}
 
 		// Set sample rate, either from input jAudioFormat or from input codec
 		if (audioFormat.sampleRate != 0) {
-			pAudioOutCodecCtx->sample_rate = (int) audioFormat.sampleRate;
+			movieStream->pAudioOutCodecCtx->sample_rate = (int) audioFormat.sampleRate;
 		} else {
-			pAudioOutCodecCtx->sample_rate = pAudioInCodecCtx->sample_rate;
-			audioFormat.sampleRate = pAudioInCodecCtx->sample_rate;
+			movieStream->pAudioOutCodecCtx->sample_rate = movieStream->pAudioInCodecCtx->sample_rate;
+			audioFormat.sampleRate = movieStream->pAudioInCodecCtx->sample_rate;
 		}
 
 		// Set bit rate
 		if (audioFormat.frameRate != 0) {
-			pAudioOutCodecCtx->bit_rate = (int) audioFormat.frameRate;
+			movieStream->pAudioOutCodecCtx->bit_rate = (int) audioFormat.frameRate;
 		} else {
-			pAudioOutCodecCtx->bit_rate = pAudioInCodecCtx->bit_rate;
-			audioFormat.sampleRate = pAudioInCodecCtx->bit_rate;
+			movieStream->pAudioOutCodecCtx->bit_rate = movieStream->pAudioInCodecCtx->bit_rate;
+			audioFormat.sampleRate = movieStream->pAudioInCodecCtx->bit_rate;
 		}
 		
 		// Set the frame size
 		audioFormat.frameSize = av_get_bytes_per_sample(sampleFormat);
 
 		// Open the encoder for the audio stream to use it later.
-		if ((errNo = avcodec_open2(pAudioOutCodecCtx, aOutCodec, NULL)) < 0) {
-			pLogger->error("Could not open output codec. Error message: '%s'.\n",
-							getErrorText(errNo));
-			avformat_close_input(&pFormatCtx);
-			return errNo;
+		if ((errNo = avcodec_open2(movieStream->pAudioOutCodecCtx, aOutCodec, NULL)) < 0) {
+			movieStream->pLogger->error("Could not open output codec. Error message: '%s'.\n", getErrorText(errNo));
+			avformat_close_input(&movieStream->pFormatCtx);
+			returnValues[0] = errNo;
+			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+			return returnArray;
 		}
 
 		// Initialize the resampler to be able to convert audio sample formats. 
-		if ((errNo = initResampler(pAudioInCodecCtx, pAudioOutCodecCtx, &pResampleCtx)) < 0) {
-			avformat_close_input(&pFormatCtx);
-			return errNo;
+		if ((errNo = MovieStream::initResampler(movieStream->pAudioInCodecCtx,
+		                                        movieStream->pAudioOutCodecCtx,
+		                                        &movieStream->pResampleCtx,
+		                                        movieStream->pLogger)) < 0) {
+			avformat_close_input(&movieStream->pFormatCtx);
+			returnValues[0] = errNo;
+			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+			return returnArray;
 		}
 
 		// bits_per_coded_sample is only set after opening the audio codec context
-		audioFormat.sampleSizeInBits = pAudioOutCodecCtx->bits_per_coded_sample;
+		audioFormat.sampleSizeInBits = movieStream->pAudioOutCodecCtx->bits_per_coded_sample;
 
-		if ((errNo = setAudioFormat(env, jAudioFormat, audioFormat)) < 0) {
-			return errNo;
+		if ((errNo = setAudioFormat(env, jAudioFormat, audioFormat, movieStream->pLogger)) < 0) {
+		    // TODO: Add error message
+			returnValues[0] = errNo;
+			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+			return returnArray;
 		}
 	}
 
-	playSound = hasAudioStream();
+	movieStream->playSound = movieStream->hasAudioStream();
 
 	// Seek to the start of the file (must have an image or audio stream).
-	lastWritePts = seekPts = hasVideoStream() ? pImageStream->start_time : 0; // assume 0 is the start time for the audio stream
-	seekReq = true;
+	movieStream->lastWritePts = movieStream->seekPts = movieStream->hasVideoStream()
+	                                                        ? movieStream->pImageStream->start_time : 0;
+	                                                        // assume 0 is the start time for the audio stream
+	movieStream->seekReq = true;
 
-	// Start the decode thread.
-	decodeFrame = new std::thread(readNextFrame);	
-	pLogger->info("Started decoding thread!");
+	// Start the decode thread
+	movieStream->pDecodeFrame = new std::thread(&MovieStream::readNextFrame, movieStream);
+	movieStream->pLogger->info("Started decoding thread!");
 
-	// Set the value for loaded movie true.
-	loadedMovie = true;
+	// Set the value for loaded movie true
+	movieStream->loadedMovie = true;
 
-	// Free strings.
+	// Free strings
 	env->ReleaseStringUTFChars(jFileName, fileName);
 	env->ReleaseStringUTFChars(jVersion, version);
 
-	return (jint) 0; // No error.
+	// Add player to the map
+	idToMovieStream[streamId] = movieStream;
+
+    env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
+    return returnArray;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfColorChannels0
-(JNIEnv* env, jobject thisObject) {
-	return (jint) nChannel;
+
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasVideoStream0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr && movieStream->hasVideoStream();
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getHeight0
-(JNIEnv* env, jobject thisObject) {
-	return (jint) height;
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasAudioStream0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr && movieStream->hasAudioStream();
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getWidth0
-(JNIEnv* env, jobject thisObject) {
-	return (jint) width;
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getStartTime0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getStartTime() : 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_view
-(JNIEnv* env, jobject thisObject, jint jx0, jint jy0, jint jwidth, jint jheight) {
-	// Done if we did not load any movie.
-	if (!hasVideoStream()) {
-		return (jboolean) false; 
-	}
-
-	// Error if the start coordinates are out of range.
-	if (jx0 < 0 || jy0 < 0 || jx0 >= width || jy0 >= height) {
-		pLogger->error("Start position (x0, y0) = (%d, %d) pixels is out of range ",
-			"(%d, %d) ... (%d, %d) pixels.", jx0, jy0, 0, 0, width, height);
-		return (jboolean) false;
-	}
-
-	// Error if the width or height is too large.
-	if ((jx0+jwidth) > width || (jy0+jheight) > height) {
-		pLogger->error("Width %d pixels > %d pixels or height %d pixels > %d pixels.",
-			jwidth, width, jheight, height);
-		return (jboolean) false;
-	}
-
-	// We need to restrict the view if we do not use the original window of
-	// (0, 0) ... (width, height).
-	doView = jx0 > 0 || jy0 > 0 || jwidth < width || jheight < height;
-
-	// Set the view variables.
-	x0View = jx0;
-	y0View = jy0;
-	widthView = jwidth;
-	heightView = jheight;
-
-	// Log the new viewing window.
-	pLogger->info("Set view to (%d, %d) to (%d, %d).", jx0, jy0, jx0+jwidth, 
-		jy0+jheight);
-
-	// Return true to indicate that the window has been adjusted.
-	return (jboolean) true;
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getEndTime0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getEndTime() : 0;
 }
 
-JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameBuffer
-(JNIEnv* env, jobject thisObject) {
-	// No movie was loaded return nullptr.
-	if (!hasVideoStream()) return 0;
-
-	// We have a viewing window that needs to be supported.
-	if (doView) {
-		for (int iRow = 0; iRow < heightView; ++iRow) {
-			for (int iCol = 0; iCol < widthView; ++iCol) {
-				for (int iChannel = 0; iChannel < nChannel; ++iChannel) {
-					int iSrc = ((y0View+iRow)*width + x0View+iCol)*nChannel + iChannel;
-					int iDst = (iRow*widthView + iCol)*nChannel + iChannel;
-					pImageFrameShow->data[0][iDst] = pImageFrameShow->data[0][iSrc];
-				}
-			}
-		}
-		return env->NewDirectByteBuffer((void*) pImageFrameShow->data[0], 
-									widthView*heightView*nChannel*sizeof(uint8_t));
-	}
-
-	// Construct a new direct byte buffer pointing to data from pImageFrameShow.
-	return env->NewDirectByteBuffer((void*) pImageFrameShow->data[0], 
-									width*height*nChannel*sizeof(uint8_t));
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getDuration0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getDuration() : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextImageFrame
-(JNIEnv* env, jobject thisObject) {
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCurrentTime0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getCurrentTime() : -1;
+}
 
-	// No image stream is present return -1
-	if (!hasVideoStream()) return -1;
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setTime0(JNIEnv *env,
+    jclass thisClass, jint streamId, jdouble jTime) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    if (movieStream != nullptr) {
+        movieStream->setTime(jTime);
+    }
+}
 
-	// Counts the number of frames that this method requested (could be 0, 1, 2)
-	int nFrame = 0;
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaybackSpeed0(JNIEnv *env,
+    jclass thisClass, jint streamId, jfloat speed) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    if (movieStream != nullptr) {
+        movieStream->setPlaybackSpeed(speed);
+    }
+}
 
-	// Get the next read pointer
-	AVFrame *pVideoFrameTmp = pImageBuffer->getGetPtr();
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_reset0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    if (movieStream != nullptr) {
+        movieStream->reset();
+    }
+}
 
-	// We received a frame -- no flushing
-	if (pVideoFrameTmp) {
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    if (movieStream != nullptr) {
+        movieStream->close();
+        idToMovieStream.erase(streamId);
+        delete movieStream;
+    }
+}
 
-		// Retrieve the presentation time for this first frame
-		uint64_t firstPts = pVideoFrameTmp->pts;
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableAudioData0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr && movieStream->availableAudioData();
+}
 
-		// Increase the number of read frames by one
-		nFrame++;
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableImageFrame0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr && movieStream->availableImageFrame();
+}
 
-		// Initialize if the pts difference is above threshold as a result of a seek
-		bool init = std::labs(firstPts - imageLastPts) > PTS_DELTA_THRESHOLD*imageDeltaPts;
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextAudioData0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr && movieStream->loadNextAudioData();
+}
 
-		// Compute the difference for the presentation time stamps
-		double diffPts = init ? 0 : std::labs(firstPts - imageLastPts)
-										/speed*av_q2d(pImageStream->time_base);
+JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAudioBuffer0(JNIEnv *env,
+    jclass thisClass, jint streamId, jint nBytes) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getAudioBuffer(env, nBytes) : 0;
+}
 
-		// Get the current time
-		auto time = std::chrono::high_resolution_clock::now();
+JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleFormat0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getSampleFormat(env) : 0;
+}
 
-		// Compute the time difference
-		double timeDiff = init ? 0 
-			: std::chrono::duration_cast<std::chrono::microseconds>(time-imageLastTime).count()/1000000.0;
+JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCodecName0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getCodecName(env) : 0;
+}
 
-		// Compute the difference between times and pts
-		imageDiffCum = init ? 0 : (imageDiffCum + diffPts - timeDiff);
+JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleRate0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getSampleRate() : 0;
+}
 
-		// Calculate the delay that this display thread is required to wait.
-		double delay = diffPts;
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleSizeInBits0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getSampleSizeInBits() : 0;
+}
 
-		// If the frame is repeated split this delay in half.
-		if (pVideoFrameTmp->repeat_pict) {
-			delay += delay/2;
-		}
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfSoundChannels0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getNumberOfSoundChannels() : 0;
+}
 
-		// Compute the synchronization threshold (see ffplay.c)
-		double syncThreshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameSize0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getFrameSize() : 0;
+}
 
-		// The time difference is within the no sync threshold.
-		if (fabs(imageDiffCum) < AV_NOSYNC_THRESHOLD) {
+JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameRate0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getFrameRate() : 0;
+}
 
-			// If our time difference is lower than the sync threshold, then skip a frame.
-			if (imageDiffCum <= -syncThreshold) {
-				AVFrame *pVideoFrameTmp2 = pImageBuffer->getGetPtr();
-				if (pVideoFrameTmp2) {
-					pVideoFrameTmp = pVideoFrameTmp2;
-					nFrame++;
-				}
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_bigEndian0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr && movieStream->bigEndian();
+}
 
-			// If the time difference is within -syncThreshold ... +0 then show frame instantly.
-			} else if (imageDiffCum < 0) {
-				delay = 0;
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaySound0(JNIEnv *env,
+    jclass thisCLass, jint streamId, jboolean playSound) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr && movieStream->setPlaySound(playSound);
+}
 
-			// If the time difference is greater than the syncThreshold increase the delay.
-			} else if (imageDiffCum >= syncThreshold) {
-				delay *= 2;
-			}
-		}
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfColorChannels0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getNumberOfColorChannels() : 0;
+}
 
-		// Save values for next call.
-		imageDeltaPts = init ? (int64_t)(1.0/(av_q2d(pImageStream->time_base)
-								*av_q2d(pImageStream->avg_frame_rate))) 
-								: std::labs(firstPts - imageLastPts);
-		imageLastPts = firstPts; // Need to use the first pts.
-		imageLastTime = time;
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getHeight0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getHeight() : 0;
+}
 
-		// Delay read to keep the desired frame rate.
-		if (delay > 0) {
-			std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
-		}
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getWidth0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getWidth() : 0;
+}
 
-		// Update the pointer for the show frame.
-		pImageFrameShow = pVideoFrameTmp;
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_view0(JNIEnv *env, jclass thisClass,
+    jint streamId, jint x0, jint y0, jint width, jint height) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr && movieStream->view(x0, y0, width, height);
+}
 
-		// Log that we displayed a frame.
-		pLogger->info("Display pts %I64d.", pImageFrameShow->pts/avgDeltaPts);
+JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameBuffer0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getFrameBuffer(env) : 0;
+}
 
-		videoTime = pImageFrameShow->pts * av_q2d(pImageStream->time_base);
-	}
-
-	// Return the number of read frames (not neccesarily all are displayed).
-	return (jint) nFrame;
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextImageFrame0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->loadNextImageFrame() : 0;
 }

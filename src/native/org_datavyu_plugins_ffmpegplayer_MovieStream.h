@@ -8,250 +8,250 @@
 extern "C" {
 #endif
 #undef org_datavyu_plugins_ffmpegplayer_MovieStream_MIN_SPEED
-#define org_datavyu_plugins_ffmpegplayer_MovieStream_MIN_SPEED -4.0f
+#define org_datavyu_plugins_ffmpegplayer_MovieStream_MIN_SPEED -16.0f
 #undef org_datavyu_plugins_ffmpegplayer_MovieStream_MAX_SPEED
-#define org_datavyu_plugins_ffmpegplayer_MovieStream_MAX_SPEED 4.0f
+#define org_datavyu_plugins_ffmpegplayer_MovieStream_MAX_SPEED 16.0f
 #undef org_datavyu_plugins_ffmpegplayer_MovieStream_AUDIO_BUFFER_SIZE
 #define org_datavyu_plugins_ffmpegplayer_MovieStream_AUDIO_BUFFER_SIZE 65536L
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    hasVideoStream
- * Signature: ()Z
+ * Method:    hasVideoStream0
+ * Signature: (I)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasVideoStream
-  (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasVideoStream0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    hasAudioStream
- * Signature: ()Z
+ * Method:    hasAudioStream0
+ * Signature: (I)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasAudioStream
-  (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasAudioStream0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    getStartTime0
- * Signature: ()D
+ * Signature: (I)D
  */
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getStartTime0
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    getEndTime0
- * Signature: ()D
+ * Signature: (I)D
  */
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getEndTime0
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    getDuration0
- * Signature: ()D
+ * Signature: (I)D
  */
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getDuration0
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getCurrentTime
- * Signature: ()D
+ * Method:    getCurrentTime0
+ * Signature: (I)D
  */
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCurrentTime
-  (JNIEnv *, jobject);
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCurrentTime0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    setTime0
- * Signature: (D)V
+ * Signature: (ID)V
  */
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setTime0
-  (JNIEnv *, jobject, jdouble);
+  (JNIEnv *, jclass, jint, jdouble);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    setPlaybackSpeed0
- * Signature: (F)V
+ * Signature: (IF)V
  */
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaybackSpeed0
-  (JNIEnv *, jobject, jfloat);
+  (JNIEnv *, jclass, jint, jfloat);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    reset
- * Signature: ()V
+ * Method:    reset0
+ * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_reset
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_reset0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    close0
- * Signature: ()V
+ * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    availableAudioData
- * Signature: ()Z
+ * Method:    availableAudioData0
+ * Signature: (I)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableAudioData
-  (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableAudioData0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    availableImageFrame
- * Signature: ()Z
+ * Method:    availableImageFrame0
+ * Signature: (I)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableImageFrame
-  (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableImageFrame0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    loadNextAudioData
- * Signature: ()Z
+ * Method:    loadNextAudioData0
+ * Signature: (I)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextAudioData
-  (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextAudioData0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getAudioBuffer
- * Signature: (I)Ljava/nio/ByteBuffer;
+ * Method:    getAudioBuffer0
+ * Signature: (II)Ljava/nio/ByteBuffer;
  */
-JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAudioBuffer
-  (JNIEnv *, jobject, jint);
+JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAudioBuffer0
+  (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getSampleFormat
- * Signature: ()Ljava/lang/String;
+ * Method:    getSampleFormat0
+ * Signature: (I)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleFormat
-  (JNIEnv *, jobject);
+JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleFormat0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getCodecName
- * Signature: ()Ljava/lang/String;
+ * Method:    getCodecName0
+ * Signature: (I)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCodecName
-  (JNIEnv *, jobject);
+JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCodecName0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getSampleRate
- * Signature: ()F
+ * Method:    getSampleRate0
+ * Signature: (I)F
  */
-JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleRate
-  (JNIEnv *, jobject);
+JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleRate0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getSampleSizeInBits
- * Signature: ()I
+ * Method:    getSampleSizeInBits0
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleSizeInBits
-  (JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleSizeInBits0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getNumberOfSoundChannels
- * Signature: ()I
+ * Method:    getNumberOfSoundChannels0
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfSoundChannels
-  (JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfSoundChannels0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getFrameSize
- * Signature: ()I
+ * Method:    getFrameSize0
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameSize
-  (JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameSize0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getFrameRate
- * Signature: ()F
+ * Method:    getFrameRate0
+ * Signature: (I)F
  */
-JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameRate
-  (JNIEnv *, jobject);
+JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameRate0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    bigEndian
- * Signature: ()Z
+ * Method:    bigEndian0
+ * Signature: (I)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_bigEndian
-  (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_bigEndian0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    setPlaySound
- * Signature: (Z)Z
+ * Method:    setPlaySound0
+ * Signature: (IZ)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaySound
-  (JNIEnv *, jobject, jboolean);
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaySound0
+  (JNIEnv *, jclass, jint, jboolean);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    open0
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljavax/sound/sampled/AudioFormat;)I
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljavax/sound/sampled/AudioFormat;)[I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_open0
-  (JNIEnv *, jobject, jstring, jstring, jobject);
+JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_open0
+  (JNIEnv *, jclass, jstring, jstring, jobject);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    getNumberOfColorChannels0
- * Signature: ()I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfColorChannels0
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    getHeight0
- * Signature: ()I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getHeight0
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    getWidth0
- * Signature: ()I
+ * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getWidth0
-  (JNIEnv *, jobject);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    view
- * Signature: (IIII)Z
+ * Method:    view0
+ * Signature: (IIIII)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_view
-  (JNIEnv *, jobject, jint, jint, jint, jint);
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_view0
+  (JNIEnv *, jclass, jint, jint, jint, jint, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    getFrameBuffer
- * Signature: ()Ljava/nio/ByteBuffer;
+ * Method:    getFrameBuffer0
+ * Signature: (I)Ljava/nio/ByteBuffer;
  */
-JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameBuffer
-  (JNIEnv *, jobject);
+JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameBuffer0
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    loadNextImageFrame
- * Signature: ()I
+ * Method:    loadNextImageFrame0
+ * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextImageFrame
-  (JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextImageFrame0
+  (JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
 }

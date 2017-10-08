@@ -24,6 +24,9 @@ public class MovieStream implements VideoStream, AudioStream {
 		System.loadLibrary("./lib/MovieStream");
 	}
 
+	/** The stream id for this movie stream */
+	private int streamId;
+
 	/** The minimum play back speed */
 	private final static float MIN_SPEED = -16f;
 	
@@ -71,41 +74,73 @@ public class MovieStream implements VideoStream, AudioStream {
 	
 	/**
 	 * Find out if this movie stream contains an image stream.
-	 * 
+     *
+	 * @param streamId Identifier for this stream.
 	 * @return True if there is an image stream; otherwise false.
 	 */
-	public native boolean hasVideoStream();
+	private static native boolean hasVideoStream0(int streamId);
+
+    /**
+     * Find out if this movie stream contains an image stream.
+     *
+     * @return True if there is an image stream; otherwise false.
+     */
+	public boolean hasVideoStream() {
+	    return hasVideoStream0(streamId);
+    }
 	
 	/**
 	 * Find out if this movie stream contains an audio stream.
-	 * 
+     *
+	 * @param streamId Identifier for this stream.
 	 * @return True if there is an audio stream; otherwise false.
 	 */
-	public native boolean hasAudioStream();
-	
+	private static native boolean hasAudioStream0(int streamId);
+
+    /**
+     * Find out if this movie stream contains an audio stream.
+     *
+     * @return True if there is an audio stream; otherwise false.
+     */
+    public boolean hasAudioStream() {
+	    return hasAudioStream0(streamId);
+    }
+
 	/**
 	 * Native method to get the start time of the streams. Typically, this will 
 	 * be 0 seconds.
-	 * 
+     *
+	 * @param streamId Identifier for this stream.
 	 * @return The start time in seconds.
 	 */
-	private native double getStartTime0();
+	private static native double getStartTime0(int streamId);
 	
 	/**
 	 * Native method to get the end time of the streams.
-	 * 
+	 *
+     * @param streamId Identifier for this stream.
 	 * @return The end time in seconds.
 	 */
-	private native double getEndTime0();
+	private static native double getEndTime0(int streamId);
 	
 	/**
 	 * Native method to get the duration of the streams.
-	 * 
+	 *
+     * @param streamId Identifier for this stream.
 	 * @return The duration in seconds.
 	 */
-	private native double getDuration0();
-	
-	@Override
+	private static native double getDuration0(int streamId);
+
+    /**
+     * Get the current time in the stream (either audio or video).
+     *
+     * @param streamId Identifier for this stream.
+     * @return The current time in seconds.
+     */
+    private static native double getCurrentTime0(int streamId);
+
+
+    @Override
 	public ColorSpace getColorSpace() {
 		return colorSpace;
 	}
@@ -126,23 +161,45 @@ public class MovieStream implements VideoStream, AudioStream {
 	}
 
 	@Override
-	public native double getCurrentTime();
-	
+    public double getCurrentTime() {
+        return getCurrentTime0(streamId);
+    }
+
 	/**
-	 * Native method to set the time in the stream. This method is often called 
-	 * to seek within the stream.
-	 * 
+	 * Native method to set the time in the stream.
+	 *
+     * @param streamId Identifier of this stream.
 	 * @param time The time in seconds.
 	 */
-	private native void setTime0(double time);
+	private static native void setTime0(int streamId, double time);
+
+    /**
+     * Set the time in the streams. This method is often called
+     * to seek within the stream.
+     *
+     * @param time The time in seconds.
+     */
+	public void setTime(double time) {
+	    setTime0(streamId, time);
+    }
 
 	/**
 	 * Native method to set the play back speed as multiple of the native play
 	 * back speed. E.g. 0.5x plays at half of the native speed.
-	 * 
+     *
+	 * @param streamId Identifier of this stream.
 	 * @param speed The new play back speed. 
 	 */
-	private native void setPlaybackSpeed0(float speed);
+	private static native void setPlaybackSpeed0(int streamId, float speed);
+
+    /**
+     * Set the play back speed as multiple of the native play back speed.
+     *
+     * @param speed The new play back speed.
+     */
+	public void setPlaybackSpeed(float speed) {
+	    setPlaybackSpeed0(streamId, speed);
+    }
 	
 	@Override
 	public void seek(double time) throws IndexOutOfBoundsException {
@@ -150,7 +207,7 @@ public class MovieStream implements VideoStream, AudioStream {
 			throw new IndexOutOfBoundsException("Time " + time + " is not in " 
 					+ "range [" + getStartTime() + ", " + getEndTime() + "]");
 		} else {
-			setTime0(time);
+			setTime0(streamId, time);
 		}
 	}
 
@@ -161,24 +218,30 @@ public class MovieStream implements VideoStream, AudioStream {
 		} else if (speed < MIN_SPEED || speed > MAX_SPEED) {
 			throw new IndexOutOfBoundsException("Speed " + speed + "[" + MIN_SPEED + ", " + MAX_SPEED + "]");
 		} else {
-			setPlaybackSpeed0(speed);
-		}		
+		    setPlaybackSpeed0(streamId, speed);
+		}
 	}
-	
+
+    private static native void reset0(int streamId);
+
 	@Override
-	public native void reset();
-	
+    public void reset() {
+	    reset0(streamId);
+    }
+
 	/**
 	 * Native method to close all the streams that this movie has.
-	 * 
+	 *
+     * @param streamId Identifier of this stream.
+     *
 	 * @throws IOException If errors appear during closing.
 	 */
-	public native void close0() throws IOException;
+	private static native void close0(int streamId) throws IOException;
 	
 	@Override
 	public void close() throws IOException {
 		if (isOpen) {
-			close0();
+			close0(streamId);
 		}
 		isOpen = false;
 	}
@@ -188,18 +251,30 @@ public class MovieStream implements VideoStream, AudioStream {
 		return AUDIO_BUFFER_SIZE;
 	}
 	
+	private static native boolean availableAudioData0(int streamId);
+
+    @Override
+    public boolean availableAudioData() {
+        return availableAudioData0(streamId);
+    }
+
+    private static native boolean availableImageFrame0(int streamId);
+
 	@Override
-	public native boolean availableAudioData();
-	
-	@Override
-	public native boolean availableImageFrame();
+	public boolean availableImageFrame() {
+	    return availableImageFrame0(streamId);
+    }
+
+    private static native boolean loadNextAudioData0(int playerId);
 
 	/**
 	 * Native method to load the next audio data into the buffer.
 	 * 
 	 * @return True if data could be loaded; otherwise false.
 	 */
-	private native boolean loadNextAudioData();
+	private boolean loadNextAudioData() {
+	    return loadNextAudioData0(streamId);
+    }
 
 	@Override
 	public int readAudioData(byte[] buffer) {
@@ -214,40 +289,70 @@ public class MovieStream implements VideoStream, AudioStream {
 	/**
 	 * Initialized a byte buffer of the size nByte in the native code and 
 	 * returns the instance of that initialized byte buffer.
-	 * 
+	 *
+     * @param streamId Identifier of this movie stream.
 	 * @param nByte The number of bytes that the buffered is initialized with.
 	 * 
 	 * @return An instance of the byte buffer.
 	 */
-	private native ByteBuffer getAudioBuffer(int nByte);
+	private static native ByteBuffer getAudioBuffer0(int streamId, int nByte);
 
-	/**
+    /**
+     * Get an audio buffer that has been allocated for nByte bytes.
+     *
+     * @param nByte The size of the buffer in bytes.
+     *
+     * @return A newly allocated audio buffer.
+     */
+    public ByteBuffer getAudioBuffer(int nByte) {
+        return getAudioBuffer0(streamId, nByte);
+    }
+
+    private static native String getSampleFormat0(int streamId);
+
+    /**
 	 * Get the sample format name.
 	 * 
 	 * @return The name of the sample format.
 	 */
-	private native String getSampleFormat();
+	private String getSampleFormat() {
+	    return getSampleFormat0(streamId);
+    }
+
+    private static native String getCodecName0(int streamId);
 
 	/**
 	 * Get the codec name. Examples are: 'pcm_u8' and 'pcm_s8'.
 	 * 
 	 * @return The codec name.
 	 */
-	private native String getCodecName();
+	private String getCodecName() {
+	    return getCodecName0(streamId);
+    }
+
+    private static native float getSampleRate0(int streamId);
 
 	/**
 	 * Get the sample rate of the audio stream.
 	 * 
 	 * @return The sample rate in Hertz.
 	 */
-	private native float getSampleRate();
+	private float getSampleRate() {
+	    return getSampleRate0(streamId);
+    }
+
+    private static native int getSampleSizeInBits0(int streamId);
 
 	/**
 	 * Get the sample size in bits.
 	 * 
 	 * @return The sample size in bits.
 	 */
-	private native int getSampleSizeInBits();
+	private int getSampleSizeInBits() {
+	    return getSampleSizeInBits0(streamId);
+    }
+
+    private static native int getNumberOfSoundChannels0(int streamId);
 
 	/**
 	 * Get the number of sound channels. For mono, this method returns 1. For 
@@ -256,29 +361,45 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * 
 	 * @return The number of sound channels.
 	 */
-	private native int getNumberOfSoundChannels();
+	private int getNumberOfSoundChannels() {
+	    return getNumberOfSoundChannels0(streamId);
+    }
+
+    private static native int getFrameSize0(int streamId);
 
 	/**
 	 * Get the frame size of audio frames.
 	 * 
 	 * @return The frame size in bytes.
 	 */
-	private native int getFrameSize();
+	private int getFrameSize() {
+	    return getFrameSize0(streamId);
+    }
+
+    private static native float getFrameRate0(int streamId);
 
 	/**
 	 * Get the frame rate of the audio stream.
 	 * 
 	 * @return The frame rate in Hertz.
 	 */
-	private native float getFrameRate();
+	private float getFrameRate() {
+	    return getFrameRate0(streamId);
+    }
+
+    private static native boolean bigEndian0(int streamId);
 
 	/**
 	 * Get the data encoding for the audio stream; either big or little endian.
 	 * 
 	 * @return True for big endian and false for little endian.
 	 */
-	private native boolean bigEndian();
-	
+	private boolean bigEndian() {
+	    return bigEndian0(streamId);
+    }
+
+    private static native boolean setPlaySound0(int streamId, boolean playSound);
+
 	/**
 	 * Set the boolean that determines whether sound should be played or not.
 	 * 
@@ -287,7 +408,9 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * 
 	 * @return The original state of playing before updating.
 	 */
-	public native boolean setPlaySound(boolean playSound);
+	public boolean setPlaySound(boolean playSound) {
+	    return setPlaySound0(streamId, playSound);
+    }
 
 	/**
 	 * Get the encoding for the audio stream.
@@ -315,10 +438,9 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * @param version A version string for the log file.
 	 * @param audioFormat The requested audio format. This audio format is used
 	 * 					  to transcode the input audio format into.
-	 * @return The error code when opening this stream, 0 for no error.
+	 * @return The error code when opening this stream, 0 for no error and the streamId.
 	 */
-	private native int open0(String fileName, String version, 
-			AudioFormat audioFormat);
+	private static native int[] open0(String fileName, String version, AudioFormat audioFormat);
 	
 	@Override
 	public AudioFormat getAudioFormat() {
@@ -338,30 +460,35 @@ public class MovieStream implements VideoStream, AudioStream {
 	 */
 	public void open(String fileName, String version, ColorSpace reqColorSpace, 
 			AudioFormat reqAudioFormat) throws IOException {
-		int error;
+
 		if (reqColorSpace != ColorSpace.getInstance(ColorSpace.CS_sRGB)) {
 			throw new IOException("Color space " + reqColorSpace + " not supported!");
-		} else if (!(reqAudioFormat.getChannels()==1 
-				&& reqAudioFormat.getEncoding()==Encoding.PCM_SIGNED) 
-				&& !(reqAudioFormat.getChannels()==2 
-				&& reqAudioFormat.getEncoding()==Encoding.PCM_UNSIGNED)) {
+		}
+
+		if (!(reqAudioFormat.getChannels()==1 && reqAudioFormat.getEncoding()==Encoding.PCM_SIGNED)
+				&& !(reqAudioFormat.getChannels()==2 && reqAudioFormat.getEncoding()==Encoding.PCM_UNSIGNED)) {
 			throw new IOException("Requested audio format " + reqAudioFormat 
 					+ " not supported!");
-		} else if ((error = open0(fileName, version, reqAudioFormat)) != 0) {
-			throw new IOException("Error " + error + " occured while " 
-					+ "opening " + fileName + ".");
-		}		
+		}
+
+        int[] errNoAndStreamId = open0(fileName, version, reqAudioFormat);
+		int errNo = errNoAndStreamId[0];
+
+		if (errNo != 0) {
+			throw new IOException("Error " + errNo + " occurred while opening " + fileName + ".");
+		}
+
+        streamId = errNoAndStreamId[1];
 		// Get all the information about the video/audio and cache it
 		colorSpace = reqColorSpace;
-		duration = getDuration0();
-		startTime = getStartTime0();
+        startTime = getStartTime0(streamId);
+        endTime = getEndTime0(streamId);
+		duration = getDuration0(streamId);
 		if (hasVideoStream()) {
-			widthOfView = widthOfStream = getWidth0();
-			heightOfView = heightOfStream = getHeight0();		
-			nChannels = getNumberOfColorChannels0();			
+			widthOfView = widthOfStream = getWidth0(streamId);
+			heightOfView = heightOfStream = getHeight0(streamId);
+			nChannels = getNumberOfColorChannels0(streamId);
 		}
-		startTime = getStartTime0();
-		endTime = getEndTime0();
 		if (hasAudioStream()) {
 			audioBuffer = getAudioBuffer(AUDIO_BUFFER_SIZE);
 			// When using stereo need to multiply the frameSize by number of channels
@@ -375,24 +502,27 @@ public class MovieStream implements VideoStream, AudioStream {
 
 	/**
 	 * Native method to get the number of color channels of the images.
-	 * 
+	 *
+     * @param streamId Identifier of this stream.
 	 * @return The number of color channels.
 	 */
-	private native int getNumberOfColorChannels0();
+	private static native int getNumberOfColorChannels0(int streamId);
 
 	/**
 	 * Native method to get the height of the original images.
-	 * 
+	 *
+     * @param streamId Identifier of this stream.
 	 * @return The height in pixels.
 	 */
-	private native int getHeight0();
+	private static native int getHeight0(int streamId);
 	
 	/**
 	 * Native method to get the width of the original images.
-	 * 
+	 *
+     * @param streamId Identifier of tis stream.
 	 * @return The width in pixels.
 	 */
-	private native int getWidth0();
+	private static native int getWidth0(int streamId);
 	
 	@Override
 	public int getNumberOfColorChannels() {
@@ -431,11 +561,10 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * @param height The height of the view in pixels.
 	 * @return Return true if the window was set; otherwise false.
 	 */
-	private native boolean view(int x0, int y0, int width, int height);
+	private static native boolean view0(int streamId, int x0, int y0, int width, int height);
 
 	@Override
-	public void setView(int x0, int y0, int width, int height)
-			throws IndexOutOfBoundsException {
+	public void setView(int x0, int y0, int width, int height) throws IndexOutOfBoundsException {
 		if (x0 < 0 || x0+width > getWidthOfStream() 
 				|| y0 < 0 || y0+height > getHeightOfStream()) {
 			throw new IndexOutOfBoundsException("The viewing window [" + x0 
@@ -445,22 +574,28 @@ public class MovieStream implements VideoStream, AudioStream {
 		} else {
 			widthOfView = width;
 			heightOfView = height;
-			view(x0, y0, width, height);
+			view0(streamId, x0, y0, width, height);
 		}
 	}
 	
-	/**
-	 * Native method creates a byte buffer for the image frames with for the 
-	 * width, height, and number of channels as given in the movie stream.
-	 * 
-	 * When we change the view the size of this buffer will not change! We just
-	 * don't fill it up all the way.
-	 * 
-	 * @return The instance of the byte buffer that has been created in the 
-	 * 		   native code.
-	 */
-	private native ByteBuffer getFrameBuffer();
-	
+	private static native ByteBuffer getFrameBuffer0(int streamId);
+
+    /**
+     * Creates a byte buffer for the image frames with for the
+     * width, height, and number of channels as given in the movie stream.
+     *
+     * When we change the view the size of this buffer will not change! We just
+     * don't fill it up all the way.
+     *
+     * @return The instance of the byte buffer that has been created in the
+     * 		   native code.
+     */
+	private ByteBuffer getFrameBuffer() {
+	    return getFrameBuffer0(streamId);
+    }
+
+    private static native int loadNextImageFrame0(int streamId);
+
 	/**
 	 * Loads the next image frame into the frame buffer. This method blocks if
 	 * there is no such frame available.
@@ -468,8 +603,10 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * @return An integer number that defines the number of frames that were 
 	 * 		   loaded. To fulfill the play back speed frames may be skipped. 
 	 */
-	private native int loadNextImageFrame();
-		
+	private int loadNextImageFrame() {
+	    return loadNextImageFrame0(streamId);
+    }
+
 	@Override
 	public int readImageFrame(byte[] buffer) {
 		int nFrame;
@@ -492,7 +629,8 @@ public class MovieStream implements VideoStream, AudioStream {
 	public static void main(String[] args) {
 		// Create the movie stream
 		final MovieStream movieStream = new MovieStream();
-		String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
+		String fileName = "C:\\Users\\Florian\\DatavyuSampleVideo.mp4";
+		//String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
 		//String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
 		//String fileName = "C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov";
 		String version = "0.1.0.0";
