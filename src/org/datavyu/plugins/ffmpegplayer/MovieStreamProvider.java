@@ -4,7 +4,10 @@ import java.awt.Frame;
 import java.awt.color.ColorSpace;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -320,42 +323,63 @@ public class MovieStreamProvider extends MovieStream {
 		stop();
 		super.close();
 	}
+
+	final static class MoviePlayer {
+        MovieStreamProvider movieStreamProvider;
+        final Frame frame;
+
+        public MoviePlayer(String movieFileName) throws IOException {
+            this(movieFileName, "0.0.0.1");
+        }
+
+        public MoviePlayer(String movieFileName, String version) throws IOException {
+            movieStreamProvider = new MovieStreamProvider();
+            final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            AudioFormat reqAudioFormat = new AudioFormat(
+                    AudioSound.MONO_FORMAT.getEncoding(),
+                    AudioSound.MONO_FORMAT.getSampleRate(),
+                    AudioSound.MONO_FORMAT.getSampleSizeInBits(),
+                    AudioSound.MONO_FORMAT.getChannels(),
+                    AudioSound.MONO_FORMAT.getFrameSize(),
+                    AudioSound.MONO_FORMAT.getFrameRate(),
+                    AudioSound.MONO_FORMAT.isBigEndian());
+            frame = new Frame();
+            frame.addWindowListener( new WindowAdapter() {
+                public void windowClosing(WindowEvent ev) {
+                    try {
+                        movieStreamProvider.close();
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                    frame.setVisible(false);
+                }
+            } );
+            // Add the audio sound listener
+            movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
+            // Add video display
+            movieStreamProvider.addVideoStreamListener(new VideoDisplayStreamListener(movieStreamProvider, frame,
+                    reqColorSpace));
+            // Open the movie stream provider
+            movieStreamProvider.open(movieFileName, version, reqColorSpace, reqAudioFormat);
+            movieStreamProvider.start();
+            int width = movieStreamProvider.getWidthOfView();
+            int height = movieStreamProvider.getHeightOfView();
+            frame.setBounds(0, 0, width, height);
+            frame.setVisible(true);
+        }
+    }
 	
 	public static void main(String[] args) {
-		final MovieStreamProvider movieStreamProvider = new MovieStreamProvider();
-		String fileName = "C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov";
-		//String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
-		//String fileName = "C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov";
-		String version = "0.1.0.0";
-		final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-		AudioFormat reqAudioFormat = AudioSound.MONO_FORMAT;
-		final Frame f = new Frame();
-        f.addWindowListener( new WindowAdapter() {
-            public void windowClosing(WindowEvent ev) {
-            	try {
-            		movieStreamProvider.close();
-				} catch (IOException io) {
-					io.printStackTrace();
-				}
-                System.exit(0);
+        String folderName = "C:\\Users\\Florian";
+        List<String> fileNames = Arrays.asList(new String[]{"DatavyuSampleVideo.mp4",
+                                                            "TurkishManGaitClip_KEATalk.mov"});
+        int nPlayers = fileNames.size();
+        for (int iPlayers = 0; iPlayers < nPlayers; ++iPlayers) {
+            try {
+                new MoviePlayer(new File(folderName, fileNames.get(iPlayers)).toString());
+            } catch (IOException io) {
+                System.err.println(io);
             }
-        } );
-		try {			
-			// Add the audio sound listener
-			movieStreamProvider.addAudioStreamListener(
-					new AudioSoundStreamListener(movieStreamProvider));
-			// Add video display
-			movieStreamProvider.addVideoStreamListener(
-					new VideoDisplayStreamListener(movieStreamProvider, f, reqColorSpace));
-			// Open the movie stream provider
-			movieStreamProvider.open(fileName, version, reqColorSpace, reqAudioFormat);
-			movieStreamProvider.start();
-			int width = movieStreamProvider.getWidthOfView();
-			int height = movieStreamProvider.getHeightOfView();
-	        f.setBounds(0, 0, width, height);
-	        f.setVisible(true);
-		} catch (IOException io) {
-			io.printStackTrace();
-		}
+        }
 	}
 }

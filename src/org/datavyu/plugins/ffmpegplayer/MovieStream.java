@@ -458,8 +458,8 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * 					   Thrown if the audio format is not supported.
 	 * 					   Thrown if the file cannot be found.
 	 */
-	public void open(String fileName, String version, ColorSpace reqColorSpace, 
-			AudioFormat reqAudioFormat) throws IOException {
+	public void open(String fileName, String version, ColorSpace reqColorSpace, AudioFormat reqAudioFormat)
+            throws IOException {
 
 		if (reqColorSpace != ColorSpace.getInstance(ColorSpace.CS_sRGB)) {
 			throw new IOException("Color space " + reqColorSpace + " not supported!");
