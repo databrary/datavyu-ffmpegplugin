@@ -557,8 +557,7 @@ public:
         int nBytePerSample = 2 * pAudioOutCodecCtx->channels;
 
         // Get the time difference
-        diffPts = getAudioTime() - (double)std::chrono::system_clock::to_time_t(
-                                            std::chrono::system_clock::now());
+        diffPts = getAudioTime() - (double)std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         if (diffPts < AV_NOSYNC_THRESHOLD) {
 
             // Accumulate the difference
@@ -999,15 +998,13 @@ public:
                             // Skip frames until we are at or beyond seekPts
                             if (readPts >= seekPts) {
 
-                                // Get the next writeable buffer. This may block and
-                                // can be unblocked by flushing
+                                // Get the next writable buffer. This may block and can be unblocked by flushing
                                 AVFrame* pFrameBuffer = pImageBuffer->requestPutPtr();
 
                                 // Did we get a frame buffer?
                                 if (pFrameBuffer) {
 
-                                    // Convert the image from its native color
-                                    // format into the RGB color format
+                                    // Convert the image from its native color format into the RGB color format
                                     sws_scale(
                                         pSwsImageCtx,
                                         (uint8_t const * const *)pImageFrame->data,
@@ -1249,16 +1246,19 @@ public:
         while (len > 0) {
             // We still need to read len bytes
             if (iAudioData >= nAudioData) {
-                /* We already sent all our data; get more */
+                // We already sent all our data; get more
                 audioSize = audioDecodeFrame(pAudioInCodecCtx, audioBuffer, sizeof(audioBuffer));
 
+
                 if (audioSize < 0) {
-                    /* If error, output silence */
+                    // If error, output silence
                     nAudioData = 1024; // arbitrary?
-                    memset(audioBuffer, 0, nAudioData); // set silience for the rest
+                    memset(audioBuffer, 0, nAudioData); // set silence for the rest
                 } else {
                     nAudioData = audioSize = synchronizeAudio((int16_t *)audioBuffer, audioSize);
                 }
+
+
                 iAudioData = 0;
             }
             decodeLen = nAudioData - iAudioData;

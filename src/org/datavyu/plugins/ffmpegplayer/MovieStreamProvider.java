@@ -324,7 +324,10 @@ public class MovieStreamProvider extends MovieStream {
 		super.close();
 	}
 
-	final static class MoviePlayer {
+	/**
+	 * Only intended for testing in the main method.
+	 */
+	private final static class MoviePlayer {
         MovieStreamProvider movieStreamProvider;
         final Frame frame;
 
