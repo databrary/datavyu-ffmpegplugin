@@ -607,7 +607,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		int nFrame;
 		// Check if we loaded at least one image frame
 		if ((nFrame = loadNextImageFrame()) > 0) {
-		    logger.info("StreamId " + streamId + ": Reading image frame.");
+		    logger.info("StreamId " + streamId + ": Reading image frame at time: " + getCurrentTime() + " sec.");
 			// Load the image frame into the buffer
 			ByteBuffer imageBuffer = getFrameBuffer();
 			imageBuffer.get(buffer, 0, imageBuffer.capacity());

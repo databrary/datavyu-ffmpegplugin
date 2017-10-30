@@ -228,6 +228,7 @@ public class MovieStreamProvider extends MovieStream {
 	 */
 	private void stopVideo() {
 		if (runVideo && hasVideoStream()) {
+			logger.info("StreamId " + getStreamId() + ": Trying to stop the video stream.");
 			runVideo = false;
 			if (video != null) {
 				video.interrupt();
@@ -242,6 +243,7 @@ public class MovieStreamProvider extends MovieStream {
 					listener.streamStopped();
 				}
 			}
+			logger.info("StreamId " + getStreamId() + ": Stopped the video stream.");
 		}		
 	}
 	
@@ -252,6 +254,7 @@ public class MovieStreamProvider extends MovieStream {
 	void stopAudio() {
 		setPlaySound(false);
 		if (runAudio && hasAudioStream()) {
+			logger.info("StreamId " + getStreamId() + ": Trying to stop the audio stream.");
 			runAudio = false;
 			if (audio != null) {
 				audio.interrupt();
@@ -264,9 +267,10 @@ public class MovieStreamProvider extends MovieStream {
 					for (StreamListener listener : audioListeners) {
 						listener.streamStopped();
 					}
-				}					
-			}			
-		}		
+				}
+			}
+			logger.info("StreamId " + getStreamId() + ": Stopped the audio stream.");
+		}
 	}
 	
 	/**
