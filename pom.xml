@@ -9,6 +9,14 @@
     <version>0.7</version>
     <packaging>jar</packaging>
 
+    <repositories>
+        <repository>
+            <id>java</id>
+            <url>http://download.java.net/maven/2</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+
     <build>
         <resources>
             <resource>
@@ -22,6 +30,7 @@
         <sourceDirectory>src</sourceDirectory>
 
         <plugins>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
@@ -46,4 +55,26 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <!-- Logger API -->
+        <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+        <!-- Documentation: https://logging.apache.org/log4j/2.x/manual/api.html -->
+        <!-- Updated here: 09/20/2017 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <!-- Logger Core -->
+        <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+        <!-- Documentation: (see API) -->
+        <!-- Updated here: 09/20/2017 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+    </dependencies>
 </project>

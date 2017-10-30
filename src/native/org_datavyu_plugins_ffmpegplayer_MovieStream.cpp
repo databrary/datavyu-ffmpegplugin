@@ -57,7 +57,11 @@ cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream"^
  "C:\Users\Florian\FFmpeg-release-3.2\libswresample\swresample.lib"
 */
 
+// Add flag /MDd for debugging information and flag /DEBUG:FULL to add all symbols to the PDB file
+// On debug flag for cl; see https://docs.microsoft.com/en-us/cpp/build/reference/debug-generate-debug-info
+
 // use dumpbin /ALL MovieStream.lib to list the function symbols
+// Make sure that visual studio's 'vc' folder is in the path
 
 #define AV_SYNC_THRESHOLD 0.01
 #define AV_NOSYNC_THRESHOLD 10.0
@@ -290,7 +294,7 @@ int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat, const jobject& jAudioF
 }
 
 static const char *getErrorText(const int error) {
-    static char error_buffer[256];
+    char error_buffer[256];
     av_strerror(error, error_buffer, sizeof(error_buffer));
     return error_buffer;
 }
@@ -475,6 +479,24 @@ public:
 
     /** True if a viewing window is set, otherwise false. Set to false on reset */
     bool doView;
+
+
+    /** Parameters for methods converting the audio signal. These DO NOT NEED TO BE INITIALIZED OR FREED */
+
+    /** Packet for 'audioDecodeFrame' method */
+    AVPacket audioDecodePkt;
+
+    /** Pointer to data for the 'audioDecodeFrame' method */
+    uint8_t *pAudioDecodePktData = nullptr;
+
+    /** Size of the audio decode packet used in the 'audioDecodeFrame' method */
+    int audioDecodePktSize = 0;
+
+    /** AVFrame used in the 'audioDecodeFrame' method */
+    AVFrame audioDecodeAVFrame;
+
+    /** audio buffer used in the 'loadNextAudioData' method */
+    uint8_t loadAudioBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
 
 
     MovieStream() :
@@ -689,33 +711,29 @@ public:
      * Decodes packet from queue into the audioBuffer.
      */
     int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioBuffer, int bufferSize) {
-        static AVPacket pkt;
-        static uint8_t *pAudioPktData = nullptr;
-        static int audioPktSize = 0;
-        static AVFrame frame;
         uint8_t **convertedInSamples = nullptr;
         int dataLen, dataSize = 0;
         int errNo;
 
         for (;;) {
-            while (audioPktSize > 0) {
+            while (audioDecodePktSize > 0) {
                 int gotFrame = 0;
-                dataLen = avcodec_decode_audio4(pAudioInCodecCtx, &frame, &gotFrame, &pkt);
+                dataLen = avcodec_decode_audio4(pAudioInCodecCtx, &audioDecodeAVFrame, &gotFrame, &audioDecodePkt);
 
-                // If an error occured skip the frame
+                // If an error occurred skip the frame
                 if (dataLen < 0) {
-                    audioPktSize = 0;
+                    audioDecodePktSize = 0;
                     break;
                 }
 
-                pAudioPktData += dataLen;
-                audioPktSize -= dataLen;
+                pAudioDecodePktData += dataLen;
+                audioDecodePktSize -= dataLen;
                 dataSize = 0;
 
                 if (gotFrame) {
                     dataSize = av_samples_get_buffer_size(NULL,
                                     pAudioOutCodecCtx->channels,
-                                    frame.nb_samples,
+                                    audioDecodeAVFrame.nb_samples,
                                     pAudioOutCodecCtx->sample_fmt,
                                     1);
 
@@ -723,7 +741,7 @@ public:
 
                     if ((errNo = MovieStream::initConvertedSamples(&convertedInSamples,
                                                                    pAudioOutCodecCtx,
-                                                                   frame.nb_samples,
+                                                                   audioDecodeAVFrame.nb_samples,
                                                                    pLogger)) < 0) {
                         // clean-up
                         if (convertedInSamples) {
@@ -733,9 +751,9 @@ public:
                         return errNo;
                     }
 
-                    if ((errNo = MovieStream::convertSamples((const uint8_t**)frame.extended_data,
+                    if ((errNo = MovieStream::convertSamples((const uint8_t**)audioDecodeAVFrame.extended_data,
                                                              convertedInSamples,
-                                                             frame.nb_samples, pResampleCtx,
+                                                             audioDecodeAVFrame.nb_samples, pResampleCtx,
                                                              pLogger)) < 0) {
                         // clean-up
                         if (convertedInSamples) {
@@ -761,8 +779,8 @@ public:
                 // We have data, return it and come back for more later
                 return dataSize;
             }
-            if (pkt.data)
-                av_free_packet(&pkt);
+            if (audioDecodePkt.data)
+                av_free_packet(&audioDecodePkt);
 
             if (quit) {
                 return -1;
@@ -770,14 +788,14 @@ public:
             if (pAudioBuffer->empty()) {
                 return -1;
             }
-            if (pAudioBuffer->get(&pkt) < 0) {
+            if (pAudioBuffer->get(&audioDecodePkt) < 0) {
                 return -1;
             }
-            pAudioPktData = pkt.data;
-            audioPktSize = pkt.size;
+            pAudioDecodePktData = audioDecodePkt.data;
+            audioDecodePktSize = audioDecodePkt.size;
 
-            if (pkt.pts != AV_NOPTS_VALUE) {
-                audioTime = av_q2d(pAudioStream->time_base)* pkt.pts;
+            if (audioDecodePkt.pts != AV_NOPTS_VALUE) {
+                audioTime = av_q2d(pAudioStream->time_base)* audioDecodePkt.pts;
             }
         }
     }
@@ -1221,7 +1239,7 @@ public:
             pImageFrameShow = pVideoFrameTmp;
 
             // Log that we displayed a frame.
-            pLogger->info("Display pts %I64d.", pImageFrameShow->pts/avgDeltaPts);
+            pLogger->info("Display pts %I64d.", pImageFrameShow->pts);
 
             videoTime = pImageFrameShow->pts * av_q2d(pImageStream->time_base);
         }
@@ -1241,21 +1259,20 @@ public:
         int len = nAudioBuffer; // get length of buffer
         uint8_t *data = pAudioBufferData; // get a write pointer.
         int decodeLen, audioSize;
-        static uint8_t audioBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
 
         while (len > 0) {
             // We still need to read len bytes
             if (iAudioData >= nAudioData) {
                 // We already sent all our data; get more
-                audioSize = audioDecodeFrame(pAudioInCodecCtx, audioBuffer, sizeof(audioBuffer));
+                audioSize = audioDecodeFrame(pAudioInCodecCtx, loadAudioBuffer, sizeof(loadAudioBuffer));
 
 
                 if (audioSize < 0) {
                     // If error, output silence
                     nAudioData = 1024; // arbitrary?
-                    memset(audioBuffer, 0, nAudioData); // set silence for the rest
+                    memset(loadAudioBuffer, 0, nAudioData); // set silence for the rest
                 } else {
-                    nAudioData = audioSize = synchronizeAudio((int16_t *)audioBuffer, audioSize);
+                    nAudioData = audioSize = synchronizeAudio((int16_t *)loadAudioBuffer, audioSize);
                 }
 
 
@@ -1267,7 +1284,7 @@ public:
                 decodeLen = len;
             }
 
-            memcpy(data, (uint8_t *)audioBuffer + iAudioData, decodeLen);
+            memcpy(data, (uint8_t *)loadAudioBuffer + iAudioData, decodeLen);
             len -= decodeLen;
             data += decodeLen;
             iAudioData += decodeLen;

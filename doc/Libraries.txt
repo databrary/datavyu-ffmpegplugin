@@ -44,8 +44,8 @@ Create the folder C:\yasm. Rename the file yasm-1.3.0-win64.exe into yasm.exe.
 Place this renamed file into the folder C:\yasm. Add this folder to your path.
 
 5. Setup the environment variables for the 64 bit build 
-Run the following batch script in the windows command line tool ‘cmd’:
-cd “C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC”
+Run the following batch script in the windows command line tool ï¿½cmdï¿½:
+cd ï¿½C:\Program Files (x86)\Microsoft Visual Studio 14.0\VCï¿½
 vcvarsall.bat x64
 The flag x64 sets the environment up for compilation of 64 bit versions.
 
@@ -70,7 +70,7 @@ and unzip the file into the folder FFmpeg-release-3.2 in your user directory.
 In the msys shell: cd /c/Users/Florian/FFmpeg-release-3.2/ or wherever you 
 downloaded the ffmpeg source.
 Run the command to configure the build:
-./configure --toolchain=msvc --enable-swscale --enable-asm --enable-yasm --target-os=win64 --arch=x86_64 --enable-shared --disable-static --disable-ffserver --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-ffmpeg
+./configure --toolchain=msvc --enable-swscale --enable-asm --enable-yasm --target-os=win64 --arch=x86_64 --enable-shared --disable-static --disable-ffserver --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-w32threads
 
 toolchain=msvc -- use the Microsoft Visual Studio compiler
 enable-swscale -- compile swscale DLL, we need this to rescale images
@@ -78,6 +78,13 @@ enable-yasm -- YASM is a low level assembler
 target-os=win64 -- operating system to compile for is windows 64 bit
 arch=x86_64 -- compute architecture is x86 for 64 bit
 enable-shared -- compile shared libraries
+--extra-cflags="-MDd"                    \
+--extra-ldflags="/NODEFAULTLIB:libcmt"    - enable debugging information (REMOVE these 3 flags when compiling releases)
+--enable-debug                           /
+See here for compile with debug information: https://trac.ffmpeg.org/wiki/CompilationGuide/MSVC
+--enable-pthreads -- Enable multi-threading,
+See https://stackoverflow.com/questions/13888915/thread-safety-of-libav-ffmpeg
+
 
 From release 3.3 onward I added these flags:
 --disable-ffserver --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-ffmpeg
@@ -99,9 +106,9 @@ libavformat/protocol_list.c is unchanged
 You can ignore the pkg-config not found issue. It will not affect compilation.
 
 10. Compile the source code to produce DLLs:
-make –j 4
+make ï¿½j 4
 
-The –j 4 flag indicates to use 4 threads for compilation. This speeds up the compilation process. You may want to set the number of threads even higher depending on your hardware.
+The ï¿½j 4 flag indicates to use 4 threads for compilation. This speeds up the compilation process. You may want to set the number of threads even higher depending on your hardware.
 
 The successful compilation ends with:
 LD      libavdevice/avdevice-57.dll

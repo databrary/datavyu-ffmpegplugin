@@ -1,12 +1,14 @@
 package org.datavyu.plugins.ffmpegplayer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.awt.Frame;
 import java.awt.color.ColorSpace;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,15 +16,17 @@ import java.util.List;
 import javax.sound.sampled.AudioFormat;
 
 /**
- * The movie stream provider allows for the feeding of an audio stream to 
- * multiple listeners as well as the feeding of an video stream to multiple
- * listeners. 
+ * The movie stream provider allows feeding an audio stream to multiple listeners and feeding an image stream to
+ * multiple listeners.
  * 
  * @author Florian Raudies, Mountain View, CA.
  *
  */
 public class MovieStreamProvider extends MovieStream {
-	
+
+    /** The logger for this class */
+    private static Logger logger = LogManager.getLogger(MovieStreamProvider.class);
+
 	/** The list of audio listeners */
 	private final List<StreamListener> audioListeners;
 	
@@ -42,8 +46,7 @@ public class MovieStreamProvider extends MovieStream {
 	private Thread video;
 
 	/**
-	 * This thread reads the binary audio data from the movie stream and 
-	 * forwards it to all listeners.
+	 * This thread reads the binary audio data from the movie stream and forwards it to all listeners.
 	 */
 	class AudioListenerThread extends Thread {
 		@Override
@@ -81,8 +84,7 @@ public class MovieStreamProvider extends MovieStream {
 		int nFrame = 0;
 		if (availableImageFrame()) {
 			// Allocate space for a byte buffer
-			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
-			                         *getNumberOfColorChannels()];
+			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
 			// Read the next image frame -- blocks if none is available
 			nFrame = readImageFrame(buffer);
 		}		
@@ -97,8 +99,7 @@ public class MovieStreamProvider extends MovieStream {
 	boolean nextImageFrame() {
 		if (availableImageFrame()) {
 			// Allocate space for a byte buffer
-			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()
-			                         *getNumberOfColorChannels()];
+			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
 			// Read the next image frame -- blocks if none is available
 			readImageFrame(buffer);
 			// Fulfill all listeners
@@ -113,8 +114,7 @@ public class MovieStreamProvider extends MovieStream {
 	}
 
 	/**
-	 * This thread reads the binary video data from the movie stream and
-	 * forwards it to all listeners.
+	 * This thread reads the binary video data from the movie stream and forwards it to all listeners.
 	 */
 	class VideoListenerThread extends Thread {
 		@Override
@@ -167,6 +167,7 @@ public class MovieStreamProvider extends MovieStream {
 	void startAudio() {
 		setPlaySound(true);
 		if (hasAudioStream() && !runAudio) {
+		    logger.info("StreamId " + getStreamId() + ": Starting audio play back thread.");
 			runAudio = true;
 			audio = new AudioListenerThread();
 			synchronized (audioListeners) {
@@ -185,6 +186,7 @@ public class MovieStreamProvider extends MovieStream {
 	 */
 	void startVideo() {
 		if (hasVideoStream() && !runVideo) {
+		    logger.info("StreamId "+ getStreamId() + ": Starting video play back thread.");
 			runVideo = true;
 			video = new VideoListenerThread();
 			synchronized (videoListeners) {
@@ -224,7 +226,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * Stops playing the video if a video is running and there is a video 
 	 * stream.  Calls stream stopped on all video listeners.
 	 */
-	void stopVideo() {
+	private void stopVideo() {
 		if (runVideo && hasVideoStream()) {
 			runVideo = false;
 			if (video != null) {
@@ -244,8 +246,8 @@ public class MovieStreamProvider extends MovieStream {
 	}
 	
 	/**
-	 * Stops playing the audio if a audio is running and there is an audio 
-	 * stream.  Calls stream stopped on all audio listeners.
+	 * Stops playing the audio if a audio is running and there is an audio stream.  Calls stream stopped on all audio
+     * listeners.
 	 */
 	void stopAudio() {
 		setPlaySound(false);
@@ -284,8 +286,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * @param streamListener The stream listener that is added.
 	 */
 	void addAudioStreamListener(StreamListener streamListener) {
-		// A lock on the list of audio listeners to avoid concurrent access with 
-		// the thread that is feeding data
+		// A lock on the list of audio listeners to avoid concurrent access with the thread that is feeding data
 		synchronized (audioListeners) {
 			// Add the listener to the list
 			audioListeners.add(streamListener);
@@ -305,8 +306,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * @param streamListener The stream listener that is added.
 	 */
 	void addVideoStreamListener(StreamListener streamListener) {
-		// A lock on the list of video listeners to avoid concurrent access with
-		// the thread that is feeding data
+		// A lock on the list of video listeners to avoid concurrent access with the thread that is feeding data
 		synchronized (videoListeners) {
 			// Add the listener to the list
 			videoListeners.add(streamListener);
@@ -367,12 +367,10 @@ public class MovieStreamProvider extends MovieStream {
 	
 	public static void main(String[] args) {
         String folderName = "C:\\Users\\Florian";
-        List<String> fileNames = Arrays.asList(new String[]{"DatavyuSampleVideo.mp4",
-                                                            "TurkishManGaitClip_KEATalk.mov"});
-        int nPlayers = fileNames.size();
-        for (int iPlayers = 0; iPlayers < nPlayers; ++iPlayers) {
+        List<String> fileNames = Arrays.asList(new String[]{"DatavyuSampleVideo.mp4", "TurkishManGaitClip_KEATalk.mov"});
+        for (String fileName : fileNames) {
             try {
-                new MoviePlayer(new File(folderName, fileNames.get(iPlayers)).toString());
+                new MoviePlayer(new File(folderName, fileName).toString());
             } catch (IOException io) {
                 System.err.println(io);
             }

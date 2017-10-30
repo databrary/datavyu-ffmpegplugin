@@ -1,16 +1,11 @@
 package org.datavyu.plugins.ffmpegplayer;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
@@ -23,19 +18,9 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	
 	/** Identifier for object serialization */
 	private static final long serialVersionUID = 5109839668203738974L;
-	
-	/** The requested color space */
-	private final ColorSpace reqColorSpace = ColorSpace.getInstance(
-			ColorSpace.CS_sRGB);
-	
-	/** The requested audio format */
-	private final AudioFormat reqAudioFormat = AudioSound.getNewMonoFormat();
-	
+
 	/** The movie stream for this movie player */
-	private MovieStreamProvider movieStreamProvider;
-	
-	/** The start time is used to adjust slider to correct value */
-	private double startTime = 0; 
+	private java.util.List<MovieStreamProvider> movieStreamProviders = new ArrayList<>();
 	
 	/** Used to open video files */
 	private JFileChooser fileChooser = null;
@@ -48,10 +33,6 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	
 	/** The directory last opened is used to initialize the file chooser. */
 	private File lastDirectory = new File(System.getProperty("user.home"));
-	
-	/** Radio buttons for forward and speed one */
-	private JRadioButton one;
-	private JRadioButton forward;
 	
 	/** 
 	 * A slider displays the current frame and the user can drag the slider
@@ -86,7 +67,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			ext = ext.toLowerCase();
 						
 			// Filter out the available file formats.
-			return ext.equals("mp4") || ext.equals("mpg") || ext.equals("h264") 
+			return ext.equals("mp4") || ext.equals("mpg") || ext.equals("h264")
 					|| ext.equals("mov") || ext.equals("wav");
 		}
 		
@@ -102,23 +83,33 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			// Must set is stepping to false BEFORE calling playsAtForward1x 
 			isStepping = false; 
 			// Play sound only if we are in forward direction
-			if (playsAtForward1x()) { movieStreamProvider.startAudio(); }
+			if (playsAtForward1x()) {
+			    for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                    movieStreamProvider.startAudio();
+                }
+			}
 			// Play video
-			movieStreamProvider.startVideo();
+            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                movieStreamProvider.startVideo();
+            }
 		}
 	}
 	
 	class StopSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			movieStreamProvider.stop();
+            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                movieStreamProvider.stop();
+            }
 		}
 	}
 	
 	class RewindSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			movieStreamProvider.reset();
+            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                movieStreamProvider.reset();
+            }
 		}
 	}
 	
@@ -128,17 +119,19 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	class StepSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (!isStepping) {
-				// Set natively no sound (otherwise the audio buffer will block the video stream)
-				movieStreamProvider.setPlaySound(false);
-				// Stops all stream providers
-				movieStreamProvider.stop();
-				// Enables stepping to display the frames without starting the video thread
-				movieStreamProvider.startVideoListeners();
-				// We are stepping, set isStepping
-				isStepping = true;
-			}
-			movieStreamProvider.nextImageFrame();
+            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                if (!isStepping) {
+                    // Set natively no sound (otherwise the audio buffer will block the video stream)
+                    movieStreamProvider.setPlaySound(false);
+                    // Stops all stream providers
+                    movieStreamProvider.stop();
+                    // Enables stepping to display the frames without starting the video thread
+                    movieStreamProvider.startVideoListeners();
+                    // We are stepping, set isStepping
+                    isStepping = true;
+                }
+                movieStreamProvider.nextImageFrame();
+            }
 		}
 	}
 	
@@ -153,7 +146,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		@Override
 		public void stateChanged(ChangeEvent e) {
 			if (slider.getValueIsAdjusting()) {
-				double sec = ((double)slider.getValue())/1000.0 + startTime;
+				double sec = ((double)slider.getValue())/1000.0;
 				double currentTime = System.currentTimeMillis();
 				System.out.println("Current time in milli seconds: " + currentTime);
 				
@@ -163,10 +156,12 @@ public class MoviePlayer extends JPanel implements WindowListener {
 							+ "lastUpdateTime = " + lastUpdateTime 
 							+ ", currentTime = " + currentTime
 							+ ", diffTime = " + (currentTime - lastUpdateTime));
-					movieStreamProvider.seek(sec);
-					movieStreamProvider.dropImageFrame();
-					movieStreamProvider.startVideoListeners();
-					movieStreamProvider.nextImageFrame();
+                    for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                        movieStreamProvider.seek(sec);
+                        movieStreamProvider.dropImageFrame();
+                        movieStreamProvider.startVideoListeners();
+                        movieStreamProvider.nextImageFrame();
+                    }
 					// TODO: lastUpdateTime does not seem to be updated!
 					lastUpdateTime = currentTime;
 				}
@@ -177,15 +172,17 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	class ViewSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			try {
-				// Stop the player before changing the window
-				movieStreamProvider.stop();
-				movieStreamProvider.setView(70, 50, 300, 200);
-			} catch (IndexOutOfBoundsException iob) {
-				System.err.println("Could not set view: " + iob.getMessage());
-			} finally {
-				movieStreamProvider.start();
-			}
+            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                try {
+                    // Stop the player before changing the window
+                    movieStreamProvider.stop();
+                    movieStreamProvider.setView(70, 50, 300, 200);
+                } catch (IndexOutOfBoundsException iob) {
+                    System.err.println("Could not set view: " + iob.getMessage());
+                } finally {
+                    movieStreamProvider.start();
+                }
+            }
 		}
 	}
 	
@@ -193,74 +190,71 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	class ResetViewSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			try {
-				// Stop the player before changing the window
-				movieStreamProvider.stop();
-				int w = movieStreamProvider.getWidthOfStream();
-				int h = movieStreamProvider.getHeightOfStream();
-				movieStreamProvider.setView(0, 0, w, h);
-			} catch (IndexOutOfBoundsException iob) {
-				System.err.println("Could not reset view: " + iob.getMessage());
-				iob.printStackTrace();
-			} finally {
-				movieStreamProvider.start();
-			}
+            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                try {
+                    // Stop the player before changing the window
+                    movieStreamProvider.stop();
+                    int w = movieStreamProvider.getWidthOfStream();
+                    int h = movieStreamProvider.getHeightOfStream();
+                    movieStreamProvider.setView(0, 0, w, h);
+                } catch (IndexOutOfBoundsException iob) {
+                    System.err.println("Could not reset view: " + iob.getMessage());
+                    iob.printStackTrace();
+                } finally {
+                    movieStreamProvider.start();
+                }
+            }
 		}
 	}
+
+    private class MoviePlayerFrame {
+        MovieStreamProvider movieStreamProvider;
+        final Frame frame;
+
+        public MoviePlayerFrame(String movieFileName) throws IOException {
+            this(movieFileName, "0.0.0.1");
+        }
+
+        public MoviePlayerFrame(String movieFileName, String version) throws IOException {
+            movieStreamProvider = new MovieStreamProvider();
+            final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            AudioFormat reqAudioFormat = AudioSound.getNewMonoFormat();
+            frame = new Frame();
+            frame.addWindowListener( new WindowAdapter() {
+                public void windowClosing(WindowEvent ev) {
+                    try {
+                        movieStreamProvider.close();
+                    } catch (IOException io) {
+                        io.printStackTrace();
+                    }
+                    frame.setVisible(false);
+                }
+            } );
+            // Add the audio sound listener
+            movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
+            // Add video display
+            movieStreamProvider.addVideoStreamListener(new VideoDisplayStreamListener(movieStreamProvider, frame,
+                    reqColorSpace));
+            // Open the movie stream provider
+            movieStreamProvider.open(movieFileName, version, reqColorSpace, reqAudioFormat);
+            int width = movieStreamProvider.getWidthOfView();
+            int height = movieStreamProvider.getHeightOfView();
+            frame.setBounds(0, 0, width, height);
+            frame.setVisible(true);
+        }
+
+        public MovieStreamProvider getMovieStreamProvider() {
+            return movieStreamProvider;
+        }
+    }
 	
 	private void openFile(String fileName) {
-		movieStreamProvider.stop();
-		// Assign a new movie file.
-		try {
-			// The input audio format will be manipulated by the open method!
-			AudioFormat input = new AudioFormat(
-					reqAudioFormat.getEncoding(), 
-					reqAudioFormat.getSampleRate(),
-					reqAudioFormat.getSampleSizeInBits(),
-					reqAudioFormat.getChannels(),
-					reqAudioFormat.getFrameSize(),
-					reqAudioFormat.getFrameRate(),
-					reqAudioFormat.isBigEndian());
-			
-			// Open the stream
-	        movieStreamProvider.open(fileName, "0.0.1", reqColorSpace, input);
-	        
-	        // Load and display first frame.
-	        movieStreamProvider.nextImageFrame();
-					
-			// Set the default play back speed.
-			one.setSelected(true);
-			forward.setSelected(true);
-			speedSign = 1;
-			speedValue = 1;
-			movieStreamProvider.setSpeed(1);
-	        
-			// Get information about the video file.
-	        int width = movieStreamProvider.getWidthOfStream();
-	        int height = movieStreamProvider.getHeightOfStream();
-	        double duration = movieStreamProvider.getDuration();
-	        
-	        // Get the start time for proper placing of the slider.
-	        startTime = movieStreamProvider.getStartTime();
-
-	        // Set the size for the video frame.
-	        setPreferredSize(new Dimension(width+50, height+50));
-			repaint();
-	        
-	        System.out.println("Opened movie " + fileName);
-	        System.out.println("width = " + width + ", height = " + height);
-	        System.out.println("duration = " + duration + " seconds.");
-	        System.out.println("start time = " + startTime + " seconds.");
-	        System.out.println("end time = " + movieStreamProvider.getEndTime() 
-	        		+ " seconds.");
-	        System.out.println("Has video stream  = " 
-	        		+ movieStreamProvider.hasVideoStream());
-	        System.out.println("Has audio stream = " 
-	        		+ movieStreamProvider.hasAudioStream());
-	        
-		} catch (IOException io) {
-			io.printStackTrace();
-		}        
+	    try {
+            MoviePlayerFrame moviePlayerFrame = new MoviePlayerFrame(fileName);
+            movieStreamProviders.add(moviePlayerFrame.getMovieStreamProvider());
+        } catch (IOException io) {
+            System.err.println(io);
+        }
 	}
 	
 	/**
@@ -270,8 +264,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	 * @return True if we play forward at 1x; otherwise false.
 	 */
 	private boolean playsAtForward1x() {
-		return Math.abs(speedValue - 1.0) <= Math.ulp(1.0) && speedSign == 1 
-				&& !isStepping;
+		return Math.abs(speedValue - 1.0) <= Math.ulp(1.0) && speedSign == 1 && !isStepping;
 	}
 	
 	/**
@@ -282,16 +275,17 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	 * @param speedSign The sign for the play back speed.
 	 */
 	private void setSpeed(float speedValue, int speedSign) {
-		
-		// Need to set speed first so that the reverse is set correctly!!!
-		movieStreamProvider.setSpeed(speedSign * speedValue);
-		
-		// Then we can start/stop the audio
-		if (playsAtForward1x()) {
-			movieStreamProvider.startAudio();
-		} else {
-			movieStreamProvider.stopAudio();
-		}
+		for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+            // Need to set speed first so that the reverse is set correctly!!!
+            movieStreamProvider.setSpeed(speedSign * speedValue);
+
+            // Then we can start/stop the audio
+            if (playsAtForward1x()) {
+                movieStreamProvider.startAudio();
+            } else {
+                movieStreamProvider.stopAudio();
+            }
+        }
 	}
 	
 	class SpeedValueSelection implements ActionListener {
@@ -300,8 +294,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			try {
 				speedValue = Float.parseFloat(e.getActionCommand());				
 			} catch (NumberFormatException ex) {
-				System.err.println("Could not parse command: " 
-							+ e.getActionCommand());
+				System.err.println("Could not parse command: " + e.getActionCommand());
 			}
 			setSpeed(speedValue, speedSign);
 		}
@@ -318,17 +311,18 @@ public class MoviePlayer extends JPanel implements WindowListener {
 				speedSign = -1;
 				break;
 			default:
-				System.err.println("Could not parse command: " 
-									+ e.getActionCommand());
+				System.err.println("Could not parse command: " + e.getActionCommand());
 				speedSign = +1;
 			}
 			
 			setSpeed(speedValue, speedSign);
 			
 			// Need to pull two frames as workaround because toggle requires 
-			// two frames to revert direction.			
-			movieStreamProvider.dropImageFrame();
-			movieStreamProvider.dropImageFrame();
+			// two frames to revert direction.
+            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                movieStreamProvider.dropImageFrame();
+                movieStreamProvider.dropImageFrame();
+            }
 		}
 	}
 	
@@ -393,7 +387,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		// Speed selection.
 		JRadioButton quarter = new JRadioButton("1/4x");
 		JRadioButton half = new JRadioButton("1/2x");
-		one = new JRadioButton("1x");
+		JRadioButton one = new JRadioButton("1x");
 		JRadioButton twice = new JRadioButton("2x");
 		JRadioButton four = new JRadioButton("4x");
 		// Set default.
@@ -434,7 +428,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		
 		// Direction selection.
 		ButtonGroup directionGroup = new ButtonGroup();
-		forward = new JRadioButton("+");
+		JRadioButton forward = new JRadioButton("+");
 		JRadioButton backward = new JRadioButton("-");
 		// set default.
 		forward.setSelected(true);
@@ -462,22 +456,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		add(tools, BorderLayout.NORTH);
 		add(slider, BorderLayout.SOUTH);
 		
-		movieStreamProvider = new MovieStreamProvider();
-		// Add the audio sound listener
-		movieStreamProvider.addAudioStreamListener(
-				new AudioSoundStreamListener(movieStreamProvider));
-		// Add video display
-		movieStreamProvider.addVideoStreamListener(
-				new VideoDisplayStreamListener(movieStreamProvider, this, 
-						BorderLayout.CENTER, reqColorSpace));
-		// Add slider update
-		movieStreamProvider.addVideoStreamListener(
-				new SliderStreamListener(slider, movieStreamProvider));
-		// Add text update
-		movieStreamProvider.addVideoStreamListener(
-				new LabelStreamListener(frameNumber, movieStreamProvider));
-		
-		openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
+
+		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
 	}
 	
@@ -492,11 +472,13 @@ public class MoviePlayer extends JPanel implements WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		try {
-			movieStreamProvider.close();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+        for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+            try {
+                movieStreamProvider.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
 	}
 
 	@Override

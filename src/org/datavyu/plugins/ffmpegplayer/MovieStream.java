@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
@@ -15,10 +17,12 @@ import javax.sound.sampled.LineUnavailableException;
 
 public class MovieStream implements VideoStream, AudioStream {
 
+    /** The logger for this class */
+    private static Logger logger = LogManager.getLogger(MovieStream.class);
+
 	/*
-	 * Load the native library that interfaces to ffmpeg. This load assumes
-	 * that dependent dll's are within the the JVM's classpath. In our example 
-	 * this is the directory above the directory '.'.
+	 * Load the native library that interfaces to ffmpeg. This load assumes that dependent dll's are in the JVM's
+	 * classpath. In our example this is the directory above the directory '.'.
 	 */
 	static {
 		System.loadLibrary("MovieStream");
@@ -26,12 +30,6 @@ public class MovieStream implements VideoStream, AudioStream {
 
 	/** The stream id for this movie stream */
 	private int streamId;
-
-	/** The minimum play back speed */
-	private final static float MIN_SPEED = -16f;
-	
-	/** The maximum play back speed */
-	private final static float MAX_SPEED = +16f;
 	
 	/** The size of the audio buffer */
 	private final static int AUDIO_BUFFER_SIZE = 64*1024; // 64 kB
@@ -64,7 +62,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	private ByteBuffer audioBuffer = null;
 	
 	/** The audio format of the audio stream. Initialized at opening. */
-	protected AudioFormat audioFormat = null;
+	private AudioFormat audioFormat = null;
 	
 	/** The color space of the image stream. Initialized at opening. */
 	private ColorSpace colorSpace = null;
@@ -85,7 +83,7 @@ public class MovieStream implements VideoStream, AudioStream {
      *
      * @return True if there is an image stream; otherwise false.
      */
-	public boolean hasVideoStream() {
+	boolean hasVideoStream() {
 	    return hasVideoStream0(streamId);
     }
 	
@@ -102,13 +100,12 @@ public class MovieStream implements VideoStream, AudioStream {
      *
      * @return True if there is an audio stream; otherwise false.
      */
-    public boolean hasAudioStream() {
+    boolean hasAudioStream() {
 	    return hasAudioStream0(streamId);
     }
 
 	/**
-	 * Native method to get the start time of the streams. Typically, this will 
-	 * be 0 seconds.
+	 * Native method to get the start time of the streams. Typically, this will be 0 seconds.
      *
 	 * @param streamId Identifier for this stream.
 	 * @return The start time in seconds.
@@ -139,6 +136,14 @@ public class MovieStream implements VideoStream, AudioStream {
      */
     private static native double getCurrentTime0(int streamId);
 
+    /**
+     * Get the stream id for this movie stream.
+     *
+     * @return the stream id.
+     */
+    int getStreamId() {
+        return streamId;
+    }
 
     @Override
 	public ColorSpace getColorSpace() {
@@ -192,15 +197,6 @@ public class MovieStream implements VideoStream, AudioStream {
 	 */
 	private static native void setPlaybackSpeed0(int streamId, float speed);
 
-    /**
-     * Set the play back speed as multiple of the native play back speed.
-     *
-     * @param speed The new play back speed.
-     */
-	public void setPlaybackSpeed(float speed) {
-	    setPlaybackSpeed0(streamId, speed);
-    }
-	
 	@Override
 	public void seek(double time) throws IndexOutOfBoundsException {
 		if (time < getStartTime() || time > getEndTime()) {
@@ -211,15 +207,14 @@ public class MovieStream implements VideoStream, AudioStream {
 		}
 	}
 
-	@Override
-	public void setSpeed(float speed) throws IndexOutOfBoundsException {
-		if (Math.abs(speed) < Math.ulp(1f)) {
-			throw new IndexOutOfBoundsException("Speed " + speed + " is not allowed.");
-		} else if (speed < MIN_SPEED || speed > MAX_SPEED) {
-			throw new IndexOutOfBoundsException("Speed " + speed + "[" + MIN_SPEED + ", " + MAX_SPEED + "]");
-		} else {
-		    setPlaybackSpeed0(streamId, speed);
-		}
+    /**
+     * Set the play back speed as multiple of the native play back speed.
+     *
+     * @param speed The new play back speed.
+     */
+    @Override
+	public void setSpeed(float speed) {
+		setPlaybackSpeed0(streamId, speed);
 	}
 
     private static native void reset0(int streamId);
@@ -279,6 +274,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	@Override
 	public int readAudioData(byte[] buffer) {
 		if (loadNextAudioData()) {
+            logger.info("StreamId " + streamId + ": Reading audio data of " + AUDIO_BUFFER_SIZE + " B.");
 			audioBuffer.get(buffer, 0, AUDIO_BUFFER_SIZE);
 			audioBuffer.rewind();
 			return 1;
@@ -304,7 +300,7 @@ public class MovieStream implements VideoStream, AudioStream {
      *
      * @return A newly allocated audio buffer.
      */
-    public ByteBuffer getAudioBuffer(int nByte) {
+    private ByteBuffer getAudioBuffer(int nByte) {
         return getAudioBuffer0(streamId, nByte);
     }
 
@@ -408,7 +404,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * 
 	 * @return The original state of playing before updating.
 	 */
-	public boolean setPlaySound(boolean playSound) {
+	boolean setPlaySound(boolean playSound) {
 	    return setPlaySound0(streamId, playSound);
     }
 
@@ -467,8 +463,7 @@ public class MovieStream implements VideoStream, AudioStream {
 
 		if (!(reqAudioFormat.getChannels()==1 && reqAudioFormat.getEncoding()==Encoding.PCM_SIGNED)
 				&& !(reqAudioFormat.getChannels()==2 && reqAudioFormat.getEncoding()==Encoding.PCM_UNSIGNED)) {
-			throw new IOException("Requested audio format " + reqAudioFormat 
-					+ " not supported!");
+			throw new IOException("Requested audio format " + reqAudioFormat + " not supported!");
 		}
 
         int[] errNoAndStreamId = open0(fileName, version, reqAudioFormat);
@@ -569,7 +564,7 @@ public class MovieStream implements VideoStream, AudioStream {
 				|| y0 < 0 || y0+height > getHeightOfStream()) {
 			throw new IndexOutOfBoundsException("The viewing window [" + x0 
 					+ ", " + x0+width + "] x [" + y0 + ", " + y0+height + "] "
-					+ "is ouside the bounds [0, " + getWidthOfStream() + "] x [0, " 
+					+ "is outside bounds [0, " + getWidthOfStream() + "] x [0, "
 					+ getHeightOfStream() + "]");
 		} else {
 			widthOfView = width;
@@ -612,6 +607,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		int nFrame;
 		// Check if we loaded at least one image frame
 		if ((nFrame = loadNextImageFrame()) > 0) {
+		    logger.info("StreamId " + streamId + ": Reading image frame.");
 			// Load the image frame into the buffer
 			ByteBuffer imageBuffer = getFrameBuffer();
 			imageBuffer.get(buffer, 0, imageBuffer.capacity());
@@ -621,8 +617,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	}
 	
 	/**
-	 * This is an example on how to use the API. Only closes cleanly if the 
-	 * video / audio has played until the end.
+	 * This is an example on how to use the API. Only closes cleanly if the video / audio has played until the end.
 	 * 
 	 * @param args Command line arguments.
 	 */
