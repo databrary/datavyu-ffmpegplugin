@@ -601,10 +601,12 @@ public:
                     // Remove samples from the end
                     if (nWanted < nSamples) {
                         nSamples = nWanted;
+                        pLogger->info("Removing %d samples from the audio.", nSamples);
                     // Repeat the final sample
                     } else if (nWanted > nSamples) {
                         uint8_t *samples_end, *q;
                         int nb = (nSamples - nWanted);
+                        pLogger->info("Repeat the last sample %d times.", nb);
                         samples_end = (uint8_t *)samples + nSamples - nBytePerSample;
                         q = samples_end + nBytePerSample;
                         while (nb > 0) {
@@ -617,6 +619,7 @@ public:
                 }
             }
         } else {
+            pLogger->info("Reset audio buffer.");
             // The difference is TOO big, reset
             audioDiffAvgCount = 0;
             audioDiffCum = 0;
@@ -1232,6 +1235,7 @@ public:
 
             // Delay read to keep the desired frame rate.
             if (delay > 0) {
+                fprintf(stderr, "StreamId %p: Image waiting for %lf seconds.", this, delay);
                 std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
             }
 
@@ -1266,7 +1270,6 @@ public:
                 // We already sent all our data; get more
                 audioSize = audioDecodeFrame(pAudioInCodecCtx, loadAudioBuffer, sizeof(loadAudioBuffer));
 
-
                 if (audioSize < 0) {
                     // If error, output silence
                     nAudioData = 1024; // arbitrary?
@@ -1274,7 +1277,6 @@ public:
                 } else {
                     nAudioData = audioSize = synchronizeAudio((int16_t *)loadAudioBuffer, audioSize);
                 }
-
 
                 iAudioData = 0;
             }

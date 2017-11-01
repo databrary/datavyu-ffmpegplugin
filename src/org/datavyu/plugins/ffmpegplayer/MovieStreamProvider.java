@@ -176,7 +176,8 @@ public class MovieStreamProvider extends MovieStream {
 				}				
 			}
 			audio.start();
-		}		
+            logger.info("StreamId " + getStreamId() + ": Started audio thread.");
+		}
 	}
 
 	/**
@@ -195,6 +196,7 @@ public class MovieStreamProvider extends MovieStream {
 				}		
 			}
 			video.start();
+            logger.info("StreamId " + getStreamId() + ": Started video thread");
 		}
 	}
 	
