@@ -276,8 +276,8 @@ public class MovieStreamProvider extends MovieStream {
 	}
 	
 	/**
-	 * Stops playing the video if a video is running and there is a video 
-	 * stream.  Calls stream stopped on all video listeners. 
+	 * Stops playing the video if a video is running and there is a video stream.  Calls stream stopped on all video
+     * listeners.
 	 */
 	public void stop() {
 		stopVideo();
@@ -285,9 +285,8 @@ public class MovieStreamProvider extends MovieStream {
 	}	
 	
 	/**
-	 * Adds an audio stream listener. If this stream provider is already running
-	 * the added listener is opened immediately after being added and before any
-	 * data is fed.
+	 * Adds an audio stream listener. If this stream provider is already running the added listener is opened
+     * immediately after being added and before any data is fed.
 	 * 
 	 * @param streamListener The stream listener that is added.
 	 */
@@ -305,9 +304,8 @@ public class MovieStreamProvider extends MovieStream {
 	}
 	
 	/**
-	 * Adds a video stream listener. If this stream provider is already running
-	 * the added listener is opened immediately after being added and before any
-	 * data is fed.
+	 * Adds a video stream listener. If this stream provider is already running the added listener is opened immediately
+     * after being added and before any data is fed.
 	 * 
 	 * @param streamListener The stream listener that is added.
 	 */

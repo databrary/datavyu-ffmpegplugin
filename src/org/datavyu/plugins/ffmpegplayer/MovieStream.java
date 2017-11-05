@@ -22,7 +22,7 @@ public class MovieStream implements VideoStream, AudioStream {
 
 	/*
 	 * Load the native library that interfaces to ffmpeg. This load assumes that dependent dll's are in the JVM's
-	 * classpath. In our example this is the directory above the directory '.'.
+	 * classpath. In our example this is the directory '.'.
 	 */
 	static {
 		System.loadLibrary("MovieStream");
@@ -34,7 +34,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	/** The size of the audio buffer */
 	private final static int AUDIO_BUFFER_SIZE = 64*1024; // 64 kB
 	
-	/** The duration of the video/audio. Initialized at opening. */
+	/** The duration of the video/audio. This is initialized when opening the stream. */
 	protected double duration = 0;
 	
 	/** The width of the image in the stream. Changes with the file. */
@@ -67,7 +67,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	/** The color space of the image stream. Initialized at opening. */
 	private ColorSpace colorSpace = null;
 	
-	/** Indicates that a image/audio stream is open. */
+	/** Indicates that an image/audio stream is open. */
 	private boolean isOpen = false;
 	
 	/**
@@ -200,8 +200,8 @@ public class MovieStream implements VideoStream, AudioStream {
 	@Override
 	public void seek(double time) throws IndexOutOfBoundsException {
 		if (time < getStartTime() || time > getEndTime()) {
-			throw new IndexOutOfBoundsException("Time " + time + " is not in " 
-					+ "range [" + getStartTime() + ", " + getEndTime() + "]");
+			throw new IndexOutOfBoundsException("Time " + time + " is not in " + "range [" + getStartTime() + ", "
+					+ getEndTime() + "]");
 		} else {
 			setTime0(streamId, time);
 		}
@@ -274,7 +274,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	@Override
 	public int readAudioData(byte[] buffer) {
 		if (loadNextAudioData()) {
-            logger.info("StreamId " + streamId + ": Reading audio data of " + AUDIO_BUFFER_SIZE + " B.");
+            logger.info("StreamId " + streamId + ": Reading " + AUDIO_BUFFER_SIZE + " B of audio data.");
 			audioBuffer.get(buffer, 0, AUDIO_BUFFER_SIZE);
 			audioBuffer.rewind();
 			return 1;
@@ -283,8 +283,8 @@ public class MovieStream implements VideoStream, AudioStream {
 	}
 	
 	/**
-	 * Initialized a byte buffer of the size nByte in the native code and 
-	 * returns the instance of that initialized byte buffer.
+	 * Initializes a byte buffer of the size nByte in the native code and returns the instance of that initialized byte
+     * buffer.
 	 *
      * @param streamId Identifier of this movie stream.
 	 * @param nByte The number of bytes that the buffered is initialized with.
@@ -298,7 +298,7 @@ public class MovieStream implements VideoStream, AudioStream {
      *
      * @param nByte The size of the buffer in bytes.
      *
-     * @return A newly allocated audio buffer.
+     * @return A newly allocated byte buffer to hold audio data.
      */
     private ByteBuffer getAudioBuffer(int nByte) {
         return getAudioBuffer0(streamId, nByte);
@@ -307,10 +307,11 @@ public class MovieStream implements VideoStream, AudioStream {
     private static native String getSampleFormat0(int streamId);
 
     /**
-	 * Get the sample format name.
+	 * Get the name of the sample format.
 	 * 
 	 * @return The name of the sample format.
 	 */
+    @SuppressWarnings("unused") // API method
 	private String getSampleFormat() {
 	    return getSampleFormat0(streamId);
     }
@@ -351,9 +352,8 @@ public class MovieStream implements VideoStream, AudioStream {
     private static native int getNumberOfSoundChannels0(int streamId);
 
 	/**
-	 * Get the number of sound channels. For mono, this method returns 1. For 
-	 * stereo this method returns 2. Notice, that more channels are possible 
-	 * too, depending on the stream. E.g. surround sound can have five channels.
+	 * Get the number of sound channels. For mono, this method returns 1. For stereo this method returns 2. Notice, that
+     * more channels are possible too, depending on the stream. For instance, surround sound can have five channels.
 	 * 
 	 * @return The number of sound channels.
 	 */
@@ -390,6 +390,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	 * 
 	 * @return True for big endian and false for little endian.
 	 */
+	@SuppressWarnings("unused") // API method
 	private boolean bigEndian() {
 	    return bigEndian0(streamId);
     }
@@ -399,8 +400,7 @@ public class MovieStream implements VideoStream, AudioStream {
 	/**
 	 * Set the boolean that determines whether sound should be played or not.
 	 * 
-	 * @param playSound If set to false no sound will be pulled if set to true 
-	 * sound will pulled out of the stream.
+	 * @param playSound If set to false no sound will be pulled if set to true sound will pulled out of the stream.
 	 * 
 	 * @return The original state of playing before updating.
 	 */
@@ -458,12 +458,12 @@ public class MovieStream implements VideoStream, AudioStream {
             throws IOException {
 
 		if (reqColorSpace != ColorSpace.getInstance(ColorSpace.CS_sRGB)) {
-			throw new IOException("Color space " + reqColorSpace + " not supported!");
+			throw new IOException("Color space " + reqColorSpace + " is not supported!");
 		}
 
 		if (!(reqAudioFormat.getChannels()==1 && reqAudioFormat.getEncoding()==Encoding.PCM_SIGNED)
 				&& !(reqAudioFormat.getChannels()==2 && reqAudioFormat.getEncoding()==Encoding.PCM_UNSIGNED)) {
-			throw new IOException("Requested audio format " + reqAudioFormat + " not supported!");
+			throw new IOException("Requested audio format " + reqAudioFormat + " is not supported!");
 		}
 
         int[] errNoAndStreamId = open0(fileName, version, reqAudioFormat);
@@ -479,19 +479,21 @@ public class MovieStream implements VideoStream, AudioStream {
         startTime = getStartTime0(streamId);
         endTime = getEndTime0(streamId);
 		duration = getDuration0(streamId);
+
 		if (hasVideoStream()) {
 			widthOfView = widthOfStream = getWidth0(streamId);
 			heightOfView = heightOfStream = getHeight0(streamId);
 			nChannels = getNumberOfColorChannels0(streamId);
 		}
+
 		if (hasAudioStream()) {
 			audioBuffer = getAudioBuffer(AUDIO_BUFFER_SIZE);
 			// When using stereo need to multiply the frameSize by number of channels
-			audioFormat = new AudioFormat(getEncoding(), getSampleRate(), 
-					getSampleSizeInBits(), getNumberOfSoundChannels(), 
-					getFrameSize() * getNumberOfSoundChannels(), 
-					(int) getFrameRate(), false);			
+			audioFormat = new AudioFormat(getEncoding(), getSampleRate(), getSampleSizeInBits(),
+                    getNumberOfSoundChannels(),getFrameSize() * getNumberOfSoundChannels(),
+					(int) getFrameRate(), false);
 		}
+
 		isOpen = true;
 	}
 
@@ -562,9 +564,8 @@ public class MovieStream implements VideoStream, AudioStream {
 	public void setView(int x0, int y0, int width, int height) throws IndexOutOfBoundsException {
 		if (x0 < 0 || x0+width > getWidthOfStream() 
 				|| y0 < 0 || y0+height > getHeightOfStream()) {
-			throw new IndexOutOfBoundsException("The viewing window [" + x0 
-					+ ", " + x0+width + "] x [" + y0 + ", " + y0+height + "] "
-					+ "is outside bounds [0, " + getWidthOfStream() + "] x [0, "
+			throw new IndexOutOfBoundsException("The viewing window [" + x0 + ", " + x0+width + "] x [" + y0 + ", "
+                    + y0+height + "] " + "is outside bounds [0, " + getWidthOfStream() + "] x [0, "
 					+ getHeightOfStream() + "]");
 		} else {
 			widthOfView = width;
@@ -637,15 +638,14 @@ public class MovieStream implements VideoStream, AudioStream {
 		try {
 			movieStream.open(fileName, version, reqColorSpace, reqAudioFormat);
 			List<Thread> threads = new ArrayList<>(2);
-			//movieStream.setSpeed(2f);
 			if (movieStream.hasVideoStream()) {
-				final Frame f = new Frame();
+				final Frame frame = new Frame();
 				final VideoDisplay videoDisplay = new VideoDisplay(movieStream);
 				int width = movieStream.getWidthOfStream();
 				int height = movieStream.getHeightOfStream();
-		        f.setBounds(0, 0, width, height);
-		        f.add(videoDisplay);
-		        f.addWindowListener( new WindowAdapter() {
+		        frame.setBounds(0, 0, width, height);
+		        frame.add(videoDisplay);
+		        frame.addWindowListener( new WindowAdapter() {
 		            public void windowClosing(WindowEvent ev) {
 		            	try {
 							movieStream.close();
@@ -655,7 +655,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		                System.exit(0);
 		            }
 		        } );
-		        f.setVisible(true);
+		        frame.setVisible(true);
 		        // Create a thread to play the images
 		    	class ImagePlayerThread extends Thread {
 		    		@Override
@@ -664,7 +664,7 @@ public class MovieStream implements VideoStream, AudioStream {
 		    				videoDisplay.showNextFrame();	    				
 		    			}
 		    		}
-		    	}	    	
+		    	}
 		    	// Create a thread to play the audio
 		    	threads.add(new ImagePlayerThread());
 			}

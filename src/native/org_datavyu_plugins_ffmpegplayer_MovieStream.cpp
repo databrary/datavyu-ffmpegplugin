@@ -628,8 +628,7 @@ public:
     }
 
     /**
-     * Initialize the re-sampler context for the audio signal.  This re-sampler is
-     * transcoding the audio signals.
+     * Initialize the re-sampler context for the audio signal.  This re-sampler is transcoding the audio signals.
      */
     static int initResampler(AVCodecContext *inCodecCtx, AVCodecContext *outCodecCtx, SwrContext **pResampleCtx,
                              Logger* pLogger) {
@@ -701,9 +700,7 @@ public:
                               SwrContext *pResampleCtx, Logger* pLogger) {
         int errNo;
         // Convert samples using the resampler context.
-        if ((errNo = swr_convert(pResampleCtx,
-                                 convertedData, frameSize,
-                                 inData, frameSize)) < 0) {
+        if ((errNo = swr_convert(pResampleCtx, convertedData, frameSize, inData, frameSize)) < 0) {
             pLogger->error("Could not convert input samples. Error '%s'.", getErrorText(errNo));
             return errNo;
         }
@@ -1235,7 +1232,7 @@ public:
 
             // Delay read to keep the desired frame rate.
             if (delay > 0) {
-                fprintf(stderr, "StreamId %p: Image waiting for %lf seconds.", this, delay);
+                fprintf(stderr, "StreamId %p: Image waiting for %lf seconds.\n", this, delay);
                 std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
             }
 

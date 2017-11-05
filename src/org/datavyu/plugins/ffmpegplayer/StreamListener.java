@@ -23,6 +23,7 @@ public interface StreamListener {
 	/**
 	 * This method is called when the stream is closed.
 	 */
+	@SuppressWarnings("unused") // API method
 	void streamClosed();
 	
 	/**

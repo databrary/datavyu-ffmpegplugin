@@ -74,6 +74,7 @@ public class AudioPlayer {
 	 * 
 	 * @return String representation of the sample format of the output audio.
 	 */
+	@SuppressWarnings("unused") // API method
 	private native String getSampleFormat();
 
 	/**
@@ -128,6 +129,7 @@ public class AudioPlayer {
 	 * 
 	 * @return Endianess for the output audio.
 	 */
+	@SuppressWarnings("unused") // API method
 	private native boolean bigEndian();
 
 	/**
@@ -267,16 +269,15 @@ public class AudioPlayer {
 	 */
 	@SuppressWarnings("WeakerAccess") // interface method
 	public boolean playNextFrame() {
-		boolean hasNext = false;
+		boolean hasNext;
 		if ((hasNext = loadNextFrame())) {
-			// Copy data from the buffer into sample data
-			// We cannot directly copy from buffer.data() because the buffer is 
-			// not backed by an array
+			// Copy data from the buffer into sound line
+			// We cannot directly copy from buffer.data() because the buffer is not backed by an array
 			buffer.get(sampleData, 0, BUFFER_SIZE);
 			soundLine.write(sampleData, 0, BUFFER_SIZE);
 			buffer.rewind();
 		}
-		return hasNext;		
+		return hasNext;
 	}
 	
 	/**
@@ -297,7 +298,7 @@ public class AudioPlayer {
 	 * 
 	 * @return The output audio format.
 	 */
-	public AudioFormat getOutputAudioFormat() {
+	AudioFormat getOutputAudioFormat() {
 		return outAudioFormat;
 	}
 	
@@ -307,12 +308,12 @@ public class AudioPlayer {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+	    String fileName = "C:\\Users\\Florian\\DatavyuSampleVideo.mp4";
 		//String fileName = "C:\\Users\\Florian\\SleepingBag.MP4";
 		//String fileName = "C:\\Users\\Florian\\WalkingVideo.mov";
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\dvm1.mpg";
 		//String fileName = "C:\\Users\\Florian\\VideosForPlayer\\Gah.mov";
-		//String fileName = "C:\\Users\\Florian\\Los_Parranderos.mp3";
-		String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
+		//String fileName = "C:\\Users\\Florian\\a2002011001-e02.wav";
 		//String dirName = "C:\\Users\\Florian\\AudioCodecs\\";
 		//String fileName = dirName + "audio_aac.mp4";
 		//String fileName = dirName + "audio_aacplus1.mp4";
@@ -338,7 +339,7 @@ public class AudioPlayer {
 			if (errNo != 0) {
 				System.err.println("Could not open audio file: " + fileName + ", errNo: " + errNo);
 			} else {
-				while (player.playNextFrame()) {}				
+				while (player.playNextFrame()) {}
 			}
 		} catch (LineUnavailableException ex) {
 			ex.printStackTrace();

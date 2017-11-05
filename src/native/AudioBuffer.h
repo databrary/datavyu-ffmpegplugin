@@ -46,6 +46,7 @@ public:
 		n_packets = 0;
 		mu = new std::mutex;
 		cv = new std::condition_variable;
+		flushing = false; // initialize flushing to false!
 	}
 
 	/**
@@ -117,8 +118,7 @@ public:
 		pkt1->next = nullptr;
 		std::unique_lock<std::mutex> locker(*mu);
 		// Wait if we have no more space except for when flushing
-		cv->wait(locker, [this](){return (n_packets < AUDIO_QUEUE_MAX_SIZE) 
-					|| flushing;});
+		cv->wait(locker, [this](){return (n_packets < AUDIO_QUEUE_MAX_SIZE) || flushing;});
 		if (flushing) {
 			av_free(pkt1);
 		} else {

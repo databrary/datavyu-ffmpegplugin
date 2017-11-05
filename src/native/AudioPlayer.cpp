@@ -150,13 +150,11 @@ static int initConvertedSamples(uint8_t ***convertedInSamples, AVCodecContext *o
  * The conversion happens on a per-frame basis, the size of which is specified
  * by frameSize.
  */
-static int convertSamples(const uint8_t **inData, uint8_t **convertedData, 
-						   const int frameSize, SwrContext *pResampleCtx) {
+static int convertSamples(const uint8_t **inData, uint8_t **convertedData, const int frameSize,
+                          SwrContext *pResampleCtx) {
     int errNo;
     /** Convert samples using the resampler context. */
-    if ((errNo = swr_convert(pResampleCtx,
-                             convertedData, frameSize,
-                             inData, frameSize)) < 0) {
+    if ((errNo = swr_convert(pResampleCtx, convertedData, frameSize, inData, frameSize)) < 0) {
         fprintf(stderr, "Could not convert input samples. Error '%s')\n", getErrorText(errNo));
         return 1;
     }
@@ -164,8 +162,7 @@ static int convertSamples(const uint8_t **inData, uint8_t **convertedData,
 }
 
 // decodes packet from queue into audioByteBuffer
-int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer, 
-					 int bufferSize) {
+int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer, int bufferSize) {
 	static AVPacket pkt;
 	static uint8_t *pAudioPktData = nullptr;
 	static int audioPktSize = 0;
@@ -197,9 +194,7 @@ int audioDecodeFrame(AVCodecContext *pAudioInCodecCtx, uint8_t *audioByteBuffer,
 
 				assert(dataSize <= bufferSize);
 
-				if ((errNo = initConvertedSamples(&convertedInSamples, 
-													pAudioOutCodecCtx, 
-													frame.nb_samples)) < 0) {
+				if ((errNo = initConvertedSamples(&convertedInSamples, pAudioOutCodecCtx, frame.nb_samples)) < 0) {
 					// clean-up
 					if (convertedInSamples) {
 						av_freep(&convertedInSamples[0]);
@@ -271,8 +266,7 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_loadNextFrame(JNIEnv *env, jobject t
 	static unsigned int audioBufferSize = 0;
 	static unsigned int audioBufferIndex = 0;
 
-	// If we are at the end of the end of the file then do not load another 
-	// empty buffer
+	// If we are at the end of the end of the file then do not load another empty buffer
 	if (doneDecoding || pAudioBuffer->empty()) {
 		return false;
 	}
@@ -649,6 +643,7 @@ JNIEXPORT jint JNICALL Java_AudioPlayer_loadAudio
 		return errNo;
 	}
 
+    quit = 0;
 	decodeAudio = new std::thread(decodeLoop);
 	env->ReleaseStringUTFChars(jFileName, fileName);
 
@@ -706,7 +701,6 @@ JNIEXPORT jboolean JNICALL Java_AudioPlayer_bigEndian
 
 JNIEXPORT void JNICALL Java_AudioPlayer_release
 (JNIEnv *env, jobject thisObject) {
-
 
 	if (loadedMovie) {
 		pAudioBuffer->flush();

@@ -21,7 +21,7 @@ public interface AudioStream extends TimeStream {
 	 * This method blocks if called and there is no available data.
 	 * 
 	 * @param buffer The buffer where to put the data.
-	 * @return
+	 * @return 1 if data was read otherwise 0.
 	 */
 	int readAudioData(byte[] buffer);
 

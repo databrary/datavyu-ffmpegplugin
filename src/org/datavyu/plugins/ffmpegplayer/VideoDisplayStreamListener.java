@@ -15,9 +15,8 @@ import java.awt.image.WritableRaster;
 import java.util.Hashtable;
 
 /**
- * This class implements a stream listener for the video data. It receives
- * the byte data from the provider typically a MoieStream and displays it as 
- * image.
+ * This class implements a stream listener for the video data. It receives byte data from the provider, which is
+ * typically a MovieStream, and displays it as image.
  * 
  * @author Florian Raudies, Mountain View, CA.
  */
@@ -27,13 +26,10 @@ public class VideoDisplayStreamListener implements StreamListener {
 	private ComponentColorModel cm = null;
 	
 	/** The properties */
-	private Hashtable<String, String> properties = new Hashtable<String, String>();
+	private Hashtable<String, String> properties = new Hashtable<>();
 	
 	/** The buffered image to display*/
 	private BufferedImage image = null;
-	
-	/** The number of channels of the image */
-	private int nChannel = 0;
 	
 	/** The canvas that we draw the image in */
 	private Canvas imageDisplay = null;
@@ -82,7 +78,7 @@ public class VideoDisplayStreamListener implements StreamListener {
         if (constraints != null) {
         	container.add(imageDisplay, constraints);
         } else {
-            container.add(imageDisplay);        	
+            container.add(imageDisplay);
         }		
 	}
 
@@ -119,8 +115,9 @@ public class VideoDisplayStreamListener implements StreamListener {
 	public void streamOpened() {
 		int width = movieStream.getWidthOfView();
 		int height = movieStream.getHeightOfView();		
-		nChannel = movieStream.getNumberOfColorChannels();
-		cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+		int nChannel = movieStream.getNumberOfColorChannels();
+		cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
+				DataBuffer.TYPE_BYTE);
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		// Initialize an empty image
 		DataBufferByte dataBuffer = new DataBufferByte(new byte[width*height*nChannel], width*height);
@@ -135,9 +132,12 @@ public class VideoDisplayStreamListener implements StreamListener {
 		int width = movieStream.getWidthOfView(); 
 		int height = movieStream.getHeightOfView();
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
-		DataBufferByte dataBuffer = new DataBufferByte(data, width*height); // Create data buffer.
-		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0)); // Create writable raster.
-		image = new BufferedImage(cm, raster, false, properties); // Create buffered image.
+		// Create data buffer
+		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
+		// Create writable raster
+		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
+		// Create buffered image
+		image = new BufferedImage(cm, raster, false, properties);
 		imageDisplay.repaint();
 	}
 
@@ -148,12 +148,15 @@ public class VideoDisplayStreamListener implements StreamListener {
 	
 	@Override
 	public void streamStarted() {
-		stopped = false; // start displaying
-		imageDisplay.repaint(); // display the current frame
+		// start displaying
+		stopped = false;
+		// display the current frame
+		imageDisplay.repaint();
 	}
 	
 	@Override
 	public void streamStopped() {
-		stopped = true; // stop displaying
+		// stop displaying
+		stopped = true;
 	}
 }

@@ -68,17 +68,17 @@ class ImageBuffer {
 	/** Mutex to control access of variables. */
 	std::mutex mu;
 
-	/** Conditional variable to control acces of variables. */
+	/** Conditional variable to control access of variables. */
 	std::condition_variable cv;
 
-	/** Pointer to logger. Assumes that his pointer is initializd. */
+	/** Pointer to logger. Assumes that his pointer is initialized. */
 	Logger* pLogger;
 
-	/** Used for conversion of pts into frame no during printing. */
+	/** Used for conversion of pts into frame for printing. */
 	int64_t avgDeltaPts;
 
 	/**
-	 * Resets the buffer to the intial state.
+	 * Resets the buffer to the initial state.
 	 */
 	void reset() {
 		iRead = 0;
@@ -96,11 +96,9 @@ class ImageBuffer {
 	inline int nFree() const { return std::min(nData - nBefore, nData) - 1; }
 
 	/**
-	 * RETURNS true if we are in reverse and we have not written any frames in 
-	 * reverse.
+	 * RETURNS true if we are in reverse and we have not written any frames in reverse.
 	 */
-	inline bool notReversed() const { return iReverse == nReverse 
-											&& nReverse > 0; }
+	inline bool notReversed() const { return iReverse == nReverse && nReverse > 0; }
 
 public:
 
@@ -122,8 +120,7 @@ public:
 			// Create the data buffer and associate it with the buffer.
 			int nByte = avpicture_get_size(AV_PIX_FMT_RGB24, width, height);
 			uint8_t* bufferShow = (uint8_t*) av_malloc(nByte*sizeof(uint8_t));
-			avpicture_fill((AVPicture*)pFrame, bufferShow, AV_PIX_FMT_RGB24,
-				 width, height);
+			avpicture_fill((AVPicture*)pFrame, bufferShow, AV_PIX_FMT_RGB24, width, height);
 		}
 
 		// Initialize the index variables in the buffer by invoking reset.
@@ -153,21 +150,19 @@ public:
 	inline bool inReverse() const { return iReverse > 0; }
 
 	/**
-	 * This buffer is emtpy if all loaded frames are read.
+	 * This buffer is empty if all loaded frames are read.
 	 */
 	inline bool empty() const { return nBefore == 0; }
 
 	/**
-	 * Set the minimum number of images required to reverse. Set this to 1 
-	 * before changing direction from backward to forward. Set this to 
-	 * N_MIN_IMAGES when changing direction from forward to backward.
+	 * Set the minimum number of images required to reverse. Set this to 1 before changing direction from backward to
+	 * forward. Set this to N_MIN_IMAGES when changing direction from forward to backward.
 	 */
 	void setNMinImages(int nMin) { nMinImages = nMin; }
 
 	/**
-	 * Flushes the buffer and sets it into its initial state. This state is the
-	 * same as the one after creating this obejct instance with one exception:
-	 * The playback direction is not reset.
+	 * Flushes the buffer and sets it into its initial state. This state is the same as the one after creating this
+	 * object instance with one exception: The playback direction is not reset.
 	 */
 	void flush() {
 		flushing = true;
@@ -327,7 +322,7 @@ public:
 	/**
 	 * Request a put pointer. Notice this request does not change the internal
 	 * pointers within the buffer. We separated requestPutPtr and completePutPtr
-	 * because we may request the same write pointer several times without 
+	 * because we may request the same put pointer several times without
 	 * wanting to change the internal pointers of the buffer.
 	 *
 	 * RETURNS A pointer to an AVFrame.
@@ -337,7 +332,7 @@ public:
 		std::unique_lock<std::mutex> locker(mu);
 		
 		// This checks that there are 2 frames left for reverse with toggle from 
-		// revere into forward taking two extra frames. Keep >= 2 frames free!
+		// reverse into forward taking two extra frames. Keep >= 2 frames free!
 		cv.wait(locker, [this](){return nFree() > 1 || flushing;});
 
 		// If we do not flush get the write position.
@@ -357,18 +352,16 @@ public:
 		std::unique_lock<std::mutex> locker(mu);
 
 		// If not flushing iReverse is subtracted by one if reverse == true.
-		// nAfter is reduced if we have written all elements that is 
-		// nBefore + nAfter == Data.
-		// nBefore is inceased by 1 if not in reverse otherwise it is increased 
-		// by nReverse if we are done with writing the block that is when 
-		// iReverse == 0.
+		// nAfter is reduced if we have written all elements that is nBefore + nAfter == Data.
+		// nBefore is increased by 1 if not in reverse otherwise it is increased
+		// by nReverse if we are done with writing the block that is when iReverse == 0.
 		if (!flushing) {
 			iWrite = (iWrite + 1) % nData;
 			iReverse -= reverse;
 			nAfter -= (nBefore + nAfter) == nData;
 			nBefore += reverse ? (iReverse == 0) * nReverse : 1;
 		}
-		locker.unlock();	
+		locker.unlock();
 		cv.notify_all();
 	}
 

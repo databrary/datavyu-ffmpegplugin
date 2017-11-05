@@ -34,15 +34,11 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	/** The directory last opened is used to initialize the file chooser. */
 	private File lastDirectory = new File(System.getProperty("user.home"));
 	
-	/** 
-	 * A slider displays the current frame and the user can drag the slider
-	 * to switch to a different frame. 
-	 */
+	/** A slider displays the current frame and the user can drag the slider to switch to a different frame. */
 	private JSlider slider;
 	
 	/**
-	 * An encapsulated class that ensures that filters files down to video files
-	 * based on known file extensions.
+	 * An encapsulated class that ensures that filters files down to video files based on known file extensions.
 	 */
 	class VideoFilter extends FileFilter {
 		
@@ -65,10 +61,10 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			
 			// Convert to all lower case.
 			ext = ext.toLowerCase();
-						
+
 			// Filter out the available file formats.
-			return ext.equals("mp4") || ext.equals("mpg") || ext.equals("h264")
-					|| ext.equals("mov") || ext.equals("wav");
+			return ext.equals("mp4") || ext.equals("mpg") || ext.equals("h264") || ext.equals("mov")
+					|| ext.equals("wav");
 		}
 		
 		@Override
@@ -211,11 +207,11 @@ public class MoviePlayer extends JPanel implements WindowListener {
         MovieStreamProvider movieStreamProvider;
         final Frame frame;
 
-        public MoviePlayerFrame(String movieFileName) throws IOException {
+        MoviePlayerFrame(String movieFileName) throws IOException {
             this(movieFileName, "0.0.0.1");
         }
 
-        public MoviePlayerFrame(String movieFileName, String version) throws IOException {
+        MoviePlayerFrame(String movieFileName, String version) throws IOException {
             movieStreamProvider = new MovieStreamProvider();
             final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             AudioFormat reqAudioFormat = AudioSound.getNewMonoFormat();
@@ -243,7 +239,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
             frame.setVisible(true);
         }
 
-        public MovieStreamProvider getMovieStreamProvider() {
+        MovieStreamProvider getMovieStreamProvider() {
             return movieStreamProvider;
         }
     }

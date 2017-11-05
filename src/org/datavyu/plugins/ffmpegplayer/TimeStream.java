@@ -63,7 +63,7 @@ public interface TimeStream {
 	 * arbitrarily fast. If the implementing class does not support a value it 
 	 * throws this exception.
 	 */
-	void setSpeed(float speed) throws IndexOutOfBoundsException; // play back speed for the movie
+	void setSpeed(float speed);
 	
 	/**
 	 * Rewinds the stream to the starting position. In forward play back the 

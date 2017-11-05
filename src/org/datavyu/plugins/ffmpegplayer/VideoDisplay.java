@@ -21,15 +21,11 @@ import java.util.Hashtable;
  */
 public class VideoDisplay extends Canvas {
 	
-	/** RGB sample model. */
-	protected ColorSpace cs;
-	
 	/** Samples components without transparency using a byte format. */
-	protected ComponentColorModel cm;
+	private ComponentColorModel cm;
 	
 	/** These properties are used to create the buffered image. */
-	protected Hashtable<String, String> properties = 
-			new Hashtable<String, String>();
+	private Hashtable<String, String> properties = new Hashtable<>();
 	
 	/** The number of channels, typically 3. */
 	protected int nChannel = 0;
@@ -40,14 +36,11 @@ public class VideoDisplay extends Canvas {
 	/** A copy of the raw data used to be wrapped by the data byte buffer. */
 	protected byte[] data = null;
 	
-	/** Used to buffer the image. */
-	protected DataBufferByte dataBuffer = null;
-	
 	/** Used to create the buffered image. */
-	protected SampleModel sm = null;
+	private SampleModel sm = null;
 	
 	/** Movie stream that backs this canvas. */
-	protected MovieStream movieStream = null;
+	private MovieStream movieStream = null;
 	
 	/** Unique id for serialization of this class. */
 	private static final long serialVersionUID = 8365021112734430014L;
@@ -63,23 +56,22 @@ public class VideoDisplay extends Canvas {
 		// Set the movie stream
 		this.movieStream = movieStream;
 		// Get the color space from the movie stream
-		cs = movieStream.getColorSpace();
+		ColorSpace cs = movieStream.getColorSpace();
 		// Get the width, height, number of channels in the stream
 		int width = movieStream.getWidthOfView();
 		int height = movieStream.getHeightOfView();
 		nChannel = movieStream.getNumberOfColorChannels();	
 		// Construct the component model that interprets bytes in the channels
-		cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE, 
+		cm = new ComponentColorModel(cs, false, false, Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE);
 		// Create a sampling model for the given width and height of the image
-		sm = cm.createCompatibleSampleModel(width, height);		
+		sm = cm.createCompatibleSampleModel(width, height);
 		// Allocate the data buffer for the width, height, channels in bytes
 		data = new byte[width*height*nChannel];	
 		// Wrap the byte buffer in a data buffer
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
 		// Use the byte buffer in a writable raster for the buffered image
-		WritableRaster raster = WritableRaster.createWritableRaster(sm, 
-				dataBuffer, new Point(0,0));
+		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
 		// Create the buffered image with the color model and raster
 		image = new BufferedImage(cm, raster, false, properties);
 		// Set the bounds for this canvas according to the width and height
@@ -105,8 +97,7 @@ public class VideoDisplay extends Canvas {
 		// Create a data buffer for the new width and height with the data
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
 		// Create the writable raster that wraps the new data buffer
-		WritableRaster raster = WritableRaster.createWritableRaster(sm, 
-				dataBuffer, new Point(0, 0));
+		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
 		// Create the buffered image for the new raster
 		image = new BufferedImage(cm, raster, false, properties);
 		// Trigger a re-paint of the image in the canvas
