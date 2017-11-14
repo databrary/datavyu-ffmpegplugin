@@ -97,7 +97,9 @@ public class MovieStreamProvider extends MovieStream {
 	 * @return True if an image frame was consumed; otherwise false.
 	 */
 	boolean nextImageFrame() {
+	    logger.info("Checking for the next available frame.");
 		if (availableImageFrame()) {
+		    logger.info("Got a next available frame.");
 			// Allocate space for a byte buffer
 			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
 			// Read the next image frame -- blocks if none is available
@@ -107,7 +109,7 @@ public class MovieStreamProvider extends MovieStream {
 				for (StreamListener listener : videoListeners) {
 					listener.streamData(buffer);
 				}					
-			}					
+			}
 			return true;
 		}
 		return false;
@@ -214,6 +216,15 @@ public class MovieStreamProvider extends MovieStream {
 			}		
 		}		
 	}
+
+	@SuppressWarnings("unused") // API method
+	void stopVideoListeners() {
+	    synchronized (videoListeners) {
+	        for (StreamListener listener : videoListeners) {
+	            listener.streamStopped();
+            }
+        }
+    }
 	
 	/**
 	 * Start the audio and video playing if there is an audio stream and a video 

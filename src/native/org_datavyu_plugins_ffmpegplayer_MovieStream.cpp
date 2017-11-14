@@ -5,6 +5,7 @@
 #include "AVLogger.h"
 #include <jni.h>
 #include <cstdio>
+#include <cstdlib>
 #include <ctime>
 #include <cmath>
 #include <cassert>
@@ -12,7 +13,7 @@
 #include <thread>
 #include <chrono>
 #include <algorithm>
-#include <cstdlib>
+#include <string>
 #include <sstream>
 #include <map>
 
@@ -41,6 +42,7 @@ cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\MovieStream"^
  "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib"^
  "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib"^
  "C:\Users\Florian\FFmpeg-release-3.3\libswresample\swresample.lib"
+copy ..\..\MovieStream.* ..\..\lib\MovieStream.*
 */
 
 /*
@@ -293,10 +295,10 @@ int getAudioFormat(JNIEnv *env, AudioFormat* audioFormat, const jobject& jAudioF
 	return 0; // No error
 }
 
-static const char *getErrorText(const int error) {
+std::string getErrorText(const int error) {
     char error_buffer[256];
     av_strerror(error, error_buffer, sizeof(error_buffer));
-    return error_buffer;
+    return std::string(error_buffer, sizeof(error_buffer));
 }
 
 /*****************************************************************************************
@@ -480,24 +482,25 @@ public:
     /** True if a viewing window is set, otherwise false. Set to false on reset */
     bool doView;
 
-
     /** Parameters for methods converting the audio signal. These DO NOT NEED TO BE INITIALIZED OR FREED */
 
     /** Packet for 'audioDecodeFrame' method */
-    AVPacket audioDecodePkt;
+    AVPacket *pAudioDecodeFramePkt;
 
     /** Pointer to data for the 'audioDecodeFrame' method */
-    uint8_t *pAudioDecodePktData = nullptr;
+    uint8_t *pAudioDecodePktData;
 
     /** Size of the audio decode packet used in the 'audioDecodeFrame' method */
-    int audioDecodePktSize = 0;
+    int audioDecodePktSize;
 
     /** AVFrame used in the 'audioDecodeFrame' method */
-    AVFrame audioDecodeAVFrame;
+    AVFrame *pAudioDecodeAVFrame;
+
+    /** size of the audio buffer used in the 'loadNextAudioData' method */
+    int nLoadAudioByteBuffer;
 
     /** audio buffer used in the 'loadNextAudioData' method */
-    uint8_t loadAudioBuffer[(MAX_AUDIO_FRAME_SIZE * 3) / 2];
-
+    uint8_t *pLoadAudioByteBuffer;
 
     MovieStream() :
         width(0),
@@ -550,7 +553,25 @@ public:
         heightView(0),
         x0View(0),
         y0View(0),
-        doView(false) { /* nothing to do here */ }
+        doView(false),
+        pAudioDecodeFramePkt(nullptr),
+        pAudioDecodePktData(nullptr),
+        audioDecodePktSize(0),
+        pAudioDecodeAVFrame(nullptr) {
+
+        // Initialize the pkt and frame and buffer for methods
+        pAudioDecodeFramePkt = av_packet_alloc();
+        pAudioDecodeAVFrame = av_frame_alloc();
+        nLoadAudioByteBuffer = ((MAX_AUDIO_FRAME_SIZE * 3) / 2) * sizeof(uint8_t);
+        pLoadAudioByteBuffer = (uint8_t*) malloc(nLoadAudioByteBuffer);
+    }
+
+    virtual ~MovieStream() {
+        // Clean up memory
+        free(pLoadAudioByteBuffer);
+        av_packet_free(&pAudioDecodeFramePkt);
+        av_frame_free(&pAudioDecodeAVFrame);
+    }
 
     static int getId() {
         return ++id;
@@ -718,7 +739,7 @@ public:
         for (;;) {
             while (audioDecodePktSize > 0) {
                 int gotFrame = 0;
-                dataLen = avcodec_decode_audio4(pAudioInCodecCtx, &audioDecodeAVFrame, &gotFrame, &audioDecodePkt);
+                dataLen = avcodec_decode_audio4(pAudioInCodecCtx, pAudioDecodeAVFrame, &gotFrame, pAudioDecodeFramePkt);
 
                 // If an error occurred skip the frame
                 if (dataLen < 0) {
@@ -733,7 +754,7 @@ public:
                 if (gotFrame) {
                     dataSize = av_samples_get_buffer_size(NULL,
                                     pAudioOutCodecCtx->channels,
-                                    audioDecodeAVFrame.nb_samples,
+                                    pAudioDecodeAVFrame->nb_samples,
                                     pAudioOutCodecCtx->sample_fmt,
                                     1);
 
@@ -741,7 +762,7 @@ public:
 
                     if ((errNo = MovieStream::initConvertedSamples(&convertedInSamples,
                                                                    pAudioOutCodecCtx,
-                                                                   audioDecodeAVFrame.nb_samples,
+                                                                   pAudioDecodeAVFrame->nb_samples,
                                                                    pLogger)) < 0) {
                         // clean-up
                         if (convertedInSamples) {
@@ -751,9 +772,9 @@ public:
                         return errNo;
                     }
 
-                    if ((errNo = MovieStream::convertSamples((const uint8_t**)audioDecodeAVFrame.extended_data,
+                    if ((errNo = MovieStream::convertSamples((const uint8_t**)pAudioDecodeAVFrame->extended_data,
                                                              convertedInSamples,
-                                                             audioDecodeAVFrame.nb_samples, pResampleCtx,
+                                                             pAudioDecodeAVFrame->nb_samples, pResampleCtx,
                                                              pLogger)) < 0) {
                         // clean-up
                         if (convertedInSamples) {
@@ -779,8 +800,9 @@ public:
                 // We have data, return it and come back for more later
                 return dataSize;
             }
-            if (audioDecodePkt.data)
-                av_free_packet(&audioDecodePkt);
+            if (pAudioDecodeFramePkt->data) {
+                av_free_packet(pAudioDecodeFramePkt);
+            }
 
             if (quit) {
                 return -1;
@@ -788,14 +810,14 @@ public:
             if (pAudioBuffer->empty()) {
                 return -1;
             }
-            if (pAudioBuffer->get(&audioDecodePkt) < 0) {
+            if (pAudioBuffer->get(pAudioDecodeFramePkt) < 0) {
                 return -1;
             }
-            pAudioDecodePktData = audioDecodePkt.data;
-            audioDecodePktSize = audioDecodePkt.size;
+            pAudioDecodePktData = pAudioDecodeFramePkt->data;
+            audioDecodePktSize = pAudioDecodeFramePkt->size;
 
-            if (audioDecodePkt.pts != AV_NOPTS_VALUE) {
-                audioTime = av_q2d(pAudioStream->time_base)* audioDecodePkt.pts;
+            if (pAudioDecodeFramePkt->pts != AV_NOPTS_VALUE) {
+                audioTime = av_q2d(pAudioStream->time_base)* pAudioDecodeFramePkt->pts;
             }
         }
     }
@@ -875,7 +897,7 @@ public:
             if (seekReq) {
 
                 endOfFile = false;
-                seekFlags |= AVSEEK_FLAG_BACKWARD;
+                seekFlags = 0; //|= AVSEEK_FLAG_BACKWARD;
 
                 // Seek in the image stream
                 if (hasVideoStream()) {
@@ -920,7 +942,7 @@ public:
                 pLogger->info("Toggle with offset %d and delta %d.", offset, delta);
 
                 // Even if we may not seek backward it is safer to get the prior keyframe
-                seekFlags |= AVSEEK_FLAG_BACKWARD;
+                seekFlags = 0; //AVSEEK_FLAG_BACKWARD;
                 if (pImageBuffer->isReverse()) {
                     int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;
                     delta = std::min(offset+delta, maxDelta) - offset;
@@ -995,8 +1017,7 @@ public:
                         static_cast<char>((-ret >> 8) & 0xFF),
                         static_cast<char>((-ret >> 16) & 0xFF),
                         static_cast<char>((-ret >> 24) & 0xFF));
-                    std::this_thread::sleep_for(
-                        std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
 
                 // We got a frame! Let's decode it
                 } else {
@@ -1035,9 +1056,8 @@ public:
                                     pFrameBuffer->pts = lastWritePts = readPts;
                                     pImageBuffer->completePutPtr();
 
-                                    pLogger->info("Wrote %I64d pts, %I64d frames.",
-                                                    lastWritePts,
-                                                    lastWritePts/avgDeltaPts);
+                                    pLogger->info("Wrote %I64d pts, %I64d frames.", lastWritePts,
+                                                  lastWritePts/avgDeltaPts);
                                     pImageBuffer->printLog();
                                 }
                             }
@@ -1049,8 +1069,7 @@ public:
                         // Free the packet that was allocated by av_read_frame
                         av_free_packet(&packet);
 
-                    } else if (hasAudioStream() && playSound
-                        && packet.stream_index == iAudioStream) {
+                    } else if (hasAudioStream() && playSound && packet.stream_index == iAudioStream) {
 
                         // Decode packet from audio stream
                         pAudioBuffer->put(&packet); // packet is freed when consumed
@@ -1058,10 +1077,10 @@ public:
                         av_free_packet(&packet);
                     }
                 }
+
             // We are at the end of file and throttle this loop through a delay
             } else {
-                std::this_thread::sleep_for(
-                    std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
+                std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
             }
         }
     }
@@ -1178,8 +1197,7 @@ public:
             bool init = std::labs(firstPts - imageLastPts) > PTS_DELTA_THRESHOLD*imageDeltaPts;
 
             // Compute the difference for the presentation time stamps
-            double diffPts = init ? 0 : std::labs(firstPts - imageLastPts)
-                                            /speed*av_q2d(pImageStream->time_base);
+            double diffPts = init ? 0 : std::labs(firstPts - imageLastPts)/speed*av_q2d(pImageStream->time_base);
 
             // Get the current time
             auto time = std::chrono::high_resolution_clock::now();
@@ -1187,6 +1205,7 @@ public:
             // Compute the time difference
             double timeDiff = init ? 0
                 : std::chrono::duration_cast<std::chrono::microseconds>(time-imageLastTime).count()/1000000.0;
+            pLogger->info("The time difference is %lf sec.", timeDiff);
 
             // Compute the difference between times and pts
             imageDiffCum = init ? 0 : (imageDiffCum + diffPts - timeDiff);
@@ -1232,7 +1251,7 @@ public:
 
             // Delay read to keep the desired frame rate.
             if (delay > 0) {
-                fprintf(stderr, "StreamId %p: Image waiting for %lf seconds.\n", this, delay);
+                pLogger->info("Image waiting for %lf seconds.\n", delay);
                 std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
             }
 
@@ -1245,7 +1264,7 @@ public:
             videoTime = pImageFrameShow->pts * av_q2d(pImageStream->time_base);
         }
 
-        // Return the number of read frames (not neccesarily all are displayed).
+        // Return the number of read frames; the number may be larger than 1
         return nFrame;
     }
 
@@ -1265,14 +1284,15 @@ public:
             // We still need to read len bytes
             if (iAudioData >= nAudioData) {
                 // We already sent all our data; get more
-                audioSize = audioDecodeFrame(pAudioInCodecCtx, loadAudioBuffer, sizeof(loadAudioBuffer));
+                audioSize = audioDecodeFrame(pAudioInCodecCtx, pLoadAudioByteBuffer, nLoadAudioByteBuffer);
+
 
                 if (audioSize < 0) {
                     // If error, output silence
                     nAudioData = 1024; // arbitrary?
-                    memset(loadAudioBuffer, 0, nAudioData); // set silence for the rest
+                    memset(pLoadAudioByteBuffer, 0, nAudioData); // set silence for the rest
                 } else {
-                    nAudioData = audioSize = synchronizeAudio((int16_t *)loadAudioBuffer, audioSize);
+                    nAudioData = audioSize = synchronizeAudio((int16_t *)pLoadAudioByteBuffer, audioSize);
                 }
 
                 iAudioData = 0;
@@ -1283,7 +1303,7 @@ public:
                 decodeLen = len;
             }
 
-            memcpy(data, (uint8_t *)loadAudioBuffer + iAudioData, decodeLen);
+            memcpy(data, (uint8_t *)pLoadAudioByteBuffer + iAudioData, decodeLen);
             len -= decodeLen;
             data += decodeLen;
             iAudioData += decodeLen;
