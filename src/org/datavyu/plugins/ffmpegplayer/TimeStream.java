@@ -13,6 +13,21 @@ import java.io.IOException;
  */
 public interface TimeStream {
 
+    /**
+     * Start the time stream.
+     */
+	void start();
+
+    /**
+     * Stop the time stream.
+     */
+	void stop();
+
+	/**
+	 * Step by one frame in the current play back direction.
+	 */
+	void step();
+
 	/**
 	 * Get the start time of the stream. Typically that will be 0.0.
 	 * 

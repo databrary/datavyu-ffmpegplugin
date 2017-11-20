@@ -9,7 +9,15 @@ import javax.sound.sampled.*;
  * @author Florian Raudies, Mountain View, CA.
  */
 public class AudioSoundStreamListener implements StreamListener {
-	
+
+	/** The supported mono format; blank values are from the input audio */
+	private final static AudioFormat MONO_FORMAT = new AudioFormat(
+			AudioFormat.Encoding.PCM_SIGNED, 0, 0, 1, 0, 0, false);
+
+	/** The supported stereo format; blank values are from the input audio */
+	private final static AudioFormat STEREO_FORMAT = new AudioFormat(
+			AudioFormat.Encoding.PCM_UNSIGNED, 0, 0, 2, 0, 0, false);
+
 	/** The underlying movie stream, used to get the audio format */
 	private MovieStream movieStream = null;
 	
@@ -70,4 +78,36 @@ public class AudioSoundStreamListener implements StreamListener {
             gainControl.setValue(volume);
         }
     }
+
+	/**
+	 * Get new audio format for mono playback.
+	 *
+	 * @return AudioFormat for mono playback.
+	 */
+	public static AudioFormat getNewMonoFormat() {
+		return new AudioFormat(
+				MONO_FORMAT.getEncoding(),
+				MONO_FORMAT.getSampleRate(),
+				MONO_FORMAT.getSampleSizeInBits(),
+				MONO_FORMAT.getChannels(),
+				MONO_FORMAT.getFrameSize(),
+				MONO_FORMAT.getFrameRate(),
+				MONO_FORMAT.isBigEndian());
+	}
+
+	/**
+	 * Get new audio format for stereo playback.
+	 *
+	 * @return AudioFormat for stereo playback.
+	 */
+	public static AudioFormat getNewStereoFormat() {
+		return new AudioFormat(
+				STEREO_FORMAT.getEncoding(),
+				STEREO_FORMAT.getSampleRate(),
+				STEREO_FORMAT.getSampleSizeInBits(),
+				STEREO_FORMAT.getChannels(),
+				STEREO_FORMAT.getFrameSize(),
+				STEREO_FORMAT.getFrameRate(),
+				STEREO_FORMAT.isBigEndian());
+	}
 }

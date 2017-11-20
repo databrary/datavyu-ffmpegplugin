@@ -45,6 +45,12 @@ public class MovieStreamProvider extends MovieStream {
 	/** This thread instance fulfills all video play back */
 	private Thread video;
 
+	/** The number of frames that were loaded */
+	private long nFrame;
+
+	/** The number of frames that were dropped during the loading/display process: nFrameDrop < nFrame */
+	private long nFrameDrop;
+
 	/**
 	 * This thread reads the binary audio data from the movie stream and forwards it to all listeners.
 	 */
@@ -55,12 +61,9 @@ public class MovieStreamProvider extends MovieStream {
 			byte[] buffer = new byte[getAudioBufferSize()];
 			// Start the play back loop
 			while (runAudio) {				
-				// If there is audio data available
-				if (availableAudioData()) {
-					// Read audio data -- blocks if none is available
-					readAudioData(buffer);
-					// Fulfill all listeners
-					// This is lock allows to add listeners
+				// If audio data was read
+				if (readAudioData(buffer) > 0) {
+					// Fulfill all listeners with a lock that allows to add listeners concurrently
 					synchronized (audioListeners) {
 						// For a listeners forward this data
 						for (StreamListener listener : audioListeners) {
@@ -74,6 +77,15 @@ public class MovieStreamProvider extends MovieStream {
 			}
 		}
 	}
+
+	long getNumberOfFrames() {
+	    return nFrame;
+    }
+
+    @SuppressWarnings("unused") // API method
+    long getNumberOfFrameDrops() {
+	    return nFrameDrop;
+    }
 	
 	/**
 	 * Consumes the next image frame without forwarding it to the listeners.
@@ -81,14 +93,13 @@ public class MovieStreamProvider extends MovieStream {
 	 * @return True if at least one frame was read; otherwise false. 
 	 */
 	boolean dropImageFrame() {
-		int nFrame = 0;
-		if (availableImageFrame()) {
-			// Allocate space for a byte buffer
-			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
-			// Read the next image frame -- blocks if none is available
-			nFrame = readImageFrame(buffer);
-		}		
-		return nFrame > 0;
+        // Allocate space for a byte buffer
+        byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
+        // Read the next image frame -- blocks if none is available
+        int nFrame = readImageFrame(buffer);
+        this.nFrame += nFrame;
+        this.nFrameDrop += nFrame - 1;
+        return nFrame > 0;
 	}
 	
 	/**
@@ -97,18 +108,19 @@ public class MovieStreamProvider extends MovieStream {
 	 * @return True if an image frame was consumed; otherwise false.
 	 */
 	boolean nextImageFrame() {
-	    logger.info("Checking for the next available frame.");
-		if (availableImageFrame()) {
-		    logger.info("Got a next available frame.");
-			// Allocate space for a byte buffer
-			byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
-			// Read the next image frame -- blocks if none is available
-			readImageFrame(buffer);
+		// Allocate space for a byte buffer -- have to re-allocate because the width or the height might change
+		byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
+		// Read the next image frame and we read a frame
+		int nFrame = readImageFrame(buffer);
+		this.nFrame += nFrame;
+		this.nFrameDrop += nFrame - 1;
+		logger.info("Read " + nFrame + " image frames.");
+		if (nFrame > 0) {
 			// Fulfill all listeners
 			synchronized (videoListeners) {
 				for (StreamListener listener : videoListeners) {
 					listener.streamData(buffer);
-				}					
+				}
 			}
 			return true;
 		}
@@ -123,7 +135,7 @@ public class MovieStreamProvider extends MovieStream {
 		public void run() {
 			// Start the play back loop
 			while (runVideo) {
-				// If there is image frame available
+				// If there is an image frame available
 				if (!nextImageFrame()) {
 					// Throttle this loop when we have no available data
 					try { Thread.sleep(250); } catch (InterruptedException ie) {}					
@@ -169,6 +181,7 @@ public class MovieStreamProvider extends MovieStream {
 	void startAudio() {
 		setPlaySound(true);
 		if (hasAudioStream() && !runAudio) {
+			super.start();
 		    logger.info("StreamId " + getStreamId() + ": Starting audio play back thread.");
 			runAudio = true;
 			audio = new AudioListenerThread();
@@ -189,13 +202,14 @@ public class MovieStreamProvider extends MovieStream {
 	 */
 	void startVideo() {
 		if (hasVideoStream() && !runVideo) {
+			super.start();
 		    logger.info("StreamId "+ getStreamId() + ": Starting video play back thread.");
 			runVideo = true;
 			video = new VideoListenerThread();
 			synchronized (videoListeners) {
 				for (StreamListener listener : videoListeners) {
 					listener.streamStarted();
-				}		
+				}
 			}
 			video.start();
             logger.info("StreamId " + getStreamId() + ": Started video thread");
@@ -230,10 +244,68 @@ public class MovieStreamProvider extends MovieStream {
 	 * Start the audio and video playing if there is an audio stream and a video 
 	 * stream.  Calls stream started on all stream listeners. Thread safe.
 	 */
+	@Override
 	public void start() {
-		startAudio();
-		startVideo();
+	    if (isSpeed1x()) {
+            startAudio();
+        }
+        startVideo();
 	}
+
+    /**
+     * Returns true if values are set for the video to be played back at 1x
+     * speed.
+     *
+     * @return True if we play forward at 1x; otherwise false.
+     */
+    private boolean playsAtForward1x() {
+        return isSpeed1x() && runVideo;
+    }
+
+    private static boolean isSpeedZero(float newSpeed) {
+        return Math.abs(newSpeed) < Math.ulp(1.0);
+    }
+
+    @Override
+    public void setSpeed(float newSpeed) {
+        if (isSpeedZero(newSpeed)) {
+            stop();
+        } else {
+            boolean wasStopped = !runVideo;
+            boolean directionChanged = Math.signum(newSpeed) != Math.signum(speed);
+            // Need to set speed first so that the reverse is set correctly!!!
+            super.setSpeed(newSpeed);
+            if (wasStopped) {
+                startVideo();
+            }
+            // Then we can start/stop the audio
+            if (playsAtForward1x()) {
+                startAudio();
+            } else {
+                stopAudio();
+            }
+            // TODO: Remove this workaround because toggle requires two frames to revert direction.
+            if (directionChanged) {
+                dropImageFrame();
+                dropImageFrame();
+            }
+        }
+    }
+
+	@Override
+    public void step() {
+        boolean wasNotStepping = runVideo;
+        if (wasNotStepping) {
+            // Set natively no sound (otherwise the audio buffer will block the video stream)
+            setPlaySound(false);
+            // Stops all stream providers
+            stop();
+        }
+        // Enables stepping to display the frames without starting the video thread
+        startVideoListeners();
+        super.step(); // resets the timer for the sync of the clock
+        nextImageFrame();
+    }
 	
 	/**
 	 * Stops playing the video if a video is running and there is a video 
@@ -241,6 +313,7 @@ public class MovieStreamProvider extends MovieStream {
 	 */
 	private void stopVideo() {
 		if (runVideo && hasVideoStream()) {
+			super.stop();
 			logger.info("StreamId " + getStreamId() + ": Trying to stop the video stream.");
 			runVideo = false;
 			if (video != null) {
@@ -267,6 +340,7 @@ public class MovieStreamProvider extends MovieStream {
 	void stopAudio() {
 		setPlaySound(false);
 		if (runAudio && hasAudioStream()) {
+			super.stop();
 			logger.info("StreamId " + getStreamId() + ": Trying to stop the audio stream.");
 			runAudio = false;
 			if (audio != null) {
@@ -353,7 +427,7 @@ public class MovieStreamProvider extends MovieStream {
         public MoviePlayer(String movieFileName, String version) throws IOException {
             movieStreamProvider = new MovieStreamProvider();
             final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-            AudioFormat reqAudioFormat = AudioSound.getNewMonoFormat();
+            AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
             frame = new Frame();
             frame.addWindowListener( new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {

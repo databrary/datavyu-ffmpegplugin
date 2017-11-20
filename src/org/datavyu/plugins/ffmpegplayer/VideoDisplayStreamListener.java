@@ -1,5 +1,8 @@
 package org.datavyu.plugins.ffmpegplayer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.awt.Canvas;
 import java.awt.Container;
 import java.awt.Graphics;
@@ -21,7 +24,10 @@ import java.util.Hashtable;
  * @author Florian Raudies, Mountain View, CA.
  */
 public class VideoDisplayStreamListener implements StreamListener {
-	
+
+    /** The logger for this class */
+    private static Logger logger = LogManager.getLogger(VideoDisplayStreamListener.class);
+
 	/** The color component model */
 	private ComponentColorModel cm = null;
 	
@@ -131,6 +137,7 @@ public class VideoDisplayStreamListener implements StreamListener {
 		// Width and height could have changed due to the view
 		int width = movieStream.getWidthOfView(); 
 		int height = movieStream.getHeightOfView();
+        logger.debug("Received " + data.length + " By for image: " + width + " x " + height + " pixels.");
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		// Create data buffer
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);

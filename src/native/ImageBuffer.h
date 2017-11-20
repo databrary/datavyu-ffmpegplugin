@@ -12,7 +12,7 @@ extern "C" {
 }
 
 /** Maximum number of images in the buffer. Won't work for videos < 32 frames */
-#define N_MAX_IMAGES 32
+#define N_MAX_IMAGES 64
 
 /** Minimum number of images for allocation in reverse direction */
 #define N_MIN_IMAGES N_MAX_IMAGES/2

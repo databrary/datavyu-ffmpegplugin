@@ -11,7 +11,7 @@ import java.awt.color.ColorSpace;
  *
  */
 public interface VideoStream extends TimeStream {
-	
+
 	/**
 	 * Get the color space of this video stream. This allows us to interpret the 
 	 * data from the readImageFrame method correctly.
@@ -83,15 +83,9 @@ public interface VideoStream extends TimeStream {
 	 * 		   stream. If we cannot display frames fast enough and we have a 
 	 * 		   long lag this method may drop frames from the underlying stream
 	 * 		   to catch up with the set speed. For instance, if the method 
-	 * 		   returns 2 that means that one frame was skipped.
+	 * 		   returns 2 that means that one frame was skipped. If the method returns
+	 * 		   0 that means that no frames were read.
 	 */
 	int readImageFrame(byte[] buffer); // reads next image
-	
-	/**
-	 * Provides information about availability of image frames.
-	 * 
-	 * @return True if there are more available image frames, otherwise false.
-	 */
-	boolean availableImageFrame();
 	
 }

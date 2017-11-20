@@ -7,12 +7,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#undef org_datavyu_plugins_ffmpegplayer_MovieStream_MIN_SPEED
-#define org_datavyu_plugins_ffmpegplayer_MovieStream_MIN_SPEED -16.0f
-#undef org_datavyu_plugins_ffmpegplayer_MovieStream_MAX_SPEED
-#define org_datavyu_plugins_ffmpegplayer_MovieStream_MAX_SPEED 16.0f
 #undef org_datavyu_plugins_ffmpegplayer_MovieStream_AUDIO_BUFFER_SIZE
 #define org_datavyu_plugins_ffmpegplayer_MovieStream_AUDIO_BUFFER_SIZE 65536L
+/*
+ * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
+ * Method:    getAverageFrameRate0
+ * Signature: (I)D
+ */
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAverageFrameRate0
+  (JNIEnv *, jclass, jint);
+
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    hasVideoStream0
@@ -63,6 +67,30 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getC
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
+ * Method:    start0
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_start0
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
+ * Method:    stop0
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_stop0
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
+ * Method:    step0
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_step0
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    setTime0
  * Signature: (ID)V
  */
@@ -91,22 +119,6 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_reset0
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    availableAudioData0
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableAudioData0
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    availableImageFrame0
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableImageFrame0
   (JNIEnv *, jclass, jint);
 
 /*

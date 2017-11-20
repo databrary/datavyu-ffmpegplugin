@@ -65,9 +65,15 @@ cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\lib\MovieStream"^
 // use dumpbin /ALL MovieStream.lib to list the function symbols
 // Make sure that visual studio's 'vc' folder is in the path
 
-#define AV_SYNC_THRESHOLD 0.01
-#define AV_NOSYNC_THRESHOLD 10.0
-#define PTS_DELTA_THRESHOLD 3
+/* no AV sync correction is done if below the minimum AV sync threshold */
+#define AV_SYNC_THRESHOLD_MIN 0.04
+/* AV sync correction is done if above the maximum AV sync threshold */
+#define AV_SYNC_THRESHOLD_MAX 0.1
+/* If a frame duration is longer than this, it will not be duplicated to compensate AV sync */
+#define AV_SYNC_FRAMEDUP_THRESHOLD 0.1
+/* no AV correction is done if too big error */
+#define AV_NOSYNC_THRESHOLD 1.0
+
 #define MAX_AUDIO_FRAME_SIZE 192000
 #define SAMPLE_CORRECTION_PERCENT_MAX 10
 #define AUDIO_DIFF_AVG_NB 20
@@ -399,6 +405,9 @@ public:
     /** Decoding thread that decodes frames and is started when opening a video */
     std::thread	*pDecodeFrame;
 
+    /** Flags that the load image frame should be initialized after a seek or when starting the first time */
+    bool initLoadNextImageFrame;
+
 
     /** Variables to playback the audio stream. */
     /** Index of the 1st audio stream */
@@ -529,6 +538,7 @@ public:
         lastWritePts(0),
         avgDeltaPts(1),
         pDecodeFrame(nullptr),
+        initLoadNextImageFrame(false),
         iAudioStream(-1),
         pAudioInCodecCtx(nullptr),
         pAudioOutCodecCtx(nullptr),
@@ -575,6 +585,18 @@ public:
 
     static int getId() {
         return ++id;
+    }
+
+    void start() {
+        initLoadNextImageFrame = true;
+    }
+
+    void step() {
+        initLoadNextImageFrame = true;
+    }
+
+    void stop() {
+        // nothing to do here for now
     }
 
     /**
@@ -897,11 +919,12 @@ public:
             if (seekReq) {
 
                 endOfFile = false;
-                seekFlags = 0; //|= AVSEEK_FLAG_BACKWARD;
+                seekFlags = AVSEEK_FLAG_BACKWARD;
 
                 // Seek in the image stream
                 if (hasVideoStream()) {
-                    if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
+                    if (avformat_seek_file(pFormatCtx, iImageStream, 5, seekPts, 5, seekFlags) < 0) {
+                    //if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
                         pLogger->error("Random seek of %I64d pts or %I64d frames in"
                             " image stream unsuccessful.", seekPts, seekPts/avgDeltaPts);
                     } else {
@@ -910,12 +933,14 @@ public:
                         pImageBuffer->flush();
                         avcodec_flush_buffers(pImageCodecCtx);
                         lastWritePts = seekPts;
+                        initLoadNextImageFrame = true;
                     }
                 }
 
                 // Seek in the audio stream
                 if (hasAudioStream()) {
-                    if (av_seek_frame(pFormatCtx, iAudioStream, seekPts, seekFlags) < 0) {
+                    if (avformat_seek_file(pFormatCtx, iAudioStream, 5, seekPts, 5, seekFlags) < 0) {
+                    //if (av_seek_frame(pFormatCtx, iAudioStream, seekPts, seekFlags) < 0) {
                         pLogger->error("Random seek of %I64d pts or %I64d frames in"
                             " audio stream unsuccessful.", seekPts, seekPts/avgDeltaPts);
                     } else {
@@ -942,7 +967,7 @@ public:
                 pLogger->info("Toggle with offset %d and delta %d.", offset, delta);
 
                 // Even if we may not seek backward it is safer to get the prior keyframe
-                seekFlags = 0; //AVSEEK_FLAG_BACKWARD;
+                seekFlags = AVSEEK_FLAG_BACKWARD;
                 if (pImageBuffer->isReverse()) {
                     int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;
                     delta = std::min(offset+delta, maxDelta) - offset;
@@ -1060,6 +1085,8 @@ public:
                                                   lastWritePts/avgDeltaPts);
                                     pImageBuffer->printLog();
                                 }
+                            } else {
+                                pLogger->info("Skip frame with %I64d pts, %I64d frames.", readPts, readPts/avgDeltaPts);
                             }
 
                             // Reset frame container to initial state
@@ -1176,11 +1203,13 @@ public:
     int loadNextImageFrame() {
 
         // No image stream is present return -1
-        if (!hasVideoStream()) return -1;
+        if (!hasVideoStream() || seekReq) return -1;
 
         // Counts the number of frames that this method requested (could be 0, 1, 2)
         int nFrame = 0;
 
+    // TODO: Remove this ugly label/goto
+    retry:
         // Get the next read pointer
         AVFrame *pVideoFrameTmp = pImageBuffer->getGetPtr();
 
@@ -1194,23 +1223,21 @@ public:
             nFrame++;
 
             // Initialize if the pts difference is above threshold as a result of a seek
-            bool init = std::labs(firstPts - imageLastPts) > PTS_DELTA_THRESHOLD*imageDeltaPts;
+            //bool initLoadNextImageFrame = std::labs(firstPts - imageLastPts) > PTS_DELTA_THRESHOLD*imageDeltaPts;
 
             // Compute the difference for the presentation time stamps
-            double diffPts = init ? 0 : std::labs(firstPts - imageLastPts)/speed*av_q2d(pImageStream->time_base);
+            double diffPts = initLoadNextImageFrame ? 0 : std::labs(firstPts - imageLastPts)/speed*av_q2d(pImageStream->time_base);
 
             // Get the current time
             auto time = std::chrono::high_resolution_clock::now();
 
             // Compute the time difference
-            double timeDiff = init ? 0
+            double timeDiff = initLoadNextImageFrame ? 0
                 : std::chrono::duration_cast<std::chrono::microseconds>(time-imageLastTime).count()/1000000.0;
-            pLogger->info("The time difference is %lf sec.", timeDiff);
 
             // Compute the difference between times and pts
-            imageDiffCum = init ? 0 : (imageDiffCum + diffPts - timeDiff);
+            imageDiffCum = initLoadNextImageFrame ? 0 : (imageDiffCum + diffPts - timeDiff);
 
-            // Calculate the delay that this display thread is required to wait.
             double delay = diffPts;
 
             // If the frame is repeated split this delay in half.
@@ -1219,17 +1246,25 @@ public:
             }
 
             // Compute the synchronization threshold (see ffplay.c)
-            double syncThreshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
+            double syncThreshold = FFMAX(AV_SYNC_THRESHOLD_MIN, FFMIN(AV_SYNC_THRESHOLD_MAX, delay));
 
-            // The time difference is within the no sync threshold.
+            // Save values for next call.
+            imageDeltaPts = initLoadNextImageFrame ? (int64_t)(1.0/(av_q2d(pImageStream->time_base)
+                                    *av_q2d(pImageStream->avg_frame_rate)))
+                                    : std::labs(firstPts - imageLastPts);
+            imageLastPts = firstPts; // Need to use the first pts.
+            imageLastTime = time;
+
+            // We initialized and can reset the flag
+            initLoadNextImageFrame = false;
+
             if (fabs(imageDiffCum) < AV_NOSYNC_THRESHOLD) {
 
-                // If our time difference is lower than the sync threshold, then skip a frame.
-                if (imageDiffCum <= -syncThreshold) {
-                    AVFrame *pVideoFrameTmp2 = pImageBuffer->getGetPtr();
-                    if (pVideoFrameTmp2) {
-                        pVideoFrameTmp = pVideoFrameTmp2;
-                        nFrame++;
+                // Lag too far behind get next frame
+                if (imageDiffCum < -syncThreshold) {
+                    pLogger->info("Lag of more than %lf sec.", -syncThreshold);
+                    if (!pImageBuffer->empty()) {
+                        goto retry;
                     }
 
                 // If the time difference is within -syncThreshold ... +0 then show frame instantly.
@@ -1240,14 +1275,18 @@ public:
                 } else if (imageDiffCum >= syncThreshold) {
                     delay *= 2;
                 }
+            } else {
+                seekReq = true;
+                int64_t delta = ((int64_t)(((double)imageDiffCum)/(avgDeltaPts * av_q2d(pImageStream->time_base))))
+                                *avgDeltaPts;
+                imageLastPts = lastWritePts = seekPts = imageLastPts - delta; // set imageLastPts to this one
+                nFrame += -imageDiffCum*getAverageFrameRate();
+                imageDiffCum = 0; // Reset image diff cum since we corrected it
+                pLogger->info("Seek request for %I64d, delta %I64d pts, frames %d.", seekPts, delta, nFrame);
             }
 
-            // Save values for next call.
-            imageDeltaPts = init ? (int64_t)(1.0/(av_q2d(pImageStream->time_base)
-                                    *av_q2d(pImageStream->avg_frame_rate)))
-                                    : std::labs(firstPts - imageLastPts);
-            imageLastPts = firstPts; // Need to use the first pts.
-            imageLastTime = time;
+            pLogger->info("\tTime difference %lf sec\n\tCumulative difference %lf sec\n\tDiff pts %lf sec\n\tDelay %lf\n\tSync threshold %lf.",
+                timeDiff, imageDiffCum, diffPts, delay, syncThreshold);
 
             // Delay read to keep the desired frame rate.
             if (delay > 0) {
@@ -1458,6 +1497,11 @@ public:
     	return env->NewStringUTF(name);
     }
 
+    double getAverageFrameRate() const {
+        if (!hasVideoStream()) { return 0; }
+        return av_q2d(pImageStream->avg_frame_rate);
+    }
+
     float getSampleRate() const {
         return hasAudioStream() ? pAudioOutCodecCtx->sample_rate : 0;
     }
@@ -1597,6 +1641,8 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 		return returnArray;
 	}
+	// TODO: Check if we need to seek to pts
+	movieStream->pFormatCtx->flags = AVFMT_SEEK_TO_PTS;
 
 	// Retrieve the stream information.
 	if ((errNo = avformat_find_stream_info(movieStream->pFormatCtx, nullptr)) < 0) {
@@ -1609,7 +1655,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	// Log that opened a file.
 	movieStream->pLogger->info("Opened file %s.", fileName);
 
-	// Dump information about file onto standard error.
+	// Dump information about file into logger.
 	std::string info = log_av_format(movieStream->pFormatCtx, 0, fileName, 0);
 	std::istringstream lines(info);
     std::string line;
@@ -1656,7 +1702,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	}
 
 	if (movieStream->hasVideoStream()) {
-		// Get a poitner to the video stream.
+		// Get a pointer to the video stream.
 		movieStream->pImageStream = movieStream->pFormatCtx->streams[movieStream->iImageStream];
 
 		// Get a pointer to the codec context for the video stream.
@@ -1865,6 +1911,9 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	// Set the value for loaded movie true
 	movieStream->loadedMovie = true;
 
+	// Initialize the load next image frame mechanism
+	movieStream->initLoadNextImageFrame = true;
+
 	// Free strings
 	env->ReleaseStringUTFChars(jFileName, fileName);
 	env->ReleaseStringUTFChars(jVersion, version);
@@ -1889,6 +1938,12 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_has
     return movieStream != nullptr && movieStream->hasAudioStream();
 }
 
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAverageFrameRate0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getAverageFrameRate() : 0;
+}
+
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getStartTime0(JNIEnv *env,
     jclass thisClass, jint streamId) {
     MovieStream* movieStream = getMovieStream(streamId);
@@ -1911,6 +1966,30 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getC
     jclass thisClass, jint streamId) {
     MovieStream* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getCurrentTime() : -1;
+}
+
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_start0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    if (movieStream != nullptr) {
+        movieStream->start();
+    }
+}
+
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_stop0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    if (movieStream != nullptr) {
+        movieStream->stop();
+    }
+}
+
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_step0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    if (movieStream != nullptr) {
+        movieStream->step();
+    }
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setTime0(JNIEnv *env,
@@ -1945,18 +2024,6 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0(
         idToMovieStream.erase(streamId);
         delete movieStream;
     }
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableAudioData0(JNIEnv *env,
-    jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr && movieStream->availableAudioData();
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableImageFrame0(JNIEnv *env,
-    jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr && movieStream->availableImageFrame();
 }
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextAudioData0(JNIEnv *env,
