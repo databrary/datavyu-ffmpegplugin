@@ -53,7 +53,8 @@ public class MeasureFrameRate {
         Configurator.setRootLevel(Level.OFF);
         String movieFileName = "C:\\Users\\Florian\\DatavyuSampleVideo.mp4";
         List<Float> speeds = new ArrayList<Float>() {{
-            add(1f); add(2f); add(4f); add(8f); add(16f); add(32f);
+            add(32f);
+            //add(1f); add(2f); add(4f); add(8f); add(16f); add(32f);
         }};
         try {
             for (float speed : speeds) {
@@ -68,6 +69,10 @@ public class MeasureFrameRate {
                 double averageFrameRate = measureFrameRate.movieStreamProvider.getAverageFrameRate();
                 double frameRate = ((double)measureFrameRate.movieStreamProvider.getNumberOfFrames())/TIME_OUT_SEC;
                 double isSpeed = frameRate/averageFrameRate;
+                System.out.println("The total number of frames is: "
+                        + measureFrameRate.movieStreamProvider.getNumberOfFrames());
+                System.out.println("The total number of skipped frames is: "
+                        + measureFrameRate.movieStreamProvider.getNumberOfFrameDrops());
                 System.out.println("The expected speed: " + speed);
                 System.out.println("The detected speed: " + isSpeed);
                 //assert Math.abs(speed - isSpeed) < Math.ulp(1f);
