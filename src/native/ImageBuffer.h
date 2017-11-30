@@ -41,7 +41,7 @@ class ImageBuffer {
 	/** Read pointer in 0...nData-1. The read pointer is at the next read position. */
 	int iRead;
 
-	/** Write pointer in 0...nData-1. The write poitner is at the next write position. */
+	/** Write pointer in 0...nData-1. The write pointer is at the next write position. */
 	int iWrite;
 
 	/** Readable frames before read pointer (including current iRead position). */
@@ -190,9 +190,10 @@ public:
 		// Ensure there are at least two frames after the current frame.
 		// If we are in reverse then nAfter is at least 1, if we are in forward 
 		// mode then nAfter is at least 2.
-		cv.wait(locker, [this](){return nAfter > 1-reverse;});
+		//cv.wait(locker, [this](){return nAfter > 1-reverse;});
+		cv.wait(locker, [this](){return nAfter > 0;});
 
-		// When toggeling we have the following cases:
+		// When toggling we have the following cases:
 		// Switching into backward replay:
 		// * offset
 		//   We need to go backward by at least nBefore+nAfter in the stream to 
@@ -206,7 +207,7 @@ public:
 		// * delta
 		//   is always zero since we only advance by +1 frame in forward replay.
 		pLogger->info("Before toggle.");
-		printLog();
+		//printLog();
 		
 		reverse = !reverse;
 		std::pair<int,int> ret = reverse ?
@@ -239,7 +240,7 @@ public:
 		nReverse = iReverse = 0;
 
 		pLogger->info("After toggle.");
-		printLog();
+		//printLog();
 
 		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
@@ -259,7 +260,7 @@ public:
 		std::unique_lock<std::mutex> locker(mu);
 		
 		// Ensure we have at least a block of nMinImages to go backward.
-		// Leave two frames for the backup when toggeling.
+		// Leave two frames for the backup when toggling.
 		cv.wait(locker, [this](){return (nData-nBefore-2) > nMinImages || flushing;});
 		
 		// The delta is nReverse and the offset is nData-nBefore-1.
@@ -331,9 +332,8 @@ public:
 		AVFrame* pFrame = nullptr;
 		std::unique_lock<std::mutex> locker(mu);
 		
-		// This checks that there are 2 frames left for reverse with toggle from 
-		// reverse into forward taking two extra frames. Keep >= 2 frames free!
-		cv.wait(locker, [this](){return nFree() > 1 || flushing;});
+		// At least 2 frames are required by toggle
+		cv.wait(locker, [this](){return nFree() >= 2 || flushing;});
 
 		// If we do not flush get the write position.
 		if (!flushing) {

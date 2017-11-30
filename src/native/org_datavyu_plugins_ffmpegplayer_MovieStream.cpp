@@ -372,6 +372,9 @@ public:
     /** The current presentation time stamp for the video */
     double videoTime;
 
+    /** Means that we need to initialize the next image frame */
+    std::atomic<bool> initLoadNextImageFrame;
+
 
     /** Status in the movie file. */
 
@@ -521,6 +524,7 @@ public:
         imageDeltaPts(0),
         imageDiffCum(0),
         videoTime(0),
+        initLoadNextImageFrame(false),
         quit(false),
         loadedMovie(false),
         endOfFile(false),
@@ -876,7 +880,7 @@ public:
     /**
      * Reads the next frame from the video stream and supports:
      * - Random seek through the variable seekReq.
-     * - Toggeling the direction through the variable toggle.
+     * - Toggling the direction through the variable toggle.
      * - Automatically fills the buffer for backward play.
      *
      * For a seek this jumps to the next earlier keyframe than the current frame.
@@ -895,39 +899,28 @@ public:
 
             // Random seek
             if (seekReq) {
-
                 endOfFile = false;
                 seekFlags = 0; //|= AVSEEK_FLAG_BACKWARD;
 
-                // Seek in the image stream
-                if (hasVideoStream()) {
-                    if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
-                        pLogger->error("Random seek of %I64d pts or %I64d frames in"
-                            " image stream unsuccessful.", seekPts, seekPts/avgDeltaPts);
-                    } else {
-                        pLogger->info("Random seek of %I64d pts or %I64d frames in"
-                            " image stream successful.", seekPts, seekPts/avgDeltaPts);
+                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
+                    pLogger->error("Random seek of %I64d pts or %I64d frames unsuccessful.",
+                                    seekPts, seekPts/avgDeltaPts);
+                } else {
+                    pLogger->info("Random seek of %I64d pts or %I64d frames successful.",
+                                    seekPts, seekPts/avgDeltaPts);
+                    if (hasVideoStream()) {
                         pImageBuffer->flush();
                         avcodec_flush_buffers(pImageCodecCtx);
                         lastWritePts = seekPts;
                     }
-                }
-
-                // Seek in the audio stream
-                if (hasAudioStream()) {
-                    if (av_seek_frame(pFormatCtx, iAudioStream, seekPts, seekFlags) < 0) {
-                        pLogger->error("Random seek of %I64d pts or %I64d frames in"
-                            " audio stream unsuccessful.", seekPts, seekPts/avgDeltaPts);
-                    } else {
-                        pLogger->info("Random seek of %I64d pts or %I64d frames in"
-                            " audio stream successful.", seekPts, seekPts/avgDeltaPts);
+                    if (hasAudioStream()) {
                         pAudioBuffer->flush();
                         avcodec_flush_buffers(pAudioInCodecCtx);
                         avcodec_flush_buffers(pAudioOutCodecCtx);
                         lastWritePts = seekPts;
                     }
+                    initLoadNextImageFrame = true;
                 }
-
                 seekReq = false;
             }
 
@@ -965,6 +958,7 @@ public:
 
                 // Done with toggle of direction, set toggle to false
                 toggle = false;
+                initLoadNextImageFrame = true;
             }
 
             // Find next frame in reverse playback
@@ -982,8 +976,7 @@ public:
 
                 delta = std::min(offset+delta, maxDelta) - offset;
 
-                pLogger->info("Seek frame for reverse playback with offset %d and "
-                                "min delta %d.", offset, delta);
+                pLogger->info("Seek frame for reverse playback with offset %d and min delta %d.", offset, delta);
 
                 pImageBuffer->setBackwardAfterSeek(delta);
 
@@ -1058,7 +1051,7 @@ public:
 
                                     pLogger->info("Wrote %I64d pts, %I64d frames.", lastWritePts,
                                                   lastWritePts/avgDeltaPts);
-                                    pImageBuffer->printLog();
+                                    //pImageBuffer->printLog();
                                 }
                             }
 
@@ -1151,7 +1144,7 @@ public:
 
     		if (pImageBuffer->isReverse()) {
     			// Seek to the end of the file
-    			lastWritePts = seekPts = pImageStream->duration - 2*avgDeltaPts;
+    			lastWritePts = seekPts = pImageStream->start_time + pImageStream->duration - 2*avgDeltaPts;
     			seekReq = true;
     			pLogger->info("Rewind to end %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
 
@@ -1194,7 +1187,8 @@ public:
             nFrame++;
 
             // Initialize if the pts difference is above threshold as a result of a seek
-            bool init = std::labs(firstPts - imageLastPts) > PTS_DELTA_THRESHOLD*imageDeltaPts;
+            //bool init = std::labs(firstPts - imageLastPts) > PTS_DELTA_THRESHOLD*imageDeltaPts;
+            bool init = initLoadNextImageFrame;
 
             // Compute the difference for the presentation time stamps
             double diffPts = init ? 0 : std::labs(firstPts - imageLastPts)/speed*av_q2d(pImageStream->time_base);
@@ -1205,7 +1199,7 @@ public:
             // Compute the time difference
             double timeDiff = init ? 0
                 : std::chrono::duration_cast<std::chrono::microseconds>(time-imageLastTime).count()/1000000.0;
-            pLogger->info("The time difference is %lf sec.", timeDiff);
+            pLogger->info("The pts difference is %lf and the time difference is %lf sec.", diffPts, timeDiff);
 
             // Compute the difference between times and pts
             imageDiffCum = init ? 0 : (imageDiffCum + diffPts - timeDiff);
@@ -1257,6 +1251,8 @@ public:
 
             // Update the pointer for the show frame.
             pImageFrameShow = pVideoFrameTmp;
+
+            initLoadNextImageFrame = false;
 
             // Log that we displayed a frame.
             pLogger->info("Display pts %I64d.", pImageFrameShow->pts);
@@ -1389,6 +1385,7 @@ public:
     		duration = 0;
     		lastWritePts = 0;
     		videoTime = 0;
+    		initLoadNextImageFrame = false;
 
     		// Set default values for playback speed.
     		toggle = false;
@@ -1656,7 +1653,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	}
 
 	if (movieStream->hasVideoStream()) {
-		// Get a poitner to the video stream.
+		// Get a pointer to the video stream.
 		movieStream->pImageStream = movieStream->pFormatCtx->streams[movieStream->iImageStream];
 
 		// Get a pointer to the codec context for the video stream.
@@ -1702,6 +1699,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		movieStream->width = movieStream->pImageCodecCtx->width;
 		movieStream->height = movieStream->pImageCodecCtx->height;
 		movieStream->duration = movieStream->pImageStream->duration * av_q2d(movieStream->pImageStream->time_base);
+		movieStream->initLoadNextImageFrame = true;
 		movieStream->pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.",
 					               movieStream->width, movieStream->height, movieStream->duration,
 					               movieStream->pImageStream->duration);
@@ -1828,7 +1826,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 			return returnArray;
 		}
 
-		// Initialize the resampler to be able to convert audio sample formats. 
+		// Initialize the re-sampler to be able to convert audio sample formats.
 		if ((errNo = MovieStream::initResampler(movieStream->pAudioInCodecCtx,
 		                                        movieStream->pAudioOutCodecCtx,
 		                                        &movieStream->pResampleCtx,
