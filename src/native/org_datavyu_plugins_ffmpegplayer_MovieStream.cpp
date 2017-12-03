@@ -1199,7 +1199,6 @@ public:
             // Compute the time difference
             double timeDiff = init ? 0
                 : std::chrono::duration_cast<std::chrono::microseconds>(time-imageLastTime).count()/1000000.0;
-            pLogger->info("The pts difference is %lf and the time difference is %lf sec.", diffPts, timeDiff);
 
             // Compute the difference between times and pts
             imageDiffCum = init ? 0 : (imageDiffCum + diffPts - timeDiff);
@@ -1214,6 +1213,9 @@ public:
 
             // Compute the synchronization threshold (see ffplay.c)
             double syncThreshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
+
+            pLogger->info("Pts difference: %lf; time difference: %lf sec; cum diff %lf; sync %lf; initialize %d.",
+                          diffPts, timeDiff, imageDiffCum, syncThreshold, init);
 
             // The time difference is within the no sync threshold.
             if (fabs(imageDiffCum) < AV_NOSYNC_THRESHOLD) {
@@ -1909,6 +1911,27 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getC
     jclass thisClass, jint streamId) {
     MovieStream* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getCurrentTime() : -1;
+}
+
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_start0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    if (movieStream != nullptr) {
+        movieStream->initLoadNextImageFrame = true;
+    }
+}
+
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_stop0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    // Nothing to do here for now
+}
+
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_step0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    if (movieStream != nullptr) {
+        movieStream->initLoadNextImageFrame = true;
+    }
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setTime0(JNIEnv *env,

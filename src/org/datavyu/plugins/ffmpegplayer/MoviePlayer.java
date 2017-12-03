@@ -1,5 +1,7 @@
 package org.datavyu.plugins.ffmpegplayer;
 
+import javafx.util.Pair;
+
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.*;
@@ -24,19 +26,16 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	
 	/** Used to open video files */
 	private JFileChooser fileChooser = null;
-	
-	/** The sign for the play back speed: + = forward and - = backward */
-	private int speedSign = 1;
-	
-	/** The speed for play back */
-	private float speedValue = 1;
-	
+
 	/** The directory last opened is used to initialize the file chooser. */
 	private File lastDirectory = new File(System.getProperty("user.home"));
 	
 	/** A slider displays the current frame and the user can drag the slider to switch to a different frame. */
 	private JSlider slider;
-	
+
+    /** Time of the last update */
+    private static double lastUpdateTime = System.currentTimeMillis();
+
 	/**
 	 * An encapsulated class that ensures that filters files down to video files based on known file extensions.
 	 */
@@ -76,17 +75,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	class PlaySelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// Must set is stepping to false BEFORE calling playsAtForward1x 
-			isStepping = false; 
-			// Play sound only if we are in forward direction
-			if (playsAtForward1x()) {
-			    for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                    movieStreamProvider.startAudio();
-                }
-			}
-			// Play video
             for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                movieStreamProvider.startVideo();
+                movieStreamProvider.start();
             }
 		}
 	}
@@ -108,33 +98,16 @@ public class MoviePlayer extends JPanel implements WindowListener {
             }
 		}
 	}
-	
-	/** Set to true if this player is in stepping mode */
-	private boolean isStepping = false;
-	
+
 	class StepSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
             for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                if (!isStepping) {
-                    // Set natively no sound (otherwise the audio buffer will block the video stream)
-                    movieStreamProvider.setPlaySound(false);
-                    // Stops all stream providers
-                    movieStreamProvider.stop();
-                    // Enables stepping to display the frames without starting the video thread
-                    movieStreamProvider.startVideoListeners();
-                    // We are stepping, set isStepping
-                    isStepping = true;
-                }
-                movieStreamProvider.nextImageFrame();
+                movieStreamProvider.step();
             }
 		}
 	}
-	
-	
-	/** Time of the last update */
-	private static double lastUpdateTime = System.currentTimeMillis();
-	
+
 	class SliderSelection implements ChangeListener {
 		
 		private final static double DELTA_TIME = 1000;
@@ -181,8 +154,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
             }
 		}
 	}
-	
-	
+
 	class ResetViewSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -214,7 +186,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
         MoviePlayerFrame(String movieFileName, String version) throws IOException {
             movieStreamProvider = new MovieStreamProvider();
             final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-            AudioFormat reqAudioFormat = AudioSound.getNewMonoFormat();
+            AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
             frame = new Frame();
             frame.addWindowListener( new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {
@@ -252,76 +224,21 @@ public class MoviePlayer extends JPanel implements WindowListener {
             System.err.println(io);
         }
 	}
-	
-	/**
-	 * Returns true if values are set for the video to be played back at 1x 
-	 * speed.
-	 *  
-	 * @return True if we play forward at 1x; otherwise false.
-	 */
-	private boolean playsAtForward1x() {
-		return Math.abs(speedValue - 1.0) <= Math.ulp(1.0) && speedSign == 1 && !isStepping;
-	}
-	
-	/**
-	 * Set the play back speed for this movie player. Notice that depending on
-	 * the play back speed this may stop the audio play back.
-	 * 
-	 * @param speedValue The speed value for the play back speed.
-	 * @param speedSign The sign for the play back speed.
-	 */
-	private void setSpeed(float speedValue, int speedSign) {
-		for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-            // Need to set speed first so that the reverse is set correctly!!!
-            movieStreamProvider.setSpeed(speedSign * speedValue);
 
-            // Then we can start/stop the audio
-            if (playsAtForward1x()) {
-                movieStreamProvider.startAudio();
-            } else {
-                movieStreamProvider.stopAudio();
-            }
-        }
-	}
-	
 	class SpeedValueSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				speedValue = Float.parseFloat(e.getActionCommand());				
+			    float newSpeed = Float.parseFloat(e.getActionCommand());
+			    for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+			        movieStreamProvider.setSpeed(newSpeed);
+                }
 			} catch (NumberFormatException ex) {
 				System.err.println("Could not parse command: " + e.getActionCommand());
 			}
-			setSpeed(speedValue, speedSign);
 		}
 	}
-	
-	class SpeedSignSelection implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			switch (e.getActionCommand()) {
-			case "+":
-				speedSign = +1;
-				break;
-			case "-":
-				speedSign = -1;
-				break;
-			default:
-				System.err.println("Could not parse command: " + e.getActionCommand());
-				speedSign = +1;
-			}
-			
-			setSpeed(speedValue, speedSign);
-			
-			// Need to pull two frames as workaround because toggle requires 
-			// two frames to revert direction.
-            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                movieStreamProvider.dropImageFrame();
-                movieStreamProvider.dropImageFrame();
-            }
-		}
-	}
-	
+
 	class OpenFileSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -381,70 +298,57 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		resetView.addActionListener(new ResetViewSelection());
 		
 		// Speed selection.
-		JRadioButton quarter = new JRadioButton("1/4x");
-		JRadioButton half = new JRadioButton("1/2x");
-		JRadioButton one = new JRadioButton("1x");
-		JRadioButton twice = new JRadioButton("2x");
-		JRadioButton four = new JRadioButton("4x");
-		// Set default.
-		one.setSelected(true);
-		
-		// Add action commands.
-		SpeedValueSelection speedValueSelect = new SpeedValueSelection();
-		quarter.setActionCommand("0.25");
-		half.setActionCommand("0.5");
-		one.setActionCommand("1.0");
-		twice.setActionCommand("2.0");
-		four.setActionCommand("4.0");
-		
-		quarter.addActionListener(speedValueSelect);
-		half.addActionListener(speedValueSelect);
-		one.addActionListener(speedValueSelect);
-		twice.addActionListener(speedValueSelect);
-		four.addActionListener(speedValueSelect);		
+        SpeedValueSelection speedValueSelect = new SpeedValueSelection();
+        java.util.List<Pair<String, Double>> speedsLabelValue = new ArrayList<Pair<String, Double>>() {{
+            add(new Pair<>("-32x", -32.0));
+            add(new Pair<>("-16x", -16.0));
+            add(new Pair<>("-8x", -8.0));
+            add(new Pair<>("-4x", -4.0));
+            add(new Pair<>("-2x", -2.0));
+            add(new Pair<>("-1x", -1.0));
+            add(new Pair<>("-1/2x", -0.5));
+            add(new Pair<>("-1/4x", -0.25));
+            add(new Pair<>("-1/8x", -0.125));
+            add(new Pair<>("-1/16x", -0.0625));
+            add(new Pair<>("-1/32x", -0.03125));
+            add(new Pair<>("0x", 0.0));
+            add(new Pair<>("1/32x", 0.03125));
+            add(new Pair<>("1/16x", 0.0625));
+            add(new Pair<>("1/8x", 0.125));
+            add(new Pair<>("1/4x", 0.25));
+            add(new Pair<>("1/2x", 0.5));
+            add(new Pair<>("1x", 1.0));
+            add(new Pair<>("2x", 2.0));
+            add(new Pair<>("4x", 4.0));
+            add(new Pair<>("8x", 8.0));
+            add(new Pair<>("16x", 16.0));
+            add(new Pair<>("32x", 32.0));
+        }};
+        java.util.List<JRadioButton> speedButtons = new ArrayList<>(speedsLabelValue.size());
+        for (Pair<String, Double> speedLabelValue : speedsLabelValue) {
+            JRadioButton speedButton = new JRadioButton(speedLabelValue.getKey());
+            speedButton.setActionCommand(speedLabelValue.getValue().toString());
+            speedButton.addActionListener(speedValueSelect);
+            speedButtons.add(speedButton);
+        }
+
+		// Select default.
+        speedButtons.get(speedsLabelValue.size()/2).setSelected(true);
 		
 		// Add radio buttons to a group for mutual exclusion.
 		ButtonGroup speedsGroup = new ButtonGroup();
-		speedsGroup.add(quarter);
-		speedsGroup.add(half);
-		speedsGroup.add(one);
-		speedsGroup.add(twice);
-		speedsGroup.add(four);
-		
+		for (JRadioButton speedButton : speedButtons) {
+		    speedsGroup.add(speedButton);
+        }
 		
 		// Add radio buttons to a panel for display.
-		JPanel speedsPanel = new JPanel(new GridLayout(1, 0));
-		speedsPanel.add(quarter);
-		speedsPanel.add(half);
-		speedsPanel.add(one);
-		speedsPanel.add(twice);
-		speedsPanel.add(four);
+		JPanel speedsPanel = new JPanel(new GridLayout(2, 0));
+		for (JRadioButton speedButton : speedButtons) {
+		    speedsPanel.add(speedButton);
+        }
+
 		tools.add(new JLabel("Speed:"));
 		tools.add(speedsPanel);
-		
-		// Direction selection.
-		ButtonGroup directionGroup = new ButtonGroup();
-		JRadioButton forward = new JRadioButton("+");
-		JRadioButton backward = new JRadioButton("-");
-		// set default.
-		forward.setSelected(true);
-		
-		directionGroup.add(forward);
-		directionGroup.add(backward);
-		
-		SpeedSignSelection speedSignSelect = new SpeedSignSelection();
-		forward.setActionCommand("+");
-		backward.setActionCommand("-");
-		forward.addActionListener(speedSignSelect);
-		backward.addActionListener(speedSignSelect);		
-		
-		JPanel directionPanel = new JPanel(new GridLayout(1, 0));
-		directionPanel.add(forward);
-		directionPanel.add(backward);
-		
-		
-		tools.add(new JLabel("Direction:"));
-		tools.add(directionPanel);
 
 		JLabel frameNumber = new JLabel("0");
 		tools.add(frameNumber);
@@ -453,6 +357,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		add(slider, BorderLayout.SOUTH);
 
 		openFile("C:\\Users\\Florian\\DatavyuSampleVideo.mp4");
+
 		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
 	}

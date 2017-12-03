@@ -38,11 +38,4 @@ public interface AudioStream extends TimeStream {
 	 * @return The size of the buffer in bytes.
 	 */
 	int getAudioBufferSize();
-
-	/**
-	 * Find if there is any audio data available in the stream.
-	 * 
-	 * @return True if there is data available; otherwise false.
-	 */
-	boolean availableAudioData();
 }
