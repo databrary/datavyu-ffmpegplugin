@@ -1,4 +1,6 @@
 *.dll
+*.lib
+*.obj
 *.exp
 *.log
 logger.txt
