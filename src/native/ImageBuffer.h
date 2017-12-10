@@ -380,7 +380,7 @@ public:
 	inline void printLog() {
 		pLogger->info("iRead = %d, iWrite = %d, nBefore = %d, "
 				"nAfter = %d, nReverse = %d, iReverse = %d, reverse = %d.",
-			iRead, iWrite, nBefore, nAfter, nReverse, iReverse, (int)reverse);
+			iRead, iWrite, nBefore.load(), nAfter.load(), nReverse, iReverse, (int)reverse);
 		std::stringstream ss;
 		for (int iData = 0; iData < nData; ++iData) {
 			ss << "(" << iData << ";" << data[iData]->pts/avgDeltaPts << "), ";
