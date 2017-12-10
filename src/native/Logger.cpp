@@ -1,11 +1,10 @@
 #include "Logger.h"
 // compile cl Logger.cpp
 // Run Logger.exe
-Logger* pLogger = nullptr;
 
 int main(int argc, char** argv) {
-	//pLogger = new StreamLogger(&std::cerr);
-	pLogger = new FileLogger("logger.txt");
+	Logger* pLogger = new StreamLogger(&std::cerr);
+	//Logger* pLogger = new FileLogger("logger.txt");
 	pLogger->setLevel(Logger::ALL);
 	pLogger->info("This is the first logging message");
 	pLogger->warn("You better get smaller than %d.", 5);

@@ -1457,6 +1457,11 @@ public:
     	return env->NewStringUTF(name);
     }
 
+    double getAverageFrameRate() const {
+        if (!hasVideoStream()) { return 0; }
+        return av_q2d(pImageStream->avg_frame_rate);
+    }
+
     float getSampleRate() const {
         return hasAudioStream() ? pAudioOutCodecCtx->sample_rate : 0;
     }
@@ -1876,6 +1881,11 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
     return returnArray;
 }
 
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAverageFrameRate0(JNIEnv *env,
+    jclass thisClass, jint streamId) {
+    MovieStream* movieStream = getMovieStream(streamId);
+    return movieStream != nullptr ? movieStream->getAverageFrameRate() : 0;
+}
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasVideoStream0(JNIEnv *env,
     jclass thisClass, jint streamId) {

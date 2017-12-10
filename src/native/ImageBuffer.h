@@ -206,7 +206,7 @@ public:
 		//   We need to seek forward by nBefore+nAfter+iReverse.
 		// * delta
 		//   is always zero since we only advance by +1 frame in forward replay.
-		pLogger->info("Before toggle.");
+		pLogger->info("Before toggle: nBefore %d, nAfter %d, iRead %d, iWrite %d.", nBefore, nAfter, iRead, iWrite);
 		//printLog();
 		
 		reverse = !reverse;
@@ -239,8 +239,9 @@ public:
 		// Reset the reverse.
 		nReverse = iReverse = 0;
 
-		pLogger->info("After toggle.");
+		//pLogger->info("After toggle.");
 		//printLog();
+		pLogger->info("After toggle: nBefore %d, nAfter %d, iRead %d, iWrite %d.", nBefore, nAfter, iRead, iWrite);
 
 		// Reset nMinImages.
 		nMinImages = N_MIN_IMAGES;
