@@ -6,7 +6,7 @@
 
 // cl -EHsc -I%CATCH_SINGLE_INCLUDE% TestBufferForStream.cpp
 
-
+/*
 TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
     Logger* pLogger = new FileLogger("single-threaded-write-read-test.txt");
     long first = 0; // first item in stream
@@ -56,6 +56,7 @@ TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
     }
     delete pLogger;
 }
+*/
 
 TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) {
     Logger* pLogger = new FileLogger("single-threaded-write-read-backward-test.txt");
@@ -93,17 +94,30 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
         currentWrite--;
     }
 
-    // Read all the available values; there should be 5 reads
+    // Read some values
     pLogger->info("\n");
     pLogger->info("Reading in reverse.");
     currentRead--;
-    for (int count = 0; count < 4; ++count) {
+    for (int count = 0; count < 5; ++count) {
         long value = 0;
         bufferForStream.read(value);
         pLogger->info("Read value %ld.", value);
         bufferForStream.log(*pLogger);
         currentRead--;
         REQUIRE( value == currentRead );
+    }
+
+    // Switch back into forward writing
+    nToggleItem = bufferForStream.toggle(currentWrite);
+    currentWrite += nToggleItem;
+    pLogger->info("\n");
+    pLogger->info("Writing in forward mode (after backward writing)");
+    for (int count = 0; count < 3; ++count) {
+        bufferForStream.writeRequest(currentWrite, currentWrite);
+        bufferForStream.writeComplete(currentWrite);
+        pLogger->info("Writing %ld.", currentWrite);
+        bufferForStream.log(*pLogger);
+        currentWrite++;
     }
     delete pLogger;
 }

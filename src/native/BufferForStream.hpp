@@ -86,10 +86,11 @@ public:
         if (!flushing) {
             // Switch from backward to forward
             if (back) {
-                iWrite = (iWrite + nBefore) % nItem;
+                nToggleItem = nBefore + nAfter + 1;
+                iWrite = (iWrite + nBefore + nAfter + 1) % nItem;
                 iRead = (iRead + 2) % nItem;
             } else {
-                nToggleItem = -(nAfter+1);
+                nToggleItem = -nAfter - 1;
                 iWrite = (iWrite - nAfter - 1 + nItem) % nItem;
                 iRead = (iRead - 2 + nItem) % nItem;
             }
