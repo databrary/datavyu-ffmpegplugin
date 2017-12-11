@@ -4,22 +4,11 @@
 #include "Logger.h"
 #include "catch.hpp"
 
-// Compile: cl -EHsc -I%CATCH_SINGLE_INCLUDE% 010-TestCase.cpp && 010-TestCase --success
-//cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\MovieStream"^
-// /I"C:\Users\Florian\FFmpeg-release-3.3"^
-// /I"C:\Program Files\Java\jdk1.8.0_144\include"^
-// /I"C:\Program Files\Java\jdk1.8.0_144\include\win32"^
-// /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_144\lib\jawt.lib"^
-// "C:\Users\Florian\FFmpeg-release-3.3\libavcodec\avcodec.lib"^
-// "C:\Users\Florian\FFmpeg-release-3.3\libavformat\avformat.lib"^
-// "C:\Users\Florian\FFmpeg-release-3.3\libavutil\avutil.lib"^
-// "C:\Users\Florian\FFmpeg-release-3.3\libswscale\swscale.lib"^
-// "C:\Users\Florian\FFmpeg-release-3.3\libswresample\swresample.lib"
-
 // cl -EHsc -I%CATCH_SINGLE_INCLUDE% TestBufferForStream.cpp
 
+
 TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
-    Logger* pLogger = new FileLogger("logger.txt");
+    Logger* pLogger = new FileLogger("single-threaded-write-read-test.txt");
     long first = 0; // first item in stream
     BufferForStream<int> bufferForStream(first, 8, 4);
     for (int value = 0; value < 6; ++value) {
@@ -29,6 +18,8 @@ TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
         pLogger->info("Writing %d, nRead %d.", value);
         bufferForStream.log(*pLogger);
     }
+    pLogger->info("\n");
+    pLogger->info("Read forward");
     // Read forward
     for (int item = 0; item < 6; ++item) {
         int value = 0;
@@ -38,17 +29,81 @@ TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
         REQUIRE( value == item );
     }
     // Toggle
-    //bufferForStream.toggle(6);
-    //pLogger->info("After toggle.");
-    //bufferForStream.log(*pLogger);
+    int nToggleItem = bufferForStream.toggle(6);
+    pLogger->info("Toggle items %d.", nToggleItem);
+    pLogger->info("\n");
+    bufferForStream.log(*pLogger);
     // Read backward
-    /*
-    for (int item = 5; item >= 0; --item) {
+    for (int item = 4; item >= 0; --item) {
         int value = 0;
         bufferForStream.read(value);
         pLogger->info("Read value %d.", value);
         bufferForStream.log(*pLogger);
         REQUIRE( value == item );
-    }*/
+    }
+    // Toggle
+    nToggleItem = bufferForStream.toggle(7);
+    pLogger->info("Toggle items %d.", nToggleItem);
+    pLogger->info("\n");
+    bufferForStream.log(*pLogger);
+    // Read forward
+    for (int item = 1; item < 6; ++item) {
+        int value = 0;
+        bufferForStream.read(value);
+        pLogger->info("Read value %d.", value);
+        bufferForStream.log(*pLogger);
+        REQUIRE( value == item );
+    }
+    delete pLogger;
+}
+
+TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) {
+    Logger* pLogger = new FileLogger("single-threaded-write-read-backward-test.txt");
+    long first = 0; // first item in stream
+    long currentRead = 15;
+    long currentWrite = currentRead;
+    BufferForStream<long> bufferForStream(first, 8, 4);
+    for (int count = 0; count < 2; ++count) {
+        bufferForStream.writeRequest(currentWrite, currentWrite);
+        bufferForStream.writeComplete(currentWrite);
+        pLogger->info("Writing %ld.", currentWrite);
+        bufferForStream.log(*pLogger);
+        currentWrite++;
+    }
+    pLogger->info("\n");
+    // Read forward
+    for (int count = 0; count < 2; ++count) {
+        long value = 0;
+        bufferForStream.read(value);
+        pLogger->info("Read value %ld.", value);
+        bufferForStream.log(*pLogger);
+        REQUIRE( value == currentRead );
+        currentRead++;
+    }
+    // Switch into backward mode
+    int nToggleItem = bufferForStream.toggle(currentWrite);
+    currentWrite += nToggleItem;
+    pLogger->info("In stream jumped to %ld.", currentWrite);
+    pLogger->info("\n");
+    for (int count = 0; count < 7; ++count) {
+        bufferForStream.writeRequest(currentWrite, currentWrite);
+        bufferForStream.writeComplete(currentWrite);
+        pLogger->info("Writing %ld.", currentWrite);
+        bufferForStream.log(*pLogger);
+        currentWrite--;
+    }
+
+    // Read all the available values; there should be 5 reads
+    pLogger->info("\n");
+    pLogger->info("Reading in reverse.");
+    currentRead--;
+    for (int count = 0; count < 4; ++count) {
+        long value = 0;
+        bufferForStream.read(value);
+        pLogger->info("Read value %ld.", value);
+        bufferForStream.log(*pLogger);
+        currentRead--;
+        REQUIRE( value == currentRead );
+    }
     delete pLogger;
 }
