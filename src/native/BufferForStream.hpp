@@ -11,24 +11,28 @@ class BufferForStream {
     Item* buffer;
     long firstItem; // first item in the stream
     int nItem; // Capacity of the buffer
-    int nMaxBack; // Maximum backward jump in stream; must be smaller than nItem, e.g. nItem/2
-    int nBefore;
-    int nAfter; // Number of items behind that can be read
+    int nMaxReverse; // Maximum backward jump in stream; must be smaller than nItem, e.g. nItem/2
+    int nReverseLast; // Number of items jumped back last
+    int nBefore; // Number of items before read
+    int nAfter; // Number of items behind read
     int iRead; // Read pointer
     int iWrite; // Write pointer
+    int iReverse; // Counter for steps in reverse
     bool back; // Forward or backward mode
     std::mutex mu;
     std::condition_variable cv;
     std::atomic<bool> flushing;
     void reset() {
+        nReverseLast = 0;
+        iReverse = 0;
         iRead = 0;
         iWrite = 0;
         nBefore = 0;
         nAfter = 0;
     }
 public:
-    BufferForStream(long firstItem, int nItem, int nMaxBack) : firstItem(firstItem), nItem(nItem), nMaxBack(nMaxBack),
-        back(false), flushing(false) {
+    BufferForStream(long firstItem, int nItem, int nMaxReverse) : firstItem(firstItem), nItem(nItem),
+        nMaxReverse(nMaxReverse), back(false), flushing(false) {
         buffer = new Item[nItem];
         reset();
     }
@@ -36,9 +40,12 @@ public:
         delete [] buffer;
     }
     inline int nFree() { return nItem - nBefore; }
+    inline int nReverse(long currentItem) const {
+        return (int) std::min(currentItem - firstItem, (long) nMaxReverse);
+    }
     void log(Logger& pLogger) {
-        pLogger.info("iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d.",
-                     iRead, iWrite, nBefore, nAfter);
+        pLogger.info("iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverseLast = %d, iReverse = %d.",
+                     iRead, iWrite, nBefore, nAfter, nReverseLast, iReverse);
         std::stringstream ss;
         for (int iItem = 0; iItem < nItem; ++iItem) {
             ss << buffer[iItem] << ", ";
@@ -57,9 +64,11 @@ public:
 		locker.unlock();
 		cv.notify_all();
     }
+    // TODO: Simplify writeRequest and writeComplete into one method for now
     void writeRequest(Item& item, long currentItem) {
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this, currentItem](){ return nFree() > 0 || flushing; });
+        cv.wait(locker, [this, currentItem](){ return !back && nFree() > 0 || back && nFree() >= nReverse(currentItem)
+                                                      || flushing; });
         if (!flushing) {
             *(buffer + iWrite) = item;
         }
@@ -69,11 +78,27 @@ public:
     int writeComplete(long currentItem) {
         int nBackItem = 0;
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this, currentItem](){ return nFree() > 0 || flushing; });
+        cv.wait(locker, [this, currentItem](){ return !back && nFree() > 0 || back && nFree() >= nReverse(currentItem)
+                                               || flushing; });
         if (!flushing) {
-            iWrite = (back ? (iWrite - 1 + nItem) : (iWrite + 1)) % nItem;
-            nAfter = std::max(0, nAfter - 1);
-            nBefore++;
+            if (back) {
+                if (iReverse == 0) {
+                    nBackItem = -nReverseLast - nReverse(currentItem);
+                    iWrite = (iWrite - nReverseLast + nItem) % nItem;
+                    iReverse = nReverseLast = nReverse(currentItem);
+                } else {
+                    iReverse--;
+                    iWrite = (iWrite + 1) % nItem;
+                }
+                if (iReverse == 0) {
+                    nBefore += nReverseLast;
+                    nAfter = std::max(0, nAfter - nReverseLast); // This is pessimistic if the buffer is not full
+                }
+            } else {
+                iWrite = (iWrite + 1) % nItem;
+                nAfter = std::max(0, nAfter - 1);
+                nBefore++;
+            }
         }
 		locker.unlock();
 		cv.notify_all();
@@ -89,10 +114,15 @@ public:
                 nToggleItem = nBefore + nAfter + 1;
                 iWrite = (iWrite + nBefore + nAfter + 1) % nItem;
                 iRead = (iRead + 2) % nItem;
+            // Switch from forward to backward
             } else {
-                nToggleItem = -nAfter - 1;
-                iWrite = (iWrite - nAfter - 1 + nItem) % nItem;
+                iReverse = nReverseLast = std::min(nFree(), nReverse(currentItem));
+                nToggleItem = -nAfter - nReverseLast;
+                iWrite = (iWrite - nAfter - nReverseLast + nItem) % nItem;
                 iRead = (iRead - 2 + nItem) % nItem;
+                //nToggleItem = -nAfter - 1;
+                //iWrite = (iWrite - nAfter - 1 + nItem) % nItem;
+                //iRead = (iRead - 2 + nItem) % nItem;
             }
             nBefore++;
             nAfter--;

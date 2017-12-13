@@ -30,8 +30,9 @@ TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
     }
     // Toggle
     int nToggleItem = bufferForStream.toggle(6);
-    pLogger->info("Toggle items %d.", nToggleItem);
     pLogger->info("\n");
+    pLogger->info("Read backward");
+    pLogger->info("Toggle items %d.", nToggleItem);
     bufferForStream.log(*pLogger);
     // Read backward
     for (int item = 4; item >= 0; --item) {
@@ -43,8 +44,9 @@ TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
     }
     // Toggle
     nToggleItem = bufferForStream.toggle(7);
-    pLogger->info("Toggle items %d.", nToggleItem);
     pLogger->info("\n");
+    pLogger->info("Read forward.");
+    pLogger->info("Toggle items %d.", nToggleItem);
     bufferForStream.log(*pLogger);
     // Read forward
     for (int item = 1; item < 6; ++item) {
@@ -57,6 +59,8 @@ TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
     delete pLogger;
 }
 */
+
+
 
 TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) {
     Logger* pLogger = new FileLogger("single-threaded-write-read-backward-test.txt");
@@ -72,6 +76,7 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
         currentWrite++;
     }
     pLogger->info("\n");
+    pLogger->info("Read forward.");
     // Read forward
     for (int count = 0; count < 2; ++count) {
         long value = 0;
@@ -81,19 +86,19 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
         REQUIRE( value == currentRead );
         currentRead++;
     }
+
     // Switch into backward mode
     int nToggleItem = bufferForStream.toggle(currentWrite);
     currentWrite += nToggleItem;
     pLogger->info("In stream jumped to %ld.", currentWrite);
     pLogger->info("\n");
-    for (int count = 0; count < 7; ++count) {
+    for (int count = 0; count < 4; ++count) {
         bufferForStream.writeRequest(currentWrite, currentWrite);
         bufferForStream.writeComplete(currentWrite);
         pLogger->info("Writing %ld.", currentWrite);
         bufferForStream.log(*pLogger);
-        currentWrite--;
+        currentWrite++;
     }
-
     // Read some values
     pLogger->info("\n");
     pLogger->info("Reading in reverse.");
@@ -106,7 +111,19 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
         currentRead--;
         REQUIRE( value == currentRead );
     }
+    // Write some values
+    pLogger->info("\n");
+    pLogger->info("Write some more in revers.");
+    for (int count = 0; count < 4; ++count) {
+        bufferForStream.writeRequest(currentWrite, currentWrite);
+        int nSkip = bufferForStream.writeComplete(currentWrite);
+        pLogger->info("Writing %ld.", currentWrite);
+        bufferForStream.log(*pLogger);
+        currentWrite += nSkip;
+        currentWrite++;
+    }
 
+    /*
     // Switch back into forward writing
     nToggleItem = bufferForStream.toggle(currentWrite);
     currentWrite += nToggleItem;
@@ -118,6 +135,6 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
         pLogger->info("Writing %ld.", currentWrite);
         bufferForStream.log(*pLogger);
         currentWrite++;
-    }
+    }*/
     delete pLogger;
 }
