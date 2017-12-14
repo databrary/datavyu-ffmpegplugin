@@ -81,28 +81,24 @@ public:
         cv.wait(locker, [this, currentItem](){ return !back && nFree() > 0 || back && nFree() >= nReverse(currentItem)
                                                || flushing; });
         if (!flushing) {
+            iWrite = (iWrite + 1) % nItem;
             if (back) {
-                if (iReverse == 0) {
-                    nBackItem = -nReverseLast - nReverse(currentItem);
-                    iWrite = (iWrite - nReverseLast + nItem) % nItem;
-                    iReverse = nReverseLast = nReverse(currentItem);
-                } else {
-                    iReverse--;
-                    iWrite = (iWrite + 1) % nItem;
-                }
+                iReverse--;
                 if (iReverse == 0) {
                     nBefore += nReverseLast;
                     nAfter = std::max(0, nAfter - nReverseLast); // This is pessimistic if the buffer is not full
+                    nBackItem = -nReverseLast - nReverse(currentItem);
+                    iWrite = (iWrite - nBackItem + nItem) % nItem;
+                    iReverse = nReverseLast = nReverse(currentItem);
                 }
             } else {
-                iWrite = (iWrite + 1) % nItem;
                 nAfter = std::max(0, nAfter - 1);
                 nBefore++;
             }
         }
 		locker.unlock();
 		cv.notify_all();
-		return -nBackItem;
+		return nBackItem;
     }
     int toggle(long currentItem) {
         int nToggleItem = 0;

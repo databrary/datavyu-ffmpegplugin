@@ -69,9 +69,9 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
     long currentWrite = currentRead;
     BufferForStream<long> bufferForStream(first, 8, 4);
     for (int count = 0; count < 2; ++count) {
-        bufferForStream.writeRequest(currentWrite, currentWrite);
-        bufferForStream.writeComplete(currentWrite);
         pLogger->info("Writing %ld.", currentWrite);
+        bufferForStream.writeRequest(currentWrite, currentWrite);
+        currentWrite += bufferForStream.writeComplete(currentWrite);
         bufferForStream.log(*pLogger);
         currentWrite++;
     }
@@ -93,12 +93,13 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
     pLogger->info("In stream jumped to %ld.", currentWrite);
     pLogger->info("\n");
     for (int count = 0; count < 4; ++count) {
-        bufferForStream.writeRequest(currentWrite, currentWrite);
-        bufferForStream.writeComplete(currentWrite);
         pLogger->info("Writing %ld.", currentWrite);
+        bufferForStream.writeRequest(currentWrite, currentWrite);
+        currentWrite += bufferForStream.writeComplete(currentWrite);
         bufferForStream.log(*pLogger);
         currentWrite++;
     }
+
     // Read some values
     pLogger->info("\n");
     pLogger->info("Reading in reverse.");
@@ -115,11 +116,10 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
     pLogger->info("\n");
     pLogger->info("Write some more in revers.");
     for (int count = 0; count < 4; ++count) {
-        bufferForStream.writeRequest(currentWrite, currentWrite);
-        int nSkip = bufferForStream.writeComplete(currentWrite);
         pLogger->info("Writing %ld.", currentWrite);
+        bufferForStream.writeRequest(currentWrite, currentWrite);
+        currentWrite += bufferForStream.writeComplete(currentWrite);
         bufferForStream.log(*pLogger);
-        currentWrite += nSkip;
         currentWrite++;
     }
 
@@ -131,10 +131,11 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
     pLogger->info("Writing in forward mode (after backward writing)");
     for (int count = 0; count < 3; ++count) {
         bufferForStream.writeRequest(currentWrite, currentWrite);
-        bufferForStream.writeComplete(currentWrite);
+        currentWrite += bufferForStream.writeComplete(currentWrite);
         pLogger->info("Writing %ld.", currentWrite);
         bufferForStream.log(*pLogger);
         currentWrite++;
-    }*/
+    }
+    */
     delete pLogger;
 }
