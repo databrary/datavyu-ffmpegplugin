@@ -85,8 +85,12 @@ public:
             if (back) {
                 iReverse--;
                 if (iReverse == 0) {
+                    int nNonOccupied = nItem - nBefore - nAfter; // Number of non-occupied spaces
+                    int nDiff = nReverseLast - nNonOccupied; // Whatever more we reversed than were non-occupied
+                    if (nDiff > 0) {
+                        nAfter = std::max(0, nAfter - nDiff);
+                    }
                     nBefore += nReverseLast;
-                    nAfter = std::max(0, nAfter - nReverseLast); // This is pessimistic if the buffer is not full
                     nBackItem = -nReverseLast - nReverse(currentItem);
                     iWrite = (iWrite - nBackItem + nItem) % nItem;
                     iReverse = nReverseLast = nReverse(currentItem);
@@ -107,9 +111,12 @@ public:
         if (!flushing) {
             // Switch from backward to forward
             if (back) {
-                nToggleItem = nBefore + nAfter + 1;
-                iWrite = (iWrite + nBefore + nAfter + 1) % nItem;
+                //nToggleItem = nBefore + nAfter + 1;
+                //iWrite = (iWrite + nBefore + nAfter + 1) % nItem;
+                nToggleItem = nBefore + nAfter + nReverseLast;
+                iWrite = (iWrite + nBefore + nAfter + nReverseLast) % nItem;
                 iRead = (iRead + 2) % nItem;
+                iReverse = nReverseLast = 0;
             // Switch from forward to backward
             } else {
                 iReverse = nReverseLast = std::min(nFree(), nReverse(currentItem));
