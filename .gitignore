@@ -10,3 +10,4 @@ bin/
 .idea/*
 target/*
 out/*
+src/native/*.txt

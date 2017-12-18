@@ -64,7 +64,6 @@ public:
 		locker.unlock();
 		cv.notify_all();
     }
-    // TODO: Simplify writeRequest and writeComplete into one method for now
     void writeRequest(Item& item, long currentItem) {
         std::unique_lock<std::mutex> locker(mu);
         cv.wait(locker, [this, currentItem](){ return !back && nFree() > 0 || back && nFree() >= nReverse(currentItem)
@@ -96,7 +95,7 @@ public:
                     iReverse = nReverseLast = nReverse(currentItem);
                 }
             } else {
-                nAfter = std::max(0, nAfter - 1);
+                nAfter = std::max(0, nAfter - int(nFree() == 0));
                 nBefore++;
             }
         }
@@ -121,7 +120,7 @@ public:
             } else {
                 iReverse = nReverseLast = std::min(nFree(), nReverse(currentItem));
                 nToggleItem = -nAfter - nReverseLast;
-                iWrite = (iWrite - nAfter - nReverseLast + nItem) % nItem;
+                iWrite = (iWrite - nAfter - nReverseLast + 2*nItem) % nItem;
                 iRead = (iRead - 2 + nItem) % nItem;
                 //nToggleItem = -nAfter - 1;
                 //iWrite = (iWrite - nAfter - 1 + nItem) % nItem;
