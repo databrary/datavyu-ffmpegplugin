@@ -7,8 +7,7 @@
 
 
 template<class Item>
-class BufferForStream {
-    Item* buffer;
+class LogicForBuffer {
     long firstItem; // first item in the stream
     int nItem; // Capacity of the buffer
     int nMaxReverse; // Maximum backward jump in stream; must be smaller than nItem, e.g. nItem/2
@@ -18,7 +17,7 @@ class BufferForStream {
     int iRead; // Read pointer
     int iWrite; // Write pointer
     int iReverse; // Counter for steps in reverse
-    bool back; // Forward or backward mode
+    bool backward; // Forward or backward mode
     std::mutex mu;
     std::condition_variable cv;
     std::atomic<bool> flushing;
@@ -30,15 +29,28 @@ class BufferForStream {
         nBefore = 0;
         nAfter = 0;
     }
+protected:
+    Item* buffer;
 public:
+    /*
     BufferForStream(long firstItem, int nItem, int nMaxReverse) : firstItem(firstItem), nItem(nItem),
         nMaxReverse(nMaxReverse), back(false), flushing(false) {
         buffer = new Item[nItem];
         reset();
+    }*/
+    LogicForBuffer(long firstItem, int nItem, int nMaxReverse) : buffer(nullptr), firstItem(firstItem),
+        nItem(nItem), nMaxReverse(nMaxReverse), backward(false), flushing(false) {
+        reset();
     }
+    /*
     virtual ~BufferForStream() {
         delete [] buffer;
     }
+    */
+    inline bool isBackward() const { return backward; }
+    inline bool inReverse() const { return iReverse > 0; }
+    inline bool empty() const { return nBefore == 0; }
+
     inline int nFree() { return nItem - nBefore; }
     inline int nReverse(long currentItem) const {
         return (int) std::min(currentItem - firstItem, (long) nMaxReverse);
@@ -57,7 +69,7 @@ public:
         cv.wait(locker, [this](){return nBefore > 0 || flushing;});
         if (!flushing) {
             item = buffer[iRead];
-            iRead = (back ? (iRead - 1 + nItem) : (iRead + 1)) % nItem;
+            iRead = (backward ? (iRead - 1 + nItem) : (iRead + 1)) % nItem;
             nAfter++;
             nBefore = std::max(nBefore - 1, 0);
         }
@@ -66,7 +78,7 @@ public:
     }
     void writeRequest(Item& item, long currentItem) {
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this, currentItem](){ return !back && nFree() > 0 || back && nFree() >= nReverse(currentItem)
+        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > 0 || backward && nFree() >= nReverse(currentItem)
                                                       || flushing; });
         if (!flushing) {
             *(buffer + iWrite) = item;
@@ -77,11 +89,11 @@ public:
     int writeComplete(long currentItem) {
         int nBackItem = 0;
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this, currentItem](){ return !back && nFree() > 0 || back && nFree() >= nReverse(currentItem)
-                                               || flushing; });
+        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > 0 || backward && nFree() >= nReverse(currentItem)
+                                                      || flushing; });
         if (!flushing) {
             iWrite = (iWrite + 1) % nItem;
-            if (back) {
+            if (backward) {
                 iReverse--;
                 if (iReverse == 0) {
                     int nNonOccupied = nItem - nBefore - nAfter; // Number of non-occupied spaces
@@ -109,9 +121,7 @@ public:
         cv.wait(locker, [this](){ return nAfter > 1 || flushing; });
         if (!flushing) {
             // Switch from backward to forward
-            if (back) {
-                //nToggleItem = nBefore + nAfter + 1;
-                //iWrite = (iWrite + nBefore + nAfter + 1) % nItem;
+            if (backward) {
                 nToggleItem = nBefore + nAfter + nReverseLast;
                 iWrite = (iWrite + nBefore + nAfter + nReverseLast) % nItem;
                 iRead = (iRead + 2) % nItem;
@@ -122,14 +132,11 @@ public:
                 nToggleItem = -nAfter - nReverseLast;
                 iWrite = (iWrite - nAfter - nReverseLast + 2*nItem) % nItem;
                 iRead = (iRead - 2 + nItem) % nItem;
-                //nToggleItem = -nAfter - 1;
-                //iWrite = (iWrite - nAfter - 1 + nItem) % nItem;
-                //iRead = (iRead - 2 + nItem) % nItem;
             }
             nBefore++;
             nAfter--;
             std::swap(nAfter, nBefore);
-            back = !back;
+            backward = !backward;
         }
 		locker.unlock();
 		cv.notify_all();
