@@ -4,16 +4,16 @@
 #include <atomic>
 #include <mutex>
 
-#include "ItemBuffer.hpp"
+#include "LongBuffer.hpp"
 #include "Logger.h"
 #include "catch.hpp"
 
-// Compile with: cl -EHsc -I%CATCH_SINGLE_INCLUDE% TestBufferForStream.cpp
-// Run with: TestItemBuffer.exe
+// Compile with: cl -EHsc -I%CATCH_SINGLE_INCLUDE% TestLongBuffer.cpp
+// Run with: TestLongBuffer.exe
 
 // Note: Each test case produces a log file for debugging purposes. However; the log file is not written if the test
 // fails.
-
+/*
 TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
     // Tests:
     // - writing and reading in forward mode
@@ -21,51 +21,50 @@ TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
     // - toggle and reading forward
     Logger* pLogger = new FileLogger("single-threaded-write-read-test.txt");
     long first = 0; // first item in stream
-    ItemBuffer<int> itemBuffer(first, 8, 4);
+    LongBuffer longBuffer(first, 8, 4);
+    long* pValue = nullptr;
     for (int value = 0; value < 6; ++value) {
         long current = first + value; // current item in stream
-        itemBuffer.writeRequest(value, current);
-        itemBuffer.writeComplete(current);
+        longBuffer.writeRequest(&pValue, current);
+        *pValue = value; // write the value here
+        longBuffer.writeComplete(current);
         pLogger->info("Writing %d, nRead %d.", value);
-        itemBuffer.log(*pLogger);
+        longBuffer.log(*pLogger);
     }
     pLogger->info("\n");
     pLogger->info("Read forward");
     // Read forward
     for (int item = 0; item < 6; ++item) {
-        int value = 0;
-        itemBuffer.read(value);
-        pLogger->info("Read value %d.", value);
-        itemBuffer.log(*pLogger);
-        REQUIRE( value == item );
+        longBuffer.read(&pValue);
+        pLogger->info("Read value %d.", *pValue);
+        longBuffer.log(*pLogger);
+        REQUIRE( *pValue == item );
     }
     // Toggle
-    int nToggleItem = itemBuffer.toggle(6);
+    int nToggleItem = longBuffer.toggle(6);
     pLogger->info("\n");
     pLogger->info("Read backward");
     pLogger->info("Toggle items %d.", nToggleItem);
-    itemBuffer.log(*pLogger);
+    longBuffer.log(*pLogger);
     // Read backward
     for (int item = 4; item >= 0; --item) {
-        int value = 0;
-        itemBuffer.read(value);
-        pLogger->info("Read value %d.", value);
-        itemBuffer.log(*pLogger);
-        REQUIRE( value == item );
+        longBuffer.read(&pValue);
+        pLogger->info("Read value %d.", *pValue);
+        longBuffer.log(*pLogger);
+        REQUIRE( *pValue == item );
     }
     // Toggle
-    nToggleItem = itemBuffer.toggle(7);
+    nToggleItem = longBuffer.toggle(7);
     pLogger->info("\n");
     pLogger->info("Read forward.");
     pLogger->info("Toggle items %d.", nToggleItem);
-    itemBuffer.log(*pLogger);
+    longBuffer.log(*pLogger);
     // Read forward
     for (int item = 1; item < 6; ++item) {
-        int value = 0;
-        itemBuffer.read(value);
-        pLogger->info("Read value %d.", value);
-        itemBuffer.log(*pLogger);
-        REQUIRE( value == item );
+        longBuffer.read(&pValue);
+        pLogger->info("Read value %d.", *pValue);
+        longBuffer.log(*pLogger);
+        REQUIRE( *pValue == item );
     }
     delete pLogger;
 }
@@ -84,14 +83,16 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
     long first = 0; // first item in stream
     long currentRead = 15;
     long currentWrite = currentRead;
-    ItemBuffer<long> itemBuffer(first, 8, 4);
+    LongBuffer longBuffer(first, 8, 4);
+    long* pValue = nullptr;
 
     // Write two values
     for (int count = 0; count < 2; ++count) {
         pLogger->info("Writing %ld.", currentWrite);
-        itemBuffer.writeRequest(currentWrite, currentWrite);
-        currentWrite += itemBuffer.writeComplete(currentWrite);
-        itemBuffer.log(*pLogger);
+        longBuffer.writeRequest(&pValue, currentWrite);
+        *pValue = currentWrite; // write the value here
+        currentWrite += longBuffer.writeComplete(currentWrite);
+        longBuffer.log(*pLogger);
         currentWrite++;
     }
 
@@ -99,24 +100,24 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
     pLogger->info("\n");
     pLogger->info("Read forward.");
     for (int count = 0; count < 2; ++count) {
-        long value = 0;
-        itemBuffer.read(value);
-        pLogger->info("Read value %ld.", value);
-        itemBuffer.log(*pLogger);
-        REQUIRE( value == currentRead );
+        longBuffer.read(&pValue);
+        pLogger->info("Read value %ld.", *pValue);
+        longBuffer.log(*pLogger);
+        REQUIRE( *pValue == currentRead );
         currentRead++;
     }
 
     // Switch into backward mode
-    int nToggleItem = itemBuffer.toggle(currentWrite);
+    int nToggleItem = longBuffer.toggle(currentWrite);
     currentWrite += nToggleItem;
     pLogger->info("In stream jumped to %ld.", currentWrite);
     pLogger->info("\n");
     for (int count = 0; count < 4; ++count) {
         pLogger->info("Writing %ld.", currentWrite);
-        itemBuffer.writeRequest(currentWrite, currentWrite);
-        currentWrite += itemBuffer.writeComplete(currentWrite);
-        itemBuffer.log(*pLogger);
+        longBuffer.writeRequest(&pValue, currentWrite);
+        *pValue = currentWrite; // write value here
+        currentWrite += longBuffer.writeComplete(currentWrite);
+        longBuffer.log(*pLogger);
         currentWrite++;
     }
 
@@ -125,12 +126,11 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
     pLogger->info("Reading in reverse.");
     currentRead--;
     for (int count = 0; count < 5; ++count) {
-        long value = 0;
-        itemBuffer.read(value);
-        pLogger->info("Read value %ld.", value);
-        itemBuffer.log(*pLogger);
+        longBuffer.read(&pValue);
+        pLogger->info("Read value %ld.", *pValue);
+        longBuffer.log(*pLogger);
         currentRead--;
-        REQUIRE( value == currentRead );
+        REQUIRE( *pValue == currentRead );
     }
 
     // Write some values
@@ -138,22 +138,24 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
     pLogger->info("Write some more in reverse.");
     for (int count = 0; count < 4; ++count) {
         pLogger->info("Writing %ld.", currentWrite);
-        itemBuffer.writeRequest(currentWrite, currentWrite);
-        currentWrite += itemBuffer.writeComplete(currentWrite);
-        itemBuffer.log(*pLogger);
+        longBuffer.writeRequest(&pValue, currentWrite);
+        *pValue = currentWrite; // write value here
+        currentWrite += longBuffer.writeComplete(currentWrite);
+        longBuffer.log(*pLogger);
         currentWrite++;
     }
 
     // Switch back into forward writing
-    nToggleItem = itemBuffer.toggle(currentWrite);
+    nToggleItem = longBuffer.toggle(currentWrite);
     currentWrite += nToggleItem;
     pLogger->info("\n");
     pLogger->info("Writing in forward mode (after backward writing)");
     for (int count = 0; count < 3; ++count) {
-        itemBuffer.writeRequest(currentWrite, currentWrite);
-        currentWrite += itemBuffer.writeComplete(currentWrite);
+        longBuffer.writeRequest(&pValue, currentWrite);
+        *pValue = currentWrite; // write value here
+        currentWrite += longBuffer.writeComplete(currentWrite);
         pLogger->info("Writing %ld.", currentWrite);
-        itemBuffer.log(*pLogger);
+        longBuffer.log(*pLogger);
         currentWrite++;
     }
 
@@ -161,12 +163,11 @@ TEST_CASE( "Single threaded write-read-backward test (pass)", "[single-file]" ) 
     pLogger->info("\n");
     pLogger->info("Read a few values in forward mode.");
     for (int count = 0; count < 4; ++count) {
-        long value;
-        itemBuffer.read(value);
-        pLogger->info("Read value %ld.", value);
-        itemBuffer.log(*pLogger);
+        longBuffer.read(&pValue);
+        pLogger->info("Read value %ld.", *pValue);
+        longBuffer.log(*pLogger);
         currentRead++;
-        REQUIRE( value == currentRead );
+        REQUIRE( *pValue == currentRead );
     }
 
     // Clean-up
@@ -181,29 +182,29 @@ TEST_CASE( "Multi threaded write-read test (pass)", "[single-file]" ) {
     int nItem = 8;
     std::atomic<long> currentRead = 15;
     std::atomic<long> currentWrite = 15;
-    ItemBuffer<long> itemBuffer(0, nItem, nItem/2);
+    LongBuffer longBuffer(0, nItem, nItem/2);
 
     // Define the writer thread to write some items
-    std::thread writer([&itemBuffer, &currentWrite, &pLogger]{
-        long writeValue;
+    std::thread writer([&longBuffer, &currentWrite, &pLogger]{
+        long* pValue = nullptr;
         for (int writes = 0; writes < 10; writes++) {
-            writeValue = currentWrite;
-            itemBuffer.writeRequest(writeValue, currentWrite);
-            currentWrite += itemBuffer.writeComplete(currentWrite);
-            pLogger->info("Wrote %ld.", writeValue);
-            itemBuffer.log(*pLogger);
+            longBuffer.writeRequest(&pValue, currentWrite);
+            *pValue = currentWrite; // write value here
+            currentWrite += longBuffer.writeComplete(currentWrite);
+            pLogger->info("Wrote %ld.", *pValue);
+            longBuffer.log(*pLogger);
             currentWrite++;
         }
     });
 
     // Define the reader thread to read some items
-    std::thread reader([&itemBuffer, &currentRead, &pLogger]{
-        long readValue;
+    std::thread reader([&longBuffer, &currentRead, &pLogger]{
+        long* pValue = nullptr;
         for (int reads = 0; reads < 10; reads++) {
-            itemBuffer.read(readValue);
-            pLogger->info("Read %ld and expected %ld.", readValue, currentRead.load());
-            itemBuffer.log(*pLogger);
-            REQUIRE( readValue == currentRead );
+            longBuffer.read(&pValue);
+            pLogger->info("Read %ld and expected %ld.", *pValue, currentRead.load());
+            longBuffer.log(*pLogger);
+            REQUIRE( *pValue == currentRead );
             currentRead++;
         }
     });
@@ -214,31 +215,33 @@ TEST_CASE( "Multi threaded write-read test (pass)", "[single-file]" ) {
     // Clean-up
     delete pLogger;
 }
+*/
 
 
 TEST_CASE( "Multi threaded write-read backward test (pass)", "[single-file]" ) {
     // Tests
     // Writer and reader thread in backward mode
     Logger* pLogger = new FileLogger("multi-threaded-read-write-backward-test.txt");
+    //Logger* pLogger = new StreamLogger(&std::cerr);
     int nItem = 8;
     std::atomic<long> currentRead = 25;
     std::atomic<long> currentWrite = 25;
-    ItemBuffer<long> itemBuffer(0, nItem, nItem/2);
+    LongBuffer longBuffer(0, nItem, nItem/2);
 
     // Write two items/read two items, then toggle
-    long writeValue;
-    long readValue;
+    long* pWriteValue = nullptr;
+    long readValue = 0;
     for (int writeReads = 0; writeReads < 2; writeReads++) {
         // Read write value
-        writeValue = currentWrite;
-        itemBuffer.writeRequest(writeValue, currentWrite);
-        currentWrite += itemBuffer.writeComplete(currentWrite);
-        pLogger->info("Wrote %ld.", writeValue);
-        itemBuffer.log(*pLogger);
+        longBuffer.writeRequest(&pWriteValue, currentWrite);
+        *pWriteValue = currentWrite; // write value here
+        currentWrite += longBuffer.writeComplete(currentWrite);
+        pLogger->info("Wrote %ld.", *pWriteValue);
+        longBuffer.log(*pLogger);
         // Read value
-        itemBuffer.read(readValue);
+        longBuffer.read(&readValue);
         pLogger->info("Read %ld and expected %ld.", readValue, currentRead.load());
-        itemBuffer.log(*pLogger);
+        longBuffer.log(*pLogger);
         // Compare and update
         REQUIRE( readValue == currentRead );
         currentWrite++;
@@ -246,30 +249,30 @@ TEST_CASE( "Multi threaded write-read backward test (pass)", "[single-file]" ) {
     }
 
     // Toggle
-    currentWrite += itemBuffer.toggle(currentWrite);
+    currentWrite += longBuffer.toggle(currentWrite);
     currentRead -= 2;
 
     // Define the writer thread to write multiple of nItem values
-    std::thread writer([&itemBuffer, &currentWrite, &pLogger, &nItem]{
-        long writeValue;
+    std::thread writer([&longBuffer, &currentWrite, &pLogger, &nItem]{
+        long* pValue = nullptr;
         for (int writes = 0; writes < 2*nItem; writes++) {
-            writeValue = currentWrite;
-            itemBuffer.writeRequest(writeValue, currentWrite);
-            currentWrite += itemBuffer.writeComplete(currentWrite);
-            pLogger->info("Wrote %ld.", writeValue);
-            itemBuffer.log(*pLogger);
+            longBuffer.writeRequest(&pValue, currentWrite);
+            *pValue = currentWrite; // write value here
+            currentWrite += longBuffer.writeComplete(currentWrite);
+            pLogger->info("Wrote %ld.", *pValue);
+            longBuffer.log(*pLogger);
             currentWrite++;
         }
     });
 
     // Define the reader thread to read multiple of nItem values (same number as in teh writer thread)
-    std::thread reader([&itemBuffer, &currentRead, &pLogger, &nItem]{
-        long readValue;
+    std::thread reader([&longBuffer, &currentRead, &pLogger, &nItem]{
+        long value = 0;
         for (int reads = 0; reads < 2*nItem; reads++) {
-            itemBuffer.read(readValue);
-            pLogger->info("Read %ld and expected %ld.", readValue, currentRead.load());
-            itemBuffer.log(*pLogger);
-            REQUIRE( readValue == currentRead );
+            longBuffer.read(&value);
+            pLogger->info("Read %ld and expected %ld.", value, currentRead.load());
+            longBuffer.log(*pLogger);
+            REQUIRE( value == currentRead );
             currentRead--;
         }
     });

@@ -32,25 +32,14 @@ class LogicForBuffer {
 protected:
     Item* buffer;
 public:
-    /*
-    BufferForStream(long firstItem, int nItem, int nMaxReverse) : firstItem(firstItem), nItem(nItem),
-        nMaxReverse(nMaxReverse), back(false), flushing(false) {
-        buffer = new Item[nItem];
-        reset();
-    }*/
     LogicForBuffer(long firstItem, int nItem, int nMaxReverse) : buffer(nullptr), firstItem(firstItem),
         nItem(nItem), nMaxReverse(nMaxReverse), backward(false), flushing(false) {
         reset();
     }
-    /*
-    virtual ~BufferForStream() {
-        delete [] buffer;
-    }
-    */
     inline bool isBackward() const { return backward; }
     inline bool inReverse() const { return iReverse > 0; }
     inline bool empty() const { return nBefore == 0; }
-
+    inline int size() const { return nItem; }
     inline int nFree() { return nItem - nBefore; }
     inline int nReverse(long currentItem) const {
         return (int) std::min(currentItem - firstItem, (long) nMaxReverse);
@@ -60,15 +49,16 @@ public:
                      iRead, iWrite, nBefore, nAfter, nReverseLast, iReverse);
         std::stringstream ss;
         for (int iItem = 0; iItem < nItem; ++iItem) {
-            ss << buffer[iItem] << ", ";
+            ss << *buffer[iItem] << ", ";
         }
         pLogger.info("Contents: %s", ss.str().c_str());
     }
-    void read(Item& item) {
+    void read(Item item) { // item is allocated
         std::unique_lock<std::mutex> locker(mu);
         cv.wait(locker, [this](){return nBefore > 0 || flushing;});
         if (!flushing) {
-            item = buffer[iRead];
+            //*item = buffer[iRead];
+            std::memcpy(static_cast<void*>(item), static_cast<void*>(buffer[iRead]), sizeof(Item));
             iRead = (backward ? (iRead - 1 + nItem) : (iRead + 1)) % nItem;
             nAfter++;
             nBefore = std::max(nBefore - 1, 0);
@@ -76,12 +66,12 @@ public:
 		locker.unlock();
 		cv.notify_all();
     }
-    void writeRequest(Item& item, long currentItem) {
+    void writeRequest(Item* item, long currentItem) {
         std::unique_lock<std::mutex> locker(mu);
         cv.wait(locker, [this, currentItem](){ return !backward && nFree() > 0 || backward && nFree() >= nReverse(currentItem)
                                                       || flushing; });
         if (!flushing) {
-            *(buffer + iWrite) = item;
+            *item = buffer[iWrite];
         }
 		locker.unlock();
 		cv.notify_all();
