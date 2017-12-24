@@ -13,7 +13,6 @@
 
 // Note: Each test case produces a log file for debugging purposes. However; the log file is not written if the test
 // fails.
-/*
 TEST_CASE( "Single threaded write-read test (pass)", "[single-file]" ) {
     // Tests:
     // - writing and reading in forward mode
@@ -215,7 +214,7 @@ TEST_CASE( "Multi threaded write-read test (pass)", "[single-file]" ) {
     // Clean-up
     delete pLogger;
 }
-*/
+
 
 
 TEST_CASE( "Multi threaded write-read backward test (pass)", "[single-file]" ) {
@@ -230,7 +229,7 @@ TEST_CASE( "Multi threaded write-read backward test (pass)", "[single-file]" ) {
 
     // Write two items/read two items, then toggle
     long* pWriteValue = nullptr;
-    long readValue = 0;
+    long* pReadValue = nullptr;
     for (int writeReads = 0; writeReads < 2; writeReads++) {
         // Read write value
         longBuffer.writeRequest(&pWriteValue, currentWrite);
@@ -239,11 +238,11 @@ TEST_CASE( "Multi threaded write-read backward test (pass)", "[single-file]" ) {
         pLogger->info("Wrote %ld.", *pWriteValue);
         longBuffer.log(*pLogger);
         // Read value
-        longBuffer.read(&readValue);
-        pLogger->info("Read %ld and expected %ld.", readValue, currentRead.load());
+        longBuffer.read(&pReadValue);
+        pLogger->info("Read %ld and expected %ld.", *pReadValue, currentRead.load());
         longBuffer.log(*pLogger);
         // Compare and update
-        REQUIRE( readValue == currentRead );
+        REQUIRE( *pReadValue == currentRead );
         currentWrite++;
         currentRead++;
     }
@@ -267,12 +266,12 @@ TEST_CASE( "Multi threaded write-read backward test (pass)", "[single-file]" ) {
 
     // Define the reader thread to read multiple of nItem values (same number as in teh writer thread)
     std::thread reader([&longBuffer, &currentRead, &pLogger, &nItem]{
-        long value = 0;
+        long* pValue = nullptr;
         for (int reads = 0; reads < 2*nItem; reads++) {
-            longBuffer.read(&value);
-            pLogger->info("Read %ld and expected %ld.", value, currentRead.load());
+            longBuffer.read(&pValue);
+            pLogger->info("Read %ld and expected %ld.", *pValue, currentRead.load());
             longBuffer.log(*pLogger);
-            REQUIRE( value == currentRead );
+            REQUIRE( *pValue == currentRead );
             currentRead--;
         }
     });

@@ -53,12 +53,12 @@ public:
         }
         pLogger.info("Contents: %s", ss.str().c_str());
     }
-    void read(Item item) { // item is allocated
+    void read(Item* item) { // item is allocated
         std::unique_lock<std::mutex> locker(mu);
         cv.wait(locker, [this](){return nBefore > 0 || flushing;});
         if (!flushing) {
-            //*item = buffer[iRead];
-            std::memcpy(static_cast<void*>(item), static_cast<void*>(buffer[iRead]), sizeof(Item));
+            *item = buffer[iRead];
+            //std::memcpy(static_cast<void*>(item), static_cast<void*>(buffer[iRead]), sizeof(Item));
             iRead = (backward ? (iRead - 1 + nItem) : (iRead + 1)) % nItem;
             nAfter++;
             nBefore = std::max(nBefore - 1, 0);
@@ -68,7 +68,8 @@ public:
     }
     void writeRequest(Item* item, long currentItem) {
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > 0 || backward && nFree() >= nReverse(currentItem)
+        // Always leave one spot open because it could be currently where the read pointer is pointing too
+        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > 1 || backward && nFree() >= 1+nReverse(currentItem)
                                                       || flushing; });
         if (!flushing) {
             *item = buffer[iWrite];
@@ -79,7 +80,7 @@ public:
     int writeComplete(long currentItem) {
         int nBackItem = 0;
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > 0 || backward && nFree() >= nReverse(currentItem)
+        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > 1 || backward && nFree() >= 1+nReverse(currentItem)
                                                       || flushing; });
         if (!flushing) {
             iWrite = (iWrite + 1) % nItem;
