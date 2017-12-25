@@ -14,4 +14,12 @@ public:
         delete [] buffer;
         delete [] data;
     }
+    virtual void log(Logger& pLogger) {
+        LogicForBuffer::log(pLogger);
+        std::stringstream ss;
+        for (int iItem = 0; iItem < size(); ++iItem) {
+            ss << data[iItem] << ", ";
+        }
+        pLogger.info("Contents: %s", ss.str().c_str());
+    }
 };

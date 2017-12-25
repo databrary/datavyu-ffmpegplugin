@@ -1,5 +1,5 @@
 #include "org_datavyu_plugins_ffmpegplayer_MovieStream.h"
-#include "ImageBuffer.h"
+#include "ImageBuffer.hpp"
 #include "AudioBuffer.h"
 #include "Logger.h"
 #include "AVLogger.h"
@@ -31,6 +31,9 @@ extern "C" {
 // To create the header file run 'javah -d native org.datavyu.plugins.ffmpegplayer.MovieStream' from the directory 'src'
 
 /*
+cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\MovieStream" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" /I"C:\Program Files\Java\jdk1.8.0_151\include" /I"C:\Program Files\Java\jdk1.8.0_151\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_151\lib\jawt.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswresample\swresample.lib"
+
+
 release 3.4 (writes dll to ../../MovieStream)
 cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\MovieStream"^
  /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4"^
@@ -447,8 +450,9 @@ public:
     /** The time stamp that should be present after a random seek */
     int64_t seekPts;
 
-    /** Flag that indicates the direction of seeking: Forward or backward */
-    int seekFlags;
+    bool backwardReq;
+
+    int64_t backwardPts;
 
     /** Logger */
     Logger *pLogger;
@@ -535,9 +539,10 @@ public:
         audioDiffThreshold(0),
         audioDiffAvgCount(0),
         playSound(false),
-        seekReq(false),
         seekPts(0),
-        seekFlags(0),
+        seekReq(false),
+        backwardPts(0),
+        backwardReq(false),
         pLogger(nullptr),
         widthView(0),
         heightView(0),
@@ -827,7 +832,7 @@ public:
      * the file. In reverse we are not yet at the start if we are 'inReverse'.
      */
     bool atStartForWrite() const {
-        return pImageBuffer->isReverse()
+        return pImageBuffer->isBackward()
             && lastWritePts <= pImageStream->start_time+avgDeltaPts
             && !pImageBuffer->inReverse();
     }
@@ -840,27 +845,25 @@ public:
     }
 
     /**
-     * This only happens in forward mode. True if writing reached the end of the
-     * file.
+     * This only happens in forward mode. True if writing reached the end of the file.
      */
     bool atEndForWrite() const {
-        return !pImageBuffer->isReverse() && endOfFile;
+        return !pImageBuffer->isBackward() && endOfFile;
     }
 
     /**
-     * This only happens in forward mode. True if reading reached the end of the
-     * file.
+     * This only happens in forward mode. True if reading reached the end of the file.
      */
     bool atEndForRead() const {
         // The duration is not a reliable estimate for the end a video file
-        return !pImageBuffer->isReverse() && endOfFile && pImageBuffer->empty();
+        return !pImageBuffer->isBackward() && endOfFile && pImageBuffer->empty();
     }
 
     /**
      * True if we are in forward playback
      */
     bool isForwardPlayback() const {
-        return loadedMovie ? !pImageBuffer->isReverse() : true;
+        return loadedMovie ? !pImageBuffer->isBackward() : true;
     }
 
     /**
@@ -886,7 +889,7 @@ public:
             // Random seek
             if (seekReq) {
                 endOfFile = false;
-                seekFlags = 0; //|= AVSEEK_FLAG_BACKWARD;
+                int seekFlags = 0; //|= AVSEEK_FLAG_BACKWARD;
 
                 if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
                     pLogger->error("Random seek of %I64d pts or %I64d frames unsuccessful.",
@@ -908,32 +911,20 @@ public:
                     initLoadNextImageFrame = true;
                 }
                 seekReq = false;
+                toggle = false;
+                backwardReq = false;
             }
 
             // Switch direction of playback
             if (hasVideoStream() && toggle) {
                 endOfFile = false;
-                std::pair<int, int> offsetDelta = pImageBuffer->toggle();
-                int offset = offsetDelta.first;
-                int delta = offsetDelta.second;
-                int nShift = 0;
+                int delta = pImageBuffer->toggle(lastWritePts/avgDeltaPts);
 
-                pLogger->info("Toggle with offset %d and delta %d.", offset, delta);
+                pLogger->info("Toggle requires jump by %d frames.", delta);
 
-                // Even if we may not seek backward it is safer to get the prior keyframe
-                seekFlags = 0; //AVSEEK_FLAG_BACKWARD;
-                if (pImageBuffer->isReverse()) {
-                    int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;
-                    delta = std::min(offset+delta, maxDelta) - offset;
-                    pImageBuffer->setBackwardAfterToggle(delta);
-                    nShift = -(offset + delta) + 1;
-                } else {
-                    nShift = offset;
-                }
+                lastWritePts = seekPts = lastWritePts + delta*avgDeltaPts;
 
-                lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
-
-                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
+                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, 0) < 0) {
                     pLogger->error("Toggle seek of %I64d pts, %I64d frames unsuccessful.",
                                     seekPts, seekPts/avgDeltaPts);
                 } else {
@@ -948,37 +939,21 @@ public:
             }
 
             // Find next frame in reverse playback
-            if (hasVideoStream() && pImageBuffer->seekReq()) {
+            if (hasVideoStream() && backwardReq) {
                 endOfFile = false;
 
-                // Find the number of frames that can still be toward the start of
-                // the file
-                int maxDelta = (-pImageStream->start_time+lastWritePts)/avgDeltaPts;
+                lastWritePts = seekPts = backwardPts;
 
-                std::pair<int, int> offsetDelta = pImageBuffer->seekBackward();
-
-                int offset = offsetDelta.first;
-                int delta = offsetDelta.second;
-
-                delta = std::min(offset+delta, maxDelta) - offset;
-
-                pLogger->info("Seek frame for reverse playback with offset %d and min delta %d.", offset, delta);
-
-                pImageBuffer->setBackwardAfterSeek(delta);
-
-                seekFlags |= AVSEEK_FLAG_BACKWARD;
-                int nShift = -(offset + delta) + 1;
-
-                lastWritePts = seekPts = lastWritePts + nShift*avgDeltaPts;
-
-                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
-                    pLogger->error("Reverse seek of %I64d pts, %I64d frames unsuccessful.",
+                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, AVSEEK_FLAG_BACKWARD) < 0) {
+                    pLogger->error("Backward seek of %I64d pts, %I64d frames unsuccessful.",
                                     seekPts, seekPts/avgDeltaPts);
                 } else {
-                    pLogger->info("Reverse seek of %I64d pts, %I64d frames successful.",
+                    pLogger->info("Backward seek of %I64d pts, %I64d frames successful.",
                                     seekPts, seekPts/avgDeltaPts);
                     avcodec_flush_buffers(pImageCodecCtx);
                 }
+                backwardReq = false;
+                initLoadNextImageFrame = false;
             }
 
             if (!endOfFile) {
@@ -1017,7 +992,12 @@ public:
                             if (readPts >= seekPts) {
 
                                 // Get the next writable buffer. This may block and can be unblocked by flushing
-                                AVFrame* pFrameBuffer = pImageBuffer->requestPutPtr();
+                                AVFrame* pFrameBuffer;
+                                long currentFrame = readPts/avgDeltaPts;
+
+                                pLogger->info("Write request for %I64d pts or frame %ld.", readPts, currentFrame);
+
+                                pImageBuffer->writeRequest(&pFrameBuffer, currentFrame);
 
                                 // Did we get a frame buffer?
                                 if (pFrameBuffer) {
@@ -1033,12 +1013,18 @@ public:
                                         pFrameBuffer->linesize);
                                     pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
                                     pFrameBuffer->pts = lastWritePts = readPts;
-                                    pImageBuffer->completePutPtr();
-
+                                    int delta = pImageBuffer->writeComplete(currentFrame);
                                     pLogger->info("Wrote %I64d pts, %I64d frames.", lastWritePts,
-                                                  lastWritePts/avgDeltaPts);
-                                    //pImageBuffer->printLog();
+                                                                                    lastWritePts/avgDeltaPts);
+                                    pImageBuffer->log(*pLogger, avgDeltaPts);
+                                    if (delta != 0) {
+                                        backwardReq = true;
+                                        backwardPts = lastWritePts + delta*avgDeltaPts;
+                                        pLogger->info("Next read jump %d frames to %I64d.", delta, backwardPts);
+                                    }
                                 }
+                            } else {
+                                pLogger->info("Skipped frame %ld.", readPts/avgDeltaPts);
                             }
 
                             // Reset frame container to initial state
@@ -1091,17 +1077,7 @@ public:
 
         if (hasVideoStream() || hasAudioStream()) {
 
-            // If we are in backward and switch into forward
-            if (pImageBuffer->isReverse() && inSpeed > 0) {
-                pImageBuffer->setNMinImages(N_MIN_IMAGES);
-            }
-
-            // If we are in forward and switch into backward
-            if (!pImageBuffer->isReverse() && inSpeed < 0) {
-                pImageBuffer->setNMinImages(1);
-            }
-
-            toggle = pImageBuffer->isReverse() != (inSpeed < 0);
+            toggle = pImageBuffer->isBackward() != (inSpeed < 0);
 
             speed = fabs(inSpeed);
 
@@ -1128,7 +1104,7 @@ public:
     	// If we have a video or an audio stream
     	if (hasVideoStream() || hasAudioStream()) {
 
-    		if (pImageBuffer->isReverse()) {
+    		if (pImageBuffer->isBackward()) {
     			// Seek to the end of the file
     			lastWritePts = seekPts = pImageStream->start_time + pImageStream->duration - 2*avgDeltaPts;
     			seekReq = true;
@@ -1161,7 +1137,8 @@ public:
         int nFrame = 0;
 
         // Get the next read pointer
-        AVFrame *pVideoFrameTmp = pImageBuffer->getGetPtr();
+        AVFrame *pVideoFrameTmp;
+        pImageBuffer->read(&pVideoFrameTmp);
 
         // We received a frame -- no flushing
         if (pVideoFrameTmp) {
@@ -1208,7 +1185,8 @@ public:
 
                 // If our time difference is lower than the sync threshold, then skip a frame.
                 if (imageDiffCum <= -syncThreshold) {
-                    AVFrame *pVideoFrameTmp2 = pImageBuffer->getGetPtr();
+                    AVFrame *pVideoFrameTmp2;
+                    pImageBuffer->read(&pVideoFrameTmp2);
                     if (pVideoFrameTmp2) {
                         pVideoFrameTmp = pVideoFrameTmp2;
                         nFrame++;
@@ -1385,10 +1363,11 @@ public:
     		imageDiffCum = 0;
     		endOfFile = false;
 
-    		// Reset value for seek request.
+    		// Reset value for seek and backward request.
     		seekReq = false;
     		seekPts = 0;
-    		seekFlags = 0;
+            backwardReq = false;
+            backwardPts = 0;
 
     		// Reset variables from viewing window.
     		widthView = 0;
@@ -1574,7 +1553,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
     movieStream->pLogger = new FileLogger(logFileName);
-    //player->pLogger = new StreamLogger(&std::cerr);
+    //movieStream->pLogger = new StreamLogger(&std::cerr);
 	movieStream->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs
@@ -1704,10 +1683,11 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		movieStream->pLogger->info("Average delta %I64d pts.", movieStream->avgDeltaPts);
 
 		// Initialize the image buffer.
+
+		//int width, int height, long firstItem, int nItem, int nMaxReverse
 		movieStream->pImageBuffer = new ImageBuffer(movieStream->width,
 		                                            movieStream->height,
-		                                            movieStream->avgDeltaPts,
-		                                            movieStream->pLogger);
+		                                            ((double) movieStream->pImageStream->start_time)/movieStream->avgDeltaPts);
 	}
 
 	// *************************************************************************
