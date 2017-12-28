@@ -4,6 +4,7 @@
 #include <condition_variable>
 #include <algorithm>
 #include <sstream>
+#include <stdlib.h>     /* abs */
 
 
 template<class Item>
@@ -29,6 +30,7 @@ class LogicForBuffer {
         nBefore = 0;
         nAfter = 0;
     }
+    inline bool inBalance() { return abs(nBefore - nAfter) <= 2; }
 protected:
     Item* buffer;
 public:
@@ -40,10 +42,10 @@ public:
     inline bool inReverse() const { return iReverse > 0; }
     inline bool empty() const { return nBefore == 0; }
     inline int size() const { return nItem; }
-    inline int nFree() { return nItem - nBefore; }
-    inline int nNonOccupied() { return nItem - nBefore - nAfter; } // Number of non-occupied spaces
+    inline int nFree() { return nItem - nBefore; } // number of non-occupied spaces
+    inline int nNonOccupied() { return nItem - nBefore - nAfter; }
     inline int nReverse(long currentItem) const {
-        return (int) std::min(currentItem - firstItem - nReverseLast + 1, (long) nMaxReverse); // +1 for 0
+        return (int) std::min(currentItem - firstItem + 1, (long) nMaxReverse); // +1 for 0
     }
     virtual void log(Logger& pLogger) {
         pLogger.info("iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverseLast = %d, iReverse = %d.",
@@ -56,7 +58,7 @@ public:
             *item = buffer[iRead];
             iRead = (backward ? (iRead - 1 + nItem) : (iRead + 1)) % nItem;
             nAfter++;
-            nBefore = std::max(nBefore - 1, 0);
+            nBefore--; // since nBefore > 0
         }
 		locker.unlock();
 		cv.notify_all();
@@ -64,9 +66,8 @@ public:
     void writeRequest(Item* item, long currentItem) {
         std::unique_lock<std::mutex> locker(mu);
         // Always leave one spot open because it could be currently where the read pointer is pointing too
-        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > 1
-                                                    || backward && iReverse==1 && nFree() >= 1+nReverse(currentItem)
-                                                    || backward && iReverse>1
+        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > nMaxReverse
+                                                    || backward && nFree() > nMaxReverse && nReverse(currentItem) > 0
                                                     || flushing; });
         if (!flushing) {
             *item = buffer[iWrite];
@@ -77,37 +78,34 @@ public:
     int writeComplete(long currentItem) {
         int nBackItem = 0;
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > 1
-                                                    || backward && iReverse==1 && nFree() >= 1+nReverse(currentItem)
-                                                    || backward && iReverse>1
+        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > nMaxReverse
+                                                    || backward && nFree() > nMaxReverse && nReverse(currentItem) > 0
                                                     || flushing; });
         if (!flushing) {
-            iWrite = (iWrite + 1) % nItem;
             if (backward) {
                 iReverse--;
                 if (iReverse == 0) {
-                    int nDiff = nReverseLast - nNonOccupied(); // Whatever more we reversed than were non-occupied
-                    if (nDiff > 0) {
-                        nAfter = std::max(0, nAfter - nDiff);
-                    }
+                    nAfter -= std::max(0, nReverseLast - nNonOccupied()); // Make space for nReverseLast items, which we have
                     nBefore += nReverseLast;
                     nBackItem = -nReverseLast - nReverse(currentItem);
                     iWrite = (iWrite + nBackItem + nItem) % nItem;
                     iReverse = nReverseLast = nReverse(currentItem);
                 }
             } else {
-                nAfter = std::max(0, nAfter - int(nBefore + nAfter == nItem));
+                nAfter -= nNonOccupied() == 0;
                 nBefore++;
             }
+            iWrite = (iWrite + 1) % nItem;
         }
 		locker.unlock();
 		cv.notify_all();
 		return nBackItem;
     }
+
     int toggle(long currentItem) {
         int nToggleItem = 0;
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this](){ return nAfter > 0 || flushing; });
+        cv.wait(locker, [this, currentItem](){ return nAfter > 0 || flushing; });
         if (!flushing) {
             // Switch from backward to forward
             if (backward) {
@@ -117,9 +115,11 @@ public:
                 iReverse = nReverseLast = 0;
             // Switch from forward to backward
             } else {
-                iReverse = nReverseLast = std::min(nAfter+nFree(), nReverse(currentItem));
-                nToggleItem = -nReverseLast -nBefore -nAfter;
-                iWrite = (iWrite - nReverseLast + nItem) % nItem;
+                // We know nFree() > nMaxReverse <=> nItem - nBefore > nItem/2 <=> nItem/2 > nBefore
+                // An we know nReverse <= nItem/2
+                iReverse = nReverseLast = nReverse(currentItem - nBefore - nAfter);
+                nToggleItem = -nBefore -nAfter - nReverseLast;
+                iWrite = (iWrite + nToggleItem + 2*nItem) % nItem;
                 iRead = (iRead - 2 + nItem) % nItem;
             }
             nBefore++;
