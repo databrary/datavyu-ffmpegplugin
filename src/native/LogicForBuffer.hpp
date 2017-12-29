@@ -4,8 +4,10 @@
 #include <condition_variable>
 #include <algorithm>
 #include <sstream>
-#include <stdlib.h>     /* abs */
+#include <stdlib.h>
 
+#ifndef LOGIC_FOR_BUFFER_H_
+#define LOGIC_FOR_BUFFER_H_
 
 template<class Item>
 class LogicForBuffer {
@@ -140,3 +142,5 @@ public:
         flushing = false;
     }
 };
+
+#endif #LOGIC_FOR_BUFFER_H_

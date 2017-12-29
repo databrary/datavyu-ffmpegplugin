@@ -6,7 +6,10 @@ extern "C" {
 	#include <libavformat/avformat.h>
 }
 
-#define DEFAULT_BUFFER_SIZE 32
+#ifndef IMAGE_BUFFER_H_
+#define IMAGE_BUFFER_H_
+
+#define DEFAULT_BUFFER_SIZE 64
 
 class ImageBuffer : public LogicForBuffer<AVFrame*> {
 public:
@@ -40,3 +43,5 @@ public:
         pLogger.info("Contents: %s", ss.str().c_str());
     }
 };
+
+#endif IMAGE_BUFFER_H_

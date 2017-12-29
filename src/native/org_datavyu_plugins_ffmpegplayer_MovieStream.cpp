@@ -212,10 +212,6 @@ public:
     /** The time stamp that should be present after a random seek */
     int64_t seekPts;
 
-    bool backwardReq;
-
-    int64_t backwardPts;
-
     /** Logger */
     Logger *pLogger;
 
@@ -303,8 +299,6 @@ public:
         playSound(false),
         seekPts(0),
         seekReq(false),
-        backwardPts(0),
-        backwardReq(false),
         pLogger(nullptr),
         widthView(0),
         heightView(0),
@@ -628,6 +622,30 @@ public:
         return loadedMovie ? !pImageBuffer->isBackward() : true;
     }
 
+    void doSeek(uint64_t pts, bool flush, bool init) {
+        int seekFlags = pts < lastWritePts ? AVSEEK_FLAG_BACKWARD : 0;
+        if (av_seek_frame(pFormatCtx, iImageStream, pts, seekFlags) < 0) {
+            pLogger->error("Seek to frame %I64d.", pts/avgDeltaPts);
+        } else {
+            lastWritePts = pts;
+            pLogger->info("Seek to frame %I64d.", pts/avgDeltaPts);
+            if (hasVideoStream()) {
+                if (flush) {
+                    pImageBuffer->flush();
+                }
+                avcodec_flush_buffers(pImageCodecCtx);
+            }
+            if (hasAudioStream()) {
+                if (flush) {
+                    pAudioBuffer->flush();
+                }
+                avcodec_flush_buffers(pAudioInCodecCtx);
+                avcodec_flush_buffers(pAudioOutCodecCtx);
+            }
+            initLoadNextImageFrame = init;
+        }
+    }
+
     /**
      * Reads the next frame from the video stream and supports:
      * - Random seek through the variable seekReq.
@@ -645,169 +663,113 @@ public:
         int frameFinished;
         bool reverseRefresh = true;
         AVPacket packet;
+        int delta = 0;
 
         while (!quit) {
 
             // Random seek
             if (seekReq) {
-                endOfFile = false;
-                int seekFlags = 0; //|= AVSEEK_FLAG_BACKWARD;
-
-                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, seekFlags) < 0) {
-                    pLogger->error("Random seek of %I64d pts or %I64d frames unsuccessful.",
-                                    seekPts, seekPts/avgDeltaPts);
-                } else {
-                    pLogger->info("Random seek of %I64d pts or %I64d frames successful.",
-                                    seekPts, seekPts/avgDeltaPts);
-                    if (hasVideoStream()) {
-                        pImageBuffer->flush();
-                        avcodec_flush_buffers(pImageCodecCtx);
-                        lastWritePts = seekPts;
-                    }
-                    if (hasAudioStream()) {
-                        pAudioBuffer->flush();
-                        avcodec_flush_buffers(pAudioInCodecCtx);
-                        avcodec_flush_buffers(pAudioOutCodecCtx);
-                        lastWritePts = seekPts;
-                    }
-                    initLoadNextImageFrame = true;
-                }
-                seekReq = false;
-                toggle = false;
-                backwardReq = false;
+                endOfFile = seekReq = false;
+                doSeek(seekPts, true, true);
             }
 
-            // Switch direction of playback
-            if (hasVideoStream() && toggle) {
-                endOfFile = false;
+            // Toggle direction
+            if (toggle) {
+                toggle = endOfFile = false;
                 int delta = pImageBuffer->toggle(lastWritePts/avgDeltaPts);
-
-                pLogger->info("Toggle requires jump by %d frames.", delta);
-
-                lastWritePts = seekPts = lastWritePts + delta*avgDeltaPts;
-
-                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, 0) < 0) {
-                    pLogger->error("Toggle seek of %I64d pts, %I64d frames unsuccessful.",
-                                    seekPts, seekPts/avgDeltaPts);
-                } else {
-                    pLogger->info("Toggle seek of %I64d pts, %I64d frames successful.",
-                                    seekPts, seekPts/avgDeltaPts);
-                    avcodec_flush_buffers(pImageCodecCtx);
-                }
-
-                // Done with toggle of direction, set toggle to false
-                toggle = false;
-                initLoadNextImageFrame = true;
+                seekPts = lastWritePts + (1+delta)*avgDeltaPts;
+                doSeek(seekPts, true, false);
             }
 
             // Find next frame in reverse playback
-            if (hasVideoStream() && backwardReq) {
+            if (delta) {
+                seekPts = lastWritePts + (1+delta)*avgDeltaPts;
+                pLogger->info("Next read jump %d frames to %I64d.", delta, seekPts);
                 endOfFile = false;
-
-                lastWritePts = seekPts = backwardPts;
-
-                if (av_seek_frame(pFormatCtx, iImageStream, seekPts, AVSEEK_FLAG_BACKWARD) < 0) {
-                    pLogger->error("Backward seek of %I64d pts, %I64d frames unsuccessful.",
-                                    seekPts, seekPts/avgDeltaPts);
-                } else {
-                    pLogger->info("Backward seek of %I64d pts, %I64d frames successful.",
-                                    seekPts, seekPts/avgDeltaPts);
-                    avcodec_flush_buffers(pImageCodecCtx);
-                }
-                backwardReq = false;
-                initLoadNextImageFrame = false;
+                delta = 0;
+                doSeek(seekPts, false, false);
             }
 
-            if (!endOfFile) {
+            // Read frame
+            int ret = av_read_frame(pFormatCtx, &packet);
 
-                // Read frame
-                int ret = av_read_frame(pFormatCtx, &packet);
+            // Set end of file
+            endOfFile = ret == AVERROR_EOF;
 
-                // Set endOfFile for end of file
-                endOfFile = ret == AVERROR_EOF;
+            if (endOfFile) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
+                continue;
+            }
 
-                // Any error that is not endOfFile
-                if (ret < 0 && !endOfFile) {
-                    pLogger->error("Error:  %c, %c, %c, %c.\n",
-                        static_cast<char>((-ret >> 0) & 0xFF),
-                        static_cast<char>((-ret >> 8) & 0xFF),
-                        static_cast<char>((-ret >> 16) & 0xFF),
-                        static_cast<char>((-ret >> 24) & 0xFF));
-                    std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
+            if (ret < 0) {
+                pLogger->error("Error:  %c, %c, %c, %c.\n",
+                    static_cast<char>((-ret >> 0) & 0xFF),
+                    static_cast<char>((-ret >> 8) & 0xFF),
+                    static_cast<char>((-ret >> 16) & 0xFF),
+                    static_cast<char>((-ret >> 24) & 0xFF));
+                std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
+                continue;
+            }
 
-                // We got a frame! Let's decode it
-                } else {
+            // Is this a packet from the video stream?
+            if (hasVideoStream() && packet.stream_index == iImageStream) {
 
-                    // Is this a packet from the video stream?
-                    if (hasVideoStream() && packet.stream_index == iImageStream) {
+                // Decode the video frame
+                avcodec_decode_video2(pImageCodecCtx, pImageFrame, &frameFinished, &packet);
 
-                        // Decode the video frame
-                        avcodec_decode_video2(pImageCodecCtx, pImageFrame, &frameFinished, &packet);
+                // Did we get a full video frame?
+                if (frameFinished) {
 
-                        // Did we get a full video frame?
-                        if (frameFinished) {
+                    // Set the presentation time stamp (PTS)
+                    int64_t readPts = pImageFrame->pkt_pts;
 
-                            // Set the presentation time stamp (PTS)
-                            int64_t readPts = pImageFrame->pkt_pts;
+                    // Skip frames until we are at or beyond seekPts
+                    if (readPts >= seekPts) {
 
-                            // Skip frames until we are at or beyond seekPts
-                            if (readPts >= seekPts) {
+                        // Get the next writable buffer. This may block and can be unblocked by flushing
+                        AVFrame* pFrameBuffer;
+                        long currentFrame = readPts/avgDeltaPts;
 
-                                // Get the next writable buffer. This may block and can be unblocked by flushing
-                                AVFrame* pFrameBuffer;
-                                long currentFrame = readPts/avgDeltaPts;
+                        pLogger->info("Write request for %I64d pts or frame %ld.", readPts, currentFrame);
 
-                                pLogger->info("Write request for %I64d pts or frame %ld.", readPts, currentFrame);
+                        pImageBuffer->writeRequest(&pFrameBuffer, currentFrame);
 
-                                pImageBuffer->writeRequest(&pFrameBuffer, currentFrame);
+                        // Did we get a frame buffer?
+                        if (pFrameBuffer) {
 
-                                // Did we get a frame buffer?
-                                if (pFrameBuffer) {
-
-                                    // Convert the image from its native color format into the RGB color format
-                                    sws_scale(
-                                        pSwsImageCtx,
-                                        (uint8_t const * const *)pImageFrame->data,
-                                        pImageFrame->linesize,
-                                        0,
-                                        pImageCodecCtx->height,
-                                        pFrameBuffer->data,
-                                        pFrameBuffer->linesize);
-                                    pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
-                                    pFrameBuffer->pts = lastWritePts = readPts;
-                                    int delta = pImageBuffer->writeComplete(currentFrame);
-                                    pLogger->info("Wrote %I64d pts, %I64d frames.", lastWritePts,
-                                                                                    lastWritePts/avgDeltaPts);
-                                    pImageBuffer->log(*pLogger, avgDeltaPts);
-                                    if (delta != 0) {
-                                        backwardReq = true;
-                                        backwardPts = lastWritePts + delta*avgDeltaPts;
-                                        pLogger->info("Next read jump %d frames to %I64d.", delta, backwardPts);
-                                    }
-                                }
-                            } else {
-                                pLogger->info("Skipped frame %ld.", readPts/avgDeltaPts);
-                            }
-
-                            // Reset frame container to initial state
-                            av_frame_unref(pImageFrame);
+                            // Convert the image from its native color format into the RGB color format
+                            sws_scale(
+                                pSwsImageCtx,
+                                (uint8_t const * const *)pImageFrame->data,
+                                pImageFrame->linesize,
+                                0,
+                                pImageCodecCtx->height,
+                                pFrameBuffer->data,
+                                pFrameBuffer->linesize);
+                            pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
+                            pFrameBuffer->pts = lastWritePts = readPts;
+                            int delta = pImageBuffer->writeComplete(currentFrame);
+                            pLogger->info("Wrote %I64d pts, %I64d frames.", lastWritePts,
+                                                                            lastWritePts/avgDeltaPts);
+                            pImageBuffer->log(*pLogger, avgDeltaPts);
                         }
-
-                        // Free the packet that was allocated by av_read_frame
-                        av_free_packet(&packet);
-
-                    } else if (hasAudioStream() && playSound && packet.stream_index == iAudioStream) {
-
-                        // Decode packet from audio stream
-                        pAudioBuffer->put(&packet); // packet is freed when consumed
                     } else {
-                        av_free_packet(&packet);
+                        pLogger->info("Skipped frame %ld.", readPts/avgDeltaPts);
                     }
+
+                    // Reset frame container to initial state
+                    av_frame_unref(pImageFrame);
                 }
 
-            // We are at the end of file and throttle this loop through a delay
+                // Free the packet that was allocated by av_read_frame
+                av_free_packet(&packet);
+
+            } else if (hasAudioStream() && playSound && packet.stream_index == iAudioStream) {
+
+                // Decode packet from audio stream
+                pAudioBuffer->put(&packet); // packet is freed when consumed
             } else {
-                std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
+                av_free_packet(&packet);
             }
         }
     }
@@ -1128,8 +1090,6 @@ public:
     		// Reset value for seek and backward request.
     		seekReq = false;
     		seekPts = 0;
-            backwardReq = false;
-            backwardPts = 0;
 
     		// Reset variables from viewing window.
     		widthView = 0;
