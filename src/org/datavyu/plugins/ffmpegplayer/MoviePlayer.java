@@ -127,7 +127,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 							+ ", diffTime = " + (currentTime - lastUpdateTime));
                     for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
                         movieStreamProvider.seek(sec);
-                        movieStreamProvider.dropImageFrame();
+                        //movieStreamProvider.dropImageFrame();
                         movieStreamProvider.startVideoListeners();
                         movieStreamProvider.nextImageFrame();
                     }

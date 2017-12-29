@@ -23,7 +23,7 @@ class LogicForBuffer {
     bool backward; // Forward or backward mode
     std::mutex mu;
     std::condition_variable cv;
-    std::atomic<bool> flushing;
+    std::atomic<bool> unblocking;
     void reset() {
         nReverseLast = 0;
         iReverse = 0;
@@ -37,7 +37,7 @@ protected:
     Item* buffer;
 public:
     LogicForBuffer(long firstItem, int nItem, int nMaxReverse) : buffer(nullptr), firstItem(firstItem),
-        nItem(nItem), nMaxReverse(nMaxReverse), backward(false), flushing(false) {
+        nItem(nItem), nMaxReverse(nMaxReverse), backward(false), unblocking(false) {
         reset();
     }
     inline bool isBackward() const { return backward; }
@@ -55,8 +55,10 @@ public:
     }
     void read(Item* item) { // item is allocated
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this](){return nBefore > 0 || flushing;});
-        if (!flushing) {
+        cv.wait(locker, [this](){return nBefore > 0 || unblocking;});
+        if (unblocking) {
+            *item = nullptr;
+        } else {
             *item = buffer[iRead];
             iRead = (backward ? (iRead - 1 + nItem) : (iRead + 1)) % nItem;
             nAfter++;
@@ -70,10 +72,8 @@ public:
         // Always leave one spot open because it could be currently where the read pointer is pointing too
         cv.wait(locker, [this, currentItem](){ return !backward && nFree() > nMaxReverse
                                                     || backward && nFree() > nMaxReverse && nReverse(currentItem) > 0
-                                                    || flushing; });
-        if (!flushing) {
-            *item = buffer[iWrite];
-        }
+                                                    || unblocking; });
+        *item = unblocking ? nullptr : buffer[iWrite];
 		locker.unlock();
 		cv.notify_all();
     }
@@ -82,8 +82,8 @@ public:
         std::unique_lock<std::mutex> locker(mu);
         cv.wait(locker, [this, currentItem](){ return !backward && nFree() > nMaxReverse
                                                     || backward && nFree() > nMaxReverse && nReverse(currentItem) > 0
-                                                    || flushing; });
-        if (!flushing) {
+                                                    || unblocking; });
+        if (!unblocking) {
             if (backward) {
                 iReverse--;
                 if (iReverse == 0) {
@@ -103,12 +103,11 @@ public:
 		cv.notify_all();
 		return nBackItem;
     }
-
     int toggle(long currentItem) {
         int nToggleItem = 0;
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this, currentItem](){ return nAfter > 0 || flushing; });
-        if (!flushing) {
+        cv.wait(locker, [this, currentItem](){ return nAfter > 0 || unblocking; });
+        if (!unblocking) {
             // Switch from backward to forward
             if (backward) {
                 nToggleItem = nBefore + nAfter + iReverse;
@@ -133,13 +132,21 @@ public:
 		cv.notify_all();
         return nToggleItem;
     }
+    void unblock() {
+        unblocking = true;
+        cv.notify_all();
+        //unblocking = false;
+    }
+    void block() {
+        unblocking = false;
+    }
     void flush() {
-        flushing = true;
+        unblocking = true;
         cv.notify_all();
         std::unique_lock<std::mutex> locker(mu);
         reset();
         locker.unlock();
-        flushing = false;
+        unblocking = false;
     }
 };
 

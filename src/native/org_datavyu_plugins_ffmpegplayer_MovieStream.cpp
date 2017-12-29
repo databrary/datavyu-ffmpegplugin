@@ -676,9 +676,13 @@ public:
             // Toggle direction
             if (toggle) {
                 toggle = endOfFile = false;
+                pImageBuffer->block(); // Block the buffer again; unblocked for toggle
                 int delta = pImageBuffer->toggle(lastWritePts/avgDeltaPts);
+                pLogger->info("After toggle.");
+                pImageBuffer->log(*pLogger, avgDeltaPts);
+
                 seekPts = lastWritePts + (1+delta)*avgDeltaPts;
-                doSeek(seekPts, true, false);
+                doSeek(seekPts, false, true);
             }
 
             // Find next frame in reverse playback
@@ -752,6 +756,8 @@ public:
                             pLogger->info("Wrote %I64d pts, %I64d frames.", lastWritePts,
                                                                             lastWritePts/avgDeltaPts);
                             pImageBuffer->log(*pLogger, avgDeltaPts);
+                        } else {
+                            pLogger->info("Write request aborted.");
                         }
                     } else {
                         pLogger->info("Skipped frame %ld.", readPts/avgDeltaPts);
@@ -802,6 +808,11 @@ public:
         if (hasVideoStream() || hasAudioStream()) {
 
             toggle = pImageBuffer->isBackward() != (inSpeed < 0);
+
+            if (toggle) {
+                // Unblock the buffer to allow for the toggle and write
+                pImageBuffer->unblock();
+            }
 
             speed = fabs(inSpeed);
 
@@ -1274,8 +1285,8 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	MovieStream* movieStream = new MovieStream();
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
-    movieStream->pLogger = new FileLogger(logFileName);
-    //movieStream->pLogger = new StreamLogger(&std::cerr);
+    //movieStream->pLogger = new FileLogger(logFileName);
+    movieStream->pLogger = new StreamLogger(&std::cerr);
 	movieStream->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs
