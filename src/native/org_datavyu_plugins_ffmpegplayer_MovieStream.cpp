@@ -622,13 +622,45 @@ public:
         return loadedMovie ? !pImageBuffer->isBackward() : true;
     }
 
-    void doSeek(uint64_t pts, bool flush, bool init) {
-        int seekFlags = pts < lastWritePts ? AVSEEK_FLAG_BACKWARD : 0;
-        if (av_seek_frame(pFormatCtx, iImageStream, pts, seekFlags) < 0) {
-            pLogger->error("Seek to frame %I64d.", pts/avgDeltaPts);
+    /**
+     * ALWAYS seeks before the current target. Use this method for precise location.  It may take longer though.
+     */
+    void doSeekBefore(int64_t target, bool flush, bool init) {
+        if (av_seek_frame(pFormatCtx, iImageStream, target, AVSEEK_FLAG_BACKWARD) < 0) {
+            pLogger->error("Failed seek before to frame %I64d.", target/avgDeltaPts);
         } else {
-            lastWritePts = pts;
-            pLogger->info("Seek to frame %I64d.", pts/avgDeltaPts);
+            lastWritePts = target;
+            pLogger->info("Succeeded seek before to frame %I64d.", target/avgDeltaPts);
+            if (hasVideoStream()) {
+                if (flush) {
+                    pImageBuffer->flush();
+                }
+                avcodec_flush_buffers(pImageCodecCtx);
+            }
+            if (hasAudioStream()) {
+                if (flush) {
+                    pAudioBuffer->flush();
+                }
+                avcodec_flush_buffers(pAudioInCodecCtx);
+                avcodec_flush_buffers(pAudioOutCodecCtx);
+            }
+            initLoadNextImageFrame = init;
+        }
+    }
+
+    /**
+     * Seek approximately to the target frame. Use this for random seeks.
+     */
+    void doSeek(int64_t target, int64_t delta, bool flush, bool init) {
+        int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
+        int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
+        int seekFlags = delta < 0 ? AVSEEK_FLAG_BACKWARD : 0;
+        if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, seekFlags) < 0) {
+            pLogger->error("Failed seek to frame %I64d.", target/avgDeltaPts);
+        } else {
+            lastWritePts = target;
+            pLogger->info("Succeeded seek to frame %I64d with min %I64d and max %I64d for delta %I64d.",
+                          target/avgDeltaPts, min_/avgDeltaPts, max_/avgDeltaPts, delta/avgDeltaPts);
             if (hasVideoStream()) {
                 if (flush) {
                     pImageBuffer->flush();
@@ -670,24 +702,26 @@ public:
             // Random seek
             if (seekReq) {
                 endOfFile = seekReq = false;
-                doSeek(seekPts, true, true);
+                doSeek(seekPts, seekPts-lastWritePts, true, true);
             }
 
             // Toggle direction
             if (toggle) {
                 toggle = endOfFile = false;
-                int delta = pImageBuffer->toggle(lastWritePts/avgDeltaPts);
-                seekPts = lastWritePts + (1+delta)*avgDeltaPts;
-                doSeek(seekPts, true, false);
+                pImageBuffer->block(); // Block the buffer again; unblocked for toggle
+                int delta_ = pImageBuffer->toggle(lastWritePts/avgDeltaPts);
+                seekPts = lastWritePts + (1+delta_)*avgDeltaPts;
+                pLogger->info("Toggle to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta_);
+                doSeekBefore(seekPts, false, true);
             }
 
             // Find next frame in reverse playback
             if (delta) {
                 seekPts = lastWritePts + (1+delta)*avgDeltaPts;
-                pLogger->info("Next read jump %d frames to %I64d.", delta, seekPts);
                 endOfFile = false;
+                pLogger->info("Jump to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta);
+                doSeekBefore(seekPts, false, false);
                 delta = 0;
-                doSeek(seekPts, false, false);
             }
 
             // Read frame
@@ -730,7 +764,7 @@ public:
                         AVFrame* pFrameBuffer;
                         long currentFrame = readPts/avgDeltaPts;
 
-                        pLogger->info("Write request for %I64d pts or frame %ld.", readPts, currentFrame);
+                        pLogger->info("Write frame %I64d.", currentFrame);
 
                         pImageBuffer->writeRequest(&pFrameBuffer, currentFrame);
 
@@ -748,10 +782,11 @@ public:
                                 pFrameBuffer->linesize);
                             pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
                             pFrameBuffer->pts = lastWritePts = readPts;
-                            int delta = pImageBuffer->writeComplete(currentFrame);
-                            pLogger->info("Wrote %I64d pts, %I64d frames.", lastWritePts,
-                                                                            lastWritePts/avgDeltaPts);
+                            delta = pImageBuffer->writeComplete(currentFrame);
+                            pLogger->info("Wrote frame %I64d.", lastWritePts/avgDeltaPts);
                             pImageBuffer->log(*pLogger, avgDeltaPts);
+                        } else {
+                            pLogger->info("Write request aborted.");
                         }
                     } else {
                         pLogger->info("Skipped frame %ld.", readPts/avgDeltaPts);
@@ -802,6 +837,11 @@ public:
         if (hasVideoStream() || hasAudioStream()) {
 
             toggle = pImageBuffer->isBackward() != (inSpeed < 0);
+
+            if (toggle) {
+                // Unblock the buffer to allow for the toggle and write
+                pImageBuffer->unblock();
+            }
 
             speed = fabs(inSpeed);
 
@@ -945,7 +985,7 @@ public:
             initLoadNextImageFrame = false;
 
             // Log that we displayed a frame.
-            pLogger->info("Display pts %I64d.", pImageFrameShow->pts);
+            pLogger->info("Display frame %I64d.", pImageFrameShow->pts/avgDeltaPts);
 
             videoTime = pImageFrameShow->pts * av_q2d(pImageStream->time_base);
         }
@@ -1274,8 +1314,8 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	MovieStream* movieStream = new MovieStream();
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
-    movieStream->pLogger = new FileLogger(logFileName);
-    //movieStream->pLogger = new StreamLogger(&std::cerr);
+    //movieStream->pLogger = new FileLogger(logFileName);
+    movieStream->pLogger = new StreamLogger(&std::cerr);
 	movieStream->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs

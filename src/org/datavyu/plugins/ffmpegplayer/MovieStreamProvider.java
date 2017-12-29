@@ -271,23 +271,13 @@ public class MovieStreamProvider extends MovieStream {
         if (isSpeedZero(newSpeed)) {
             stop();
         } else {
-            boolean wasStopped = !runVideo;
-            boolean directionChanged = Math.signum(newSpeed) != Math.signum(speed);
             // Need to set speed first so that the reverse is set correctly!!!
             super.setSpeed(newSpeed);
-            if (wasStopped) {
-                startVideo();
-            }
             // Then we can start/stop the audio
             if (playsAtForward1x()) {
                 startAudio();
             } else {
                 stopAudio();
-            }
-            // TODO: Remove this workaround because toggle requires two frames to revert direction.
-            if (directionChanged) {
-                dropImageFrame();
-                dropImageFrame();
             }
         }
     }
