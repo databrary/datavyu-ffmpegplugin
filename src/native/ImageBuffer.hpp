@@ -9,7 +9,7 @@ extern "C" {
 #ifndef IMAGE_BUFFER_H_
 #define IMAGE_BUFFER_H_
 
-#define DEFAULT_BUFFER_SIZE 8
+#define DEFAULT_BUFFER_SIZE 32
 
 class ImageBuffer : public LogicForBuffer<AVFrame*> {
 public:
@@ -36,11 +36,13 @@ public:
     }
     virtual void log(Logger& pLogger, int64_t avgDeltaPts) {
         LogicForBuffer::log(pLogger);
+        /*
         std::stringstream ss;
         for (int iItem = 0; iItem < size(); ++iItem) {
             ss << "(" << iItem << ";" << buffer[iItem]->pts/avgDeltaPts << "), ";
         }
         pLogger.info("Contents: %s", ss.str().c_str());
+        */
     }
 };
 

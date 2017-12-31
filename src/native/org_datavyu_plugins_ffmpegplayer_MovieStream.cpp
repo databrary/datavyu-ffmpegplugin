@@ -584,38 +584,6 @@ public:
     bool hasAudioStream() const { return iAudioStream > -1; }
 
     /**
-     * This only is true for the reverse mode and if writing reached the start of
-     * the file. In reverse we are not yet at the start if we are 'inReverse'.
-     */
-    bool atStartForWrite() const {
-        return pImageBuffer->isBackward()
-            && lastWritePts <= pImageStream->start_time+avgDeltaPts
-            && !pImageBuffer->inReverse();
-    }
-
-    /**
-     * True if reading reached the start of the file. This happens in reverse mode.
-     */
-    bool atStartForRead() const {
-        return atStartForWrite() && pImageBuffer->empty();
-    }
-
-    /**
-     * This only happens in forward mode. True if writing reached the end of the file.
-     */
-    bool atEndForWrite() const {
-        return !pImageBuffer->isBackward() && endOfFile;
-    }
-
-    /**
-     * This only happens in forward mode. True if reading reached the end of the file.
-     */
-    bool atEndForRead() const {
-        // The duration is not a reliable estimate for the end a video file
-        return !pImageBuffer->isBackward() && endOfFile && pImageBuffer->empty();
-    }
-
-    /**
      * True if we are in forward playback
      */
     bool isForwardPlayback() const {
@@ -884,18 +852,10 @@ public:
     	}
     }
 
-    bool availableAudioData() const {
-    	return hasAudioStream() ? !endOfFile : false;
-    }
-
-    bool availableImageFrame() const {
-    	return hasVideoStream() ? !(isForwardPlayback() && atEndForRead()
-    							|| !isForwardPlayback() && atStartForRead()) : false;
-    }
-
     int loadNextImageFrame() {
 
-        // No image stream is present return -1
+        // If there is no image stream or if the image buffer is empty, then return -1
+        // The latter condition avoids blocking when reaching the start/end of the stream
         if (!hasVideoStream() || pImageBuffer->empty()) return -1;
 
         // Counts the number of frames that this method requested (could be 0, 1, 2)
@@ -1705,18 +1665,6 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0(
         idToMovieStream.erase(streamId);
         delete movieStream;
     }
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableAudioData0(JNIEnv *env,
-    jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr && movieStream->availableAudioData();
-}
-
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_availableImageFrame0(JNIEnv *env,
-    jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr && movieStream->availableImageFrame();
 }
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextAudioData0(JNIEnv *env,
