@@ -728,9 +728,10 @@ public:
             int ret = av_read_frame(pFormatCtx, &packet);
 
             // Set end of file
-            endOfFile = ret == AVERROR_EOF;
+            endOfFile = ret == AVERROR_EOF || pImageBuffer->atStart();
 
             if (endOfFile) {
+                pLogger->info("Reached the end or start of the file.");
                 std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
                 continue;
             }
@@ -895,7 +896,7 @@ public:
     int loadNextImageFrame() {
 
         // No image stream is present return -1
-        if (!hasVideoStream()) return -1;
+        if (!hasVideoStream() || pImageBuffer->empty()) return -1;
 
         // Counts the number of frames that this method requested (could be 0, 1, 2)
         int nFrame = 0;
@@ -1449,7 +1450,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		//int width, int height, long firstItem, int nItem, int nMaxReverse
 		movieStream->pImageBuffer = new ImageBuffer(movieStream->width,
 		                                            movieStream->height,
-		                                            ((double) movieStream->pImageStream->start_time)/movieStream->avgDeltaPts);
+		                                            movieStream->pImageStream->start_time/movieStream->avgDeltaPts);
 	}
 
 	// *************************************************************************

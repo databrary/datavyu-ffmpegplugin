@@ -40,6 +40,7 @@ public:
         nItem(nItem), nMaxReverse(nMaxReverse), backward(false), unblocking(false) {
         reset();
     }
+    inline bool atStart() const { return backward && nReverseLast == 0; }
     inline bool isBackward() const { return backward; }
     inline bool inReverse() const { return iReverse > 0; }
     inline bool empty() const { return nBefore == 0; }
@@ -47,7 +48,7 @@ public:
     inline int nFree() { return nItem - nBefore; } // number of non-occupied spaces
     inline int nNonOccupied() { return nItem - nBefore - nAfter; }
     inline int nReverse(long currentItem) const {
-        return (int) std::min(currentItem - firstItem + 1, (long) nMaxReverse); // +1 for 0
+        return (int) std::min(currentItem - firstItem, (long) nMaxReverse);
     }
     virtual void log(Logger& pLogger) {
         pLogger.info("iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverseLast = %d, iReverse = %d.",
@@ -71,7 +72,7 @@ public:
         std::unique_lock<std::mutex> locker(mu);
         // Always leave one spot open because it could be currently where the read pointer is pointing too
         cv.wait(locker, [this, currentItem](){ return !backward && nFree() > nMaxReverse
-                                                    || backward && nFree() > nMaxReverse && nReverse(currentItem) > 0
+                                                    || backward && nFree() > nMaxReverse && nReverseLast > 0
                                                     || unblocking; });
         *item = unblocking ? nullptr : buffer[iWrite];
 		locker.unlock();
@@ -81,7 +82,7 @@ public:
         int nBackItem = 0;
         std::unique_lock<std::mutex> locker(mu);
         cv.wait(locker, [this, currentItem](){ return !backward && nFree() > nMaxReverse
-                                                    || backward && nFree() > nMaxReverse && nReverse(currentItem) > 0
+                                                    || backward && nFree() > nMaxReverse && nReverseLast > 0
                                                     || unblocking; });
         if (!unblocking) {
             if (backward) {
@@ -89,9 +90,9 @@ public:
                 if (iReverse == 0) {
                     nAfter -= std::max(0, nReverseLast - nNonOccupied()); // Make space for nReverseLast items, which we have
                     nBefore += nReverseLast;
-                    nBackItem = -nReverseLast - nReverse(currentItem);
+                    nBackItem = -nReverseLast - nReverse(currentItem - nReverseLast + 1);
                     iWrite = (iWrite + nBackItem + nItem) % nItem;
-                    iReverse = nReverseLast = nReverse(currentItem);
+                    iReverse = nReverseLast = nReverse(currentItem - nReverseLast + 1);
                 }
             } else {
                 nAfter -= nNonOccupied() == 0;

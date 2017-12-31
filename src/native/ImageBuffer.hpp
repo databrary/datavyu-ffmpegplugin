@@ -9,7 +9,7 @@ extern "C" {
 #ifndef IMAGE_BUFFER_H_
 #define IMAGE_BUFFER_H_
 
-#define DEFAULT_BUFFER_SIZE 64
+#define DEFAULT_BUFFER_SIZE 8
 
 class ImageBuffer : public LogicForBuffer<AVFrame*> {
 public:
