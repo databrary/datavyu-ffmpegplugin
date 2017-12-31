@@ -32,7 +32,6 @@ class LogicForBuffer {
         nBefore = 0;
         nAfter = 0;
     }
-    inline bool inBalance() { return abs(nBefore - nAfter) <= 2; }
 protected:
     Item* buffer;
 public:
@@ -42,7 +41,6 @@ public:
     }
     inline bool atStart() const { return backward && nReverseLast == 0; }
     inline bool isBackward() const { return backward; }
-    inline bool inReverse() const { return iReverse > 0; }
     inline bool empty() const { return nBefore == 0; }
     inline int size() const { return nItem; }
     inline int nFree() { return nItem - nBefore; } // number of non-occupied spaces

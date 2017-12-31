@@ -136,7 +136,7 @@ public:
     bool loadedMovie;
 
     /** The stream reached the end of the file */
-    std::atomic<bool> endOfFile;
+    std::atomic<bool> endOrStart;
 
     /** Toggles the direction of playback */
     std::atomic<bool> toggle;
@@ -275,7 +275,7 @@ public:
         initLoadNextImageFrame(false),
         quit(false),
         loadedMovie(false),
-        endOfFile(false),
+        endOrStart(false),
         toggle(false),
         speed(1),
         lastWritePts(0),
@@ -669,13 +669,13 @@ public:
 
             // Random seek
             if (seekReq) {
-                endOfFile = seekReq = false;
+                endOrStart = seekReq = false;
                 doSeek(seekPts, seekPts-lastWritePts, true, true);
             }
 
             // Toggle direction
             if (toggle) {
-                toggle = endOfFile = false;
+                toggle = endOrStart = false;
                 pImageBuffer->block(); // Block the buffer again; unblocked for toggle
                 int delta_ = pImageBuffer->toggle(lastWritePts/avgDeltaPts);
                 seekPts = lastWritePts + (1+delta_)*avgDeltaPts;
@@ -686,7 +686,7 @@ public:
             // Find next frame in reverse playback
             if (delta) {
                 seekPts = lastWritePts + (1+delta)*avgDeltaPts;
-                endOfFile = false;
+                endOrStart = false;
                 pLogger->info("Jump to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta);
                 doSeekBefore(seekPts, false, false);
                 delta = 0;
@@ -695,10 +695,10 @@ public:
             // Read frame
             int ret = av_read_frame(pFormatCtx, &packet);
 
-            // Set end of file
-            endOfFile = ret == AVERROR_EOF || pImageBuffer->atStart();
+            // Set end or start of file
+            endOrStart = ret == AVERROR_EOF || pImageBuffer->atStart();
 
-            if (endOfFile) {
+            if (endOrStart) {
                 pLogger->info("Reached the end or start of the file.");
                 std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
                 continue;
@@ -959,7 +959,7 @@ public:
 
         // If we do not have an audio stream, we are done decoding, or the audio
         // buffer is empty, return false to indicate that we did not load data
-        if (!hasAudioStream() || endOfFile || pAudioBuffer->empty()) {
+        if (!hasAudioStream() || endOrStart || pAudioBuffer->empty()) {
             return false;
         }
 
@@ -1086,7 +1086,7 @@ public:
     		avgDeltaPts = 1;
     		lastWritePts = 0;
     		imageDiffCum = 0;
-    		endOfFile = false;
+    		endOrStart = false;
 
     		// Reset value for seek and backward request.
     		seekReq = false;
