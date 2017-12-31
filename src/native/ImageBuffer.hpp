@@ -36,13 +36,11 @@ public:
     }
     virtual void log(Logger& pLogger, int64_t avgDeltaPts) {
         LogicForBuffer::log(pLogger);
-        /*
         std::stringstream ss;
         for (int iItem = 0; iItem < size(); ++iItem) {
             ss << "(" << iItem << ";" << buffer[iItem]->pts/avgDeltaPts << "), ";
         }
         pLogger.info("Contents: %s", ss.str().c_str());
-        */
     }
 };
 

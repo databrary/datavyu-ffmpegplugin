@@ -121,6 +121,7 @@ public:
                 // An we know nReverse <= nItem/2
                 iReverse = nReverseLast = nReverse(currentItem - nBefore - nAfter);
                 nToggleItem = -nBefore -nAfter - nReverseLast;
+                nBefore -= std::max(0, nReverseLast - nNonOccupied()); // Corrects nAfter after the swap
                 iWrite = (iWrite + nToggleItem + 2*nItem) % nItem;
                 iRead = (iRead - 2 + nItem) % nItem;
             }
