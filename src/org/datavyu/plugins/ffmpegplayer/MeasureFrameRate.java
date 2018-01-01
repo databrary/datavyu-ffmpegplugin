@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unused") // TODO: Performance measurement; good for integration into test cases
+@SuppressWarnings("unused") // TODO: Performance measurement; integrate into tests
 public class MeasureFrameRate {
 
     private MovieStreamProvider movieStreamProvider;
@@ -51,10 +51,10 @@ public class MeasureFrameRate {
 
     public static void main(String[] args) {
         Configurator.setRootLevel(Level.OFF);
-        String movieFileName = "C:\\Users\\Florian\\DatavyuSampleVideo.mp4";
-        //String movieFileName = "C:\\Users\\Florian\\databrary106-Majumder-Datavyu_Training-Cathy_004-004_Mother_Child.mp4";
+        //String movieFileName = "C:\\Users\\Florian\\DatavyuSampleVideo.mp4";
+        String movieFileName = "C:\\Users\\Florian\\databrary106-Majumder-Datavyu_Training-Cathy_004-004_Mother_Child.mp4";
         List<Float> speeds = new ArrayList<Float>() {{
-            add(8f);
+            add(32f);
             //add(1f); add(2f); add(4f); add(8f); add(16f); add(32f);
         }};
         try {
@@ -67,9 +67,9 @@ public class MeasureFrameRate {
                     System.out.println("Timeout failed with " + ie);
                 }
                 measureFrameRate.stop();
-                double averageFrameRate = measureFrameRate.movieStreamProvider.getAverageFrameRate();
-                double frameRate = ((double)measureFrameRate.movieStreamProvider.getNumberOfFrames())/TIME_OUT_SEC;
-                double isSpeed = frameRate/averageFrameRate;
+                double timeDifference = measureFrameRate.movieStreamProvider.getCurrentTime()
+                                      - measureFrameRate.movieStreamProvider.getStartTime();
+                double isSpeed = timeDifference/TIME_OUT_SEC;
                 System.out.println("The total number of frames is: "
                         + measureFrameRate.movieStreamProvider.getNumberOfFrames());
                 System.out.println("The total number of skipped frames is: "
