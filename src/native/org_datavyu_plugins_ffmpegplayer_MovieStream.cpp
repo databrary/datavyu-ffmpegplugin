@@ -42,15 +42,18 @@ copy ..\..\MovieStream.* ..\..\lib\MovieStream.*
 // use dumpbin /ALL MovieStream.lib to list the function symbols
 // Make sure that visual studio's 'vc' folder is in the path
 
-#define AV_SYNC_THRESHOLD 0.01
-#define AV_NOSYNC_THRESHOLD 10.0
+/* no AV sync correction is done if below the minimum AV sync threshold */
+#define AV_SYNC_THRESHOLD_MIN 0.04
+/* AV sync correction is done if above the maximum AV sync threshold */
+#define AV_SYNC_THRESHOLD_MAX 0.1
+
+#define AV_NOSYNC_THRESHOLD 2.0
 #define PTS_DELTA_THRESHOLD 3
 #define MAX_AUDIO_FRAME_SIZE 192000
 #define SAMPLE_CORRECTION_PERCENT_MAX 10
 #define AUDIO_DIFF_AVG_NB 20
 #define AUDIO_AVG_COEF exp(log(0.01 / AUDIO_DIFF_AVG_NB))
 #define WAIT_TIMEOUT_IN_MSEC 250
-
 
 /*****************************************************************************************
  * Movie stream class that encapsulates functionality for the playback of a movie stream.
@@ -97,7 +100,7 @@ public:
     AVFrame *pImageFrame;
 
     /** Image frame displayed (wrapped by buffer) */
-    AVFrame *pImageFrameShow;
+    AVFrame *pAVFrameShow;
 
     /** Dictionary is a key-value store */
     AVDictionary *pOptsDict;
@@ -118,13 +121,13 @@ public:
     double imageDiffCum;
 
     /** The system clock's last time */
-    std::chrono::high_resolution_clock::time_point imageLastTime;
+    std::chrono::high_resolution_clock::time_point lastDisplayTime;
 
     /** The current presentation time stamp for the video */
     double videoTime;
 
     /** Means that we need to initialize the next image frame */
-    std::atomic<bool> initLoadNextImageFrame;
+    std::atomic<bool> resetClock;
 
 
     /** Status in the movie file. */
@@ -264,7 +267,7 @@ public:
         pImageCodecCtx(nullptr),
         pImageCodec(nullptr),
         pImageFrame(nullptr),
-        pImageFrameShow(nullptr),
+        pAVFrameShow(nullptr),
         pOptsDict(nullptr),
         pSwsImageCtx(nullptr),
         pImageBuffer(nullptr),
@@ -272,7 +275,7 @@ public:
         imageDeltaPts(0),
         imageDiffCum(0),
         videoTime(0),
-        initLoadNextImageFrame(false),
+        resetClock(false),
         quit(false),
         loadedMovie(false),
         endOrStart(false),
@@ -593,33 +596,26 @@ public:
     /**
      * ALWAYS seeks before the current target. Use this method for precise location.  It may take longer though.
      */
-    void doSeekBefore(int64_t target, bool flush, bool init) {
+    void doSeekBefore(int64_t target) {
         if (av_seek_frame(pFormatCtx, iImageStream, target, AVSEEK_FLAG_BACKWARD) < 0) {
             pLogger->error("Failed seek before to frame %I64d.", target/avgDeltaPts);
         } else {
             lastWritePts = target;
             pLogger->info("Succeeded seek before to frame %I64d.", target/avgDeltaPts);
             if (hasVideoStream()) {
-                if (flush) {
-                    pImageBuffer->flush();
-                }
                 avcodec_flush_buffers(pImageCodecCtx);
             }
             if (hasAudioStream()) {
-                if (flush) {
-                    pAudioBuffer->flush();
-                }
                 avcodec_flush_buffers(pAudioInCodecCtx);
                 avcodec_flush_buffers(pAudioOutCodecCtx);
             }
-            initLoadNextImageFrame = init;
         }
     }
 
     /**
      * Seek approximately to the target frame. Use this for random seeks.
      */
-    void doSeek(int64_t target, int64_t delta, bool flush, bool init) {
+    void doSeek(int64_t target, int64_t delta, bool flush) {
         int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
         int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
         int seekFlags = delta < 0 ? AVSEEK_FLAG_BACKWARD : 0;
@@ -642,7 +638,6 @@ public:
                 avcodec_flush_buffers(pAudioInCodecCtx);
                 avcodec_flush_buffers(pAudioOutCodecCtx);
             }
-            initLoadNextImageFrame = init;
         }
     }
 
@@ -664,13 +659,15 @@ public:
         bool reverseRefresh = true;
         AVPacket packet;
         int delta = 0;
+        bool initClock = true; // initial state
 
         while (!quit) {
 
             // Random seek
             if (seekReq) {
                 endOrStart = seekReq = false;
-                doSeek(seekPts, seekPts-lastWritePts, true, true);
+                doSeek(seekPts, seekPts-lastWritePts, true);
+                initClock = true; // Will set the next frame's to init
             }
 
             // Toggle direction
@@ -678,9 +675,17 @@ public:
                 toggle = endOrStart = false;
                 pImageBuffer->block(); // Block the buffer again; unblocked for toggle
                 int delta_ = pImageBuffer->toggle(lastWritePts/avgDeltaPts);
+
+                // Initialize frame after toggle
+                AVFrame* pFrameTmp;
+                pImageBuffer->peek(&pFrameTmp);
+                if (pFrameTmp) {
+                    static_cast<AVFrameMetaData*>(pFrameTmp->opaque)->initClock = true;
+                }
+
                 seekPts = lastWritePts + (1+delta_)*avgDeltaPts;
                 pLogger->info("Toggle to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta_);
-                doSeekBefore(seekPts, false, true);
+                doSeekBefore(seekPts); // no flushing
             }
 
             // Find next frame in reverse playback
@@ -688,7 +693,7 @@ public:
                 seekPts = lastWritePts + (1+delta)*avgDeltaPts;
                 endOrStart = false;
                 pLogger->info("Jump to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta);
-                doSeekBefore(seekPts, false, false);
+                doSeekBefore(seekPts); // no flushing
                 delta = 0;
             }
 
@@ -751,9 +756,12 @@ public:
                                 pFrameBuffer->linesize);
                             pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
                             pFrameBuffer->pts = lastWritePts = readPts;
+                            static_cast<AVFrameMetaData*>(pFrameBuffer->opaque)->initClock = initClock;
                             delta = pImageBuffer->writeComplete(currentFrame);
                             pLogger->info("Wrote frame %I64d.", lastWritePts/avgDeltaPts);
                             pImageBuffer->log(*pLogger, avgDeltaPts);
+
+                            initClock = false;
                         } else {
                             pLogger->info("Write request aborted.");
                         }
@@ -862,93 +870,104 @@ public:
         int nFrame = 0;
 
         // Get the next read pointer
-        AVFrame *pVideoFrameTmp;
-        pImageBuffer->read(&pVideoFrameTmp);
+        AVFrame *pAVFrame;
+        uint64_t latestPts;
+
+    // TODO: Remove this ugly label/goto
+    retry:
+        pImageBuffer->read(&pAVFrame);
 
         // We received a frame -- no flushing
-        if (pVideoFrameTmp) {
+        if (pAVFrame) {
 
-            // Retrieve the presentation time for this first frame
-            uint64_t firstPts = pVideoFrameTmp->pts;
+            latestPts = pAVFrame->pts;
 
             // Increase the number of read frames by one
             nFrame++;
 
-            // Initialize if the pts difference is above threshold as a result of a seek
-            //bool init = std::labs(firstPts - imageLastPts) > PTS_DELTA_THRESHOLD*imageDeltaPts;
-            bool init = initLoadNextImageFrame;
+            // Reset differences
+            bool init = static_cast<AVFrameMetaData*>(pAVFrame->opaque)->initClock || resetClock;
 
-            // Compute the difference for the presentation time stamps
-            double diffPts = init ? 0 : std::labs(firstPts - imageLastPts)/speed*av_q2d(pImageStream->time_base);
+            // Compute the difference for the presentation time stamps in seconds
+            double diffStream = init ? 0 : std::labs(latestPts - imageLastPts)/speed*av_q2d(pImageStream->time_base);
 
             // Get the current time
             auto time = std::chrono::high_resolution_clock::now();
 
-            // Compute the time difference
-            double timeDiff = init ? 0
-                : std::chrono::duration_cast<std::chrono::microseconds>(time-imageLastTime).count()/1000000.0;
+            // Compute the time difference in seconds
+            double diffClock = init ? 0
+                : std::chrono::duration_cast<std::chrono::microseconds>(time-lastDisplayTime).count()/1000000.0;
 
-            // Compute the difference between times and pts
-            imageDiffCum = init ? 0 : (imageDiffCum + diffPts - timeDiff);
+            // Compute the difference between stream and clock times
+            double diffCumNew = init ? 0 : (imageDiffCum + diffStream - diffClock);
 
-            // Calculate the delay that this display thread is required to wait.
-            double delay = diffPts;
+            // Calculate the delay for wait
+            double delay = diffStream;
 
-            // If the frame is repeated split this delay in half.
-            if (pVideoFrameTmp->repeat_pict) {
+            // If the frame is repeated split the delay in half
+            if (pAVFrame->repeat_pict) {
                 delay += delay/2;
             }
 
             // Compute the synchronization threshold (see ffplay.c)
-            double syncThreshold = (delay > AV_SYNC_THRESHOLD) ? delay : AV_SYNC_THRESHOLD;
+            double syncThreshold = std::max(AV_SYNC_THRESHOLD_MIN, std::min(delay, AV_SYNC_THRESHOLD_MAX));
 
             pLogger->info("Pts difference: %lf; time difference: %lf sec; cum diff %lf; sync %lf; initialize %d.",
-                          diffPts, timeDiff, imageDiffCum, syncThreshold, init);
+                          diffStream, diffClock, diffCumNew, syncThreshold, init);
 
-            // The time difference is within the no sync threshold.
-            if (fabs(imageDiffCum) < AV_NOSYNC_THRESHOLD) {
+            // The time difference is within the no sync threshold
+            if (fabs(diffCumNew) < AV_NOSYNC_THRESHOLD) {
 
-                // If our time difference is lower than the sync threshold, then skip a frame.
-                if (imageDiffCum <= -syncThreshold) {
-                    AVFrame *pVideoFrameTmp2;
-                    pImageBuffer->read(&pVideoFrameTmp2);
-                    if (pVideoFrameTmp2) {
-                        pVideoFrameTmp = pVideoFrameTmp2;
-                        nFrame++;
+                // If our time difference is lower than the sync threshold, then skip frames
+                if (diffCumNew <= -syncThreshold) {
+                    delay = std::max(0.0, delay + diffCumNew);
+                    imageLastPts = latestPts;
+
+                    if (!pImageBuffer->empty()) {
+                        goto retry;
                     }
 
-                // If the time difference is within -syncThreshold ... +0 then show frame instantly.
-                } else if (imageDiffCum < 0) {
+                // If the time difference is within -syncThreshold ... +0 then show frame instantly
+                } else if (diffCumNew < 0) {
                     delay = 0;
 
-                // If the time difference is greater than the syncThreshold increase the delay.
-                } else if (imageDiffCum >= syncThreshold) {
+                // If the time difference is greater than the syncThreshold increase the delay
+                } else if (diffCumNew >= syncThreshold) {
                     delay *= 2;
                 }
+
+                // Delay read to keep the desired frame rate.
+                if (delay > 0) {
+                    pLogger->info("Image waiting for %lf seconds.\n", delay);
+                    std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
+                }
+
+                imageDeltaPts = init ? (int64_t)(1.0/(av_q2d(pImageStream->time_base)*av_q2d(pImageStream->avg_frame_rate)))
+                                     : std::labs(latestPts - imageLastPts);
+
+            } else {
+                uint64_t diffPts = (-diffCumNew)*speed/av_q2d(pImageStream->time_base);
+                int diffFrames = diffPts/avgDeltaPts;
+                nFrame += diffFrames;
+                pLogger->info("Correct frames %d.", diffFrames);
+                seekReq = true;
+                latestPts = seekPts = imageLastPts + diffPts;
             }
 
-            // Save values for next call.
-            imageDeltaPts = init ? (int64_t)(1.0/(av_q2d(pImageStream->time_base)
-                                    *av_q2d(pImageStream->avg_frame_rate)))
-                                    : std::labs(firstPts - imageLastPts);
-            imageLastPts = firstPts; // Need to use the first pts.
-            imageLastTime = time;
+            // Update values for next call
+            imageLastPts = latestPts;
+            imageDiffCum = diffCumNew;
+            lastDisplayTime = time;
 
-            // Delay read to keep the desired frame rate.
-            if (delay > 0) {
-                pLogger->info("Image waiting for %lf seconds.\n", delay);
-                std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
-            }
+            // Show the frame by updating the "show" pointer
+            pAVFrameShow = pAVFrame;
+            videoTime = pAVFrameShow->pts * av_q2d(pImageStream->time_base);
 
-            // Update the pointer for the show frame.
-            pImageFrameShow = pVideoFrameTmp;
+            // Reset 'reset clock'
+            resetClock = false;
 
-            initLoadNextImageFrame = false;
-
-            // Log that we displayed a frame.
-            pLogger->info("Display frame %I64d.", pImageFrameShow->pts/avgDeltaPts);
-
-            videoTime = pImageFrameShow->pts * av_q2d(pImageStream->time_base);
+            // We displayed a frame
+            pLogger->info("Display frame %I64d.", pAVFrameShow->pts/avgDeltaPts);
         }
 
         // Return the number of read frames; the number may be larger than 1
@@ -1044,7 +1063,7 @@ public:
     			// Free the YUV frame and reset pointers
     			av_free(pImageFrame);
     			pImageFrame = nullptr;
-    			pImageFrameShow = nullptr;
+    			pAVFrameShow = nullptr;
     		}
 
     		// If we have an audio stream
@@ -1076,7 +1095,7 @@ public:
     		duration = 0;
     		lastWritePts = 0;
     		videoTime = 0;
-    		initLoadNextImageFrame = false;
+    		resetClock = false;
 
     		// Set default values for playback speed.
     		toggle = false;
@@ -1237,16 +1256,16 @@ public:
                     for (int iChannel = 0; iChannel < nChannel; ++iChannel) {
                         int iSrc = ((y0View+iRow)*width + x0View+iCol)*nChannel + iChannel;
                         int iDst = (iRow*widthView + iCol)*nChannel + iChannel;
-                        pImageFrameShow->data[0][iDst] = pImageFrameShow->data[0][iSrc];
+                        pAVFrameShow->data[0][iDst] = pAVFrameShow->data[0][iSrc];
                     }
                 }
             }
-            return env->NewDirectByteBuffer((void*) pImageFrameShow->data[0],
+            return env->NewDirectByteBuffer((void*) pAVFrameShow->data[0],
                                         widthView*heightView*nChannel*sizeof(uint8_t));
         }
 
-        // Construct a new direct byte buffer pointing to data from pImageFrameShow.
-        return env->NewDirectByteBuffer((void*) pImageFrameShow->data[0],
+        // Construct a new direct byte buffer pointing to data from pAVFrameShow.
+        return env->NewDirectByteBuffer((void*) pAVFrameShow->data[0],
                                         width*height*nChannel*sizeof(uint8_t));
     }
 
@@ -1275,8 +1294,8 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	MovieStream* movieStream = new MovieStream();
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
-    //movieStream->pLogger = new FileLogger(logFileName);
-    movieStream->pLogger = new StreamLogger(&std::cerr);
+    movieStream->pLogger = new FileLogger(logFileName);
+    //movieStream->pLogger = new StreamLogger(&std::cerr);
 	movieStream->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs
@@ -1394,7 +1413,6 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		movieStream->width = movieStream->pImageCodecCtx->width;
 		movieStream->height = movieStream->pImageCodecCtx->height;
 		movieStream->duration = movieStream->pImageStream->duration * av_q2d(movieStream->pImageStream->time_base);
-		movieStream->initLoadNextImageFrame = true;
 		movieStream->pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.",
 					               movieStream->width, movieStream->height, movieStream->duration,
 					               movieStream->pImageStream->duration);
@@ -1616,7 +1634,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_start0(
     jint streamId) {
     MovieStream* movieStream = getMovieStream(streamId);
     if (movieStream != nullptr) {
-        movieStream->initLoadNextImageFrame = true;
+        movieStream->resetClock = true;
     }
 }
 
@@ -1629,7 +1647,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_step0(J
     jint streamId) {
     MovieStream* movieStream = getMovieStream(streamId);
     if (movieStream != nullptr) {
-        movieStream->initLoadNextImageFrame = true;
+        movieStream->resetClock = true;
     }
 }
 

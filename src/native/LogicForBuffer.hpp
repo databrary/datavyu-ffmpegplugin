@@ -52,7 +52,11 @@ public:
         pLogger.info("iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverseLast = %d, iReverse = %d.",
                      iRead, iWrite, nBefore, nAfter, nReverseLast, iReverse);
     }
-    void read(Item* item) { // item is allocated
+    void peek(Item* item) {
+        // TODO: Check for thread safety
+        *item = buffer[iRead];
+    }
+    void read(Item* item) {
         std::unique_lock<std::mutex> locker(mu);
         cv.wait(locker, [this](){return nBefore > 0 || unblocking;});
         if (unblocking) {
