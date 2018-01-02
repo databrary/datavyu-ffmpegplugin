@@ -273,6 +273,7 @@ public class MovieStreamProvider extends MovieStream {
         } else {
             // Need to set speed first so that the reverse is set correctly!!!
             super.setSpeed(newSpeed);
+
             // Then we can start/stop the audio
             if (playsAtForward1x()) {
                 startAudio();

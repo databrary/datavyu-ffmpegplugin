@@ -86,5 +86,4 @@ public interface VideoStream extends TimeStream {
 	 * 		   0 that means that no frames were read.
 	 */
 	int readImageFrame(byte[] buffer); // reads next image
-
 }

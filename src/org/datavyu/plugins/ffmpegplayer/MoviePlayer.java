@@ -25,7 +25,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	private java.util.List<MovieStreamProvider> movieStreamProviders = new ArrayList<>();
 	
 	/** Used to open video files */
-	private JFileChooser fileChooser = null;
+	private JFileChooser fileChooser;
 
 	/** The directory last opened is used to initialize the file chooser. */
 	private File lastDirectory = new File(System.getProperty("user.home"));

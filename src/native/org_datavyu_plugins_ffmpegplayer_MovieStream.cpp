@@ -616,27 +616,30 @@ public:
      * Seek approximately to the target frame. Use this for random seeks.
      */
     void doSeek(int64_t target, int64_t delta, bool flush) {
-        int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
-        int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
-        int seekFlags = delta < 0 ? AVSEEK_FLAG_BACKWARD : 0;
-        if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, seekFlags) < 0) {
-            pLogger->error("Failed seek to frame %I64d.", target/avgDeltaPts);
-        } else {
-            lastWritePts = target;
-            pLogger->info("Succeeded seek to frame %I64d with min %I64d and max %I64d for delta %I64d.",
-                          target/avgDeltaPts, min_/avgDeltaPts, max_/avgDeltaPts, delta/avgDeltaPts);
-            if (hasVideoStream()) {
-                if (flush) {
-                    pImageBuffer->flush();
+        pLogger->info("Seeking to frame %I64d with delta %I64d.", target/avgDeltaPts, delta/avgDeltaPts);
+        if (delta != 0) {
+            int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
+            int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
+            int seekFlags = delta < 0 ? AVSEEK_FLAG_BACKWARD : 0;
+            if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, seekFlags) < 0) {
+                pLogger->error("Failed seek to frame %I64d.", target/avgDeltaPts);
+            } else {
+                lastWritePts = target;
+                pLogger->info("Succeeded seek to frame %I64d with min %I64d and max %I64d for delta %I64d.",
+                              target/avgDeltaPts, min_/avgDeltaPts, max_/avgDeltaPts, delta/avgDeltaPts);
+                if (hasVideoStream()) {
+                    if (flush) {
+                        pImageBuffer->flush();
+                    }
+                    avcodec_flush_buffers(pImageCodecCtx);
                 }
-                avcodec_flush_buffers(pImageCodecCtx);
-            }
-            if (hasAudioStream()) {
-                if (flush) {
-                    pAudioBuffer->flush();
+                if (hasAudioStream()) {
+                    if (flush) {
+                        pAudioBuffer->flush();
+                    }
+                    avcodec_flush_buffers(pAudioInCodecCtx);
+                    avcodec_flush_buffers(pAudioOutCodecCtx);
                 }
-                avcodec_flush_buffers(pAudioInCodecCtx);
-                avcodec_flush_buffers(pAudioOutCodecCtx);
             }
         }
     }
@@ -1294,8 +1297,8 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	MovieStream* movieStream = new MovieStream();
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
-    movieStream->pLogger = new FileLogger(logFileName);
-    //movieStream->pLogger = new StreamLogger(&std::cerr);
+    //movieStream->pLogger = new FileLogger(logFileName);
+    movieStream->pLogger = new StreamLogger(&std::cerr);
 	movieStream->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs
@@ -1327,7 +1330,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
     while (std::getline(lines, line)) {
 		movieStream->pLogger->info("%s", line.c_str());
     }
-  
+
 	// Find the first video stream.
 	movieStream->iImageStream = -1;
 	for (int iStream = 0; iStream < movieStream->pFormatCtx->nb_streams; ++iStream) {
@@ -1527,7 +1530,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 			movieStream->pAudioOutCodecCtx->bit_rate = movieStream->pAudioInCodecCtx->bit_rate;
 			audioFormat.sampleRate = movieStream->pAudioInCodecCtx->bit_rate;
 		}
-		
+
 		// Set the frame size
 		audioFormat.frameSize = av_get_bytes_per_sample(sampleFormat);
 

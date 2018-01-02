@@ -9,9 +9,9 @@ This repo holds the native c++/java code that composes the ffmpeg plugin. The fi
 
 The other source code files contain prototypes for video playback, audio playback, etc.
 
-The compile instructions are in the cpp file.
+The compile instructions for the plugin are in the cpp file.
 
-The compile instructions for the ffmpeg native code are in doc/Libraries.txt.
+The compile instructions for the ffmpeg code are in doc/Libraries.txt.
 
 
 ## Native Code
@@ -30,7 +30,20 @@ Check out the examples folder in the release for more details on the framework.
 
 
 ## Java Code
-The java code provides examples on how to interface with the move stream interface; especially on how to playback image
+The java code provides examples on how to interface with the movie stream interface; especially on how to playback image
 frames and audio frames through separate threads. The relevant java code resides in the package
 
     org.datavyu.plugins.ffmpegplayer
+    
+## Deployment
+To build process we use maven. Dependencies are described in a pom file. The package is build with
+
+    mvn package
+    
+and deployed with 
+
+    mvn deploy
+    
+Notice, the latter command deploys to the local cache '.m2' and a maven server if setup. At the moment, we do not have a 
+maven server setup and that step of the deploy fails. Instead, we manually copy files '*.jar' and '*.pom' unto the 
+'wwww' server.
