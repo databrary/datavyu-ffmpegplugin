@@ -54,7 +54,8 @@ public class MeasureFrameRate {
         //String movieFileName = "C:\\Users\\Florian\\DatavyuSampleVideo.mp4";
         String movieFileName = "C:\\Users\\Florian\\databrary106-Majumder-Datavyu_Training-Cathy_004-004_Mother_Child.mp4";
         List<Float> speeds = new ArrayList<Float>() {{
-            add(32f);
+            add(2f);
+            //add(32f);
             //add(1f); add(2f); add(4f); add(8f); add(16f); add(32f);
         }};
         try {

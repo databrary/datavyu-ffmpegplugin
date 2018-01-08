@@ -331,6 +331,20 @@ public:
         return ++id;
     }
 
+    inline int64_t limitToRange(int64_t target) {
+        // TODO: Fixme sometime. Here we make sure not to jump to the end but it depends on the accuracy of the duration.
+        int64_t after = std::min(std::max(target, pImageStream->start_time),
+                                         pImageStream->start_time + pImageStream->duration - 5*avgDeltaPts);
+        // Not to jump all the way to the end is necessary because we need at least one frame after the current one to
+        // reverse
+        pLogger->info("Seek: before limit %I64d, after limit: %I64d, start %I64d, end %I64d.",
+                      target/avgDeltaPts,
+                      after/avgDeltaPts,
+                      pImageStream->start_time/avgDeltaPts,
+                      (pImageStream->start_time + pImageStream->duration)/avgDeltaPts);
+        return after;
+    }
+
     /**
      * Get the time passed from the audio.
      */
@@ -597,6 +611,7 @@ public:
      * ALWAYS seeks before the current target. Use this method for precise location.  It may take longer though.
      */
     void doSeekBefore(int64_t target) {
+        // make sure the target is in the range
         if (av_seek_frame(pFormatCtx, iImageStream, target, AVSEEK_FLAG_BACKWARD) < 0) {
             pLogger->error("Failed seek before to frame %I64d.", target/avgDeltaPts);
         } else {
@@ -670,6 +685,8 @@ public:
             if (seekReq) {
                 endOrStart = seekReq = false;
                 doSeek(seekPts, seekPts-lastWritePts, true);
+                pLogger->info("Status after seek.");
+                pImageBuffer->log(*pLogger, avgDeltaPts);
                 initClock = true; // Will set the next frame's to init
             }
 
@@ -685,15 +702,15 @@ public:
                 if (pFrameTmp) {
                     static_cast<AVFrameMetaData*>(pFrameTmp->opaque)->initClock = true;
                 }
-
-                seekPts = lastWritePts + (1+delta_)*avgDeltaPts;
+                // Never jump beyond the start/end of the stream
+                seekPts = limitToRange(lastWritePts + (1+delta_)*avgDeltaPts);
                 pLogger->info("Toggle to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta_);
                 doSeekBefore(seekPts); // no flushing
             }
 
             // Find next frame in reverse playback
             if (delta) {
-                seekPts = lastWritePts + (1+delta)*avgDeltaPts;
+                seekPts = limitToRange(lastWritePts + (1+delta)*avgDeltaPts);
                 endOrStart = false;
                 pLogger->info("Jump to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta);
                 doSeekBefore(seekPts); // no flushing
@@ -761,7 +778,7 @@ public:
                             pFrameBuffer->pts = lastWritePts = readPts;
                             static_cast<AVFrameMetaData*>(pFrameBuffer->opaque)->initClock = initClock;
                             delta = pImageBuffer->writeComplete(currentFrame);
-                            pLogger->info("Wrote frame %I64d.", lastWritePts/avgDeltaPts);
+                            pLogger->info("Wrote frame %I64d with init %d.", lastWritePts/avgDeltaPts, initClock);
                             pImageBuffer->log(*pLogger, avgDeltaPts);
 
                             initClock = false;
@@ -807,7 +824,7 @@ public:
 
     void setTime(double time) {
         if (hasVideoStream() || hasAudioStream()) {
-            lastWritePts = seekPts = ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts;
+            lastWritePts = seekPts = limitToRange( ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts );
             seekReq = true;
         }
     }
@@ -924,7 +941,7 @@ public:
                 // If our time difference is lower than the sync threshold, then skip frames
                 if (diffCumNew <= -syncThreshold) {
                     delay = std::max(0.0, delay + diffCumNew);
-                    imageLastPts = latestPts;
+                    //imageLastPts = latestPts;
 
                     if (!pImageBuffer->empty()) {
                         goto retry;
@@ -949,12 +966,16 @@ public:
                                      : std::labs(latestPts - imageLastPts);
 
             } else {
-                uint64_t diffPts = (-diffCumNew)*speed/av_q2d(pImageStream->time_base);
-                int diffFrames = diffPts/avgDeltaPts;
-                nFrame += diffFrames;
-                pLogger->info("Correct frames %d.", diffFrames);
-                seekReq = true;
-                latestPts = seekPts = imageLastPts + diffPts;
+                if (!resetClock) {
+                    uint64_t diffPts = (-diffCumNew)*speed/av_q2d(pImageStream->time_base);
+                    int diffFrames = diffPts/avgDeltaPts;
+                    nFrame += diffFrames;
+                    pLogger->info("Correct frames %d.", diffFrames);
+                    seekReq = true;
+                    latestPts = seekPts = limitToRange(imageLastPts + diffPts);
+                } else {
+                    pLogger->info("Reset clock in progress issue seek later.");
+                }
             }
 
             // Update values for next call
