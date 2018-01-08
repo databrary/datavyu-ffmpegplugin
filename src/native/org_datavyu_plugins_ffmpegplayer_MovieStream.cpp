@@ -892,17 +892,20 @@ public:
         // Get the next read pointer
         AVFrame *pAVFrame;
         uint64_t latestPts;
+        double delay = 0;
+        double diffCumNew = 0;
+        std::chrono::high_resolution_clock::time_point time;
 
-    // TODO: Remove this ugly label/goto
-    retry:
-        pImageBuffer->read(&pAVFrame);
+        for (int iFrameDrop = ceil(speed); iFrameDrop > 0; --iFrameDrop) {
 
-        // We received a frame -- no flushing
-        if (pAVFrame) {
+            pImageBuffer->read(&pAVFrame);
+
+            if (pAVFrame == nullptr) {
+                return nFrame;
+            }
 
             latestPts = pAVFrame->pts;
 
-            // Increase the number of read frames by one
             nFrame++;
 
             // Reset differences
@@ -912,87 +915,75 @@ public:
             double diffStream = init ? 0 : std::labs(latestPts - imageLastPts)/speed*av_q2d(pImageStream->time_base);
 
             // Get the current time
-            auto time = std::chrono::high_resolution_clock::now();
+            time = std::chrono::high_resolution_clock::now();
 
             // Compute the time difference in seconds
             double diffClock = init ? 0
                 : std::chrono::duration_cast<std::chrono::microseconds>(time-lastDisplayTime).count()/1000000.0;
 
             // Compute the difference between stream and clock times
-            double diffCumNew = init ? 0 : (imageDiffCum + diffStream - diffClock);
+            diffCumNew = init ? 0 : (imageDiffCum + diffStream - diffClock);
 
             // Calculate the delay for wait
-            double delay = diffStream;
+            delay = diffStream;
 
             // If the frame is repeated split the delay in half
             if (pAVFrame->repeat_pict) {
                 delay += delay/2;
             }
 
-            // Compute the synchronization threshold (see ffplay.c)
-            double syncThreshold = std::max(AV_SYNC_THRESHOLD_MIN, std::min(delay, AV_SYNC_THRESHOLD_MAX));
-
-            pLogger->info("Pts difference: %lf; time difference: %lf sec; cum diff %lf; sync %lf; initialize %d.",
-                          diffStream, diffClock, diffCumNew, syncThreshold, init);
-
-            // The time difference is within the no sync threshold
-            if (fabs(diffCumNew) < AV_NOSYNC_THRESHOLD) {
-
-                // If our time difference is lower than the sync threshold, then skip frames
-                if (diffCumNew <= -syncThreshold) {
-                    delay = std::max(0.0, delay + diffCumNew);
-                    //imageLastPts = latestPts;
-
-                    if (!pImageBuffer->empty()) {
-                        goto retry;
-                    }
-
-                // If the time difference is within -syncThreshold ... +0 then show frame instantly
-                } else if (diffCumNew < 0) {
-                    delay = 0;
-
-                // If the time difference is greater than the syncThreshold increase the delay
-                } else if (diffCumNew >= syncThreshold) {
-                    delay *= 2;
-                }
-
-                // Delay read to keep the desired frame rate.
-                if (delay > 0) {
-                    pLogger->info("Image waiting for %lf seconds.\n", delay);
-                    std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
-                }
-
-                imageDeltaPts = init ? (int64_t)(1.0/(av_q2d(pImageStream->time_base)*av_q2d(pImageStream->avg_frame_rate)))
-                                     : std::labs(latestPts - imageLastPts);
-
-            } else {
-                if (!resetClock) {
-                    uint64_t diffPts = (-diffCumNew)*speed/av_q2d(pImageStream->time_base);
-                    int diffFrames = diffPts/avgDeltaPts;
-                    nFrame += diffFrames;
-                    pLogger->info("Correct frames %d.", diffFrames);
-                    seekReq = true;
-                    latestPts = seekPts = limitToRange(imageLastPts + diffPts);
-                } else {
-                    pLogger->info("Reset clock in progress issue seek later.");
-                }
+            if (init) {
+                break;
             }
 
-            // Update values for next call
-            imageLastPts = latestPts;
-            imageDiffCum = diffCumNew;
-            lastDisplayTime = time;
+            // We are too far off and need to jump
+            if (fabs(diffCumNew) > AV_NOSYNC_THRESHOLD) {
+                delay = 0;
+                uint64_t diffPts = (-diffCumNew)*speed/av_q2d(pImageStream->time_base);
+                int diffFrames = diffPts/avgDeltaPts;
+                nFrame += diffFrames;
+                pLogger->info("Correct frames %d.", diffFrames);
+                seekReq = true;
+                latestPts = seekPts = limitToRange(imageLastPts + diffPts);
+                break;
+            }
 
-            // Show the frame by updating the "show" pointer
-            pAVFrameShow = pAVFrame;
-            videoTime = pAVFrameShow->pts * av_q2d(pImageStream->time_base);
+            if (diffCumNew < -AV_SYNC_THRESHOLD_MIN) {
+                delay = std::max(0.0, delay + diffCumNew);
 
-            // Reset 'reset clock'
-            resetClock = false;
-
-            // We displayed a frame
-            pLogger->info("Display frame %I64d.", pAVFrameShow->pts/avgDeltaPts);
+            // If the time difference is greater than the syncThreshold increase the delay
+            } else if (diffCumNew > AV_SYNC_THRESHOLD_MAX) {
+                delay *= 2;
+            }
         }
+
+        if (pAVFrame == nullptr) {
+            return nFrame;
+        }
+
+        // Delay read to keep the desired frame rate.
+        if (delay > 0) {
+            pLogger->info("Image waiting for %lf seconds.\n", delay);
+            std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
+        }
+
+        //imageDeltaPts = init ? (int64_t)(1.0/(av_q2d(pImageStream->time_base)*av_q2d(pImageStream->avg_frame_rate)))
+        //                                     : std::labs(latestPts - imageLastPts);
+
+        // Update values for next call
+        imageLastPts = latestPts;
+        imageDiffCum = diffCumNew;
+        lastDisplayTime = time;
+
+        // Show the frame by updating the "show" pointer
+        pAVFrameShow = pAVFrame;
+        videoTime = pAVFrameShow->pts * av_q2d(pImageStream->time_base);
+
+        // Reset 'reset clock'
+        resetClock = false;
+
+        // We displayed a frame
+        pLogger->info("Display frame %I64d.", pAVFrameShow->pts/avgDeltaPts);
 
         // Return the number of read frames; the number may be larger than 1
         return nFrame;

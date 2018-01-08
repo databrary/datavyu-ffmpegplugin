@@ -400,8 +400,8 @@ public class MovieStreamProvider extends MovieStream {
 	
 	@Override
 	public void close() throws IOException {
-		stop();
 		super.close();
+		stop();
 	}
 
 	/**
