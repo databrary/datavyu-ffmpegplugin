@@ -21,6 +21,7 @@ class LogicForBuffer {
     int iWrite; // Write pointer
     int iReverse; // Counter for steps in reverse
     bool backward; // Forward or backward mode
+    bool start;
     std::mutex mu;
     std::condition_variable cv;
     std::atomic<bool> unblocking;
@@ -31,6 +32,7 @@ class LogicForBuffer {
         iWrite = 0;
         nBefore = 0;
         nAfter = 0;
+        start = false;
     }
 protected:
     Item* buffer;
@@ -39,7 +41,8 @@ public:
         nItem(nItem), nMaxReverse(nMaxReverse), backward(false), unblocking(false) {
         reset();
     }
-    inline bool atStart() const { return backward && nReverseLast == 0; }
+    inline bool atStart() const { return backward && start && nReverseLast == 0; }
+    inline bool inReverse() const { return iReverse > 0; }
     inline bool isBackward() const { return backward; }
     inline bool empty() const { return nBefore == 0; }
     inline int size() const { return nItem; }
@@ -52,7 +55,7 @@ public:
         pLogger.info("iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverseLast = %d, iReverse = %d.",
                      iRead, iWrite, nBefore, nAfter, nReverseLast, iReverse);
     }
-    void peek(Item* item) {
+    void peekRead(Item* item) {
         // TODO: Check for thread safety
         *item = buffer[iRead];
     }
@@ -90,6 +93,7 @@ public:
             if (backward) {
                 iReverse--;
                 if (iReverse == 0) {
+                    start = currentItem <= firstItem;
                     nAfter -= std::max(0, nReverseLast - nNonOccupied()); // Make space for nReverseLast items, which we have
                     nBefore += nReverseLast;
                     nBackItem = -nReverseLast - nReverse(currentItem - nReverseLast + 1);
@@ -97,6 +101,7 @@ public:
                     iReverse = nReverseLast = nReverse(currentItem - nReverseLast + 1);
                 }
             } else {
+                start = false;
                 nAfter -= nNonOccupied() == 0;
                 nBefore++;
             }
@@ -139,7 +144,6 @@ public:
     void unblock() {
         unblocking = true;
         cv.notify_all();
-        //unblocking = false;
     }
     void block() {
         unblocking = false;

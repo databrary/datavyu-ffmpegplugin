@@ -400,8 +400,9 @@ public class MovieStreamProvider extends MovieStream {
 	
 	@Override
 	public void close() throws IOException {
-		super.close();
+		// TODO: Need to flush the buffers to release the resources
 		stop();
+		super.close();
 	}
 
 	/**

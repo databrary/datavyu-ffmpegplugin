@@ -698,7 +698,7 @@ public:
 
                 // Initialize frame after toggle
                 AVFrame* pFrameTmp;
-                pImageBuffer->peek(&pFrameTmp);
+                pImageBuffer->peekRead(&pFrameTmp);
                 if (pFrameTmp) {
                     static_cast<AVFrameMetaData*>(pFrameTmp->opaque)->initClock = true;
                 }
@@ -1034,6 +1034,8 @@ public:
 
     void close() {
 
+        pLogger->info("Closing.");
+
     	// If we have a video or an audio stream
     	if (hasVideoStream() || hasAudioStream()) {
 
@@ -1043,16 +1045,19 @@ public:
     		// Drain the audio buffer that means no packets can be get or put
     		if (hasAudioStream()) {
     			pAudioBuffer->flush();
+    		    pLogger->info("Flushed audio stream.");
     		}
 
     		// Flush the image buffer buffer which unblocks all readers/writers
     		if (hasVideoStream()) {
     			pImageBuffer->flush();
+    			pLogger->info("Flushed video stream.");
     		}
 
     		// Join and free the decoding thread
     		pDecodeFrame->join();
     		delete pDecodeFrame;
+    		pLogger->info("Joined decoding thread");
 
     		// If we have a video stream
     		if (hasVideoStream()) {
@@ -1079,6 +1084,8 @@ public:
     			av_free(pImageFrame);
     			pImageFrame = nullptr;
     			pAVFrameShow = nullptr;
+
+    			pLogger->info("Freed image related resources.");
     		}
 
     		// If we have an audio stream
@@ -1096,6 +1103,8 @@ public:
     			pAudioOutCodecCtx = nullptr;
     			pResampleCtx = nullptr;
     			pAudioBufferData = nullptr;
+
+    			pLogger->info("Freed audio related resources.");
     		}
 
     		// Close the video file AFTER closing all codecs!!!
