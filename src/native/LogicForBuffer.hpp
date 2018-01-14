@@ -41,7 +41,7 @@ public:
         nItem(nItem), nMaxReverse(nMaxReverse), backward(false), unblocking(false) {
         reset();
     }
-    inline bool atStart() const { return backward && start && nReverseLast == 0; }
+    inline bool atStart() const { return backward && start; }
     inline bool inReverse() const { return iReverse > 0; }
     inline bool isBackward() const { return backward; }
     inline bool empty() const { return nBefore == 0; }
@@ -52,8 +52,8 @@ public:
         return (int) std::min(currentItem - firstItem, (long) nMaxReverse);
     }
     virtual void log(Logger& pLogger) {
-        pLogger.info("iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverseLast = %d, iReverse = %d.",
-                     iRead, iWrite, nBefore, nAfter, nReverseLast, iReverse);
+        pLogger.info("firstItem = %ld, start = %d, atStart = %d, iRead = %d, iWrite = %d, nBefore = %d, nAfter = %d, nReverseLast = %d, iReverse = %d.",
+                     firstItem, start, atStart(), iRead, iWrite, nBefore, nAfter, nReverseLast, iReverse);
     }
     void peekRead(Item* item) {
         // TODO: Check for thread safety
@@ -68,7 +68,7 @@ public:
             *item = buffer[iRead];
             iRead = (backward ? (iRead - 1 + nItem) : (iRead + 1)) % nItem;
             nAfter++;
-            nBefore--; // since nBefore > 0
+            nBefore--;
         }
 		locker.unlock();
 		cv.notify_all();
@@ -76,9 +76,7 @@ public:
     void writeRequest(Item* item, long currentItem) {
         std::unique_lock<std::mutex> locker(mu);
         // Always leave one spot open because it could be currently where the read pointer is pointing too
-        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > nMaxReverse
-                                                    || backward && nFree() > nMaxReverse && nReverseLast > 0
-                                                    || unblocking; });
+        cv.wait(locker, [this, currentItem](){ return nFree() > nMaxReverse || unblocking; });
         *item = unblocking ? nullptr : buffer[iWrite];
 		locker.unlock();
 		cv.notify_all();
@@ -86,19 +84,17 @@ public:
     int writeComplete(long currentItem) {
         int nBackItem = 0;
         std::unique_lock<std::mutex> locker(mu);
-        cv.wait(locker, [this, currentItem](){ return !backward && nFree() > nMaxReverse
-                                                    || backward && nFree() > nMaxReverse && nReverseLast > 0
-                                                    || unblocking; });
+        cv.wait(locker, [this, currentItem](){ return nFree() > nMaxReverse || unblocking; });
         if (!unblocking) {
             if (backward) {
                 iReverse--;
-                if (iReverse == 0) {
-                    start = currentItem <= firstItem;
+                if (iReverse <= 0) {
                     nAfter -= std::max(0, nReverseLast - nNonOccupied()); // Make space for nReverseLast items, which we have
                     nBefore += nReverseLast;
-                    nBackItem = -nReverseLast - nReverse(currentItem - nReverseLast + 1);
+                    nBackItem = -nReverseLast - nReverse(currentItem - nReverseLast);
                     iWrite = (iWrite + nBackItem + nItem) % nItem;
-                    iReverse = nReverseLast = nReverse(currentItem - nReverseLast + 1);
+                    iReverse = nReverseLast = nReverse(currentItem - nReverseLast);
+                    start = nReverseLast == 0;
                 }
             } else {
                 start = false;

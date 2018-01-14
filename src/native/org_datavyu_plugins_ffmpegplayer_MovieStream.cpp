@@ -709,7 +709,7 @@ public:
             }
 
             // Find next frame in reverse playback
-            if (delta) {
+            if (delta && !pImageBuffer->atStart()) {
                 seekPts = limitToRange(lastWritePts + (1+delta)*avgDeltaPts);
                 endOrStart = false;
                 pLogger->info("Jump to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta);
@@ -724,7 +724,7 @@ public:
             endOrStart = ret == AVERROR_EOF || pImageBuffer->atStart();
 
             if (endOrStart) {
-                pLogger->info("Reached the end or start of the file.");
+                pLogger->info(ret == AVERROR_EOF ? "Reached the end of the file." : "Reached the start of the file.");
                 std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
                 continue;
             }
@@ -882,6 +882,9 @@ public:
 
     int loadNextImageFrame() {
 
+        pLogger->info("Buffer state before loading next frame.");
+        pImageBuffer->log(*pLogger, avgDeltaPts);
+
         // If there is no image stream or if the image buffer is empty, then return -1
         // The latter condition avoids blocking when reaching the start/end of the stream
         if (!hasVideoStream() || pImageBuffer->empty()) return -1;
@@ -937,14 +940,18 @@ public:
             }
 
             // We are too far off and need to jump
-            if (fabs(diffCumNew) > AV_NOSYNC_THRESHOLD) {
+            if (fabs(diffCumNew) > AV_NOSYNC_THRESHOLD && !pImageBuffer->atStart()) {
                 delay = 0;
                 uint64_t diffPts = (-diffCumNew)*speed/av_q2d(pImageStream->time_base);
                 int diffFrames = diffPts/avgDeltaPts;
                 nFrame += diffFrames;
                 pLogger->info("Correct frames %d.", diffFrames);
-                seekReq = true;
-                latestPts = seekPts = limitToRange(imageLastPts + diffPts);
+                uint64_t newSeekPts = limitToRange(imageLastPts + diffPts);
+                // If a seek is in progress that targets earlier then issue that one first
+                if (newSeekPts < seekPts) {
+                    seekReq = true;
+                    latestPts = seekPts = limitToRange(imageLastPts + diffPts);
+                }
                 break;
             }
 
