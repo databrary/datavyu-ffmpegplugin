@@ -684,6 +684,7 @@ public:
             // Random seek
             if (seekReq) {
                 endOrStart = seekReq = false;
+                pImageBuffer->block();
                 doSeek(seekPts, seekPts-lastWritePts, true);
                 pLogger->info("Status after seek.");
                 pImageBuffer->log(*pLogger, avgDeltaPts);
@@ -824,6 +825,7 @@ public:
 
     void setTime(double time) {
         if (hasVideoStream() || hasAudioStream()) {
+            pImageBuffer->unblock();
             lastWritePts = seekPts = limitToRange( ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts );
             seekReq = true;
         }
@@ -1325,8 +1327,8 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	MovieStream* movieStream = new MovieStream();
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
-    //movieStream->pLogger = new FileLogger(logFileName);
-    movieStream->pLogger = new StreamLogger(&std::cerr);
+    movieStream->pLogger = new FileLogger(logFileName);
+    //movieStream->pLogger = new StreamLogger(&std::cerr);
 	movieStream->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs
