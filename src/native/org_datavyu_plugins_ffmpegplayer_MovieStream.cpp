@@ -899,7 +899,7 @@ public:
         double diffCumNew = 0;
         std::chrono::high_resolution_clock::time_point time;
 
-        for (int iFrameDrop = ceil(speed); iFrameDrop > 0; --iFrameDrop) {
+        for (int iFrameDrop = ceil(speed); iFrameDrop > 0 && !pImageBuffer->empty(); --iFrameDrop) {
 
             pImageBuffer->read(&pAVFrame);
 
