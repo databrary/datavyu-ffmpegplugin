@@ -243,17 +243,7 @@ public class MovieStream implements VideoStream, AudioStream {
      * @param streamId Identifier of this stream.
      * @param time     The time in seconds.
      */
-    private static native void setTime0(int streamId, double time);
-
-    /**
-     * Set the time in the streams. This method is often called
-     * to seek within the stream.
-     *
-     * @param time The time in seconds.
-     */
-    public void setTime(double time) {
-        setTime0(streamId, time);
-    }
+    private static native void setCurrentTime0(int streamId, double time);
 
     /**
      * Native method to set the play back speed as multiple of the native play
@@ -265,13 +255,8 @@ public class MovieStream implements VideoStream, AudioStream {
     private static native void setPlaybackSpeed0(int streamId, float speed);
 
     @Override
-    public void seek(double time) throws IndexOutOfBoundsException {
-        if (time < getStartTime() || time > getEndTime()) {
-            throw new IndexOutOfBoundsException("Time " + time + " is not in " + "range [" + getStartTime() + ", "
-                    + getEndTime() + "]");
-        } else {
-            setTime0(streamId, time);
-        }
+    public void setCurrentTime(double time) {
+        setCurrentTime0(streamId, time);
     }
 
     /**

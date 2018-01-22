@@ -823,9 +823,9 @@ public:
 
     double getCurrentTime() const { return hasVideoStream() ? videoTime : audioTime; }
 
-    void setTime(double time) {
+    void setCurrentTime(double time) {
         if (hasVideoStream() || hasAudioStream()) {
-            pImageBuffer->unblock();
+            //pImageBuffer->unblock();
             lastWritePts = seekPts = limitToRange( ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts );
             seekReq = true;
         }
@@ -869,13 +869,13 @@ public:
 
     		if (pImageBuffer->isBackward()) {
     			// Seek to the end of the file
-    			lastWritePts = seekPts = pImageStream->start_time + pImageStream->duration - 2*avgDeltaPts;
+    			lastWritePts = seekPts = limitToRange(pImageStream->start_time + pImageStream->duration - 2*avgDeltaPts);
     			seekReq = true;
     			pLogger->info("Rewind to end %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
 
     		} else {
     			// Seek to the start of the file
-    			lastWritePts = seekPts = pImageStream->start_time;
+    			lastWritePts = seekPts = limitToRange(pImageStream->start_time);
     			seekReq = true;
     			pLogger->info("Rewind to start %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
     		}
@@ -1684,11 +1684,11 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_step0(J
     }
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setTime0(JNIEnv *env,
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setCurrentTime0(JNIEnv *env,
     jclass thisClass, jint streamId, jdouble jTime) {
     MovieStream* movieStream = getMovieStream(streamId);
     if (movieStream != nullptr) {
-        movieStream->setTime(jTime);
+        movieStream->setCurrentTime(jTime); // set current time limits range
     }
 }
 

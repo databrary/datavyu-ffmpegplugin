@@ -1,6 +1,8 @@
 package org.datavyu.plugins.ffmpegplayer;
 
 import javafx.util.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -8,6 +10,8 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
@@ -17,47 +21,235 @@ import javax.swing.filechooser.FileFilter;
 
 
 public class MoviePlayer extends JPanel implements WindowListener {
-	
+
 	/** Identifier for object serialization */
 	private static final long serialVersionUID = 5109839668203738974L;
 
+	/** Time base for the slider from time in seconds to slider time */
+	private static final int SLIDER_TIME_BASE = 1000;
+
+    /** The logger for this class */
+    private static Logger logger = LogManager.getLogger(MoviePlayer.class);
+
 	/** The movie stream for this movie player */
 	private java.util.List<MovieStreamProvider> movieStreamProviders = new ArrayList<>();
-	
+
 	/** Used to open video files */
 	private JFileChooser fileChooser;
 
 	/** The directory last opened is used to initialize the file chooser. */
 	private File lastDirectory = new File(System.getProperty("user.home"));
-	
+
 	/** A slider displays the current frame and the user can drag the slider to switch to a different frame. */
 	private JSlider slider;
 
-    /** Time of the last update */
-    private static double lastUpdateTime = System.currentTimeMillis();
+	public MoviePlayer() {
+		setLayout(new BorderLayout());
+
+		JToolBar tools = new JToolBar();
+
+		fileChooser = new JFileChooser();
+
+		fileChooser.addChoosableFileFilter(new VideoFilter());
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setSelectedFile(lastDirectory);
+
+		slider = new JSlider();
+
+		// Open file dialog.
+		JButton open = new JButton("Open File");
+		JButton play = new JButton("Play");
+		JButton stop = new JButton("Stop");
+		JButton rewind = new JButton("Rewind");
+		JButton step = new JButton("Step");
+		JButton view = new JButton("View");
+		JButton resetView = new JButton("ResetView");
+
+		tools.add(open);
+		tools.add(play);
+		tools.add(stop);
+		tools.add(rewind);
+		tools.add(step);
+		tools.add(view);
+		tools.add(resetView);
+
+		open.addActionListener(new OpenFileSelection());
+		play.addActionListener(new PlaySelection());
+		stop.addActionListener(new StopSelection());
+		rewind.addActionListener(new RewindSelection());
+		step.addActionListener(new StepSelection());
+		slider.addChangeListener(new SliderSelection());
+		view.addActionListener(new ViewSelection());
+		resetView.addActionListener(new ResetViewSelection());
+
+		// Speed selection.
+        SpeedValueSelection speedValueSelect = new SpeedValueSelection();
+        java.util.List<Pair<String, Double>> speedsLabelValue = new ArrayList<Pair<String, Double>>() {{
+            add(new Pair<>("-32x", -32.0));
+            add(new Pair<>("-16x", -16.0));
+            add(new Pair<>("-8x", -8.0));
+            add(new Pair<>("-4x", -4.0));
+            add(new Pair<>("-2x", -2.0));
+            add(new Pair<>("-1x", -1.0));
+            add(new Pair<>("-1/2x", -0.5));
+            add(new Pair<>("-1/4x", -0.25));
+            add(new Pair<>("-1/8x", -0.125));
+            add(new Pair<>("-1/16x", -0.0625));
+            add(new Pair<>("-1/32x", -0.03125));
+            add(new Pair<>("0x", 0.0));
+            add(new Pair<>("1/32x", 0.03125));
+            add(new Pair<>("1/16x", 0.0625));
+            add(new Pair<>("1/8x", 0.125));
+            add(new Pair<>("1/4x", 0.25));
+            add(new Pair<>("1/2x", 0.5));
+            add(new Pair<>("1x", 1.0));
+            add(new Pair<>("2x", 2.0));
+            add(new Pair<>("4x", 4.0));
+            add(new Pair<>("8x", 8.0));
+            add(new Pair<>("16x", 16.0));
+            add(new Pair<>("32x", 32.0));
+        }};
+        java.util.List<JRadioButton> speedButtons = new ArrayList<>(speedsLabelValue.size());
+        for (Pair<String, Double> speedLabelValue : speedsLabelValue) {
+            JRadioButton speedButton = new JRadioButton(speedLabelValue.getKey());
+            speedButton.setActionCommand(speedLabelValue.getValue().toString());
+            speedButton.addActionListener(speedValueSelect);
+            speedButtons.add(speedButton);
+        }
+
+		// Select default.
+        speedButtons.get(speedsLabelValue.size()/2).setSelected(true);
+
+		// Add radio buttons to a group for mutual exclusion.
+		ButtonGroup speedsGroup = new ButtonGroup();
+		for (JRadioButton speedButton : speedButtons) {
+		    speedsGroup.add(speedButton);
+        }
+
+		// Add radio buttons to a panel for display.
+		JPanel speedsPanel = new JPanel(new GridLayout(2, 0));
+		for (JRadioButton speedButton : speedButtons) {
+		    speedsPanel.add(speedButton);
+        }
+
+		tools.add(new JLabel("Speed:"));
+		tools.add(speedsPanel);
+
+		JLabel frameNumber = new JLabel("0");
+		tools.add(frameNumber);
+
+		add(tools, BorderLayout.NORTH);
+		add(slider, BorderLayout.SOUTH);
+
+		openFile("C:\\Users\\Florian\\DatavyuSampleVideo.mp4");
+
+		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
+		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
+	}
+	
+	/**
+     * Create the GUI and show it. For thread safety, this method should be invoked from the
+     * event-dispatching thread.
+     */
+    private static void createAndShowGUI() {
+        // Create and set up the window
+        JFrame frame = new JFrame("Video Player");
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        MoviePlayer player = new MoviePlayer();
+        player.addWindowListener(frame);
+        // Add content to the window
+        frame.add(player, BorderLayout.CENTER);
+
+        // Display the window
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        /* Turn off metal's use of bold fonts */
+        UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+        // Schedule a job for the event-dispatching thread:
+        // creating and showing this application's GUI.
+		javax.swing.SwingUtilities.invokeLater(()->createAndShowGUI());
+    }
+
+	private void openFile(String fileName) {
+	    try {
+            MoviePlayerFrame moviePlayerFrame = new MoviePlayerFrame(fileName);
+            movieStreamProviders.add(moviePlayerFrame.getMovieStreamProvider());
+        } catch (IOException io) {
+            System.err.println(io);
+        }
+	}
+	
+    private void addWindowListener(Window w) {
+        w.addWindowListener(this);
+    }
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		/* Nothing here */
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+        for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+            try {
+                movieStreamProvider.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		/* Nothing here */
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		/* Nothing here */
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		/* Nothing here */
+	}
+	
+	@Override
+	public void windowActivated(WindowEvent e) {
+		/* Nothing here */
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		/* Nothing here */
+	}
 
 	/**
 	 * An encapsulated class that ensures that filters files down to video files based on known file extensions.
 	 */
 	class VideoFilter extends FileFilter {
-		
+
 		private String getFileExtension(File file) {
 		    String name = file.getName();
 		    int iDot = name.lastIndexOf(".");
 		    return (iDot == -1 || iDot == name.length()) ? "" : name.substring(iDot + 1);
 		}
-		
+
 		@Override
 		public boolean accept(File f) {
-			
+
 			// If this file is a directory display it.
 			if (f.isDirectory()) {
 				return true;
 			}
-			
+
 			// Get the file extension.
 			String ext = getFileExtension(f);
-			
+
 			// Convert to all lower case.
 			ext = ext.toLowerCase();
 
@@ -65,7 +257,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			return ext.equals("mp4") || ext.equals("mpg") || ext.equals("h264") || ext.equals("mov")
 					|| ext.equals("wav");
 		}
-		
+
 		@Override
 		public String getDescription() {
 			return "mp4, mpg, h264, mov, wav";
@@ -89,7 +281,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
             }
 		}
 	}
-	
+
 	class RewindSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -109,35 +301,41 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	}
 
 	class SliderSelection implements ChangeListener {
-		
-		private final static double DELTA_TIME = 1000;
-		
+
+		private final static long SYNC_INTERVAL = 500;  // in milliseconds
+
+		private final static long SYNC_DELAY = 0; // in milliseconds
+
+		private final static double SYNC_THRESHOLD = 0.5; // in seconds
+
+        SliderSelection() {
+            new Timer().scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    double streamTime = SliderStreamListener.toStreamTime(slider.getValue());
+                    for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                        if (Math.abs(streamTime - movieStreamProvider.getCurrentTime()) >= SYNC_THRESHOLD) {
+                            logger.info("The slider time is: " + streamTime + " seconds and the stream time is: "
+                                    + movieStreamProvider.getCurrentTime() + " seconds");
+                            movieStreamProvider.setCurrentTime(streamTime);
+                            movieStreamProvider.startVideoListeners();
+                            movieStreamProvider.nextImageFrame();
+                        }
+                    }
+                }
+            }, SYNC_DELAY, SYNC_INTERVAL);
+        }
+
 		@Override
 		public void stateChanged(ChangeEvent e) {
-			if (slider.getValueIsAdjusting()) {
-				double sec = ((double)slider.getValue())/1000.0;
-				double currentTime = System.currentTimeMillis();
-				System.out.println("Current time in milli seconds: " + currentTime);
-				
-				// Can't show all the frames, random seeks
-				if (currentTime - lastUpdateTime > DELTA_TIME) {
-					System.out.println("Repaint with " 
-							+ "lastUpdateTime = " + lastUpdateTime 
-							+ ", currentTime = " + currentTime
-							+ ", diffTime = " + (currentTime - lastUpdateTime));
-                    for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                        movieStreamProvider.seek(sec);
-                        //movieStreamProvider.dropImageFrame();
-                        movieStreamProvider.startVideoListeners();
-                        movieStreamProvider.nextImageFrame();
-                    }
-					// TODO: lastUpdateTime does not seem to be updated!
-					lastUpdateTime = currentTime;
-				}
-			}
+            if (slider.getValueIsAdjusting()) {
+                for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+                    movieStreamProvider.stop();
+                }
+            }
 		}
 	}
-	
+
 	class ViewSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -176,8 +374,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	}
 
     private class MoviePlayerFrame {
-        MovieStreamProvider movieStreamProvider;
         final Frame frame;
+        MovieStreamProvider movieStreamProvider;
 
         MoviePlayerFrame(String movieFileName) throws IOException {
             this(movieFileName, "0.0.0.1");
@@ -203,6 +401,10 @@ public class MoviePlayer extends JPanel implements WindowListener {
             // Add video display
             movieStreamProvider.addVideoStreamListener(new VideoDisplayStreamListener(movieStreamProvider, frame,
                     reqColorSpace));
+
+            // TODO: This only works if we have only one video; otherwise we need to sync them through one clock
+            movieStreamProvider.addVideoStreamListener(new SliderStreamListener(slider, movieStreamProvider));
+
             // Open the movie stream provider
             movieStreamProvider.open(movieFileName, version, reqColorSpace, reqAudioFormat);
             int width = movieStreamProvider.getWidthOfView();
@@ -216,15 +418,6 @@ public class MoviePlayer extends JPanel implements WindowListener {
         }
     }
 	
-	private void openFile(String fileName) {
-	    try {
-            MoviePlayerFrame moviePlayerFrame = new MoviePlayerFrame(fileName);
-            movieStreamProviders.add(moviePlayerFrame.getMovieStreamProvider());
-        } catch (IOException io) {
-            System.err.println(io);
-        }
-	}
-
 	class SpeedValueSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -238,199 +431,23 @@ public class MoviePlayer extends JPanel implements WindowListener {
 			}
 		}
 	}
-
+ 
 	class OpenFileSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			
+
 			// Show the file chooser.
 	        int val = fileChooser.showDialog(MoviePlayer.this, "Open");
-	        
+
 	        // Process the results.
 	        if (val == JFileChooser.APPROVE_OPTION) {
 	            File file = fileChooser.getSelectedFile();
 	            lastDirectory = new File(file.getAbsolutePath());
 	            openFile(file.getAbsolutePath());
 	        }
-	        
+
 	        // Set the file chooser's default directory for next time.
 	        fileChooser.setSelectedFile(lastDirectory);
 		}
 	}
-	
-	public MoviePlayer() {
-		setLayout(new BorderLayout());
-		
-		JToolBar tools = new JToolBar();
-		
-		fileChooser = new JFileChooser();
-		
-		fileChooser.addChoosableFileFilter(new VideoFilter());
-        fileChooser.setAcceptAllFileFilterUsed(false);        
-        fileChooser.setSelectedFile(lastDirectory);
-        
-		slider = new JSlider();
-		
-		// Open file dialog.
-		JButton open = new JButton("Open File");
-		JButton play = new JButton("Play");
-		JButton stop = new JButton("Stop");
-		JButton rewind = new JButton("Rewind");
-		JButton step = new JButton("Step");
-		JButton view = new JButton("View");
-		JButton resetView = new JButton("ResetView");
-		
-		tools.add(open);
-		tools.add(play);
-		tools.add(stop);
-		tools.add(rewind);
-		tools.add(step);
-		tools.add(view);
-		tools.add(resetView);
-		
-		open.addActionListener(new OpenFileSelection());
-		play.addActionListener(new PlaySelection());
-		stop.addActionListener(new StopSelection());
-		rewind.addActionListener(new RewindSelection());
-		step.addActionListener(new StepSelection());
-		slider.addChangeListener(new SliderSelection());
-		view.addActionListener(new ViewSelection());
-		resetView.addActionListener(new ResetViewSelection());
-		
-		// Speed selection.
-        SpeedValueSelection speedValueSelect = new SpeedValueSelection();
-        java.util.List<Pair<String, Double>> speedsLabelValue = new ArrayList<Pair<String, Double>>() {{
-            add(new Pair<>("-32x", -32.0));
-            add(new Pair<>("-16x", -16.0));
-            add(new Pair<>("-8x", -8.0));
-            add(new Pair<>("-4x", -4.0));
-            add(new Pair<>("-2x", -2.0));
-            add(new Pair<>("-1x", -1.0));
-            add(new Pair<>("-1/2x", -0.5));
-            add(new Pair<>("-1/4x", -0.25));
-            add(new Pair<>("-1/8x", -0.125));
-            add(new Pair<>("-1/16x", -0.0625));
-            add(new Pair<>("-1/32x", -0.03125));
-            add(new Pair<>("0x", 0.0));
-            add(new Pair<>("1/32x", 0.03125));
-            add(new Pair<>("1/16x", 0.0625));
-            add(new Pair<>("1/8x", 0.125));
-            add(new Pair<>("1/4x", 0.25));
-            add(new Pair<>("1/2x", 0.5));
-            add(new Pair<>("1x", 1.0));
-            add(new Pair<>("2x", 2.0));
-            add(new Pair<>("4x", 4.0));
-            add(new Pair<>("8x", 8.0));
-            add(new Pair<>("16x", 16.0));
-            add(new Pair<>("32x", 32.0));
-        }};
-        java.util.List<JRadioButton> speedButtons = new ArrayList<>(speedsLabelValue.size());
-        for (Pair<String, Double> speedLabelValue : speedsLabelValue) {
-            JRadioButton speedButton = new JRadioButton(speedLabelValue.getKey());
-            speedButton.setActionCommand(speedLabelValue.getValue().toString());
-            speedButton.addActionListener(speedValueSelect);
-            speedButtons.add(speedButton);
-        }
-
-		// Select default.
-        speedButtons.get(speedsLabelValue.size()/2).setSelected(true);
-		
-		// Add radio buttons to a group for mutual exclusion.
-		ButtonGroup speedsGroup = new ButtonGroup();
-		for (JRadioButton speedButton : speedButtons) {
-		    speedsGroup.add(speedButton);
-        }
-		
-		// Add radio buttons to a panel for display.
-		JPanel speedsPanel = new JPanel(new GridLayout(2, 0));
-		for (JRadioButton speedButton : speedButtons) {
-		    speedsPanel.add(speedButton);
-        }
-
-		tools.add(new JLabel("Speed:"));
-		tools.add(speedsPanel);
-
-		JLabel frameNumber = new JLabel("0");
-		tools.add(frameNumber);
-				
-		add(tools, BorderLayout.NORTH);
-		add(slider, BorderLayout.SOUTH);
-
-		openFile("C:\\Users\\Florian\\DatavyuSampleVideo.mp4");
-
-		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
-		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
-	}
-	
-    private void addWindowListener(Window w) {
-        w.addWindowListener(this);
-    }
-
-	@Override
-	public void windowOpened(WindowEvent e) {
-		/* Nothing here */
-	}
-
-	@Override
-	public void windowClosing(WindowEvent e) {
-        for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-            try {
-                movieStreamProvider.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-        }
-	}
-
-	@Override
-	public void windowClosed(WindowEvent e) {
-		/* Nothing here */
-	}
-
-	@Override
-	public void windowIconified(WindowEvent e) {
-		/* Nothing here */
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent e) {
-		/* Nothing here */
-	}
-
-	@Override
-	public void windowActivated(WindowEvent e) {
-		/* Nothing here */
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent e) {
-		/* Nothing here */
-	}
-	
-	/**
-     * Create the GUI and show it. For thread safety, this method should be invoked from the
-     * event-dispatching thread.
-     */
-    private static void createAndShowGUI() {
-        // Create and set up the window
-        JFrame frame = new JFrame("Video Player");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        MoviePlayer player = new MoviePlayer();
-        player.addWindowListener(frame);
-        // Add content to the window
-        frame.add(player, BorderLayout.CENTER);
- 
-        // Display the window
-        frame.pack();
-        frame.setVisible(true);
-    }
- 
-    public static void main(String[] args) {
-        /* Turn off metal's use of bold fonts */
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
-         
-        // Schedule a job for the event-dispatching thread:
-        // creating and showing this application's GUI.
-		javax.swing.SwingUtilities.invokeLater(()->createAndShowGUI());
-    }
 }

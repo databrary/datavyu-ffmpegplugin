@@ -91,10 +91,10 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_step0
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    setTime0
+ * Method:    setCurrentTime0
  * Signature: (ID)V
  */
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setTime0
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setCurrentTime0
   (JNIEnv *, jclass, jint, jdouble);
 
 /*

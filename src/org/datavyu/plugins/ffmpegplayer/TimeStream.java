@@ -4,7 +4,7 @@ import java.io.IOException;
 
 /**
  * This interface associates time to a stream. It provides the start time, 
- * end time, duration, current time, seek of a time, and a speed. The idea is 
+ * end time, duration, current time, setCurrentTime of a time, and a speed. The idea is
  * to have same interface as for a stream but with methods that control time
  * within that stream. The unit of time is seconds.
  * 
@@ -57,14 +57,13 @@ public interface TimeStream {
 	double getCurrentTime();
 
 	/**
-	 * Seek a time within the stream.
-	 * 
-	 * @param time The time point to seek in seconds.
-	 * 
-	 * @throws IndexOutOfBoundsException if the time is outside the range of 
-	 * start time and end time.
+	 * Sets time within the stream. The implementation restricts the time to the
+	 * earliest and latest time in the stream.
+	 *
+	 * @param time The time point to setCurrentTime in seconds.
+	 *
 	 */
-	void seek(double time) throws IndexOutOfBoundsException; // set time to continue play back
+	void setCurrentTime(double time); // set time to continue play back
 
 	/**
 	 * Set the play back speed as multiple of the native play back and also 
@@ -73,10 +72,6 @@ public interface TimeStream {
 	 * play back.
 	 * 
 	 * @param speed The speed, e.g. 0.5x or -4x.
-	 * 
-	 * @throws IndexOutOfBoundsException A stream may not be played back 
-	 * arbitrarily fast. If the implementing class does not support a value it 
-	 * throws this exception.
 	 */
 	void setSpeed(float speed);
 	

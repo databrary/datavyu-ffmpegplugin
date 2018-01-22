@@ -178,7 +178,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * stream and audio is not playing already.  Calls stream started on all 
 	 * audio listeners. Thread safe.
 	 */
-	void startAudio() {
+	private void startAudio() {
 		setPlaySound(true);
 		if (hasAudioStream() && !runAudio) {
 			super.start();
@@ -200,7 +200,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * video stream and is not playing already.  Calls stream started on all 
 	 * video listeners. Thread safe.
 	 */
-	void startVideo() {
+	private void startVideo() {
 		if (hasVideoStream() && !runVideo) {
 			super.start();
 		    logger.info("StreamId "+ getStreamId() + ": Starting video play back thread.");
@@ -328,7 +328,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * Stops playing the audio if a audio is running and there is an audio stream.  Calls stream stopped on all audio
      * listeners.
 	 */
-	void stopAudio() {
+	private void stopAudio() {
 		setPlaySound(false);
 		if (runAudio && hasAudioStream()) {
 			super.stop();
