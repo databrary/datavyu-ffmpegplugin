@@ -86,21 +86,6 @@ public class MovieStreamProvider extends MovieStream {
     long getNumberOfFrameDrops() {
 	    return nFrameDrop;
     }
-
-	/**
-	 * Consumes the next image frame without forwarding it to the listeners.
-	 * 
-	 * @return True if at least one frame was read; otherwise false. 
-	 */
-	boolean dropImageFrame() {
-        // Allocate space for a byte buffer
-        byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
-        // Read the next image frame -- blocks if none is available
-        int nFrame = readImageFrame(buffer);
-        this.nFrame += nFrame;
-        this.nFrameDrop += nFrame - 1;
-        return nFrame > 0;
-	}
 	
 	/**
 	 * Consumes the next image frame if there is one.
@@ -403,6 +388,11 @@ public class MovieStreamProvider extends MovieStream {
 		// TODO: Need to flush the buffers to release the resources
 		stop();
 		super.close();
+	}
+
+	@SuppressWarnings("unused") // Is an API method
+	public boolean isPlaying() {
+		return runVideo;
 	}
 
 	/**
