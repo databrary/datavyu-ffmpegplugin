@@ -268,18 +268,19 @@ public class MovieStreamProvider extends MovieStream {
         }
     }
 
-	@Override
-    public void step() {
-        boolean wasNotStepping = runVideo;
-        if (wasNotStepping) {
-            // Set natively no sound (otherwise the audio buffer will block the video stream)
-            setPlaySound(false);
-            // Stops all stream providers
-            stop();
-        }
-        // Enables stepping to display the frames without starting the video thread
+    @Override
+    public void stepForward() {
+        // Enables display without starting the video thread
         startVideoListeners();
-        super.step(); // resets the timer for the sync of the clock
+        super.stepForward(); // Calls step that also resets the timer for the sync of the clock
+        nextImageFrame();
+    }
+
+    @Override
+    public void stepBackward() {
+        // Enables display without starting the video thread
+        startVideoListeners();
+        super.stepBackward(); // Calls step that also resets the timer for the sync of the clock
         nextImageFrame();
     }
 

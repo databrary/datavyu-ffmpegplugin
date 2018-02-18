@@ -24,9 +24,14 @@ public interface TimeStream {
 	void stop();
 
 	/**
-	 * Step by one frame in the current play back direction.
+	 * Step forward by one frame.
 	 */
-	void step();
+	void stepForward();
+
+	/**
+	 * Step backward by one frame.
+	 */
+	void stepBackward();
 
 	/**
 	 * Get the start time of the stream. Typically that will be 0.0.

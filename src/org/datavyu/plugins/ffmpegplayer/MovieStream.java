@@ -99,6 +99,16 @@ public class MovieStream implements VideoStream, AudioStream {
      */
     protected float speed = 1f;
 
+    /**
+     * Indicates that we are in stepping.
+     */
+    protected boolean isStepping = false;
+
+    /**
+     * Restore this speed when starting to play after stepping.
+     */
+    protected float speedBeforeStepping = 1f;
+
 
     /**
      * Get the average frame rate as defined by the video file.
@@ -220,7 +230,12 @@ public class MovieStream implements VideoStream, AudioStream {
 
     @Override
     public void start() {
+        // If we were stepping restore the speed and start the stream
+        if (isStepping) {
+            setSpeed(speedBeforeStepping);
+        }
         start0(streamId);
+        isStepping = false;
     }
 
     @Override
@@ -229,7 +244,36 @@ public class MovieStream implements VideoStream, AudioStream {
     }
 
     @Override
-    public void step() { step0(streamId); }
+    public void stepBackward() {
+        // If we are not stepping save the current speed
+        if (!isStepping) {
+            speedBeforeStepping = speed;
+        }
+        // If we are in forward mode reverse
+        if (speed > 0) {
+            setSpeed(-1);
+        }
+        // Activate step, at the moment for timers
+        step0(streamId);
+        // Enable stepping mode
+        isStepping = true;
+    }
+
+    @Override
+    public void stepForward() {
+        // If we are not stepping save the current speed
+        if (!isStepping) {
+            speedBeforeStepping = speed;
+        }
+        // If we are in backward mode reverse
+        if (speed < 0) {
+            setSpeed(+1);
+        }
+        // Activate the step, at the moment for timers
+        step0(streamId);
+        // Enable stepping mode
+        isStepping = true;
+    }
 
     private static native void start0(int streamId);
 

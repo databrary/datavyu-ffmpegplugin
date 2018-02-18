@@ -61,7 +61,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		JButton play = new JButton("Play");
 		JButton stop = new JButton("Stop");
 		JButton rewind = new JButton("Rewind");
-		JButton step = new JButton("Step");
+		JButton stepBackward = new JButton("<");
+		JButton stepForward = new JButton(">");
 		JButton view = new JButton("View");
 		JButton resetView = new JButton("ResetView");
 
@@ -69,7 +70,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		tools.add(play);
 		tools.add(stop);
 		tools.add(rewind);
-		tools.add(step);
+		tools.add(stepBackward);
+		tools.add(stepForward);
 		tools.add(view);
 		tools.add(resetView);
 
@@ -77,7 +79,8 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		play.addActionListener(new PlaySelection());
 		stop.addActionListener(new StopSelection());
 		rewind.addActionListener(new RewindSelection());
-		step.addActionListener(new StepSelection());
+		stepBackward.addActionListener(new StepBackwardSelection());
+		stepForward.addActionListener(new StepForwardSelection());
 		slider.addChangeListener(new SliderSelection());
 		view.addActionListener(new ViewSelection());
 		resetView.addActionListener(new ResetViewSelection());
@@ -291,11 +294,20 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		}
 	}
 
-	class StepSelection implements ActionListener {
+	class StepBackwardSelection implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+				movieStreamProvider.stepBackward();
+			}
+		}
+	}
+
+	class StepForwardSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
             for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                movieStreamProvider.step();
+                movieStreamProvider.stepForward();
             }
 		}
 	}

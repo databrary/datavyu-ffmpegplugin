@@ -1328,8 +1328,8 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
     movieStream->pLogger = new FileLogger(logFileName);
-    //movieStream->pLogger = new StreamLogger(&std::cerr);
-	movieStream->pLogger->info("Version: %s", version);
+    movieStream->pLogger = new StreamLogger(&std::cerr);
+	//movieStream->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs
 	av_register_all();
