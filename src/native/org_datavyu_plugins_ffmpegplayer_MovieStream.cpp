@@ -611,9 +611,10 @@ public:
      * ALWAYS seeks before the current target. Use this method for precise location.  It may take longer though.
      */
     void doSeekBefore(int64_t target) {
+        pLogger->info("Seek to or before %I64d frames", target/avgDeltaPts);
         // make sure the target is in the range
         if (av_seek_frame(pFormatCtx, iImageStream, target, AVSEEK_FLAG_BACKWARD) < 0) {
-            pLogger->error("Failed seek before to frame %I64d.", target/avgDeltaPts);
+            pLogger->info("Failed seek before to frame %I64d.", target/avgDeltaPts);
         } else {
             lastWritePts = target;
             pLogger->info("Succeeded seek before to frame %I64d.", target/avgDeltaPts);
@@ -631,16 +632,16 @@ public:
      * Seek approximately to the target frame. Use this for random seeks.
      */
     void doSeek(int64_t target, int64_t delta, bool flush) {
-        pLogger->info("Seeking to frame %I64d with delta %I64d.", target/avgDeltaPts, delta/avgDeltaPts);
+        pLogger->info("Seek random %I64d frame with diff %I64d frames.", target/avgDeltaPts, delta/avgDeltaPts);
         if (delta != 0) {
             int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
             int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
             int seekFlags = delta < 0 ? AVSEEK_FLAG_BACKWARD : 0;
             if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, seekFlags) < 0) {
-                pLogger->error("Failed seek to frame %I64d.", target/avgDeltaPts);
+                pLogger->info("Failed seek to frame %I64d.", target/avgDeltaPts);
             } else {
                 lastWritePts = target;
-                pLogger->info("Succeeded seek to frame %I64d with min %I64d and max %I64d for delta %I64d.",
+                pLogger->info("Succeeded seek to frame %I64d with min %I64d frames and max %I64d frames for diff %I64d frames.",
                               target/avgDeltaPts, min_/avgDeltaPts, max_/avgDeltaPts, delta/avgDeltaPts);
                 if (hasVideoStream()) {
                     if (flush) {
@@ -725,7 +726,7 @@ public:
             endOrStart = ret == AVERROR_EOF || pImageBuffer->atStart();
 
             if (endOrStart) {
-                pLogger->info(ret == AVERROR_EOF ? "Reached the end of the file." : "Reached the start of the file.");
+                pLogger->debug(ret == AVERROR_EOF ? "Reached the end of the file." : "Reached the start of the file.");
                 std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_TIMEOUT_IN_MSEC));
                 continue;
             }
@@ -759,8 +760,6 @@ public:
                         AVFrame* pFrameBuffer;
                         long currentFrame = readPts/avgDeltaPts;
 
-                        pLogger->info("Write frame %I64d.", currentFrame);
-
                         pImageBuffer->writeRequest(&pFrameBuffer, currentFrame);
 
                         // Did we get a frame buffer?
@@ -780,7 +779,7 @@ public:
                             static_cast<AVFrameMetaData*>(pFrameBuffer->opaque)->initClock = initClock;
                             delta = pImageBuffer->writeComplete(currentFrame);
                             pLogger->info("Wrote frame %I64d with init %d.", lastWritePts/avgDeltaPts, initClock);
-                            pImageBuffer->log(*pLogger, avgDeltaPts);
+                            //pImageBuffer->log(*pLogger, avgDeltaPts);
 
                             initClock = false;
                         } else {
@@ -884,9 +883,6 @@ public:
 
     int loadNextImageFrame() {
 
-        pLogger->info("Buffer state before loading next frame.");
-        pImageBuffer->log(*pLogger, avgDeltaPts);
-
         // If there is no image stream or if the image buffer is empty, then return -1
         // The latter condition avoids blocking when reaching the start/end of the stream
         if (!hasVideoStream() || pImageBuffer->empty()) return -1;
@@ -948,11 +944,10 @@ public:
                 int diffFrames = diffPts/avgDeltaPts;
                 nFrame += diffFrames;
                 pLogger->info("Correct frames %d.", diffFrames);
-                uint64_t newSeekPts = limitToRange(imageLastPts + diffPts);
-                // If a seek is in progress that targets earlier then issue that one first
-                if (newSeekPts < seekPts) {
+                // If a seek is not in progress
+                if (!seekReq) {
                     seekReq = true;
-                    latestPts = seekPts = limitToRange(imageLastPts + diffPts);
+                    seekPts = limitToRange(imageLastPts + diffPts);
                 }
                 break;
             }
@@ -972,12 +967,9 @@ public:
 
         // Delay read to keep the desired frame rate.
         if (delay > 0) {
-            pLogger->info("Image waiting for %lf seconds.\n", delay);
+            pLogger->info("Frame %I64d waits for %lf seconds.", latestPts/avgDeltaPts, delay);
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
         }
-
-        //imageDeltaPts = init ? (int64_t)(1.0/(av_q2d(pImageStream->time_base)*av_q2d(pImageStream->avg_frame_rate)))
-        //                                     : std::labs(latestPts - imageLastPts);
 
         // Update values for next call
         imageLastPts = latestPts;
@@ -992,7 +984,7 @@ public:
         resetClock = false;
 
         // We displayed a frame
-        pLogger->info("Display frame %I64d.", pAVFrameShow->pts/avgDeltaPts);
+        pLogger->info("Return frame: %I64d.", pAVFrameShow->pts/avgDeltaPts);
 
         // Return the number of read frames; the number may be larger than 1
         return nFrame;
@@ -1094,7 +1086,7 @@ public:
     			pImageFrame = nullptr;
     			pAVFrameShow = nullptr;
 
-    			pLogger->info("Freed image related resources.");
+    			pLogger->info("Freed image stream resources.");
     		}
 
     		// If we have an audio stream
@@ -1113,7 +1105,7 @@ public:
     			pResampleCtx = nullptr;
     			pAudioBufferData = nullptr;
 
-    			pLogger->info("Freed audio related resources.");
+    			pLogger->info("Freed audio stream resources.");
     		}
 
     		// Close the video file AFTER closing all codecs!!!
@@ -1162,6 +1154,8 @@ public:
     		playSound = false;
 
     		quit = false;
+
+    		pLogger->info("Reset state for this movie stream.");
     	}
 
     	if (pLogger) {

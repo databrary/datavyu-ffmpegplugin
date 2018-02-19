@@ -1,8 +1,10 @@
 package org.datavyu.plugins.ffmpegplayer;
 
 import javafx.util.Pair;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -24,9 +26,6 @@ public class MoviePlayer extends JPanel implements WindowListener {
 
 	/** Identifier for object serialization */
 	private static final long serialVersionUID = 5109839668203738974L;
-
-	/** Time base for the slider from time in seconds to slider time */
-	private static final int SLIDER_TIME_BASE = 1000;
 
     /** The logger for this class */
     private static Logger logger = LogManager.getLogger(MoviePlayer.class);
@@ -171,6 +170,9 @@ public class MoviePlayer extends JPanel implements WindowListener {
     public static void main(String[] args) {
         /* Turn off metal's use of bold fonts */
         UIManager.put("swing.boldMetal", Boolean.FALSE);
+
+        // Log info only
+        Configurator.setRootLevel(Level.INFO);
 
         // Schedule a job for the event-dispatching thread:
         // creating and showing this application's GUI.
@@ -402,6 +404,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
                 public void windowClosing(WindowEvent ev) {
                     try {
                         movieStreamProvider.close();
+                        movieStreamProviders.remove(movieStreamProvider);
                     } catch (IOException io) {
                         io.printStackTrace();
                     }

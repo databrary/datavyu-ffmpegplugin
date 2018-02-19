@@ -14,7 +14,7 @@ public class MovieStream implements VideoStream, AudioStream {
     /**
      * The logger for this class
      */
-    private static Logger logger = LogManager.getLogger(MovieStream.class);
+    private static Logger logger = LogManager.getFormatterLogger(MovieStream.class);
 
     /*
      * Load the native library that interfaces to ffmpeg. This load assumes that dependent dll's are in the JVM's
@@ -365,9 +365,9 @@ public class MovieStream implements VideoStream, AudioStream {
     @Override
     public int readAudioData(byte[] buffer) {
         if (loadNextAudioData()) {
-            logger.info("StreamId " + streamId + ": Reading " + AUDIO_BUFFER_SIZE + " B of audio data.");
             audioBuffer.get(buffer, 0, AUDIO_BUFFER_SIZE);
             audioBuffer.rewind();
+            logger.info("Stream " + streamId + ": Read audio data.");
             return 1;
         }
         return 0;
@@ -698,9 +698,9 @@ public class MovieStream implements VideoStream, AudioStream {
         int nFrame;
         // Check if we loaded at least one image frame
         if ((nFrame = loadNextImageFrame()) > 0) {
-            logger.info("StreamId " + streamId + ": Reading image frame at time: " + getCurrentTime() + " sec.");
             // Load the image frame into the buffer
             ByteBuffer imageBuffer = getFrameBuffer();
+            logger.info("Stream %d: Read %d frames at %3.3f sec.", streamId , nFrame, getCurrentTime());
             imageBuffer.get(buffer, 0, imageBuffer.capacity());
         }
         // Return the number of loaded image frames

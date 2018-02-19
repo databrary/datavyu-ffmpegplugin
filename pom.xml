@@ -6,7 +6,7 @@
 
     <groupId>datavyu</groupId>
     <artifactId>ffmpeg-plugin</artifactId>
-    <version>0.13</version>
+    <version>0.14</version>
     <packaging>jar</packaging>
 
     <repositories>

@@ -25,7 +25,7 @@ import javax.sound.sampled.AudioFormat;
 public class MovieStreamProvider extends MovieStream {
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getLogger(MovieStreamProvider.class);
+    private static Logger logger = LogManager.getFormatterLogger(MovieStreamProvider.class);
 
 	/** The list of audio listeners */
 	private final List<StreamListener> audioListeners;
@@ -99,7 +99,6 @@ public class MovieStreamProvider extends MovieStream {
 		int nFrame = readImageFrame(buffer);
 		this.nFrame += nFrame;
 		this.nFrameDrop += nFrame - 1;
-		logger.info("Read " + nFrame + " image frames.");
 		if (nFrame > 0) {
 			// Fulfill all listeners
 			synchronized (videoListeners) {
@@ -167,7 +166,7 @@ public class MovieStreamProvider extends MovieStream {
 		setPlaySound(true);
 		if (hasAudioStream() && !runAudio) {
 			super.start();
-		    logger.info("StreamId " + getStreamId() + ": Starting audio play back thread.");
+		    logger.info("Stream %d: Starting audio thread.",getStreamId());
 			runAudio = true;
 			audio = new AudioListenerThread();
 			synchronized (audioListeners) {
@@ -176,7 +175,7 @@ public class MovieStreamProvider extends MovieStream {
 				}				
 			}
 			audio.start();
-            logger.info("StreamId " + getStreamId() + ": Started audio thread.");
+            logger.info("Stream %d: Started audio thread.", getStreamId());
 		}
 	}
 
@@ -188,7 +187,7 @@ public class MovieStreamProvider extends MovieStream {
 	private void startVideo() {
 		if (hasVideoStream() && !runVideo) {
 			super.start();
-		    logger.info("StreamId "+ getStreamId() + ": Starting video play back thread.");
+		    logger.info("Stream %d: Starting video thread.", getStreamId());
 			runVideo = true;
 			video = new VideoListenerThread();
 			synchronized (videoListeners) {
@@ -197,7 +196,7 @@ public class MovieStreamProvider extends MovieStream {
 				}
 			}
 			video.start();
-            logger.info("StreamId " + getStreamId() + ": Started video thread");
+            logger.info("Stream %d: Started thread.", getStreamId());
 		}
 	}
 	
@@ -291,7 +290,7 @@ public class MovieStreamProvider extends MovieStream {
 	private void stopVideo() {
 		if (runVideo && hasVideoStream()) {
 			super.stop();
-			logger.info("StreamId " + getStreamId() + ": Trying to stop the video stream.");
+			logger.info("Stream %d: Stopping video thread.", getStreamId());
 			runVideo = false;
 			if (video != null) {
 				video.interrupt();
@@ -306,7 +305,7 @@ public class MovieStreamProvider extends MovieStream {
 					listener.streamStopped();
 				}
 			}
-			logger.info("StreamId " + getStreamId() + ": Stopped the video stream.");
+			logger.info("Stream " + getStreamId() + ": Stopped video thread.");
 		}		
 	}
 	
@@ -318,7 +317,7 @@ public class MovieStreamProvider extends MovieStream {
 		setPlaySound(false);
 		if (runAudio && hasAudioStream()) {
 			super.stop();
-			logger.info("StreamId " + getStreamId() + ": Trying to stop the audio stream.");
+			logger.info("Stream %d: Stopping audio thread.", getStreamId());
 			runAudio = false;
 			if (audio != null) {
 				audio.interrupt();
@@ -333,7 +332,7 @@ public class MovieStreamProvider extends MovieStream {
 					}
 				}
 			}
-			logger.info("StreamId " + getStreamId() + ": Stopped the audio stream.");
+			logger.info("Stream %d: Stopped audio thread.", getStreamId());
 		}
 	}
 	
@@ -397,7 +396,9 @@ public class MovieStreamProvider extends MovieStream {
 	}
 
 	/**
-	 * Only intended for testing in the main method.
+	 * Only for testing in the main method
+     *
+     * This is not part of the API
 	 */
 	private final static class MoviePlayer {
         MovieStreamProvider movieStreamProvider;
