@@ -676,6 +676,7 @@ public:
     void readNextFrame() {
         int frameFinished;
         bool reverseRefresh = true;
+        bool isSeekBefore = false; // Used to decide when to skip frames
         AVPacket packet;
         int delta = 0;
         bool initClock = true; // initial state
@@ -690,6 +691,7 @@ public:
                 pLogger->info("Status after seek.");
                 pImageBuffer->log(*pLogger, avgDeltaPts);
                 initClock = true; // Will set the next frame's to init
+                isSeekBefore = false;
             }
 
             // Toggle direction
@@ -708,6 +710,7 @@ public:
                 seekPts = limitToRange(lastWritePts + (1+delta_)*avgDeltaPts);
                 pLogger->info("Toggle to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta_);
                 doSeekBefore(seekPts); // no flushing
+                isSeekBefore = true;
             }
 
             // Find next frame in reverse playback
@@ -717,6 +720,7 @@ public:
                 pLogger->info("Jump to frame %I64d by %d frames.", seekPts/avgDeltaPts, delta);
                 doSeekBefore(seekPts); // no flushing
                 delta = 0;
+                isSeekBefore = true;
             }
 
             // Read frame
@@ -753,8 +757,8 @@ public:
                     // Set the presentation time stamp (PTS)
                     int64_t readPts = pImageFrame->pkt_pts;
 
-                    // Skip frames until we are at or beyond seekPts
-                    if (readPts >= seekPts) {
+                    // Only for seek before we may need to skip frames until we are at seekPts
+                    if (!isSeekBefore || readPts >= seekPts) {
 
                         // Get the next writable buffer. This may block and can be unblocked by flushing
                         AVFrame* pFrameBuffer;
