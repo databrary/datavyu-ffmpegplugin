@@ -3,18 +3,9 @@ package org.datavyu.plugins.ffmpegplayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.awt.Canvas;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Transparency;
+import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.image.BufferedImage;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
+import java.awt.image.*;
 import java.util.Hashtable;
 
 /**
@@ -25,8 +16,11 @@ import java.util.Hashtable;
  */
 public class VideoDisplayStreamListener implements StreamListener {
 
+    /** This is the threshold at which a resize occurs */
+    private static final float SCALE_RESIZE_THRESHOLD = 0.01f;
+
     /** The logger for this class */
-    private static Logger logger = LogManager.getLogger(VideoDisplayStreamListener.class);
+    private static Logger logger = LogManager.getFormatterLogger(VideoDisplayStreamListener.class);
 
 	/** The color component model */
 	private ComponentColorModel cm = null;
@@ -45,18 +39,21 @@ public class VideoDisplayStreamListener implements StreamListener {
 	
 	/** The color space for this the data provided */
 	private ColorSpace colorSpace = null;
+
+	/** The current scale of the play back image, e.g. 2.0f magnifies the original image by 2x */
+	private float scale = 1f;
 	
 	/** 
-	 * The stream has stopped and no updates to the image should be made 
+	 * The stream has doPaint = false no updates to the image should be made
 	 * We had to introduce this flag because the java event manager is lacking 
 	 * and another frame is displayed with considerable lag after the stopping 
 	 * occurred triggered by the java event manager which is not real-time.
 	 * 
-	 * The idea of stopped is that we prevent the java event manager from 
-	 * updating a frame that should not be displayed anymore because we stopped
+	 * The idea of doPaint is that we prevent the java event manager from
+	 * updating a frame that should not be displayed anymore because we doPaint
 	 * the this video listener. 
 	 */
-	private boolean stopped = true;
+	private boolean doPaint = false;
 	
 	/**
 	 * Initialized the image display and adds it to the supplied container with 
@@ -72,15 +69,15 @@ public class VideoDisplayStreamListener implements StreamListener {
 
 			@Override
         	public void paint(Graphics g) {
-				// If not stopped display the next image
-				if (!stopped) {
-	        		g.drawImage(image, 0, 0, null);					
+				// If not doPaint display the next image
+				if (doPaint) {
+	        		g.drawImage(image, 0, 0, null);
 				}
         	}
 			public void update(Graphics g){
 			    paint(g);
 			}
-        };
+		};
         if (constraints != null) {
         	container.add(imageDisplay, constraints);
         } else {
@@ -129,7 +126,7 @@ public class VideoDisplayStreamListener implements StreamListener {
 		DataBufferByte dataBuffer = new DataBufferByte(new byte[width*height*nChannel], width*height);
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
 		image = new BufferedImage(cm, raster, false, properties);
-        stopped = false; // display
+        doPaint = true; // display
 	}
 
 	@Override
@@ -143,20 +140,20 @@ public class VideoDisplayStreamListener implements StreamListener {
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
 		// Create writable raster
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
-		// Create buffered image
-		image = new BufferedImage(cm, raster, false, properties);
+		// Create buffered image and possibly resize it
+        image = resizeImage(new BufferedImage(cm, raster, false, properties), scale);
 		imageDisplay.repaint();
 	}
 
 	@Override
 	public void streamClosed() { 
-		stopped = true;
+		doPaint = false;
 	}
 	
 	@Override
 	public void streamStarted() {
 		// start displaying
-		stopped = false;
+		doPaint = true;
 		// display the current frame
 		imageDisplay.repaint();
 	}
@@ -164,6 +161,41 @@ public class VideoDisplayStreamListener implements StreamListener {
 	@Override
 	public void streamStopped() {
 		// stop displaying
-		stopped = true;
+		doPaint = false;
 	}
+
+    /**
+     * Resizes the buffered image and returns the resized image
+     * @param image
+     * @return
+     */
+	private BufferedImage resizeImage(BufferedImage image, float scale) {
+	    if (Math.abs(scale - 1.0f) > Math.ulp(1.0f)) {
+            int oldWidth = movieStream.getWidthOfView();
+            int oldHeight = movieStream.getHeightOfView();
+            int newWidth = (int) Math.floor(scale*oldWidth);
+            int newHeight = (int) Math.floor(scale*oldHeight);
+            Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = newImage.createGraphics();
+            g2d.drawImage(scaledImage, 0, 0, null);
+            g2d.dispose();
+            return newImage;
+        } else {
+	        return image;
+        }
+    }
+
+	@SuppressWarnings("unused") // API method
+	public void setScale(float newScale) {
+        // We rescale the image if the scale is strongly update the image
+        if (Math.abs(newScale - scale) > SCALE_RESIZE_THRESHOLD) {
+            logger.info("Changing from %2.3f scale to %2.3f.", scale, newScale);
+            scale = newScale;
+            image = resizeImage(image, newScale);
+            // Must set doPaint to true, it's fine not to set it back
+            doPaint = true;
+            imageDisplay.repaint();
+        }
+    }
 }

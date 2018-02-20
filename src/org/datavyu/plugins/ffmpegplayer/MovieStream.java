@@ -2,18 +2,24 @@ package org.datavyu.plugins.ffmpegplayer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.awt.image.ToolkitImage;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
+import java.awt.*;
 import java.awt.color.ColorSpace;
+import java.awt.image.*;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Hashtable;
+
+import static java.awt.Image.SCALE_FAST;
 
 public class MovieStream implements VideoStream, AudioStream {
 
-    /**
-     * The logger for this class
-     */
+    /** The logger for this class */
     private static Logger logger = LogManager.getFormatterLogger(MovieStream.class);
 
     /*
@@ -24,91 +30,56 @@ public class MovieStream implements VideoStream, AudioStream {
         System.loadLibrary("MovieStream");
     }
 
-    /**
-     * The stream id for this movie stream
-     */
+    /** The stream id for this movie stream */
     private int streamId;
 
-    /**
-     * The size of the audio buffer
-     */
+    /** The size of the audio buffer */
     private final static int AUDIO_BUFFER_SIZE = 64 * 1024; // 64 kB
 
-    /**
-     * The duration of the video/audio. This is initialized when opening the stream.
-     */
+    /** The duration of the video/audio. This is initialized when opening the stream */
     protected double duration = 0;
 
-    /**
-     * The width of the image in the stream. Changes with the file.
-     */
+    /** The width of the image in the stream. Changes with the file */
     private int widthOfStream = 0;
 
-    /**
-     * The height of the image in the stream. Changes with the file.
-     */
+    /** The height of the image in the stream. Changes with the file */
     private int heightOfStream = 0;
 
-    /**
-     * The width of the current view. Changes with the view.
-     */
+    /** The width of the current view. Changes with the view */
     private int widthOfView = 0;
 
-    /**
-     * The height of the current view. Changes with the view.
-     */
+    /** The height of the current view. Changes with the view */
     private int heightOfView = 0;
 
-    /**
-     * The number of channels. Initialized at opening.
-     */
+    /** The number of channels. Initialized at opening */
     private int nChannels = 0;
 
-    /**
-     * The start time of the audio/video streams. Initialized at opening.
-     */
+    /** The start time of the audio/video streams. Initialized at opening */
     private double startTime = 0;
 
-    /**
-     * The end time of the audio/video streams. Initialized at opening.
-     */
+    /** The end time of the audio/video streams. Initialized at opening */
     private double endTime = 0;
 
-    /**
-     * The byte buffer for the audio. Initialized at opening.
-     */
+    /** The byte buffer for the audio. Initialized at opening */
     private ByteBuffer audioBuffer = null;
 
-    /**
-     * The audio format of the audio stream. Initialized at opening.
-     */
+    /** The audio format of the audio stream. Initialized at opening */
     private AudioFormat audioFormat = null;
 
-    /**
-     * The color space of the image stream. Initialized at opening.
-     */
+    /** The color space of the image stream. Initialized at opening */
     private ColorSpace colorSpace = null;
 
-    /**
-     * Indicates that an image/audio stream is open.
-     */
+    /** Indicates that an image/audio stream is open */
     private boolean isOpen = false;
 
-    /**
-     * The play back speed.
-     */
+    /** The play back speed */
     protected float speed = 1f;
 
-    /**
-     * Indicates that we are in stepping.
-     */
-    protected boolean isStepping = false;
+    /** Indicates that we are in stepping */
+    private boolean isStepping = false;
 
-    /**
-     * Restore this speed when starting to play after stepping.
-     */
-    protected float speedBeforeStepping = 1f;
-
+    /** Restore this speed when starting to play after stepping */
+    private float speedBeforeStepping = 1f;
 
     /**
      * Get the average frame rate as defined by the video file.

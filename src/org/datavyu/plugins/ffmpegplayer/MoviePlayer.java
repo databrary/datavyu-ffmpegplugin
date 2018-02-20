@@ -28,7 +28,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	private static final long serialVersionUID = 5109839668203738974L;
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getLogger(MoviePlayer.class);
+    private static Logger logger = LogManager.getFormatterLogger(MoviePlayer.class);
 
 	/** The movie stream for this movie player */
 	private java.util.List<MovieStreamProvider> movieStreamProviders = new ArrayList<>();
@@ -411,11 +411,14 @@ public class MoviePlayer extends JPanel implements WindowListener {
                     frame.setVisible(false);
                 }
             } );
+            AudioSoundStreamListener audioListener = new AudioSoundStreamListener(movieStreamProvider);
+            VideoDisplayStreamListener displayListener = new VideoDisplayStreamListener(movieStreamProvider, frame,
+                    reqColorSpace);
+
             // Add the audio sound listener
-            movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
+            movieStreamProvider.addAudioStreamListener(audioListener);
             // Add video display
-            movieStreamProvider.addVideoStreamListener(new VideoDisplayStreamListener(movieStreamProvider, frame,
-                    reqColorSpace));
+            movieStreamProvider.addVideoStreamListener(displayListener);
 
             // TODO: This only works if we have only one video; otherwise we need to sync them through one clock
             movieStreamProvider.addVideoStreamListener(new SliderStreamListener(slider, movieStreamProvider));
@@ -426,6 +429,21 @@ public class MoviePlayer extends JPanel implements WindowListener {
             int height = movieStreamProvider.getHeightOfView();
             frame.setBounds(0, 0, width, height);
             frame.setVisible(true);
+            frame.addComponentListener(new ComponentListener() {
+                public void componentResized(ComponentEvent e) {
+                    float scale = ((float) frame.getHeight())/movieStreamProvider.getHeightOfView();
+                    displayListener.setScale(scale);
+                }
+
+                @Override
+                public void componentHidden(ComponentEvent e) { }
+
+                @Override
+                public void componentMoved(ComponentEvent e) { }
+
+                @Override
+                public void componentShown(ComponentEvent e) { }
+            });
         }
 
         MovieStreamProvider getMovieStreamProvider() {
