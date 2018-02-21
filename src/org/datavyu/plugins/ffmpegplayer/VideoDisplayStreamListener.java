@@ -10,7 +10,7 @@ import java.util.Hashtable;
 
 /**
  * This class implements a stream listener for the video data. It receives byte data from the provider, which is
- * typically a MovieStream, and displays it as image.
+ * typically a MovieStream, and displays it as originalImage.
  * 
  * @author Florian Raudies, Mountain View, CA.
  */
@@ -28,11 +28,14 @@ public class VideoDisplayStreamListener implements StreamListener {
 	/** The properties */
 	private Hashtable<String, String> properties = new Hashtable<>();
 	
-	/** The buffered image to display*/
-	private BufferedImage image = null;
+	/** This is the original image that is been read from the native side */
+	private BufferedImage originalImage = null;
+
+	/** This is the scaled image that is displayed */
+	private BufferedImage scaledImage = null;
 	
-	/** The canvas that we draw the image in */
-	private Canvas imageDisplay = null;
+	/** The canvas that we draw the originalImage in */
+	private Canvas canvas = null;
 	
 	/** The movie stream to get width, height, channel info */
 	private MovieStream movieStream = null;
@@ -40,11 +43,11 @@ public class VideoDisplayStreamListener implements StreamListener {
 	/** The color space for this the data provided */
 	private ColorSpace colorSpace = null;
 
-	/** The current scale of the play back image, e.g. 2.0f magnifies the original image by 2x */
+	/** The current scale of the play back originalImage, e.g. 2.0f magnifies the original originalImage by 2x */
 	private float scale = 1f;
 	
 	/** 
-	 * The stream has doPaint = false no updates to the image should be made
+	 * The stream has doPaint = false no updates to the originalImage should be made
 	 * We had to introduce this flag because the java event manager is lacking 
 	 * and another frame is displayed with considerable lag after the stopping 
 	 * occurred triggered by the java event manager which is not real-time.
@@ -56,7 +59,7 @@ public class VideoDisplayStreamListener implements StreamListener {
 	private boolean doPaint = false;
 	
 	/**
-	 * Initialized the image display and adds it to the supplied container with 
+	 * Initialized the originalImage display and adds it to the supplied container with
 	 * the supplied constraint. If the constraint is null it uses the add method
 	 * on the container without constraint.
 	 * 
@@ -64,14 +67,14 @@ public class VideoDisplayStreamListener implements StreamListener {
 	 * @param constraints The constraint used when adding
 	 */
 	private void initImageDisplay(Container container, Object constraints) {
-		imageDisplay = new Canvas() {
+		canvas = new Canvas() {
 			private static final long serialVersionUID = 5471924216942753555L;
 
 			@Override
         	public void paint(Graphics g) {
-				// If not doPaint display the next image
+				// If not doPaint display the next originalImage
 				if (doPaint) {
-	        		g.drawImage(image, 0, 0, null);
+	        		g.drawImage(scaledImage, 0, 0, null);
 				}
         	}
 			public void update(Graphics g){
@@ -79,9 +82,9 @@ public class VideoDisplayStreamListener implements StreamListener {
 			}
 		};
         if (constraints != null) {
-        	container.add(imageDisplay, constraints);
+        	container.add(canvas, constraints);
         } else {
-            container.add(imageDisplay);
+            container.add(canvas);
         }		
 	}
 
@@ -90,8 +93,8 @@ public class VideoDisplayStreamListener implements StreamListener {
 	 * to the container.
 	 * 
 	 * @param movieStream The underlying movie stream that provides data.
-	 * @param container The container we add the image display.
-	 * @param colorSpace The color space for the image data.
+	 * @param container The container we add the originalImage display.
+	 * @param colorSpace The color space for the originalImage data.
 	 */
 	public VideoDisplayStreamListener(MovieStream movieStream, 
 			Container container, ColorSpace colorSpace) {
@@ -103,9 +106,9 @@ public class VideoDisplayStreamListener implements StreamListener {
 	 * to the container using the constraint.
 	 * 
 	 * @param movieStream The underlying movie stream that provides data.
-	 * @param container The container we add the image display.
+	 * @param container The container we add the originalImage display.
 	 * @param constraints Constraint where to add this video display into the container.
-	 * @param colorSpace The color space for the image data.
+	 * @param colorSpace The color space for the originalImage data.
 	 */
 	public VideoDisplayStreamListener(MovieStream movieStream, 
 			Container container, Object constraints, ColorSpace colorSpace) {
@@ -122,11 +125,15 @@ public class VideoDisplayStreamListener implements StreamListener {
 		cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE);
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
-		// Initialize an empty image
+		// Initialize an empty originalImage
 		DataBufferByte dataBuffer = new DataBufferByte(new byte[width*height*nChannel], width*height);
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-		image = new BufferedImage(cm, raster, false, properties);
-        doPaint = true; // display
+		// Create the original image
+		originalImage = new BufferedImage(cm, raster, false, properties);
+		// Resize that image according to the scale
+		scaledImage = resizeImage(originalImage, scale);
+		// Paint the image
+        doPaint = true;
 	}
 
 	@Override
@@ -134,15 +141,18 @@ public class VideoDisplayStreamListener implements StreamListener {
 		// Width and height could have changed due to the view
 		int width = movieStream.getWidthOfView(); 
 		int height = movieStream.getHeightOfView();
-        logger.debug("Received " + data.length + " By for image: " + width + " x " + height + " pixels.");
+        logger.debug("Received " + data.length + " By for originalImage: " + width + " x " + height + " pixels.");
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		// Create data buffer
 		DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
 		// Create writable raster
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
-		// Create buffered image and possibly resize it
-        image = resizeImage(new BufferedImage(cm, raster, false, properties), scale);
-		imageDisplay.repaint();
+		// Create the original image
+        originalImage = new BufferedImage(cm, raster, false, properties);
+        // Resize the original image
+        scaledImage = resizeImage(originalImage, scale);
+        // Paint the image
+		canvas.repaint();
 	}
 
 	@Override
@@ -155,7 +165,7 @@ public class VideoDisplayStreamListener implements StreamListener {
 		// start displaying
 		doPaint = true;
 		// display the current frame
-		imageDisplay.repaint();
+		canvas.repaint();
 	}
 	
 	@Override
@@ -165,7 +175,7 @@ public class VideoDisplayStreamListener implements StreamListener {
 	}
 
     /**
-     * Resizes the buffered image and returns the resized image
+     * Resizes the buffered originalImage and returns the resized originalImage
      * @param image
      * @return
      */
@@ -182,20 +192,20 @@ public class VideoDisplayStreamListener implements StreamListener {
             g2d.dispose();
             return newImage;
         } else {
-	        return image;
+	        return originalImage;
         }
     }
 
 	@SuppressWarnings("unused") // API method
 	public void setScale(float newScale) {
-        // We rescale the image if the scale is strongly update the image
+        // We rescale the originalImage if the scale is strongly update the originalImage
         if (Math.abs(newScale - scale) > SCALE_RESIZE_THRESHOLD) {
             logger.info("Changing from %2.3f scale to %2.3f.", scale, newScale);
             scale = newScale;
-            image = resizeImage(image, newScale);
+            scaledImage = resizeImage(originalImage, newScale);
             // Must set doPaint to true, it's fine not to set it back
             doPaint = true;
-            imageDisplay.repaint();
+            canvas.repaint();
         }
     }
 }
