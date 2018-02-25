@@ -33,7 +33,6 @@ extern "C" {
 
 /*
 cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\MovieStream" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" /I"C:\Program Files\Java\jdk1.8.0_151\include" /I"C:\Program Files\Java\jdk1.8.0_151\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_151\lib\jawt.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswresample\swresample.lib"
-copy ..\..\MovieStream.* ..\..\lib\MovieStream.*
 */
 
 // Add flag /MDd for debugging information and flag /DEBUG:FULL to add all symbols to the PDB file

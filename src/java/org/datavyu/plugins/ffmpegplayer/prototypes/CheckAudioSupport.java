@@ -1,3 +1,5 @@
+package org.datavyu.plugins.ffmpegplayer.prototypes;
+
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;

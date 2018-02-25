@@ -1,3 +1,5 @@
+package org.datavyu.plugins.ffmpegplayer.prototypes;
+
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.WindowAdapter;

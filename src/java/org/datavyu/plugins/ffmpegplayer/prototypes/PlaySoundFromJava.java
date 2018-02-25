@@ -1,3 +1,5 @@
+package org.datavyu.plugins.ffmpegplayer.prototypes;
+
 import java.io.File;
 import java.io.IOException;
 

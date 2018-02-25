@@ -1,3 +1,4 @@
+package org.datavyu.plugins.ffmpegplayer.prototypes;
 
 import java.nio.ByteBuffer;
 

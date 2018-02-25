@@ -7,7 +7,7 @@ This repo holds the native c++/java code that composes the ffmpeg plugin. The fi
     org_datavyu_plugins_ffmpegplayer_MovieStream.cpp
     org_datavyu_plugins_ffmpegplayer_MovieStream.h
 
-The other source code files contain prototypes for video playback, audio playback, etc.
+The other source code files contain org.datavyu.plugins.ffmpegplayer.prototypes for video playback, audio playback, etc.
 
 The compile instructions for the plugin are in the cpp file.
 

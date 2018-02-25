@@ -6,7 +6,7 @@
 
     <groupId>datavyu</groupId>
     <artifactId>ffmpeg-plugin</artifactId>
-    <version>0.16</version>
+    <version>0.17-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <repositories>
@@ -18,19 +18,18 @@
     </repositories>
 
     <build>
+        <sourceDirectory>src/java</sourceDirectory>
+
         <resources>
             <resource>
-                <directory>lib</directory>
+                <directory>./</directory>
                 <includes>
                     <include>MovieStream.dll</include>
                 </includes>
             </resource>
         </resources>
 
-        <sourceDirectory>src</sourceDirectory>
-
         <plugins>
-
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
@@ -39,6 +38,11 @@
                     <optimize>true</optimize>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <!-- Note all paths start off from sourceDirectory -->
+                    <excludes>
+                        <exclude>org/datavyu/plugins/ffmpegplayer/prototypes/*.java</exclude>
+                        <exclude>org/datavyu/plugins/benchmark/*.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 
@@ -51,6 +55,12 @@
                             <Automatic-Module-Name>org.datavyu.plugins.ffmpegplayer</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
+                    <!-- Note, if you want to compile a source but not include it, exclude it here -->
+                    <!--
+                    <excludes>
+                        <exclude>org/datavyu/plugins/ffmpegplayer/prototypes</exclude>
+                    </excludes>
+                    -->
                 </configuration>
             </plugin>
         </plugins>
