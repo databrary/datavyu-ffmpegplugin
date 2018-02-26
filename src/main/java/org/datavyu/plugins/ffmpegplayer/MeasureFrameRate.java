@@ -25,7 +25,7 @@ public class MeasureFrameRate {
         // Add the audio sound listener
         movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
         // Add video display
-        movieStreamProvider.addVideoStreamListener(new VideoDisplayStreamListener(movieStreamProvider, frame,
+        movieStreamProvider.addVideoStreamListener(new VideoStreamListenerContainer(movieStreamProvider, frame,
                 reqColorSpace));
         // Open the movie stream provider
         movieStreamProvider.open(movieFileName, "0.0.0.1", reqColorSpace, reqAudioFormat);

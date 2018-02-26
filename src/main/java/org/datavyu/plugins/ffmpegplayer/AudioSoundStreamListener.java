@@ -32,7 +32,7 @@ public class AudioSoundStreamListener implements StreamListener {
 	 * 
 	 * @param movieStream The underlying movie stream.
 	 */
-	AudioSoundStreamListener(MovieStream movieStream) {
+	public AudioSoundStreamListener(MovieStream movieStream) {
 		this.movieStream = movieStream;
 	}
 

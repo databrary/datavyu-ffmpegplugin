@@ -1,10 +1,14 @@
-package org.datavyu.plugins.ffmpegplayer;
+package org.datavyu.plugins.ffmpegplayer.examples;
 
 import javafx.util.Pair;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
+import org.datavyu.plugins.ffmpegplayer.MovieStreamProvider;
+import org.datavyu.plugins.ffmpegplayer.SliderStreamListener;
+import org.datavyu.plugins.ffmpegplayer.VideoStreamListenerContainer;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -22,13 +26,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 
-public class MoviePlayer extends JPanel implements WindowListener {
+public class MoviePlayerExample extends JPanel implements WindowListener {
 
 	/** Identifier for object serialization */
 	private static final long serialVersionUID = 5109839668203738974L;
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(MoviePlayer.class);
+    private static Logger logger = LogManager.getFormatterLogger(MoviePlayerExample.class);
 
 	/** The movie stream for this movie player */
 	private java.util.List<MovieStreamProvider> movieStreamProviders = new ArrayList<>();
@@ -42,7 +46,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	/** A slider displays the current frame and the user can drag the slider to switch to a different frame. */
 	private JSlider slider;
 
-	public MoviePlayer() {
+	public MoviePlayerExample() {
 		setLayout(new BorderLayout());
 
 		JToolBar tools = new JToolBar();
@@ -157,7 +161,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
         // Create and set up the window
         JFrame frame = new JFrame("Video Player");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        MoviePlayer player = new MoviePlayer();
+        MoviePlayerExample player = new MoviePlayerExample();
         player.addWindowListener(frame);
         // Add content to the window
         frame.add(player, BorderLayout.CENTER);
@@ -412,7 +416,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
                 }
             } );
             AudioSoundStreamListener audioListener = new AudioSoundStreamListener(movieStreamProvider);
-            VideoDisplayStreamListener displayListener = new VideoDisplayStreamListener(movieStreamProvider, frame,
+            VideoStreamListenerContainer displayListener = new VideoStreamListenerContainer(movieStreamProvider, frame,
                     reqColorSpace);
 
             // Add the audio sound listener
@@ -470,7 +474,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 		public void actionPerformed(ActionEvent e) {
 
 			// Show the file chooser.
-	        int val = fileChooser.showDialog(MoviePlayer.this, "Open");
+	        int val = fileChooser.showDialog(MoviePlayerExample.this, "Open");
 
 	        // Process the results.
 	        if (val == JFileChooser.APPROVE_OPTION) {

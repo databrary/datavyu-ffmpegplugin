@@ -14,13 +14,13 @@ import java.util.Hashtable;
  * 
  * @author Florian Raudies, Mountain View, CA.
  */
-public class VideoDisplayStreamListener implements StreamListener {
+public class VideoStreamListenerContainer implements StreamListener {
 
     /** This is the threshold at which a resize occurs */
     private static final float SCALE_RESIZE_THRESHOLD = 0.01f;
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(VideoDisplayStreamListener.class);
+    private static Logger logger = LogManager.getFormatterLogger(VideoStreamListenerContainer.class);
 
 	/** The color component model */
 	private ComponentColorModel cm = null;
@@ -96,8 +96,8 @@ public class VideoDisplayStreamListener implements StreamListener {
 	 * @param container The container we add the originalImage display.
 	 * @param colorSpace The color space for the originalImage data.
 	 */
-	public VideoDisplayStreamListener(MovieStream movieStream, 
-			Container container, ColorSpace colorSpace) {
+	public VideoStreamListenerContainer(MovieStream movieStream,
+										Container container, ColorSpace colorSpace) {
 		this(movieStream, container, null, colorSpace);
 	}
 	
@@ -110,8 +110,8 @@ public class VideoDisplayStreamListener implements StreamListener {
 	 * @param constraints Constraint where to add this video display into the container.
 	 * @param colorSpace The color space for the originalImage data.
 	 */
-	public VideoDisplayStreamListener(MovieStream movieStream, 
-			Container container, Object constraints, ColorSpace colorSpace) {
+	public VideoStreamListenerContainer(MovieStream movieStream,
+										Container container, Object constraints, ColorSpace colorSpace) {
 		this.movieStream = movieStream;
 		this.colorSpace = colorSpace;
 		initImageDisplay(container, constraints);

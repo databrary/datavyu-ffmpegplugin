@@ -92,7 +92,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * 
 	 * @return True if an image frame was consumed; otherwise false.
 	 */
-	boolean nextImageFrame() {
+	public boolean nextImageFrame() {
 		// Allocate space for a byte buffer -- have to re-allocate because the width or the height might change
 		byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
 		// Read the next image frame and we read a frame
@@ -131,7 +131,7 @@ public class MovieStreamProvider extends MovieStream {
 	/**
 	 * Creates a movie stream provider.
 	 */
-	MovieStreamProvider() {
+	public MovieStreamProvider() {
 		audioListeners = new LinkedList<>();
 		videoListeners = new LinkedList<>();
 		runAudio = false;
@@ -207,7 +207,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * This is used to enable stepping when not using the internal video player
 	 * thread that pulls and displays images.
 	 */
-	void startVideoListeners() {
+	public void startVideoListeners() {
 		synchronized (videoListeners) {
 			for (StreamListener listener : videoListeners) {
 				listener.streamStarted();
@@ -351,7 +351,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * 
 	 * @param streamListener The stream listener that is added.
 	 */
-	void addAudioStreamListener(StreamListener streamListener) {
+	public void addAudioStreamListener(StreamListener streamListener) {
 		// A lock on the list of audio listeners to avoid concurrent access with the thread that is feeding data
 		synchronized (audioListeners) {
 			// Add the listener to the list
@@ -370,7 +370,7 @@ public class MovieStreamProvider extends MovieStream {
 	 * 
 	 * @param streamListener The stream listener that is added.
 	 */
-	void addVideoStreamListener(StreamListener streamListener) {
+	public void addVideoStreamListener(StreamListener streamListener) {
 		// A lock on the list of video listeners to avoid concurrent access with the thread that is feeding data
 		synchronized (videoListeners) {
 			// Add the listener to the list
@@ -426,7 +426,7 @@ public class MovieStreamProvider extends MovieStream {
             // Add the audio sound listener
             movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
             // Add video display
-            movieStreamProvider.addVideoStreamListener(new VideoDisplayStreamListener(movieStreamProvider, frame,
+            movieStreamProvider.addVideoStreamListener(new VideoStreamListenerContainer(movieStreamProvider, frame,
                     reqColorSpace));
             // Open the movie stream provider
             movieStreamProvider.open(movieFileName, version, reqColorSpace, reqAudioFormat);

@@ -32,7 +32,7 @@ extern "C" {
 // To create the header file run 'javah -d native org.datavyu.plugins.ffmpegplayer.MovieStream' from the directory 'src'
 
 /*
-cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\MovieStream" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" /I"C:\Program Files\Java\jdk1.8.0_151\include" /I"C:\Program Files\Java\jdk1.8.0_151\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_151\lib\jawt.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswresample\swresample.lib"
+cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\..\MovieStream" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" /I"C:\Program Files\Java\jdk1.8.0_151\include" /I"C:\Program Files\Java\jdk1.8.0_151\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_151\lib\jawt.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswresample\swresample.lib"
 */
 
 // Add flag /MDd for debugging information and flag /DEBUG:FULL to add all symbols to the PDB file
@@ -1325,8 +1325,8 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
     movieStream->pLogger = new FileLogger(logFileName);
-    movieStream->pLogger = new StreamLogger(&std::cerr);
-	//movieStream->pLogger->info("Version: %s", version);
+    //movieStream->pLogger = new StreamLogger(&std::cerr);
+	movieStream->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs
 	av_register_all();
@@ -1539,7 +1539,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		} else {
 			movieStream->pAudioOutCodecCtx->channels = movieStream->pAudioInCodecCtx->channels;
 			movieStream->pAudioOutCodecCtx->channel_layout = movieStream->pAudioInCodecCtx->channel_layout;
-			audioFormat.channels = movieStream->pAudioInCodecCtx->channels;
+			//audioFormat.channels = movieStream->pAudioInCodecCtx->channels;
 		}
 
 		// Set sample rate, either from input jAudioFormat or from input codec
@@ -1547,7 +1547,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 			movieStream->pAudioOutCodecCtx->sample_rate = (int) audioFormat.sampleRate;
 		} else {
 			movieStream->pAudioOutCodecCtx->sample_rate = movieStream->pAudioInCodecCtx->sample_rate;
-			audioFormat.sampleRate = movieStream->pAudioInCodecCtx->sample_rate;
+			//audioFormat.sampleRate = movieStream->pAudioInCodecCtx->sample_rate;
 		}
 
 		// Set bit rate
@@ -1555,11 +1555,11 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 			movieStream->pAudioOutCodecCtx->bit_rate = (int) audioFormat.frameRate;
 		} else {
 			movieStream->pAudioOutCodecCtx->bit_rate = movieStream->pAudioInCodecCtx->bit_rate;
-			audioFormat.sampleRate = movieStream->pAudioInCodecCtx->bit_rate;
+			//audioFormat.sampleRate = movieStream->pAudioInCodecCtx->bit_rate;
 		}
 
 		// Set the frame size
-		audioFormat.frameSize = av_get_bytes_per_sample(sampleFormat);
+		//audioFormat.frameSize = av_get_bytes_per_sample(sampleFormat);
 
 		// Open the encoder for the audio stream to use it later.
 		if ((errNo = avcodec_open2(movieStream->pAudioOutCodecCtx, aOutCodec, NULL)) < 0) {
@@ -1582,14 +1582,16 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		}
 
 		// bits_per_coded_sample is only set after opening the audio codec context
-		audioFormat.sampleSizeInBits = movieStream->pAudioOutCodecCtx->bits_per_coded_sample;
+		//audioFormat.sampleSizeInBits = movieStream->pAudioOutCodecCtx->bits_per_coded_sample;
 
+        /*
 		if ((errNo = setAudioFormat(env, jAudioFormat, audioFormat, movieStream->pLogger)) < 0) {
 		    // TODO: Add error message
 			returnValues[0] = errNo;
 			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 			return returnArray;
 		}
+		*/
 	}
 
 	movieStream->playSound = movieStream->hasAudioStream();
