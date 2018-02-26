@@ -45,6 +45,11 @@ public class VideoStreamListenerStage implements StreamListener {
         Scene scene = new Scene(root);
         root.getChildren().add(imageView);
         stage.setScene(scene);
+
+        // Make sure the rescaling happens for the image
+        imageView.fitWidthProperty().bind(scene.widthProperty());
+        imageView.fitHeightProperty().bind(scene.heightProperty());
+        //imageView.viewportProperty().bind(scene);
     }
 
     @Override
@@ -60,7 +65,7 @@ public class VideoStreamListenerStage implements StreamListener {
         WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
         writableImage = SwingFXUtils.toFXImage(new BufferedImage(cm, raster, false, properties), null);
         imageView.setImage(writableImage);
-        stage.show();
+
     }
 
     @Override
@@ -77,7 +82,6 @@ public class VideoStreamListenerStage implements StreamListener {
         // Create the original image
         imageView.setImage(SwingFXUtils.toFXImage(new BufferedImage(cm, raster, false, properties),
                 writableImage));
-        stage.show();
     }
 
     @Override

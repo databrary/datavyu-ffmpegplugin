@@ -18,10 +18,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlaybackSpeed {
+public class TestPlaybackRateScale {
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(PlaybackSpeed.class);
+    private static Logger logger = LogManager.getFormatterLogger(TestPlaybackRateScale.class);
 
     /** Resource folder for video files used during testing */
     private static final String TEST_RESOURCE_PATH = "test/resources";
@@ -84,12 +84,14 @@ public class PlaybackSpeed {
 
     private List<MoviePlayer.PlayerType> moviePlayerTypes = new ArrayList<MoviePlayer.PlayerType>(){{
         add(MoviePlayer.PlayerType.AWT_TYPE);
+        // TODO: Fix the JFX type player
+        //add(MoviePlayer.PlayerType.JFX_TYPE);
     }};
 
     private List<Pair<Float, Float>> offsetAndRates = new ArrayList<Pair<Float, Float>>(){{
         // TODO: Work on correct conditions for reverse playback
         //add(new Pair<>(2f*60, -1f));
-        add(new Pair<>(0f, 4f));
+        //add(new Pair<>(0f, 4f));
     }};
 
     private List<Float> playbackScale = new ArrayList<Float>() {{

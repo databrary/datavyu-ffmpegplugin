@@ -1,5 +1,7 @@
 package org.datavyu.benchmark;
 
+
+import javafx.application.Application;
 import javafx.stage.Stage;
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 import org.datavyu.plugins.ffmpegplayer.MovieStreamProvider;
@@ -9,7 +11,7 @@ import javax.sound.sampled.AudioFormat;
 import java.awt.color.ColorSpace;
 import java.io.IOException;
 
-public class MoviePlayerStage extends Stage implements MoviePlayer {
+public class MoviePlayerStage extends Application implements MoviePlayer {
 
     private MovieStreamProvider movieStreamProvider = new MovieStreamProvider();
 
@@ -17,13 +19,28 @@ public class MoviePlayerStage extends Stage implements MoviePlayer {
 
     private AudioFormat audioFormat;
 
+    private Stage stage;
+
+    public MoviePlayerStage() {
+        this(ColorSpace.getInstance(ColorSpace.CS_sRGB), AudioSoundStreamListener.getNewMonoFormat());
+    }
+
     public MoviePlayerStage(ColorSpace colorSpace, AudioFormat audioFormat) {
         this.colorSpace = colorSpace;
         this.audioFormat = audioFormat;
+    }
 
+    @Override
+    public void init() throws Exception {
+        super.init();
         movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
-        movieStreamProvider.addVideoStreamListener(new VideoStreamListenerStage(movieStreamProvider, this,
-                colorSpace));
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        stage = primaryStage;
+        movieStreamProvider.addVideoStreamListener(new VideoStreamListenerStage(movieStreamProvider, stage, colorSpace));
+        stage.show();
     }
 
     @Override
@@ -33,7 +50,8 @@ public class MoviePlayerStage extends Stage implements MoviePlayer {
 
     @Override
     public void setScale(float scale) {
-
+        stage.setMaxWidth(scale * movieStreamProvider.getWidthOfView());
+        stage.setMaxHeight(scale * movieStreamProvider.getHeightOfView());
     }
 
     @Override
@@ -44,6 +62,7 @@ public class MoviePlayerStage extends Stage implements MoviePlayer {
     @Override
     public void start() {
         movieStreamProvider.start();
+        launch(new String[]{});
     }
 
     @Override
