@@ -1,8 +1,8 @@
 package org.datavyu.benchmark;
 
-
-import javafx.application.Application;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 import org.datavyu.plugins.ffmpegplayer.MovieStreamProvider;
 import org.datavyu.plugins.ffmpegplayer.VideoStreamListenerStage;
@@ -11,7 +11,11 @@ import javax.sound.sampled.AudioFormat;
 import java.awt.color.ColorSpace;
 import java.io.IOException;
 
-public class MoviePlayerStage extends Application implements MoviePlayer {
+public class MoviePlayerStage implements MoviePlayer {
+
+
+    /** The logger for this class */
+    private static Logger logger = LogManager.getFormatterLogger(MoviePlayerStage.class);
 
     private MovieStreamProvider movieStreamProvider = new MovieStreamProvider();
 
@@ -19,28 +23,14 @@ public class MoviePlayerStage extends Application implements MoviePlayer {
 
     private AudioFormat audioFormat;
 
-    private Stage stage;
-
-    public MoviePlayerStage() {
-        this(ColorSpace.getInstance(ColorSpace.CS_sRGB), AudioSoundStreamListener.getNewMonoFormat());
-    }
+    VideoStreamListenerStage videoStreamListenerStage;
 
     public MoviePlayerStage(ColorSpace colorSpace, AudioFormat audioFormat) {
         this.colorSpace = colorSpace;
         this.audioFormat = audioFormat;
-    }
-
-    @Override
-    public void init() throws Exception {
-        super.init();
+        this.videoStreamListenerStage = new VideoStreamListenerStage(movieStreamProvider, colorSpace);
         movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        stage = primaryStage;
-        movieStreamProvider.addVideoStreamListener(new VideoStreamListenerStage(movieStreamProvider, stage, colorSpace));
-        stage.show();
+        movieStreamProvider.addVideoStreamListener(videoStreamListenerStage);
     }
 
     @Override
@@ -50,8 +40,12 @@ public class MoviePlayerStage extends Application implements MoviePlayer {
 
     @Override
     public void setScale(float scale) {
-        stage.setMaxWidth(scale * movieStreamProvider.getWidthOfView());
-        stage.setMaxHeight(scale * movieStreamProvider.getHeightOfView());
+/*
+        if (stage != null) {
+            videoStreamListenerStage.s(scale * movieStreamProvider.getWidthOfView());
+            videoStreamListenerStage.setMaxHeight(scale * movieStreamProvider.getHeightOfView());
+        }
+*/
     }
 
     @Override
@@ -61,8 +55,13 @@ public class MoviePlayerStage extends Application implements MoviePlayer {
 
     @Override
     public void start() {
+        new Thread() {
+            @Override
+            public void run() {
+                videoStreamListenerStage.start(new Stage());
+            }
+        }.start();
         movieStreamProvider.start();
-        launch(new String[]{});
     }
 
     @Override

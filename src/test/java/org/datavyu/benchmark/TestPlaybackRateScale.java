@@ -83,9 +83,9 @@ public class TestPlaybackRateScale {
     private List<String> movieFiles = new ArrayList<>();
 
     private List<MoviePlayer.PlayerType> moviePlayerTypes = new ArrayList<MoviePlayer.PlayerType>(){{
-        add(MoviePlayer.PlayerType.AWT_TYPE);
+        //add(MoviePlayer.PlayerType.AWT_TYPE);
         // TODO: Fix the JFX type player
-        //add(MoviePlayer.PlayerType.JFX_TYPE);
+        add(MoviePlayer.PlayerType.JFX_TYPE);
     }};
 
     private List<Pair<Float, Float>> offsetAndRates = new ArrayList<Pair<Float, Float>>(){{
@@ -95,7 +95,7 @@ public class TestPlaybackRateScale {
     }};
 
     private List<Float> playbackScale = new ArrayList<Float>() {{
-        add(.25f);
+        //add(.25f);
         add(2f);
     }};
 
@@ -105,7 +105,7 @@ public class TestPlaybackRateScale {
 
     @BeforeMethod
     public void setup() throws IOException {
-        Configurator.setRootLevel(Level.OFF);
+        Configurator.setRootLevel(Level.INFO);
         movieFiles.add(copyToLocalTmp(new URL(TEST_MOVIE_PATH)));
     }
 
