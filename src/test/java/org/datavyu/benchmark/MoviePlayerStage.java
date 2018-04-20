@@ -11,6 +11,9 @@ import javax.sound.sampled.AudioFormat;
 import java.awt.color.ColorSpace;
 import java.io.IOException;
 
+/**
+ * Note this is one suggestion
+ */
 public class MoviePlayerStage implements MoviePlayer {
 
 
