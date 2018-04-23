@@ -5,10 +5,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
-import org.datavyu.plugins.ffmpegplayer.MovieStreamProvider;
-import org.datavyu.plugins.ffmpegplayer.SliderStreamListener;
-import org.datavyu.plugins.ffmpegplayer.VideoStreamListenerContainer;
+import org.datavyu.plugins.ffmpegplayer.*;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -418,11 +415,14 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
             AudioSoundStreamListener audioListener = new AudioSoundStreamListener(movieStreamProvider);
             VideoStreamListenerContainer displayListener = new VideoStreamListenerContainer(movieStreamProvider, frame,
                     reqColorSpace);
+            AudioVisualizer audioVisualizer = new AudioVisualizer(movieStreamProvider);
 
             // Add the audio sound listener
             movieStreamProvider.addAudioStreamListener(audioListener);
             // Add video display
             movieStreamProvider.addVideoStreamListener(displayListener);
+            // Add audio visualizer
+            movieStreamProvider.addAudioStreamListener(audioVisualizer);
 
             // TODO: This only works if we have only one video; otherwise we need to sync them through one clock
             movieStreamProvider.addVideoStreamListener(new SliderStreamListener(slider, movieStreamProvider));
