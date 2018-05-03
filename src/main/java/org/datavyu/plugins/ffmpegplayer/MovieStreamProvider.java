@@ -94,7 +94,7 @@ public class MovieStreamProvider extends MovieStream {
 	 */
 	public boolean nextImageFrame() {
 		// Allocate space for a byte buffer -- have to re-allocate because the width or the height might change
-		byte[] buffer = new byte[getWidthOfView()*getHeightOfView()*getNumberOfColorChannels()];
+		byte[] buffer = new byte[getWidth()*getHeight()*getNumberOfColorChannels()];
 		// Read the next image frame and we read a frame
 		int nFrame = readImageFrame(buffer);
 		this.nFrame += nFrame;
@@ -163,7 +163,6 @@ public class MovieStreamProvider extends MovieStream {
 	 * audio listeners. Thread safe.
 	 */
 	private void startAudio() {
-		setPlaySound(true);
 		if (hasAudioStream() && !runAudio) {
 			super.start();
 		    logger.info("Stream %d: Starting audio thread.",getStreamId());
@@ -267,22 +266,6 @@ public class MovieStreamProvider extends MovieStream {
         }
     }
 
-    @Override
-    public void stepForward() {
-        // Enables display without starting the video thread
-        startVideoListeners();
-        super.stepForward(); // Calls step that also resets the timer for the sync of the clock
-        nextImageFrame();
-    }
-
-    @Override
-    public void stepBackward() {
-        // Enables display without starting the video thread
-        startVideoListeners();
-        super.stepBackward(); // Calls step that also resets the timer for the sync of the clock
-        nextImageFrame();
-    }
-
 	/**
 	 * Stops playing the video if a video is running and there is a video 
 	 * stream.  Calls stream stopped on all video listeners.
@@ -314,7 +297,6 @@ public class MovieStreamProvider extends MovieStream {
      * listeners.
 	 */
 	private void stopAudio() {
-		setPlaySound(false);
 		if (runAudio && hasAudioStream()) {
 			super.stop();
 			logger.info("Stream %d: Stopping audio thread.", getStreamId());
@@ -431,8 +413,8 @@ public class MovieStreamProvider extends MovieStream {
             // Open the movie stream provider
             movieStreamProvider.open(movieFileName, version, reqColorSpace, reqAudioFormat);
             movieStreamProvider.start();
-            int width = movieStreamProvider.getWidthOfView();
-            int height = movieStreamProvider.getHeightOfView();
+            int width = movieStreamProvider.getWidth();
+            int height = movieStreamProvider.getHeight();
             frame.setBounds(0, 0, width, height);
             frame.setVisible(true);
         }

@@ -63,8 +63,6 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 		JButton rewind = new JButton("Rewind");
 		JButton stepBackward = new JButton("<");
 		JButton stepForward = new JButton(">");
-		JButton view = new JButton("View");
-		JButton resetView = new JButton("ResetView");
 
 		tools.add(open);
 		tools.add(play);
@@ -72,8 +70,6 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 		tools.add(rewind);
 		tools.add(stepBackward);
 		tools.add(stepForward);
-		tools.add(view);
-		tools.add(resetView);
 
 		open.addActionListener(new OpenFileSelection());
 		play.addActionListener(new PlaySelection());
@@ -82,8 +78,6 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 		stepBackward.addActionListener(new StepBackwardSelection());
 		stepForward.addActionListener(new StepForwardSelection());
 		slider.addChangeListener(new SliderSelection());
-		view.addActionListener(new ViewSelection());
-		resetView.addActionListener(new ResetViewSelection());
 
 		// Speed selection.
         SpeedValueSelection speedValueSelect = new SpeedValueSelection();
@@ -300,18 +294,14 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 	class StepBackwardSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-				movieStreamProvider.stepBackward();
-			}
+		    // TODO: Implement this by jumping -50 ms back
 		}
 	}
 
 	class StepForwardSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                movieStreamProvider.stepForward();
-            }
+		    // TODO: Implement this by jumping forward by
 		}
 	}
 
@@ -346,43 +336,6 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
             if (slider.getValueIsAdjusting()) {
                 for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
                     movieStreamProvider.stop();
-                }
-            }
-		}
-	}
-
-	class ViewSelection implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                try {
-                    // Stop the player before changing the window
-                    movieStreamProvider.stop();
-                    movieStreamProvider.setView(70, 50, 300, 200);
-                } catch (IndexOutOfBoundsException iob) {
-                    System.err.println("Could not set view: " + iob.getMessage());
-                } finally {
-                    movieStreamProvider.start();
-                }
-            }
-		}
-	}
-
-	class ResetViewSelection implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-            for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                try {
-                    // Stop the player before changing the window
-                    movieStreamProvider.stop();
-                    int w = movieStreamProvider.getWidthOfStream();
-                    int h = movieStreamProvider.getHeightOfStream();
-                    movieStreamProvider.setView(0, 0, w, h);
-                } catch (IndexOutOfBoundsException iob) {
-                    System.err.println("Could not reset view: " + iob.getMessage());
-                    iob.printStackTrace();
-                } finally {
-                    movieStreamProvider.start();
                 }
             }
 		}
@@ -429,13 +382,13 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 
             // Open the movie stream provider
             movieStreamProvider.open(movieFileName, version, reqColorSpace, reqAudioFormat);
-            int width = movieStreamProvider.getWidthOfView();
-            int height = movieStreamProvider.getHeightOfView();
+            int width = movieStreamProvider.getWidth();
+            int height = movieStreamProvider.getHeight();
             frame.setBounds(0, 0, width, height);
             frame.setVisible(true);
             frame.addComponentListener(new ComponentListener() {
                 public void componentResized(ComponentEvent e) {
-                    float scale = ((float) frame.getHeight())/movieStreamProvider.getHeightOfView();
+                    float scale = ((float) frame.getHeight())/movieStreamProvider.getHeight();
                     displayListener.setScale(scale);
                 }
 

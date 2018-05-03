@@ -12,7 +12,6 @@ public interface MoviePlayer {
     void setRate(float rate);
     void start();
     void stop();
-    void stepForward();
     void openFile(String file, String version) throws IOException;
     void closeFile() throws IOException;
     double getTimeInSeconds();

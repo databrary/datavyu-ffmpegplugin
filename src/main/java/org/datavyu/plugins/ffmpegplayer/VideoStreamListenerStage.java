@@ -48,8 +48,8 @@ public class VideoStreamListenerStage extends Application implements StreamListe
 
     @Override
     public void streamOpened() {
-        int width = movieStream.getWidthOfView();
-        int height = movieStream.getHeightOfView();
+        int width = movieStream.getWidth();
+        int height = movieStream.getHeight();
         int nChannel = movieStream.getNumberOfColorChannels();
         cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
                 DataBuffer.TYPE_BYTE);
@@ -64,8 +64,8 @@ public class VideoStreamListenerStage extends Application implements StreamListe
     @Override
     public void streamData(byte[] data) {
         // Width and height could have changed due to the view
-        int width = movieStream.getWidthOfView();
-        int height = movieStream.getHeightOfView();
+        int width = movieStream.getWidth();
+        int height = movieStream.getHeight();
         logger.debug("Received " + data.length + " By for originalImage: " + width + " x " + height + " pixels.");
         SampleModel sm = cm.createCompatibleSampleModel(width, height);
         // Create data buffer

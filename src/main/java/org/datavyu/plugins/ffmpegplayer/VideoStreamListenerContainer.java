@@ -119,8 +119,8 @@ public class VideoStreamListenerContainer implements StreamListener {
 
 	@Override
 	public void streamOpened() {
-		int width = movieStream.getWidthOfView();
-		int height = movieStream.getHeightOfView();		
+		int width = movieStream.getWidth();
+		int height = movieStream.getHeight();
 		int nChannel = movieStream.getNumberOfColorChannels();
 		cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE);
@@ -139,8 +139,8 @@ public class VideoStreamListenerContainer implements StreamListener {
 	@Override
 	public void streamData(byte[] data) {
 		// Width and height could have changed due to the view
-		int width = movieStream.getWidthOfView(); 
-		int height = movieStream.getHeightOfView();
+		int width = movieStream.getWidth();
+		int height = movieStream.getHeight();
         logger.debug("Received " + data.length + " By for originalImage: " + width + " x " + height + " pixels.");
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		// Create data buffer
@@ -181,8 +181,8 @@ public class VideoStreamListenerContainer implements StreamListener {
      */
 	private BufferedImage resizeImage(BufferedImage image, float scale) {
 	    if (Math.abs(scale - 1.0f) > Math.ulp(1.0f)) {
-            int oldWidth = movieStream.getWidthOfView();
-            int oldHeight = movieStream.getHeightOfView();
+            int oldWidth = movieStream.getWidth();
+            int oldHeight = movieStream.getHeight();
             int newWidth = (int) Math.floor(scale*oldWidth);
             int newHeight = (int) Math.floor(scale*oldHeight);
             Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);

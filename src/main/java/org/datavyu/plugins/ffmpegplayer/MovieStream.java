@@ -36,20 +36,14 @@ public class MovieStream implements VideoStream, AudioStream {
     /** The size of the audio buffer */
     private final static int AUDIO_BUFFER_SIZE = 64 * 1024; // 64 kB
 
-    /** The duration of the video/audio. This is initialized when opening the stream */
+    /** The duration of the video/audio. Initialized at opening */
     protected double duration = 0;
 
-    /** The width of the image in the stream. Changes with the file */
-    private int widthOfStream = 0;
+    /** The width of the image in the stream */
+    private int width = 0;
 
-    /** The height of the image in the stream. Changes with the file */
-    private int heightOfStream = 0;
-
-    /** The width of the current view. Changes with the view */
-    private int widthOfView = 0;
-
-    /** The height of the current view. Changes with the view */
-    private int heightOfView = 0;
+    /** The height of the image in the stream */
+    private int height = 0;
 
     /** The number of channels. Initialized at opening */
     private int nChannels = 0;
@@ -74,12 +68,6 @@ public class MovieStream implements VideoStream, AudioStream {
 
     /** The play back speed */
     protected float speed = 1f;
-
-    /** Indicates that we are in stepping */
-    private boolean isStepping = false;
-
-    /** Restore this speed when starting to play after stepping */
-    private float speedBeforeStepping = 1f;
 
     /**
      * Get the average frame rate as defined by the video file.
@@ -201,12 +189,7 @@ public class MovieStream implements VideoStream, AudioStream {
 
     @Override
     public void start() {
-        // If we were stepping restore the speed and start the stream
-        if (isStepping) {
-            setSpeed(speedBeforeStepping);
-        }
         start0(streamId);
-        isStepping = false;
     }
 
     @Override
@@ -214,43 +197,9 @@ public class MovieStream implements VideoStream, AudioStream {
         stop0(streamId);
     }
 
-    @Override
-    public void stepBackward() {
-        // If we are not stepping save the current speed
-        if (!isStepping) {
-            speedBeforeStepping = speed;
-        }
-        // If we are in forward mode reverse
-        if (speed > 0) {
-            setSpeed(-1);
-        }
-        // Activate step, at the moment for timers
-        step0(streamId);
-        // Enable stepping mode
-        isStepping = true;
-    }
-
-    @Override
-    public void stepForward() {
-        // If we are not stepping save the current speed
-        if (!isStepping) {
-            speedBeforeStepping = speed;
-        }
-        // If we are in backward mode reverse
-        if (speed < 0) {
-            setSpeed(+1);
-        }
-        // Activate the step, at the moment for timers
-        step0(streamId);
-        // Enable stepping mode
-        isStepping = true;
-    }
-
     private static native void start0(int streamId);
 
     private static native void stop0(int streamId);
-
-    private static native void step0(int streamId);
 
     /**
      * Native method to set the time in the stream.
@@ -455,18 +404,6 @@ public class MovieStream implements VideoStream, AudioStream {
         return bigEndian0(streamId);
     }
 
-    private static native boolean setPlaySound0(int streamId, boolean playSound);
-
-    /**
-     * Set the boolean that determines whether sound should be played or not.
-     *
-     * @param playSound If set to false no sound will be pulled if set to true sound will pulled out of the stream.
-     * @return The original state of playing before updating.
-     */
-    boolean setPlaySound(boolean playSound) {
-        return setPlaySound0(streamId, playSound);
-    }
-
     /**
      * Get the encoding for the audio stream.
      *
@@ -542,8 +479,8 @@ public class MovieStream implements VideoStream, AudioStream {
         duration = getDuration0(streamId);
 
         if (hasVideoStream()) {
-            widthOfView = widthOfStream = getWidth0(streamId);
-            heightOfView = heightOfStream = getHeight0(streamId);
+            width = getWidth0(streamId);
+            height = getHeight0(streamId);
             nChannels = getNumberOfColorChannels0(streamId);
         }
 
@@ -588,51 +525,11 @@ public class MovieStream implements VideoStream, AudioStream {
     }
 
     @Override
-    public int getHeightOfStream() {
-        return heightOfStream;
-    }
+    public int getHeight() { return height; }
 
     @Override
-    public int getWidthOfStream() {
-        return widthOfStream;
-    }
-
-    @Override
-    public int getHeightOfView() {
-        return heightOfView;
-    }
-
-    @Override
-    public int getWidthOfView() {
-        return widthOfView;
-    }
-
-    /**
-     * Native method to set the viewing window. This changes the height and
-     * width of the view -- unless set to the same values.
-     * <p>
-     * This method can not be called while the stream is playing.
-     *
-     * @param x0     The horizontal starting position in pixels.
-     * @param y0     The vertical starting position in pixels.
-     * @param width  The width of the view in pixels.
-     * @param height The height of the view in pixels.
-     * @return Return true if the window was set; otherwise false.
-     */
-    private static native boolean view0(int streamId, int x0, int y0, int width, int height);
-
-    @Override
-    public void setView(int x0, int y0, int width, int height) throws IndexOutOfBoundsException {
-        if (x0 < 0 || x0 + width > getWidthOfStream()
-                || y0 < 0 || y0 + height > getHeightOfStream()) {
-            throw new IndexOutOfBoundsException("The viewing window [" + x0 + ", " + x0 + width + "] x [" + y0 + ", "
-                    + y0 + height + "] " + "is outside bounds [0, " + getWidthOfStream() + "] x [0, "
-                    + getHeightOfStream() + "]");
-        } else {
-            widthOfView = width;
-            heightOfView = height;
-            view0(streamId, x0, y0, width, height);
-        }
+    public int getWidth() {
+        return width;
     }
 
     private static native ByteBuffer getFrameBuffer0(int streamId);

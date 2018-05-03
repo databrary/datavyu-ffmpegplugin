@@ -33,8 +33,8 @@ public class MoviePlayerFrame extends Frame implements MoviePlayer {
     @Override
     public void setScale(float scale) {
         videoStreamListenerContainer.setScale(scale);
-        setSize(new Dimension((int) scale*movieStreamProvider.getWidthOfView(),
-                (int) scale*movieStreamProvider.getHeightOfView()));
+        setSize(new Dimension((int) scale*movieStreamProvider.getWidth(),
+                (int) scale*movieStreamProvider.getHeight()));
     }
 
     @Override
@@ -53,14 +53,9 @@ public class MoviePlayerFrame extends Frame implements MoviePlayer {
     }
 
     @Override
-    public void stepForward() {
-        movieStreamProvider.stepForward();
-    }
-
-    @Override
     public void openFile(String file, String version) throws IOException {
         movieStreamProvider.open(file, version, colorSpace, audioFormat);
-        setSize(new Dimension(movieStreamProvider.getWidthOfView(), movieStreamProvider.getHeightOfView()));
+        setSize(new Dimension(movieStreamProvider.getWidth(), movieStreamProvider.getHeight()));
     }
 
     @Override

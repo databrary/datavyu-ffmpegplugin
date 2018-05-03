@@ -37,11 +37,6 @@ public class MoviePlayerStage implements MoviePlayer {
     }
 
     @Override
-    public void stepForward() {
-        movieStreamProvider.stepForward();
-    }
-
-    @Override
     public void setScale(float scale) {
 /*
         if (stage != null) {

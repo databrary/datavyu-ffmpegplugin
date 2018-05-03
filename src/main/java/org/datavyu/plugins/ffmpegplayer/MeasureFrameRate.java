@@ -30,8 +30,8 @@ public class MeasureFrameRate {
         // Open the movie stream provider
         movieStreamProvider.open(movieFileName, "0.0.0.1", reqColorSpace, reqAudioFormat);
         movieStreamProvider.setSpeed(speed);
-        int width = movieStreamProvider.getWidthOfView();
-        int height = movieStreamProvider.getHeightOfView();
+        int width = movieStreamProvider.getWidth();
+        int height = movieStreamProvider.getHeight();
         frame.setBounds(0, 0, width, height);
         frame.setVisible(true);
     }
