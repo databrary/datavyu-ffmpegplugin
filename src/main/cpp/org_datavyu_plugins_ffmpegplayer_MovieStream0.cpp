@@ -1,4 +1,4 @@
-#include "org_datavyu_plugins_ffmpegplayer_MovieStream.h"
+#include "org_datavyu_plugins_ffmpegplayer_MoviePlayer0.h"
 #include "ImageBuffer.hpp"
 #include "AudioBuffer.h"
 #include "AudioFormatHelper.hpp"
@@ -7,7 +7,6 @@
 #include <jni.h>
 #include <cstdio>
 #include <cstdlib>
-#include <ctime>
 #include <cmath>
 #include <cassert>
 #include <vector>
@@ -24,30 +23,33 @@ extern "C" {
 	#include <libswscale/swscale.h> // sampling of images
 	#include <libswresample/swresample.h> // resampling of audio
 	#include <libavutil/error.h> // error codes
+	#include <libavutil/time.h> // timer
 }
 
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
 
-// To create the header file run 'javah -d ../cpp org.datavyu.plugins.ffmpegplayer.MovieStream'
+// To create the header file run 'javah -d ../cpp org.datavyu.plugins.ffmpegplayer.MoviePlayer0'
 // from the directory 'src/main/java'
 
 /*
-cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\..\MovieStream" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" /I"C:\Program Files\Java\jdk1.8.0_151\include" /I"C:\Program Files\Java\jdk1.8.0_151\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_151\lib\jawt.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswresample\swresample.lib"
+cl org_datavyu_plugins_ffmpegplayer_MoviePlayer0.cpp /Fe"..\..\..\MoviePlayer0" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" /I"C:\Program Files\Java\jdk1.8.0_151\include" /I"C:\Program Files\Java\jdk1.8.0_151\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_151\lib\jawt.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswresample\swresample.lib"
 */
 
 // Add flag /MDd for debugging information and flag /DEBUG:FULL to add all symbols to the PDB file
 // On debug flag for cl; see https://docs.microsoft.com/en-us/cpp/build/reference/debug-generate-debug-info
 
-// use dumpbin /ALL MovieStream.lib to list the function symbols
+// use dumpbin /ALL MoviePlayer.lib to list the function symbols
 // Make sure that visual studio's 'vc' folder is in the path
 
 /* no AV sync correction is done if below the minimum AV sync threshold */
 #define AV_SYNC_THRESHOLD_MIN 0.04
 /* AV sync correction is done if above the maximum AV sync threshold */
 #define AV_SYNC_THRESHOLD_MAX 0.1
+/* If a frame duration is longer than this, it will not be duplicated to compensate AV sync */
+#define AV_SYNC_FRAMEDUP_THRESHOLD 0.1
+/* no AV correction is done if too big error */
 
-#define AV_NOSYNC_THRESHOLD 2.0
 #define PTS_DELTA_THRESHOLD 3
 #define MAX_AUDIO_FRAME_SIZE 192000
 #define SAMPLE_CORRECTION_PERCENT_MAX 10
@@ -55,137 +57,28 @@ cl org_datavyu_plugins_ffmpegplayer_MovieStream.cpp /Fe"..\..\..\MovieStream" /I
 #define AUDIO_AVG_COEF exp(log(0.01 / AUDIO_DIFF_AVG_NB))
 #define WAIT_TIMEOUT_IN_MSEC 250
 
-
-// TODO: Move to class and separate file
-typedef struct Clock {
-    double pts;           /* clock base */
-    double pts_drift;     /* clock base minus time at which we updated the clock */
-    double last_updated;
-    double speed;
-    int paused;
-} Clock;
-
-static double get_clock(Clock *c) {
-    if (c->paused) {
-        return c->pts;
-    } else {
-        double time = av_gettime_relative() / 1000000.0;
-        return c->pts_drift + time - (time - c->last_updated) * (1.0 - c->speed);
-    }
-}
-
-static void set_clock_at(Clock *c, double pts, double time) {
-    c->pts = pts;
-    c->last_updated = time;
-    c->pts_drift = c->pts - time;
-}
-
-static void set_clock(Clock *c, double pts) {
-    double time = av_gettime_relative() / 1000000.0;
-    set_clock_at(c, pts, time);
-}
-
-static void set_clock_speed(Clock *c, double speed)
-{
-    set_clock(c, get_clock(c));
-    c->speed = speed;
-}
-
-static void init_clock(Clock *c, int *queue_serial) {
-    c->speed = 1.0;
-    c->paused = 0;
-    set_clock(c, NAN);
-}
-
-static void sync_clock_to_slave(Clock *c, Clock *slave) {
-    double clock = get_clock(c);
-    double slave_clock = get_clock(slave);
-    if (!isnan(slave_clock) && (isnan(clock) || fabs(clock - slave_clock) > AV_NOSYNC_THRESHOLD))
-        set_clock(c, slave_clock, slave->serial);
-}
-
-/* pause or resume the video */
-static void stream_toggle_pause(VideoState *is) {
-    if (is->paused) {
-        is->frame_timer += av_gettime_relative() / 1000000.0 - is->vidclk.last_updated;
-        if (is->read_pause_return != AVERROR(ENOSYS)) {
-            is->vidclk.paused = 0;
-        }
-        set_clock(&is->vidclk, get_clock(&is->vidclk), is->vidclk.serial);
-    }
-    set_clock(&is->extclk, get_clock(&is->extclk), is->extclk.serial);
-    is->paused = is->audclk.paused = is->vidclk.paused = is->extclk.paused = !is->paused;
-}
-
-static double compute_target_delay(double delay, VideoState *is) {
-    double sync_threshold, diff = 0;
-
-    /* update delay to follow master synchronisation source */
-    if (get_master_sync_type(is) != AV_SYNC_VIDEO_MASTER) {
-        /* if video is slave, we try to correct big delays by
-           duplicating or deleting a frame */
-        diff = get_clock(&is->vidclk) - get_master_clock(is);
-
-        /* skip or repeat frame. We take into account the
-           delay to compute the threshold. I still don't know
-           if it is the best guess */
-        sync_threshold = FFMAX(AV_SYNC_THRESHOLD_MIN, FFMIN(AV_SYNC_THRESHOLD_MAX, delay));
-        if (!isnan(diff) && fabs(diff) < is->max_frame_duration) {
-            if (diff <= -sync_threshold)
-                delay = FFMAX(0, delay + diff);
-            else if (diff >= sync_threshold && delay > AV_SYNC_FRAMEDUP_THRESHOLD)
-                delay = delay + diff;
-            else if (diff >= sync_threshold)
-                delay = 2 * delay;
-        }
-    }
-
-    av_log(NULL, AV_LOG_TRACE, "video: delay=%0.3f A-V=%f\n",
-            delay, -diff);
-
-    return delay;
-}
-
-static int get_video_frame(VideoState *is, AVFrame *frame)
-{
-    int got_picture;
-
-    if ((got_picture = decoder_decode_frame(&is->viddec, frame, NULL)) < 0)
-        return -1;
-
-    if (got_picture) {
-        double dpts = NAN;
-
-        if (frame->pts != AV_NOPTS_VALUE)
-            dpts = av_q2d(is->video_st->time_base) * frame->pts;
-
-        frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(is->ic, is->video_st, frame);
-
-        if (framedrop>0 || (framedrop && get_master_sync_type(is) != AV_SYNC_VIDEO_MASTER)) {
-            if (frame->pts != AV_NOPTS_VALUE) {
-                double diff = dpts - get_master_clock(is);
-                if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
-                    diff - is->frame_last_filter_delay < 0 &&
-                    is->viddec.pkt_serial == is->vidclk.serial &&
-                    is->videoq.nb_packets) {
-                    is->frame_drops_early++;
-                    av_frame_unref(frame);
-                    got_picture = 0;
-                }
-            }
-        }
-    }
-
-    return got_picture;
-}
+enum {
+    AV_SYNC_AUDIO_MASTER, /* default choice */
+    AV_SYNC_VIDEO_MASTER,
+    AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
+};
 
 
 /*****************************************************************************************
  * Movie stream class that encapsulates functionality for the playback of a movie stream.
  ****************************************************************************************/
-class MovieStream {
+class MoviePlayer {
 
 public:
+    /** Clocks for synchronization for video, audio, external */
+    Clock audioClock;
+    Clock videoClock;
+    Clock externalClock;
+    int avSyncType;
+    bool paused;
+    double frameTime;
+    double maxFrameDuration; // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
+
     /** Id counter for the streams that are opened */
     static int id;
 
@@ -236,21 +129,6 @@ public:
     /** Pointer to the image buffer */
     ImageBuffer *pImageBuffer;
 
-/*    *//** Last present time stamp. Set to 0 on reset *//*
-    int64_t imageLastPts;
-
-    *//** Difference between time stamps. Set to 0 on reset *//*
-    int64_t	imageDeltaPts;
-
-    *//** Accumulated difference. Set to 0 on reset *//*
-    double imageDiffCum;
-
-    *//** The system clock's last time *//*
-    std::chrono::high_resolution_clock::time_point lastDisplayTime;
-
-    *//** The current presentation time stamp for the video *//*
-    double videoTime;*/
-
 
     /** Status in the movie file. */
 
@@ -260,17 +138,6 @@ public:
     /** Flag indicates that we loaded a movie */
     bool loadedMovie;
 
-/*    *//** Controls the speed of playback as factor of the original playback speed *//*
-    double speed;*/
-
-/*    *//** Reset the clock difference *//*
-    std::atomic<bool> resetClockDiff;*/
-
-/*    *//** Last written time stamp. Set to 0 on reset *//*
-    int64_t	lastWritePts;
-
-    *//** Average of time stamp intervals. Set to 1 on reset. Used for reverse seek *//*
-    int64_t	avgDeltaPts;*/
 
     /** Decoding thread that decodes frames and is started when opening a video */
     std::thread	*pDecodeFrame;
@@ -292,9 +159,6 @@ public:
     /** Audio stream */
     AVStream *pAudioStream;
 
-/*    *//** Time as progressed in the audio stream; measured through packets *//*
-    double audioTime;*/
-
     /** Buffer for the audio packet data */
     AudioBuffer	*pAudioBuffer;
 
@@ -309,21 +173,6 @@ public:
 
     /** Index of audio data in bytes. Set to 0 on reset */
     unsigned int iAudioData;
-
-/*    *//** Used to compute the average difference for the audio *//*
-    double audioDiffCum;
-
-    *//** Holds the average coefficient for teh audio difference *//*
-    double audioDiffAvgCoef;
-
-    *//** Holds the audio difference threshold. Set when opening the audio buffer *//*
-    double audioDiffThreshold;
-
-    *//** Holds the average audio difference count *//*
-    int audioDiffAvgCount;*/
-
-    /** This boolean is set if we do not play sound */
-    std::atomic<bool> playSound;
 
 
     /**  Variables that control random seeking. */
@@ -357,7 +206,9 @@ public:
     /** audio buffer used in the 'loadNextAudioData' method */
     uint8_t *pLoadAudioByteBuffer;
 
-    MovieStream() :
+    MoviePlayer() :
+        avSyncType(AV_SYNC_AUDIO_MASTER),
+        paused(false),
         width(0),
         height(0),
         nChannel(3),
@@ -378,26 +229,17 @@ public:
         videoTime(0),
         quit(false),
         loadedMovie(false),
-        speed(1),
-        resetClockDiff(false),
-        lastWritePts(0),
-        avgDeltaPts(1),
         pDecodeFrame(nullptr),
         iAudioStream(-1),
         pAudioInCodecCtx(nullptr),
         pAudioOutCodecCtx(nullptr),
         pResampleCtx(nullptr),
         pAudioStream(nullptr),
-        audioTime(0),
         pAudioBuffer(nullptr),
         pAudioBufferData(nullptr),
         nAudioBuffer(0),
         nAudioData(0),
         iAudioData(0),
-        audioDiffCum(0),
-        audioDiffAvgCoef(AUDIO_AVG_COEF),
-        audioDiffThreshold(0),
-        audioDiffAvgCount(0),
         playSound(false),
         seekPts(0),
         seekReq(false),
@@ -414,7 +256,7 @@ public:
         pLoadAudioByteBuffer = (uint8_t*) malloc(nLoadAudioByteBuffer);
     }
 
-    virtual ~MovieStream() {
+    virtual ~MoviePlayer() {
         // Clean up memory
         free(pLoadAudioByteBuffer);
         av_packet_free(&pAudioDecodeFramePkt);
@@ -423,6 +265,80 @@ public:
 
     static int getId() {
         return ++id;
+    }
+
+    /* pause or resume the video */
+    void pause() {
+        if (paused) {
+            frameTime += av_gettime_relative() / 1000000.0 - videoClock.getLastUpdated();
+            videoClock.setTime(videoClock.getTime());
+        }
+        externalClock.setTime(externalClock.getTime());
+        // toggle paused
+        paused = !paused;
+        externalClock.setPaused(paused);
+        videoClock.setPaused(paused);
+        audioClock.setPaused(paused);
+    }
+
+    double computeTargetDelay(double delay) {
+        double syncThreshold, diff = 0;
+
+        /* update delay to follow master synchronisation source */
+        if (getMasterSyncType() != AV_SYNC_VIDEO_MASTER) {
+            /* if video is slave, we try to correct big delays by
+               duplicating or deleting a frame */
+            diff = videoClock.getTime() - getMasterClockTime();
+
+            /* skip or repeat frame. We take into account the
+               delay to compute the threshold. I still don't know
+               if it is the best guess */
+            syncThreshold = FFMAX(AV_SYNC_THRESHOLD_MIN, FFMIN(AV_SYNC_THRESHOLD_MAX, delay));
+            if (!isnan(diff) && fabs(diff) < maxFrameDuration) {
+                if (diff <= -syncThreshold)
+                    delay = FFMAX(0, delay + diff);
+                else if (diff >= syncThreshold && delay > AV_SYNC_FRAMEDUP_THRESHOLD)
+                    delay = delay + diff;
+                else if (diff >= syncThreshold)
+                    delay = 2 * delay;
+            }
+        }
+
+        pLogger->info("video: delay=%0.3f A-V=%f", delay, -diff);
+
+        return delay;
+    }
+
+    int getVideoFrame(AVFrame *frame) {
+        int got_picture;
+
+        if ((got_picture = decoder_decode_frame(&is->viddec, frame, NULL)) < 0)
+            return -1;
+
+        if (got_picture) {
+            double dpts = NAN;
+
+            if (frame->pts != AV_NOPTS_VALUE)
+                dpts = av_q2d(is->video_st->time_base) * frame->pts;
+
+            frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(pFormatCtx, is->video_st, frame);
+
+            if (framedrop > 0 || (framedrop && get_master_sync_type(is) != AV_SYNC_VIDEO_MASTER)) {
+                if (frame->pts != AV_NOPTS_VALUE) {
+                    double diff = dpts - get_master_clock(is);
+                    if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
+                        diff - is->frame_last_filter_delay < 0 &&
+                        is->viddec.pkt_serial == is->vidclk.serial &&
+                        is->videoq.nb_packets) {
+                        is->frame_drops_early++;
+                        av_frame_unref(frame);
+                        got_picture = 0;
+                    }
+                }
+            }
+        }
+
+        return got_picture;
     }
 
     inline int64_t limitToRange(int64_t target) {
@@ -437,19 +353,6 @@ public:
                       pImageStream->start_time/avgDeltaPts,
                       (pImageStream->start_time + pImageStream->duration)/avgDeltaPts);
         return after;
-    }
-
-    /**
-     * Get the time passed from the audio.
-     */
-    double getAudioTime() const {
-        double pts = audioTime; // Maintained by the audio thread
-        int hw_buf_size = nAudioData - iAudioData;
-        int bytes_per_sec = pAudioOutCodecCtx->sample_rate * pAudioOutCodecCtx->channels * 2;
-        if (bytes_per_sec) {
-            pts -= (double)hw_buf_size / bytes_per_sec;
-        }
-        return pts;
     }
 
     /**
@@ -622,7 +525,7 @@ public:
 
                     assert(dataSize <= bufferSize);
 
-                    if ((errNo = MovieStream::initConvertedSamples(&convertedInSamples,
+                    if ((errNo = MoviePlayer::initConvertedSamples(&convertedInSamples,
                                                                    pAudioOutCodecCtx,
                                                                    pAudioDecodeAVFrame->nb_samples,
                                                                    pLogger)) < 0) {
@@ -634,7 +537,7 @@ public:
                         return errNo;
                     }
 
-                    if ((errNo = MovieStream::convertSamples((const uint8_t**)pAudioDecodeAVFrame->extended_data,
+                    if ((errNo = MoviePlayer::convertSamples((const uint8_t**)pAudioDecodeAVFrame->extended_data,
                                                              convertedInSamples,
                                                              pAudioDecodeAVFrame->nb_samples, pResampleCtx,
                                                              pLogger)) < 0) {
@@ -856,16 +759,15 @@ public:
 
     double getCurrentTime() const { return hasVideoStream() ? videoTime : audioTime; }
 
-    void setCurrentTime(double time) {
+    void seek(double time) {
         if (hasVideoStream() || hasAudioStream()) {
-            //pImageBuffer->unblock();
             lastWritePts = seekPts = limitToRange( ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts );
             seekReq = true;
         }
     }
 
     // assumes inSpeed is positive
-    void setPlaybackSpeed(float inSpeed) {
+    void setSpeed(float inSpeed) {
 
         if (hasVideoStream() || hasAudioStream()) {
 
@@ -1256,12 +1158,43 @@ public:
                                         width*height*nChannel*sizeof(uint8_t));
     }
 
+    int getMasterSyncType() {
+        if (avSyncType == AV_SYNC_VIDEO_MASTER) {
+            if (hasVideoStream())
+                return AV_SYNC_VIDEO_MASTER;
+            else
+                return AV_SYNC_AUDIO_MASTER;
+        } else if (is->av_sync_type == AV_SYNC_AUDIO_MASTER) {
+            if (hasAudioStream())
+                return AV_SYNC_AUDIO_MASTER;
+            else
+                return AV_SYNC_EXTERNAL_CLOCK;
+        } else {
+            return AV_SYNC_EXTERNAL_CLOCK;
+        }
+    }
+
+    double getMasterClockTime(VideoState *is) {
+        double time;
+        switch (getMasterSyncType()) {
+            case AV_SYNC_VIDEO_MASTER:
+                time = videoClock.getClockTime();
+                break;
+            case AV_SYNC_AUDIO_MASTER:
+                time = audioClock.getClockTime();
+                break;
+            default:
+                time = externalClock.getClockTime();
+                break;
+        }
+        return time;
+    }
 };
 
-int MovieStream::id = -1;
-std::map<int, MovieStream*> idToMovieStream;
+int MoviePlayer::id = -1;
+std::map<int, MoviePlayer*> idToMovieStream;
 
-MovieStream* getMovieStream(int streamId) {
+MoviePlayer* getMovieStream(int streamId) {
     return idToMovieStream.find(streamId) != idToMovieStream.end() ? idToMovieStream[streamId] : nullptr;
 }
 
@@ -1275,10 +1208,10 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
 	const char *version = env->GetStringUTFChars(jVersion, 0);
 
-    int streamId = MovieStream::getId();
+    int streamId = MoviePlayer::getId();
     returnValues[0] = 0;
     returnValues[1] = streamId;
-	MovieStream* movieStream = new MovieStream();
+	MoviePlayer* movieStream = new MoviePlayer();
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
     movieStream->pLogger = new FileLogger(logFileName);
@@ -1354,6 +1287,10 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	}
 
 	if (movieStream->hasVideoStream()) {
+
+        // Set the max frame duration
+	    movieStream->maxFrameDuration = (movieStream->pFormatCtx->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
+
 		// Get a pointer to the video stream.
 		movieStream->pImageStream = movieStream->pFormatCtx->streams[movieStream->iImageStream];
 
@@ -1422,6 +1359,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	// Work on audio
 	// *************************************************************************
 	if (movieStream->hasAudioStream()) {
+
 		AVCodec *aOutCodec = nullptr;
 		AVCodec *aInCodec = nullptr;
 
@@ -1528,7 +1466,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		}
 
 		// Initialize the re-sampler to be able to convert audio sample formats.
-		if ((errNo = MovieStream::initResampler(movieStream->pAudioInCodecCtx,
+		if ((errNo = MoviePlayer::initResampler(movieStream->pAudioInCodecCtx,
 		                                        movieStream->pAudioOutCodecCtx,
 		                                        &movieStream->pResampleCtx,
 		                                        movieStream->pLogger)) < 0) {
@@ -1548,7 +1486,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	movieStream->seekReq = true;
 
 	// Start the decode thread
-	movieStream->pDecodeFrame = new std::thread(&MovieStream::readNextFrame, movieStream);
+	movieStream->pDecodeFrame = new std::thread(&MoviePlayer::readNextFrame, movieStream);
 	movieStream->pLogger->info("Started decoding thread!");
 
 	// Set the value for loaded movie true
@@ -1567,49 +1505,49 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAverageFrameRate0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getAverageFrameRate() : 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasVideoStream0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr && movieStream->hasVideoStream();
 }
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasAudioStream0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr && movieStream->hasAudioStream();
 }
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getStartTime0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getStartTime() : 0;
 }
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getEndTime0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getEndTime() : 0;
 }
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getDuration0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getDuration() : 0;
 }
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCurrentTime0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getCurrentTime() : -1;
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_start0(JNIEnv *env, jclass thisClass,
     jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     if (movieStream != nullptr) {
         movieStream->resetClockDiff = true;
     }
@@ -1622,7 +1560,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_stop0(J
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setCurrentTime0(JNIEnv *env,
     jclass thisClass, jint streamId, jdouble jTime) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     if (movieStream != nullptr) {
         movieStream->setCurrentTime(jTime); // set current time limits range
     }
@@ -1630,7 +1568,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setCurr
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaybackSpeed0(JNIEnv *env,
     jclass thisClass, jint streamId, jfloat speed) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     if (movieStream != nullptr) {
         movieStream->setPlaybackSpeed(speed);
     }
@@ -1638,7 +1576,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlay
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_reset0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     if (movieStream != nullptr) {
         movieStream->reset();
     }
@@ -1646,7 +1584,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_reset0(
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0(JNIEnv *env, jclass thisClass,
     jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     if (movieStream != nullptr) {
         movieStream->close();
         idToMovieStream.erase(streamId);
@@ -1656,90 +1594,90 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0(
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextAudioData0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr && movieStream->loadNextAudioData();
 }
 
 JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAudioBuffer0(JNIEnv *env,
     jclass thisClass, jint streamId, jint nBytes) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getAudioBuffer(env, nBytes) : 0;
 }
 
 JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleFormat0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getSampleFormat(env) : 0;
 }
 
 JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCodecName0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getCodecName(env) : 0;
 }
 
 JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleRate0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getSampleRate() : 0;
 }
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleSizeInBits0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getSampleSizeInBits() : 0;
 }
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfSoundChannels0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getNumberOfSoundChannels() : 0;
 }
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameSize0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getFrameSize() : 0;
 }
 
 JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameRate0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getFrameRate() : 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_bigEndian0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr && movieStream->bigEndian();
 }
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfColorChannels0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getNumberOfColorChannels() : 0;
 }
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getHeight0(JNIEnv *env, jclass thisClass,
     jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getHeight() : 0;
 }
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getWidth0(JNIEnv *env, jclass thisClass,
     jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getWidth() : 0;
 }
 
 JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameBuffer0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->getFrameBuffer(env) : 0;
 }
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextImageFrame0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MovieStream* movieStream = getMovieStream(streamId);
+    MoviePlayer* movieStream = getMovieStream(streamId);
     return movieStream != nullptr ? movieStream->loadNextImageFrame() : 0;
 }

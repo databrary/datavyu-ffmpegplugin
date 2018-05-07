@@ -4,7 +4,6 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
-import org.datavyu.plugins.ffmpegplayer.MovieStreamProvider;
 import org.datavyu.plugins.ffmpegplayer.VideoStreamListenerStage;
 
 import javax.sound.sampled.AudioFormat;
@@ -14,13 +13,13 @@ import java.io.IOException;
 /**
  * Note this is one suggestion
  */
-public class MoviePlayerStage implements MoviePlayer {
+public class MoviePlayerStage implements org.datavyu.benchmark.MoviePlayer {
 
 
     /** The logger for this class */
     private static Logger logger = LogManager.getFormatterLogger(MoviePlayerStage.class);
 
-    private MovieStreamProvider movieStreamProvider = new MovieStreamProvider();
+    private org.datavyu.plugins.ffmpegplayer.MoviePlayer movieStreamProvider = new org.datavyu.plugins.ffmpegplayer.MoviePlayer();
 
     private ColorSpace colorSpace;
 
@@ -59,7 +58,7 @@ public class MoviePlayerStage implements MoviePlayer {
                 videoStreamListenerStage.start(new Stage());
             }
         }.start();
-        movieStreamProvider.start();
+        movieStreamProvider.play();
     }
 
     @Override
@@ -84,6 +83,6 @@ public class MoviePlayerStage implements MoviePlayer {
 
     @Override
     public void setTimeInSeconds(double timeInSeconds) {
-        movieStreamProvider.setCurrentTime(timeInSeconds);
+        movieStreamProvider.seek(timeInSeconds);
     }
 }

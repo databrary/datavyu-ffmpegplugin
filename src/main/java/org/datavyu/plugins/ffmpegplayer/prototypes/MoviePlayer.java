@@ -31,7 +31,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
 	
 	private static final long serialVersionUID = -5139487296977249036L;
 	
-	/** The start time is used to adjust slider to correct value. */
+	/** The play time is used to adjust slider to correct value. */
 	private double startTime = 0; 
 	
 	/** Used as indicator to play in the display thread. */ 
@@ -212,7 +212,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
         // Load and display first frame.
         showNextFrame();
 
-        // Display the start time.
+        // Display the play time.
 		double timeInSeconds = player.getCurrentTime();
 		frameNumber.setText(Math.round(timeInSeconds*1000.0)/1000.0 
 				+ " seconds");
@@ -229,7 +229,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
         int height = player.getHeight();
         double duration = player.getDuration();
         
-        // Get the start time for proper placing of the slider.
+        // Get the play time for proper placing of the slider.
         startTime = player.getStartTime();
 
         // Assign a range of 0 to 1 to the slider.
@@ -242,7 +242,7 @@ public class MoviePlayer extends JPanel implements WindowListener {
         System.out.println("Opened movie " + fileName);
         System.out.println("width = " + width + ", height = " + height);
         System.out.println("duration = " + duration + " seconds.");
-        System.out.println("start time = " + player.getStartTime() + " seconds.");
+        System.out.println("play time = " + player.getStartTime() + " seconds.");
         System.out.println("end time = " + player.getEndTime() + " seconds.");
         System.out.println("Encountered error number " + errNo + " (0 no error)");
 	}

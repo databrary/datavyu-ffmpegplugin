@@ -13,12 +13,12 @@ import java.util.List;
 @SuppressWarnings("unused") // TODO: Performance measurement; integrate into tests
 public class MeasureFrameRate {
 
-    private MovieStreamProvider movieStreamProvider;
+    private MoviePlayer movieStreamProvider;
     private Frame frame;
     private static final int TIME_OUT_SEC = 10;
 
     private MeasureFrameRate(String movieFileName, float speed) throws IOException {
-        movieStreamProvider = new MovieStreamProvider();
+        movieStreamProvider = new MoviePlayer();
         final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
         frame = new Frame();
@@ -37,7 +37,7 @@ public class MeasureFrameRate {
     }
 
     private void start() {
-        movieStreamProvider.start();
+        movieStreamProvider.play();
     }
 
     private void stop() {

@@ -41,7 +41,7 @@ public class TestPlaybackRateScale {
 
     private static final double MEASUREMENT_DURATION_IN_SEC = 10; // 10 seconds
 
-    private static final double START_TIME_IN_SEC = 10 * MEASUREMENT_DURATION_IN_SEC; // start time
+    private static final double START_TIME_IN_SEC = 10 * MEASUREMENT_DURATION_IN_SEC; // play time
 
     private static final double TO_MILLI = 1000;
 

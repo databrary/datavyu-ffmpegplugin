@@ -1,7 +1,6 @@
 package org.datavyu.benchmark;
 
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
-import org.datavyu.plugins.ffmpegplayer.MovieStreamProvider;
 import org.datavyu.plugins.ffmpegplayer.VideoStreamListenerContainer;
 
 import javax.sound.sampled.AudioFormat;
@@ -9,9 +8,9 @@ import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.io.IOException;
 
-public class MoviePlayerFrame extends Frame implements MoviePlayer {
+public class MoviePlayerFrame extends Frame implements org.datavyu.benchmark.MoviePlayer {
 
-    private MovieStreamProvider movieStreamProvider = new MovieStreamProvider();
+    private org.datavyu.plugins.ffmpegplayer.MoviePlayer movieStreamProvider = new org.datavyu.plugins.ffmpegplayer.MoviePlayer();
 
     private VideoStreamListenerContainer videoStreamListenerContainer;
 
@@ -44,7 +43,7 @@ public class MoviePlayerFrame extends Frame implements MoviePlayer {
 
     @Override
     public void start() {
-        movieStreamProvider.start();
+        movieStreamProvider.play();
     }
 
     @Override
@@ -70,6 +69,6 @@ public class MoviePlayerFrame extends Frame implements MoviePlayer {
 
     @Override
     public void setTimeInSeconds(double timeInSeconds) {
-        movieStreamProvider.setCurrentTime(timeInSeconds);
+        movieStreamProvider.seek(timeInSeconds);
     }
 }
