@@ -13,7 +13,7 @@ public interface VideoStream extends TimeStream {
 
     /**
      * Get the color space of this video stream. This allows us to interpret the
-     * data from the readImageFrame method correctly.
+     * data from the readImageData method correctly.
      *
      * @return ColorSpace of this image stream.
      */
@@ -55,5 +55,5 @@ public interface VideoStream extends TimeStream {
 	 * 		   returns 2 that means that one frame was skipped. If the method returns
 	 * 		   0 that means that no frames were read.
 	 */
-	int readImageFrame(byte[] buffer); // reads next image
+	int readImageData(byte[] buffer); // reads next image
 }

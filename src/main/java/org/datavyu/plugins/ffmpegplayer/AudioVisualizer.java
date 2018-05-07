@@ -17,7 +17,7 @@ public class AudioVisualizer implements StreamListener {
     private long nBytes;
     private int nSample;
 
-    public AudioVisualizer(MovieStreamProvider movieStreamProvider, int nSample) {
+    public AudioVisualizer(MoviePlayer movieStreamProvider, int nSample) {
         this.movieStreamProvider = movieStreamProvider;
         this.nSample = nSample;
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -25,7 +25,7 @@ public class AudioVisualizer implements StreamListener {
         frame.pack();
     }
 
-    public AudioVisualizer(MovieStreamProvider movieStreamProvider) {
+    public AudioVisualizer(MoviePlayer movieStreamProvider) {
         this(movieStreamProvider, N_SAMPLE);
     }
 

@@ -3,8 +3,8 @@ package org.datavyu.plugins.ffmpegplayer;
 import java.io.IOException;
 
 /**
- * This interface associates time to a stream. It provides the start time, 
- * end time, duration, current time, setCurrentTime of a time, and a speed. The idea is
+ * This interface associates time to a stream. It provides the play time,
+ * end time, duration, current time, seek of a time, and a speed. The idea is
  * to have same interface as for a stream but with methods that control time
  * within that stream. The unit of time is seconds.
  * 
@@ -14,19 +14,24 @@ import java.io.IOException;
 public interface TimeStream {
 
     /**
-     * Start the time stream.
+     * Start the time stream
      */
-	void start();
+	void play();
 
     /**
-     * Stop the time stream.
+     * Stop the time stream
      */
 	void stop();
 
 	/**
-	 * Get the start time of the stream. Typically that will be 0.0.
+	 * Pause the stream
+	 */
+	void pause();
+
+	/**
+	 * Get the play time of the stream. Typically that will be 0.0.
 	 * 
-	 * @return The start time in seconds.
+	 * @return The play time in seconds.
 	 */
 	double getStartTime();
 
@@ -55,10 +60,10 @@ public interface TimeStream {
 	 * Sets time within the stream. The implementation restricts the time to the
 	 * earliest and latest time in the stream.
 	 *
-	 * @param time The time point to setCurrentTime in seconds.
+	 * @param time The time point to seek in seconds.
 	 *
 	 */
-	void setCurrentTime(double time); // set time to continue play back
+	void seek(double time); // set time to continue play back
 
 	/**
 	 * Set the play back speed as multiple of the native play back and also 
@@ -69,13 +74,6 @@ public interface TimeStream {
 	 * @param speed The speed, e.g. 0.5x or -4x.
 	 */
 	void setSpeed(float speed);
-	
-	/**
-	 * Rewinds the stream to the starting position. In forward play back the 
-	 * starting position is the start time. In backward play back the starting
-	 * position is the end time.
-	 */
-	void reset();
 	
 	/**
 	 * Closes the stream and frees all associated resources.

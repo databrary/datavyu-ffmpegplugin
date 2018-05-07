@@ -13,40 +13,42 @@ import java.util.List;
 @SuppressWarnings("unused") // TODO: Performance measurement; integrate into tests
 public class MeasureFrameRate {
 
-    private MovieStreamProvider movieStreamProvider;
+    private MoviePlayer moviePlayer;
     private Frame frame;
     private static final int TIME_OUT_SEC = 10;
 
-    private MeasureFrameRate(String movieFileName, float speed) throws IOException {
-        movieStreamProvider = new MovieStreamProvider();
+    private MeasureFrameRate(String movieFileName, float speed) {
+        moviePlayer = MoviePlayer.newBuilder().setFileName(movieFileName).build();
+        if (moviePlayer.hasError()) {
+            throw moviePlayer.getError();
+        }
         final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
         frame = new Frame();
         // Add the audio sound listener
-        movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
+        moviePlayer.addAudioStreamListener(new AudioSoundStreamListener(moviePlayer));
         // Add video display
-        movieStreamProvider.addVideoStreamListener(new VideoStreamListenerContainer(movieStreamProvider, frame,
+        moviePlayer.addVideoStreamListener(new VideoStreamListenerContainer(moviePlayer, frame,
                 reqColorSpace));
         // Open the movie stream provider
-        movieStreamProvider.open(movieFileName, "0.0.0.1", reqColorSpace, reqAudioFormat);
-        movieStreamProvider.setSpeed(speed);
-        int width = movieStreamProvider.getWidth();
-        int height = movieStreamProvider.getHeight();
+        moviePlayer.setSpeed(speed);
+        int width = moviePlayer.getWidth();
+        int height = moviePlayer.getHeight();
         frame.setBounds(0, 0, width, height);
         frame.setVisible(true);
     }
 
     private void start() {
-        movieStreamProvider.start();
+        moviePlayer.play();
     }
 
     private void stop() {
-        movieStreamProvider.stop();
+        moviePlayer.stop();
     }
 
     private void close() throws IOException {
         frame.setVisible(false);
-        movieStreamProvider.close();
+        moviePlayer.close();
     }
 
     public static void main(String[] args) {
@@ -68,13 +70,9 @@ public class MeasureFrameRate {
                     System.out.println("Timeout failed with " + ie);
                 }
                 measureFrameRate.stop();
-                double timeDifference = measureFrameRate.movieStreamProvider.getCurrentTime()
-                                      - measureFrameRate.movieStreamProvider.getStartTime();
+                double timeDifference = measureFrameRate.moviePlayer.getCurrentTime()
+                                      - measureFrameRate.moviePlayer.getStartTime();
                 double isSpeed = timeDifference/TIME_OUT_SEC;
-                System.out.println("The total number of frames is: "
-                        + measureFrameRate.movieStreamProvider.getNumberOfFrames());
-                System.out.println("The total number of skipped frames is: "
-                        + measureFrameRate.movieStreamProvider.getNumberOfFrameDrops());
                 System.out.println("The expected speed: " + speed);
                 System.out.println("The detected speed: " + isSpeed);
                 //assert Math.abs(speed - isSpeed) < Math.ulp(1f);

@@ -26,7 +26,7 @@ public class VideoStreamListenerStage extends Application implements StreamListe
     /** The properties */
     private Hashtable<String, String> properties = new Hashtable<>();
 
-    private MovieStream movieStream;
+    private MoviePlayer moviePlayer;
 
     private ColorSpace colorSpace;
 
@@ -40,17 +40,17 @@ public class VideoStreamListenerStage extends Application implements StreamListe
 
     }
 
-    public VideoStreamListenerStage(MovieStream movieStream,  ColorSpace colorSpace) {
-        this.movieStream = movieStream;
+    public VideoStreamListenerStage(MoviePlayer moviePlayer,  ColorSpace colorSpace) {
+        this.moviePlayer = moviePlayer;
         this.colorSpace = colorSpace;
         this.imageView = new ImageView();
     }
 
     @Override
     public void streamOpened() {
-        int width = movieStream.getWidth();
-        int height = movieStream.getHeight();
-        int nChannel = movieStream.getNumberOfColorChannels();
+        int width = moviePlayer.getWidth();
+        int height = moviePlayer.getHeight();
+        int nChannel = moviePlayer.getNumberOfColorChannels();
         cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
                 DataBuffer.TYPE_BYTE);
         SampleModel sm = cm.createCompatibleSampleModel(width, height);
@@ -64,8 +64,8 @@ public class VideoStreamListenerStage extends Application implements StreamListe
     @Override
     public void streamData(byte[] data) {
         // Width and height could have changed due to the view
-        int width = movieStream.getWidth();
-        int height = movieStream.getHeight();
+        int width = moviePlayer.getWidth();
+        int height = moviePlayer.getHeight();
         logger.debug("Received " + data.length + " By for originalImage: " + width + " x " + height + " pixels.");
         SampleModel sm = cm.createCompatibleSampleModel(width, height);
         // Create data buffer

@@ -1,10 +1,8 @@
 package org.datavyu.benchmark;
 
 import javafx.stage.Stage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
-import org.datavyu.plugins.ffmpegplayer.MovieStreamProvider;
+import org.datavyu.plugins.ffmpegplayer.MoviePlayer;
 import org.datavyu.plugins.ffmpegplayer.VideoStreamListenerStage;
 
 import javax.sound.sampled.AudioFormat;
@@ -14,41 +12,40 @@ import java.io.IOException;
 /**
  * Note this is one suggestion
  */
-public class MoviePlayerStage implements MoviePlayer {
+public class MoviePlayerStage implements MoviePlayerControl {
 
-
-    /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(MoviePlayerStage.class);
-
-    private MovieStreamProvider movieStreamProvider = new MovieStreamProvider();
-
-    private ColorSpace colorSpace;
-
-    private AudioFormat audioFormat;
+    private MoviePlayer moviePlayer;
 
     VideoStreamListenerStage videoStreamListenerStage;
 
-    public MoviePlayerStage(ColorSpace colorSpace, AudioFormat audioFormat) {
-        this.colorSpace = colorSpace;
-        this.audioFormat = audioFormat;
-        this.videoStreamListenerStage = new VideoStreamListenerStage(movieStreamProvider, colorSpace);
-        movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
-        movieStreamProvider.addVideoStreamListener(videoStreamListenerStage);
+    public MoviePlayerStage(ColorSpace colorSpace, AudioFormat audioFormat, String movieFileName) {
+        this.moviePlayer = MoviePlayer.newBuilder()
+                .setFileName(movieFileName)
+                .setColorSpace(colorSpace)
+                .setAudioFormat(audioFormat)
+                .build();
+
+        if (moviePlayer.hasError()) {
+            throw moviePlayer.getError();
+        }
+        this.videoStreamListenerStage = new VideoStreamListenerStage(moviePlayer, colorSpace);
+        moviePlayer.addAudioStreamListener(new AudioSoundStreamListener(moviePlayer));
+        moviePlayer.addVideoStreamListener(videoStreamListenerStage);
     }
 
     @Override
     public void setScale(float scale) {
 /*
         if (stage != null) {
-            videoStreamListenerStage.s(scale * movieStreamProvider.getWidthOfView());
-            videoStreamListenerStage.setMaxHeight(scale * movieStreamProvider.getHeightOfView());
+            videoStreamListenerStage.s(scale * moviePlayer.getWidthOfView());
+            videoStreamListenerStage.setMaxHeight(scale * moviePlayer.getHeightOfView());
         }
 */
     }
 
     @Override
     public void setRate(float rate) {
-        movieStreamProvider.setSpeed(rate);
+        moviePlayer.setSpeed(rate);
     }
 
     @Override
@@ -59,31 +56,26 @@ public class MoviePlayerStage implements MoviePlayer {
                 videoStreamListenerStage.start(new Stage());
             }
         }.start();
-        movieStreamProvider.start();
+        moviePlayer.play();
     }
 
     @Override
     public void stop() {
-        movieStreamProvider.stop();
+        moviePlayer.stop();
     }
 
     @Override
-    public void openFile(String file, String version) throws IOException {
-        movieStreamProvider.open(file, version, colorSpace, audioFormat);
-    }
-
-    @Override
-    public void closeFile() throws IOException {
-        movieStreamProvider.close();
+    public void close() {
+        moviePlayer.close();
     }
 
     @Override
     public double getTimeInSeconds() {
-        return movieStreamProvider.getCurrentTime();
+        return moviePlayer.getCurrentTime();
     }
 
     @Override
     public void setTimeInSeconds(double timeInSeconds) {
-        movieStreamProvider.setCurrentTime(timeInSeconds);
+        moviePlayer.seek(timeInSeconds);
     }
 }

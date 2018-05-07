@@ -10,7 +10,7 @@ import java.util.Hashtable;
 
 /**
  * This class implements a stream listener for the video data. It receives byte data from the provider, which is
- * typically a MovieStream, and displays it as originalImage.
+ * typically a MoviePlayer, and displays it as originalImage.
  * 
  * @author Florian Raudies, Mountain View, CA.
  */
@@ -38,7 +38,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 	private Canvas canvas = null;
 	
 	/** The movie stream to get width, height, channel info */
-	private MovieStream movieStream = null;
+	private MoviePlayer moviePlayer = null;
 	
 	/** The color space for this the data provided */
 	private ColorSpace colorSpace = null;
@@ -92,36 +92,36 @@ public class VideoStreamListenerContainer implements StreamListener {
 	 * Creates a video display through a stream listener. The display is added
 	 * to the container.
 	 * 
-	 * @param movieStream The underlying movie stream that provides data.
+	 * @param moviePlayer The underlying movie stream that provides data.
 	 * @param container The container we add the originalImage display.
 	 * @param colorSpace The color space for the originalImage data.
 	 */
-	public VideoStreamListenerContainer(MovieStream movieStream,
+	public VideoStreamListenerContainer(MoviePlayer moviePlayer,
 										Container container, ColorSpace colorSpace) {
-		this(movieStream, container, null, colorSpace);
+		this(moviePlayer, container, null, colorSpace);
 	}
 	
 	/**
 	 * Creates a video display through a stream listener. The display is added 
 	 * to the container using the constraint.
 	 * 
-	 * @param movieStream The underlying movie stream that provides data.
+	 * @param moviePlayer The underlying movie stream that provides data.
 	 * @param container The container we add the originalImage display.
 	 * @param constraints Constraint where to add this video display into the container.
 	 * @param colorSpace The color space for the originalImage data.
 	 */
-	public VideoStreamListenerContainer(MovieStream movieStream,
+	public VideoStreamListenerContainer(MoviePlayer moviePlayer,
 										Container container, Object constraints, ColorSpace colorSpace) {
-		this.movieStream = movieStream;
+		this.moviePlayer = moviePlayer;
 		this.colorSpace = colorSpace;
 		initImageDisplay(container, constraints);
 	}
 
 	@Override
 	public void streamOpened() {
-		int width = movieStream.getWidth();
-		int height = movieStream.getHeight();
-		int nChannel = movieStream.getNumberOfColorChannels();
+		int width = moviePlayer.getWidth();
+		int height = moviePlayer.getHeight();
+		int nChannel = moviePlayer.getNumberOfColorChannels();
 		cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE);
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
@@ -139,8 +139,8 @@ public class VideoStreamListenerContainer implements StreamListener {
 	@Override
 	public void streamData(byte[] data) {
 		// Width and height could have changed due to the view
-		int width = movieStream.getWidth();
-		int height = movieStream.getHeight();
+		int width = moviePlayer.getWidth();
+		int height = moviePlayer.getHeight();
         logger.debug("Received " + data.length + " By for originalImage: " + width + " x " + height + " pixels.");
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		// Create data buffer
@@ -162,7 +162,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 	
 	@Override
 	public void streamStarted() {
-		// start displaying
+		// play displaying
 		doPaint = true;
 		// display the current frame
 		canvas.repaint();
@@ -181,8 +181,8 @@ public class VideoStreamListenerContainer implements StreamListener {
      */
 	private BufferedImage resizeImage(BufferedImage image, float scale) {
 	    if (Math.abs(scale - 1.0f) > Math.ulp(1.0f)) {
-            int oldWidth = movieStream.getWidth();
-            int oldHeight = movieStream.getHeight();
+            int oldWidth = moviePlayer.getWidth();
+            int oldHeight = moviePlayer.getHeight();
             int newWidth = (int) Math.floor(scale*oldWidth);
             int newHeight = (int) Math.floor(scale*oldHeight);
             Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
@@ -199,13 +199,6 @@ public class VideoStreamListenerContainer implements StreamListener {
 	@SuppressWarnings("unused") // API method
 	public void setScale(float newScale) {
         // We rescale the originalImage if the scale is strongly update the originalImage
-        if (Math.abs(newScale - scale) > SCALE_RESIZE_THRESHOLD) {
-            logger.info("Changing from %2.3f scale to %2.3f.", scale, newScale);
-            scale = newScale;
-            scaledImage = resizeImage(originalImage, newScale);
-            // Must set doPaint to true, it's fine not to set it back
-            doPaint = true;
-            canvas.repaint();
-        }
+        // TODO: Implement this differently
     }
 }

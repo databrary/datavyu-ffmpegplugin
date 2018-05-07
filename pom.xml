@@ -38,7 +38,7 @@
                     <optimize>true</optimize>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <!-- Note all paths start off from sourceDirectory -->
+                    <!-- Note all paths play off from sourceDirectory -->
                     <excludes>
                         <exclude>org/datavyu/plugins/ffmpegplayer/prototypes/*.java</exclude>
                     </excludes>

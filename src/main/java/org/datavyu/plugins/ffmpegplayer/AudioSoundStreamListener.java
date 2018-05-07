@@ -19,7 +19,7 @@ public class AudioSoundStreamListener implements StreamListener {
 			AudioFormat.Encoding.PCM_UNSIGNED, 0, 0, 2, 0, 0, false);
 
 	/** The underlying movie stream, used to get the audio format */
-	private MovieStream movieStream = null;
+	private MoviePlayer moviePlayer = null;
 	
 	/** The sound line to write the data */
 	private SourceDataLine soundLine = null;
@@ -32,13 +32,13 @@ public class AudioSoundStreamListener implements StreamListener {
 	 * 
 	 * @param movieStream The underlying movie stream.
 	 */
-	public AudioSoundStreamListener(MovieStream movieStream) {
-		this.movieStream = movieStream;
+	public AudioSoundStreamListener(MoviePlayer movieStream) {
+		this.moviePlayer = movieStream;
 	}
 
 	@Override
 	public void streamOpened() {
-		AudioFormat audioFormat = movieStream.getAudioFormat();
+		AudioFormat audioFormat = moviePlayer.getAudioFormat();
 		try {
 			// Get the data line
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
