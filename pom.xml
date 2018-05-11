@@ -118,5 +118,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>datavyu</groupId>
+            <artifactId>ffmpeg-libs</artifactId>
+            <version>0.4</version>
+        </dependency>
+
     </dependencies>
 </project>
