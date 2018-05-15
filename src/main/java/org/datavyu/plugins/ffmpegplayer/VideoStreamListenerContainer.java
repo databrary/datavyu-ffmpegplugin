@@ -71,21 +71,39 @@ public class VideoStreamListenerContainer implements StreamListener {
 			private static final long serialVersionUID = 5471924216942753555L;
 
 			@Override
+			public void update(Graphics g){ paint(g);}
+			@Override
         	public void paint(Graphics g) {
-				// If not doPaint display the next originalImage
-				if (doPaint) {
-	        		g.drawImage(scaledImage, 0, 0, null);
-				}
+				// Calling BufferStrategy.show() could throws
+				// exceptions
+				try {
+					BufferStrategy strategy = canvas.getBufferStrategy();
+					if(strategy == null){
+						createBufferStrategy(3);
+					}
+					do {
+						do {
+							g = strategy.getDrawGraphics();
+							if (originalImage != null) {
+								// If not doPaint display the next originalImage
+								if(doPaint){
+									g.drawImage(originalImage, 0, 0,getWidth(), getHeight(),  null);
+								}
+							}
+							g.dispose();
+						} while (strategy.contentsRestored());
+						strategy.show();
+					} while (strategy.contentsLost());
+				} catch (Exception e) {}
         	}
-			public void update(Graphics g){
-			    paint(g);
-			}
 		};
+
         if (constraints != null) {
         	container.add(canvas, constraints);
         } else {
             container.add(canvas);
-        }		
+        }
+		canvas.setVisible(true);
 	}
 
 	/**
@@ -131,7 +149,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// Create the original image
 		originalImage = new BufferedImage(cm, raster, false, properties);
 		// Resize that image according to the scale
-		scaledImage = resizeImage(originalImage, scale);
+//		scaledImage = resizeImage(originalImage, scale);
 		// Paint the image
         doPaint = true;
 	}
@@ -150,9 +168,9 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// Create the original image
         originalImage = new BufferedImage(cm, raster, false, properties);
         // Resize the original image
-        scaledImage = resizeImage(originalImage, scale);
+//        scaledImage = resizeImage(originalImage, scale);
         // Paint the image
-		canvas.repaint();
+		canvas.paint(null);
 	}
 
 	@Override
@@ -165,7 +183,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// start displaying
 		doPaint = true;
 		// display the current frame
-		canvas.repaint();
+		canvas.paint(null);
 	}
 	
 	@Override
@@ -174,7 +192,9 @@ public class VideoStreamListenerContainer implements StreamListener {
 		doPaint = false;
 	}
 
-    /**
+
+	//TODO REMOVE resizeImage and setScale methods
+	/**
      * Resizes the buffered originalImage and returns the resized originalImage
      * @param image
      * @return
@@ -205,7 +225,7 @@ public class VideoStreamListenerContainer implements StreamListener {
             scaledImage = resizeImage(originalImage, newScale);
             // Must set doPaint to true, it's fine not to set it back
             doPaint = true;
-            canvas.repaint();
+            canvas.paint(null);
         }
     }
 }
