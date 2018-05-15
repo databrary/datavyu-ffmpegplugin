@@ -48,6 +48,12 @@ public class NativeLibraryLoader {
 
     private static boolean isMacOs = System.getProperty("os.name").contains("Mac");
 
+    /** Buffer size when copying files from streams */
+    public static final int BUFFER_COPY_SIZE = 16*1024; // 16 kB
+
+    /** Native Library Extension */
+    private static String extension;
+
     /**
      * Get resource URL for a given library name that is part of the jar.
      *
@@ -57,41 +63,19 @@ public class NativeLibraryLoader {
      */
     private static URL getResource(String libName) throws Exception {
         Enumeration<URL> resources;
-        String extension;
         ClassLoader classLoader = NativeLibraryLoader.class.getClassLoader();
         if (isMacOs) {
-            extension = ".jnilib";
-            resources = classLoader.getResources("lib" + libName + extension);
+            extension = "jnilib";
+            resources = classLoader.getResources("lib" + libName + "." + extension);
             if (!resources.hasMoreElements()) {
-                extension = ".dylib";
-                resources = classLoader.getResources(libName + extension);
+                extension = "dylib";
+                resources = classLoader.getResources(libName + "." + extension);
             }
         } else {
-            extension = ".dll";
-            resources = classLoader.getResources(libName + extension);
+            extension = "dll";
+            resources = classLoader.getResources(libName + "." + extension);
         }
         return resources.hasMoreElements() ? resources.nextElement() : null;
-    }
-
-    /**
-     * Get the file extension for a library name.
-     *
-     * @param libName The library name.
-     * @return The extension as string.
-     * @throws Exception Could come from the class loader.
-     */
-    private static String getExtension(String libName) throws Exception {
-        String extension;
-        if (isMacOs) {
-            extension = ".jnilib";
-            if (!NativeLibraryLoader.class.getClassLoader()
-                    .getResources("lib" + libName + extension).hasMoreElements()) {
-                extension = ".dylib";
-            }
-        } else {
-            extension = ".dll";
-        }
-        return extension;
     }
 
     /**
@@ -120,12 +104,12 @@ public class NativeLibraryLoader {
         logger.info("Attempting to extract " + destName);
         URL url = getResource(destName);
         InputStream in = url.openStream();
-        File outfile = new File(libraryFolder, destName + getExtension(destName));
+        File outfile = new File(libraryFolder, destName + "." + extension);
         FileOutputStream out = new FileOutputStream(outfile);
-        BufferedOutputStream dest = new BufferedOutputStream(out, 16*1024);
+        BufferedOutputStream dest = new BufferedOutputStream(out, BUFFER_COPY_SIZE);
         int count;
-        byte[] data = new byte[16*1024];
-        while ((count = in.read(data, 0, 16*1024)) != -1) {
+        byte[] data = new byte[BUFFER_COPY_SIZE];
+        while ((count = in.read(data, 0, BUFFER_COPY_SIZE)) != -1) {
             dest.write(data, 0, count);
         }
         dest.close();  // close flushes

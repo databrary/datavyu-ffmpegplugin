@@ -21,6 +21,7 @@ public class MovieStream implements VideoStream, AudioStream {
      */
     static {
         try{
+            /** FFmpeg 4.0 Libraries*/
             NativeLibraryLoader.extract("swscale-5");
             NativeLibraryLoader.extract("swresample-3");
             NativeLibraryLoader.extract("avcodec-58");
