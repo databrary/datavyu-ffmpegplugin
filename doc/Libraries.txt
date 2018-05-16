@@ -90,6 +90,10 @@ From release 3.3 onward I added these flags:
 --disable-ffserver --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-ffmpeg
 to disable the compile of the various executables. We are only interested in the dll's anyways.
 
+Release 4.0: remove the option --disbale-ffserver, full command for FFmpeg 4.0:
+./configure --toolchain=msvc --enable-swscale --enable-asm --enable-yasm --target-os=win64 --arch=x86_64 --enable-shared --disable-static --disable-avdevice --disable-doc --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-w32threads
+
+
 The error that I ran into was with a wrong include order of windows.h and winsock2.h. E.g. search for:
 winsock2.h(2171): error C2375: 'socket': redefinition; different linkag
 
