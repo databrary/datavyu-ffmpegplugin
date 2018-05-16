@@ -436,7 +436,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
             frame.addComponentListener(new ComponentListener() {
                 public void componentResized(ComponentEvent e) {
                     float scale = ((float) frame.getHeight())/movieStreamProvider.getHeightOfView();
-                    displayListener.setScale(scale);
+//                    displayListener.setScale(scale);
                 }
 
                 @Override

@@ -32,7 +32,7 @@ public class MoviePlayerFrame extends Frame implements MoviePlayer {
 
     @Override
     public void setScale(float scale) {
-        videoStreamListenerContainer.setScale(scale);
+//        videoStreamListenerContainer.setScale(scale);
         setSize(new Dimension((int) scale*movieStreamProvider.getWidthOfView(),
                 (int) scale*movieStreamProvider.getHeightOfView()));
     }
