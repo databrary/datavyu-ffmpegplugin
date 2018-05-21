@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.sound.sampled.AudioFormat;
-import java.awt.*;
+import javax.swing.*;
 import java.awt.color.ColorSpace;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,13 +14,13 @@ import java.util.List;
 public class MeasureFrameRate {
 
     private MediaPlayer mediaPlayer;
-    private Frame frame;
+    private JFrame frame;
     private static final int TIME_OUT_SEC = 10;
 
     private MeasureFrameRate(String movieFileName, float speed) {
         ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
-        frame = new Frame();
+        frame = new JFrame();
         mediaPlayer = MediaPlayer.newBuilder()
                 .setFileName(movieFileName)
                 .setAudioFormat(audioFormat)

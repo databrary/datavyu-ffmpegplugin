@@ -3,9 +3,11 @@ package org.datavyu.plugins.ffmpegplayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
 /**
@@ -49,37 +51,13 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 
 	private BufferStrategy strategy;
 
-	private void updateDisplay() {
-	    // See https://docs.oracle.com/javase/7/docs/api/java/awt/image/BufferStrategy.html
-        // Render single frame
-        do {
-            // The following loop ensures that the contents of the drawing buffer
-            // are consistent in case the underlying surface was recreated
-            do {
-                // Get a new graphics context every time through the loop
-                // to make sure the strategy is validated
-                Graphics graphics = strategy.getDrawGraphics();
+	/** Parent JFrame */
+	private JFrame frame;
 
-                // Render to graphics
-                // ...
-                if (image != null && doPaint) {
-                    graphics.drawImage(image, 0, 0, width, height,  null);
-                }
+	private ColorSpace colorSpace;
 
-                // Dispose the graphics
-                graphics.dispose();
+	private Canvas canvas;
 
-                // Repeat the rendering if the drawing buffer contents
-                // were restored
-            } while (strategy.contentsRestored());
-
-            // Display the buffer
-            strategy.show();
-
-            // Repeat the rendering if the drawing buffer was lost
-        } while (strategy.contentsLost());
-    }
-	
 	/**
 	 * Creates a video display through a stream listener. The display is added 
 	 * to the container using the constraint.
@@ -87,32 +65,95 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
      * @param frame The frame that is used for drawing the image on.
 	 * @param colorSpace The color space for the image data.
 	 */
-	public ImageStreamListenerFrame(Frame frame, ColorSpace colorSpace) {
-		this.cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
-				DataBuffer.TYPE_BYTE);
+	public ImageStreamListenerFrame(JFrame frame, ColorSpace colorSpace) {
         // TODO: Change the implementation to the triple buffering in the Canvas and resize there directly
-        // Set defaults
-        SampleModel sm = cm.createCompatibleSampleModel(width, height);
-        // Initialize an empty image
-        DataBufferByte dataBuffer = new DataBufferByte(new byte[width* height *INITIAL_NUM_CHANNEL],
-                width* height);
-        WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-        // Create the original image
-        image = new BufferedImage(cm, raster, false, properties);
-        // Make the canvas visible
-        frame.setBounds(0, 0, width, height);
-        frame.setVisible(true);
-        // Create a buffer strategy
-        frame.createBufferStrategy(2);
-        strategy = frame.getBufferStrategy();
+		this.frame = frame;
+		this.colorSpace = colorSpace;
+		init();
+
     }
+
+    private void init(){
+		Runnable init = () -> {
+			//Creating an empty image may not be useful
+			cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
+					DataBuffer.TYPE_BYTE);
+			// Set defaults
+			SampleModel sm = cm.createCompatibleSampleModel(width, height);
+			// Initialize an empty image
+			DataBufferByte dataBuffer = new DataBufferByte(new byte[width* height *INITIAL_NUM_CHANNEL],
+					width* height);
+			WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
+			// Create the original image
+			image = new BufferedImage(cm, raster, false, properties);
+
+
+			frame.setBounds(0, 0, width, height);
+			frame.setVisible(true);
+
+			//Initialize the Canvas
+			initCanvas();
+		};
+		if(EventQueue.isDispatchThread()){
+			init.run();
+		}else {
+			try {
+				EventQueue.invokeAndWait(init);
+			} catch (InterruptedException e) {
+				logger.warn(e);
+			} catch (InvocationTargetException e) {
+				logger.warn(e);
+			}
+		}
+	}
+
+	private void initCanvas() {
+		canvas = new Canvas() {
+			private static final long serialVersionUID = 5471924216942753555L;
+
+			@Override
+			public void update(Graphics g){ paint(g);}
+			@Override
+			public void paint(Graphics g) {
+				// Calling BufferStrategy.show() could throws
+				// exceptions
+				try {
+					BufferStrategy strategy = canvas.getBufferStrategy();
+					if(strategy == null){
+						createBufferStrategy(3);
+					}
+					do {
+						do {
+							g = strategy.getDrawGraphics();
+							if (image != null) {
+								// If not doPaint display the next originalImage
+								if(doPaint){
+									g.drawImage(image, 0, 0,getWidth(), getHeight(),  null);
+								}
+							}
+							g.dispose();
+						} while (strategy.contentsRestored());
+						strategy.show();
+					} while (strategy.contentsLost());
+				} catch (Exception e) { logger.warn("Buffer Strategy Exception: " + e); }
+			}
+		};
+
+		//TODO ADD an initial resize boolean to see if we need to resize after the first frame
+
+		if (frame != null) {
+			frame.getContentPane().add(canvas);
+		}
+		canvas.setVisible(true);
+	}
+
 
 	@Override
 	public void streamOpened() {
 		// Paint the image
         doPaint = true;
         // Update the display with the image content
-        updateDisplay();
+		canvas.paint(null);
 	}
 
     @Override
@@ -134,7 +175,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 		// Create the original image
         image = new BufferedImage(cm, raster, false, properties);
         // Paint the image
-		updateDisplay();
+		canvas.paint(null);
 	}
 
 	@Override
@@ -147,7 +188,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 		// play displaying
 		doPaint = true;
 		// display the current frame
-		updateDisplay();
+		canvas.paint(null);
 	}
 	
 	@Override

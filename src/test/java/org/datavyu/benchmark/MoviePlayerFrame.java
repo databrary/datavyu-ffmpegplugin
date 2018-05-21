@@ -5,10 +5,11 @@ import org.datavyu.plugins.ffmpegplayer.MediaPlayer;
 import org.datavyu.plugins.ffmpegplayer.ImageStreamListenerFrame;
 
 import javax.sound.sampled.AudioFormat;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 
-public class MoviePlayerFrame extends Frame implements MoviePlayerControl {
+public class MoviePlayerFrame extends JFrame implements MoviePlayerControl {
 
     private MediaPlayer mediaPlayer;
 

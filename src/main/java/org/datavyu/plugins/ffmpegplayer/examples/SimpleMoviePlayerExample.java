@@ -6,7 +6,7 @@ import org.datavyu.plugins.ffmpegplayer.MediaPlayer;
 import org.datavyu.plugins.ffmpegplayer.ImageStreamListenerFrame;
 
 import javax.sound.sampled.AudioFormat;
-import java.awt.*;
+import javax.swing.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SimpleMoviePlayerExample {
     MediaPlayer mediaPlayer;
-    final Frame frame;
+    final JFrame frame;
 
     public SimpleMoviePlayerExample(String movieFileName) throws IOException {
         this(movieFileName, "0.0.0.1");
@@ -26,7 +26,7 @@ public class SimpleMoviePlayerExample {
     public SimpleMoviePlayerExample(String movieFileName, String version) throws MediaException {
         final ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
-        frame = new Frame();
+        frame = new JFrame();
         mediaPlayer = MediaPlayer.newBuilder()
                 .setFileName(movieFileName)
                 .setVersion(version)
