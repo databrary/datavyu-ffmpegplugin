@@ -321,7 +321,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	}
 
     private class MoviePlayerFrame {
-        final Frame frame;
+        final JFrame frame;
         MediaPlayer mediaPlayer;
 
         MoviePlayerFrame(String movieFileName) {
@@ -332,7 +332,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
             final ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             final AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
 
-            frame = new Frame();
+            frame = new JFrame();
             frame.addWindowListener( new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {
                     mediaPlayer.close();
