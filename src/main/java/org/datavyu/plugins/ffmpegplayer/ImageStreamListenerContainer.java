@@ -29,10 +29,7 @@ public class ImageStreamListenerContainer implements ImageStreamListener {
 	private Hashtable<String, String> properties = new Hashtable<>();
 	
 	/** This is the original image that is been read from the native side */
-	private BufferedImage image = null;
-
-	/** The canvas that we draw the image in */
-	private Canvas canvas = null;
+	private BufferedImage image;
 
 	private int width = INITIAL_WIDTH;
 
@@ -49,36 +46,39 @@ public class ImageStreamListenerContainer implements ImageStreamListener {
 	 * the this video listener. 
 	 */
 	private boolean doPaint = false;
-	
-	/**
-	 * Initialized the image display and adds it to the supplied container with
-	 * the supplied constraint. If the constraint is null it uses the add method
-	 * on the container without constraint.
-	 * 
-	 * @param container The container that the display is added to
-	 * @param constraints The constraint used when adding
-	 */
-	private void initImageDisplay(Container container, Object constraints) {
-		canvas = new Canvas() {
-			private static final long serialVersionUID = 5471924216942753555L;
 
-			@Override
-        	public void paint(Graphics g) {
-				// If not doPaint display the next image
-				if (doPaint) {
-	        		g.drawImage(image, 0, 0, null);
-				}
-        	}
-			public void update(Graphics g){
-			    paint(g);
-			}
-		};
-        if (constraints != null) {
-        	container.add(canvas, constraints);
-        } else {
-            container.add(canvas);
-        }		
-	}
+	private BufferStrategy strategy;
+
+	private void updateDisplay() {
+	    // See https://docs.oracle.com/javase/7/docs/api/java/awt/image/BufferStrategy.html
+        // Render single frame
+        do {
+            // The following loop ensures that the contents of the drawing buffer
+            // are consistent in case the underlying surface was recreated
+            do {
+                // Get a new graphics context every time through the loop
+                // to make sure the strategy is validated
+                Graphics graphics = strategy.getDrawGraphics();
+
+                // Render to graphics
+                // ...
+                if (image != null && doPaint) {
+                    graphics.drawImage(image, 0, 0, width, height,  null);
+                }
+
+                // Dispose the graphics
+                graphics.dispose();
+
+                // Repeat the rendering if the drawing buffer contents
+                // were restored
+            } while (strategy.contentsRestored());
+
+            // Display the buffer
+            strategy.show();
+
+            // Repeat the rendering if the drawing buffer was lost
+        } while (strategy.contentsLost());
+    }
 	
 	/**
 	 * Creates a video display through a stream listener. The display is added 
@@ -91,7 +91,6 @@ public class ImageStreamListenerContainer implements ImageStreamListener {
 	public ImageStreamListenerContainer(Container container, Object constraints, ColorSpace colorSpace) {
 		this.cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE);
-		initImageDisplay(container, constraints);
         // TODO: Change the implementation to the triple buffering in the Canvas and resize there directly
         // Set defaults
         SampleModel sm = cm.createCompatibleSampleModel(width, height);
@@ -101,18 +100,37 @@ public class ImageStreamListenerContainer implements ImageStreamListener {
         WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
+        // Create the canvas to paint on
+        Canvas canvas = new Canvas();
+        // Add the canvas to the container with the given constraint -- if any is given
+        if (constraints != null) {
+            container.add(canvas, constraints);
+        } else {
+            container.add(canvas);
+        }
+        // Make the canvas visible
+        container.setPreferredSize(new Dimension(width, height));
+        canvas.setVisible(true);
+        container.setVisible(true);
+
+        // Create a buffer strategy
+        canvas.createBufferStrategy(2);
+        strategy = canvas.getBufferStrategy();
     }
 
 	@Override
 	public void streamOpened() {
 		// Paint the image
         doPaint = true;
+        // Update the display with the image content
+        updateDisplay();
 	}
 
     @Override
     public void streamNewImageSize(int newWidth, int newHeight) {
         this.width = newWidth;
         this.height = newHeight;
+        //canvas.setPreferredSize(new Dimension(newWidth, newHeight));
     }
 
     @Override
@@ -126,7 +144,7 @@ public class ImageStreamListenerContainer implements ImageStreamListener {
 		// Create the original image
         image = new BufferedImage(cm, raster, false, properties);
         // Paint the image
-		canvas.repaint();
+		updateDisplay();
 	}
 
 	@Override
@@ -139,7 +157,7 @@ public class ImageStreamListenerContainer implements ImageStreamListener {
 		// play displaying
 		doPaint = true;
 		// display the current frame
-		canvas.repaint();
+		updateDisplay();
 	}
 	
 	@Override

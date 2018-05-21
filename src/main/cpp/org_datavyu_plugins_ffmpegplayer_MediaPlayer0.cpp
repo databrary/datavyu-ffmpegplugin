@@ -351,7 +351,7 @@ public:
     }
 
     inline int64_t limitToRange(int64_t target) {
-        // TODO: Fixme sometime. Here we make sure not to jump to the end but it depends on the accuracy of the duration.
+        // TODO(fraudies): Here we make sure not to jump to the end but it depends on the accuracy of the duration.
         int64_t after = std::min(std::max(target, pImageStream->start_time),
                                          pImageStream->start_time + pImageStream->duration - 5*avgDeltaPts);
         // Not to jump all the way to the end is necessary because we need at least one frame after the current one to
@@ -363,47 +363,6 @@ public:
                       (pImageStream->start_time + pImageStream->duration)/avgDeltaPts);
         return after;
     }
-
-    /*
-    // TODO: Remove this?
-    int synchronize_audio(VideoState *is, int nb_samples) {
-        int wanted_nb_samples = nb_samples;
-
-        // if not master, then we try to remove or add samples to correct the clock
-        if (getMasterSyncType(is) != AV_SYNC_AUDIO_MASTER) {
-            double diff, avgDiff;
-            int min_nb_samples, max_nb_samples;
-
-            diff = pAudioClock->getTime() - getMasterClockTime();
-
-            if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD) {
-                audioDiffCum = diff + audioDiffAvgCoef * audioDiffCum;
-                if (is->audio_diff_avg_count < AUDIO_DIFF_AVG_NB) {
-                    // not enough measures to have a correct estimate
-                    is->audio_diff_avg_count++;
-                } else {
-                    // estimate the A-V difference
-                    avgDiff = audioDiffCum * (1.0 - audioDiffAvgCoef);
-
-                    if (fabs(avgDiff) >= audioDiffThreshold) {
-                        wanted_nb_samples = nb_samples + (int)(diff * is->audio_src.freq);
-                        min_nb_samples = ((nb_samples * (100 - SAMPLE_CORRECTION_PERCENT_MAX) / 100));
-                        max_nb_samples = ((nb_samples * (100 + SAMPLE_CORRECTION_PERCENT_MAX) / 100));
-                        wanted_nb_samples = av_clip(wanted_nb_samples, min_nb_samples, max_nb_samples);
-                    }
-                    av_log(NULL, AV_LOG_TRACE, "diff=%f adiff=%f sample_diff=%d apts=%0.3f %f\n",
-                            diff, avg_diff, wanted_nb_samples - nb_samples,
-                            is->audio_clock, is->audio_diff_threshold);
-                }
-            } else {
-                // too big difference : may be initial PTS errors, so reset A-V filter
-                is->audio_diff_avg_count = 0;
-                is->audio_diff_cum       = 0;
-            }
-        }
-        return wanted_nb_samples;
-    }
-    */
 
     /**
      * Synchronize the audio to the system clock by adding (repeating last sample)
@@ -680,7 +639,7 @@ public:
             if (seekReq) {
                 seekReq = false;
                 int64_t target = seekPts;
-                int64_t delta = 0; // TODO: Fix seek!
+                int64_t delta = 0; // TODO(fraudies): Fix seek here
                 int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
                 int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
                 int seekFlags = 0;
@@ -742,6 +701,7 @@ public:
                         // Get the next writable buffer. This may block and can be unblocked by flushing
                         Frame* pFrame;
 
+                        // TODO(fraudies): Check that the allocation happens in the frame write request
                         //pFrameBuffer->writeRequestWithAllocate(pFrame, *pSrcAVFrame);
                         pFrameBuffer->writeRequest(&pFrame);
 
@@ -749,14 +709,14 @@ public:
                         if (pFrame) {
 
                             // Convert the image from its native color format into the RGB color format
-                            // TODO: Add resize here
+                            // TODO(fraudies): Add resize here
                             sws_scale(
                                 pSwsImageCtx,
                                 (uint8_t const * const *)pSrcAVFrame->data,
                                 pSrcAVFrame->linesize,
                                 0,
                                 pImageCodecCtx->height,
-                                pFrame->frame->data, // TODO: Check me, but should be fine
+                                pFrame->frame->data,
                                 pFrame->frame->linesize);
 
                             pts = (readPts == AV_NOPTS_VALUE) ? NAN : readPts * av_q2d(timeBase);
@@ -840,7 +800,7 @@ public:
                 bool isSpeedOne = fabs(speed-1.0) <= std::numeric_limits<float>::epsilon();
 
                 // If we switch from playing sound to not play sound or vice versa
-                // TODO: Disable/enable sound decoding
+                // TODO(fraudies): Disable/enable sound decoding
                 if (!playSound && isSpeedOne || playSound && !isSpeedOne) {
                     pAudioBuffer->flush();
                     avcodec_flush_buffers(pAudioInCodecCtx);
@@ -919,15 +879,8 @@ public:
             return nFrame;
         }
 
-        // Free the previously shown av frame (if it does exist)
-        // TODO: Check this for any memory problems
-        //av_frame_unref(pAVFrameShow);
-
         pAVFrameShow = pCurrentFrame->frame;
-        //av_frame_move_ref(pAVFrameShow, pCurrentFrame->frame);
 
-        // We displayed a frame
-        //pLogger->info("Return frame for time: %I64d.", pCurrentFrame->pts);
         if (!isnan(pCurrentFrame->pts)) {
             AVClock::syncMasterToSlave(pExternalClock, pVideoClock, AV_NOSYNC_THRESHOLD);
         }
@@ -1580,7 +1533,7 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_get
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setAudioSyncDelay0(JNIEnv *env,
     jclass thisClass, jint streamId, jlong delay) {
-    // TODO: Wire this up properly
+    // TODO(fraudies): Wire this up
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_play0(JNIEnv *env, jclass thisClass,

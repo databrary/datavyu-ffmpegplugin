@@ -230,7 +230,14 @@ public class MediaPlayer extends MediaPlayer0 {
             }
 
             setStatus(Status.READY);
+
+            // Do we need to play
+            checkPlay();
         }
+    }
+
+    private boolean isReady() {
+        return status == Status.READY;
     }
 
     private abstract class RunnableWithStopHook implements Runnable {
@@ -247,6 +254,8 @@ public class MediaPlayer extends MediaPlayer0 {
 		@Override
 		public void run() {
 		    doRun = true;
+
+            // Introduce an "onReady event from player"
 
             logger.info("Stream %d: Starting audio thread.", getStreamId());
 
@@ -335,32 +344,56 @@ public class MediaPlayer extends MediaPlayer0 {
         }
     }
 
+    private boolean playRequested = false;
+
+    private void checkPlay() {
+        if (playRequested) {
+            play0(streamId);
+            playback.parallelStream().forEach(r -> threads.submit(r));
+        }
+    }
+
 	@Override
 	public void play() {
-        play0(streamId);
-        playback.parallelStream().forEach(r -> threads.submit(r));
-        setStatus(Status.PLAYING);
+        if (isReady()) {
+            play0(streamId);
+            playback.parallelStream().forEach(r -> threads.submit(r));
+        } else {
+            playRequested = true;
+        }
 	}
 
     @Override
     public void stop() {
-        stop0(streamId);
-        playback.parallelStream().forEach(r -> r.stop());
-        setStatus(Status.STOPPED);
+        if (isReady()) {
+            stop0(streamId);
+            playback.parallelStream().forEach(r -> r.stop());
+            setStatus(Status.STOPPED);
+        } else {
+            playRequested = false;
+        }
     }
 
     @Override
     public void pause() {
-        pause0(streamId);
-        playback.parallelStream().forEach(r -> r.stop());
-        setStatus(Status.PAUSED);
+        if (isReady()) {
+            pause0(streamId);
+            playback.parallelStream().forEach(r -> r.stop());
+            setStatus(Status.PAUSED);
+        } else {
+            playRequested = false;
+        }
     }
 
     @Override
     public void close() {
-        stop();
-        close0(streamId);
-        setStatus(Status.DISPOSED);
+	    if (isReady()) {
+            stop();
+            close0(streamId);
+            setStatus(Status.DISPOSED);
+        } else {
+            playRequested = false;
+        }
     }
 
     @Override

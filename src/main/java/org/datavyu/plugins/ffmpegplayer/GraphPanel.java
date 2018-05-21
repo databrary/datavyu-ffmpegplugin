@@ -74,11 +74,14 @@ public class GraphPanel extends JPanel {
         this.points = points;
         this.xRange = xRange;
         this.yRange = yRange;
+        validate();
         repaint();
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
+
+        super.paintComponent(g); // draw background
 
         // Get the first point
         Point first = points.remove(0);

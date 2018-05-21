@@ -64,12 +64,8 @@ public class AudioVisualizer implements StreamListener {
     }
 
     @Override
-    public void streamStopped() {
-
-    }
+    public void streamStopped() { }
 
     @Override
-    public void streamStarted() {
-
-    }
+    public void streamStarted() { }
 }
