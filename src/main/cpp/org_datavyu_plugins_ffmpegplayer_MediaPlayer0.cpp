@@ -301,7 +301,7 @@ public:
     /* pause or resume the video */
     void pause() {
         if (paused) {
-            frameTimer += av_gettime_relative() / 1000000.0 - pVideoClock->getLastUpdated();
+            frameTimer += AVClock::getSystemTimeRelative() / 1000000.0 - pVideoClock->getLastUpdated();
             pVideoClock->setTime(pVideoClock->getTime());
         }
         pExternalClock->setTime(pExternalClock->getTime());
@@ -317,6 +317,8 @@ public:
 
         /* update delay to follow master synchronisation source */
         if (getMasterSyncType() != AV_SYNC_VIDEO_MASTER) {
+            pLogger->info("Sync video clock with master");
+
             /* if video is slave, we try to correct big delays by
                duplicating or deleting a frame */
             diff = pVideoClock->getTime() - getMasterClockTime();
@@ -875,7 +877,7 @@ public:
 
             lastDuration = getDurationBetweenFrames(pLastFrame, pCurrentFrame);
             delay = computeTargetDelay(lastDuration);
-            time = av_gettime_relative()/1000000.0;
+            time = AVClock::getSystemTimeRelative()/1000000.0;
 
             if (paused) {
                 break;
@@ -925,9 +927,10 @@ public:
         //av_frame_move_ref(pAVFrameShow, pCurrentFrame->frame);
 
         // We displayed a frame
-        pLogger->info("Return frame for time: %I64d.", pCurrentFrame->pts);
-
-        AVClock::syncMasterToSlave(pExternalClock, pVideoClock, AV_NOSYNC_THRESHOLD);
+        //pLogger->info("Return frame for time: %I64d.", pCurrentFrame->pts);
+        if (!isnan(pCurrentFrame->pts)) {
+            AVClock::syncMasterToSlave(pExternalClock, pVideoClock, AV_NOSYNC_THRESHOLD);
+        }
 
         // Return the number of read frames; the number may be larger than 1
         return nFrame;
@@ -977,7 +980,7 @@ public:
         if (!isnan(audioTime)) {
             pAudioClock->setClockAt(
                 audioTime - (double)(2 * decodeLen) / audioBytesPerSecond,
-                av_gettime_relative() / 1000000.0
+                AVClock::getSystemTimeRelative() / 1000000.0
             );
             AVClock::syncMasterToSlave(pExternalClock, pAudioClock, AV_NOSYNC_THRESHOLD);
         }
@@ -1171,8 +1174,6 @@ public:
 
     jobject getFrameBuffer(JNIEnv* env) {
         // No movie was loaded return nullptr.
-        pLogger->info("Get frame buffer %p", pAVFrameShow->data[0]);
-
         if (!hasVideoStream()) return 0;
 
         // Construct a new direct byte buffer pointing to data from pAVFrameShow.

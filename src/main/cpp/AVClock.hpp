@@ -21,16 +21,11 @@ private:
         this->paused = clock.paused;
         locker.unlock();
     }
-    double getSystemTime() {
-        using namespace std;
-        using namespace std::chrono;
-        return duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
-    }
 public:
     AVClock() :
         pts(NAN),
         ptsDrift(NAN),
-        lastUpdate(getSystemTime() / 1000000.0),
+        lastUpdate(getSystemTimeRelative() / 1000000.0),
         speed(1.0),
         paused(false) {}
     void setPaused(bool paused) {
@@ -44,7 +39,7 @@ public:
     }
     void setTime(double pts) {
         std::unique_lock<std::mutex> locker(mu);
-        double time = getSystemTime() / 1000000.0;
+        double time = getSystemTimeRelative() / 1000000.0;
         this->pts = pts;
         this->lastUpdate = time;
         this->ptsDrift = pts - time;
@@ -63,7 +58,7 @@ public:
         if (paused) {
             returnTime = pts;
         } else {
-            double time = getSystemTime() / 1000000.0;
+            double time = getSystemTimeRelative() / 1000000.0;
             returnTime = ptsDrift + time - (time - lastUpdate) * (1.0 - speed);
         }
         locker.unlock();
@@ -78,11 +73,20 @@ public:
     static void syncMasterToSlave(AVClock* master, AVClock* slave, double noSyncThreshold) {
         double masterTime = master->getTime();
         double slaveTime = slave->getTime();
-        if (!isnan(slaveTime) && (isnan(masterTime) || fabs(masterTime - slaveTime) < noSyncThreshold)) {
+        if (!isnan(slaveTime) && (isnan(masterTime) || fabs(masterTime - slaveTime) > noSyncThreshold)) {
             master->setClock(*slave);
             //std::cout << "Slave clock parameters after sync" << std::endl;
             //print(*slave);
         }
+    }
+    static double getSystemTime() {
+        using namespace std;
+        using namespace std::chrono;
+        return duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+    }
+    // Implementation of av_gettime_relative so we can make this available here w/out the avutil dependency
+    static double getSystemTimeRelative() {
+        return getSystemTime() + 42 * 60 * 60 * INT64_C(1000000);
     }
     static void print(const AVClock& clock) {
         std::cout << "AVClock parameters" << std::endl;
