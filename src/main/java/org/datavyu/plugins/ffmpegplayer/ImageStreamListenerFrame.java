@@ -6,8 +6,6 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.color.ICC_ColorSpace;
-import java.awt.color.ICC_ProfileRGB;
 import java.awt.image.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
@@ -60,6 +58,12 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 
 	private Canvas canvas;
 
+	/** A flag to see if we the canvas need to be resized */
+	private boolean needResize = true;
+
+	/** The scale of the canvas, default value is 1.0 */
+	private double canvasScale = 1.0;
+
 	/**
 	 * Creates a video display through a stream listener. The display is added 
 	 * to the container using the constraint.
@@ -68,7 +72,6 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	 * @param colorSpace The color space for the image data.
 	 */
 	public ImageStreamListenerFrame(JFrame frame, ColorSpace colorSpace) {
-        // TODO: Change the implementation to the triple buffering in the Canvas and resize there directly
 		this.frame = frame;
 		this.colorSpace = colorSpace;
 		init();
@@ -114,8 +117,6 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 
 	private void initCanvas() {
 		canvas = new Canvas() {
-			private static final long serialVersionUID = 5471924216942753555L;
-
 			@Override
 			public void update(Graphics g){ paint(g);}
 			@Override
@@ -143,8 +144,8 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 				} catch (Exception e) { logger.warn("Buffer Strategy Exception: " + e); }
 			}
 		};
-
-		//TODO ADD an initial resize boolean to see if we need to resize after the first frame
+		canvas.setSize(INITIAL_WIDTH,INITIAL_HEIGHT);
+		needResize = true;
 
 		if (frame != null) {
 			frame.getContentPane().add(canvas);
@@ -157,6 +158,15 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	public void streamOpened() {
 		// Paint the image
         doPaint = true;
+
+        //TODO Need to display the first image here
+        //Check if we need an initial resize
+		if(frame.isResizable() && needResize){
+			int width = (int)Math.round(image.getWidth(null)*canvasScale);
+			int height = (int) Math.round(image.getHeight(null)*canvasScale);
+			setCanvasSize(width,height);
+		}
+
         // Update the display with the image content
 		canvas.paint(null);
 	}
@@ -165,8 +175,6 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
     public void streamNewImageSize(int newWidth, int newHeight) {
         this.width = newWidth;
         this.height = newHeight;
-
-        // TODO: Need to update the buffer strategy here
 		setCanvasSize(newWidth,newHeight);
     }
 
@@ -180,6 +188,14 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
 		// Create the original image
         image = new BufferedImage(cm, raster, false, properties);
+
+        // Check if we need to resize the canvas
+		if(frame.isResizable() && needResize){
+			int width = (int)Math.round(image.getWidth(null)*canvasScale);
+			int height = (int) Math.round(image.getHeight(null)*canvasScale);
+			setCanvasSize(width,height);
+		}
+
         // Paint the image
 		canvas.paint(null);
 	}
@@ -207,6 +223,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	public void setScale(float newScale) {
         // We rescale the image if the scale is strongly update the image
         // TODO: Implement this differently
+		setCanvasScale(newScale);
     }
 
     public Dimension getCanvasSize() { return canvas.getSize(); }
@@ -219,9 +236,10 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 			return;
 		}
 		Runnable resizeCanvas = () -> {
-			logger.info("Change Canvas Size to: width: " +width + " Height: "+height);
+			logger.info("Change Canvas Size to width: " +width + " Height: "+height);
 			canvas.setSize(width, height);
 			frame.pack();
+			needResize = false;
 		};
 
 		if (EventQueue.isDispatchThread()){
@@ -239,5 +257,12 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 
 	public GraphicsDevice getDefaultScreenDevice(){
     	return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	}
+	public double getCanvasScale() {
+		return canvasScale;
+	}
+	public void setCanvasScale(double scale) {
+		this.canvasScale = scale;
+		this.needResize = true;
 	}
 }
