@@ -2,8 +2,8 @@ package org.datavyu.plugins.ffmpegplayer.examples;
 
 import javafx.scene.media.MediaException;
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
-import org.datavyu.plugins.ffmpegplayer.MoviePlayer;
-import org.datavyu.plugins.ffmpegplayer.VideoStreamListenerContainer;
+import org.datavyu.plugins.ffmpegplayer.MediaPlayer;
+import org.datavyu.plugins.ffmpegplayer.ImageStreamListenerContainer;
 
 import javax.sound.sampled.AudioFormat;
 import java.awt.*;
@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SimpleMoviePlayerExample {
-    org.datavyu.plugins.ffmpegplayer.MoviePlayer moviePlayer;
+    MediaPlayer mediaPlayer;
     final Frame frame;
 
     public SimpleMoviePlayerExample(String movieFileName) throws IOException {
@@ -24,33 +24,31 @@ public class SimpleMoviePlayerExample {
     }
 
     public SimpleMoviePlayerExample(String movieFileName, String version) throws MediaException {
-        final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
-        moviePlayer = MoviePlayer.newBuilder()
+        final ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
+        mediaPlayer = MediaPlayer.newBuilder()
                 .setFileName(movieFileName)
                 .setVersion(version)
-                .setAudioFormat(reqAudioFormat)
-                .setColorSpace(reqColorSpace)
+                .setAudioFormat(audioFormat)
+                .setColorSpace(colorSpace)
                 .build();
-        if (moviePlayer.hasError()) {
-            throw moviePlayer.getError();
+        if (mediaPlayer.hasError()) {
+            throw mediaPlayer.getError();
         }
         frame = new Frame();
         frame.addWindowListener( new WindowAdapter() {
             public void windowClosing(WindowEvent ev) {
-                moviePlayer.close();
+                mediaPlayer.close();
             }
         } );
         // Add the audio sound listener
-        moviePlayer.addAudioStreamListener(new AudioSoundStreamListener(moviePlayer));
+        mediaPlayer.addAudioStreamListener(new AudioSoundStreamListener(audioFormat));
         // Add video display
-        moviePlayer.addVideoStreamListener(new VideoStreamListenerContainer(moviePlayer, frame,
-                reqColorSpace));
+        mediaPlayer.addImageStreamListener(new ImageStreamListenerContainer(frame, null, colorSpace));
         // Open the movie stream provider
-        //moviePlayer.open(movieFileName, version, reqColorSpace, reqAudioFormat);
-        moviePlayer.play();
-        int width = moviePlayer.getWidth();
-        int height = moviePlayer.getHeight();
+        mediaPlayer.play();
+        int width = mediaPlayer.getWidth();
+        int height = mediaPlayer.getHeight();
         frame.setBounds(0, 0, width, height);
         frame.setVisible(true);
     }

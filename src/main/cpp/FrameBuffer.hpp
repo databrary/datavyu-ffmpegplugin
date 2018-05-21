@@ -21,42 +21,40 @@ typedef struct Frame {
 
 class FrameBuffer : public LogicForBuffer<Frame*> {
 public:
-    FrameBuffer(int width, int height, long firstItem,
-                int nItem = DEFAULT_BUFFER_SIZE, int nMaxReverse = DEFAULT_BUFFER_SIZE/2)
+    FrameBuffer(int width, int height, long firstItem, int nItem = DEFAULT_BUFFER_SIZE)
         : LogicForBuffer<Frame*>(nItem) {
 		buffer = new Frame*[nItem];
 		for (int iItem = 0; iItem < nItem; ++iItem) {
+		    // Get the frame pointer
 		    Frame* pFrame = new Frame();
+		    // Allocate the frame
 		    pFrame->frame = av_frame_alloc();
-			buffer[iItem] = pFrame;
+		    pFrame->frame->width = width;
+		    pFrame->frame->height = height;
+		    pFrame->frame->format = AV_PIX_FMT_RGB24;
+		    av_frame_get_buffer(pFrame->frame, 0);
+		    buffer[iItem] = pFrame;
 		}
     }
     virtual ~FrameBuffer() {
 		for (int iItem = 0; iItem < size(); ++iItem) {
 		    Frame* pFrame = buffer[iItem];
+		    //av_free(pFrame->frame->data[0]); // Free data buffer
 			av_frame_free(&pFrame->frame);
 			delete pFrame;
 		}
 		delete [] buffer;
     }
-/*    void writeRequestWithAllocate(Frame* pFrame, const Frame& src) {
-        writeRequest(pFrame);
-        if (pFrame) {
-            av_image_alloc(pFrame->data, dst_linesize, dst_w, dst_h, dst_pix_fmt, 16)
+/*    void writeRequestWithAllocate(Frame* pFrame, const AVFrame& src) {
+        writeRequest(&pFrame);
+        // allocate or resize the buffer
+        if (!pFrame->frame->data) {
+            pFrame->frame->width = src.width;
+            pFrame->frame->height = src.height;
+            pFrame->frame->format = AV_PIX_FMT_RGB24;
 
-
-        }
-            pFrame->frame
-
-*//*
-            AVFrame* pFrame = av_frame_alloc();
-			pFrame->opaque = new AVFrameMetaData();
-			buffer[iItem] = pFrame;
-			// Create the data buffer and associate it with the buffer
-			int nByte = avpicture_get_size(AV_PIX_FMT_RGB24, width, height);
-			uint8_t* bufferShow = (uint8_t*) av_malloc(nByte*sizeof(uint8_t));
-			avpicture_fill((AVPicture*)pFrame, bufferShow, AV_PIX_FMT_RGB24, width, height);
-*//*
+        } else if (pFrame->width != src.width || pFrame->height != src.height) {
+		    av_free(pFrame->frame->data[0]); // Free data buffer
 
         }
     }*/

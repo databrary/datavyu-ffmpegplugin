@@ -21,7 +21,7 @@ public class SliderStreamListener implements StreamListener {
     private JSlider jSlider;
 
     /** The movie stream that we use as reference to update the slider */
-    private MoviePlayer moviePlayer;
+    private MediaPlayer mediaPlayer;
 
     /** Time base for the slider from time in seconds to slider time */
     private static final int SLIDER_TIME_BASE = 1000;
@@ -52,24 +52,24 @@ public class SliderStreamListener implements StreamListener {
      * Create a slider stream listener.
      *
      * @param jSlider The slider.
-     * @param moviePlayer The move stream.
+     * @param mediaPlayer The move stream.
      */
-    public SliderStreamListener(JSlider jSlider, MoviePlayer moviePlayer) {
+    public SliderStreamListener(JSlider jSlider, MediaPlayer mediaPlayer) {
         this.jSlider = jSlider;
-        this.moviePlayer = moviePlayer;
+        this.mediaPlayer = mediaPlayer;
     }
 
     @Override
     public void streamOpened() {
-        logger.info("Set minimum time to: " + moviePlayer.getStartTime() + "seconds");
-        logger.info("Set maximum time to: " + moviePlayer.getEndTime() + "seconds");
-        jSlider.setMinimum(toSliderTime(moviePlayer.getStartTime()));
-        jSlider.setMaximum(toSliderTime(moviePlayer.getEndTime()));
+        logger.info("Set minimum time to: " + mediaPlayer.getStartTime() + "seconds");
+        logger.info("Set maximum time to: " + mediaPlayer.getEndTime() + "seconds");
+        jSlider.setMinimum(toSliderTime(mediaPlayer.getStartTime()));
+        jSlider.setMaximum(toSliderTime(mediaPlayer.getEndTime()));
     }
 
     @Override
     public void streamData(byte[] data) {
-        jSlider.setValue(toSliderTime(moviePlayer.getCurrentTime()));
+        jSlider.setValue(toSliderTime(mediaPlayer.getCurrentTime()));
     }
 
     @Override

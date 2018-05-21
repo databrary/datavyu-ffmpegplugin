@@ -1,9 +1,10 @@
-#include "org_datavyu_plugins_ffmpegplayer_MoviePlayer0.h"
-#include "ImageBuffer.hpp"
+#include "org_datavyu_plugins_ffmpegplayer_MediaPlayer0.h"
+#include "FrameBuffer.hpp"
 #include "AudioBuffer.h"
 #include "AudioFormatHelper.hpp"
 #include "Logger.h"
 #include "AVLogger.h"
+#include "AVClock.hpp"
 #include <jni.h>
 #include <cstdio>
 #include <cstdlib>
@@ -29,17 +30,21 @@ extern "C" {
 // Florian Raudies, Mountain View, CA.
 // vcvarsall.bat x64
 
-// To create the header file run 'javah -d ../cpp org.datavyu.plugins.ffmpegplayer.MoviePlayer0'
+// To create the header file run 'javah -d ../cpp org.datavyu.plugins.ffmpegplayer.MediaPlayer0'
 // from the directory 'src/main/java'
 
+// Helpful source code in ffmpeg to look at
+// frame.h/frame.c in libavutil
+// avformat.h/avformat.c in libavformat
+
 /*
-cl org_datavyu_plugins_ffmpegplayer_MoviePlayer0.cpp /Fe"..\..\..\MoviePlayer0" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" /I"C:\Program Files\Java\jdk1.8.0_151\include" /I"C:\Program Files\Java\jdk1.8.0_151\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_151\lib\jawt.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswresample\swresample.lib"
+cl org_datavyu_plugins_ffmpegplayer_MediaPlayer0.cpp /Fe"..\..\..\MediaPlayer0" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" /I"C:\Program Files\Java\jdk1.8.0_151\include" /I"C:\Program Files\Java\jdk1.8.0_151\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_151\lib\jawt.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavformat\avformat.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswscale\swscale.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libswresample\swresample.lib"
 */
 
 // Add flag /MDd for debugging information and flag /DEBUG:FULL to add all symbols to the PDB file
 // On debug flag for cl; see https://docs.microsoft.com/en-us/cpp/build/reference/debug-generate-debug-info
 
-// use dumpbin /ALL MoviePlayer.lib to list the function symbols
+// use dumpbin /ALL MediaPlayer0.lib to list the function symbols
 // Make sure that visual studio's 'vc' folder is in the path
 
 /* no AV sync correction is done if below the minimum AV sync threshold */
@@ -49,6 +54,7 @@ cl org_datavyu_plugins_ffmpegplayer_MoviePlayer0.cpp /Fe"..\..\..\MoviePlayer0" 
 /* If a frame duration is longer than this, it will not be duplicated to compensate AV sync */
 #define AV_SYNC_FRAMEDUP_THRESHOLD 0.1
 /* no AV correction is done if too big error */
+#define AV_NOSYNC_THRESHOLD 10.0
 
 #define PTS_DELTA_THRESHOLD 3
 #define MAX_AUDIO_FRAME_SIZE 192000
@@ -65,19 +71,21 @@ enum {
 
 
 /*****************************************************************************************
- * Movie stream class that encapsulates functionality for the playback of a movie stream.
+ * Movie player class that encapsulates functionality for the playback of a movie
  ****************************************************************************************/
-class MoviePlayer {
+class MediaPlayer {
 
 public:
     /** Clocks for synchronization for video, audio, external */
-    Clock audioClock;
-    Clock videoClock;
-    Clock externalClock;
+    AVClock* pAudioClock;
+    AVClock* pVideoClock;
+    AVClock* pExternalClock;
+
     int avSyncType;
     bool paused;
-    double frameTime;
+    double frameTimer;
     double maxFrameDuration; // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
+    double remainingTime; // accumulates remaining time for frame display
 
     /** Id counter for the streams that are opened */
     static int id;
@@ -114,9 +122,6 @@ public:
     /** Image codec */
     AVCodec *pImageCodec;
 
-    /** Image frame read from stream */
-    AVFrame *pImageFrame;
-
     /** Image frame displayed (wrapped by buffer) */
     AVFrame *pAVFrameShow;
 
@@ -127,7 +132,7 @@ public:
     struct SwsContext *pSwsImageCtx;
 
     /** Pointer to the image buffer */
-    ImageBuffer *pImageBuffer;
+    FrameBuffer *pFrameBuffer;
 
 
     /** Status in the movie file. */
@@ -138,6 +143,8 @@ public:
     /** Flag indicates that we loaded a movie */
     bool loadedMovie;
 
+    /** Average of time stamp intervals. Set to 1 on reset. Used for reverse seek */
+    int64_t	avgDeltaPts;
 
     /** Decoding thread that decodes frames and is started when opening a video */
     std::thread	*pDecodeFrame;
@@ -174,6 +181,24 @@ public:
     /** Index of audio data in bytes. Set to 0 on reset */
     unsigned int iAudioData;
 
+    /** Used to compute the average difference for the audio */
+    double audioDiffCum;
+
+    /** Holds the average coefficient for teh audio difference */
+    double audioDiffAvgCoef;
+
+    /** Holds the audio difference threshold. Set when opening the audio buffer */
+    double audioDiffThreshold;
+
+    /** Holds the average audio difference count */
+    int audioDiffAvgCount;
+
+    /** Used to keep time in the audio decoding */
+    double audioTime;
+
+    /** This boolean is set if we do not play sound */
+    std::atomic<bool> playSound;
+
 
     /**  Variables that control random seeking. */
 
@@ -206,7 +231,10 @@ public:
     /** audio buffer used in the 'loadNextAudioData' method */
     uint8_t *pLoadAudioByteBuffer;
 
-    MoviePlayer() :
+    MediaPlayer() :
+        pAudioClock(new AVClock()),
+        pVideoClock(new AVClock()),
+        pExternalClock(new AVClock()),
         avSyncType(AV_SYNC_AUDIO_MASTER),
         paused(false),
         width(0),
@@ -218,15 +246,10 @@ public:
         pImageStream(nullptr),
         pImageCodecCtx(nullptr),
         pImageCodec(nullptr),
-        pImageFrame(nullptr),
         pAVFrameShow(nullptr),
         pOptsDict(nullptr),
         pSwsImageCtx(nullptr),
-        pImageBuffer(nullptr),
-        imageLastPts(0),
-        imageDeltaPts(0),
-        imageDiffCum(0),
-        videoTime(0),
+        pFrameBuffer(nullptr),
         quit(false),
         loadedMovie(false),
         pDecodeFrame(nullptr),
@@ -240,10 +263,11 @@ public:
         nAudioBuffer(0),
         nAudioData(0),
         iAudioData(0),
+        audioTime(0),
         playSound(false),
         seekPts(0),
         seekReq(false),
-        pLogger(nullptr),
+        pLogger(new StreamLogger(&std::cerr)), // new FileLogger(logFileName)
         pAudioDecodeFramePkt(nullptr),
         pAudioDecodePktData(nullptr),
         audioDecodePktSize(0),
@@ -256,8 +280,11 @@ public:
         pLoadAudioByteBuffer = (uint8_t*) malloc(nLoadAudioByteBuffer);
     }
 
-    virtual ~MoviePlayer() {
+    virtual ~MediaPlayer() {
         // Clean up memory
+        delete pExternalClock;
+        delete pAudioClock;
+        delete pVideoClock;
         free(pLoadAudioByteBuffer);
         av_packet_free(&pAudioDecodeFramePkt);
         av_frame_free(&pAudioDecodeAVFrame);
@@ -270,15 +297,15 @@ public:
     /* pause or resume the video */
     void pause() {
         if (paused) {
-            frameTime += av_gettime_relative() / 1000000.0 - videoClock.getLastUpdated();
-            videoClock.setTime(videoClock.getTime());
+            frameTimer += av_gettime_relative() / 1000000.0 - pVideoClock->getLastUpdated();
+            pVideoClock->setTime(pVideoClock->getTime());
         }
-        externalClock.setTime(externalClock.getTime());
+        pExternalClock->setTime(pExternalClock->getTime());
         // toggle paused
         paused = !paused;
-        externalClock.setPaused(paused);
-        videoClock.setPaused(paused);
-        audioClock.setPaused(paused);
+        pExternalClock->setPaused(paused);
+        pVideoClock->setPaused(paused);
+        pAudioClock->setPaused(paused);
     }
 
     double computeTargetDelay(double delay) {
@@ -288,7 +315,7 @@ public:
         if (getMasterSyncType() != AV_SYNC_VIDEO_MASTER) {
             /* if video is slave, we try to correct big delays by
                duplicating or deleting a frame */
-            diff = videoClock.getTime() - getMasterClockTime();
+            diff = pVideoClock->getTime() - getMasterClockTime();
 
             /* skip or repeat frame. We take into account the
                delay to compute the threshold. I still don't know
@@ -309,36 +336,12 @@ public:
         return delay;
     }
 
-    int getVideoFrame(AVFrame *frame) {
-        int got_picture;
-
-        if ((got_picture = decoder_decode_frame(&is->viddec, frame, NULL)) < 0)
-            return -1;
-
-        if (got_picture) {
-            double dpts = NAN;
-
-            if (frame->pts != AV_NOPTS_VALUE)
-                dpts = av_q2d(is->video_st->time_base) * frame->pts;
-
-            frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(pFormatCtx, is->video_st, frame);
-
-            if (framedrop > 0 || (framedrop && get_master_sync_type(is) != AV_SYNC_VIDEO_MASTER)) {
-                if (frame->pts != AV_NOPTS_VALUE) {
-                    double diff = dpts - get_master_clock(is);
-                    if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
-                        diff - is->frame_last_filter_delay < 0 &&
-                        is->viddec.pkt_serial == is->vidclk.serial &&
-                        is->videoq.nb_packets) {
-                        is->frame_drops_early++;
-                        av_frame_unref(frame);
-                        got_picture = 0;
-                    }
-                }
-            }
-        }
-
-        return got_picture;
+    double getDurationBetweenFrames(Frame *pCurrentFrame, Frame *pNextFrame) {
+        double duration = pNextFrame->pts - pCurrentFrame->pts;
+        if (isnan(duration) || duration <= 0 || duration > maxFrameDuration)
+            return pCurrentFrame->duration;
+        else
+            return duration;
     }
 
     inline int64_t limitToRange(int64_t target) {
@@ -355,6 +358,47 @@ public:
         return after;
     }
 
+    /*
+    // TODO: Remove this?
+    int synchronize_audio(VideoState *is, int nb_samples) {
+        int wanted_nb_samples = nb_samples;
+
+        // if not master, then we try to remove or add samples to correct the clock
+        if (getMasterSyncType(is) != AV_SYNC_AUDIO_MASTER) {
+            double diff, avgDiff;
+            int min_nb_samples, max_nb_samples;
+
+            diff = pAudioClock->getTime() - getMasterClockTime();
+
+            if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD) {
+                audioDiffCum = diff + audioDiffAvgCoef * audioDiffCum;
+                if (is->audio_diff_avg_count < AUDIO_DIFF_AVG_NB) {
+                    // not enough measures to have a correct estimate
+                    is->audio_diff_avg_count++;
+                } else {
+                    // estimate the A-V difference
+                    avgDiff = audioDiffCum * (1.0 - audioDiffAvgCoef);
+
+                    if (fabs(avgDiff) >= audioDiffThreshold) {
+                        wanted_nb_samples = nb_samples + (int)(diff * is->audio_src.freq);
+                        min_nb_samples = ((nb_samples * (100 - SAMPLE_CORRECTION_PERCENT_MAX) / 100));
+                        max_nb_samples = ((nb_samples * (100 + SAMPLE_CORRECTION_PERCENT_MAX) / 100));
+                        wanted_nb_samples = av_clip(wanted_nb_samples, min_nb_samples, max_nb_samples);
+                    }
+                    av_log(NULL, AV_LOG_TRACE, "diff=%f adiff=%f sample_diff=%d apts=%0.3f %f\n",
+                            diff, avg_diff, wanted_nb_samples - nb_samples,
+                            is->audio_clock, is->audio_diff_threshold);
+                }
+            } else {
+                // too big difference : may be initial PTS errors, so reset A-V filter
+                is->audio_diff_avg_count = 0;
+                is->audio_diff_cum       = 0;
+            }
+        }
+        return wanted_nb_samples;
+    }
+    */
+
     /**
      * Synchronize the audio to the system clock by adding (repeating last sample)
      * or removing (truncating last samples) from the audio buffer.
@@ -365,7 +409,7 @@ public:
         int nBytePerSample = 2 * pAudioOutCodecCtx->channels;
 
         // Get the time difference
-        diffPts = resetClockDiff ? 0 : getAudioTime() - (double)std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        diffPts = pAudioClock->getTime() - getMasterClockTime();
         if (diffPts < AV_NOSYNC_THRESHOLD) {
 
             // Accumulate the difference
@@ -525,7 +569,7 @@ public:
 
                     assert(dataSize <= bufferSize);
 
-                    if ((errNo = MoviePlayer::initConvertedSamples(&convertedInSamples,
+                    if ((errNo = MediaPlayer::initConvertedSamples(&convertedInSamples,
                                                                    pAudioOutCodecCtx,
                                                                    pAudioDecodeAVFrame->nb_samples,
                                                                    pLogger)) < 0) {
@@ -537,7 +581,7 @@ public:
                         return errNo;
                     }
 
-                    if ((errNo = MoviePlayer::convertSamples((const uint8_t**)pAudioDecodeAVFrame->extended_data,
+                    if ((errNo = MediaPlayer::convertSamples((const uint8_t**)pAudioDecodeAVFrame->extended_data,
                                                              convertedInSamples,
                                                              pAudioDecodeAVFrame->nb_samples, pResampleCtx,
                                                              pLogger)) < 0) {
@@ -583,6 +627,7 @@ public:
 
             if (pAudioDecodeFramePkt->pts != AV_NOPTS_VALUE) {
                 audioTime = av_q2d(pAudioStream->time_base)* pAudioDecodeFramePkt->pts;
+                AVClock::syncMasterToSlave(pExternalClock, pAudioClock, AV_NOSYNC_THRESHOLD);
             }
         }
     }
@@ -596,38 +641,6 @@ public:
      * True if the current video file has an audio stream; otherwise false
      */
     bool hasAudioStream() const { return iAudioStream > -1; }
-
-    /**
-     * Seek approximately to the target frame. Use this for random seeks.
-     */
-    void doSeek(int64_t target, int64_t delta, bool flush) {
-        pLogger->info("Seek random %I64d frame with diff %I64d frames.", target/avgDeltaPts, delta/avgDeltaPts);
-        if (delta != 0) {
-            int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
-            int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
-            int seekFlags = delta < 0 ? AVSEEK_FLAG_BACKWARD : 0;
-            if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, seekFlags) < 0) {
-                pLogger->info("Failed seek to frame %I64d.", target/avgDeltaPts);
-            } else {
-                lastWritePts = target;
-                pLogger->info("Succeeded seek to frame %I64d with min %I64d frames and max %I64d frames for diff %I64d frames.",
-                              target/avgDeltaPts, min_/avgDeltaPts, max_/avgDeltaPts, delta/avgDeltaPts);
-                if (hasVideoStream()) {
-                    if (flush) {
-                        pImageBuffer->flush();
-                    }
-                    avcodec_flush_buffers(pImageCodecCtx);
-                }
-                if (hasAudioStream()) {
-                    if (flush) {
-                        pAudioBuffer->flush();
-                    }
-                    avcodec_flush_buffers(pAudioInCodecCtx);
-                    avcodec_flush_buffers(pAudioOutCodecCtx);
-                }
-            }
-        }
-    }
 
     /**
      * Reads the next frame from the video stream and supports:
@@ -645,22 +658,43 @@ public:
     void readNextFrame() {
         int frameFinished;
         bool reverseRefresh = true;
-        bool isSeekBefore = false; // Used to decide when to skip frames
         AVPacket packet;
         int delta = 0;
-        bool initClock = true; // initial state
+        AVFrame *pSrcAVFrame = av_frame_alloc();
+        AVRational frameRate = av_guess_frame_rate(pFormatCtx, pImageStream, NULL);
+        AVRational timeBase = pImageStream->time_base;
+        double pts;
+        double duration;
 
         while (!quit) {
 
             // Random seek
             if (seekReq) {
                 seekReq = false;
-                pImageBuffer->block();
-                doSeek(seekPts, seekPts-lastWritePts, true);
-                pLogger->info("Status after seek.");
-                pImageBuffer->log(*pLogger, avgDeltaPts);
-                // TODO: Set clock
-                //set_clock(&is->extclk, seekPts / (double)AV_TIME_BASE, 0);
+                int64_t target = seekPts;
+                int64_t delta = 0; // TODO: Fix seek!
+                int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
+                int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
+                int seekFlags = 0;
+
+                if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, seekFlags) < 0) {
+                    pLogger->info("Failed seek to frame %I64d.", target/avgDeltaPts);
+                } else {
+                    pLogger->info("Succeeded seek to frame %I64d with min %I64d frames and max %I64d frames for diff %I64d frames.",
+                                  target/avgDeltaPts, min_/avgDeltaPts, max_/avgDeltaPts, delta/avgDeltaPts);
+                    if (hasVideoStream()) {
+                        pFrameBuffer->flush();
+                        avcodec_flush_buffers(pImageCodecCtx);
+                    }
+                    if (hasAudioStream()) {
+                        pAudioBuffer->flush();
+                        avcodec_flush_buffers(pAudioInCodecCtx);
+                        avcodec_flush_buffers(pAudioOutCodecCtx);
+                    }
+                    pLogger->info("Status after seek.");
+                    pFrameBuffer->log(*pLogger, avgDeltaPts);
+                    pExternalClock->setTime(target/ (double)AV_TIME_BASE);
+                }
             }
 
             // Read frame
@@ -686,38 +720,54 @@ public:
             if (hasVideoStream() && packet.stream_index == iImageStream) {
 
                 // Decode the video frame
-                avcodec_decode_video2(pImageCodecCtx, pImageFrame, &frameFinished, &packet);
+                avcodec_decode_video2(pImageCodecCtx, pSrcAVFrame, &frameFinished, &packet);
 
                 // Did we get a full video frame?
                 if (frameFinished) {
 
                     // Set the presentation time stamp (PTS)
-                    int64_t readPts = pImageFrame->pkt_pts;
+                    int64_t readPts = pSrcAVFrame->pkt_pts;
 
-                    // Only for seek before we may need to skip frames until we are at seekPts
-                    if (!isSeekBefore || readPts >= seekPts) {
+                    // Skip frames if seek before we may need to skip frames until we are at seekPts
+                    if (readPts >= seekPts) {
 
                         // Get the next writable buffer. This may block and can be unblocked by flushing
-                        AVFrame* pFrameBuffer;
+                        Frame* pFrame;
 
-                        pImageBuffer->writeRequest(&pFrameBuffer);
+                        //pFrameBuffer->writeRequestWithAllocate(pFrame, *pSrcAVFrame);
+                        pFrameBuffer->writeRequest(&pFrame);
 
                         // Did we get a frame buffer?
-                        if (pFrameBuffer) {
+                        if (pFrame) {
 
                             // Convert the image from its native color format into the RGB color format
+                            // TODO: Add resize here
                             sws_scale(
                                 pSwsImageCtx,
-                                (uint8_t const * const *)pImageFrame->data,
-                                pImageFrame->linesize,
+                                (uint8_t const * const *)pSrcAVFrame->data,
+                                pSrcAVFrame->linesize,
                                 0,
                                 pImageCodecCtx->height,
-                                pFrameBuffer->data,
-                                pFrameBuffer->linesize);
-                            pFrameBuffer->repeat_pict = pImageFrame->repeat_pict;
-                            pFrameBuffer->pts = lastWritePts = readPts;
-                            pImageBuffer->writeComplete();
-                            pLogger->info("Wrote frame %I64d.", lastWritePts/avgDeltaPts);
+                                pFrame->frame->data, // TODO: Check me, but should be fine
+                                pFrame->frame->linesize);
+
+                            pts = (readPts == AV_NOPTS_VALUE) ? NAN : readPts * av_q2d(timeBase);
+                            duration = (frameRate.num && frameRate.den ? av_q2d(struct AVRational {frameRate.den, frameRate.num}) : 0);
+
+                            pLogger->info("Read pts %I64d, pts %f, duration %f, average delta pts %I64d.",
+                                          readPts, pts, duration, avgDeltaPts);
+
+                            // Assign fields to the pFrame
+                            pFrame->frame->repeat_pict = pSrcAVFrame->repeat_pict;
+                            pFrame->pts = pts;
+                            pFrame->duration = duration;
+                            pFrame->width = pSrcAVFrame->width;
+                            pFrame->height = pSrcAVFrame->height;
+                            //av_frame_move_ref(pFrame->frame, pSrcAVFrame);
+
+                            // Complete the write
+                            pFrameBuffer->writeComplete();
+
 
                         } else {
                             pLogger->info("Write request aborted.");
@@ -727,7 +777,7 @@ public:
                     }
 
                     // Reset frame container to initial state
-                    av_frame_unref(pImageFrame);
+                    av_frame_unref(pSrcAVFrame);
                 }
 
                 // Free the packet that was allocated by av_read_frame
@@ -741,6 +791,7 @@ public:
                 av_free_packet(&packet);
             }
         }
+        av_frame_free(&pSrcAVFrame);
     }
 
     double getStartTime() const {
@@ -757,157 +808,124 @@ public:
         return duration;
     }
 
-    double getCurrentTime() const { return hasVideoStream() ? videoTime : audioTime; }
+    double getCurrentTime() { return getMasterClockTime() * av_q2d(pImageStream->time_base); }
 
     void seek(double time) {
         if (hasVideoStream() || hasAudioStream()) {
-            lastWritePts = seekPts = limitToRange( ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts );
+            seekPts = limitToRange( ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts );
             seekReq = true;
         }
     }
 
     // assumes inSpeed is positive
-    void setSpeed(float inSpeed) {
+    void setSpeed(float speed) {
 
         if (hasVideoStream() || hasAudioStream()) {
 
-            speed = inSpeed;
+            // Set speed for clock
+            pExternalClock->setSpeed(speed);
 
             // If we have audio need to turn off at playback other than 1x
             if (hasAudioStream()) {
 
                 // Do we have speedOne?
-                bool speedOne = fabs(inSpeed-1.0) <= std::numeric_limits<float>::epsilon();
+                bool isSpeedOne = fabs(speed-1.0) <= std::numeric_limits<float>::epsilon();
 
                 // If we switch from playing sound to not play sound or vice versa
                 // TODO: Disable/enable sound decoding
-                if (!playSound && speedOne || playSound && !speedOne) {
+                if (!playSound && isSpeedOne || playSound && !isSpeedOne) {
                     pAudioBuffer->flush();
                     avcodec_flush_buffers(pAudioInCodecCtx);
                     avcodec_flush_buffers(pAudioOutCodecCtx);
                 }
 
                 // If we have speed one than we play sound (otherwise not)
-                playSound = speedOne;
+                playSound = isSpeedOne;
             }
         }
-    }
-
-    void reset() {
-    	// If we have a video or an audio stream
-    	if (hasVideoStream() || hasAudioStream()) {
-
-            // Seek to the start of the file
-            lastWritePts = seekPts = limitToRange(pImageStream->start_time);
-            seekReq = true;
-            pLogger->info("Rewind to start %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
-    	}
     }
 
     int loadNextImageFrame() {
-
         // If there is no image stream or if the image buffer is empty, then return -1
         // The latter condition avoids blocking when reaching the start/end of the stream
-        if (!hasVideoStream() || pImageBuffer->empty()) return -1;
+        if (!hasVideoStream() || pFrameBuffer->empty()) return -1;
 
         // Counts the number of frames that this method requested (could be 0, 1, 2)
-        int nFrame = 0;
+        int nFrame = 1;
+        Frame *pCurrentFrame, *pLastFrame;
+        double lastDuration;
+        double delay;
+        double time;
 
-        // Get the next read pointer
-        AVFrame *pAVFrame;
-        uint64_t latestPts;
-        double delay = 0;
-        double diffCumNew = 0;
-        std::chrono::high_resolution_clock::time_point time;
+        pLogger->info("Master clock time %f.", getMasterClockTime());
 
-        for (int iFrameDrop = ceil(speed); iFrameDrop > 0 && !pImageBuffer->empty(); --iFrameDrop) {
+        for (int iFrameDrop = ceil(fabs(getMasterClockSpeed()));
+            iFrameDrop > 0 && !pFrameBuffer->empty(); --iFrameDrop) {
 
-            pImageBuffer->read(&pAVFrame);
+            pFrameBuffer->peekLast(&pLastFrame);
+            pFrameBuffer->peekCurrent(&pCurrentFrame);
 
-            if (pAVFrame == nullptr) {
-                return nFrame;
-            }
+            lastDuration = getDurationBetweenFrames(pLastFrame, pCurrentFrame);
+            delay = computeTargetDelay(lastDuration);
+            time = av_gettime_relative()/1000000.0;
 
-            latestPts = pAVFrame->pts;
-
-            nFrame++;
-
-            // Reset differences
-            bool init = resetClockDiff;
-
-            // Compute the difference for the presentation time stamps in seconds
-            double diffStream = init ? 0 : std::labs(latestPts - imageLastPts)/speed*av_q2d(pImageStream->time_base);
-
-            // Get the current time
-            time = std::chrono::high_resolution_clock::now();
-
-            // Compute the time difference in seconds
-            double diffClock = init ? 0
-                : std::chrono::duration_cast<std::chrono::microseconds>(time-lastDisplayTime).count()/1000000.0;
-
-            // Compute the difference between stream and clock times
-            diffCumNew = init ? 0 : (imageDiffCum + diffStream - diffClock);
-
-            // Calculate the delay for wait
-            delay = diffStream;
-
-            // If the frame is repeated split the delay in half
-            if (pAVFrame->repeat_pict) {
-                delay += delay/2;
-            }
-
-            if (init) {
+            if (paused) {
                 break;
             }
 
-            // We are too far off and need to jump
-            if (fabs(diffCumNew) > AV_NOSYNC_THRESHOLD) {
-                delay = 0;
-                uint64_t diffPts = (-diffCumNew)*speed/av_q2d(pImageStream->time_base);
-                int diffFrames = diffPts/avgDeltaPts;
-                nFrame += diffFrames;
-                pLogger->info("Correct frames %d.", diffFrames);
-                // If a seek is not in progress
-                if (!seekReq) {
-                    seekReq = true;
-                    seekPts = limitToRange(imageLastPts + diffPts);
+            if (time < frameTimer + delay) {
+                remainingTime = FFMIN(frameTimer + delay - time, remainingTime);
+                break;
+            }
+
+            frameTimer += delay;
+            if (delay > 0 && time - frameTimer > AV_SYNC_THRESHOLD_MAX)
+                frameTimer = time;
+
+            if (!isnan(pCurrentFrame->pts)) {
+                pVideoClock->setTime(pCurrentFrame->pts);
+                AVClock::syncMasterToSlave(pExternalClock, pVideoClock, AV_NOSYNC_THRESHOLD);
+            }
+
+            if (!pFrameBuffer->empty()) {
+                Frame *pNextFrame;
+                pFrameBuffer->peekNext(&pNextFrame);
+                duration = getDurationBetweenFrames(pCurrentFrame, pNextFrame);
+                pLogger->info("Time %f, frameTimer %f, duration %f, %d, %d.",
+                    time, frameTimer, duration,
+                    getMasterSyncType() != AV_SYNC_VIDEO_MASTER,
+                    time > frameTimer + duration);
+
+                if (getMasterSyncType() != AV_SYNC_VIDEO_MASTER && time > frameTimer + duration) {
+                    nFrame++; // repeat frame
+                    pFrameBuffer->next();
+                } else {
+                    break;
                 }
-                break;
-            }
-
-            if (diffCumNew < -AV_SYNC_THRESHOLD_MIN) {
-                delay = std::max(0.0, delay + diffCumNew);
-
-            // If the time difference is greater than the syncThreshold increase the delay
-            } else if (diffCumNew > AV_SYNC_THRESHOLD_MAX) {
-                delay *= 2;
             }
         }
 
-        if (pAVFrame == nullptr) {
+        if (pCurrentFrame == nullptr) {
             return nFrame;
         }
 
-        // Delay read to keep the desired frame rate.
+        // Above logic just returns the same frame
+
+/*        // Delay read to keep the desired frame rate.
         if (delay > 0) {
-            pLogger->info("Frame %I64d waits for %lf seconds.", latestPts/avgDeltaPts, delay);
+            pLogger->info("Frame %I64d waits for %lf seconds.", pCurrentFrame->pts/avgDeltaPts, delay);
             std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
-        }
+        }*/
 
-        // Update values for next call
-        imageLastPts = latestPts;
-        imageDiffCum = diffCumNew;
-        lastDisplayTime = time;
+        // Free the previously shown av frame (if it does exist)
+        // TODO: Check this for any memory problems
+        //av_frame_unref(pAVFrameShow);
 
-        // Show the frame by updating the "show" pointer
-        pAVFrameShow = pAVFrame;
-        videoTime = pAVFrameShow->pts * av_q2d(pImageStream->time_base);
-
-        // Reset 'reset clock'
-        resetClockDiff = false;
+        pAVFrameShow = pCurrentFrame->frame;
+        //av_frame_move_ref(pAVFrameShow, pCurrentFrame->frame);
 
         // We displayed a frame
-        pLogger->info("Return frame: %I64d.", pAVFrameShow->pts/avgDeltaPts);
+        pLogger->info("Return frame for time: %I64d.", pCurrentFrame->pts);
 
         // Return the number of read frames; the number may be larger than 1
         return nFrame;
@@ -974,7 +992,7 @@ public:
 
     		// Flush the image buffer buffer which unblocks all readers/writers
     		if (hasVideoStream()) {
-    			pImageBuffer->flush();
+    			pFrameBuffer->flush();
     			pLogger->info("Flushed video stream.");
     		}
 
@@ -986,8 +1004,8 @@ public:
     		// If we have a video stream
     		if (hasVideoStream()) {
     			// Free the image buffer buffer and reset pointer
-    			delete pImageBuffer;
-    			pImageBuffer = nullptr;
+    			delete pFrameBuffer;
+    			pFrameBuffer = nullptr;
 
     			// Free the dictionary and reset pointer
     			av_dict_free(&pOptsDict);
@@ -1005,8 +1023,6 @@ public:
     			pSwsImageCtx = nullptr;
 
     			// Free the YUV frame and reset pointers
-    			av_free(pImageFrame);
-    			pImageFrame = nullptr;
     			pAVFrameShow = nullptr;
 
     			pLogger->info("Freed image stream resources.");
@@ -1041,17 +1057,9 @@ public:
     		height = 0;
     		nChannel = 3;
     		duration = 0;
-    		lastWritePts = 0;
-    		videoTime = 0;
-    		resetClockDiff = false;
 
     		// Set default values for playback speed.
-    		speed = 1;
-    		imageLastPts = 0;
-    		imageDeltaPts = 0;
     		avgDeltaPts = 1;
-    		lastWritePts = 0;
-    		imageDiffCum = 0;
 
     		// Reset value for seek and backward request.
     		seekReq = false;
@@ -1151,6 +1159,8 @@ public:
 
     jobject getFrameBuffer(JNIEnv* env) {
         // No movie was loaded return nullptr.
+        pLogger->info("Get frame buffer %p", pAVFrameShow->data[0]);
+
         if (!hasVideoStream()) return 0;
 
         // Construct a new direct byte buffer pointing to data from pAVFrameShow.
@@ -1164,7 +1174,7 @@ public:
                 return AV_SYNC_VIDEO_MASTER;
             else
                 return AV_SYNC_AUDIO_MASTER;
-        } else if (is->av_sync_type == AV_SYNC_AUDIO_MASTER) {
+        } else if (avSyncType == AV_SYNC_AUDIO_MASTER) {
             if (hasAudioStream())
                 return AV_SYNC_AUDIO_MASTER;
             else
@@ -1174,31 +1184,41 @@ public:
         }
     }
 
-    double getMasterClockTime(VideoState *is) {
-        double time;
+    void getMasterClock(AVClock** master) {
         switch (getMasterSyncType()) {
             case AV_SYNC_VIDEO_MASTER:
-                time = videoClock.getClockTime();
+                *master = pVideoClock;
                 break;
             case AV_SYNC_AUDIO_MASTER:
-                time = audioClock.getClockTime();
+                *master = pAudioClock;
                 break;
             default:
-                time = externalClock.getClockTime();
+                *master = pExternalClock;
                 break;
         }
-        return time;
+    }
+
+    double getMasterClockTime() {
+        AVClock* master;
+        getMasterClock(&master);
+        return master->getTime();
+    }
+
+    double getMasterClockSpeed() {
+        AVClock* master;
+        getMasterClock(&master);
+        return master->getSpeed();
     }
 };
 
-int MoviePlayer::id = -1;
-std::map<int, MoviePlayer*> idToMovieStream;
+int MediaPlayer::id = -1;
+std::map<int, MediaPlayer*> idToMovieStream;
 
-MoviePlayer* getMovieStream(int streamId) {
+MediaPlayer* getMediaPlayer(int streamId) {
     return idToMovieStream.find(streamId) != idToMovieStream.end() ? idToMovieStream[streamId] : nullptr;
 }
 
-JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_open0(JNIEnv *env, jclass thisClass,
+JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_open0(JNIEnv *env, jclass thisClass,
     jstring jFileName, jstring jVersion, jobject jAudioFormat) {
 
 	int errNo = 0;
@@ -1208,124 +1228,119 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 	const char *fileName = env->GetStringUTFChars(jFileName, 0);
 	const char *version = env->GetStringUTFChars(jVersion, 0);
 
-    int streamId = MoviePlayer::getId();
+    int streamId = MediaPlayer::getId();
     returnValues[0] = 0;
     returnValues[1] = streamId;
-	MoviePlayer* movieStream = new MoviePlayer();
+	MediaPlayer* mediaPlayer = new MediaPlayer();
     std::string logFileName = std::string(fileName, strlen(fileName));
     logFileName = logFileName.substr(logFileName.find_last_of("/\\") + 1) + ".log";
-    movieStream->pLogger = new FileLogger(logFileName);
-    //movieStream->pLogger = new StreamLogger(&std::cerr);
-	movieStream->pLogger->info("Version: %s", version);
+    mediaPlayer->pLogger->info("Version: %s", version);
 
 	// Register all formats and codecs
 	av_register_all();
 
 	// Open the video file.
-	if ((errNo = avformat_open_input(&movieStream->pFormatCtx, fileName, nullptr, nullptr)) != 0) {
-		movieStream->pLogger->error("Could not open file %s.", fileName);
+	if ((errNo = avformat_open_input(&mediaPlayer->pFormatCtx, fileName, nullptr, nullptr)) != 0) {
+		mediaPlayer->pLogger->error("Could not open file %s.", fileName);
 		returnValues[0] = errNo;
 		env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 		return returnArray;
 	}
 
 	// Retrieve the stream information.
-	if ((errNo = avformat_find_stream_info(movieStream->pFormatCtx, nullptr)) < 0) {
-		movieStream->pLogger->error("Unable to find stream information for file %s.", fileName);
+	if ((errNo = avformat_find_stream_info(mediaPlayer->pFormatCtx, nullptr)) < 0) {
+		mediaPlayer->pLogger->error("Unable to find stream information for file %s.", fileName);
 		returnValues[0] = errNo;
 		env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 		return returnArray;
 	}
 
 	// Log that opened a file.
-	movieStream->pLogger->info("Opened file %s.", fileName);
+	mediaPlayer->pLogger->info("Opened file %s.", fileName);
 
 	// Dump information about file onto standard error.
-	std::string info = log_av_format(movieStream->pFormatCtx, 0, fileName, 0);
+	std::string info = log_av_format(mediaPlayer->pFormatCtx, 0, fileName, 0);
 	std::istringstream lines(info);
     std::string line;
     while (std::getline(lines, line)) {
-		movieStream->pLogger->info("%s", line.c_str());
+		mediaPlayer->pLogger->info("%s", line.c_str());
     }
 
 	// Find the first video stream.
-	movieStream->iImageStream = -1;
-	for (int iStream = 0; iStream < movieStream->pFormatCtx->nb_streams; ++iStream) {
-		if (movieStream->pFormatCtx->streams[iStream]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
-			movieStream->iImageStream = iStream;
+	mediaPlayer->iImageStream = -1;
+	for (int iStream = 0; iStream < mediaPlayer->pFormatCtx->nb_streams; ++iStream) {
+		if (mediaPlayer->pFormatCtx->streams[iStream]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+			mediaPlayer->iImageStream = iStream;
 			break;
 		}
 	}
 
-	if (movieStream->hasVideoStream()) {
-		movieStream->pLogger->info("Found image stream with id %d.", movieStream->iImageStream);
+	if (mediaPlayer->hasVideoStream()) {
+		mediaPlayer->pLogger->info("Found image stream with id %d.", mediaPlayer->iImageStream);
 	} else {
-		movieStream->pLogger->info("Could not find an image stream.");
+		mediaPlayer->pLogger->info("Could not find an image stream.");
 	}
 
 	// Find the first audio stream
-	movieStream->iAudioStream = -1;
-	for (int iStream = 0; iStream < movieStream->pFormatCtx->nb_streams; iStream++) {
-		if (movieStream->pFormatCtx->streams[iStream]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
-			movieStream->iAudioStream = iStream;
+	mediaPlayer->iAudioStream = -1;
+	for (int iStream = 0; iStream < mediaPlayer->pFormatCtx->nb_streams; iStream++) {
+		if (mediaPlayer->pFormatCtx->streams[iStream]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+			mediaPlayer->iAudioStream = iStream;
 			break;
 		}
 	}
 
-	if (movieStream->hasAudioStream()) {
-		movieStream->pLogger->info("Found audio stream with id %d.", movieStream->iAudioStream);
+	if (mediaPlayer->hasAudioStream()) {
+		mediaPlayer->pLogger->info("Found audio stream with id %d.", mediaPlayer->iAudioStream);
 	} else {
-		movieStream->pLogger->info("Could not find an audio stream.");
+		mediaPlayer->pLogger->info("Could not find an audio stream.");
 	}
 
-	if (!movieStream->hasVideoStream() && !movieStream->hasAudioStream()) {
-		movieStream->pLogger->error("Could not find an image stream or audio stream.");
-		avformat_close_input(&movieStream->pFormatCtx);
+	if (!mediaPlayer->hasVideoStream() && !mediaPlayer->hasAudioStream()) {
+		mediaPlayer->pLogger->error("Could not find an image stream or audio stream.");
+		avformat_close_input(&mediaPlayer->pFormatCtx);
 		returnValues[0] = AVERROR_INVALIDDATA;
 		env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 		return returnArray;
 	}
 
-	if (movieStream->hasVideoStream()) {
+	if (mediaPlayer->hasVideoStream()) {
 
         // Set the max frame duration
-	    movieStream->maxFrameDuration = (movieStream->pFormatCtx->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
+	    mediaPlayer->maxFrameDuration = (mediaPlayer->pFormatCtx->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
 
 		// Get a pointer to the video stream.
-		movieStream->pImageStream = movieStream->pFormatCtx->streams[movieStream->iImageStream];
+		mediaPlayer->pImageStream = mediaPlayer->pFormatCtx->streams[mediaPlayer->iImageStream];
 
 		// Get a pointer to the codec context for the video stream.
-		movieStream->pImageCodecCtx = movieStream->pImageStream->codec;
+		mediaPlayer->pImageCodecCtx = mediaPlayer->pImageStream->codec;
 
 		// Find the decoder for the video stream.
-		movieStream->pImageCodec = avcodec_find_decoder(movieStream->pImageCodecCtx->codec_id);
-		if (movieStream->pImageCodec == nullptr) {
-			movieStream->pLogger->error("Unsupported codec for file %s.", fileName);
+		mediaPlayer->pImageCodec = avcodec_find_decoder(mediaPlayer->pImageCodecCtx->codec_id);
+		if (mediaPlayer->pImageCodec == nullptr) {
+			mediaPlayer->pLogger->error("Unsupported codec for file %s.", fileName);
 			returnValues[0] = AVERROR_DECODER_NOT_FOUND;
             env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
             return returnArray;
 		}
 
 		// Open codec.
-		if ((errNo = avcodec_open2(movieStream->pImageCodecCtx, movieStream->pImageCodec,
-		                           &movieStream->pOptsDict)) < 0) {
-			movieStream->pLogger->error("Unable to open codec for file %s.", fileName);
+		if ((errNo = avcodec_open2(mediaPlayer->pImageCodecCtx, mediaPlayer->pImageCodec,
+		                           &mediaPlayer->pOptsDict)) < 0) {
+			mediaPlayer->pLogger->error("Unable to open codec for file %s.", fileName);
 			returnValues[0] = errNo;
             env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
             return returnArray;
 		}
 
-		// Allocate video frame.
-		movieStream->pImageFrame = av_frame_alloc();
-
 		// Initialize the color model conversion/rescaling context.
-		movieStream->pSwsImageCtx = sws_getContext
+		mediaPlayer->pSwsImageCtx = sws_getContext
 			(
-				movieStream->pImageCodecCtx->width,
-				movieStream->pImageCodecCtx->height,
-				movieStream->pImageCodecCtx->pix_fmt,
-				movieStream->pImageCodecCtx->width,
-				movieStream->pImageCodecCtx->height,
+				mediaPlayer->pImageCodecCtx->width,
+				mediaPlayer->pImageCodecCtx->height,
+				mediaPlayer->pImageCodecCtx->pix_fmt,
+				mediaPlayer->pImageCodecCtx->width,
+				mediaPlayer->pImageCodecCtx->height,
 				AV_PIX_FMT_RGB24,
 				SWS_BILINEAR,
 				nullptr,
@@ -1334,37 +1349,37 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 			);
 
 		// Initialize the width, height, and duration.
-		movieStream->width = movieStream->pImageCodecCtx->width;
-		movieStream->height = movieStream->pImageCodecCtx->height;
-		movieStream->duration = movieStream->pImageStream->duration * av_q2d(movieStream->pImageStream->time_base);
-		movieStream->pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.",
-					               movieStream->width, movieStream->height, movieStream->duration,
-					               movieStream->pImageStream->duration);
-		movieStream->pLogger->info("Time base %2.5f.", av_q2d(movieStream->pImageStream->time_base));
+		mediaPlayer->width = mediaPlayer->pImageCodecCtx->width;
+		mediaPlayer->height = mediaPlayer->pImageCodecCtx->height;
+		mediaPlayer->duration = mediaPlayer->pImageStream->duration * av_q2d(mediaPlayer->pImageStream->time_base);
+		mediaPlayer->pLogger->info("Duration of movie %d x %d pixels is %2.3f seconds, %I64d pts.",
+					               mediaPlayer->width, mediaPlayer->height, mediaPlayer->duration,
+					               mediaPlayer->pImageStream->duration);
+		mediaPlayer->pLogger->info("Time base %2.5f.", av_q2d(mediaPlayer->pImageStream->time_base));
 
 		// Initialize the delta pts using the average frame rate and the average pts.
-		movieStream->avgDeltaPts = movieStream->imageDeltaPts = (int64_t)(1.0/
-		        (av_q2d(movieStream->pImageStream->time_base)*av_q2d(movieStream->pImageStream->avg_frame_rate)));
-		movieStream->pLogger->info("Average delta %I64d pts.", movieStream->avgDeltaPts);
+		mediaPlayer->avgDeltaPts = (int64_t)(1.0/
+		        (av_q2d(mediaPlayer->pImageStream->time_base)*av_q2d(mediaPlayer->pImageStream->avg_frame_rate)));
+		mediaPlayer->pLogger->info("Average delta %I64d pts.", mediaPlayer->avgDeltaPts);
 
 		// Initialize the image buffer.
 
 		//int width, int height, long firstItem, int nItem, int nMaxReverse
-		movieStream->pImageBuffer = new ImageBuffer(movieStream->width,
-		                                            movieStream->height,
-		                                            movieStream->pImageStream->start_time/movieStream->avgDeltaPts);
+		mediaPlayer->pFrameBuffer = new FrameBuffer(mediaPlayer->width,
+		                                            mediaPlayer->height,
+		                                            mediaPlayer->pImageStream->start_time/mediaPlayer->avgDeltaPts);
 	}
 
 	// *************************************************************************
 	// Work on audio
 	// *************************************************************************
-	if (movieStream->hasAudioStream()) {
+	if (mediaPlayer->hasAudioStream()) {
 
 		AVCodec *aOutCodec = nullptr;
 		AVCodec *aInCodec = nullptr;
 
 		struct AudioFormat audioFormat;
-		if ((errNo = getAudioFormat(env, &audioFormat, jAudioFormat, movieStream->pLogger)) < 0) {
+		if ((errNo = getAudioFormat(env, &audioFormat, jAudioFormat, mediaPlayer->pLogger)) < 0) {
 			returnValues[0] = errNo;
             env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
             return returnArray;
@@ -1376,7 +1391,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		} else if (strcmp("PCM_SIGNED", audioFormat.encodingName.c_str()) == 0) {
 			sampleFormat = AV_SAMPLE_FMT_S16;
 		} else {
-			movieStream->pLogger->error("Encoding %s is not supported.\n", audioFormat.encodingName.c_str());
+			mediaPlayer->pLogger->error("Encoding %s is not supported.\n", audioFormat.encodingName.c_str());
 			returnValues[0] = AVERROR_INVALIDDATA;
             env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
             return returnArray;
@@ -1385,299 +1400,308 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_op
 		// Supported codecs are: AV_CODEC_ID_PCM_U8 and AV_CODEC_ID_PCM_S16LE.
 		AVCodecID codecId = av_get_pcm_codec(sampleFormat, audioFormat.bigEndian);
 
-		movieStream->pAudioStream = movieStream->pFormatCtx->streams[movieStream->iAudioStream];
+		mediaPlayer->pAudioStream = mediaPlayer->pFormatCtx->streams[mediaPlayer->iAudioStream];
 
-		movieStream->pAudioInCodecCtx = movieStream->pAudioStream->codec;
+		mediaPlayer->pAudioInCodecCtx = mediaPlayer->pAudioStream->codec;
 
-		if (!(aInCodec = avcodec_find_decoder(movieStream->pAudioInCodecCtx->codec_id))) {
-			movieStream->pLogger->error("Could not find input codec!\n");
-			avformat_close_input(&movieStream->pFormatCtx);
+		if (!(aInCodec = avcodec_find_decoder(mediaPlayer->pAudioInCodecCtx->codec_id))) {
+			mediaPlayer->pLogger->error("Could not find input codec!\n");
+			avformat_close_input(&mediaPlayer->pFormatCtx);
 			returnValues[0] = AVERROR_EXIT;
             env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
             return returnArray;
 		}
 
-		if ((errNo = avcodec_open2(movieStream->pAudioInCodecCtx, aInCodec, NULL)) < 0) {
-			movieStream->pLogger->error("Could not open audio codec. Error message: '%s'.\n", getErrorText(errNo));
-			avformat_close_input(&movieStream->pFormatCtx);
+		if ((errNo = avcodec_open2(mediaPlayer->pAudioInCodecCtx, aInCodec, NULL)) < 0) {
+			mediaPlayer->pLogger->error("Could not open audio codec. Error message: '%s'.\n", getErrorText(errNo));
+			avformat_close_input(&mediaPlayer->pFormatCtx);
 			returnValues[0] = errNo;
             env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
             return returnArray;
 		}
-		movieStream->pAudioBuffer = new AudioBuffer();
+		mediaPlayer->pAudioBuffer = new AudioBuffer();
 
 		// create the output codec (alternative is stero: AV_CODEC_ID_PCM_U8)
 		if (!(aOutCodec = avcodec_find_encoder(codecId))) {
-			movieStream->pLogger->error("Could not create output codec.");
-			avformat_close_input(&movieStream->pFormatCtx);
+			mediaPlayer->pLogger->error("Could not create output codec.");
+			avformat_close_input(&mediaPlayer->pFormatCtx);
 			returnValues[0] = AVERROR_EXIT;
 			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 			return returnArray;
 		}
 
 		// Allocate the output codec context
-		if (!(movieStream->pAudioOutCodecCtx = avcodec_alloc_context3(aOutCodec))) {
-			movieStream->pLogger->error("Could not allocate an encoding output context.\n");
-			avformat_close_input(&movieStream->pFormatCtx);
+		if (!(mediaPlayer->pAudioOutCodecCtx = avcodec_alloc_context3(aOutCodec))) {
+			mediaPlayer->pLogger->error("Could not allocate an encoding output context.\n");
+			avformat_close_input(&mediaPlayer->pFormatCtx);
 			returnValues[0] = AVERROR_EXIT;
 			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 			return returnArray;
 		}
 
 		// Set the sample format
-		movieStream->pAudioOutCodecCtx->sample_fmt = sampleFormat;
+		mediaPlayer->pAudioOutCodecCtx->sample_fmt = sampleFormat;
 
 		// Set channels, either from input jAudioFormat or from input codec
 		if (audioFormat.channels != 0) {
-			movieStream->pAudioOutCodecCtx->channels = audioFormat.channels;
-			movieStream->pAudioOutCodecCtx->channel_layout = av_get_default_channel_layout(audioFormat.channels);
+			mediaPlayer->pAudioOutCodecCtx->channels = audioFormat.channels;
+			mediaPlayer->pAudioOutCodecCtx->channel_layout = av_get_default_channel_layout(audioFormat.channels);
 		} else {
-			movieStream->pAudioOutCodecCtx->channels = movieStream->pAudioInCodecCtx->channels;
-			movieStream->pAudioOutCodecCtx->channel_layout = movieStream->pAudioInCodecCtx->channel_layout;
-			//audioFormat.channels = movieStream->pAudioInCodecCtx->channels;
+			mediaPlayer->pAudioOutCodecCtx->channels = mediaPlayer->pAudioInCodecCtx->channels;
+			mediaPlayer->pAudioOutCodecCtx->channel_layout = mediaPlayer->pAudioInCodecCtx->channel_layout;
+			//audioFormat.channels = mediaPlayer->pAudioInCodecCtx->channels;
 		}
 
 		// Set sample rate, either from input jAudioFormat or from input codec
 		if (audioFormat.sampleRate != 0) {
-			movieStream->pAudioOutCodecCtx->sample_rate = (int) audioFormat.sampleRate;
+			mediaPlayer->pAudioOutCodecCtx->sample_rate = (int) audioFormat.sampleRate;
 		} else {
-			movieStream->pAudioOutCodecCtx->sample_rate = movieStream->pAudioInCodecCtx->sample_rate;
-			//audioFormat.sampleRate = movieStream->pAudioInCodecCtx->sample_rate;
+			mediaPlayer->pAudioOutCodecCtx->sample_rate = mediaPlayer->pAudioInCodecCtx->sample_rate;
+			//audioFormat.sampleRate = mediaPlayer->pAudioInCodecCtx->sample_rate;
 		}
 
 		// Set bit rate
 		if (audioFormat.frameRate != 0) {
-			movieStream->pAudioOutCodecCtx->bit_rate = (int) audioFormat.frameRate;
+			mediaPlayer->pAudioOutCodecCtx->bit_rate = (int) audioFormat.frameRate;
 		} else {
-			movieStream->pAudioOutCodecCtx->bit_rate = movieStream->pAudioInCodecCtx->bit_rate;
-			//audioFormat.sampleRate = movieStream->pAudioInCodecCtx->bit_rate;
+			mediaPlayer->pAudioOutCodecCtx->bit_rate = mediaPlayer->pAudioInCodecCtx->bit_rate;
+			//audioFormat.sampleRate = mediaPlayer->pAudioInCodecCtx->bit_rate;
 		}
 
 		// Set the frame size
 		//audioFormat.frameSize = av_get_bytes_per_sample(sampleFormat);
 
 		// Open the encoder for the audio stream to use it later.
-		if ((errNo = avcodec_open2(movieStream->pAudioOutCodecCtx, aOutCodec, NULL)) < 0) {
-			movieStream->pLogger->error("Could not open output codec. Error message: '%s'.\n", getErrorText(errNo));
-			avformat_close_input(&movieStream->pFormatCtx);
+		if ((errNo = avcodec_open2(mediaPlayer->pAudioOutCodecCtx, aOutCodec, NULL)) < 0) {
+			mediaPlayer->pLogger->error("Could not open output codec. Error message: '%s'.\n", getErrorText(errNo));
+			avformat_close_input(&mediaPlayer->pFormatCtx);
 			returnValues[0] = errNo;
 			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 			return returnArray;
 		}
 
 		// Initialize the re-sampler to be able to convert audio sample formats.
-		if ((errNo = MoviePlayer::initResampler(movieStream->pAudioInCodecCtx,
-		                                        movieStream->pAudioOutCodecCtx,
-		                                        &movieStream->pResampleCtx,
-		                                        movieStream->pLogger)) < 0) {
-			avformat_close_input(&movieStream->pFormatCtx);
+		if ((errNo = MediaPlayer::initResampler(mediaPlayer->pAudioInCodecCtx,
+		                                        mediaPlayer->pAudioOutCodecCtx,
+		                                        &mediaPlayer->pResampleCtx,
+		                                        mediaPlayer->pLogger)) < 0) {
+			avformat_close_input(&mediaPlayer->pFormatCtx);
 			returnValues[0] = errNo;
 			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 			return returnArray;
 		}
 	}
 
-	movieStream->playSound = movieStream->hasAudioStream();
+	mediaPlayer->playSound = mediaPlayer->hasAudioStream();
 
 	// Seek to the start of the file (must have an image or audio stream).
-	movieStream->lastWritePts = movieStream->seekPts = movieStream->hasVideoStream()
-	                                                        ? movieStream->pImageStream->start_time : 0;
+	mediaPlayer->seekPts = mediaPlayer->hasVideoStream() ? mediaPlayer->pImageStream->start_time : 0;
 	                                                        // assume 0 is the start time for the audio stream
-	movieStream->seekReq = true;
+	mediaPlayer->seekReq = true;
 
 	// Start the decode thread
-	movieStream->pDecodeFrame = new std::thread(&MoviePlayer::readNextFrame, movieStream);
-	movieStream->pLogger->info("Started decoding thread!");
+	mediaPlayer->pDecodeFrame = new std::thread(&MediaPlayer::readNextFrame, mediaPlayer);
+	mediaPlayer->pLogger->info("Started decoding thread!");
 
 	// Set the value for loaded movie true
-	movieStream->loadedMovie = true;
+	mediaPlayer->loadedMovie = true;
 
 	// Free strings
 	env->ReleaseStringUTFChars(jFileName, fileName);
 	env->ReleaseStringUTFChars(jVersion, version);
 
 	// Add player to the map
-	idToMovieStream[streamId] = movieStream;
+	idToMovieStream[streamId] = mediaPlayer;
 
     env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
     return returnArray;
 }
 
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAverageFrameRate0(JNIEnv *env,
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getAverageFrameRate0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getAverageFrameRate() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getAverageFrameRate() : 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasVideoStream0(JNIEnv *env,
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_hasVideoStream0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr && movieStream->hasVideoStream();
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr && mediaPlayer->hasVideoStream();
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_hasAudioStream0(JNIEnv *env,
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_hasAudioStream0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr && movieStream->hasAudioStream();
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr && mediaPlayer->hasAudioStream();
 }
 
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getStartTime0(JNIEnv *env,
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getStartTime0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getStartTime() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getStartTime() : 0;
 }
 
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getEndTime0(JNIEnv *env,
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getEndTime0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getEndTime() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getEndTime() : 0;
 }
 
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getDuration0(JNIEnv *env,
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getDuration0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getDuration() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getDuration() : 0;
 }
 
-JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCurrentTime0(JNIEnv *env,
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getCurrentTime0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getCurrentTime() : -1;
+/*
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getCurrentTime() : -1;
+*/
+    return -1;
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_start0(JNIEnv *env, jclass thisClass,
-    jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    if (movieStream != nullptr) {
-        movieStream->resetClockDiff = true;
-    }
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setAudioSyncDelay0(JNIEnv *env,
+    jclass thisClass, jint streamId, jlong delay) {
+    // TODO: Wire this up properly
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_stop0(JNIEnv *env, jclass thisClass,
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_play0(JNIEnv *env, jclass thisClass,
+       jint streamId) {
+    // Nothing to do here for now
+}
+
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_stop0(JNIEnv *env, jclass thisClass,
     jint streamId) {
     // Nothing to do here for now
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setCurrentTime0(JNIEnv *env,
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_pause0(JNIEnv *env, jclass thisClass,
+    jint streamId) {
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    if (mediaPlayer != nullptr) {
+        mediaPlayer->pause();
+    }
+}
+
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_seek0(JNIEnv *env,
     jclass thisClass, jint streamId, jdouble jTime) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    if (movieStream != nullptr) {
-        movieStream->setCurrentTime(jTime); // set current time limits range
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    if (mediaPlayer != nullptr) {
+        mediaPlayer->seek(jTime); // set current time limits range
     }
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaybackSpeed0(JNIEnv *env,
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setPlaybackSpeed0(JNIEnv *env,
     jclass thisClass, jint streamId, jfloat speed) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    if (movieStream != nullptr) {
-        movieStream->setPlaybackSpeed(speed);
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    if (mediaPlayer != nullptr) {
+        mediaPlayer->setSpeed(speed);
     }
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_reset0(JNIEnv *env,
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_reset0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    if (movieStream != nullptr) {
-        movieStream->reset();
-    }
+    // Nothing to do here
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_close0(JNIEnv *env, jclass thisClass,
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_close0(JNIEnv *env, jclass thisClass,
     jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    if (movieStream != nullptr) {
-        movieStream->close();
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    if (mediaPlayer != nullptr) {
+        mediaPlayer->close();
         idToMovieStream.erase(streamId);
-        delete movieStream;
+        delete mediaPlayer;
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextAudioData0(JNIEnv *env,
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_loadNextAudioData0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr && movieStream->loadNextAudioData();
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr && mediaPlayer->loadNextAudioData();
 }
 
-JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getAudioBuffer0(JNIEnv *env,
+JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getAudioBuffer0(JNIEnv *env,
     jclass thisClass, jint streamId, jint nBytes) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getAudioBuffer(env, nBytes) : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getAudioBuffer(env, nBytes) : 0;
 }
 
-JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleFormat0(JNIEnv *env,
+JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getSampleFormat0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getSampleFormat(env) : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getSampleFormat(env) : 0;
 }
 
-JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getCodecName0(JNIEnv *env,
+JNIEXPORT jstring JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getCodecName0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getCodecName(env) : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getCodecName(env) : 0;
 }
 
-JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleRate0(JNIEnv *env,
+JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getSampleRate0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getSampleRate() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getSampleRate() : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getSampleSizeInBits0(JNIEnv *env,
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getSampleSizeInBits0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getSampleSizeInBits() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getSampleSizeInBits() : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfSoundChannels0(JNIEnv *env,
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getNumberOfSoundChannels0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getNumberOfSoundChannels() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getNumberOfSoundChannels() : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameSize0(JNIEnv *env,
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getFrameSize0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getFrameSize() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getFrameSize() : 0;
 }
 
-JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameRate0(JNIEnv *env,
+JNIEXPORT jfloat JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getFrameRate0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getFrameRate() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getFrameRate() : 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_bigEndian0(JNIEnv *env,
+JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_bigEndian0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr && movieStream->bigEndian();
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr && mediaPlayer->bigEndian();
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getNumberOfColorChannels0(JNIEnv *env,
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getNumberOfColorChannels0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getNumberOfColorChannels() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getNumberOfColorChannels() : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getHeight0(JNIEnv *env, jclass thisClass,
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getHeight0(JNIEnv *env, jclass thisClass,
     jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getHeight() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getHeight() : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getWidth0(JNIEnv *env, jclass thisClass,
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getWidth0(JNIEnv *env, jclass thisClass,
     jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getWidth() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getWidth() : 0;
 }
 
-JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getFrameBuffer0(JNIEnv *env,
+JNIEXPORT jobject JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getImageBuffer0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->getFrameBuffer(env) : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->getFrameBuffer(env) : 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_loadNextImageFrame0(JNIEnv *env,
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_loadNextImageFrame0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-    MoviePlayer* movieStream = getMovieStream(streamId);
-    return movieStream != nullptr ? movieStream->loadNextImageFrame() : 0;
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    return mediaPlayer != nullptr ? mediaPlayer->loadNextImageFrame() : 0;
 }

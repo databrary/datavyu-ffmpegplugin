@@ -1,13 +1,10 @@
 #include <mutex>
+#include <ctime>
 
-extern "C" {
-	#include <libavutil/time.h> // timer
-}
+#ifndef AVCLOCK_H_
+#define AVCLOCK_H_
 
-#ifndef CLOCK_H_
-#define CLOCK_H_
-
-class Clock {
+class AVClock {
 private:
     double pts;
     double ptsDrift;
@@ -15,7 +12,7 @@ private:
     double speed;
     bool paused;
     std::mutex mu;
-    void setClock(const Clock& clock) {
+    void setClock(const AVClock& clock) {
         std::unique_lock<std::mutex> locker(mu);
         this->pts = clock.pts;
         this->ptsDrift = clock.ptsDrift;
@@ -25,10 +22,15 @@ private:
         locker.unlock();
     }
 public:
-    Clock() :
+    double getSystemTime() {
+        using namespace std;
+        using namespace std::chrono;
+        return duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+    }
+    AVClock() :
         pts(NAN),
         ptsDrift(NAN),
-        lastUpdate(av_gettime_relative() / 1000000.0),
+        lastUpdate(getSystemTime() / 1000000.0),
         speed(1.0),
         paused(false) {}
     void setPaused(bool paused) {
@@ -42,7 +44,7 @@ public:
     }
     void setTime(double pts) {
         std::unique_lock<std::mutex> locker(mu);
-        double time = av_gettime_relative() / 1000000.0;
+        double time = getSystemTime() / 1000000.0;
         this->pts = pts;
         this->lastUpdate = time;
         this->ptsDrift = pts - time;
@@ -54,7 +56,7 @@ public:
         if (paused) {
             returnTime = pts;
         } else {
-            double time = av_gettime_relative() / 1000000.0;
+            double time = getSystemTime() / 1000000.0;
             returnTime = ptsDrift + time - (time - lastUpdate) * (1.0 - speed);
         }
         locker.unlock();
@@ -66,7 +68,7 @@ public:
     double getSpeed() const {
         return speed;
     }
-    static void syncMasterToSlave(Clock* master, Clock* slave, double noSyncThreshold) {
+    static void syncMasterToSlave(AVClock* master, AVClock* slave, double noSyncThreshold) {
         double masterTime = master->getTime();
         double slaveTime = slave->getTime();
         if (!isnan(slaveTime) && (isnan(masterTime) || fabs(masterTime - slaveTime) > noSyncThreshold))
@@ -74,4 +76,4 @@ public:
     }
 };
 
-#endif CLOCK_H_
+#endif AVCLOCK_H_

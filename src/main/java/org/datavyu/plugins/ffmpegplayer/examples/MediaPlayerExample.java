@@ -12,10 +12,7 @@ import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
@@ -24,16 +21,16 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 
-public class MoviePlayerExample extends JPanel implements WindowListener {
+public class MediaPlayerExample extends JPanel implements WindowListener {
 
 	/** Identifier for object serialization */
 	private static final long serialVersionUID = 5109839668203738974L;
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(MoviePlayerExample.class);
+    private static Logger logger = LogManager.getFormatterLogger(MediaPlayerExample.class);
 
 	/** The movie stream for this movie player */
-	private java.util.List<MoviePlayer> movieStreamProviders = new ArrayList<>();
+	private java.util.List<MediaPlayer> movieStreamProviders = new ArrayList<>();
 
 	/** Used to open video files */
 	private JFileChooser fileChooser;
@@ -44,7 +41,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 	/** A slider displays the current frame and the user can drag the slider to switch to a different frame. */
 	private JSlider slider;
 
-	public MoviePlayerExample() {
+	public MediaPlayerExample() {
 		setLayout(new BorderLayout());
 
 		JToolBar tools = new JToolBar();
@@ -150,7 +147,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
         // Create and set up the window
         JFrame frame = new JFrame("Video Player");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        MoviePlayerExample player = new MoviePlayerExample();
+        MediaPlayerExample player = new MediaPlayerExample();
         player.addWindowListener(frame);
         // Add content to the window
         frame.add(player, BorderLayout.CENTER);
@@ -188,7 +185,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-        for (MoviePlayer movieStreamProvider : movieStreamProviders) {
+        for (MediaPlayer movieStreamProvider : movieStreamProviders) {
             movieStreamProvider.close();
         }
 	}
@@ -257,7 +254,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 	class PlaySelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-            for (MoviePlayer movieStreamProvider : movieStreamProviders) {
+            for (MediaPlayer movieStreamProvider : movieStreamProviders) {
                 movieStreamProvider.play();
             }
 		}
@@ -266,7 +263,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 	class StopSelection implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (MoviePlayer movieStreamProvider : movieStreamProviders) {
+            for (MediaPlayer movieStreamProvider : movieStreamProviders) {
                 movieStreamProvider.stop();
             }
         }
@@ -294,28 +291,28 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 
 		private final static double SYNC_THRESHOLD = 0.5; // in seconds
 
-        SliderSelection() {
+/*        SliderSelection() {
             new Timer().scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
                     double streamTime = SliderStreamListener.toStreamTime(slider.getValue());
-                    for (MoviePlayer movieStreamProvider : movieStreamProviders) {
+                    for (MediaPlayer movieStreamProvider : movieStreamProviders) {
                         if (Math.abs(streamTime - movieStreamProvider.getCurrentTime()) >= SYNC_THRESHOLD) {
                             logger.info("The slider time is: " + streamTime + " seconds and the stream time is: "
                                     + movieStreamProvider.getCurrentTime() + " seconds");
                             movieStreamProvider.seek(streamTime);
-                            //moviePlayer.startVideoListeners();
-                            //moviePlayer.nextImageFrame();
+                            //mediaPlayer.startVideoListeners();
+                            //mediaPlayer.nextImageFrame();
                         }
                     }
                 }
             }, SYNC_DELAY, SYNC_INTERVAL);
-        }
+        }*/
 
 		@Override
 		public void stateChanged(ChangeEvent e) {
             if (slider.getValueIsAdjusting()) {
-                for (MoviePlayer movieStreamProvider : movieStreamProviders) {
+                for (MediaPlayer movieStreamProvider : movieStreamProviders) {
                     movieStreamProvider.stop();
                 }
             }
@@ -324,55 +321,59 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 
     private class MoviePlayerFrame {
         final Frame frame;
-        MoviePlayer moviePlayer;
+        MediaPlayer mediaPlayer;
 
         MoviePlayerFrame(String movieFileName) {
             this(movieFileName, "0.0.1");
         }
 
         MoviePlayerFrame(String movieFileName, String version) throws MediaException {
-            moviePlayer = MoviePlayer
+            final ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+            final AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
+
+            mediaPlayer = MediaPlayer
 					.newBuilder()
 					.setFileName(movieFileName)
 					.setVersion(version)
+                    .setColorSpace(colorSpace)
+                    .setAudioFormat(audioFormat)
 					.build();
 
-            if (moviePlayer.hasError()) {
-                throw moviePlayer.getError();
+            if (mediaPlayer.hasError()) {
+                throw mediaPlayer.getError();
             }
 
-            final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             frame = new Frame();
             frame.addWindowListener( new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {
-                    moviePlayer.close();
-                    movieStreamProviders.remove(moviePlayer);
+                    mediaPlayer.close();
+                    movieStreamProviders.remove(mediaPlayer);
                     frame.setVisible(false);
                 }
             } );
-            AudioSoundStreamListener audioListener = new AudioSoundStreamListener(moviePlayer);
-            VideoStreamListenerContainer displayListener = new VideoStreamListenerContainer(moviePlayer, frame,
-                    reqColorSpace);
-            AudioVisualizer audioVisualizer = new AudioVisualizer(moviePlayer);
+            AudioSoundStreamListener audioListener = new AudioSoundStreamListener(audioFormat);
+            ImageStreamListenerContainer displayListener = new ImageStreamListenerContainer(frame, null,
+                    colorSpace);
+            AudioVisualizer audioVisualizer = new AudioVisualizer(mediaPlayer);
 
             // Add the audio sound listener
-            moviePlayer.addAudioStreamListener(audioListener);
+            mediaPlayer.addAudioStreamListener(audioListener);
             // Add video display
-            moviePlayer.addVideoStreamListener(displayListener);
+            mediaPlayer.addImageStreamListener(displayListener);
             // Add audio visualizer
-            moviePlayer.addAudioStreamListener(audioVisualizer);
+            mediaPlayer.addAudioStreamListener(audioVisualizer);
 
             // TODO: This only works if we have only one video; otherwise we need to sync them through one clock
-            moviePlayer.addVideoStreamListener(new SliderStreamListener(slider, moviePlayer));
+            //mediaPlayer.addImageStreamListener(new SliderStreamListener(slider, mediaPlayer));
 
             // Open the movie stream provider
-            int width = moviePlayer.getWidth();
-            int height = moviePlayer.getHeight();
+            int width = mediaPlayer.getWidth();
+            int height = mediaPlayer.getHeight();
             frame.setBounds(0, 0, width, height);
             frame.setVisible(true);
             frame.addComponentListener(new ComponentListener() {
                 public void componentResized(ComponentEvent e) {
-                    float scale = ((float) frame.getHeight())/moviePlayer.getHeight();
+                    float scale = ((float) frame.getHeight())/ mediaPlayer.getHeight();
                     displayListener.setScale(scale);
                 }
 
@@ -387,8 +388,8 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
             });
         }
 
-        MoviePlayer getMovieStreamProvider() {
-            return moviePlayer;
+        MediaPlayer getMovieStreamProvider() {
+            return mediaPlayer;
         }
     }
 	
@@ -397,7 +398,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
 			    float newSpeed = Float.parseFloat(e.getActionCommand());
-			    for (MoviePlayer movieStreamProvider : movieStreamProviders) {
+			    for (MediaPlayer movieStreamProvider : movieStreamProviders) {
 			        movieStreamProvider.setSpeed(newSpeed);
                 }
 			} catch (NumberFormatException ex) {
@@ -411,7 +412,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 		public void actionPerformed(ActionEvent e) {
 
 			// Show the file chooser.
-	        int val = fileChooser.showDialog(MoviePlayerExample.this, "Open");
+	        int val = fileChooser.showDialog(MediaPlayerExample.this, "Open");
 
 	        // Process the results.
 	        if (val == JFileChooser.APPROVE_OPTION) {

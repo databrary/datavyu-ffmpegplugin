@@ -22,8 +22,6 @@ public interface MoviePlayerControl {
         switch (type) {
             case AWT_TYPE:
                 return new MoviePlayerFrame(colorSpace, audioFormat, movieFileName);
-            case JFX_TYPE:
-                return new MoviePlayerStage(colorSpace, audioFormat, movieFileName);
         }
         throw new IllegalArgumentException("Unsupported player type: " + type);
     }

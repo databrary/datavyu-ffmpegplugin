@@ -82,7 +82,6 @@ public:
         std::unique_lock<std::mutex> locker(mu);
         cv.wait(locker, [this](){return nWrite > 0 || unblocking;});
         if (!unblocking) {
-            //frame_queue_unref_item(buffer[iRead]->frame);
             iRead = (iRead + 1) % nItem;
             nRead = 1;
             nWrite--;

@@ -4,7 +4,7 @@ package org.datavyu.plugins.ffmpegplayer;
 import javax.sound.sampled.AudioFormat;
 import java.nio.ByteBuffer;
 
-public abstract class MoviePlayer0 implements VideoStream, AudioStream {
+public abstract class MediaPlayer0 implements VideoStream, AudioStream {
 
     /*
      * Load the native library that interfaces to ffmpeg.
@@ -12,7 +12,7 @@ public abstract class MoviePlayer0 implements VideoStream, AudioStream {
      * This load assumes that dependent dll's are in the JVM's classpath. Here, this is the directory '.'
      */
     static {
-        System.loadLibrary("MoviePlayer0");
+        System.loadLibrary("MediaPlayer0");
     }
 
     protected static native int[] open0(String fileName, String version, AudioFormat audioFormat);

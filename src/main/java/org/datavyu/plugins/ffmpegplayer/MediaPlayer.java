@@ -1,12 +1,10 @@
 package org.datavyu.plugins.ffmpegplayer;
 
 import com.sun.media.jfxmedia.MediaException;
-import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.color.ColorSpace;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +20,16 @@ import javax.sound.sampled.AudioFormat;
  * @author Florian Raudies, Mountain View, CA.
  *
  */
-public class MoviePlayer extends MoviePlayer0 {
+public class MediaPlayer extends MediaPlayer0 {
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(MoviePlayer.class);
+    private static Logger logger = LogManager.getFormatterLogger(MediaPlayer.class);
 
 	/** The list of audio listeners */
 	private final List<StreamListener> audioListeners = new ArrayList<>();
 	
 	/** The list of video listeners */
-	private final List<StreamListener> videoListeners = new ArrayList<>();
+	private final List<ImageStreamListener> imageListeners = new ArrayList<>();
 
     public enum Status {
         UNKNOWN,
@@ -54,12 +52,6 @@ public class MoviePlayer extends MoviePlayer0 {
 
     /** The duration of the video/audio. Initialized at opening */
     protected double duration = 0;
-
-    /** The width of the image in the stream */
-    private int width = 0;
-
-    /** The height of the image in the stream */
-    private int height = 0;
 
     /** The number of channels. Initialized at opening */
     private int nColorChannels = 0;
@@ -136,10 +128,10 @@ public class MoviePlayer extends MoviePlayer0 {
     public int getNumberOfColorChannels() { return nColorChannels; }
 
     @Override
-    public int getHeight() { return height; }
+    public int getHeight() { return getHeight0(streamId); }
 
     @Override
-    public int getWidth() { return width; }
+    public int getWidth() { return getWidth0(streamId); }
 
     /**
      * Set the amount of time to delay the audio. A positive value makes audio
@@ -207,11 +199,9 @@ public class MoviePlayer extends MoviePlayer0 {
             duration = getDuration0(streamId);
 
             if (hasVideoStream0(streamId)) {
-                width = getWidth0(streamId);
-                height = getHeight0(streamId);
                 nColorChannels = getNumberOfColorChannels0(streamId);
 
-                for (StreamListener listener : videoListeners) {
+                for (StreamListener listener : imageListeners) {
                     listener.streamOpened();
                 }
 
@@ -307,8 +297,8 @@ public class MoviePlayer extends MoviePlayer0 {
             logger.info("Stream %d: Starting video thread.", getStreamId());
 
             // Inform the stream listeners about the play
-            synchronized (videoListeners) {
-                for (StreamListener listener : videoListeners) {
+            synchronized (imageListeners) {
+                for (StreamListener listener : imageListeners) {
                     listener.streamStarted();
                 }
             }
@@ -321,8 +311,9 @@ public class MoviePlayer extends MoviePlayer0 {
 
                 if (hasData) {
                     // Fulfill all listeners
-                    synchronized (videoListeners) {
-                        for (StreamListener listener : videoListeners) {
+                    synchronized (imageListeners) {
+                        for (ImageStreamListener listener : imageListeners) {
+                            listener.streamNewImageSize(getWidth(), getHeight());
                             listener.streamData(buffer);
                         }
                     }
@@ -334,8 +325,8 @@ public class MoviePlayer extends MoviePlayer0 {
             }
 
             // Inform stream listeners about stop
-            synchronized (videoListeners) {
-                for (StreamListener listener : videoListeners) {
+            synchronized (imageListeners) {
+                for (StreamListener listener : imageListeners) {
                     listener.streamStopped();
                 }
             }
@@ -347,41 +338,30 @@ public class MoviePlayer extends MoviePlayer0 {
 	@Override
 	public void play() {
         // Spun light-weight thread
-        Platform.runLater(() -> {
-            play0(streamId);
-            playback.parallelStream().forEach(r -> threads.submit(r));
-            setStatus(Status.PLAYING);
-        });
+        play0(streamId);
+        playback.parallelStream().forEach(r -> threads.submit(r));
+        setStatus(Status.PLAYING);
 	}
 
     @Override
     public void stop() {
-        // Spun light-weight thread
-	    Platform.runLater(() -> {
-            stop0(streamId);
-            // Note: Seek to play happens in native land
-            playback.parallelStream().forEach(r -> r.stop());
-            setStatus(Status.STOPPED);
-        });
+        stop0(streamId);
+        playback.parallelStream().forEach(r -> r.stop());
+        setStatus(Status.STOPPED);
     }
 
     @Override
     public void pause() {
-        // Spun light-weight thread
-	    Platform.runLater(() -> {
-            pause0(streamId);
-            playback.parallelStream().forEach(r -> r.stop());
-            setStatus(Status.PAUSED);
-        });
+        pause0(streamId);
+        playback.parallelStream().forEach(r -> r.stop());
+        setStatus(Status.PAUSED);
     }
 
     @Override
     public void close() {
-        Platform.runLater(() -> {
-            stop();
-            close0(streamId);
-            setStatus(Status.DISPOSED);
-        });
+        stop();
+        close0(streamId);
+        setStatus(Status.DISPOSED);
     }
 
     @Override
@@ -418,11 +398,11 @@ public class MoviePlayer extends MoviePlayer0 {
 	 * 
 	 * @param streamListener The stream listener that is added.
 	 */
-	public void addVideoStreamListener(StreamListener streamListener) {
+	public void addImageStreamListener(ImageStreamListener streamListener) {
         // A lock on the list of video listeners to avoid concurrent access with the thread that is feeding data
-        synchronized (videoListeners) {
+        synchronized (imageListeners) {
             // Add the listener to the list
-            videoListeners.add(streamListener);
+            imageListeners.add(streamListener);
             // If playing open and play
             if (getStatus() == Status.PLAYING) {
                 streamListener.streamOpened();
@@ -504,12 +484,12 @@ public class MoviePlayer extends MoviePlayer0 {
             return this;
         }
 
-        public MoviePlayer build() {
-            return new MoviePlayer(fileName, version, colorSpace, audioFormat);
+        public MediaPlayer build() {
+            return new MediaPlayer(fileName, version, colorSpace, audioFormat);
         }
     }
 
-    private MoviePlayer(String fileName, String version, ColorSpace colorSpace, AudioFormat audioFormat) {
+    private MediaPlayer(String fileName, String version, ColorSpace colorSpace, AudioFormat audioFormat) {
         this.fileName = fileName;
         this.version = version;
         this.audioFormat = audioFormat;
