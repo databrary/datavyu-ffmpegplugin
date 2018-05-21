@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
+import java.awt.color.ICC_ColorSpace;
+import java.awt.color.ICC_ProfileRGB;
 import java.awt.image.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
@@ -76,6 +78,9 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
     private void init(){
 		Runnable init = () -> {
 			//Creating an empty image may not be useful
+			if (colorSpace == null){
+				colorSpace = getDefaultSrceenDevice().getDefaultConfiguration().getColorModel().getColorSpace();
+			}
 			cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
 					DataBuffer.TYPE_BYTE);
 			// Set defaults
@@ -162,6 +167,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
         this.height = newHeight;
 
         // TODO: Need to update the buffer strategy here
+		setCanvasSize(newWidth,newHeight);
     }
 
     @Override
@@ -202,4 +208,36 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
         // We rescale the image if the scale is strongly update the image
         // TODO: Implement this differently
     }
+
+    public Dimension getCanvasSize() { return canvas.getSize(); }
+
+    /** Change the Canvas size */
+    public void setCanvasSize(final int width, final int height){
+		Dimension canvasDimension = getCanvasSize();
+		if (canvasDimension.width == width
+				&& canvasDimension.height == height){
+			return;
+		}
+		Runnable resizeCanvas = () -> {
+			logger.info("Change Canvas Size to: width: " +width + " Height: "+height);
+			canvas.setSize(width, height);
+			frame.pack();
+		};
+
+		if (EventQueue.isDispatchThread()){
+			resizeCanvas.run();
+		}else{
+			try {
+				EventQueue.invokeAndWait(resizeCanvas);
+			} catch (InterruptedException e) {
+				logger.warn(e);
+			} catch (InvocationTargetException e) {
+				logger.warn(e);
+			}
+		}
+	}
+
+	public GraphicsDevice getDefaultSrceenDevice(){
+    	return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	}
 }
