@@ -85,6 +85,10 @@ public class MediaPlayer extends MediaPlayer0 {
     /** Thread pool for the audio and video playback */
     private ThreadPoolExecutor threads = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
 
+    /** A Flag to enable resizing during playback when needed*/
+    private boolean needResize = false;
+
+
     public Status getStatus() {
         synchronized (lockForStatus) {
             return status;
@@ -253,8 +257,13 @@ public class MediaPlayer extends MediaPlayer0 {
     private float scale = 1f;
 
     public void setSize(float scale) {
-        logger.info("Set size with scale: " + scale);
-        this.scale = scale;
+        if (this.scale != scale) {
+            logger.info("Set size with scale: " + scale);
+            this.scale = scale;
+            needResize = true;
+        }else{
+            needResize = false;
+        }
     }
 
 	private class AudioPlayback extends RunnableWithStopHook {
@@ -332,7 +341,9 @@ public class MediaPlayer extends MediaPlayer0 {
                     // Fulfill all listeners
                     synchronized (imageListeners) {
                         for (ImageStreamListener listener : imageListeners) {
-                            listener.streamNewImageSize(getWidth(), getHeight());
+                            if (needResize) {
+                                listener.streamNewImageSize(getWidth(), getHeight());
+                            }
                             //listener.streamNewImageSize((int) scale*getWidth(), (int) scale*getHeight());
                             listener.streamData(buffer);
                         }
