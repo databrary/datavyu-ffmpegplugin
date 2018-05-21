@@ -26,7 +26,7 @@ public class MeasureFrameRate {
                 .setAudioFormat(audioFormat)
                 .setColorSpace(colorSpace)
                 .addAudioStreamListener(new AudioSoundStreamListener(audioFormat))
-                .addImageStreamListener(new ImageStreamListenerContainer(frame, null, colorSpace))
+                .addImageStreamListener(new ImageStreamListenerFrame(frame, colorSpace))
                 .build();
         if (mediaPlayer.hasError()) {
             throw mediaPlayer.getError();

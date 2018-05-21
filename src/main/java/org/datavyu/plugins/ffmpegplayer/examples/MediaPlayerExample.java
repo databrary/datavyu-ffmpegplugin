@@ -30,7 +30,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
     private static Logger logger = LogManager.getFormatterLogger(MediaPlayerExample.class);
 
 	/** The movie stream for this movie player */
-	private java.util.List<MediaPlayer> movieStreamProviders = new ArrayList<>();
+	private java.util.List<MediaPlayer> mediaPlayers = new ArrayList<>();
 
 	/** Used to open video files */
 	private JFileChooser fileChooser;
@@ -172,7 +172,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
 	private void openFile(String fileName) {
 		MoviePlayerFrame moviePlayerFrame = new MoviePlayerFrame(fileName);
-		movieStreamProviders.add(moviePlayerFrame.getMovieStreamProvider());
+		mediaPlayers.add(moviePlayerFrame.getMovieStreamProvider());
 	}
 	
     private void addWindowListener(Window w) {
@@ -186,7 +186,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-        for (MediaPlayer movieStreamProvider : movieStreamProviders) {
+        for (MediaPlayer movieStreamProvider : mediaPlayers) {
             movieStreamProvider.close();
         }
 	}
@@ -255,7 +255,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	class PlaySelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-            for (MediaPlayer movieStreamProvider : movieStreamProviders) {
+            for (MediaPlayer movieStreamProvider : mediaPlayers) {
                 movieStreamProvider.play();
             }
 		}
@@ -264,8 +264,8 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	class StopSelection implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (MediaPlayer movieStreamProvider : movieStreamProviders) {
-                movieStreamProvider.stop();
+            for (MediaPlayer mediaPlayer : mediaPlayers) {
+                mediaPlayer.stop();
             }
         }
     }
@@ -297,7 +297,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
                 @Override
                 public void run() {
                     double streamTime = SliderStreamListener.toStreamTime(slider.getValue());
-                    for (MediaPlayer movieStreamProvider : movieStreamProviders) {
+                    for (MediaPlayer movieStreamProvider : mediaPlayers) {
                         if (Math.abs(streamTime - movieStreamProvider.getCurrentTime()) >= SYNC_THRESHOLD) {
                             logger.info("The slider time is: " + streamTime + " seconds and the stream time is: "
                                     + movieStreamProvider.getCurrentTime() + " seconds");
@@ -313,8 +313,8 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		@Override
 		public void stateChanged(ChangeEvent e) {
             if (slider.getValueIsAdjusting()) {
-                for (MediaPlayer movieStreamProvider : movieStreamProviders) {
-                    movieStreamProvider.stop();
+                for (MediaPlayer mediaPlayer : mediaPlayers) {
+                    mediaPlayer.stop();
                 }
             }
 		}
@@ -336,7 +336,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
             frame.addWindowListener( new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {
                     mediaPlayer.close();
-                    movieStreamProviders.remove(mediaPlayer);
+                    mediaPlayers.remove(mediaPlayer);
                     frame.setVisible(false);
                 }
             } );
@@ -349,22 +349,19 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 					.setAudioFormat(audioFormat)
                     .addAudioStreamListener(new AudioVisualizer(audioFormat)) // Add audio visualizer
                     .addAudioStreamListener(new AudioSoundStreamListener(audioFormat)) // Add the audio sound listener
-                    .addImageStreamListener(new ImageStreamListenerContainer(frame, null, colorSpace)) // Add video display
+                    .addImageStreamListener(new ImageStreamListenerFrame(frame, colorSpace)) // Add video display
 					.build();
 
 			if (mediaPlayer.hasError()) {
 				throw mediaPlayer.getError();
 			}
 
-            // Open the movie stream provider
-            int width = mediaPlayer.getWidth();
-            int height = mediaPlayer.getHeight();
-            frame.setBounds(0, 0, width, height);
-            frame.setVisible(true);
-            /*frame.addComponentListener(new ComponentListener() {
+            frame.addComponentListener(new ComponentListener() {
                 public void componentResized(ComponentEvent e) {
-                    float scale = ((float) frame.getHeight())/ mediaPlayer.getHeight();
-                    displayListener.setScale(scale);
+                    mediaPlayer.setSize(
+                            frame.getHeight() > 0 ?
+                                    ((float) mediaPlayer.getHeight())/ frame.getHeight()
+                                    : 1f);
                 }
 
                 @Override
@@ -375,7 +372,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
                 @Override
                 public void componentShown(ComponentEvent e) { }
-            });*/
+            });
         }
 
         MediaPlayer getMovieStreamProvider() {
@@ -388,7 +385,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		public void actionPerformed(ActionEvent e) {
 			try {
 			    float newSpeed = Float.parseFloat(e.getActionCommand());
-			    for (MediaPlayer movieStreamProvider : movieStreamProviders) {
+			    for (MediaPlayer movieStreamProvider : mediaPlayers) {
 			        movieStreamProvider.setSpeed(newSpeed);
                 }
 			} catch (NumberFormatException ex) {

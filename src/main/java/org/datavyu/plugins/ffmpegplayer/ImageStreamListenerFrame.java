@@ -14,13 +14,13 @@ import java.util.Hashtable;
  * 
  * @author Florian Raudies, Mountain View, CA.
  */
-public class ImageStreamListenerContainer implements ImageStreamListener {
+public class ImageStreamListenerFrame implements ImageStreamListener {
     private final static int INITIAL_NUM_CHANNEL = 3;
     private final static int INITIAL_WIDTH = 640;
     private final static int INITIAL_HEIGHT = 480;
 
     /** The logger for this class */
-    private static Logger logger = LogManager.getFormatterLogger(ImageStreamListenerContainer.class);
+    private static Logger logger = LogManager.getFormatterLogger(ImageStreamListenerFrame.class);
 
 	/** The color component model */
 	private ComponentColorModel cm;
@@ -84,11 +84,10 @@ public class ImageStreamListenerContainer implements ImageStreamListener {
 	 * Creates a video display through a stream listener. The display is added 
 	 * to the container using the constraint.
 	 *
-	 * @param container The container we add the image display.
-	 * @param constraints Constraint where to add this video display into the container.
+     * @param frame The frame that is used for drawing the image on.
 	 * @param colorSpace The color space for the image data.
 	 */
-	public ImageStreamListenerContainer(Container container, Object constraints, ColorSpace colorSpace) {
+	public ImageStreamListenerFrame(Frame frame, ColorSpace colorSpace) {
 		this.cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE);
         // TODO: Change the implementation to the triple buffering in the Canvas and resize there directly
@@ -100,22 +99,12 @@ public class ImageStreamListenerContainer implements ImageStreamListener {
         WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
-        // Create the canvas to paint on
-        Canvas canvas = new Canvas();
-        // Add the canvas to the container with the given constraint -- if any is given
-        if (constraints != null) {
-            container.add(canvas, constraints);
-        } else {
-            container.add(canvas);
-        }
         // Make the canvas visible
-        container.setPreferredSize(new Dimension(width, height));
-        canvas.setVisible(true);
-        container.setVisible(true);
-
+        frame.setBounds(0, 0, width, height);
+        frame.setVisible(true);
         // Create a buffer strategy
-        canvas.createBufferStrategy(2);
-        strategy = canvas.getBufferStrategy();
+        frame.createBufferStrategy(2);
+        strategy = frame.getBufferStrategy();
     }
 
 	@Override
@@ -130,7 +119,8 @@ public class ImageStreamListenerContainer implements ImageStreamListener {
     public void streamNewImageSize(int newWidth, int newHeight) {
         this.width = newWidth;
         this.height = newHeight;
-        //canvas.setPreferredSize(new Dimension(newWidth, newHeight));
+
+        // TODO: Need to update the buffer strategy here
     }
 
     @Override

@@ -230,14 +230,17 @@ public class MediaPlayer extends MediaPlayer0 {
             }
 
             setStatus(Status.READY);
+            initialized = true;
 
             // Do we need to play
             checkPlay();
         }
     }
 
-    private boolean isReady() {
-        return status == Status.READY;
+    private boolean initialized = false;
+
+    private boolean isInitialized() {
+        return initialized;
     }
 
     private abstract class RunnableWithStopHook implements Runnable {
@@ -245,6 +248,13 @@ public class MediaPlayer extends MediaPlayer0 {
         void stop() {
             doRun = false;
         }
+    }
+
+    private float scale = 1f;
+
+    public void setSize(float scale) {
+        logger.info("Set size with scale: " + scale);
+        this.scale = scale;
     }
 
 	private class AudioPlayback extends RunnableWithStopHook {
@@ -323,6 +333,7 @@ public class MediaPlayer extends MediaPlayer0 {
                     synchronized (imageListeners) {
                         for (ImageStreamListener listener : imageListeners) {
                             listener.streamNewImageSize(getWidth(), getHeight());
+                            //listener.streamNewImageSize((int) scale*getWidth(), (int) scale*getHeight());
                             listener.streamData(buffer);
                         }
                     }
@@ -355,7 +366,7 @@ public class MediaPlayer extends MediaPlayer0 {
 
 	@Override
 	public void play() {
-        if (isReady()) {
+        if (isInitialized()) {
             play0(streamId);
             playback.parallelStream().forEach(r -> threads.submit(r));
         } else {
@@ -365,7 +376,7 @@ public class MediaPlayer extends MediaPlayer0 {
 
     @Override
     public void stop() {
-        if (isReady()) {
+        if (isInitialized()) {
             stop0(streamId);
             playback.parallelStream().forEach(r -> r.stop());
             setStatus(Status.STOPPED);
@@ -376,7 +387,7 @@ public class MediaPlayer extends MediaPlayer0 {
 
     @Override
     public void pause() {
-        if (isReady()) {
+        if (isInitialized()) {
             pause0(streamId);
             playback.parallelStream().forEach(r -> r.stop());
             setStatus(Status.PAUSED);
@@ -387,7 +398,7 @@ public class MediaPlayer extends MediaPlayer0 {
 
     @Override
     public void close() {
-	    if (isReady()) {
+	    if (isInitialized()) {
             stop();
             close0(streamId);
             setStatus(Status.DISPOSED);

@@ -2,7 +2,7 @@ package org.datavyu.benchmark;
 
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 import org.datavyu.plugins.ffmpegplayer.MediaPlayer;
-import org.datavyu.plugins.ffmpegplayer.ImageStreamListenerContainer;
+import org.datavyu.plugins.ffmpegplayer.ImageStreamListenerFrame;
 
 import javax.sound.sampled.AudioFormat;
 import java.awt.*;
@@ -12,16 +12,16 @@ public class MoviePlayerFrame extends Frame implements MoviePlayerControl {
 
     private MediaPlayer mediaPlayer;
 
-    private ImageStreamListenerContainer imageStreamListenerContainer;
+    private ImageStreamListenerFrame imageStreamListenerFrame;
 
     MoviePlayerFrame(ColorSpace colorSpace, AudioFormat audioFormat, String movieFileName) {
-        imageStreamListenerContainer = new ImageStreamListenerContainer(this, null, colorSpace);
+        imageStreamListenerFrame = new ImageStreamListenerFrame(this, colorSpace);
         this.mediaPlayer = MediaPlayer.newBuilder()
                 .setFileName(movieFileName)
                 .setColorSpace(colorSpace)
                 .setAudioFormat(audioFormat)
                 .addAudioStreamListener(new AudioSoundStreamListener(audioFormat))
-                .addImageStreamListener(imageStreamListenerContainer)
+                .addImageStreamListener(imageStreamListenerFrame)
                 .build();
         if (mediaPlayer.hasError()) {
             throw mediaPlayer.getError();
@@ -31,7 +31,7 @@ public class MoviePlayerFrame extends Frame implements MoviePlayerControl {
 
     @Override
     public void setScale(float scale) {
-        imageStreamListenerContainer.setScale(scale);
+        imageStreamListenerFrame.setScale(scale);
         setSize(new Dimension((int) scale* mediaPlayer.getWidth(),
                 (int) scale* mediaPlayer.getHeight()));
     }

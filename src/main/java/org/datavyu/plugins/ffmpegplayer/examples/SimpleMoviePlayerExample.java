@@ -3,7 +3,7 @@ package org.datavyu.plugins.ffmpegplayer.examples;
 import javafx.scene.media.MediaException;
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 import org.datavyu.plugins.ffmpegplayer.MediaPlayer;
-import org.datavyu.plugins.ffmpegplayer.ImageStreamListenerContainer;
+import org.datavyu.plugins.ffmpegplayer.ImageStreamListenerFrame;
 
 import javax.sound.sampled.AudioFormat;
 import java.awt.*;
@@ -33,7 +33,7 @@ public class SimpleMoviePlayerExample {
                 .setAudioFormat(audioFormat)
                 .setColorSpace(colorSpace)
                 .addAudioStreamListener(new AudioSoundStreamListener(audioFormat))
-                .addImageStreamListener(new ImageStreamListenerContainer(frame, null, colorSpace))
+                .addImageStreamListener(new ImageStreamListenerFrame(frame, colorSpace))
                 .build();
         if (mediaPlayer.hasError()) {
             throw mediaPlayer.getError();
