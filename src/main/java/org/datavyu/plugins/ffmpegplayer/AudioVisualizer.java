@@ -12,27 +12,24 @@ public class AudioVisualizer implements StreamListener {
     final private static GraphPanel.Range Y_RANGE = new GraphPanel.Range(-32768f, 32768f, 5000f);
     private JFrame frame = new JFrame("Audio Visualizer");
     private GraphPanel barPanel = new GraphPanel(WIDTH, HEIGHT);
-    private AudioStream movieStreamProvider;
     private float bps; // bytes per second
     private long nBytes;
     private int nSample;
 
-    public AudioVisualizer(MediaPlayer movieStreamProvider, int nSample) {
-        this.movieStreamProvider = movieStreamProvider;
+    public AudioVisualizer(AudioFormat audioFormat, int nSample) {
         this.nSample = nSample;
+        this.bps = audioFormat.getFrameSize() * audioFormat.getFrameRate();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().add(barPanel, BorderLayout.CENTER);
         frame.pack();
     }
 
-    public AudioVisualizer(MediaPlayer movieStreamProvider) {
-        this(movieStreamProvider, N_SAMPLE);
+    public AudioVisualizer(AudioFormat audioFormat) {
+        this(audioFormat, N_SAMPLE);
     }
 
     @Override
     public void streamOpened() {
-        AudioFormat audioFormat = movieStreamProvider.getAudioFormat();
-        bps = audioFormat.getFrameSize() * audioFormat.getFrameRate();
         nBytes = 0;
         frame.setVisible(true);
     }

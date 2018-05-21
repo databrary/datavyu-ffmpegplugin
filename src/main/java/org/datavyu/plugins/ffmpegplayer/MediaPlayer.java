@@ -26,10 +26,10 @@ public class MediaPlayer extends MediaPlayer0 {
     private static Logger logger = LogManager.getFormatterLogger(MediaPlayer.class);
 
 	/** The list of audio listeners */
-	private final List<StreamListener> audioListeners = new ArrayList<>();
+	private List<StreamListener> audioListeners;
 	
 	/** The list of video listeners */
-	private final List<ImageStreamListener> imageListeners = new ArrayList<>();
+	private List<ImageStreamListener> imageListeners;
 
     public enum Status {
         UNKNOWN,
@@ -337,7 +337,6 @@ public class MediaPlayer extends MediaPlayer0 {
 
 	@Override
 	public void play() {
-        // Spun light-weight thread
         play0(streamId);
         playback.parallelStream().forEach(r -> threads.submit(r));
         setStatus(Status.PLAYING);
@@ -371,44 +370,6 @@ public class MediaPlayer extends MediaPlayer0 {
         }
         // TODO: Handle play/stop for audio, but may just work out with empty signals
         setSpeed0(streamId, speed);
-    }
-
-    /**
-	 * Adds an audio stream listener. If this stream provider is already running the added listener is opened
-     * immediately after being added and before any data is fed.
-	 * 
-	 * @param streamListener The stream listener that is added.
-	 */
-	public void addAudioStreamListener(StreamListener streamListener) {
-		// A lock on the list of audio listeners to avoid concurrent access with the thread that is feeding data
-		synchronized (audioListeners) {
-			// Add the listener to the list
-			audioListeners.add(streamListener);
-			// If playing open and play
-			if (getStatus() == Status.PLAYING) {
-				streamListener.streamOpened();
-				streamListener.streamStarted();
-			}
-		}
-	}
-	
-	/**
-	 * Adds a video stream listener. If this stream provider is already running the added listener is opened immediately
-     * after being added and before any data is fed.
-	 * 
-	 * @param streamListener The stream listener that is added.
-	 */
-	public void addImageStreamListener(ImageStreamListener streamListener) {
-        // A lock on the list of video listeners to avoid concurrent access with the thread that is feeding data
-        synchronized (imageListeners) {
-            // Add the listener to the list
-            imageListeners.add(streamListener);
-            // If playing open and play
-            if (getStatus() == Status.PLAYING) {
-                streamListener.streamOpened();
-                streamListener.streamStarted();
-            }
-        }
     }
 
     /**
@@ -463,6 +424,8 @@ public class MediaPlayer extends MediaPlayer0 {
         private String version;
         private AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
         private ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB); // set default
+        private List<StreamListener> audioListeners = new ArrayList<>();
+        private List<ImageStreamListener> imageListeners = new ArrayList<>();
 
         public Builder setFileName(String fileName) {
             this.fileName = fileName;
@@ -484,18 +447,40 @@ public class MediaPlayer extends MediaPlayer0 {
             return this;
         }
 
+        public Builder addAudioStreamListener(StreamListener listener) {
+            this.audioListeners.add(listener);
+            return this;
+        }
+
+        public Builder addImageStreamListener(ImageStreamListener listener) {
+            this.imageListeners.add(listener);
+            return this;
+        }
+
         public MediaPlayer build() {
-            return new MediaPlayer(fileName, version, colorSpace, audioFormat);
+            return new MediaPlayer(
+                    fileName,
+                    version,
+                    colorSpace,
+                    audioFormat,
+                    audioListeners,
+                    imageListeners);
         }
     }
 
-    private MediaPlayer(String fileName, String version, ColorSpace colorSpace, AudioFormat audioFormat) {
+    private MediaPlayer(String fileName,
+                        String version,
+                        ColorSpace colorSpace,
+                        AudioFormat audioFormat,
+                        List<StreamListener> audioListeners,
+                        List<ImageStreamListener> imageListeners) {
         this.fileName = fileName;
         this.version = version;
         this.audioFormat = audioFormat;
         this.colorSpace = colorSpace;
-
-        // Heavy duty work
+        this.audioListeners = audioListeners;
+        this.imageListeners = imageListeners;
+        // Initialize the player but return fast
         Thread thread = new Thread(new InitMoviePlayer());
         thread.start();
     }

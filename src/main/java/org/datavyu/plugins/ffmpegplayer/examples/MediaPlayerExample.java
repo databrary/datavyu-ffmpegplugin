@@ -331,18 +331,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
             final ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             final AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
 
-            mediaPlayer = MediaPlayer
-					.newBuilder()
-					.setFileName(movieFileName)
-					.setVersion(version)
-                    .setColorSpace(colorSpace)
-                    .setAudioFormat(audioFormat)
-					.build();
-
-            if (mediaPlayer.hasError()) {
-                throw mediaPlayer.getError();
-            }
-
             frame = new Frame();
             frame.addWindowListener( new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {
@@ -351,27 +339,28 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
                     frame.setVisible(false);
                 }
             } );
-            AudioSoundStreamListener audioListener = new AudioSoundStreamListener(audioFormat);
-            ImageStreamListenerContainer displayListener = new ImageStreamListenerContainer(frame, null,
-                    colorSpace);
-            AudioVisualizer audioVisualizer = new AudioVisualizer(mediaPlayer);
 
-            // Add the audio sound listener
-            mediaPlayer.addAudioStreamListener(audioListener);
-            // Add video display
-            mediaPlayer.addImageStreamListener(displayListener);
-            // Add audio visualizer
-            mediaPlayer.addAudioStreamListener(audioVisualizer);
+			mediaPlayer = MediaPlayer
+					.newBuilder()
+					.setFileName(movieFileName)
+					.setVersion(version)
+					.setColorSpace(colorSpace)
+					.setAudioFormat(audioFormat)
+                    .addAudioStreamListener(new AudioVisualizer(audioFormat)) // Add audio visualizer
+                    .addAudioStreamListener(new AudioSoundStreamListener(audioFormat)) // Add the audio sound listener
+                    .addImageStreamListener(new ImageStreamListenerContainer(frame, null, colorSpace)) // Add video display
+					.build();
 
-            // TODO: This only works if we have only one video; otherwise we need to sync them through one clock
-            //mediaPlayer.addImageStreamListener(new SliderStreamListener(slider, mediaPlayer));
+			if (mediaPlayer.hasError()) {
+				throw mediaPlayer.getError();
+			}
 
             // Open the movie stream provider
             int width = mediaPlayer.getWidth();
             int height = mediaPlayer.getHeight();
             frame.setBounds(0, 0, width, height);
             frame.setVisible(true);
-            frame.addComponentListener(new ComponentListener() {
+            /*frame.addComponentListener(new ComponentListener() {
                 public void componentResized(ComponentEvent e) {
                     float scale = ((float) frame.getHeight())/ mediaPlayer.getHeight();
                     displayListener.setScale(scale);
@@ -385,7 +374,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
                 @Override
                 public void componentShown(ComponentEvent e) { }
-            });
+            });*/
         }
 
         MediaPlayer getMovieStreamProvider() {

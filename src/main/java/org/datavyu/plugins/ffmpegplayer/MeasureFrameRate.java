@@ -18,18 +18,19 @@ public class MeasureFrameRate {
     private static final int TIME_OUT_SEC = 10;
 
     private MeasureFrameRate(String movieFileName, float speed) {
-        mediaPlayer = MediaPlayer.newBuilder().setFileName(movieFileName).build();
+        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
+        frame = new Frame();
+        mediaPlayer = MediaPlayer.newBuilder()
+                .setFileName(movieFileName)
+                .setAudioFormat(audioFormat)
+                .setColorSpace(colorSpace)
+                .addAudioStreamListener(new AudioSoundStreamListener(audioFormat))
+                .addImageStreamListener(new ImageStreamListenerContainer(frame, null, colorSpace))
+                .build();
         if (mediaPlayer.hasError()) {
             throw mediaPlayer.getError();
         }
-        final ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
-        frame = new Frame();
-        // Add the audio sound listener
-        mediaPlayer.addAudioStreamListener(new AudioSoundStreamListener(audioFormat));
-        // Add video display
-        mediaPlayer.addImageStreamListener(new ImageStreamListenerContainer(frame, null,
-                colorSpace));
         // Open the movie stream provider
         mediaPlayer.setSpeed(speed);
         int width = mediaPlayer.getWidth();

@@ -15,20 +15,17 @@ public class MoviePlayerFrame extends Frame implements MoviePlayerControl {
     private ImageStreamListenerContainer imageStreamListenerContainer;
 
     MoviePlayerFrame(ColorSpace colorSpace, AudioFormat audioFormat, String movieFileName) {
+        imageStreamListenerContainer = new ImageStreamListenerContainer(this, null, colorSpace);
         this.mediaPlayer = MediaPlayer.newBuilder()
                 .setFileName(movieFileName)
                 .setColorSpace(colorSpace)
                 .setAudioFormat(audioFormat)
+                .addAudioStreamListener(new AudioSoundStreamListener(audioFormat))
+                .addImageStreamListener(imageStreamListenerContainer)
                 .build();
-
         if (mediaPlayer.hasError()) {
             throw mediaPlayer.getError();
         }
-
-        imageStreamListenerContainer = new ImageStreamListenerContainer(this, null, colorSpace);
-
-        mediaPlayer.addAudioStreamListener(new AudioSoundStreamListener(audioFormat));
-        mediaPlayer.addImageStreamListener(imageStreamListenerContainer);
         setVisible(true);
     }
 

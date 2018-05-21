@@ -193,7 +193,7 @@ public:
     /** Holds the average audio difference count */
     int audioDiffAvgCount;
 
-    /** Used to keep time in the audio decoding */
+    /** Used to set time in the audio decoding and read in the audio load method */
     double audioTime;
 
     /** This boolean is set if we do not play sound */
@@ -230,6 +230,9 @@ public:
 
     /** audio buffer used in the 'loadNextAudioData' method */
     uint8_t *pLoadAudioByteBuffer;
+
+    /** Bytes per second -- set during open and used in the clock timer for the audio stream */
+    int audioBytesPerSecond;
 
     MediaPlayer() :
         pAudioClock(new AVClock()),
@@ -271,7 +274,8 @@ public:
         pAudioDecodeFramePkt(nullptr),
         pAudioDecodePktData(nullptr),
         audioDecodePktSize(0),
-        pAudioDecodeAVFrame(nullptr) {
+        pAudioDecodeAVFrame(nullptr),
+        audioBytesPerSecond(0) {
 
         // Initialize the pkt and frame and buffer for methods
         pAudioDecodeFramePkt = av_packet_alloc();
@@ -544,6 +548,7 @@ public:
         uint8_t **convertedInSamples = nullptr;
         int dataLen, dataSize = 0;
         int errNo;
+        AVRational timeBase = pAudioStream->time_base;
 
         for (;;) {
             while (audioDecodePktSize > 0) {
@@ -604,8 +609,6 @@ public:
                     continue;
                 }
 
-                audioTime += (double)dataSize / (double)(2 * pAudioOutCodecCtx->channels * pAudioOutCodecCtx->sample_rate);
-
                 // We have data, return it and come back for more later
                 return dataSize;
             }
@@ -624,11 +627,14 @@ public:
             }
             pAudioDecodePktData = pAudioDecodeFramePkt->data;
             audioDecodePktSize = pAudioDecodeFramePkt->size;
+            double pts = (pAudioDecodeAVFrame->pts == AV_NOPTS_VALUE) ? NAN : pAudioDecodeAVFrame->pts * av_q2d(timeBase);
 
-            if (pAudioDecodeFramePkt->pts != AV_NOPTS_VALUE) {
-                audioTime = av_q2d(pAudioStream->time_base)* pAudioDecodeFramePkt->pts;
-                AVClock::syncMasterToSlave(pExternalClock, pAudioClock, AV_NOSYNC_THRESHOLD);
+            if (!isnan(pts)) {
+                audioTime = pts + (double) pAudioDecodeAVFrame->nb_samples / pAudioDecodeAVFrame->sample_rate;
+            } else {
+                audioTime = NAN;
             }
+            pLogger->info("The decoded audio time is %f", audioTime);
         }
     }
 
@@ -846,6 +852,8 @@ public:
     }
 
     int loadNextImageFrame() {
+        // If the time has not elapsed the same frame is returned
+
         // If there is no image stream or if the image buffer is empty, then return -1
         // The latter condition avoids blocking when reaching the start/end of the stream
         if (!hasVideoStream() || pFrameBuffer->empty()) return -1;
@@ -883,8 +891,8 @@ public:
                 frameTimer = time;
 
             if (!isnan(pCurrentFrame->pts)) {
+                pLogger->info("Set time of video clock to: %f", pCurrentFrame->pts);
                 pVideoClock->setTime(pCurrentFrame->pts);
-                AVClock::syncMasterToSlave(pExternalClock, pVideoClock, AV_NOSYNC_THRESHOLD);
             }
 
             if (!pFrameBuffer->empty()) {
@@ -909,14 +917,6 @@ public:
             return nFrame;
         }
 
-        // Above logic just returns the same frame
-
-/*        // Delay read to keep the desired frame rate.
-        if (delay > 0) {
-            pLogger->info("Frame %I64d waits for %lf seconds.", pCurrentFrame->pts/avgDeltaPts, delay);
-            std::this_thread::sleep_for(std::chrono::milliseconds((int)(delay*1000+0.5)));
-        }*/
-
         // Free the previously shown av frame (if it does exist)
         // TODO: Check this for any memory problems
         //av_frame_unref(pAVFrameShow);
@@ -926,6 +926,8 @@ public:
 
         // We displayed a frame
         pLogger->info("Return frame for time: %I64d.", pCurrentFrame->pts);
+
+        AVClock::syncMasterToSlave(pExternalClock, pVideoClock, AV_NOSYNC_THRESHOLD);
 
         // Return the number of read frames; the number may be larger than 1
         return nFrame;
@@ -949,7 +951,6 @@ public:
                 // We already sent all our data; get more
                 audioSize = audioDecodeFrame(pAudioInCodecCtx, pLoadAudioByteBuffer, nLoadAudioByteBuffer);
 
-
                 if (audioSize < 0) {
                     // If error, output silence
                     nAudioData = 1024; // arbitrary?
@@ -971,6 +972,16 @@ public:
             data += decodeLen;
             iAudioData += decodeLen;
         }
+        // audio_hw_buf_size -- dataSize from audio decode thread
+        // is->audio_write_buf_size = is->audio_buf_size - is->audio_buf_index;
+        if (!isnan(audioTime)) {
+            pAudioClock->setClockAt(
+                audioTime - (double)(2 * decodeLen) / audioBytesPerSecond,
+                av_gettime_relative() / 1000000.0
+            );
+            AVClock::syncMasterToSlave(pExternalClock, pAudioClock, AV_NOSYNC_THRESHOLD);
+        }
+
         return !quit;
     }
 
@@ -1043,6 +1054,7 @@ public:
     			pAudioOutCodecCtx = nullptr;
     			pResampleCtx = nullptr;
     			pAudioBufferData = nullptr;
+    			audioBytesPerSecond = 0;
 
     			pLogger->info("Freed audio stream resources.");
     		}
@@ -1490,6 +1502,12 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_o
 			env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
 			return returnArray;
 		}
+        mediaPlayer->audioBytesPerSecond = av_samples_get_buffer_size(
+		    NULL,
+		    mediaPlayer->pAudioOutCodecCtx->channels,
+		    mediaPlayer->pAudioOutCodecCtx->sample_rate,
+		    mediaPlayer->pAudioOutCodecCtx->sample_fmt,
+		    1);
 	}
 
 	mediaPlayer->playSound = mediaPlayer->hasAudioStream();
@@ -1555,11 +1573,8 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_get
 
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getCurrentTime0(JNIEnv *env,
     jclass thisClass, jint streamId) {
-/*
     MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
     return mediaPlayer != nullptr ? mediaPlayer->getCurrentTime() : -1;
-*/
-    return -1;
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setAudioSyncDelay0(JNIEnv *env,

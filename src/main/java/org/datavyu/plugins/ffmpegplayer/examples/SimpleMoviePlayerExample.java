@@ -26,25 +26,23 @@ public class SimpleMoviePlayerExample {
     public SimpleMoviePlayerExample(String movieFileName, String version) throws MediaException {
         final ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
+        frame = new Frame();
         mediaPlayer = MediaPlayer.newBuilder()
                 .setFileName(movieFileName)
                 .setVersion(version)
                 .setAudioFormat(audioFormat)
                 .setColorSpace(colorSpace)
+                .addAudioStreamListener(new AudioSoundStreamListener(audioFormat))
+                .addImageStreamListener(new ImageStreamListenerContainer(frame, null, colorSpace))
                 .build();
         if (mediaPlayer.hasError()) {
             throw mediaPlayer.getError();
         }
-        frame = new Frame();
         frame.addWindowListener( new WindowAdapter() {
             public void windowClosing(WindowEvent ev) {
                 mediaPlayer.close();
             }
         } );
-        // Add the audio sound listener
-        mediaPlayer.addAudioStreamListener(new AudioSoundStreamListener(audioFormat));
-        // Add video display
-        mediaPlayer.addImageStreamListener(new ImageStreamListenerContainer(frame, null, colorSpace));
         // Open the movie stream provider
         mediaPlayer.play();
         int width = mediaPlayer.getWidth();

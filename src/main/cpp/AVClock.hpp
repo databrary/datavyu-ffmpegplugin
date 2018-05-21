@@ -21,12 +21,12 @@ private:
         this->paused = clock.paused;
         locker.unlock();
     }
-public:
     double getSystemTime() {
         using namespace std;
         using namespace std::chrono;
         return duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
     }
+public:
     AVClock() :
         pts(NAN),
         ptsDrift(NAN),
@@ -45,6 +45,13 @@ public:
     void setTime(double pts) {
         std::unique_lock<std::mutex> locker(mu);
         double time = getSystemTime() / 1000000.0;
+        this->pts = pts;
+        this->lastUpdate = time;
+        this->ptsDrift = pts - time;
+        locker.unlock();
+    }
+    void setClockAt(double pts, double time) {
+        std::unique_lock<std::mutex> locker(mu);
         this->pts = pts;
         this->lastUpdate = time;
         this->ptsDrift = pts - time;
@@ -71,8 +78,19 @@ public:
     static void syncMasterToSlave(AVClock* master, AVClock* slave, double noSyncThreshold) {
         double masterTime = master->getTime();
         double slaveTime = slave->getTime();
-        if (!isnan(slaveTime) && (isnan(masterTime) || fabs(masterTime - slaveTime) > noSyncThreshold))
+        if (!isnan(slaveTime) && (isnan(masterTime) || fabs(masterTime - slaveTime) < noSyncThreshold)) {
             master->setClock(*slave);
+            //std::cout << "Slave clock parameters after sync" << std::endl;
+            //print(*slave);
+        }
+    }
+    static void print(const AVClock& clock) {
+        std::cout << "AVClock parameters" << std::endl;
+        std::cout << "\tpts:\t\t" << clock.pts << std::endl;
+        std::cout << "\tptsDrift:\t\t" << clock.ptsDrift << std::endl;
+        std::cout << "\tlastUpdate:\t" << clock.lastUpdate << std::endl;
+        std::cout << "\tspeed:\t" << clock.speed << std::endl;
+        std::cout << "\tpaused:\t" << clock.paused << std:: endl;
     }
 };
 
