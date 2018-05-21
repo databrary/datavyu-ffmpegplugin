@@ -2,20 +2,13 @@ package org.datavyu.plugins.ffmpegplayer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.awt.image.ToolkitImage;
+import org.datavyu.util.NativeLibraryLoader;
 
-import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
-import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.image.*;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Hashtable;
-
-import static java.awt.Image.SCALE_FAST;
 
 public class MovieStream implements VideoStream, AudioStream {
 
@@ -27,6 +20,16 @@ public class MovieStream implements VideoStream, AudioStream {
      * classpath. In our example this is the directory '.'.
      */
     static {
+        try{
+            /** FFmpeg 4.0 Libraries*/
+            NativeLibraryLoader.extract("swscale-5");
+            NativeLibraryLoader.extract("swresample-3");
+            NativeLibraryLoader.extract("avcodec-58");
+            NativeLibraryLoader.extract("avformat-58");
+            NativeLibraryLoader.extract("avutil-56");
+        }catch (Exception e){
+            logger.error("Failed loading libraries. Error: "+e);
+        }
         System.loadLibrary("MovieStream");
     }
 
