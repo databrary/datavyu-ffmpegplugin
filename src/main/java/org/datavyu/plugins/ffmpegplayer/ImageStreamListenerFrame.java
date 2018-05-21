@@ -79,7 +79,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 		Runnable init = () -> {
 			//Creating an empty image may not be useful
 			if (colorSpace == null){
-				colorSpace = getDefaultSrceenDevice().getDefaultConfiguration().getColorModel().getColorSpace();
+				colorSpace = getDefaultScreenDevice().getDefaultConfiguration().getColorModel().getColorSpace();
 			}
 			cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
 					DataBuffer.TYPE_BYTE);
@@ -237,7 +237,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 		}
 	}
 
-	public GraphicsDevice getDefaultSrceenDevice(){
+	public GraphicsDevice getDefaultScreenDevice(){
     	return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 	}
 }
