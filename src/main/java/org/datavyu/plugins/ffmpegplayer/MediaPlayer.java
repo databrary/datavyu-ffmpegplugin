@@ -335,7 +335,7 @@ public class MediaPlayer extends MediaPlayer0 {
 
                 // The size of the buffer may change per frame
                 byte[] buffer = new byte[getWidth()*getHeight()*getNumberOfColorChannels()];
-                boolean hasData = readImageData(buffer) > 0;
+                boolean hasData = readImageData(buffer) > 0; // If 0 its the same frame and we don't have to repeat that
 
                 if (hasData) {
                     // Fulfill all listeners

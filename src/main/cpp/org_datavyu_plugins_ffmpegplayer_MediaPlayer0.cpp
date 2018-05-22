@@ -54,8 +54,9 @@ cl org_datavyu_plugins_ffmpegplayer_MediaPlayer0.cpp /Fe"..\..\..\MediaPlayer0" 
 /* If a frame duration is longer than this, it will not be duplicated to compensate AV sync */
 #define AV_SYNC_FRAMEDUP_THRESHOLD 0.1
 /* no AV correction is done if too big error */
-#define AV_NOSYNC_THRESHOLD 10.0
+#define AV_NOSYNC_THRESHOLD 2.0
 
+#define MAX_NUM_FRAME_DROP 15
 #define PTS_DELTA_THRESHOLD 3
 #define MAX_AUDIO_FRAME_SIZE 192000
 #define SAMPLE_CORRECTION_PERCENT_MAX 10
@@ -776,7 +777,7 @@ public:
         return duration;
     }
 
-    double getCurrentTime() { return getMasterClockTime() * av_q2d(pImageStream->time_base); }
+    double getCurrentTime() { return getMasterClockTime(); }
 
     void seek(double time) {
         if (hasVideoStream() || hasAudioStream()) {
@@ -821,16 +822,14 @@ public:
         if (!hasVideoStream() || pFrameBuffer->empty()) return -1;
 
         // Counts the number of frames that this method requested (could be 0, 1, 2)
-        int nFrame = 1;
+        int nFrame = 0;
         Frame *pCurrentFrame, *pLastFrame;
         double lastDuration;
         double delay;
         double time;
 
         pLogger->info("Master clock time %f.", getMasterClockTime());
-
-        for (int iFrameDrop = ceil(fabs(getMasterClockSpeed()));
-            iFrameDrop > 0 && !pFrameBuffer->empty(); --iFrameDrop) {
+        for (int iFrameDrop = MAX_NUM_FRAME_DROP; iFrameDrop > 0 && !pFrameBuffer->empty(); --iFrameDrop) {
 
             pFrameBuffer->peekLast(&pLastFrame);
             pFrameBuffer->peekCurrent(&pCurrentFrame);
@@ -931,8 +930,11 @@ public:
         // audio_hw_buf_size -- dataSize from audio decode thread
         // is->audio_write_buf_size = is->audio_buf_size - is->audio_buf_index;
         if (!isnan(audioTime)) {
+            // TODO: Fix the audio clock time here for the sync with the clock
+            // This is the argument from ffplay.cpp
+            // is->audio_clock - (double)(2 * is->audio_hw_buf_size + is->audio_write_buf_size) / is->audio_tgt.bytes_per_sec
             pAudioClock->setClockAt(
-                audioTime - (double)(2 * decodeLen) / audioBytesPerSecond,
+                audioTime - (double)(2 * (nAudioBuffer-len)) / audioBytesPerSecond,
                 AVClock::getSystemTimeRelative() / 1000000.0
             );
             AVClock::syncMasterToSlave(pExternalClock, pAudioClock, AV_NOSYNC_THRESHOLD);
