@@ -49,12 +49,8 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	 */
 	private boolean doPaint = false;
 
-	private BufferStrategy strategy;
-
 	/** Parent JFrame */
 	private JFrame frame;
-
-	private ColorSpace colorSpace;
 
 	private Canvas canvas;
 
@@ -62,7 +58,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	private boolean needResize = true;
 
 	/** The scale of the canvas, default value is 1.0 */
-	private double canvasScale = 1.0;
+	private double scale = 1.0;
 
 	/**
 	 * Creates a video display through a stream listener. The display is added 
@@ -73,100 +69,61 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	 */
 	public ImageStreamListenerFrame(JFrame frame, ColorSpace colorSpace) {
 		this.frame = frame;
-		this.colorSpace = colorSpace;
-		init();
 
+		launcher(() -> {
+            cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
+                    DataBuffer.TYPE_BYTE);
+            // Set defaults
+            SampleModel sm = cm.createCompatibleSampleModel(width, height);
+            // Initialize an empty image
+            DataBufferByte dataBuffer = new DataBufferByte(new byte[width * height * INITIAL_NUM_CHANNEL],
+                    width * height);
+            WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
+            // Create the original image
+            image = new BufferedImage(cm, raster, false, properties);
+
+            frame.setBounds(0, 0, width, height);
+            frame.setVisible(true);
+
+            canvas = new Canvas() {
+                @Override
+                public void update(Graphics graphics){
+                    paint(graphics);
+                }
+                @Override
+                public void paint(Graphics graphics) {
+                    BufferStrategy strategy = canvas.getBufferStrategy();
+                    do {
+                        do {
+                            // Make sure to create the buffer strategy before using it!
+                            graphics = strategy.getDrawGraphics();
+                            if (image != null && doPaint) {
+                                graphics.drawImage(image, 0, 0,getWidth(), getHeight(),  null);
+                            }
+                            graphics.dispose();
+                        } while (strategy.contentsRestored());
+                        strategy.show();
+                    } while (strategy.contentsLost());
+                }
+            };
+            // Make sure to add the canvas to the frame that is visible
+            frame.getContentPane().add(canvas);
+            canvas.setSize(INITIAL_WIDTH,INITIAL_HEIGHT);
+            // Make sure to make the canvas visible before creating the buffer strategy
+            canvas.setVisible(true);
+            canvas.createBufferStrategy(3);
+            needResize = true;
+        });
     }
-
-    private void init(){
-		Runnable init = () -> {
-			//Creating an empty image may not be useful
-			if (colorSpace == null){
-				colorSpace = getDefaultScreenDevice().getDefaultConfiguration().getColorModel().getColorSpace();
-			}
-			cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
-					DataBuffer.TYPE_BYTE);
-			// Set defaults
-			SampleModel sm = cm.createCompatibleSampleModel(width, height);
-			// Initialize an empty image
-			DataBufferByte dataBuffer = new DataBufferByte(new byte[width* height *INITIAL_NUM_CHANNEL],
-					width* height);
-			WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-			// Create the original image
-			image = new BufferedImage(cm, raster, false, properties);
-
-
-			frame.setBounds(0, 0, width, height);
-			frame.setVisible(true);
-
-			//Initialize the Canvas
-			initCanvas();
-		};
-		if(EventQueue.isDispatchThread()){
-			init.run();
-		}else {
-			try {
-				EventQueue.invokeAndWait(init);
-			} catch (InterruptedException e) {
-				logger.warn(e);
-			} catch (InvocationTargetException e) {
-				logger.warn(e);
-			}
-		}
-	}
-
-	private void initCanvas() {
-		canvas = new Canvas() {
-			@Override
-			public void update(Graphics g){ paint(g);}
-			@Override
-			public void paint(Graphics g) {
-				// Calling BufferStrategy.show() could throws
-				// exceptions
-				try {
-					BufferStrategy strategy = canvas.getBufferStrategy();
-					if(strategy == null){
-						createBufferStrategy(3);
-					}
-					do {
-						do {
-							g = strategy.getDrawGraphics();
-							if (image != null) {
-								// If not doPaint display the next originalImage
-								if(doPaint){
-									g.drawImage(image, 0, 0,getWidth(), getHeight(),  null);
-								}
-							}
-							g.dispose();
-						} while (strategy.contentsRestored());
-						strategy.show();
-					} while (strategy.contentsLost());
-				} catch (Exception e) { logger.warn("Buffer Strategy Exception: " + e); }
-			}
-		};
-		canvas.setSize(INITIAL_WIDTH,INITIAL_HEIGHT);
-		needResize = true;
-
-		if (frame != null) {
-			frame.getContentPane().add(canvas);
-		}
-		canvas.setVisible(true);
-	}
-
 
 	@Override
 	public void streamOpened() {
 		// Paint the image
         doPaint = true;
-
-        //TODO Need to display the first image here
-        //Check if we need an initial resize
-		if(frame.isResizable() && needResize){
-			int width = (int)Math.round(image.getWidth(null)*canvasScale);
-			int height = (int) Math.round(image.getHeight(null)*canvasScale);
-			setCanvasSize(width,height);
+        if (frame.isResizable() && needResize) {
+			setSize((int)Math.round(image.getWidth(null)* scale),
+                    (int) Math.round(image.getHeight(null)* scale));
 		}
-
         // Update the display with the image content
 		canvas.paint(null);
 	}
@@ -175,7 +132,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
     public void streamNewImageSize(int newWidth, int newHeight) {
         this.width = newWidth;
         this.height = newHeight;
-		setCanvasSize(newWidth,newHeight);
+		setSize(newWidth, newHeight);
     }
 
     @Override
@@ -190,10 +147,10 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
         image = new BufferedImage(cm, raster, false, properties);
 
         // Check if we need to resize the canvas
-		if(frame.isResizable() && needResize){
-			int width = (int)Math.round(image.getWidth(null)*canvasScale);
-			int height = (int) Math.round(image.getHeight(null)*canvasScale);
-			setCanvasSize(width,height);
+		if (frame.isResizable() && needResize) {
+			int width = (int)Math.round(image.getWidth(null)* scale);
+			int height = (int) Math.round(image.getHeight(null)* scale);
+			setSize(width,height);
 		}
 
         // Paint the image
@@ -219,50 +176,33 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 		doPaint = false;
 	}
 
-	@SuppressWarnings("unused") // API method
-	public void setScale(float newScale) {
-        // We rescale the image if the scale is strongly update the image
-        // TODO: Implement this differently
-		setCanvasScale(newScale);
+    /** Change the Canvas size */
+    private void setSize(final int width, final int height){
+		Dimension old = canvas.getSize();
+		if (old.width != width || old.height != height){
+            launcher(() -> {
+                logger.info("Change Canvas Size to width: " +width + " Height: "+height);
+                canvas.setSize(width, height);
+                frame.pack();
+                needResize = false;
+            });
+		}
+	}
+
+	private static void launcher(Runnable runnable) {
+        if (EventQueue.isDispatchThread()){
+            runnable.run();
+        } else {
+            try {
+                EventQueue.invokeAndWait(runnable);
+            } catch (InterruptedException | InvocationTargetException e) {
+                logger.warn(e);
+            }
+        }
     }
 
-    public Dimension getCanvasSize() { return canvas.getSize(); }
-
-    /** Change the Canvas size */
-    public void setCanvasSize(final int width, final int height){
-		Dimension canvasDimension = getCanvasSize();
-		if (canvasDimension.width == width
-				&& canvasDimension.height == height){
-			return;
-		}
-		Runnable resizeCanvas = () -> {
-			logger.info("Change Canvas Size to width: " +width + " Height: "+height);
-			canvas.setSize(width, height);
-			frame.pack();
-			needResize = false;
-		};
-
-		if (EventQueue.isDispatchThread()){
-			resizeCanvas.run();
-		}else{
-			try {
-				EventQueue.invokeAndWait(resizeCanvas);
-			} catch (InterruptedException e) {
-				logger.warn(e);
-			} catch (InvocationTargetException e) {
-				logger.warn(e);
-			}
-		}
-	}
-
-	public GraphicsDevice getDefaultScreenDevice(){
-    	return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-	}
-	public double getCanvasScale() {
-		return canvasScale;
-	}
-	public void setCanvasScale(double scale) {
-		this.canvasScale = scale;
+	public void setScale(double scale) {
+		this.scale = scale;
 		this.needResize = true;
 	}
 }
