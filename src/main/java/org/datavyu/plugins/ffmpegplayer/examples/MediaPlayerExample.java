@@ -13,6 +13,7 @@ import java.awt.color.ColorSpace;
 import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
@@ -41,6 +42,13 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	/** A slider displays the current frame and the user can drag the slider to switch to a different frame. */
 	private JSlider slider;
 
+	/** A Swing Timer to update the JSlider and Time Stamp Label */
+	private Timer timer;
+
+	private JLabel timeStamp;
+
+	private int ONE_SECONDS = 1000;
+
 	public MediaPlayerExample() {
 		setLayout(new BorderLayout());
 
@@ -53,9 +61,12 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
         fileChooser.setSelectedFile(lastDirectory);
 
 		slider = new JSlider();
+		slider.setValue(0);
+		slider.setMinimum(0);
+		slider.setMaximum(100);
 
-		// Open file dialog.
-		JButton open = new JButton("Open File");
+				// Open file dialog.
+				JButton open = new JButton("Open File");
 		JButton play = new JButton("Play");
 		JButton stop = new JButton("Stop");
 		JButton stepBackward = new JButton("<");
@@ -73,6 +84,17 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		stepBackward.addActionListener(new StepBackwardSelection());
 		stepForward.addActionListener(new StepForwardSelection());
 		slider.addChangeListener(new SliderSelection());
+
+		timer = new Timer(ONE_SECONDS, e -> {
+			for (MediaPlayer mediaPlayer : mediaPlayers) {
+				//There is a Media Player returning -1
+				if(mediaPlayer.getCurrentTime() >= 0){
+					slider.setValue((int) (mediaPlayer.getCurrentTime() * 100000));
+					timeStamp.setText(String.valueOf(mediaPlayer.getCurrentTime()*100000));
+				}
+			}
+		});
+		timer.setDelay(0);
 
 		// Speed selection.
         SpeedValueSelection speedValueSelect = new SpeedValueSelection();
@@ -125,12 +147,15 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
         }
 
 		tools.add(new JLabel("Speed:"));
+
+		timeStamp = new JLabel("00:00:00:000");
 		tools.add(speedsPanel);
 
 		JLabel frameNumber = new JLabel("0");
 		tools.add(frameNumber);
 
 		add(tools, BorderLayout.NORTH);
+		add(timeStamp, BorderLayout.CENTER);
 		add(slider, BorderLayout.SOUTH);
 
 		//openFile("C:\\\\Users\\\\Florian\\\\video_1080p.mp4");
@@ -255,6 +280,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	class PlaySelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			timer.start();
             for (MediaPlayer movieStreamProvider : mediaPlayers) {
                 movieStreamProvider.play();
             }
@@ -264,6 +290,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	class StopSelection implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+        	timer.stop();
             for (MediaPlayer mediaPlayer : mediaPlayers) {
                 mediaPlayer.stop();
             }
