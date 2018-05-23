@@ -41,7 +41,7 @@ public class TestPlaybackRateScale {
 
     private static final double MEASUREMENT_DURATION_IN_SEC = 10; // 10 seconds
 
-    private static final double START_TIME_IN_SEC = 10 * MEASUREMENT_DURATION_IN_SEC; // start time
+    private static final double START_TIME_IN_SEC = 10 * MEASUREMENT_DURATION_IN_SEC; // play time
 
     private static final double TO_MILLI = 1000;
 
@@ -82,10 +82,10 @@ public class TestPlaybackRateScale {
     // A list of all movie files to test
     private List<String> movieFiles = new ArrayList<>();
 
-    private List<MoviePlayer.PlayerType> moviePlayerTypes = new ArrayList<MoviePlayer.PlayerType>(){{
-        //add(MoviePlayer.PlayerType.AWT_TYPE);
+    private List<MoviePlayerControl.PlayerType> moviePlayerTypes = new ArrayList<MoviePlayerControl.PlayerType>(){{
+        //add(MoviePlayerControl.PlayerType.AWT_TYPE);
         // TODO: Fix the JFX type player
-        add(MoviePlayer.PlayerType.JFX_TYPE);
+        add(MoviePlayerControl.PlayerType.JFX_TYPE);
     }};
 
     private List<Pair<Float, Float>> offsetAndRates = new ArrayList<Pair<Float, Float>>(){{
@@ -117,31 +117,30 @@ public class TestPlaybackRateScale {
     @Test
     public void testRate() throws IOException {
         for (String movieFile : movieFiles) {
-            for (MoviePlayer.PlayerType playerType: moviePlayerTypes) {
+            for (MoviePlayerControl.PlayerType playerType: moviePlayerTypes) {
                 for (Pair<Float, Float> offsetAndRate : offsetAndRates) {
                     float offset = offsetAndRate.getKey();
                     float rate = offsetAndRate.getValue();
 
                     System.out.println("Testing playback with rate: " + rate + " and offset: " + offset);
 
-                    MoviePlayer moviePlayer = MoviePlayer.createMoviePlayer(playerType,
-                            DEFAULT_COLOR_SPACE, DEFAULT_AUDIO_FORMAT);
-                    moviePlayer.openFile(movieFile, "test-version");
+                    MoviePlayerControl moviePlayerControl = MoviePlayerControl.createMoviePlayer(playerType,
+                            DEFAULT_COLOR_SPACE, DEFAULT_AUDIO_FORMAT, movieFile);
 
                     // Set time and rate
-                    moviePlayer.setTimeInSeconds(offset);
-                    moviePlayer.setRate(rate);
-                    moviePlayer.start();
+                    moviePlayerControl.setTimeInSeconds(offset);
+                    moviePlayerControl.setRate(rate);
+                    moviePlayerControl.start();
                     try {
                         Thread.sleep((long) (MEASUREMENT_DURATION_IN_SEC * TO_MILLI));
                     } catch (InterruptedException ie) {
-                        logger.info("Finished measurement for " + moviePlayer.getClass());
+                        logger.info("Finished measurement for " + moviePlayerControl.getClass());
                     }
                     double diffInPercent = computeDiffInPercent(
-                            moviePlayer.getTimeInSeconds() - offset,
+                            moviePlayerControl.getTimeInSeconds() - offset,
                             Math.abs(rate) * MEASUREMENT_DURATION_IN_SEC);
-                    moviePlayer.stop();
-                    moviePlayer.closeFile();
+                    moviePlayerControl.stop();
+                    moviePlayerControl.close();
 
                     //logger.info("Measured difference " + diffInPercent + " percent");
                     System.out.println("Measured difference " + diffInPercent + " percent");
@@ -156,27 +155,26 @@ public class TestPlaybackRateScale {
     @Test
     public void testScale() throws IOException {
         for (String movieFile : movieFiles) {
-            for (MoviePlayer.PlayerType playerType: moviePlayerTypes) {
+            for (MoviePlayerControl.PlayerType playerType: moviePlayerTypes) {
                 for (float scale : playbackScale) {
                     System.out.println("Testing playback with scale: " + scale);
 
-                    MoviePlayer moviePlayer = MoviePlayer.createMoviePlayer(playerType,
-                            DEFAULT_COLOR_SPACE, AudioSoundStreamListener.getNewMonoFormat());
-                    moviePlayer.openFile(movieFile, "test-version");
-                    moviePlayer.setScale(scale);
+                    MoviePlayerControl moviePlayerControl = MoviePlayerControl.createMoviePlayer(playerType,
+                            DEFAULT_COLOR_SPACE, AudioSoundStreamListener.getNewMonoFormat(), movieFile);
+                    moviePlayerControl.setScale(scale);
 
-                    moviePlayer.setTimeInSeconds(START_TIME_IN_SEC);
-                    moviePlayer.start();
+                    moviePlayerControl.setTimeInSeconds(START_TIME_IN_SEC);
+                    moviePlayerControl.start();
                     try {
                         Thread.sleep((long) (MEASUREMENT_DURATION_IN_SEC * TO_MILLI));
                     } catch (InterruptedException ie) {
-                        logger.info("Finished measurement for " + moviePlayer.getClass());
+                        logger.info("Finished measurement for " + moviePlayerControl.getClass());
                     }
                     double diffInPercent = computeDiffInPercent(
-                            moviePlayer.getTimeInSeconds() - START_TIME_IN_SEC,
+                            moviePlayerControl.getTimeInSeconds() - START_TIME_IN_SEC,
                             MEASUREMENT_DURATION_IN_SEC);
-                    moviePlayer.stop();
-                    moviePlayer.closeFile();
+                    moviePlayerControl.stop();
+                    moviePlayerControl.close();
 
                     logger.info("Measured difference " + diffInPercent + " percent");
                     System.out.println("Measured difference " + diffInPercent + " percent");

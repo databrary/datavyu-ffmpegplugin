@@ -9,17 +9,17 @@ import javax.sound.sampled.*;
  * @author Florian Raudies, Mountain View, CA.
  */
 public class AudioSoundStreamListener implements StreamListener {
-
+    // 1/44100: Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s (default)
 	/** The supported mono format; blank values are from the input audio */
 	private final static AudioFormat MONO_FORMAT = new AudioFormat(
-			AudioFormat.Encoding.PCM_SIGNED, 0, 0, 1, 0, 0, false);
+			AudioFormat.Encoding.PCM_SIGNED, 48000, 16, 1, 2, 48000, false);
 
 	/** The supported stereo format; blank values are from the input audio */
 	private final static AudioFormat STEREO_FORMAT = new AudioFormat(
-			AudioFormat.Encoding.PCM_UNSIGNED, 0, 0, 2, 0, 0, false);
+			AudioFormat.Encoding.PCM_UNSIGNED, 44100, 8, 2, 2, 44100, false);
 
 	/** The underlying movie stream, used to get the audio format */
-	private MovieStream movieStream = null;
+	private AudioFormat audioFormat;
 	
 	/** The sound line to write the data */
 	private SourceDataLine soundLine = null;
@@ -30,15 +30,14 @@ public class AudioSoundStreamListener implements StreamListener {
 	/**
 	 * Creates an audio stream listener that plays the sound.
 	 * 
-	 * @param movieStream The underlying movie stream.
+	 * @param audioFormat The audio format for this stream.
 	 */
-	public AudioSoundStreamListener(MovieStream movieStream) {
-		this.movieStream = movieStream;
+	public AudioSoundStreamListener(AudioFormat audioFormat) {
+		this.audioFormat = audioFormat;
 	}
 
 	@Override
 	public void streamOpened() {
-		AudioFormat audioFormat = movieStream.getAudioFormat();
 		try {
 			// Get the data line
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);

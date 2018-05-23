@@ -83,14 +83,6 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_stop0
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    step0
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_step0
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    setCurrentTime0
  * Signature: (ID)V
  */
@@ -203,14 +195,6 @@ JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_big
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    setPlaySound0
- * Signature: (IZ)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_setPlaySound0
-  (JNIEnv *, jclass, jint, jboolean);
-
-/*
- * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
  * Method:    open0
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljavax/sound/sampled/AudioFormat;)[I
  */
@@ -240,14 +224,6 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getHeig
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_getWidth0
   (JNIEnv *, jclass, jint);
-
-/*
- * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream
- * Method:    view0
- * Signature: (IIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_datavyu_plugins_ffmpegplayer_MovieStream_view0
-  (JNIEnv *, jclass, jint, jint, jint, jint, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MovieStream

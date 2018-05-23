@@ -4,7 +4,7 @@ import javax.sound.sampled.AudioFormat;
 import java.awt.color.ColorSpace;
 import java.io.IOException;
 
-public interface MoviePlayer {
+public interface MoviePlayerControl {
     enum PlayerType {
         AWT_TYPE, JFX_TYPE
     }
@@ -12,17 +12,16 @@ public interface MoviePlayer {
     void setRate(float rate);
     void start();
     void stop();
-    void stepForward();
-    void openFile(String file, String version) throws IOException;
-    void closeFile() throws IOException;
+    void close();
     double getTimeInSeconds();
     void setTimeInSeconds(double timeInSeconds);
-    static MoviePlayer createMoviePlayer(PlayerType type, ColorSpace colorSpace, AudioFormat audioFormat) {
+    static MoviePlayerControl createMoviePlayer(PlayerType type,
+                                                ColorSpace colorSpace,
+                                                AudioFormat audioFormat,
+                                                String movieFileName) {
         switch (type) {
             case AWT_TYPE:
-                return new MoviePlayerFrame(colorSpace, audioFormat);
-            case JFX_TYPE:
-                return new MoviePlayerStage(colorSpace, audioFormat);
+                return new MoviePlayerFrame(colorSpace, audioFormat, movieFileName);
         }
         throw new IllegalArgumentException("Unsupported player type: " + type);
     }

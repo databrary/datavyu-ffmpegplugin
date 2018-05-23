@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.sound.sampled.AudioFormat;
-import java.awt.*;
+import javax.swing.*;
 import java.awt.color.ColorSpace;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,40 +13,43 @@ import java.util.List;
 @SuppressWarnings("unused") // TODO: Performance measurement; integrate into tests
 public class MeasureFrameRate {
 
-    private MovieStreamProvider movieStreamProvider;
-    private Frame frame;
+    private MediaPlayer mediaPlayer;
+    private JFrame frame;
     private static final int TIME_OUT_SEC = 10;
 
-    private MeasureFrameRate(String movieFileName, float speed) throws IOException {
-        movieStreamProvider = new MovieStreamProvider();
-        final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
-        frame = new Frame();
-        // Add the audio sound listener
-        movieStreamProvider.addAudioStreamListener(new AudioSoundStreamListener(movieStreamProvider));
-        // Add video display
-        movieStreamProvider.addVideoStreamListener(new VideoStreamListenerContainer(movieStreamProvider, frame,
-                reqColorSpace));
+    private MeasureFrameRate(String movieFileName, float speed) {
+        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
+        frame = new JFrame();
+        mediaPlayer = MediaPlayer.newBuilder()
+                .setFileName(movieFileName)
+                .setAudioFormat(audioFormat)
+                .setColorSpace(colorSpace)
+                .addAudioStreamListener(new AudioSoundStreamListener(audioFormat))
+                .addImageStreamListener(new ImageStreamListenerFrame(frame, colorSpace))
+                .build();
+        if (mediaPlayer.hasError()) {
+            throw mediaPlayer.getError();
+        }
         // Open the movie stream provider
-        movieStreamProvider.open(movieFileName, "0.0.0.1", reqColorSpace, reqAudioFormat);
-        movieStreamProvider.setSpeed(speed);
-        int width = movieStreamProvider.getWidthOfView();
-        int height = movieStreamProvider.getHeightOfView();
+        mediaPlayer.setSpeed(speed);
+        int width = mediaPlayer.getWidth();
+        int height = mediaPlayer.getHeight();
         frame.setBounds(0, 0, width, height);
         frame.setVisible(true);
     }
 
     private void start() {
-        movieStreamProvider.start();
+        mediaPlayer.play();
     }
 
     private void stop() {
-        movieStreamProvider.stop();
+        mediaPlayer.stop();
     }
 
     private void close() throws IOException {
         frame.setVisible(false);
-        movieStreamProvider.close();
+        mediaPlayer.close();
     }
 
     public static void main(String[] args) {
@@ -68,13 +71,9 @@ public class MeasureFrameRate {
                     System.out.println("Timeout failed with " + ie);
                 }
                 measureFrameRate.stop();
-                double timeDifference = measureFrameRate.movieStreamProvider.getCurrentTime()
-                                      - measureFrameRate.movieStreamProvider.getStartTime();
+                double timeDifference = measureFrameRate.mediaPlayer.getCurrentTime()
+                                      - measureFrameRate.mediaPlayer.getStartTime();
                 double isSpeed = timeDifference/TIME_OUT_SEC;
-                System.out.println("The total number of frames is: "
-                        + measureFrameRate.movieStreamProvider.getNumberOfFrames());
-                System.out.println("The total number of skipped frames is: "
-                        + measureFrameRate.movieStreamProvider.getNumberOfFrameDrops());
                 System.out.println("The expected speed: " + speed);
                 System.out.println("The detected speed: " + isSpeed);
                 //assert Math.abs(speed - isSpeed) < Math.ulp(1f);

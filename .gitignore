@@ -4,10 +4,10 @@
 *.exp
 *.log
 *.exe
-logger.txt
 bin/
 *.iml
 .idea/*
+.vscode/*
 target/*
 out/*
-src/native/*.txt
+src/main/cpp/*.txt

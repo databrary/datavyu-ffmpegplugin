@@ -13,7 +13,7 @@ public interface VideoStream extends TimeStream {
 
     /**
      * Get the color space of this video stream. This allows us to interpret the
-     * data from the readImageFrame method correctly.
+     * data from the readImageData method correctly.
      *
      * @return ColorSpace of this image stream.
      */
@@ -27,48 +27,18 @@ public interface VideoStream extends TimeStream {
     int getNumberOfColorChannels();
 
     /**
-     * Get the height of the current view.
-     *
-     * @return The height of the view in pixels.
-     */
-    int getHeightOfView();
-
-    /**
-     * Get the width of the current view.
-     *
-     * @return The width of the view in pixels.
-     */
-    int getWidthOfView();
-
-    /**
      * Get the width of the images in the video stream.
      *
      * @return The width of the image in pixels.
      */
-    int getWidthOfStream();
+    int getWidth();
 
     /**
      * Get the height of the image in the video stream.
      *
      * @return The height of the image in pixels.
      */
-    int getHeightOfStream();
-
-	/**
-	 * Set the view or viewing window within the image stream. This allows us to
-	 * play back a sub-window instead of the entire image. Notice that for the
-	 * coordinates (x0, y0) the image coordinate (0, 0) refers to the upper,
-	 * left corner in the image frame.
-	 *
-	 * @param x0 The left corner of the window in pixels.
-	 * @param y0 The upper corner of the window in pixels.
-	 * @param width The width of the window in pixels.
-	 * @param height The height of the window in pixels.
-	 *
-	 * @throws IndexOutOfBoundsException If the specified window extends beyond
-	 * the boundaries of the existing image size this exception is thrown.
-	 */
-	void setView(int x0, int y0, int width, int height) throws IndexOutOfBoundsException;
+    int getHeight();
 
 	/**
 	 * Reads the next image frame from the stream. Blocks if there is now such
@@ -85,5 +55,5 @@ public interface VideoStream extends TimeStream {
 	 * 		   returns 2 that means that one frame was skipped. If the method returns
 	 * 		   0 that means that no frames were read.
 	 */
-	int readImageFrame(byte[] buffer); // reads next image
+	int readImageData(byte[] buffer); // reads next image
 }
