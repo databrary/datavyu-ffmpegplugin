@@ -16,9 +16,6 @@ import java.util.Hashtable;
  */
 public class VideoStreamListenerContainer implements StreamListener {
 
-    /** This is the threshold at which a resize occurs */
-    private static final float SCALE_RESIZE_THRESHOLD = 0.01f;
-
     /** The logger for this class */
     private static Logger logger = LogManager.getFormatterLogger(VideoStreamListenerContainer.class);
 
@@ -31,9 +28,6 @@ public class VideoStreamListenerContainer implements StreamListener {
 	/** This is the original image that is been read from the native side */
 	private BufferedImage originalImage = null;
 
-	/** This is the scaled image that is displayed */
-	private BufferedImage scaledImage = null;
-	
 	/** The canvas that we draw the originalImage in */
 	private Canvas canvas = null;
 	
@@ -43,9 +37,6 @@ public class VideoStreamListenerContainer implements StreamListener {
 	/** The color space for this the data provided */
 	private ColorSpace colorSpace = null;
 
-	/** The current scale of the play back originalImage, e.g. 2.0f magnifies the original originalImage by 2x */
-	private float scale = 1f;
-	
 	/** 
 	 * The stream has doPaint = false no updates to the originalImage should be made
 	 * We had to introduce this flag because the java event manager is lacking 
@@ -71,21 +62,38 @@ public class VideoStreamListenerContainer implements StreamListener {
 			private static final long serialVersionUID = 5471924216942753555L;
 
 			@Override
+			public void update(Graphics g){ paint(g);}
+			@Override
         	public void paint(Graphics g) {
-				// If not doPaint display the next originalImage
-				if (doPaint) {
-	        		g.drawImage(scaledImage, 0, 0, null);
-				}
+				// Calling BufferStrategy.show() could throws
+				// exceptions
+				try {
+					BufferStrategy strategy = canvas.getBufferStrategy();
+					if(strategy == null){
+						createBufferStrategy(3);
+					}
+					do {
+						do {
+							g = strategy.getDrawGraphics();
+							if (originalImage != null) {
+								// If not doPaint display the next originalImage
+								if(doPaint){
+									g.drawImage(originalImage, 0, 0,getWidth(), getHeight(),  null);
+								}
+							}
+							g.dispose();
+						} while (strategy.contentsRestored());
+						strategy.show();
+					} while (strategy.contentsLost());
+				} catch (Exception e) { logger.warn("Buffer Strategy Exception: " + e); }
         	}
-			public void update(Graphics g){
-			    paint(g);
-			}
 		};
         if (constraints != null) {
         	container.add(canvas, constraints);
         } else {
             container.add(canvas);
-        }		
+        }
+		canvas.setVisible(true);
 	}
 
 	/**
@@ -119,8 +127,9 @@ public class VideoStreamListenerContainer implements StreamListener {
 
 	@Override
 	public void streamOpened() {
-		int width = movieStream.getWidthOfView();
-		int height = movieStream.getHeightOfView();		
+		int width = movieStream.getWidthOfStream();
+		int height = movieStream.getHeightOfStream();
+
 		int nChannel = movieStream.getNumberOfColorChannels();
 		cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE);
@@ -130,17 +139,14 @@ public class VideoStreamListenerContainer implements StreamListener {
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
 		// Create the original image
 		originalImage = new BufferedImage(cm, raster, false, properties);
-		// Resize that image according to the scale
-		scaledImage = resizeImage(originalImage, scale);
 		// Paint the image
         doPaint = true;
 	}
 
 	@Override
 	public void streamData(byte[] data) {
-		// Width and height could have changed due to the view
-		int width = movieStream.getWidthOfView(); 
-		int height = movieStream.getHeightOfView();
+		int width = movieStream.getWidthOfStream();
+		int height = movieStream.getHeightOfStream();
         logger.debug("Received " + data.length + " By for originalImage: " + width + " x " + height + " pixels.");
 		SampleModel sm = cm.createCompatibleSampleModel(width, height);
 		// Create data buffer
@@ -149,10 +155,8 @@ public class VideoStreamListenerContainer implements StreamListener {
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
 		// Create the original image
         originalImage = new BufferedImage(cm, raster, false, properties);
-        // Resize the original image
-        scaledImage = resizeImage(originalImage, scale);
         // Paint the image
-		canvas.repaint();
+		canvas.paint(null);
 	}
 
 	@Override
@@ -165,7 +169,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// start displaying
 		doPaint = true;
 		// display the current frame
-		canvas.repaint();
+		canvas.paint(null);
 	}
 	
 	@Override
@@ -173,39 +177,4 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// stop displaying
 		doPaint = false;
 	}
-
-    /**
-     * Resizes the buffered originalImage and returns the resized originalImage
-     * @param image
-     * @return
-     */
-	private BufferedImage resizeImage(BufferedImage image, float scale) {
-	    if (Math.abs(scale - 1.0f) > Math.ulp(1.0f)) {
-            int oldWidth = movieStream.getWidthOfView();
-            int oldHeight = movieStream.getHeightOfView();
-            int newWidth = (int) Math.floor(scale*oldWidth);
-            int newHeight = (int) Math.floor(scale*oldHeight);
-            Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            BufferedImage newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = newImage.createGraphics();
-            g2d.drawImage(scaledImage, 0, 0, null);
-            g2d.dispose();
-            return newImage;
-        } else {
-	        return originalImage;
-        }
-    }
-
-	@SuppressWarnings("unused") // API method
-	public void setScale(float newScale) {
-        // We rescale the originalImage if the scale is strongly update the originalImage
-        if (Math.abs(newScale - scale) > SCALE_RESIZE_THRESHOLD) {
-            logger.info("Changing from %2.3f scale to %2.3f.", scale, newScale);
-            scale = newScale;
-            scaledImage = resizeImage(originalImage, newScale);
-            // Must set doPaint to true, it's fine not to set it back
-            doPaint = true;
-            canvas.repaint();
-        }
-    }
 }
