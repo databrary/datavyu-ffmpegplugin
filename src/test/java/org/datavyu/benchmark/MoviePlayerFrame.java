@@ -32,7 +32,6 @@ public class MoviePlayerFrame extends JFrame implements MoviePlayerControl {
 
     @Override
     public void setScale(float scale) {
-        imageStreamListenerFrame.setScale(scale);
         setSize(new Dimension((int) scale* mediaPlayer.getWidth(),
                 (int) scale* mediaPlayer.getHeight()));
     }

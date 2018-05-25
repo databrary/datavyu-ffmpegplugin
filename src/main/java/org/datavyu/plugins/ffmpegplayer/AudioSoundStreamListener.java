@@ -12,7 +12,7 @@ public class AudioSoundStreamListener implements StreamListener {
     // 1/44100: Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, stereo, fltp, 128 kb/s (default)
 	/** The supported mono format; blank values are from the input audio */
 	private final static AudioFormat MONO_FORMAT = new AudioFormat(
-			AudioFormat.Encoding.PCM_SIGNED, 48000, 16, 1, 2, 48000, false);
+			AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 1, 2, 44100, false);
 
 	/** The supported stereo format; blank values are from the input audio */
 	private final static AudioFormat STEREO_FORMAT = new AudioFormat(

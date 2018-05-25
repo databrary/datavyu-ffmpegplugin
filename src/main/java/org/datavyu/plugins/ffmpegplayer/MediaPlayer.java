@@ -326,8 +326,9 @@ public class MediaPlayer extends MediaPlayer0 {
 
             // Inform the stream listeners about the play
             synchronized (imageListeners) {
-                for (StreamListener listener : imageListeners) {
+                for (ImageStreamListener listener : imageListeners) {
                     listener.streamStarted();
+                    listener.streamImageSize(getWidth(), getHeight());
                 }
             }
 
@@ -341,9 +342,9 @@ public class MediaPlayer extends MediaPlayer0 {
                     // Fulfill all listeners
                     synchronized (imageListeners) {
                         for (ImageStreamListener listener : imageListeners) {
-                            if (needResize) {
+/*                            if (needResize) {
                                 listener.streamNewImageSize(getWidth(), getHeight());
-                            }
+                            }*/
                             //listener.streamNewImageSize((int) scale*getWidth(), (int) scale*getHeight());
                             listener.streamData(buffer);
                         }

@@ -133,8 +133,8 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		add(tools, BorderLayout.NORTH);
 		add(slider, BorderLayout.SOUTH);
 
-		openFile("C:\\\\Users\\\\Florian\\\\video_1080p.mp4");
-		//openFile("C:\\Users\\Florian\\DatavyuSampleVideo.mp4");
+		//openFile("C:\\\\Users\\\\Florian\\\\video_1080p.mp4");
+		openFile("C:\\Users\\Florian\\DatavyuSampleVideo.mp4");
 
 		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
@@ -163,7 +163,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
         UIManager.put("swing.boldMetal", Boolean.FALSE);
 
         // Log info only
-        Configurator.setRootLevel(Level.INFO);
+        Configurator.setRootLevel(Level.DEBUG);
 
         // Schedule a job for the event-dispatching thread:
         // creating and showing this application's GUI.
@@ -355,24 +355,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 			if (mediaPlayer.hasError()) {
 				throw mediaPlayer.getError();
 			}
-
-            frame.addComponentListener(new ComponentListener() {
-                public void componentResized(ComponentEvent e) {
-                    mediaPlayer.setSize(
-                            frame.getHeight() > 0 ?
-                                    ((float) mediaPlayer.getHeight())/ frame.getHeight()
-                                    : 1f);
-                }
-
-                @Override
-                public void componentHidden(ComponentEvent e) { }
-
-                @Override
-                public void componentMoved(ComponentEvent e) { }
-
-                @Override
-                public void componentShown(ComponentEvent e) { }
-            });
         }
 
         MediaPlayer getMovieStreamProvider() {
