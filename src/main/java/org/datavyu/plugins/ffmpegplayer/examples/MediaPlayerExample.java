@@ -139,7 +139,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
 	}
-	
+
 	/**
      * Create the GUI and show it. For thread safety, this method should be invoked from the
      * event-dispatching thread.
@@ -174,7 +174,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		MoviePlayerFrame moviePlayerFrame = new MoviePlayerFrame(fileName);
 		mediaPlayers.add(moviePlayerFrame.getMovieStreamProvider());
 	}
-	
+
     private void addWindowListener(Window w) {
         w.addWindowListener(this);
     }
@@ -205,7 +205,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	public void windowDeiconified(WindowEvent e) {
 		/* Nothing here */
 	}
-	
+
 	@Override
 	public void windowActivated(WindowEvent e) {
 		/* Nothing here */
@@ -251,7 +251,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 			return "mp4, mpg, h264, mov, wav";
 		}
 	}
-	
+
 	class PlaySelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -260,7 +260,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
             }
 		}
 	}
-	
+
 	class StopSelection implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -361,7 +361,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
             return mediaPlayer;
         }
     }
-	
+
 	class SpeedValueSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -375,7 +375,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 			}
 		}
 	}
- 
+
 	class OpenFileSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
