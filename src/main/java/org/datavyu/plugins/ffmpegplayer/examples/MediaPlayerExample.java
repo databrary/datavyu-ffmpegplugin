@@ -47,6 +47,8 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
 	private JLabel timeStamp;
 
+	private JLabel duration;
+
 	private int ONE_SECONDS = 1000;
 
 	public MediaPlayerExample() {
@@ -63,10 +65,9 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		slider = new JSlider();
 		slider.setValue(0);
 		slider.setMinimum(0);
-		slider.setMaximum(100);
 
-				// Open file dialog.
-				JButton open = new JButton("Open File");
+		// Open file dialog.
+		JButton open = new JButton("Open File");
 		JButton play = new JButton("Play");
 		JButton stop = new JButton("Stop");
 		JButton stepBackward = new JButton("<");
@@ -85,16 +86,17 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		stepForward.addActionListener(new StepForwardSelection());
 		slider.addChangeListener(new SliderSelection());
 
-		timer = new Timer(ONE_SECONDS, e -> {
+
+		timer = new Timer(0, e -> {
 			for (MediaPlayer mediaPlayer : mediaPlayers) {
 				//There is a Media Player returning -1
-				if(mediaPlayer.getCurrentTime() >= 0){
-					slider.setValue((int) (mediaPlayer.getCurrentTime() * 100000));
-					timeStamp.setText(String.valueOf(mediaPlayer.getCurrentTime()*100000));
+				if(mediaPlayer.getCurrentTime() >= 0 && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING){
+					slider.setMaximum((int) (mediaPlayer.getDuration() * ONE_SECONDS ));
+					slider.setValue((int) (mediaPlayer.getCurrentTime() * ONE_SECONDS ));
+					timeStamp.setText(timeStamp((long) mediaPlayer.getCurrentTime() * ONE_SECONDS));
 				}
 			}
 		});
-		timer.setDelay(0);
 
 		// Speed selection.
         SpeedValueSelection speedValueSelect = new SpeedValueSelection();
@@ -149,13 +151,14 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		tools.add(new JLabel("Speed:"));
 
 		timeStamp = new JLabel("00:00:00:000");
+		duration = new JLabel("00:00:00:000");
 		tools.add(speedsPanel);
 
 		JLabel frameNumber = new JLabel("0");
 		tools.add(frameNumber);
 
 		add(tools, BorderLayout.NORTH);
-		add(timeStamp, BorderLayout.CENTER);
+		add(timeStamp, BorderLayout.CENTER,0);
 		add(slider, BorderLayout.SOUTH);
 
 		//openFile("C:\\\\Users\\\\Florian\\\\video_1080p.mp4");
@@ -341,7 +344,8 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		public void stateChanged(ChangeEvent e) {
             if (slider.getValueIsAdjusting()) {
                 for (MediaPlayer mediaPlayer : mediaPlayers) {
-                    mediaPlayer.stop();
+//                    mediaPlayer.stop();
+					//TODO: Add the seek here
                 }
             }
 		}
@@ -420,5 +424,15 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	        // Set the file chooser's default directory for next time.
 	        fileChooser.setSelectedFile(lastDirectory);
 		}
+	}
+
+	private String timeStamp(final long timeInMillis){
+		String hours = String.format("%02d", TimeUnit.MILLISECONDS.toHours(timeInMillis));
+		String minutes = String.format("%02d", TimeUnit.MILLISECONDS.toMinutes(timeInMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeInMillis)));
+		String seconds = String.format("%02d", TimeUnit.MILLISECONDS.toSeconds(timeInMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMillis)));
+		String millis = String.format("%03d", TimeUnit.MILLISECONDS.toMillis(timeInMillis) - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(timeInMillis)));
+
+		String timeStampString = hours + ":" + minutes + ":" + seconds + ":" + millis;
+		return timeStampString;
 	}
 }
