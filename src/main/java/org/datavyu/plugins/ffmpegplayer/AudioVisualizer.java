@@ -3,32 +3,34 @@ package org.datavyu.plugins.ffmpegplayer;
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
 import java.awt.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
 
-public class AudioVisualizer extends JPanel implements StreamListener {
-
+public class AudioVisualizer implements StreamListener {
+    final private static int N_SAMPLE = 128;
     final private static int WIDTH = 600;
     final private static int HEIGHT = 400;
-
-    private BarPanel barPanel = new BarPanel(WIDTH, HEIGHT);
-    private AudioStream audioStream;
+    final private static GraphPanel.Range Y_RANGE = new GraphPanel.Range(-32768f, 32768f, 5000f);
+    private JFrame frame = new JFrame("Audio Visualizer");
+    private GraphPanel barPanel = new GraphPanel(WIDTH, HEIGHT);
     private float bps; // bytes per second
     private long nBytes;
+    private int nSample;
 
-    public AudioVisualizer(AudioStream audioStream) {
-        this.audioStream = audioStream;
+    public AudioVisualizer(AudioFormat audioFormat, int nSample) {
+        this.nSample = nSample;
+        this.bps = audioFormat.getFrameSize() * audioFormat.getFrameRate();
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.getContentPane().add(barPanel, BorderLayout.CENTER);
+        frame.pack();
+    }
+
+    public AudioVisualizer(AudioFormat audioFormat) {
+        this(audioFormat, N_SAMPLE);
     }
 
     @Override
     public void streamOpened() {
-        AudioFormat audioFormat = audioStream.getAudioFormat();
-        bps = audioFormat.getFrameSize() * audioFormat.getFrameRate();
         nBytes = 0;
-        JFrame frame = new JFrame("FrameDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(barPanel, BorderLayout.CENTER);
-        frame.pack();
         frame.setVisible(true);
     }
 
@@ -36,31 +38,34 @@ public class AudioVisualizer extends JPanel implements StreamListener {
     public void streamData(byte[] data) {
 
         // Set range
-        float startTime = bps * nBytes;
+        float startTime = nBytes/bps;
         nBytes += data.length;
-        float endTime = bps * nBytes;
+        float endTime = nBytes/bps;
+        GraphPanel.Range xRange = new GraphPanel.Range(startTime, endTime, (endTime-startTime)/10);
 
-        // Pull the data convert into bars
-        barPanel.update(IntStream
-                .range(0, data.length)
-                .map(i -> data[i])
-                .mapToObj(datum -> new BarPanel.Bar((int) bps, datum)).collect(Collectors.toList()),
-                new BarPanel.Range(startTime, endTime),
-                new BarPanel.Range(0f, 255f));
+        // Create points
+        int nSubSample = data.length/nSample;
+        java.util.List<GraphPanel.Point> points = new ArrayList<>(nSubSample);
+        for (int iSubSample = 0; iSubSample < nSubSample; ++iSubSample) {
+            float average = 0;
+            for (int iSample = 0; iSample < nSample/2; ++iSample) {
+                average += ((int)data[iSubSample*nSample+2*iSample]) << 8 + data[iSubSample*nSample+2*iSample+1];
+            }
+            points.add(new GraphPanel.Point(startTime+iSubSample*nSample/bps, average/nSample));
+        }
+
+        // Update bar panel
+        barPanel.update(points, xRange, Y_RANGE);
     }
 
     @Override
     public void streamClosed() {
-
+        frame.setVisible(false);
     }
 
     @Override
-    public void streamStopped() {
-
-    }
+    public void streamStopped() { }
 
     @Override
-    public void streamStarted() {
-
-    }
+    public void streamStarted() { }
 }

@@ -231,13 +231,13 @@ public class ImagePlayers extends Canvas {
 	}
 
 	/**
-	 * True if we reached the start when reading this file. At this point any
+	 * True if we reached the play when reading this file. At this point any
 	 * further loadNextFrame() will block.
 	 *
 	 * Blocking is intended to be used to stop any active pulling of frames when
-	 * the start or end of the file is reached.
+	 * the play or end of the file is reached.
 	 *
-	 * @return True if start of file is reached.
+	 * @return True if play of file is reached.
 	 */
 	protected boolean atStartForRead0() {
 		return atStartForRead0(playerId);

@@ -4,12 +4,9 @@ import javafx.application.Application;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,7 +23,7 @@ public class VideoStreamListenerStage extends Application implements StreamListe
     /** The properties */
     private Hashtable<String, String> properties = new Hashtable<>();
 
-    private MovieStream movieStream;
+    private MediaPlayer mediaPlayer;
 
     private ColorSpace colorSpace;
 
@@ -40,17 +37,17 @@ public class VideoStreamListenerStage extends Application implements StreamListe
 
     }
 
-    public VideoStreamListenerStage(MovieStream movieStream,  ColorSpace colorSpace) {
-        this.movieStream = movieStream;
+    public VideoStreamListenerStage(MediaPlayer mediaPlayer, ColorSpace colorSpace) {
+        this.mediaPlayer = mediaPlayer;
         this.colorSpace = colorSpace;
         this.imageView = new ImageView();
     }
 
     @Override
     public void streamOpened() {
-        int width = movieStream.getWidthOfView();
-        int height = movieStream.getHeightOfView();
-        int nChannel = movieStream.getNumberOfColorChannels();
+        int width = mediaPlayer.getWidth();
+        int height = mediaPlayer.getHeight();
+        int nChannel = mediaPlayer.getNumberOfColorChannels();
         cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
                 DataBuffer.TYPE_BYTE);
         SampleModel sm = cm.createCompatibleSampleModel(width, height);
@@ -64,8 +61,8 @@ public class VideoStreamListenerStage extends Application implements StreamListe
     @Override
     public void streamData(byte[] data) {
         // Width and height could have changed due to the view
-        int width = movieStream.getWidthOfView();
-        int height = movieStream.getHeightOfView();
+        int width = mediaPlayer.getWidth();
+        int height = mediaPlayer.getHeight();
         logger.debug("Received " + data.length + " By for originalImage: " + width + " x " + height + " pixels.");
         SampleModel sm = cm.createCompatibleSampleModel(width, height);
         // Create data buffer
