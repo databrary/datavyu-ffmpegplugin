@@ -102,9 +102,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	@Override
 	public void streamOpened() {
 		// Paint the image
-        launcher(() ->{
-            updateDisplay();
-        });
+        launcher(() -> updateDisplay());
 	}
 
     @Override
@@ -119,19 +117,12 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 		SampleModel sm = cm.createCompatibleSampleModel(imageWidth, imageHeight);
 		// Create data buffer
 		DataBufferByte dataBuffer = new DataBufferByte(data, imageWidth*imageHeight);
-
-		logger.debug("Created data buffer");
-
 		// Create writable raster
 		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
-
-		logger.debug("Created writeable raster");
 		// Create the original image
         image = new BufferedImage(cm, raster, false, properties);
 
-        launcher(()->{
-            updateDisplay();
-        });
+        launcher(()-> updateDisplay());
 	}
 
 	@Override
@@ -143,8 +134,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	public void streamStarted() {
 		// play displaying
 		doPaint = true;
-
-		updateDisplay();
+        launcher(()-> updateDisplay());
 	}
 	
 	@Override
