@@ -35,6 +35,7 @@ public abstract class MediaPlayer0 implements VideoStream, AudioStream {
     protected static native double getEndTime0(int streamId);
     protected static native double getDuration0(int streamId);
     protected static native double getCurrentTime0(int streamId);
+    protected static native double getAverageFrameRate0(int streamId);
     protected static native void seek0(int streamId, double time);
     protected static native void setSpeed0(int streamId, float speed);
 

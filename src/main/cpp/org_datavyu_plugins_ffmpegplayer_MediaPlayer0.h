@@ -137,6 +137,14 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_get
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
+ * Method:    getAverageFrameRate0
+ * Signature: (I)D
+ */
+JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getAverageFrameRate0
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
  * Method:    seek0
  * Signature: (ID)V
  */

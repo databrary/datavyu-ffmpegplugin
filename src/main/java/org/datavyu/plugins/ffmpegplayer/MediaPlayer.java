@@ -48,7 +48,7 @@ public class MediaPlayer extends MediaPlayer0 {
     private int streamId;
 
     /** The size of the audio buffer */
-    private final static int AUDIO_BUFFER_SIZE = 64 * 1024; // 64 kB
+    private final static int AUDIO_BUFFER_SIZE = 16 * 1024; // 16 kB
 
     /** The duration of the video/audio. Initialized at opening */
     protected double duration = 0;
@@ -61,6 +61,9 @@ public class MediaPlayer extends MediaPlayer0 {
 
     /** The end time of the streams. Initialized at opening */
     private double endTime = 0;
+
+    /** This is the average frame rate. Initialized at opening */
+    private double averageFrameRate = 0;
 
     /** The byte buffer for the audio. Initialized at opening */
     private ByteBuffer audioBuffer = null;
@@ -112,6 +115,8 @@ public class MediaPlayer extends MediaPlayer0 {
 
     @Override
     public double getDuration() { return duration; }
+
+    public double getAverageFrameRate() { return averageFrameRate; }
 
     @Override
     public double getCurrentTime() { return getCurrentTime0(streamId); }
@@ -201,6 +206,7 @@ public class MediaPlayer extends MediaPlayer0 {
             startTime = getStartTime0(streamId);
             endTime = getEndTime0(streamId);
             duration = getDuration0(streamId);
+            averageFrameRate = getAverageFrameRate0(streamId);
 
             if (hasVideoStream0(streamId)) {
                 nColorChannels = getNumberOfColorChannels0(streamId);

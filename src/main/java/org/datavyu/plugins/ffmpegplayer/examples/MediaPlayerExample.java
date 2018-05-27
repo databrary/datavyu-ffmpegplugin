@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.datavyu.plugins.ffmpegplayer.*;
+import org.datavyu.plugins.ffmpegplayer.prototypes.MoviePlayer;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -21,8 +22,14 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
+import static java.lang.Double.max;
+
 
 public class MediaPlayerExample extends JPanel implements WindowListener {
+
+    private static final double DEFAULT_FPS = 29.97; // Default value for the frames per second
+
+    private static final long MILLI_IN_SEC = 1000L;
 
 	/** Identifier for object serialization */
 	private static final long serialVersionUID = 5109839668203738974L;
@@ -161,13 +168,24 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		add(timeStamp, BorderLayout.CENTER,0);
 		add(slider, BorderLayout.SOUTH);
 
-		//openFile("C:\\\\Users\\\\Florian\\\\video_1080p.mp4");
-		openFile("C:\\Users\\Florian\\DatavyuSampleVideo.mp4");
+		openFile("C:\\\\Users\\\\Florian\\\\video_1080p.mp4");
+		//openFile("C:\\Users\\Florian\\DatavyuSampleVideo.mp4");
 
 		//openFile("C:\\Users\\Florian\\TurkishManGaitClip_KEATalk.mov");
 		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
 	}
 
+<<<<<<< HEAD
+=======
+	private double getMaxFrameRate() {
+	    double fps = DEFAULT_FPS;
+        for (MediaPlayer mediaPlayer : mediaPlayers) {
+            fps = max(fps, mediaPlayer.getAverageFrameRate());
+        }
+        return fps;
+    }
+	
+>>>>>>> 1281e9a8... Fix audio sync in native code
 	/**
      * Create the GUI and show it. For thread safety, this method should be invoked from the
      * event-dispatching thread.
@@ -303,14 +321,22 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	class StepBackwardSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-		    // TODO: Implement this by jumping -50 ms back
+            long stepSize = (long) Math.ceil(MILLI_IN_SEC / getMaxFrameRate()); // step size is in milliseconds
+            for (MediaPlayer mediaPlayer : mediaPlayers) {
+                // TODO: Check boundaries, add modulo
+                mediaPlayer.seek(mediaPlayer.getCurrentTime() - stepSize);
+            }
 		}
 	}
 
 	class StepForwardSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-		    // TODO: Implement this by jumping forward by
+            long stepSize = (long) Math.ceil(MILLI_IN_SEC / getMaxFrameRate()); // step size is in milliseconds
+            for (MediaPlayer mediaPlayer : mediaPlayers) {
+                // TODO: Check boundaries, add modulo
+                mediaPlayer.seek(mediaPlayer.getCurrentTime() + stepSize);
+            }
 		}
 	}
 

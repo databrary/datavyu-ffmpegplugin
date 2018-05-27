@@ -318,7 +318,7 @@ public:
 
         /* update delay to follow master synchronisation source */
         if (getMasterSyncType() != AV_SYNC_VIDEO_MASTER) {
-            pLogger->info("Sync video clock with master");
+            //pLogger->info("Sync video clock with master");
 
             /* if video is slave, we try to correct big delays by
                duplicating or deleting a frame */
@@ -338,7 +338,7 @@ public:
             }
         }
 
-        pLogger->info("video: delay=%0.3f A-V=%f", delay, -diff);
+        //pLogger->info("video: delay=%0.3f A-V=%f", delay, -diff);
 
         return delay;
     }
@@ -596,7 +596,7 @@ public:
             } else {
                 audioTime = NAN;
             }
-            pLogger->info("The decoded audio time is %f", audioTime);
+            // pLogger->info("The decoded audio time is %f", audioTime);
         }
     }
 
@@ -633,6 +633,7 @@ public:
         AVRational timeBase = pImageStream->time_base;
         double pts;
         double duration;
+        int64_t readPts = 0;
 
         while (!quit) {
 
@@ -640,12 +641,11 @@ public:
             if (seekReq) {
                 seekReq = false;
                 int64_t target = seekPts;
-                int64_t delta = 0; // TODO(fraudies): Fix seek here
+                int64_t delta = seekPts - readPts;
                 int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
                 int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
-                int seekFlags = 0;
-
-                if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, seekFlags) < 0) {
+                // Seek flag is 0
+                if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, 0) < 0) {
                     pLogger->info("Failed seek to frame %I64d.", target/avgDeltaPts);
                 } else {
                     pLogger->info("Succeeded seek to frame %I64d with min %I64d frames and max %I64d frames for diff %I64d frames.",
@@ -694,7 +694,7 @@ public:
                 if (frameFinished) {
 
                     // Set the presentation time stamp (PTS)
-                    int64_t readPts = pSrcAVFrame->pkt_pts;
+                    readPts = pSrcAVFrame->pkt_pts;
 
                     // Skip frames if seek before we may need to skip frames until we are at seekPts
                     if (readPts >= seekPts) {
@@ -723,8 +723,8 @@ public:
                             pts = (readPts == AV_NOPTS_VALUE) ? NAN : readPts * av_q2d(timeBase);
                             duration = (frameRate.num && frameRate.den ? av_q2d(struct AVRational {frameRate.den, frameRate.num}) : 0);
 
-                            pLogger->info("Read pts %I64d, pts %f, duration %f, average delta pts %I64d.",
-                                          readPts, pts, duration, avgDeltaPts);
+                            // pLogger->info("Read pts %I64d, pts %f, duration %f, average delta pts %I64d.",
+                            //               readPts, pts, duration, avgDeltaPts);
 
                             // Assign fields to the pFrame
                             pFrame->frame->repeat_pict = pSrcAVFrame->repeat_pict;
@@ -828,7 +828,7 @@ public:
         double delay;
         double time;
 
-        pLogger->info("Master clock time %f.", getMasterClockTime());
+        // pLogger->info("Master clock time %f.", getMasterClockTime());
         for (int iFrameDrop = MAX_NUM_FRAME_DROP; iFrameDrop > 0 && !pFrameBuffer->empty(); --iFrameDrop) {
 
             pFrameBuffer->peekLast(&pLastFrame);
@@ -852,7 +852,7 @@ public:
                 frameTimer = time;
 
             if (!isnan(pCurrentFrame->pts)) {
-                pLogger->info("Set time of video clock to: %f", pCurrentFrame->pts);
+                //pLogger->info("Set time of video clock to: %f", pCurrentFrame->pts);
                 pVideoClock->setTime(pCurrentFrame->pts);
             }
 
@@ -860,10 +860,10 @@ public:
                 Frame *pNextFrame;
                 pFrameBuffer->peekNext(&pNextFrame);
                 duration = getDurationBetweenFrames(pCurrentFrame, pNextFrame);
-                pLogger->info("Time %f, frameTimer %f, duration %f, %d, %d.",
+/*                pLogger->info("Time %f, frameTimer %f, duration %f, %d, %d.",
                     time, frameTimer, duration,
                     getMasterSyncType() != AV_SYNC_VIDEO_MASTER,
-                    time > frameTimer + duration);
+                    time > frameTimer + duration);*/
 
                 if (getMasterSyncType() != AV_SYNC_VIDEO_MASTER && time > frameTimer + duration) {
                     nFrame++; // repeat frame
@@ -896,11 +896,11 @@ public:
             return false;
         }
 
-        int len = nAudioBuffer; // get length of buffer
+        int remainingLen = nAudioBuffer; // get length of buffer
         uint8_t *data = pAudioBufferData; // get a write pointer.
         int decodeLen, audioSize;
 
-        while (len > 0) {
+        while (remainingLen > 0) {
             // We still need to read len bytes
             if (iAudioData >= nAudioData) {
                 // We already sent all our data; get more
@@ -918,28 +918,23 @@ public:
             }
             decodeLen = nAudioData - iAudioData;
 
-            if (decodeLen > len) {
-                decodeLen = len;
+            if (decodeLen > remainingLen) {
+                decodeLen = remainingLen;
             }
 
             memcpy(data, (uint8_t *)pLoadAudioByteBuffer + iAudioData, decodeLen);
-            len -= decodeLen;
+            remainingLen -= decodeLen;
             data += decodeLen;
             iAudioData += decodeLen;
         }
-        // audio_hw_buf_size -- dataSize from audio decode thread
-        // is->audio_write_buf_size = is->audio_buf_size - is->audio_buf_index;
         if (!isnan(audioTime)) {
-            // TODO: Fix the audio clock time here for the sync with the clock
-            // This is the argument from ffplay.cpp
-            // is->audio_clock - (double)(2 * is->audio_hw_buf_size + is->audio_write_buf_size) / is->audio_tgt.bytes_per_sec
+            // Let's assume the audio driver that is used has two periods.
             pAudioClock->setClockAt(
-                audioTime - (double)(2 * (nAudioBuffer-len)) / audioBytesPerSecond,
+                audioTime - (double)((2*nAudioBuffer + remainingLen)) / audioBytesPerSecond,
                 AVClock::getSystemTimeRelative() / 1000000.0
             );
             AVClock::syncMasterToSlave(pExternalClock, pAudioClock, AV_NOSYNC_THRESHOLD);
         }
-
         return !quit;
     }
 
