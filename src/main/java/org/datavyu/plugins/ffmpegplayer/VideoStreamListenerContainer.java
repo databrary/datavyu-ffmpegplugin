@@ -3,9 +3,11 @@ package org.datavyu.plugins.ffmpegplayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
 /**
@@ -48,52 +50,56 @@ public class VideoStreamListenerContainer implements StreamListener {
 	 * the this video listener. 
 	 */
 	private boolean doPaint = false;
+
+	/** Parent JFrame */
+	private JFrame frame;
+
+	private final static int INITIAL_WIDTH = 640;
+	private final static int INITIAL_HEIGHT = 480;
+	private final static int INITIAL_NUM_CHANNEL = 3;
+
+	private void updateDisplay() {
+		BufferStrategy strategy = frame.getBufferStrategy();
+		do {
+			do {
+				// Make sure to create the buffer strategy before using it!
+				Graphics graphics = strategy.getDrawGraphics();
+				if (doPaint) {
+					graphics.drawImage(originalImage, 0, 0, frame.getWidth(), frame.getHeight(),  null);
+				}
+				graphics.dispose();
+			} while (strategy.contentsRestored());
+			strategy.show();
+		} while (strategy.contentsLost());
+	}
 	
 	/**
 	 * Initialized the originalImage display and adds it to the supplied container with
 	 * the supplied constraint. If the constraint is null it uses the add method
 	 * on the container without constraint.
 	 * 
-	 * @param container The container that the display is added to
+	 * @param frame The container that the display is added to
 	 * @param constraints The constraint used when adding
 	 */
-	private void initImageDisplay(Container container, Object constraints) {
-		canvas = new Canvas() {
-			private static final long serialVersionUID = 5471924216942753555L;
+	private void initImageDisplay(JFrame frame, Object constraints) {
+		this.frame = frame;
+		launcher(() -> {
+			cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
+				DataBuffer.TYPE_BYTE);
+			// Set defaults
+			SampleModel sm = cm.createCompatibleSampleModel(INITIAL_WIDTH, INITIAL_HEIGHT);
+			// Initialize an empty image
+			DataBufferByte dataBuffer = new DataBufferByte(new byte[INITIAL_WIDTH * INITIAL_HEIGHT * INITIAL_NUM_CHANNEL],
+					INITIAL_WIDTH * INITIAL_HEIGHT);
+			WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
+			// Create the original image
+			originalImage = new BufferedImage(cm, raster, false, properties);
 
-			@Override
-			public void update(Graphics g){ paint(g);}
-			@Override
-        	public void paint(Graphics g) {
-				// Calling BufferStrategy.show() could throws
-				// exceptions
-				try {
-					BufferStrategy strategy = canvas.getBufferStrategy();
-					if(strategy == null){
-						createBufferStrategy(3);
-					}
-					do {
-						do {
-							g = strategy.getDrawGraphics();
-							if (originalImage != null) {
-								// If not doPaint display the next originalImage
-								if(doPaint){
-									g.drawImage(originalImage, 0, 0,getWidth(), getHeight(),  null);
-								}
-							}
-							g.dispose();
-						} while (strategy.contentsRestored());
-						strategy.show();
-					} while (strategy.contentsLost());
-				} catch (Exception e) { logger.warn("Buffer Strategy Exception: " + e); }
-        	}
-		};
-        if (constraints != null) {
-        	container.add(canvas, constraints);
-        } else {
-            container.add(canvas);
-        }
-		canvas.setVisible(true);
+			frame.setBounds(0, 0, INITIAL_WIDTH, INITIAL_HEIGHT);
+			frame.setVisible(true);
+
+			frame.createBufferStrategy(3);
+		});
 	}
 
 	/**
@@ -101,12 +107,12 @@ public class VideoStreamListenerContainer implements StreamListener {
 	 * to the container.
 	 * 
 	 * @param movieStream The underlying movie stream that provides data.
-	 * @param container The container we add the originalImage display.
+	 * @param frame The container we add the originalImage display.
 	 * @param colorSpace The color space for the originalImage data.
 	 */
 	public VideoStreamListenerContainer(MovieStream movieStream,
-										Container container, ColorSpace colorSpace) {
-		this(movieStream, container, null, colorSpace);
+										JFrame frame, ColorSpace colorSpace) {
+		this(movieStream, frame, null, colorSpace);
 	}
 	
 	/**
@@ -114,33 +120,20 @@ public class VideoStreamListenerContainer implements StreamListener {
 	 * to the container using the constraint.
 	 * 
 	 * @param movieStream The underlying movie stream that provides data.
-	 * @param container The container we add the originalImage display.
+	 * @param frame The container we add the originalImage display.
 	 * @param constraints Constraint where to add this video display into the container.
 	 * @param colorSpace The color space for the originalImage data.
 	 */
 	public VideoStreamListenerContainer(MovieStream movieStream,
-										Container container, Object constraints, ColorSpace colorSpace) {
+										JFrame frame, Object constraints, ColorSpace colorSpace) {
 		this.movieStream = movieStream;
 		this.colorSpace = colorSpace;
-		initImageDisplay(container, constraints);
+		initImageDisplay(frame, constraints);
 	}
 
 	@Override
 	public void streamOpened() {
-		int width = movieStream.getWidthOfStream();
-		int height = movieStream.getHeightOfStream();
-
-		int nChannel = movieStream.getNumberOfColorChannels();
-		cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
-				DataBuffer.TYPE_BYTE);
-		SampleModel sm = cm.createCompatibleSampleModel(width, height);
-		// Initialize an empty originalImage
-		DataBufferByte dataBuffer = new DataBufferByte(new byte[width*height*nChannel], width*height);
-		WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0,0));
-		// Create the original image
-		originalImage = new BufferedImage(cm, raster, false, properties);
-		// Paint the image
-        doPaint = true;
+		launcher(() -> updateDisplay());
 	}
 
 	@Override
@@ -156,7 +149,8 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// Create the original image
         originalImage = new BufferedImage(cm, raster, false, properties);
         // Paint the image
-		canvas.paint(null);
+//		canvas.paint(null);
+		launcher(() -> updateDisplay());
 	}
 
 	@Override
@@ -169,12 +163,25 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// start displaying
 		doPaint = true;
 		// display the current frame
-		canvas.paint(null);
+		launcher(() -> updateDisplay());
+//		canvas.paint(null);
 	}
 	
 	@Override
 	public void streamStopped() {
 		// stop displaying
 		doPaint = false;
+	}
+
+	private static void launcher(Runnable runnable) {
+		if (EventQueue.isDispatchThread()) {
+			runnable.run();
+		} else {
+			try {
+				EventQueue.invokeAndWait(runnable);
+			} catch (InterruptedException | InvocationTargetException e) {
+				logger.warn(e);
+			}
+		}
 	}
 }

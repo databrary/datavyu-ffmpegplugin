@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
+import javax.swing.*;
 
 /**
  * The movie stream provider allows feeding an audio stream to multiple listeners and feeding an image stream to
@@ -402,7 +403,7 @@ public class MovieStreamProvider extends MovieStream {
 	 */
 	private final static class MoviePlayer {
         MovieStreamProvider movieStreamProvider;
-        final Frame frame;
+        final JFrame frame;
 
         public MoviePlayer(String movieFileName) throws IOException {
             this(movieFileName, "0.0.0.1");
@@ -412,7 +413,7 @@ public class MovieStreamProvider extends MovieStream {
             movieStreamProvider = new MovieStreamProvider();
             final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
-            frame = new Frame();
+            frame = new JFrame();
             frame.addWindowListener( new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {
                     try {

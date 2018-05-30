@@ -392,7 +392,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 	}
 
     private class MoviePlayerFrame {
-        final Frame frame;
+        final JFrame frame;
         MovieStreamProvider movieStreamProvider;
 
         MoviePlayerFrame(String movieFileName) throws IOException {
@@ -403,7 +403,7 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
             movieStreamProvider = new MovieStreamProvider();
             final ColorSpace reqColorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
             AudioFormat reqAudioFormat = AudioSoundStreamListener.getNewMonoFormat();
-            frame = new Frame();
+            frame = new JFrame();
             frame.addWindowListener( new WindowAdapter() {
                 public void windowClosing(WindowEvent ev) {
                     try {
