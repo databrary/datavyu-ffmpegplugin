@@ -175,8 +175,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		//openFile("C:\\Users\\Florian\\NoAudio\\TurkishCrawler_NoAudio.mov");
 	}
 
-<<<<<<< HEAD
-=======
 	private double getMaxFrameRate() {
 	    double fps = DEFAULT_FPS;
         for (MediaPlayer mediaPlayer : mediaPlayers) {
@@ -185,7 +183,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
         return fps;
     }
 	
->>>>>>> 1281e9a8... Fix audio sync in native code
 	/**
      * Create the GUI and show it. For thread safety, this method should be invoked from the
      * event-dispatching thread.
