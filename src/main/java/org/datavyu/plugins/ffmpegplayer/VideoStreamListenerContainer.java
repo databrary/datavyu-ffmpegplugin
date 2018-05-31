@@ -91,7 +91,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 			// Create the original image
 			originalImage = new BufferedImage(cm, raster, false, properties);
 
-			container.add(canvas);
+			container.add(canvas, constraints);
 
 			container.setBounds(0, 0, INITIAL_WIDTH, INITIAL_HEIGHT);
 			container.setVisible(true);
