@@ -1559,7 +1559,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_seek0(
     }
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setPlaybackSpeed0(JNIEnv *env,
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setSpeed0(JNIEnv *env,
     jclass thisClass, jint streamId, jfloat speed) {
     MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
     if (mediaPlayer != nullptr) {
