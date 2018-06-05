@@ -68,7 +68,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
 		slider = new JSlider();
 		slider.setValue(0);
-		slider.setMaximum(0);
 
 		// Open file dialog.
 		JButton open = new JButton("Open File");
@@ -335,6 +334,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 				for (MediaPlayer mediaPlayer : mediaPlayers) {
 					//There is a Media Player returning -1
 					if(mediaPlayer.getCurrentTime() >= 0 && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING){
+						//TODO: remove slider set maximum for the timer
 						slider.setMaximum((int) (mediaPlayer.getDuration() * MILLI_IN_SEC));
 						slider.setValue((int) (mediaPlayer.getCurrentTime() * MILLI_IN_SEC));
 						timeStamp.setText(timeStamp((long) (mediaPlayer.getCurrentTime() * MILLI_IN_SEC)));
