@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.datavyu.plugins.ffmpegplayer.*;
-import org.datavyu.plugins.ffmpegplayer.prototypes.MoviePlayer;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -56,8 +55,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
 	private JLabel duration;
 
-	private int ONE_SECONDS = 1000;
-
 	public MediaPlayerExample() {
 		setLayout(new BorderLayout());
 
@@ -71,7 +68,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
 		slider = new JSlider();
 		slider.setValue(0);
-		slider.setMinimum(0);
 
 		// Open file dialog.
 		JButton open = new JButton("Open File");
@@ -92,18 +88,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		stepBackward.addActionListener(new StepBackwardSelection());
 		stepForward.addActionListener(new StepForwardSelection());
 		slider.addChangeListener(new SliderSelection());
-
-
-		timer = new Timer(0, e -> {
-			for (MediaPlayer mediaPlayer : mediaPlayers) {
-				//There is a Media Player returning -1
-				if(mediaPlayer.getCurrentTime() >= 0 && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING){
-					slider.setMaximum((int) (mediaPlayer.getDuration() * ONE_SECONDS ));
-					slider.setValue((int) (mediaPlayer.getCurrentTime() * ONE_SECONDS ));
-					timeStamp.setText(timeStamp((long) mediaPlayer.getCurrentTime() * ONE_SECONDS));
-				}
-			}
-		});
 
 		// Speed selection.
         SpeedValueSelection speedValueSelect = new SpeedValueSelection();
@@ -298,9 +282,9 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	class PlaySelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			timer.start();
-            for (MediaPlayer movieStreamProvider : mediaPlayers) {
-                movieStreamProvider.play();
+            for (MediaPlayer mediaPlayer : mediaPlayers) {
+				timer.start();
+				mediaPlayer.play();
             }
 		}
 	}
@@ -308,8 +292,8 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	class StopSelection implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-        	timer.stop();
             for (MediaPlayer mediaPlayer : mediaPlayers) {
+            	timer.stop();
                 mediaPlayer.stop();
             }
         }
@@ -345,30 +329,26 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
 		private final static double SYNC_THRESHOLD = 0.5; // in seconds
 
-/*        SliderSelection() {
-            new Timer().scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    double streamTime = SliderStreamListener.toStreamTime(slider.getValue());
-                    for (MediaPlayer movieStreamProvider : mediaPlayers) {
-                        if (Math.abs(streamTime - movieStreamProvider.getCurrentTime()) >= SYNC_THRESHOLD) {
-                            logger.info("The slider time is: " + streamTime + " seconds and the stream time is: "
-                                    + movieStreamProvider.getCurrentTime() + " seconds");
-                            movieStreamProvider.seek(streamTime);
-                            //mediaPlayer.startVideoListeners();
-                            //mediaPlayer.nextImageFrame();
-                        }
-                    }
-                }
-            }, SYNC_DELAY, SYNC_INTERVAL);
-        }*/
+		SliderSelection(){
+			timer = new Timer(0, e -> {
+				for (MediaPlayer mediaPlayer : mediaPlayers) {
+					//There is a Media Player returning -1
+					if(mediaPlayer.getCurrentTime() >= 0 && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING){
+						//TODO: remove slider set maximum for the timer
+						slider.setMaximum((int) (mediaPlayer.getDuration() * MILLI_IN_SEC));
+						slider.setValue((int) (mediaPlayer.getCurrentTime() * MILLI_IN_SEC));
+						timeStamp.setText(timeStamp((long) (mediaPlayer.getCurrentTime() * MILLI_IN_SEC)));
+					}
+				}
+			});
+		}
 
 		@Override
 		public void stateChanged(ChangeEvent e) {
             if (slider.getValueIsAdjusting()) {
                 for (MediaPlayer mediaPlayer : mediaPlayers) {
-//                    mediaPlayer.stop();
-					//TODO: Add the seek here
+                	logger.info("Seek to: " + slider.getValue());
+					mediaPlayer.seek(slider.getValue() / MILLI_IN_SEC);
                 }
             }
 		}
@@ -450,12 +430,12 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 	}
 
 	private String timeStamp(final long timeInMillis){
-		String hours = String.format("%02d", TimeUnit.MILLISECONDS.toHours(timeInMillis));
-		String minutes = String.format("%02d", TimeUnit.MILLISECONDS.toMinutes(timeInMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeInMillis)));
-		String seconds = String.format("%02d", TimeUnit.MILLISECONDS.toSeconds(timeInMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeInMillis)));
-		String millis = String.format("%03d", TimeUnit.MILLISECONDS.toMillis(timeInMillis) - TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(timeInMillis)));
 
-		String timeStampString = hours + ":" + minutes + ":" + seconds + ":" + millis;
-		return timeStampString;
+		long second = (timeInMillis / 1000) % 60;
+		long minute = (timeInMillis / (1000 * 60)) % 60;
+		long hour = (timeInMillis / (1000 * 60 * 60)) % 24;
+
+		String time = String.format("%02d:%02d:%02d:%03d", hour, minute, second, timeInMillis);
+		return time;
 	}
 }
