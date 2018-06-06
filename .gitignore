@@ -12,3 +12,7 @@ bin/
 target/*
 out/*
 src/main/cpp/*.txt
+.classpath
+.factorypath
+.project
+
