@@ -792,7 +792,14 @@ public:
         if (hasVideoStream() || hasAudioStream()) {
 
             // Set speed for clock
-            pExternalClock->setSpeed(speed);
+            if(getMasterSyncType() == AV_SYNC_VIDEO_MASTER)
+                pVideoClock->setSpeed(speed);
+            
+            if(getMasterSyncType() == AV_SYNC_AUDIO_MASTER)
+                pAudioClock->setSpeed(speed);
+            
+            if(getMasterSyncType() == AV_SYNC_EXTERNAL_MASTER)
+                pExternalClock->setSpeed(speed);
 
             // If we have audio need to turn off at playback other than 1x
             if (hasAudioStream()) {
