@@ -792,7 +792,14 @@ public:
         if (hasVideoStream() || hasAudioStream()) {
 
             // Set speed for clock
-            pExternalClock->setSpeed(speed);
+            if(getMasterSyncType() == AV_SYNC_VIDEO_MASTER)
+                pVideoClock->setSpeed(speed);
+            
+            if(getMasterSyncType() == AV_SYNC_AUDIO_MASTER)
+                pAudioClock->setSpeed(speed);
+            
+            if(getMasterSyncType() == AV_SYNC_EXTERNAL_MASTER)
+                pExternalClock->setSpeed(speed);
 
             // If we have audio need to turn off at playback other than 1x
             if (hasAudioStream()) {
@@ -1559,7 +1566,7 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_seek0(
     }
 }
 
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setPlaybackSpeed0(JNIEnv *env,
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setSpeed0(JNIEnv *env,
     jclass thisClass, jint streamId, jfloat speed) {
     MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
     if (mediaPlayer != nullptr) {
