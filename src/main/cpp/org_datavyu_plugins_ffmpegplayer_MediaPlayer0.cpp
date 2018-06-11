@@ -206,6 +206,9 @@ public:
     /** Flag to initiate a random seek request */
     bool seekReq;
 
+    /** Floag to check if is Backward or Forward seek is requested */
+    int seek_flags;
+
     /** The time stamp that should be present after a random seek */
     int64_t seekPts;
 
@@ -611,30 +614,6 @@ public:
     bool hasAudioStream() const { return iAudioStream > -1; }
 
     /**
-     * Decore a packet using the new AVDecode API
-     */
-    int decode(AVCodecContext *ctx, AVFrame *frame, int *frameFinished, AVPacket *pkt) {
-        int ret;
-        *frameFinished = 0;
-
-        if (pkt) {
-            // Give the decoder raw compressed data in an AVPacket.
-            ret = avcodec_send_packet(ctx, pkt);
-            if (ret < 0)
-                return ret == AVERROR_EOF ? 0 : ret;
-        }
-        
-        // On success, it will return an AVFrame containing uncompressed audio or video data
-        ret = avcodec_receive_frame(ctx, frame);
-        if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
-            return ret;
-        if (ret >= 0)
-            *frameFinished = 1;
-
-        return 0;
-    }
-
-    /**
      * Reads the next frame from the video stream and supports:
      * - Random seek through the variable seekReq.
      * - Toggling the direction through the variable toggle.
@@ -668,7 +647,9 @@ public:
                 int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
                 int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
                 // Seek flag is 0
-                if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, 0) < 0) {
+                // if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, 0) < 0) {
+                if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, seek_flags) < 0) {
+                // if (av_seek_frame(pFormatCtx, iImageStream, target, seek_flags)) {
                     pLogger->info("Failed seek to frame %I64d.", target/avgDeltaPts);
                 } else {
                     pLogger->info("Succeeded seek to frame %I64d with min %I64d frames and max %I64d frames for diff %I64d frames.",
@@ -717,78 +698,90 @@ public:
             }
 
             // Is this a packet from the video stream?
-            if (hasVideoStream() && packet.stream_index == iImageStream) {
+            if (hasVideoStream() && packet.stream_index == iImageStream)
+            {
 
-                // Decode the video frame 
+                // Decode the Packetuntil we get all the frames
+                do {
+                    do {
+                        // Give the decoder raw compressed data in an AVPacket.
+                        ret = avcodec_send_packet(pImageCodecCtx, &packet);
+                    } while (ret == AVERROR(EAGAIN));
 
-                //(Reda) This function is deprecated see documentation
-                // avcodec_decode_video2(pImageCodecCtx, pSrcAVFrame, &frameFinished, &packet);
-
-                decode(pImageCodecCtx, pSrcAVFrame, &frameFinished, &packet);
-
-                // if we have more than one frame in the packet
-                if (frameFinished) {
-
-                      // Set the presentation time stamp (PTS)
-                    readPts = pSrcAVFrame->pkt_pts;
-
-                    // Skip frames if seek before we may need to skip frames until we are at seekPts
-                    if (readPts >= seekPts) {
-
-                        // Get the next writable buffer. This may block and can be unblocked by flushing
-                        Frame* pFrame;
-
-                        // TODO(fraudies): Check that the allocation happens in the frame write request
-                        //pFrameBuffer->writeRequestWithAllocate(pFrame, *pSrcAVFrame);
-                        pFrameBuffer->writeRequest(&pFrame);
-
-                        // Did we get a frame buffer?
-                        if (pFrame) {
-
-                            // Convert the image from its native color format into the RGB color format
-                            // TODO(fraudies): Add resize here
-                            sws_scale(
-                                pSwsImageCtx,
-                                (uint8_t const * const *)pSrcAVFrame->data,
-                                pSrcAVFrame->linesize,
-                                0,
-                                pImageCodecCtx->height,
-                                pFrame->frame->data,
-                                pFrame->frame->linesize);
-
-                            pts = (readPts == AV_NOPTS_VALUE) ? NAN : readPts * av_q2d(timeBase);
-                            duration = (frameRate.num && frameRate.den ? av_q2d(struct AVRational {frameRate.den, frameRate.num}) : 0);
-
-                            // pLogger->info("Read pts %I64d, pts %f, duration %f, average delta pts %I64d.",
-                            //               readPts, pts, duration, avgDeltaPts);
-
-                            // Assign fields to the pFrame
-                            pFrame->frame->repeat_pict = pSrcAVFrame->repeat_pict;
-                            pFrame->pts = pts;
-                            pFrame->duration = duration;
-                            pFrame->width = pSrcAVFrame->width;
-                            pFrame->height = pSrcAVFrame->height;
-                            //av_frame_move_ref(pFrame->frame, pSrcAVFrame);
-
-                            // Complete the write
-                            pFrameBuffer->writeComplete();
-
-                        } else {
-                            pLogger->info("Write request aborted.");
-                        }
-                    } else {
-                        pLogger->info("Skipped frame %ld.", readPts/avgDeltaPts);
+                    if (ret == AVERROR_EOF || ret == AVERROR(EINVAL)) {
+                        pLogger->info("AVERROR(EAGAIN): %d, AVERROR_EOF: %d, AVERROR(EINVAL): %d\n", AVERROR(EAGAIN), AVERROR_EOF, AVERROR(EINVAL));
+                        pLogger->info("fe_read_frame: Frame getting error (%d)!\n", ret);
                     }
+                    // On success, it will return an AVFrame containing uncompressed audio or video data
+                    ret = avcodec_receive_frame(pImageCodecCtx, pSrcAVFrame);
+                } while (ret == AVERROR(EAGAIN));
 
-                    // Reset frame container to initial state
-                    av_frame_unref(pSrcAVFrame);
+                if (ret == AVERROR_EOF || ret == AVERROR(EINVAL)) {
+                    // An error or EOF occured,index break out and return what
+                    // we have so far.
+                    pLogger->info("AVERROR(EAGAIN): %d, AVERROR_EOF: %d, AVERROR(EINVAL): %d\n", AVERROR(EAGAIN), AVERROR_EOF, AVERROR(EINVAL));
+                    pLogger->info("fe_read_frame: EOF or some othere decoding error (%d)!\n", ret);
                 }
+
+                // Set the presentation time stamp (PTS)
+                readPts = pSrcAVFrame->pkt_pts;
+
+                // Skip frames if seek before we may need to skip frames until we are at seekPts
+                if (readPts >= seekPts) {
+
+                    // Get the next writable buffer. This may block and can be unblocked by flushing
+                    Frame *pFrame;
+
+                    // TODO(fraudies): Check that the allocation happens in the frame write request
+                    //pFrameBuffer->writeRequestWithAllocate(pFrame, *pSrcAVFrame);
+                    pFrameBuffer->writeRequest(&pFrame);
+
+                    // Did we get a frame buffer?
+                    if (pFrame) {
+
+                        // Convert the image from its native color format into the RGB color format
+                        // TODO(fraudies): Add resize here
+                        sws_scale(
+                            pSwsImageCtx,
+                            (uint8_t const *const *)pSrcAVFrame->data,
+                            pSrcAVFrame->linesize,
+                            0,
+                            pImageCodecCtx->height,
+                            pFrame->frame->data,
+                            pFrame->frame->linesize);
+
+                        pts = (readPts == AV_NOPTS_VALUE) ? NAN : readPts * av_q2d(timeBase);
+                        duration = (frameRate.num && frameRate.den ? av_q2d(struct AVRational{frameRate.den, frameRate.num}) : 0);
+
+                        // pLogger->info("Read pts %I64d, pts %f, duration %f, average delta pts %I64d.",
+                        //               readPts, pts, duration, avgDeltaPts);
+
+                        // Assign fields to the pFrame
+                        pFrame->frame->repeat_pict = pSrcAVFrame->repeat_pict;
+                        pFrame->pts = pts;
+                        pFrame->duration = duration;
+                        pFrame->width = pSrcAVFrame->width;
+                        pFrame->height = pSrcAVFrame->height;
+                        //av_frame_move_ref(pFrame->frame, pSrcAVFrame);
+
+                        // Complete the write
+                        pFrameBuffer->writeComplete();
+                    }
+                    else {
+                        pLogger->info("Write request aborted.");
+                    }
+                }
+                else {
+                    pLogger->info("Skipped frame %ld.", readPts / avgDeltaPts);
+                }
+
+                // Reset frame container to initial state
+                av_frame_unref(pSrcAVFrame);
 
                 // Free the packet that was allocated by av_read_frame
                 av_free_packet(&packet);
 
             } else if (hasAudioStream() && playSound && packet.stream_index == iAudioStream) {
-
                 // Decode packet from audio stream
                 pAudioBuffer->put(&packet); // packet is freed when consumed
             } else {
@@ -816,7 +809,8 @@ public:
 
     void seek(double time) {
         if (hasVideoStream() || hasAudioStream()) {
-            seekPts = limitToRange( ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts );
+            seekPts = limitToRange( ((int64_t)(time/(avgDeltaPts * av_q2d(pImageStream->time_base))))*avgDeltaPts );            
+            seek_flags = (time < getCurrentTime()) ? AVSEEK_FLAG_BACKWARD : 0;
             seekReq = true;
         }
     }
