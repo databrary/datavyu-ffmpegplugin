@@ -57,7 +57,7 @@ cl org_datavyu_plugins_ffmpegplayer_MediaPlayer0.cpp /Fe"..\..\..\MediaPlayer0" 
 #define AV_NOSYNC_THRESHOLD 2.0
 
 #define MAX_NUM_FRAME_DROP 15
-#define PTS_DELTA_THRESHOLD 3
+#define PTS_DELTA_THRESHOLD 3   
 #define MAX_AUDIO_FRAME_SIZE 192000
 #define SAMPLE_CORRECTION_PERCENT_MAX 10
 #define AUDIO_DIFF_AVG_NB 20
@@ -70,13 +70,13 @@ enum {
     AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
 };
 
-
 /*****************************************************************************************
  * Movie player class that encapsulates functionality for the playback of a movie
  ****************************************************************************************/
 class MediaPlayer {
 
 public:
+
     /** Clocks for synchronization for video, audio, external */
     AVClock* pAudioClock;
     AVClock* pVideoClock;
@@ -798,7 +798,7 @@ public:
             if(getMasterSyncType() == AV_SYNC_AUDIO_MASTER)
                 pAudioClock->setSpeed(speed);
             
-            if(getMasterSyncType() == AV_SYNC_EXTERNAL_MASTER)
+            if(getMasterSyncType() == AV_SYNC_EXTERNAL_CLOCK)
                 pExternalClock->setSpeed(speed);
 
             // If we have audio need to turn off at playback other than 1x
@@ -1302,6 +1302,23 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_o
             env->ReleaseIntArrayElements(returnArray, returnValues, NULL);
             return returnArray;
 		}
+
+        //Convert deprecated pixels 
+        //(see https://libav.org/documentation/doxygen/master/pixfmt_8h.html#a9a8e335cf3be472042bc9f0cf80cd4c5)
+        switch (mediaPlayer->pImageCodecCtx->pix_fmt){
+            case AV_PIX_FMT_YUVJ420P:
+                mediaPlayer->pImageCodecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
+                break;
+            case AV_PIX_FMT_YUVJ422P:
+                mediaPlayer->pImageCodecCtx->pix_fmt = AV_PIX_FMT_YUV422P;
+                break;
+            case AV_PIX_FMT_YUVJ444P:
+                mediaPlayer->pImageCodecCtx->pix_fmt = AV_PIX_FMT_YUV444P;
+                break;
+            case AV_PIX_FMT_YUVJ440P:
+                mediaPlayer->pImageCodecCtx->pix_fmt = AV_PIX_FMT_YUV440P;
+                break; 
+        }
 
 		// Initialize the color model conversion/rescaling context.
 		mediaPlayer->pSwsImageCtx = sws_getContext
