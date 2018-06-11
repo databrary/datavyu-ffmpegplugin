@@ -578,7 +578,7 @@ public:
                 return dataSize;
             }
             if (pAudioDecodeFramePkt->data) {
-                av_free_packet(pAudioDecodeFramePkt);
+                av_packet_unref(pAudioDecodeFramePkt);
             }
 
             if (quit) {
@@ -646,10 +646,8 @@ public:
                 int64_t delta = seekPts - readPts;
                 int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
                 int64_t max_ = delta < 0 ? target - delta - 2: INT64_MAX;
-                // Seek flag is 0
-                // if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, 0) < 0) {
+                // Seek Flag could be 0 or 1(AVSEEK_FLAG_BACKWARD), see seek(double time) function 
                 if (avformat_seek_file(pFormatCtx, iImageStream, min_, target, max_, seek_flags) < 0) {
-                // if (av_seek_frame(pFormatCtx, iImageStream, target, seek_flags)) {
                     pLogger->info("Failed seek to frame %I64d.", target/avgDeltaPts);
                 } else {
                     pLogger->info("Succeeded seek to frame %I64d with min %I64d frames and max %I64d frames for diff %I64d frames.",
@@ -779,13 +777,13 @@ public:
                 av_frame_unref(pSrcAVFrame);
 
                 // Free the packet that was allocated by av_read_frame
-                av_free_packet(&packet);
+                av_packet_unref(&packet);
 
             } else if (hasAudioStream() && playSound && packet.stream_index == iAudioStream) {
                 // Decode packet from audio stream
                 pAudioBuffer->put(&packet); // packet is freed when consumed
             } else {
-                av_free_packet(&packet);
+                av_packet_unref(&packet);
             }
         }
         av_frame_free(&pSrcAVFrame);
