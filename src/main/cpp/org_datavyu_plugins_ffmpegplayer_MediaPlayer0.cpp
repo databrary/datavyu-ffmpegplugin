@@ -611,6 +611,30 @@ public:
     bool hasAudioStream() const { return iAudioStream > -1; }
 
     /**
+     * Decore a packet using the new AVDecode API
+     */
+    int decode(AVCodecContext *ctx, AVFrame *frame, int *frameFinished, AVPacket *pkt) {
+        int ret;
+        *frameFinished = 0;
+
+        if (pkt) {
+            // Give the decoder raw compressed data in an AVPacket.
+            ret = avcodec_send_packet(ctx, pkt);
+            if (ret < 0)
+                return ret == AVERROR_EOF ? 0 : ret;
+        }
+        
+        // On success, it will return an AVFrame containing uncompressed audio or video data
+        ret = avcodec_receive_frame(ctx, frame);
+        if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+            return ret;
+        if (ret >= 0)
+            *frameFinished = 1;
+
+        return 0;
+    }
+
+    /**
      * Reads the next frame from the video stream and supports:
      * - Random seek through the variable seekReq.
      * - Toggling the direction through the variable toggle.
@@ -639,7 +663,6 @@ public:
 
             // Random seek
             if (seekReq) {
-                seekReq = false;
                 int64_t target = seekPts;
                 int64_t delta = seekPts - readPts;
                 int64_t min_ = delta > 0 ? target - delta + 2: INT64_MIN;
@@ -661,8 +684,17 @@ public:
                     }
                     pLogger->info("Status after seek.");
                     pFrameBuffer->log(*pLogger, avgDeltaPts);
-                    pExternalClock->setTime(target/ (double)AV_TIME_BASE);
-                }
+                    // //Set the time according to sync type
+                    // if(getMasterSyncType() == AV_SYNC_VIDEO_MASTER)
+                    //     pVideoClock->setTime(target/ (double)AV_TIME_BASE);
+                    
+                    // if(getMasterSyncType() == AV_SYNC_AUDIO_MASTER)
+                    //     pAudioClock->setTime(target/ (double)AV_TIME_BASE);
+
+                    // if(getMasterSyncType() == AV_SYNC_EXTERNAL_CLOCK)
+                    //     pExternalClock->setTime(target/ (double)AV_TIME_BASE);
+                }                
+                seekReq = false;
             }
 
             // Read frame
@@ -687,13 +719,17 @@ public:
             // Is this a packet from the video stream?
             if (hasVideoStream() && packet.stream_index == iImageStream) {
 
-                // Decode the video frame
-                avcodec_decode_video2(pImageCodecCtx, pSrcAVFrame, &frameFinished, &packet);
+                // Decode the video frame 
 
-                // Did we get a full video frame?
+                //(Reda) This function is deprecated see documentation
+                // avcodec_decode_video2(pImageCodecCtx, pSrcAVFrame, &frameFinished, &packet);
+
+                decode(pImageCodecCtx, pSrcAVFrame, &frameFinished, &packet);
+
+                // if we have more than one frame in the packet
                 if (frameFinished) {
 
-                    // Set the presentation time stamp (PTS)
+                      // Set the presentation time stamp (PTS)
                     readPts = pSrcAVFrame->pkt_pts;
 
                     // Skip frames if seek before we may need to skip frames until we are at seekPts
@@ -736,7 +772,6 @@ public:
 
                             // Complete the write
                             pFrameBuffer->writeComplete();
-
 
                         } else {
                             pLogger->info("Write request aborted.");
