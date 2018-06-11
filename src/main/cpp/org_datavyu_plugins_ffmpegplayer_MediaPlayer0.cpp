@@ -623,7 +623,7 @@ public:
      * Decodes multiple AVPacket into an AVFrame and writes this one to the buffer.
      *
      */
-    void readNextFrame() {
+    void decodeFrames_thread() {
         int frameFinished;
         bool reverseRefresh = true;
         AVPacket packet;
@@ -1493,7 +1493,7 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_o
 	mediaPlayer->seekReq = true;
 
 	// Start the decode thread
-	mediaPlayer->pDecodeFrame = new std::thread(&MediaPlayer::readNextFrame, mediaPlayer);
+	mediaPlayer->pDecodeFrame = new std::thread(&MediaPlayer::decodeFrames_thread, mediaPlayer);
 	mediaPlayer->pLogger->info("Started decoding thread!");
 
 	// Set the value for loaded movie true
