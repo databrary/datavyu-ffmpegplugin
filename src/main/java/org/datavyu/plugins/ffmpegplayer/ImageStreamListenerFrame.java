@@ -6,8 +6,6 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.image.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
@@ -42,26 +40,26 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	/** 
 	 * The stream has doPaint = false no updates to the image should be made
 	 * We had to introduce this flag because the java event manager is lacking 
-	 * and another frame is displayed with considerable lag after the stopping 
+	 * and another canvas is displayed with considerable lag after the stopping
 	 * occurred triggered by the java event manager which is not real-time.
 	 * 
 	 * The idea of doPaint is that we prevent the java event manager from
-	 * updating a frame that should not be displayed anymore because we doPaint
+	 * updating a canvas that should not be displayed anymore because we doPaint
 	 * the this video listener. 
 	 */
 	private boolean doPaint = false;
 
 	/** Parent JFrame */
-	private JFrame frame;
+	private Canvas canvas;
 
 	private void updateDisplay() {
-        BufferStrategy strategy = frame.getBufferStrategy();
+        BufferStrategy strategy = canvas.getBufferStrategy();
         do {
             do {
                 // Make sure to create the buffer strategy before using it!
                 Graphics graphics = strategy.getDrawGraphics();
                 if (doPaint) {
-                    graphics.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(),  null);
+                    graphics.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(),  null);
                 }
                 graphics.dispose();
             } while (strategy.contentsRestored());
@@ -73,13 +71,12 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
 	 * Creates a video display through a stream listener. The display is added 
 	 * to the container using the constraint.
 	 *
-     * @param frame The frame that is used for drawing the image on.
+     * @param frame The canvas that is used for drawing the image on.
 	 * @param colorSpace The color space for the image data.
 	 */
-	public ImageStreamListenerFrame(JFrame frame, ColorSpace colorSpace) {
-		this.frame = frame;
-
+	public ImageStreamListenerFrame(Container frame, ColorSpace colorSpace) {
 		launcher(() -> {
+			canvas = new Canvas();
             cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
                     DataBuffer.TYPE_BYTE);
             // Set defaults
@@ -91,11 +88,12 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
             // Create the original image
             image = new BufferedImage(cm, raster, false, properties);
 
+			frame.add(canvas,BorderLayout.CENTER);
             frame.setBounds(0, 0, INITIAL_WIDTH, INITIAL_HEIGHT);
             frame.setVisible(true);
 
             // Make sure to make the canvas visible before creating the buffer strategy
-            frame.createBufferStrategy(3);
+            canvas.createBufferStrategy(3);
         });
     }
 
