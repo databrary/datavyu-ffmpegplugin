@@ -89,7 +89,7 @@ public class ImageStreamListenerFrame implements ImageStreamListener {
             image = new BufferedImage(cm, raster, false, properties);
 
 			frame.add(canvas,BorderLayout.CENTER);
-            frame.setBounds(0, 0, INITIAL_WIDTH, INITIAL_HEIGHT);
+//            frame.setBounds(0, 0, INITIAL_WIDTH, INITIAL_HEIGHT);
             frame.setVisible(true);
 
             // Make sure to make the canvas visible before creating the buffer strategy

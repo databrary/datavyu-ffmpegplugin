@@ -389,6 +389,9 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 			if (mediaPlayer.hasError()) {
 				throw mediaPlayer.getError();
 			}
+
+			frame.setBounds(0, 0, 640, 480);
+			frame.setVisible(true);
         }
 
         MediaPlayer getMovieStreamProvider() {
