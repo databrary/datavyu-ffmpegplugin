@@ -304,10 +304,11 @@ public class MediaPlayer extends MediaPlayer0 {
                             listener.streamData(buffer);
                         }
                     }
-                    setStatus(Status.PLAYING);
 
                 } else {
-			        setStatus(Status.STALLED);
+			        //This statement crashes the JVM when pressing play twice and stopping and trying to stop the
+                    //video
+//			        setStatus(Status.STALLED);
                 }
 			}
 
@@ -317,7 +318,6 @@ public class MediaPlayer extends MediaPlayer0 {
                     listener.streamStopped();
                 }
             }
-
             logger.info("Stream %d: Stopped audio thread.", getStreamId());
 		}
 	}
@@ -355,10 +355,11 @@ public class MediaPlayer extends MediaPlayer0 {
                             listener.streamData(buffer);
                         }
                     }
-                    setStatus(Status.PLAYING);
 
                 } else {
-                    setStatus(Status.STALLED);
+                    //This statement crashes the JVM when pressing play twice and stopping and trying to stop the
+                    //video
+//			        setStatus(Status.STALLED);
                 }
             }
 
@@ -384,12 +385,15 @@ public class MediaPlayer extends MediaPlayer0 {
 
 	@Override
 	public void play() {
-        if (isInitialized()) {
+        if (isInitialized()
+                && getStatus() != Status.PLAYING) {
             play0(streamId);
             playback.parallelStream().forEach(r -> threads.submit(r));
+            setStatus(Status.PLAYING);
         } else {
             playRequested = true;
         }
+        logger.info("Status after play " +getStatus());
 	}
 
     @Override
@@ -401,6 +405,7 @@ public class MediaPlayer extends MediaPlayer0 {
         } else {
             playRequested = false;
         }
+        logger.info("Status after stop "+ getStatus());
     }
 
     @Override

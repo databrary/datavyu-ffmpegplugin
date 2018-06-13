@@ -381,7 +381,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 					.setVersion(version)
 					.setColorSpace(colorSpace)
 					.setAudioFormat(audioFormat)
-                    .addAudioStreamListener(new AudioVisualizer(audioFormat)) // Add audio visualizer
+//                    .addAudioStreamListener(new AudioVisualizer(audioFormat)) // Add audio visualizer
                     .addAudioStreamListener(new AudioSoundStreamListener(audioFormat)) // Add the audio sound listener
                     .addImageStreamListener(new ImageStreamListenerFrame(frame, colorSpace)) // Add video display
 					.build();
