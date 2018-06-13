@@ -24,6 +24,7 @@ public abstract class MediaPlayer0 implements VideoStream, AudioStream {
     protected static native void stop0(int streamId);
     protected static native void pause0(int streamId);
     protected static native void close0(int streamId);
+    protected static native void reset0(int streamId);
 
     protected static native ByteBuffer getImageBuffer0(int streamId);
     protected static native int loadNextImageFrame0(int streamId);

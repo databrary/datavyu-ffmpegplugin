@@ -57,6 +57,14 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_pause0
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
+ * Method:    reset0
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_reset0
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
  * Method:    close0
  * Signature: (I)V
  */

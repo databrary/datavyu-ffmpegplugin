@@ -419,6 +419,12 @@ public class MediaPlayer extends MediaPlayer0 {
         }
     }
 
+    public void reset() {
+        if (isInitialized()) {
+            reset0(streamId);
+        }
+    }
+
     @Override
     public void close() {
 	    if (isInitialized()) {

@@ -73,18 +73,24 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		JButton open = new JButton("Open File");
 		JButton play = new JButton("Play");
 		JButton stop = new JButton("Stop");
+		JButton pause = new JButton("Pause");
+		JButton rewind = new JButton("Rewind");
 		JButton stepBackward = new JButton("<");
 		JButton stepForward = new JButton(">");
 
 		tools.add(open);
 		tools.add(play);
 		tools.add(stop);
+		tools.add(pause);
+		tools.add(rewind);
 		tools.add(stepBackward);
 		tools.add(stepForward);
 
 		open.addActionListener(new OpenFileSelection());
 		play.addActionListener(new PlaySelection());
 		stop.addActionListener(new StopSelection());
+		pause.addActionListener(new PauseSelection());
+		rewind.addActionListener(new RewindSelection());
 		stepBackward.addActionListener(new StepBackwardSelection());
 		stepForward.addActionListener(new StepForwardSelection());
 		slider.addChangeListener(new SliderSelection());
@@ -299,14 +305,33 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
         }
     }
 
+    class PauseSelection implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (MediaPlayer mediaPlayer : mediaPlayers){
+				timer.stop();
+				mediaPlayer.pause();
+			}
+		}
+	}
+
+	class RewindSelection implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (MediaPlayer mediaPlayer : mediaPlayers){
+				mediaPlayer.reset();
+			}
+		}
+	}
+
 	class StepBackwardSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-            long stepSize = (long) Math.ceil(MILLI_IN_SEC / getMaxFrameRate()); // step size is in milliseconds
-            for (MediaPlayer mediaPlayer : mediaPlayers) {
-                // TODO: Check boundaries, add modulo
-                mediaPlayer.seek(mediaPlayer.getCurrentTime() - stepSize);
-            }
+			long stepSize = (long) Math.ceil(MILLI_IN_SEC / getMaxFrameRate()); // step size is in milliseconds
+			for (MediaPlayer mediaPlayer : mediaPlayers) {
+				// TODO: Check boundaries, add modulo
+				mediaPlayer.seek(mediaPlayer.getCurrentTime() - stepSize);
+			}
 		}
 	}
 

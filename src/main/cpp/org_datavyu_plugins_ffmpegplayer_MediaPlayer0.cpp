@@ -84,6 +84,7 @@ public:
 
     int avSyncType;
     bool paused;
+    bool stopped;
     double frameTimer;
     double maxFrameDuration; // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
     double remainingTime; // accumulates remaining time for frame display
@@ -244,6 +245,7 @@ public:
         pExternalClock(new AVClock()),
         avSyncType(AV_SYNC_AUDIO_MASTER),
         paused(false),
+        stopped(false),
         width(0),
         height(0),
         nChannel(3),
@@ -293,6 +295,7 @@ public:
         delete pExternalClock;
         delete pAudioClock;
         delete pVideoClock;
+        delete pLogger;
         free(pLoadAudioByteBuffer);
         av_packet_free(&pAudioDecodeFramePkt);
         av_frame_free(&pAudioDecodeAVFrame);
@@ -303,7 +306,7 @@ public:
     }
 
     /* pause or resume the video */
-    void pause() {
+    void toggle_pause() {
         if (paused) {
             frameTimer += AVClock::getSystemTimeRelative() / 1000000.0 - pVideoClock->getLastUpdated();
             pVideoClock->setTime(pVideoClock->getTime());
@@ -314,6 +317,29 @@ public:
         pExternalClock->setPaused(paused);
         pVideoClock->setPaused(paused);
         pAudioClock->setPaused(paused);
+        pLogger->info("Pause stream at %f with speed: %f", getMasterClockTime(), getMasterClockSpeed()); 
+    }
+
+    /* Stop the video and set the clock speed to 1 */
+    void stop() {
+        if(!paused){
+            toggle_pause();
+            setSpeed(1);
+        }
+    }
+
+    void play() {
+        // Set the clock speed to 1 when playing after a stop
+        if(paused)
+            toggle_pause();
+        pLogger->info("Start Playing video at %f ms with a speed of %f X", getMasterClockTime(), getMasterClockSpeed());
+    }
+
+    void reset() {
+        // Seek to the start of the file
+        seekPts = limitToRange(pImageStream->start_time);
+        seekReq = true;
+        pLogger->info("Rewind to start %I64d pts, %I64d frames.", seekPts, seekPts/avgDeltaPts);
     }
 
     double computeTargetDelay(double delay) {
@@ -506,6 +532,30 @@ public:
         return 0;
     }
 
+    //TODO(Reda): Why is not working
+    int decode(AVCodecContext *avctx, AVFrame *frame, int *gotFrame, AVPacket *pkt)
+    {
+        int ret;
+
+        *gotFrame = 0;
+
+        if (pkt) {
+            ret = avcodec_send_packet(avctx, pkt);
+            // In particular, we don't expect AVERROR(EAGAIN), because we read all
+            // decoded frames with avcodec_receive_frame() until done.
+            if (ret < 0)
+                return ret == AVERROR_EOF ? 0 : ret;
+        }
+
+        ret = avcodec_receive_frame(avctx, frame);
+        if (ret < 0 && ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
+            return ret;
+        if (ret >= 0)
+            *gotFrame = 1;
+
+        return 0;
+    }
+
     /**
      * Decodes packet from queue into the audioBuffer.
      */
@@ -519,6 +569,30 @@ public:
             while (audioDecodePktSize > 0) {
                 int gotFrame = 0;
                 dataLen = avcodec_decode_audio4(pAudioInCodecCtx, pAudioDecodeAVFrame, &gotFrame, pAudioDecodeFramePkt);
+                // dataLen = decode(pAudioInCodecCtx, pAudioDecodeAVFrame, &gotFrame, pAudioDecodeFramePkt);
+
+                // Decode the Packet until we get all the frames
+                // do {
+                //     do {
+                //         // Give the decoder raw compressed data in an AVPacket.
+                //         dataLen = avcodec_send_packet(pAudioInCodecCtx, pAudioDecodeFramePkt);
+                //     } while (dataLen == AVERROR(EAGAIN));
+
+                //     if (dataLen == AVERROR_EOF || dataLen == AVERROR(EINVAL)) {
+                //         pLogger->info("AVERROR(EAGAIN): %d, AVERROR_EOF: %d, AVERROR(EINVAL): %d\n", AVERROR(EAGAIN), AVERROR_EOF, AVERROR(EINVAL));
+                //         pLogger->info("fe_read_frame: Frame getting error (%d)!\n", dataLen);
+                //     }
+                //     // On success, it will return an AVFrame containing uncompressed audio or video data
+                //     dataLen = avcodec_receive_frame(pAudioInCodecCtx, pAudioDecodeAVFrame);
+                // } while (dataLen == AVERROR(EAGAIN));
+
+                // if (dataLen == AVERROR_EOF || dataLen == AVERROR(EINVAL)) {
+                //     // An error or EOF occured,index break out and return what
+                //     // we have so far.
+                //     pLogger->info("AVERROR(EAGAIN): %d, AVERROR_EOF: %d, AVERROR(EINVAL): %d\n", AVERROR(EAGAIN), AVERROR_EOF, AVERROR(EINVAL));
+                //     pLogger->info("fe_read_frame: EOF or some othere decoding error (%d)!\n", dataLen);
+                // }
+
 
                 // If an error occurred skip the frame
                 if (dataLen < 0) {
@@ -664,14 +738,14 @@ public:
                     pLogger->info("Status after seek.");
                     pFrameBuffer->log(*pLogger, avgDeltaPts);
                     // //Set the time according to sync type
-                    // if(getMasterSyncType() == AV_SYNC_VIDEO_MASTER)
-                    //     pVideoClock->setTime(target/ (double)AV_TIME_BASE);
+                    if(getMasterSyncType() == AV_SYNC_VIDEO_MASTER)
+                        pVideoClock->setTime(target/ (double)AV_TIME_BASE);
                     
-                    // if(getMasterSyncType() == AV_SYNC_AUDIO_MASTER)
-                    //     pAudioClock->setTime(target/ (double)AV_TIME_BASE);
+                    if(getMasterSyncType() == AV_SYNC_AUDIO_MASTER)
+                        pAudioClock->setTime(target/ (double)AV_TIME_BASE);
 
-                    // if(getMasterSyncType() == AV_SYNC_EXTERNAL_CLOCK)
-                    //     pExternalClock->setTime(target/ (double)AV_TIME_BASE);
+                    if(getMasterSyncType() == AV_SYNC_EXTERNAL_CLOCK)
+                        pExternalClock->setTime(target/ (double)AV_TIME_BASE);
                 }                
                 seekReq = false;
             }
@@ -699,7 +773,7 @@ public:
             if (hasVideoStream() && packet.stream_index == iImageStream)
             {
 
-                // Decode the Packetuntil we get all the frames
+                // Decode the Packet until we get all the frames
                 do {
                     do {
                         // Give the decoder raw compressed data in an AVPacket.
@@ -818,7 +892,7 @@ public:
 
         if (hasVideoStream() || hasAudioStream()) {
 
-            // Set speed for clock
+            // Set Master Clock Speed
             if(getMasterSyncType() == AV_SYNC_VIDEO_MASTER)
                 pVideoClock->setSpeed(speed);
             
@@ -1587,18 +1661,26 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setAud
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_play0(JNIEnv *env, jclass thisClass,
        jint streamId) {
     // Nothing to do here for now
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    if (mediaPlayer != nullptr) {
+        mediaPlayer->play();
+    }
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_stop0(JNIEnv *env, jclass thisClass,
     jint streamId) {
     // Nothing to do here for now
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    if (mediaPlayer != nullptr) {
+        mediaPlayer->stop();
+    }
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_pause0(JNIEnv *env, jclass thisClass,
     jint streamId) {
     MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
     if (mediaPlayer != nullptr) {
-        mediaPlayer->pause();
+        mediaPlayer->toggle_pause();
     }
 }
 
@@ -1621,6 +1703,10 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setSpe
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_reset0(JNIEnv *env,
     jclass thisClass, jint streamId) {
     // Nothing to do here
+    MediaPlayer* mediaPlayer = getMediaPlayer(streamId);
+    if (mediaPlayer != nullptr) {
+        mediaPlayer->reset();
+    }
 }
 
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_close0(JNIEnv *env, jclass thisClass,
