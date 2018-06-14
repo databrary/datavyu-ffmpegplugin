@@ -84,7 +84,6 @@ public:
 
     int avSyncType;
     bool paused;
-    bool stopped;
     double frameTimer;
     double maxFrameDuration; // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
     double remainingTime; // accumulates remaining time for frame display
@@ -245,7 +244,6 @@ public:
         pExternalClock(new AVClock()),
         avSyncType(AV_SYNC_AUDIO_MASTER),
         paused(false),
-        stopped(false),
         width(0),
         height(0),
         nChannel(3),
@@ -569,6 +567,7 @@ public:
             while (audioDecodePktSize > 0) {
                 int gotFrame = 0;
                 dataLen = avcodec_decode_audio4(pAudioInCodecCtx, pAudioDecodeAVFrame, &gotFrame, pAudioDecodeFramePkt);
+                //TODO(Reda): Change avcodec_decode_audio4 with avcodec_send_packet and avcodec_receive_frame
                 // dataLen = decode(pAudioInCodecCtx, pAudioDecodeAVFrame, &gotFrame, pAudioDecodeFramePkt);
 
                 // Decode the Packet until we get all the frames
@@ -782,7 +781,7 @@ public:
 
                     if (ret == AVERROR_EOF || ret == AVERROR(EINVAL)) {
                         pLogger->info("AVERROR(EAGAIN): %d, AVERROR_EOF: %d, AVERROR(EINVAL): %d\n", AVERROR(EAGAIN), AVERROR_EOF, AVERROR(EINVAL));
-                        pLogger->info("fe_read_frame: Frame getting error (%d)!\n", ret);
+                        pLogger->info("Frame getting error (%d)!\n", ret);
                     }
                     // On success, it will return an AVFrame containing uncompressed audio or video data
                     ret = avcodec_receive_frame(pImageCodecCtx, pSrcAVFrame);
@@ -792,7 +791,7 @@ public:
                     // An error or EOF occured,index break out and return what
                     // we have so far.
                     pLogger->info("AVERROR(EAGAIN): %d, AVERROR_EOF: %d, AVERROR(EINVAL): %d\n", AVERROR(EAGAIN), AVERROR_EOF, AVERROR(EINVAL));
-                    pLogger->info("fe_read_frame: EOF or some othere decoding error (%d)!\n", ret);
+                    pLogger->info("EOF or some othere decoding error (%d)!\n", ret);
                 }
 
                 // Set the presentation time stamp (PTS)
