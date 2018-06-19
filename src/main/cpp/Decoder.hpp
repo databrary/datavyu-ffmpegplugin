@@ -18,6 +18,18 @@ extern "C" {
 
 class Decoder{
     private:
+    public:
+        Decoder(AVCodecContext *avctx,
+                PacketQueue *queue,
+                std::condition_variable *empty_queue_cond):
+        decoder_reorder_pts(-1) {
+            this->avctx = avctx;
+            this->queue = queue;
+            this->empty_queue_cond = empty_queue_cond;
+            this->start_pts = AV_NOPTS_VALUE;
+            this->pkt_serial = -1;
+        }
+
         AVPacket pkt;
         PacketQueue *queue;
         AVCodecContext *avctx;
@@ -31,17 +43,6 @@ class Decoder{
         int64_t next_pts;
         AVRational next_pts_tb;
         std::thread *decoder_tid;
-    public:
-        Decoder(AVCodecContext *avctx,
-                PacketQueue *queue,
-                std::condition_variable *empty_queue_cond):
-        decoder_reorder_pts(-1) {
-            this->avctx = avctx;
-            this->queue = queue;
-            this->empty_queue_cond = empty_queue_cond;
-            this->start_pts = AV_NOPTS_VALUE;
-            this->pkt_serial = -1;
-        }
 
         int decoder_decode_frame(AVFrame *frame) {
             int ret = AVERROR(EAGAIN);
