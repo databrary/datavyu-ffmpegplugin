@@ -1,0 +1,3 @@
+call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64
+cd src\main\cpp
+cl org_datavyu_plugins_ffmpegplayer_MediaPlayer0.cpp -EHsc /Fe"..\..\..\MediaPlayer0" /I"C:\Users\DatavyuTests\Documents\FFmpeg-n4.0" /I"C:\Program Files\Java\jdk1.8.0_172\include" /I"C:\Program Files\Java\jdk1.8.0_172\include\win32" /showIncludes /MD /LD /link "C:\Program Files\Java\jdk1.8.0_172\lib\jawt.lib" "C:\Users\DatavyuTests\Documents\FFmpeg-n4.0\libavcodec\avcodec.lib" "C:\Users\DatavyuTests\Documents\FFmpeg-n4.0\libavformat\avformat.lib" "C:\Users\DatavyuTests\Documents\FFmpeg-n4.0\libavutil\avutil.lib" "C:\Users\DatavyuTests\Documents\FFmpeg-n4.0\libswscale\swscale.lib" "C:\Users\DatavyuTests\Documents\FFmpeg-n4.0\libswresample\swresample.lib"  
