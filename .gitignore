@@ -4,7 +4,6 @@
 *.exp
 *.log
 *.exe
-*.bat
 bin/
 *.iml
 .idea/*
