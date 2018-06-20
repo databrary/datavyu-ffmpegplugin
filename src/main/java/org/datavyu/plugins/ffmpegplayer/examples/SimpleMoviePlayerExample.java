@@ -8,6 +8,8 @@ import org.datavyu.plugins.ffmpegplayer.ImageStreamListenerFrame;
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
 import java.awt.color.ColorSpace;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -27,6 +29,55 @@ public class SimpleMoviePlayerExample {
         final ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
         frame = new JFrame();
+        frame.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_NUMPAD5){
+                    System.out.println("Stop");
+                    mediaPlayer.stop();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_NUMPAD8){
+                    System.out.println("Play");
+                    mediaPlayer.play();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_NUMPAD6){
+                    System.out.println("Speed +2");
+                    mediaPlayer.setSpeed(2);
+                }
+                if(e.getKeyCode() == KeyEvent.VK_NUMPAD4){
+                    System.out.println("Speed -2");
+                    mediaPlayer.setSpeed(-2);
+                }
+                if(e.getKeyCode() == KeyEvent.VK_NUMPAD2){
+                    System.out.println("Pause");
+                    mediaPlayer.pause();
+                }
+                if(e.getKeyCode() == KeyEvent.VK_LEFT){
+                    System.out.println("Seek Back Short, Current Time " + mediaPlayer.getCurrentTime() + " next Time " +(mediaPlayer.getCurrentTime() - (1)) + " Duration "+mediaPlayer.getDuration());
+                    mediaPlayer.seek(mediaPlayer.getCurrentTime() - (1));
+                }
+                if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+                    System.out.println("Seek Forward Short, Current Time " + mediaPlayer.getCurrentTime() + " next Time " +(mediaPlayer.getCurrentTime() + (1)) + " Duration "+mediaPlayer.getDuration());
+                    mediaPlayer.seek(mediaPlayer.getCurrentTime() + (1));
+                }
+                if(e.getKeyCode() == KeyEvent.VK_UP){
+                    System.out.println("Seek Forward Long, Current Time " + mediaPlayer.getCurrentTime() + " next Time " +(mediaPlayer.getCurrentTime() + (1 * 5)) + " Duration "+mediaPlayer.getDuration());
+                    mediaPlayer.seek(mediaPlayer.getCurrentTime() + (1 * 5));
+                }
+                if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                    System.out.println("Seek Back Long, Current Time " + mediaPlayer.getCurrentTime() + " next Time " +(mediaPlayer.getCurrentTime() - (1 * 5)) + " Duration "+mediaPlayer.getDuration());
+                    mediaPlayer.seek(mediaPlayer.getCurrentTime() - (1 * 5));
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
         mediaPlayer = MediaPlayer.newBuilder()
                 .setFileName(movieFileName)
                 .setVersion(version)
@@ -47,13 +98,16 @@ public class SimpleMoviePlayerExample {
         mediaPlayer.play();
         int width = mediaPlayer.getWidth();
         int height = mediaPlayer.getHeight();
-        frame.setBounds(0, 0, width, height);
+        frame.setBounds(0, 0, 460, 380);
         frame.setVisible(true);
     }
 
     public static void main(String[] args) {
-        String folderName = "C:\\Users\\Florian";
-        List<String> fileNames = Arrays.asList(new String[]{"DatavyuSampleVideo.mp4", "TurkishManGaitClip_KEATalk.mov"});
+//        String folderName = "C:\\Users\\Florian";
+        String folderName = "C:\\Users\\DatavyuTests\\Documents\\Resources\\Videos";
+        List<String> fileNames = Arrays.asList(new String[]{"DatavyuSampleVideo.mp4"});
+//        List<String> fileNames = Arrays.asList(new String[]{"Nature Makes You Happy _ BBC Earth_1080p.mp4"});
+//        List<String> fileNames = Arrays.asList(new String[]{"DatavyuSampleVideo.mp4", "TurkishManGaitClip_KEATalk.mov"});
         for (String fileName : fileNames) {
             try {
                 new SimpleMoviePlayerExample(new File(folderName, fileName).toString());
