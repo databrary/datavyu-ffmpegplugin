@@ -135,7 +135,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// Create the original image
 		originalImage = new BufferedImage(cm, raster, false, properties);
 		// Paint the image
-		launcher(() -> updateImage());
+		updateImage();
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// start displaying
 		doPaint = true;
 		// display the current frame
-		launcher(() -> updateImage());
+		 updateImage();
 	}
 
 	@Override
