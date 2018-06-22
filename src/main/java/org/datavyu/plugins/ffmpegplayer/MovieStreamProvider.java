@@ -251,7 +251,15 @@ public class MovieStreamProvider extends MovieStream {
         return Math.abs(newSpeed) < Math.ulp(1.0);
     }
 
-    @Override
+	@Override
+	public void setCurrentTime(double time) {
+    	boolean wasPlaying = isPlaying();
+    	stop();
+    	super.setCurrentTime(time);
+    	if(wasPlaying){ start();}
+	}
+
+	@Override
     public void setSpeed(float newSpeed) {
         if (isSpeedZero(newSpeed)) {
             stop();

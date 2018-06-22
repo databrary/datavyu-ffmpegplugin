@@ -347,9 +347,16 @@ public class MoviePlayerExample extends JPanel implements WindowListener {
 		@Override
 		public void stateChanged(ChangeEvent e) {
             if (slider.getValueIsAdjusting()) {
-                for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
-                    movieStreamProvider.stop();
-                }
+				double streamTime = SliderStreamListener.toStreamTime(slider.getValue());
+				for (MovieStreamProvider movieStreamProvider : movieStreamProviders) {
+					if (Math.abs(streamTime - movieStreamProvider.getCurrentTime()) >= SYNC_THRESHOLD) {
+						logger.info("The slider time is: " + streamTime + " seconds and the stream time is: "
+								+ movieStreamProvider.getCurrentTime() + " seconds");
+						movieStreamProvider.setCurrentTime(streamTime);
+						movieStreamProvider.startVideoListeners();
+						movieStreamProvider.nextImageFrame();
+					}
+				}
             }
 		}
 	}
