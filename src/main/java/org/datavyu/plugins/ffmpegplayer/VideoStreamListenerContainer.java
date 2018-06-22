@@ -50,51 +50,22 @@ public class VideoStreamListenerContainer implements StreamListener {
 	 */
 	private boolean doPaint = false;
 
-	/**
-	 * Initialized the originalImage display and adds it to the supplied container with
-	 * the supplied constraint. If the constraint is null it uses the add method
-	 * on the container without constraint.
-	 *
-	 * @param container The container that the display is added to
-	 * @param constraints The constraint used when adding
-	 */
-	private void initImageDisplay(Container container, Object constraints) {
-		canvas = new Canvas() {
-			private static final long serialVersionUID = 5471924216942753555L;
-
-			@Override
-			public void update(Graphics g){ paint(g);}
-			@Override
-			public void paint(Graphics g) {
-				// Calling BufferStrategy.show() could throws
-				// exceptions
-				try {
-					BufferStrategy strategy = canvas.getBufferStrategy();
-					if(strategy == null){
-						createBufferStrategy(3);
+	private void updateImage() {
+		BufferStrategy strategy = canvas.getBufferStrategy();
+		do {
+			do {
+				Graphics g = strategy.getDrawGraphics();
+				if (originalImage != null) {
+					// If not doPaint display the next originalImage
+					if (doPaint) {
+						g.drawImage(originalImage, 0, 0, canvas.getWidth(), canvas.getHeight(), null);
 					}
-					do {
-						do {
-							g = strategy.getDrawGraphics();
-							if (originalImage != null) {
-								// If not doPaint display the next originalImage
-								if(doPaint){
-									g.drawImage(originalImage, 0, 0,getWidth(), getHeight(),  null);
-								}
-							}
-							g.dispose();
-						} while (strategy.contentsRestored());
-						strategy.show();
-					} while (strategy.contentsLost());
-				} catch (Exception e) { logger.warn("Buffer Strategy Exception: " + e); }
-			}
-		};
-		if (constraints != null) {
-			container.add(canvas, constraints);
-		} else {
-			container.add(canvas);
-		}
-		canvas.setVisible(true);
+				}
+				g.dispose();
+			} while (strategy.contentsRestored());
+			strategy.show();
+		} while (strategy.contentsLost());
+
 	}
 
 	/**
@@ -123,7 +94,14 @@ public class VideoStreamListenerContainer implements StreamListener {
 										Container container, Object constraints, ColorSpace colorSpace) {
 		this.movieStream = movieStream;
 		this.colorSpace = colorSpace;
-		initImageDisplay(container, constraints);
+		this.canvas = new Canvas();
+
+		if (constraints == null){ container.add(canvas, BorderLayout.CENTER);}
+		else{ container.add(canvas, constraints); }
+
+		if(!container.isVisible()){	container.setVisible(true); }
+
+		this.canvas.createBufferStrategy( 3);
 	}
 
 	@Override
@@ -157,7 +135,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// Create the original image
 		originalImage = new BufferedImage(cm, raster, false, properties);
 		// Paint the image
-		canvas.paint(null);
+		launcher(() -> updateImage());
 	}
 
 	@Override
@@ -170,7 +148,7 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// start displaying
 		doPaint = true;
 		// display the current frame
-		canvas.paint(null);
+		launcher(() -> updateImage());
 	}
 
 	@Override
