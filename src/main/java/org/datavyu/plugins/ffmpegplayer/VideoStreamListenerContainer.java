@@ -5,6 +5,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ContainerAdapter;
 import java.awt.image.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
@@ -50,24 +53,6 @@ public class VideoStreamListenerContainer implements StreamListener {
 	 */
 	private boolean doPaint = false;
 
-	private void updateImage() {
-		BufferStrategy strategy = canvas.getBufferStrategy();
-		do {
-			do {
-				Graphics g = strategy.getDrawGraphics();
-				if (originalImage != null) {
-					// If not doPaint display the next originalImage
-					if (doPaint) {
-						g.drawImage(originalImage, 0, 0, canvas.getWidth(), canvas.getHeight(), null);
-					}
-				}
-				g.dispose();
-			} while (strategy.contentsRestored());
-			strategy.show();
-		} while (strategy.contentsLost());
-
-	}
-
 	/**
 	 * Creates a video display through a stream listener. The display is added
 	 * to the container.
@@ -94,13 +79,55 @@ public class VideoStreamListenerContainer implements StreamListener {
 										Container container, Object constraints, ColorSpace colorSpace) {
 		this.movieStream = movieStream;
 		this.colorSpace = colorSpace;
-		this.canvas = new Canvas();
+		this.canvas = new Canvas() {
+			@Override
+			public void paint(Graphics g) {
+				BufferStrategy strategy = canvas.getBufferStrategy();
+				if(strategy == null){
+					canvas.createBufferStrategy(3);
+					strategy = canvas.getBufferStrategy();
+				}
+				do {
+					do {
+						g = strategy.getDrawGraphics();
+						if (originalImage != null && g != null) {
+							// If not doPaint display the next originalImage
+							if (doPaint) {
+								g.drawImage(originalImage, 0, 0, canvas.getWidth(), canvas.getHeight(), null);
+							}
+						}
+						g.dispose();
+					} while (strategy.contentsRestored());
+					strategy.show();
+				} while (strategy.contentsLost());
+			}
 
+			@Override
+			public void update(Graphics g) {
+				super.update(g);
+			}
+		};
+
+		container.addComponentListener(new ComponentListener() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				doPaint = true;
+				canvas.paint(null);
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e) {  }
+
+			@Override
+			public void componentShown(ComponentEvent e) {	}
+
+			@Override
+			public void componentHidden(ComponentEvent e) {  }
+		});
 		if (constraints == null){ container.add(canvas, BorderLayout.CENTER);}
 		else{ container.add(canvas, constraints); }
 
 		if(!container.isVisible()){	container.setVisible(true); }
-
 		this.canvas.createBufferStrategy( 3);
 	}
 
@@ -135,7 +162,8 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// Create the original image
 		originalImage = new BufferedImage(cm, raster, false, properties);
 		// Paint the image
-		updateImage();
+//		updateImage();
+		canvas.paint(null);
 	}
 
 	@Override
@@ -148,7 +176,8 @@ public class VideoStreamListenerContainer implements StreamListener {
 		// start displaying
 		doPaint = true;
 		// display the current frame
-		 updateImage();
+//		updateImage();
+		canvas.paint(null);
 	}
 
 	@Override
