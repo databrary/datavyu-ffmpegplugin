@@ -33,8 +33,6 @@ typedef struct Frame
 } Frame;
 
 class FrameQueue{
-    private:
-
     public:
         Frame queue[FRAME_QUEUE_SIZE];
 
@@ -175,7 +173,6 @@ class FrameQueue{
             else
                 return -1;
         }
-
 };
 
 #endif AV_FRAME_QUEUE_H_

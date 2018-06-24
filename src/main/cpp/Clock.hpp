@@ -1,4 +1,3 @@
-#include "org_datavyu_plugins_ffmpegplayer_MediaPlayer1.h"
 #include <mutex>
 #include <ctime>
 
@@ -13,16 +12,14 @@ extern "C" {
 
 // TODO(fraudies): Convert this into a C++ class
 
-class Clock{
+class Clock {
     private:
-
-
-    void set_clock_at(double pts, int serial, double time) {
-        this->pts = pts;
-        this->last_updated = time;
-        this->pts_drift = this->pts - time;
-        this->serial = serial;
-    }
+        void set_clock_at(double pts, int serial, double time) {
+            this->pts = pts;
+            this->last_updated = time;
+            this->pts_drift = this->pts - time;
+            this->serial = serial;
+        }
 
     public:
         double last_updated;
