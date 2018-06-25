@@ -9,8 +9,8 @@ extern "C" {
     #include <libavutil/rational.h>
 }
 
-#ifndef AV_DECODER_H_
-#define AV_DECODER_H_
+#ifndef DECODER_H_
+#define DECODER_H_
 
 // TODO(fraudies): Convert this into a C++ class
 // Note, I stripped out the sub title and replaced the SDL mutex by the std mutex
@@ -150,4 +150,4 @@ class Decoder{
         }
 };
 
-#endif AV_DECODER_H_
+#endif DECODER_H_

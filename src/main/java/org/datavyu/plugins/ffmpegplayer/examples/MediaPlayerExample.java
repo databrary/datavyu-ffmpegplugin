@@ -53,8 +53,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
 	private JLabel timeStamp;
 
-	private JLabel duration;
-
 	public MediaPlayerExample() {
 		setLayout(new BorderLayout());
 
@@ -74,7 +72,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		JButton play = new JButton("Play");
 		JButton stop = new JButton("Stop");
 		JButton pause = new JButton("Pause");
-		JButton rewind = new JButton("Rewind");
 		JButton stepBackward = new JButton("<");
 		JButton stepForward = new JButton(">");
 
@@ -82,7 +79,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		tools.add(play);
 		tools.add(stop);
 		tools.add(pause);
-		tools.add(rewind);
 		tools.add(stepBackward);
 		tools.add(stepForward);
 
@@ -90,7 +86,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		play.addActionListener(new PlaySelection());
 		stop.addActionListener(new StopSelection());
 		pause.addActionListener(new PauseSelection());
-		rewind.addActionListener(new RewindSelection());
 		stepBackward.addActionListener(new StepBackwardSelection());
 		stepForward.addActionListener(new StepForwardSelection());
 		slider.addChangeListener(new SliderSelection());
@@ -148,7 +143,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		tools.add(new JLabel("Speed:"));
 
 		timeStamp = new JLabel("00:00:00:000");
-		duration = new JLabel("00:00:00:000");
+		JLabel duration = new JLabel("00:00:00:000");
 		tools.add(speedsPanel);
 
 		JLabel frameNumber = new JLabel("0");
@@ -311,15 +306,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 			for (MediaPlayer mediaPlayer : mediaPlayers){
 				timer.stop();
 				mediaPlayer.pause();
-			}
-		}
-	}
-
-	class RewindSelection implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			for (MediaPlayer mediaPlayer : mediaPlayers){
-				mediaPlayer.reset();
 			}
 		}
 	}

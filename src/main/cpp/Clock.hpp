@@ -5,8 +5,8 @@ extern "C" {
 	#include <libavutil/time.h> // timer
 }
 
-#ifndef AV_CLOCK_H_
-#define AV_CLOCK_H_
+#ifndef CLOCK_H_
+#define CLOCK_H_
 
 #define AV_NOSYNC_THRESHOLD 10.0
 
@@ -14,6 +14,14 @@ extern "C" {
 
 class Clock {
     private:
+        double last_updated;
+        int paused;
+        double pts;           /* clock base */
+        double pts_drift;     /* clock base minus time at which we updated the clock */
+        double speed;
+        int serial;           /* clock is based on a packet with this serial */
+        int *queue_serial;    /* pointer to the current packet queue serial, used for obsolete clock detection */
+
         void set_clock_at(double pts, int serial, double time) {
             this->pts = pts;
             this->last_updated = time;
@@ -22,13 +30,11 @@ class Clock {
         }
 
     public:
-        double last_updated;
-        int paused;    
-        double pts;           /* clock base */
-        double pts_drift;     /* clock base minus time at which we updated the clock */
-        double speed;
-        int serial;           /* clock is based on a packet with this serial */
-        int *queue_serial;    /* pointer to the current packet queue serial, used for obsolete clock detection */
+        enum {
+            AV_SYNC_AUDIO_MASTER, /* default choice */
+            AV_SYNC_VIDEO_MASTER,
+            AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
+        };
 
         Clock(int *queue_serial) {
             this->speed = 1.0;
@@ -36,12 +42,6 @@ class Clock {
             this->queue_serial = queue_serial;
             set_clock(NAN, -1);
         }
-    
-        enum {
-            AV_SYNC_AUDIO_MASTER, /* default choice */
-            AV_SYNC_VIDEO_MASTER,
-            AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
-        };    
     
         double get_clock() {
             if (*this->queue_serial != this->serial)
@@ -73,4 +73,4 @@ class Clock {
 };
 
 
-#endif AV_CLOCK_H_
+#endif CLOCK_H_

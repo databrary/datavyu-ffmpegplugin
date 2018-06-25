@@ -57,19 +57,27 @@ JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_pause0
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
- * Method:    reset0
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_reset0
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
  * Method:    close0
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_close0
   (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
+ * Method:    seek0
+ * Signature: (ID)V
+ */
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_seek0
+  (JNIEnv *, jclass, jint, jdouble);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
+ * Method:    setSpeed0
+ * Signature: (IF)V
+ */
+JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setSpeed0
+  (JNIEnv *, jclass, jint, jfloat);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
@@ -150,22 +158,6 @@ JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_get
  */
 JNIEXPORT jdouble JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_getAverageFrameRate0
   (JNIEnv *, jclass, jint);
-
-/*
- * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
- * Method:    seek0
- * Signature: (ID)V
- */
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_seek0
-  (JNIEnv *, jclass, jint, jdouble);
-
-/*
- * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0
- * Method:    setSpeed0
- * Signature: (IF)V
- */
-JNIEXPORT void JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_setSpeed0
-  (JNIEnv *, jclass, jint, jfloat);
 
 /*
  * Class:     org_datavyu_plugins_ffmpegplayer_MediaPlayer0

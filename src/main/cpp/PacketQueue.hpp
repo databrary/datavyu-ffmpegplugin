@@ -6,8 +6,8 @@ extern "C" {
     #include <libavutil/error.h> // error codes
 }
 
-#ifndef AV_PACKET_QUEUE_H_
-#define AV_PACKET_QUEUE_H_
+#ifndef PACKET_QUEUE_H_
+#define PACKET_QUEUE_H_
 
 // TODO(fraudies): Convert this into a C++ class
 // Note, I've replaced the SDL mutex through c++ std mutex/condition_variable
@@ -200,4 +200,4 @@ class PacketQueue{
 
 };
 
-#endif AV_PACKET_QUEUE_H_
+#endif PACKET_QUEUE_H_

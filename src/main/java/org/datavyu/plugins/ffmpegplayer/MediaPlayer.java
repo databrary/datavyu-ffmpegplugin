@@ -88,10 +88,6 @@ public class MediaPlayer extends MediaPlayer0 {
     /** Thread pool for the audio and video playback */
     private ThreadPoolExecutor threads = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
 
-    /** A Flag to enable resizing during playback when needed*/
-    private boolean needResize = false;
-
-
     public Status getStatus() {
         synchronized (lockForStatus) {
             return status;
@@ -260,18 +256,6 @@ public class MediaPlayer extends MediaPlayer0 {
         }
     }
 
-    private float scale = 1f;
-
-    public void setSize(float scale) {
-        if (this.scale != scale) {
-            logger.info("Set size with scale: " + scale);
-            this.scale = scale;
-            needResize = true;
-        }else{
-            needResize = false;
-        }
-    }
-
 	private class AudioPlayback extends RunnableWithStopHook {
 
         byte[] buffer = new byte[getAudioBufferSize()]; // Allocate the buffer for the audio data
@@ -305,10 +289,6 @@ public class MediaPlayer extends MediaPlayer0 {
                         }
                     }
 
-                } else {
-			        //This statement crashes the JVM when pressing play twice and stopping and trying to stop the
-                    //video
-//			        setStatus(Status.STALLED);
                 }
 			}
 
@@ -348,18 +328,10 @@ public class MediaPlayer extends MediaPlayer0 {
                     // Fulfill all listeners
                     synchronized (imageListeners) {
                         for (ImageStreamListener listener : imageListeners) {
-/*                            if (needResize) {
-                                listener.streamNewImageSize(getWidth(), getHeight());
-                            }*/
-                            //listener.streamNewImageSize((int) scale*getWidth(), (int) scale*getHeight());
                             listener.streamData(buffer);
                         }
                     }
 
-                } else {
-                    //This statement crashes the JVM when pressing play twice and stopping and trying to stop the
-                    //video
-//			        setStatus(Status.STALLED);
                 }
             }
 
@@ -385,15 +357,14 @@ public class MediaPlayer extends MediaPlayer0 {
 
 	@Override
 	public void play() {
-        if (isInitialized()
-                && getStatus() != Status.PLAYING) {
+        if (isInitialized() && getStatus() != Status.PLAYING) {
             play0(streamId);
             playback.parallelStream().forEach(r -> threads.submit(r));
             setStatus(Status.PLAYING);
         } else {
             playRequested = true;
         }
-        logger.info("Status after play " +getStatus());
+        logger.info("Status after play " + getStatus());
 	}
 
     @Override
@@ -405,7 +376,7 @@ public class MediaPlayer extends MediaPlayer0 {
         } else {
             playRequested = false;
         }
-        logger.info("Status after stop "+ getStatus());
+        logger.info("Status after stop " + getStatus());
     }
 
     @Override
@@ -416,12 +387,6 @@ public class MediaPlayer extends MediaPlayer0 {
             setStatus(Status.PAUSED);
         } else {
             playRequested = false;
-        }
-    }
-
-    public void reset() {
-        if (isInitialized()) {
-            reset0(streamId);
         }
     }
 

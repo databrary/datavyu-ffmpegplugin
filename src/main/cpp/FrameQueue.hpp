@@ -7,8 +7,8 @@ extern "C" {
     #include <libavutil/error.h> // error codes
 }
 
-#ifndef AV_FRAME_QUEUE_H_
-#define AV_FRAME_QUEUE_H_
+#ifndef FRAME_QUEUE_H_
+#define FRAME_QUEUE_H_
 
 // TODO(fraudies): Convert this into a C++ class
 // Note, I stripped out the sub title and replaced the SDL mutex by the std mutex
@@ -33,146 +33,106 @@ typedef struct Frame
 } Frame;
 
 class FrameQueue{
-    public:
+    private:
         Frame queue[FRAME_QUEUE_SIZE];
-
         int rindex; // read index
         int windex; // write index
         int size;
         int max_size;
         int keep_last;
         int rindex_shown; // read index shown
-        std::mutex *mutex;
-        std::condition_variable* cond;
+        std::mutex mutex;
+        std::condition_variable cond;
         PacketQueue *pktq; // packet queue
-        FrameQueue(){}
 
-        static int frame_queue_init(FrameQueue *f, PacketQueue *pktq, int max_size, int keep_last)
-        {
-            int i;
-            memset(f, 0, sizeof(FrameQueue));
-            if (!(f->mutex = new std::mutex())) {
-                // TODO: Add proper logging
-                // av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
-                return AVERROR(ENOMEM);
+    public:
+        FrameQueue(PacketQueue *pktq, int max_size, int keep_last) :
+            rindex(0),
+            windex(0),
+            size(0),
+            max_size(FFMIN(max_size, FRAME_QUEUE_SIZE)),
+            keep_last(keep_last),
+            rindex_shown(0),
+            pktq(pktq) {
+            for (int i = 0; i < max_size; i++) {
+                queue[i].frame = av_frame_alloc();
             }
-            if (!(f->cond = new std::condition_variable())) {
-                // TODO: Add proper logging
-                // av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
-                return AVERROR(ENOMEM);
-            }
-            f->pktq = pktq;
-            f->max_size = FFMIN(max_size, FRAME_QUEUE_SIZE);
-            f->keep_last = !!keep_last;
-            for (i = 0; i < f->max_size; i++)
-                if (!(f->queue[i].frame = av_frame_alloc()))
-                    return AVERROR(ENOMEM);
-            return 0;
         }
 
-        static void frame_queue_destory(FrameQueue *f)
-        {
-            for (int i = 0; i < f->max_size; i++) {
-                Frame *vp = &f->queue[i];
+        virtual ~FrameQueue() {
+            for (int i = 0; i < max_size; i++) {
+                Frame *vp = &queue[i];
                 frame_queue_unref_item(vp);
                 av_frame_free(&vp->frame);
             }
-            delete f->mutex;
-            delete f->cond;
         }
 
-        static void frame_queue_unref_item(Frame *vp)
-        {
+        static void unref_item(Frame *vp) {
             av_frame_unref(vp->frame);
         }
 
-        static void frame_queue_signal(FrameQueue *f) {
-            std::unique_lock<std::mutex> locker(*f->mutex);
-            f->cond->notify_all();
+        void signal() {
+            std::unique_lock<std::mutex> locker(mutex);
+            cond.notify_all();
             locker.unlock();
         }
 
-        static Frame *frame_queue_peek(FrameQueue *f)
-        {
-            return &f->queue[(f->rindex + f->rindex_shown) % f->max_size];
-        }
+        inline Frame *peek() const { return &queue[(rindex + rindex_shown) % max_size]; }
 
-        static Frame *frame_queue_peek_next(FrameQueue *f)
-        {
-            return &f->queue[(f->rindex + f->rindex_shown + 1) % f->max_size];
-        }
+        inline Frame *peek_next() const { return &queue[(rindex + rindex_shown + 1) % max_size]; }
 
-        static Frame *frame_queue_peek_last(FrameQueue *f)
-        {
-            return &f->queue[f->rindex];
-        }
+        inline Frame *peek_last() const { return &f->queue[f->rindex]; }
 
-        static Frame *frame_queue_peek_writable(FrameQueue *f)
-        {
+        Frame *peek_writable() const {
             /* wait until we have space to put a new frame */
-            std::unique_lock<std::mutex> locker(*f->mutex);
-            f->cond->wait(locker, [&f]{ return f->size < f->max_size || f->pktq->abort_request; } );
+            std::unique_lock<std::mutex> locker(mutex);
+            cond.wait(locker, [&this]{ return this->size < this->max_size || this->pktq->abort_request; } );
             locker.unlock();
-
-            if (f->pktq->abort_request)
-                return NULL;
-
-            return &f->queue[f->windex];
+            return pktq->abort_request ? nullptr : &queue[windex];
         }
 
-        static Frame *frame_queue_peek_readable(FrameQueue *f)
-        {
+        Frame *peek_readable() const {
             /* wait until we have a readable new frame */
-            std::unique_lock<std::mutex> locker(*f->mutex);
-            f->cond->wait(locker, [&f]{ return f->size - f->rindex_shown > 0 || f->pktq->abort_request; } );
+            std::unique_lock<std::mutex> locker(mutex);
+            cond.wait(locker, [&this]{ return this->size - this->rindex_shown > 0 || this->pktq->abort_request; } );
             locker.unlock();
-
-            if (f->pktq->abort_request)
-                return NULL;
-
-            return &f->queue[(f->rindex + f->rindex_shown) % f->max_size];
+            return pktq->abort_request ? nullptr : &queue[(rindex + rindex_shown) % max_size];
         }
 
-        static void frame_queue_push(FrameQueue *f)
-        {
-            if (++f->windex == f->max_size)
-                f->windex = 0;
-            std::unique_lock<std::mutex> locker(*f->mutex);
-            f->size++;
-            f->cond->notify_all();
+        void push() {
+            if (++windex == max_size)
+                windex = 0;
+            std::unique_lock<std::mutex> locker(mutex);
+            size++;
+            cond.notify_all();
             locker.unlock();
         }
 
-        static void frame_queue_next(FrameQueue *f)
-        {
-            if (f->keep_last && !f->rindex_shown) {
-                f->rindex_shown = 1;
+        void next() {
+            if (keep_last && !rindex_shown) {
+                rindex_shown = 1;
                 return;
             }
-            frame_queue_unref_item(&f->queue[f->rindex]);
-            if (++f->rindex == f->max_size)
-                f->rindex = 0;
-            std::unique_lock<std::mutex> locker(*f->mutex);
-            f->size--;
-            f->cond->notify_all();
+            frame_queue_unref_item(&queue[rindex]);
+            if (++rindex == max_size)
+                rindex = 0;
+            std::unique_lock<std::mutex> locker(mutex);
+            size--;
+            cond.notify_all();
             locker.unlock();
         }
 
         /* return the number of undisplayed frames in the queue */
-        static int frame_queue_nb_remaining(FrameQueue *f)
-        {
-            return f->size - f->rindex_shown;
-        }
+        inline int nb_remaining() const { return size - rindex_shown; }
 
         /* return last shown position */
-        static int64_t frame_queue_last_pos(FrameQueue *f)
-        {
-            Frame *fp = &f->queue[f->rindex];
-            if (f->rindex_shown && fp->serial == f->pktq->serial)
+        int64_t last_pos() const {
+            Frame *fp = &queue[rindex];
+            if (rindex_shown && fp->serial == pktq->serial)
                 return fp->pos;
             else
                 return -1;
         }
 };
 
-#endif AV_FRAME_QUEUE_H_
+#endif FRAME_QUEUE_H_
