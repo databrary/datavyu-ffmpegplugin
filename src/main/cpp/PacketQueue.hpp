@@ -3,18 +3,18 @@
 
 extern "C" {
 	#include <libavcodec/avcodec.h> // codecs
-    #include <libavutil/error.h> // error codes
+	#include <libavutil/mem.h> // memory
 }
 
 #ifndef PACKET_QUEUE_H_
 #define PACKET_QUEUE_H_
 
-// TODO(fraudies): Convert this into a C++ class
-// Note, I've replaced the SDL mutex through c++ std mutex/condition_variable
-
-static AVPacket flush_pkt;
-
-class PacketQueue{
+/**
+ * Port of the packet queue from ffplay.c into c++
+ *
+ * Replaces the SDL mutex through c++ std mutex/condition variable
+ */
+class PacketQueue {
     private:
         // This list maintains the next for the queue
         typedef struct MyAVPacketList {
@@ -22,39 +22,38 @@ class PacketQueue{
             struct MyAVPacketList *next;
             int serial;
         } MyAVPacketList;
-        
-        static int packet_queue_put_private(PacketQueue *q, AVPacket *pkt)
-        {
+
+        int _put(AVPacket *pkt) {
             MyAVPacketList *pkt1;
 
-            if (q->abort_request)
+            if (abort_request)
             return -1;
 
-            pkt1 = (struct MyAVPacketList *)av_malloc(sizeof(MyAVPacketList));
+            pkt1 = (struct MyAVPacketList *) av_malloc(sizeof(MyAVPacketList));
             if (!pkt1)
                 return -1;
             pkt1->pkt = *pkt;
             pkt1->next = NULL;
             if (pkt == &flush_pkt)
-                q->serial++;
-            pkt1->serial = q->serial;
+                serial++;
+            pkt1->serial = serial;
 
-            if (!q->last_pkt)
-                q->first_pkt = pkt1;
+            if (!last_pkt)
+                first_pkt = pkt1;
             else
-                q->last_pkt->next = pkt1;
-            q->last_pkt = pkt1;
-            q->nb_packets++;
-            q->size += pkt1->pkt.size + sizeof(*pkt1);
-            q->duration += pkt1->pkt.duration;
+                last_pkt->next = pkt1;
+            last_pkt = pkt1;
+            nb_packets++;
+            size += pkt1->pkt.size + sizeof(*pkt1);
+            duration += pkt1->pkt.duration;
             /* XXX: should duplicate packet data in DV case */
-            q->condition = 1;
-            q->cond->notify_all();
+            condition = 1;
+            cond.notify_all();
             return 0;
         }
 
     public:
-        PacketQueue(){}
+        AVPacket flush_pkt; // better one object per all queues but this is fine too
 
         int abort_request;
         int serial;
@@ -63,44 +62,70 @@ class PacketQueue{
         MyAVPacketList *first_pkt, *last_pkt;
         int size;
         int64_t duration;
-        std::mutex *mutex;
-        std::condition_variable* cond;
         int condition;
+        std::mutex mutex;
+        std::condition_variable cond;
 
-        /* packet queue handling */
-        static int packet_queue_init(PacketQueue *q)
-        {
-            memset(q, 0, sizeof(PacketQueue));
-            q->mutex = new std::mutex();
-            if (!q->mutex) {
-                // TODO: Add some logging back
-                //av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
-                return AVERROR(ENOMEM);
-            }
-            q->cond = new std::condition_variable();
-            if (!q->cond) {
-                // TODO: add some logging back
-                // av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
-                return AVERROR(ENOMEM);
-            }
-            q->abort_request = 1;
-            return 0;
+        PacketQueue() :
+            abort_request(1),
+            serial(0),
+            nb_packets(0),
+            first_pkt(nullptr),
+            last_pkt(nullptr),
+            size(0),
+            duration(0),
+            condition(0) {
+
+            av_init_packet(&flush_pkt);
+            flush_pkt.data = (uint8_t *)&flush_pkt;
         }
 
-        static void packet_queue_destroy(PacketQueue *q)
-        {
-            packet_queue_flush(q);
-            delete q->mutex;
-            delete q->cond;
+        virtual ~PacketQueue() {
+            flush();
+            av_packet_unref(&flush_pkt);
+            av_freep(&flush_pkt);
         }
 
+        void flush() {
+            MyAVPacketList *pkt, *pkt1;
 
-        static int packet_queue_put(PacketQueue *q, AVPacket *pkt)
-        {
+            std::unique_lock<std::mutex> locker(mutex);
+            for (pkt = first_pkt; pkt; pkt = pkt1) {
+                pkt1 = pkt->next;
+                av_packet_unref(&pkt->pkt);
+                av_freep(&pkt);
+            }
+            last_pkt = NULL;
+            first_pkt = NULL;
+            nb_packets = 0;
+            size = 0;
+            duration = 0;
+            locker.unlock();
+        }
+
+        void abort() {
+            std::unique_lock<std::mutex> locker(mutex);
+
+            abort_request = 1;
+
+            condition = 1;
+            cond.notify_all();
+
+            locker.unlock();
+        }
+
+        void start() {
+            std::unique_lock<std::mutex> locker(mutex);
+            abort_request = 0;
+            _put(&flush_pkt);
+            locker.unlock();
+        }
+
+        int put(AVPacket *pkt) {
             int ret;
 
-            std::unique_lock<std::mutex> locker(*q->mutex);
-            ret = packet_queue_put_private(q, pkt);
+            std::unique_lock<std::mutex> locker(mutex);
+            ret = _put(pkt);
             locker.unlock();
 
             if (pkt != &flush_pkt && ret < 0)
@@ -109,76 +134,36 @@ class PacketQueue{
             return ret;
         }
 
-        static int packet_queue_put_nullpacket(PacketQueue *q, int stream_index)
-        {
+        int put_nullpacket(int stream_index) {
             AVPacket pkt1, *pkt = &pkt1;
             av_init_packet(pkt);
             pkt->data = NULL;
             pkt->size = 0;
             pkt->stream_index = stream_index;
-            return packet_queue_put(q, pkt);
-        }
-
-        static void packet_queue_flush(PacketQueue *q)
-        {
-            MyAVPacketList *pkt, *pkt1;
-
-            std::unique_lock<std::mutex> locker(*q->mutex);
-            for (pkt = q->first_pkt; pkt; pkt = pkt1) {
-                pkt1 = pkt->next;
-                av_packet_unref(&pkt->pkt);
-                av_freep(&pkt);
-            }
-            q->last_pkt = NULL;
-            q->first_pkt = NULL;
-            q->nb_packets = 0;
-            q->size = 0;
-            q->duration = 0;
-            locker.unlock();
-        }
-
-        static void packet_queue_abort(PacketQueue *q)
-        {
-            std::unique_lock<std::mutex> locker(*q->mutex);
-
-            q->abort_request = 1;
-
-            q->condition = 1;
-            q->cond->notify_all();
-
-            locker.unlock();
-        }
-
-        static void packet_queue_start(PacketQueue *q)
-        {
-            std::unique_lock<std::mutex> locker(*q->mutex);
-            q->abort_request = 0;
-            packet_queue_put_private(q, &flush_pkt);
-            locker.unlock();
+            return put(pkt);
         }
 
         /* return < 0 if aborted, 0 if no packet and > 0 if packet.  */
-        static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *serial)
-        {
+        int get(AVPacket *pkt, int block, int *serial) {
             MyAVPacketList *pkt1;
             int ret;
 
-            std::unique_lock<std::mutex> locker(*q->mutex);
+            std::unique_lock<std::mutex> locker(mutex);
 
             for (;;) {
-                if (q->abort_request) {
+                if (abort_request) {
                     ret = -1;
                     break;
                 }
 
-                pkt1 = q->first_pkt;
+                pkt1 = first_pkt;
                 if (pkt1) {
-                    q->first_pkt = pkt1->next;
-                    if (!q->first_pkt)
-                        q->last_pkt = NULL;
-                    q->nb_packets--;
-                    q->size -= pkt1->pkt.size + sizeof(*pkt1);
-                    q->duration -= pkt1->pkt.duration;
+                    first_pkt = pkt1->next;
+                    if (!first_pkt)
+                        last_pkt = NULL;
+                    nb_packets--;
+                    size -= pkt1->pkt.size + sizeof(*pkt1);
+                    duration -= pkt1->pkt.duration;
                     *pkt = pkt1->pkt;
                     if (serial)
                         *serial = pkt1->serial;
@@ -189,15 +174,14 @@ class PacketQueue{
                     ret = 0;
                     break;
                 } else {
-                    q->condition = 0;
-                    q->cond->wait(locker, [&q]{return q->condition;});
+                    condition = 0;
+                    cond.wait(locker, [&]{ return condition; });
                     //SDL_CondWait(q->cond, q->mutex);
                 }
             }
             locker.unlock();
             return ret;
         }
-
 };
 
 #endif PACKET_QUEUE_H_

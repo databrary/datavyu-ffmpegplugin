@@ -68,8 +68,6 @@ JNIEXPORT jintArray JNICALL Java_org_datavyu_plugins_ffmpegplayer_MediaPlayer0_o
 	// TODO: Add init method
 	av_register_all();
     avformat_network_init();
-    av_init_packet(&flush_pkt);
-    flush_pkt.data = (uint8_t *)&flush_pkt;
 
     // TODO: Check if this is correct to use the default
     AVInputFormat *file_iformat = av_find_input_format("none");

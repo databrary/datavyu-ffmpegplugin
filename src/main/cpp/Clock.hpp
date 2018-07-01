@@ -1,5 +1,4 @@
 #include <mutex>
-#include <ctime>
 
 extern "C" {
 	#include <libavutil/time.h> // timer
@@ -10,8 +9,9 @@ extern "C" {
 
 #define AV_NOSYNC_THRESHOLD 10.0
 
-// TODO(fraudies): Convert this into a C++ class
-
+/**
+ * Converted Clock struct from ffplay.c into a C++ class for better encapsulation
+ */
 class Clock {
     private:
         double last_updated;
