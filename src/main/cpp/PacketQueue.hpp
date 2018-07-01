@@ -23,6 +23,17 @@ class PacketQueue {
             int serial;
         } MyAVPacketList;
 
+        int abort_request;
+        int serial;
+        int nb_packets;
+
+        MyAVPacketList *first_pkt, *last_pkt;
+        int size;
+        int64_t duration;
+        int condition;
+        std::mutex mutex;
+        std::condition_variable cond;
+
         int _put(AVPacket *pkt) {
             MyAVPacketList *pkt1;
 
@@ -53,18 +64,7 @@ class PacketQueue {
         }
 
     public:
-        AVPacket flush_pkt; // better one object per all queues but this is fine too
-
-        int abort_request;
-        int serial;
-        int nb_packets;
-        
-        MyAVPacketList *first_pkt, *last_pkt;
-        int size;
-        int64_t duration;
-        int condition;
-        std::mutex mutex;
-        std::condition_variable cond;
+        AVPacket flush_pkt; // TODO(fraudies): better use one object for all queues
 
         PacketQueue() :
             abort_request(1),
@@ -176,7 +176,6 @@ class PacketQueue {
                 } else {
                     condition = 0;
                     cond.wait(locker, [&]{ return condition; });
-                    //SDL_CondWait(q->cond, q->mutex);
                 }
             }
             locker.unlock();
