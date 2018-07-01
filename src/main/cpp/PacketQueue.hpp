@@ -134,13 +134,21 @@ class PacketQueue {
             return ret;
         }
 
-        int put_nullpacket(int stream_index) {
+        int put_null_packet(int stream_index) {
             AVPacket pkt1, *pkt = &pkt1;
             av_init_packet(pkt);
             pkt->data = NULL;
             pkt->size = 0;
             pkt->stream_index = stream_index;
             return put(pkt);
+        }
+
+        int put_flush_packet() {
+            return put(&flush_pkt);
+        }
+
+        inline bool is_flush_packet(AVPacket *pkt) const {
+            return pkt->data == flush_pkt.data;
         }
 
         /* return < 0 if aborted, 0 if no packet and > 0 if packet.  */

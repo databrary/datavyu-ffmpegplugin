@@ -48,6 +48,16 @@ TEST_CASE( "Put and get packet (pass)", "[put-get]" ) {
     // Note, I don't free the packets here to simplify the code
 }
 
+TEST_CASE( "Put and get flush pkt (pass)", "[put-get-flush-packet]" ) {
+    AVPacket getPkt;
+    PacketQueue packetQueue;
+    packetQueue.start();
+    packetQueue.flush();
+    packetQueue.put_flush_packet();
+    REQUIRE( 0 < packetQueue.get(&getPkt, 1, nullptr) );
+    REQUIRE( packetQueue.is_flush_packet(&getPkt) == true );
+}
+
 TEST_CASE( "Abort blocked read (pass)", "[abort-blocked-read]" ) {
     // Prepare the queue
     PacketQueue packetQueue;
