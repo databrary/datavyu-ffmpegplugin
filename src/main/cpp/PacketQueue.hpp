@@ -114,6 +114,14 @@ class PacketQueue {
             locker.unlock();
         }
 
+		inline int is_abort_request() const {
+			return abort_request;
+		}
+
+		inline int get_serial() const { 
+			return serial;
+		}
+
         void start() {
             std::unique_lock<std::mutex> locker(mutex);
             abort_request = 0;
