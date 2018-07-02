@@ -138,6 +138,42 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ffplay.c" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="org_datavyu_plugins_ffmpegplayer_MediaPlayer0.cpp" />
+    <ClCompile Include="org_datavyu_plugins_ffmpegplayer_MediaPlayer1.cpp" />
+    <ClCompile Include="prototypes\AudioPlayer.cpp" />
+    <ClCompile Include="prototypes\DisplayImageFromJNI.cpp" />
+    <ClCompile Include="prototypes\DisplayImageFromVideo.cpp" />
+    <ClCompile Include="prototypes\ImagePlayers.cpp" />
+    <ClCompile Include="prototypes\PlaySoundFromJNI.cpp" />
+    <ClCompile Include="TestClock.cpp" />
+    <ClCompile Include="TestFrameQueue.cpp" />
+    <ClCompile Include="TestPacketQueue.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AudioFormatHelper.hpp" />
+    <ClInclude Include="AVLogger.h" />
+    <ClInclude Include="catch.hpp" />
+    <ClInclude Include="Clock.hpp" />
+    <ClInclude Include="Decoder.hpp" />
+    <ClInclude Include="FrameQueue.hpp" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="org_datavyu_plugins_ffmpegplayer_MediaPlayer0.h" />
+    <ClInclude Include="org_datavyu_plugins_ffmpegplayer_MediaPlayer1.h" />
+    <ClInclude Include="PacketQueue.hpp" />
+    <ClInclude Include="prototypes\AudioPlayer.h" />
+    <ClInclude Include="prototypes\DisplayImageFromJNI.h" />
+    <ClInclude Include="prototypes\DisplayImageFromVideo.h" />
+    <ClInclude Include="prototypes\ImagePlayers.h" />
+    <ClInclude Include="prototypes\ImagePlayers_PlayerThread.h" />
+    <ClInclude Include="prototypes\PlaySoundFromJNI.h" />
+    <ClInclude Include="prototypes\PlaySoundFromJNI_PlayerThread.h" />
+    <ClInclude Include="Streamer.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="org_datavyu_plugins_ffmpegplayer_MediaPlayer0.obj" />
+    <Object Include="org_datavyu_plugins_ffmpegplayer_MovieStream.obj" />
+    <Object Include="TestFrameQueue.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
