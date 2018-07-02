@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FFplay", "FFplay\FFplay.vcxproj", "{6EA34670-B97C-440E-860D-3B5AF0BE87D8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MediaPlayer", "FFplay.vcxproj", "{6EA34670-B97C-440E-860D-3B5AF0BE87D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1BF64BEC-4930-4D7F-AB53-CCE367A456AC}
+		SolutionGuid = {8022637E-056C-45EF-8B7B-9B6CAE0C370D}
 	EndGlobalSection
 EndGlobal
