@@ -15,6 +15,7 @@ extern "C" {
 // Common struct for handling decoded data and allocated buffers
 typedef struct Frame {
     AVFrame *frame;
+	AVSubtitle sub;
     int serial;
     double pts;      // presentation timestamp for the frame
     double duration; // estimated duration of the frame
@@ -73,6 +74,7 @@ class FrameQueue{
             }
         }
 
+		// Same like PacketQueue we should destroy the mutex 
         virtual ~FrameQueue() {
             for (int i = 0; i < max_size; i++) {
                 Frame *vp = &queue[i];
@@ -93,6 +95,10 @@ class FrameQueue{
         inline Frame* peek_next() { return &queue[(rindex + rindex_shown + 1) % max_size]; }
 
         inline Frame* peek_last() { return &queue[rindex]; }
+
+		inline std::mutex & get_mutex() { return mutex; }
+
+		inline int get_rindex_shown() const { return rindex_shown; }
 
         Frame *peek_writable() {
             // waits until we have space to put a new frame

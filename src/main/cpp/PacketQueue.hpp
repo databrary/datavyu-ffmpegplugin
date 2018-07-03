@@ -29,7 +29,7 @@ class PacketQueue {
 
         MyAVPacketList *first_pkt, *last_pkt;
         int size;
-        int64_t duration;
+		int64_t duration;
         int condition;
         std::mutex mutex;
         std::condition_variable cond;
@@ -80,6 +80,7 @@ class PacketQueue {
             flush_pkt.data = (uint8_t *)&flush_pkt;
         }
 
+		// Should we detroy the mutex and condition_variabe also ?
         virtual ~PacketQueue() {
             flush();
             av_packet_unref(&flush_pkt);
@@ -120,6 +121,18 @@ class PacketQueue {
 
 		inline int get_serial() const { 
 			return serial;
+		}
+
+		inline int get_size() const {
+			return size;
+		}
+
+		inline int get_nb_packets() const {
+			return nb_packets;
+		}
+
+		inline int64_t get_duration() const {
+			return duration;
 		}
 
         void start() {

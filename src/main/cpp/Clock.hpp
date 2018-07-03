@@ -66,6 +66,26 @@ class Clock {
             }
         }
 
+		double get_pts() const { 
+			return pts; 
+		}
+
+		double get_lastUpdated() const {
+			return lastUpdated;
+		}
+
+		double get_serial() const {
+			return serial;
+		}
+
+		bool isPaused() const {
+			return paused;
+		}
+
+		void setPaused(bool p) {
+			paused = p;
+		}
+
 		void set_paused(int newPaused) {
 			paused = newPaused;
 		}
