@@ -75,8 +75,8 @@
     <LibraryPath>C:\Users\DatavyuTests\Documents\FFplay\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\DatavyuTests\Documents\SDL2-2.0.8VC\include;C:\Users\DatavyuTests\Documents\ffmpeg-4.0-win32-dev\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\DatavyuTests\Documents\SDL2-2.0.8VC\lib\x86;C:\Users\DatavyuTests\Documents\ffmpeg-4.0-win32-dev\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\DatavyuTests\Documents\FFplay64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\DatavyuTests\Documents\FFplay64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,10 +102,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_172\include\win32;C:\Program Files\Java\jdk1.8.0_172\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;avutil.lib;avdevice.lib;avfilter.lib;avformat.lib;avcodec.lib;postproc.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>C:\Users\DatavyuTests\Documents\FFplay64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
