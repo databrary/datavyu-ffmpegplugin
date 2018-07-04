@@ -168,8 +168,8 @@ class PacketQueue {
             return put(&flush_pkt);
         }
 
-        inline bool is_flush_packet(AVPacket *pkt) const {
-            return pkt->data == flush_pkt.data;
+        inline bool is_flush_packet(const AVPacket& pkt) const {
+            return pkt.data == flush_pkt.data;
         }
 
         /* return < 0 if aborted, 0 if no packet and > 0 if packet.  */
