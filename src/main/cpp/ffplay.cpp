@@ -150,7 +150,7 @@ static int display_disable;
 static int borderless;
 static int startup_volume = 100;
 static int show_status = 1;
-static int av_sync_type = AV_SYNC_AUDIO_MASTER;
+static int av_sync_type_input = AV_SYNC_AUDIO_MASTER;
 static int64_t start_time = AV_NOPTS_VALUE;
 static int64_t duration = AV_NOPTS_VALUE;
 static int fast = 0;
@@ -510,8 +510,7 @@ private:
 		}
 	}
 
-	// Note romoved void *opaque
-	static int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
+	static int audio_open(VideoState* is, int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
 		struct AudioParams *audio_hw_params);
 
 	int queue_picture(AVFrame *src_frame, double pts, double duration, int64_t pos, int serial)
@@ -676,7 +675,7 @@ private:
 			SDL_DestroyTexture(this->vid_texture);
 		if (this->sub_texture)
 			SDL_DestroyTexture(this->sub_texture);
-		av_free(this);
+		//av_free(this); The object is freed by the destructor (double free)
 	}
 
 	int video_open()
@@ -1838,14 +1837,21 @@ public:
 		pVideoq(new PacketQueue()),
 		pAudioq(new PacketQueue()),
 		pSubtitleq(new PacketQueue()),
-		pPictq(new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1)),
-		pSubpq(new FrameQueue(pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0)),
-		pSampq(new FrameQueue(pAudioq, SAMPLE_QUEUE_SIZE, 1)),
-		pVidclk(new Clock(pVideoq->get_p_serial())),
-		pAudclk(new Clock(pAudioq->get_p_serial())),
-		//TODO fix serial for the external clock
-		pExtclk(new Clock()) {
-		// For the external clock the serial is set to itself (never triggers)		
+		pPictq(nullptr),
+		pSubpq(nullptr),
+		pSampq(nullptr),
+		pVidclk(nullptr),
+		pAudclk(nullptr),
+		pExtclk(new Clock() // For the external clock the serial is set to itself (never triggers)
+	) {
+		// Frame queues depend on the packet queues that have not been initialized in initializer
+		pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
+		pSubpq = new FrameQueue(pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
+		pSampq = new FrameQueue(pAudioq, SAMPLE_QUEUE_SIZE, 1);
+		// Clocks depend on packet queues that have not been initialized in initializer
+		pVidclk = new Clock(pVideoq->get_p_serial());
+		pAudclk = new Clock(pAudioq->get_p_serial());
+		// TODO(fraudies): Define these attributes in the right order in the class, then move all back to the initializers
 	}
 
 	~VideoState() {
@@ -2094,11 +2100,11 @@ public:
 		return abort_request;
 	}
 
-	void do_exit() {
+	static void do_exit(VideoState* is) {
 		// close the VideoState Stream and and destroy SDL window
-		if (this) {
+		if (is) {
 			//Clean-up memory  
-			this->stream_close();
+			is->stream_close();
 		}
 		if (renderer)
 			SDL_DestroyRenderer(renderer);
@@ -2127,13 +2133,13 @@ public:
 			switch (event.type) {
 			case SDL_KEYDOWN:
 				if (exit_on_keydown) {
-					this->do_exit();
+					this->do_exit(this);
 					break;
 				}
 				switch (event.key.keysym.sym) {
 				case SDLK_ESCAPE:
 				case SDLK_q:
-					this->do_exit();
+					this->do_exit(this);
 					break;
 				case SDLK_f:
 					this->toggle_full_screen();
@@ -2242,7 +2248,7 @@ public:
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 				if (exit_on_mousedown) {
-					this->do_exit();
+					this->do_exit(this);
 					break;
 				}
 				if (event.button.button == SDL_BUTTON_LEFT) {
@@ -2313,7 +2319,7 @@ public:
 				break;
 			case SDL_QUIT:
 			case FF_QUIT_EVENT:
-				this->do_exit();
+				this->do_exit(this);
 				break;
 			default:
 				break;
@@ -2321,7 +2327,7 @@ public:
 		}
 	}
 
-	VideoState *stream_open(const char *filename, AVInputFormat *iformat);
+	static VideoState *stream_open(const char *filename, AVInputFormat *iformat);
 
 	/* prepare a new audio buffer */
 	void sdl_audio_callback(Uint8 *stream, int len) {
@@ -2399,9 +2405,9 @@ static void sdl_audio_callback_bridge(void* vs, Uint8 *stream, int len) {
 
 
 VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat) {
-	VideoState *is;
+	VideoState *is = new VideoState();
 
-	is = (VideoState*)av_mallocz(sizeof(VideoState));
+	//is = (VideoState*) av_mallocz(sizeof(VideoState));
 	if (!is)
 		return NULL;
 	is->filename = av_strdup(filename);
@@ -2425,7 +2431,7 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 	//	this->pSubtitleq->packet_queue_init() < 0)
 	//	goto fail;
 
-	if (!(this->continue_read_thread = SDL_CreateCond())) {
+	if (!(is->continue_read_thread = SDL_CreateCond())) {
 		av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
 		goto fail;
 	}
@@ -2441,20 +2447,20 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 		av_log(NULL, AV_LOG_WARNING, "-volume=%d > 100, setting to 100\n", startup_volume);
 	startup_volume = av_clip(startup_volume, 0, 100);
 	startup_volume = av_clip(SDL_MIX_MAXVOLUME * startup_volume / 100, 0, SDL_MIX_MAXVOLUME);
-	this->audio_volume = startup_volume;
-	this->muted = 0;
-	this->av_sync_type = av_sync_type;
-	this->read_tid = SDL_CreateThread(read_thread_bridge, "read_thread", is);
-	if (!this->read_tid) {
+	is->audio_volume = startup_volume;
+	is->muted = 0;
+	is->av_sync_type = av_sync_type_input;
+	is->read_tid = SDL_CreateThread(read_thread_bridge, "read_thread", is);
+	if (!is->read_tid) {
 		av_log(NULL, AV_LOG_FATAL, "SDL_CreateThread(): %s\n", SDL_GetError());
 	fail:
-		this->stream_close();
+		is->stream_close();
 		return NULL;
 	}
 	return is;
 }
 
-int VideoState::audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
+int VideoState::audio_open(VideoState* is, int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
 	struct AudioParams *audio_hw_params) {
 	SDL_AudioSpec wanted_spec, spec;
 	const char *env;
@@ -2484,7 +2490,7 @@ int VideoState::audio_open(int64_t wanted_channel_layout, int wanted_nb_channels
 	wanted_spec.silence = 0;
 	wanted_spec.samples = FFMAX(SDL_AUDIO_MIN_BUFFER_SIZE, 2 << av_log2(wanted_spec.freq / SDL_AUDIO_MAX_CALLBACKS_PER_SEC));
 	wanted_spec.callback = sdl_audio_callback_bridge;
-	//wanted_spec.userdata = opaque;
+	wanted_spec.userdata = is; // need to add the object instance here
 	while (!(audio_dev = SDL_OpenAudioDevice(NULL, 0, &wanted_spec, &spec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE))) {
 		av_log(NULL, AV_LOG_WARNING, "SDL_OpenAudio (%d channels, %d Hz): %s\n",
 			wanted_spec.channels, wanted_spec.freq, SDL_GetError());
@@ -2959,7 +2965,7 @@ int VideoState::stream_component_open(int stream_index) {
 #endif
 
 		/* prepare audio output */
-		if ((ret = this->audio_open(channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
+		if ((ret = VideoState::audio_open(this, channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
 			goto fail;
 		this->audio_hw_buf_size = ret;
 		this->audio_src = this->audio_tgt;
@@ -3016,10 +3022,9 @@ out:
 
 
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	int flags;
-	VideoState *is = nullptr;
+	//VideoState *is = nullptr;
 
 	/*init_dynload();*/
 
@@ -3103,15 +3108,15 @@ int main(int argc, char **argv)
 		}
 		if (!window || !renderer || !renderer_info.num_texture_formats) {
 			av_log(NULL, AV_LOG_FATAL, "Failed to create window or renderer: %s", SDL_GetError());
-			is->do_exit();
+			//is->do_exit();
+			VideoState::do_exit(nullptr);
 		}
 	}
 
-	is->stream_open(input_filename, file_iformat);
+	VideoState* is = VideoState::stream_open(input_filename, file_iformat);
 	if (!is) {
 		av_log(NULL, AV_LOG_FATAL, "Failed to initialize VideoState!\n");
-
-		is->do_exit();
+		VideoState::do_exit(is);
 	}
 
 	is->event_loop();
