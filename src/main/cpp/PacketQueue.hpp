@@ -119,7 +119,11 @@ class PacketQueue {
 			return abort_request;
 		}
 
-		inline int get_serial() const { 
+		inline int* get_p_serial() { 
+			return &serial;
+		}
+
+		inline int get_serial() const {
 			return serial;
 		}
 
