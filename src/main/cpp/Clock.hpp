@@ -8,60 +8,104 @@ extern "C" {
 #define CLOCK_H_
 
 #define AV_NOSYNC_THRESHOLD 10.0
+#define MICRO 1000000.0
 
-/**
- * Converted Clock struct from ffplay.c into a C++ class for better encapsulation
- */
+// Clock to keep decoding in sync
+//
+// This is a port of the Clock  ffplay.c from ffmpeg into c++
+//
+// Big warning: This clock is NOT thread safe. The original ffplay.c code used
+// locks around the clock for the set/get in some places. We may decide to move
+// these locks into the set/get method if deemed necessary (it would be better
+// code design at the cost of performance).
+//
 class Clock {
     private:
-        double last_updated;
+        double lastUpdated;
         int paused;
-        double pts;           /* clock base */
-        double pts_drift;     /* clock base minus time at which we updated the clock */
+        double pts;					// clock base
+        double ptsDrift;			// clock base minus time at which we updated the clock
         double speed;
-        int serial;           /* clock is based on a packet with this serial */
-        int *queue_serial;    /* pointer to the current packet queue serial, used for obsolete clock detection */
-
-        void set_clock_at(double pts, int serial, double time) {
-            this->pts = pts;
-            this->last_updated = time;
-            this->pts_drift = this->pts - time;
-            this->serial = serial;
-        }
+        int serial;					// clock is based on a packet with this serial
+        const int *queueSerial;	// pointer to the current packet queue serial, used for obsolete clock detection
 
     public:
         enum {
-            AV_SYNC_AUDIO_MASTER, /* default choice */
+            AV_SYNC_AUDIO_MASTER, // default
             AV_SYNC_VIDEO_MASTER,
-            AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
+            AV_SYNC_EXTERNAL_CLOCK, // synchronize to an external clock
         };
 
-        Clock(int *queue_serial) {
-            this->speed = 1.0;
-            this->paused = 0;
-            this->queue_serial = queue_serial;
+        Clock(const int *queue_serial) : 
+			lastUpdated(0), 
+			paused(0), 
+			pts(0), 
+			ptsDrift(0), 
+			speed(1.0), 
+			serial(-1), 
+			queueSerial(queue_serial) {
             set_clock(NAN, -1);
         }
+
+		Clock() : Clock(nullptr) {
+			queueSerial = &serial;
+		}
     
         double get_clock() {
-            if (*this->queue_serial != this->serial)
+            if (*queueSerial != serial)
                 return NAN;
-            if (this->paused) {
-                return this->pts;
+            if (paused) {
+                return pts;
             } else {
-                double time = av_gettime_relative() / 1000000.0;
-                return this->pts_drift + time - (time - this->last_updated) * (1.0 - this->speed);
+                double time = av_gettime_relative() / MICRO;
+				// TODO(fraudies): Check if this holds for negative speeds as well
+                return ptsDrift + time - (time - lastUpdated) * (1.0 - speed);
             }
         }
 
-        void set_clock(double pts, int serial) {
-            double time = av_gettime_relative() / 1000000.0;
-            set_clock_at(pts, serial, time);
+		double get_pts() const { 
+			return pts; 
+		}
+
+		double get_lastUpdated() const {
+			return lastUpdated;
+		}
+
+		double get_serial() const {
+			return serial;
+		}
+
+		bool isPaused() const {
+			return paused;
+		}
+
+		void setPaused(bool p) {
+			paused = p;
+		}
+
+		void set_paused(int newPaused) {
+			paused = newPaused;
+		}
+
+		inline double get_clock_speed() const {
+			return speed;
+		}
+
+		void set_clock_at(double newPts, int newSerial, double time) {
+			pts = newPts;
+			lastUpdated = time;
+			ptsDrift = pts - time;
+			serial = newSerial;
+		}
+
+        void set_clock(double newPts, int newSerial) {
+            double time = av_gettime_relative() / MICRO;
+            set_clock_at(newPts, newSerial, time);
         }
 
-        void set_clock_speed(double speed) {
-            set_clock(get_clock(), this->serial);
-            this->speed = speed;
+        void set_clock_speed(double newSpeed) {
+            set_clock(get_clock(), serial);
+            speed = newSpeed;
         }
 
         static void sync_clock_to_slave(Clock *c, Clock *slave) {
@@ -71,6 +115,5 @@ class Clock {
                 c->set_clock(slave_clock, slave->serial);
         }
 };
-
 
 #endif CLOCK_H_

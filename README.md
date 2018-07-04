@@ -28,6 +28,12 @@ To test the native code we use catch 2.0.1 that can be downloaded from here
 
 Check out the examples folder in the release for more details on the framework.
 
+To compile the test code each Test[...].cpp file has the compilation command atop for the compile under Windows.
+Before executing that command run the 
+
+    vcvarsall.bat x86 
+
+script to setup the compile environment.
 
 ## Java Code
 The java code provides examples on how to interface with the movie stream interface; especially on how to playback image
