@@ -122,6 +122,10 @@ class PacketQueue {
 			return serial;
 		}
 
+		inline int get_nb_packets() const {
+			return nb_packets;
+		}
+
         void start() {
             std::unique_lock<std::mutex> locker(mutex);
             abort_request = 0;
@@ -155,8 +159,8 @@ class PacketQueue {
             return put(&flush_pkt);
         }
 
-        inline bool is_flush_packet(AVPacket *pkt) const {
-            return pkt->data == flush_pkt.data;
+        inline bool is_flush_packet(const AVPacket& pkt) const {
+            return pkt.data == flush_pkt.data;
         }
 
         /* return < 0 if aborted, 0 if no packet and > 0 if packet.  */
