@@ -49,14 +49,6 @@ class Decoder {
 			av_init_packet(&pkt);
 		}
 
-		Decoder() : Decoder(nullptr, nullptr, nullptr) {}
-
-		void init(AVCodecContext *avctx, PacketQueue *queue, std::condition_variable *empty_queue_cond) {
-			this->avctx = avctx;
-			this->queue = queue;
-			this->empty_queue_cond = empty_queue_cond;
-		}
-
 		virtual ~Decoder() {			
 			av_packet_unref(&pkt);
 			// TODO(fraudies): Clean-up design, move this de-allocation to the VideoState (where it is initialized)

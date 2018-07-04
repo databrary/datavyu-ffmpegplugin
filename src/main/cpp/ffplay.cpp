@@ -1672,10 +1672,9 @@ public:
 		pVidclk(nullptr),
 		pAudclk(nullptr),
 		pExtclk(new Clock()), // For the external clock the serial is set to itself (never triggers)
-		pViddec(new Decoder()),
-		pSubdec(new Decoder()),
-		pAuddec(new Decoder()
-	) {
+		pViddec(nullptr), // Decoder's are created in the stream_component_open and destroyed in stream_component_close
+		pSubdec(nullptr),
+		pAuddec(nullptr) {
 		// Frame queues depend on the packet queues that have not been initialized in initializer
 		pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
 		pSubpq = new FrameQueue(pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
@@ -2805,8 +2804,8 @@ int VideoState::stream_component_open(int stream_index) {
 
 		this->audio_stream = stream_index;
 		this->audio_st = ic->streams[stream_index];
-
-		pAuddec->init(avctx, pAudioq, &continue_read_thread);
+		pAuddec = new Decoder(avctx, pAudioq, &continue_read_thread);
+		//pAuddec->init(avctx, pAudioq, &continue_read_thread);
 		//decoder_init(&this->auddec, avctx, pAudioq, this->continue_read_thread);
 		if ((this->ic->iformat->flags & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK)) && !this->ic->iformat->read_seek) {
 			pAuddec->set_start_pts(this->audio_st->start_time);
@@ -2819,7 +2818,8 @@ int VideoState::stream_component_open(int stream_index) {
 	case AVMEDIA_TYPE_VIDEO:
 		this->video_stream = stream_index;
 		this->video_st = ic->streams[stream_index];
-		pViddec->init(avctx, pVideoq, &continue_read_thread);
+		pViddec = new Decoder(avctx, pVideoq, &continue_read_thread);
+		//pViddec->init(avctx, pVideoq, &continue_read_thread);
 		//decoder_init(&this->viddec, avctx, pVideoq, this->continue_read_thread);
 		if ((ret = pViddec->start(video_thread_bridge, this)) < 0)
 			goto out;
@@ -2828,9 +2828,9 @@ int VideoState::stream_component_open(int stream_index) {
 	case AVMEDIA_TYPE_SUBTITLE:
 		this->subtitle_stream = stream_index;
 		this->subtitle_st = ic->streams[stream_index];
-
+		pSubdec = new Decoder(avctx, pSubtitleq, &continue_read_thread);
 		//decoder_init(&this->subdec, avctx, this->pSubtitleq, this->continue_read_thread);
-		pSubdec->init(avctx, pSubtitleq, &continue_read_thread);
+		//pSubdec->init(avctx, pSubtitleq, &continue_read_thread);
 		if ((ret = pSubdec->start(subtitle_thread_bridge, this)) < 0)
 			goto out;
 		break;
