@@ -26,8 +26,11 @@
     <ClInclude Include="FrameQueue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="PacketQueue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+>>>>>>> cf753bfd20d9a6e227e14b43c9b9bc06d326d34c
   </ItemGroup>
 </Project>
