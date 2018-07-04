@@ -86,7 +86,7 @@ class FrameQueue{
 
         void signal() {
             std::unique_lock<std::mutex> locker(mutex);
-            cond.notify_all();
+            cond.notify_one();
             locker.unlock();
         }
 
@@ -121,7 +121,7 @@ class FrameQueue{
                 windex = 0;
             std::unique_lock<std::mutex> locker(mutex);
             size++;
-            cond.notify_all();
+            cond.notify_one();
             locker.unlock();
         }
 
@@ -135,7 +135,7 @@ class FrameQueue{
                 rindex = 0;
             std::unique_lock<std::mutex> locker(mutex);
             size--;
-            cond.notify_all();
+            cond.notify_one();
             locker.unlock();
         }
 
