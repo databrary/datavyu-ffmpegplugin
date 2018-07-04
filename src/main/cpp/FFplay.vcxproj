@@ -75,8 +75,8 @@
     <LibraryPath>C:\Users\DatavyuTests\Documents\FFplay\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\DatavyuTests\Documents\FFplay64\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\DatavyuTests\Documents\FFplay64\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Florian\FFplay64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Florian\FFplay64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,7 +102,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_172\include\win32;C:\Program Files\Java\jdk1.8.0_172\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_151\include\win32;C:\Program Files\Java\jdk1.8.0_151\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clock.hpp" />
+    <ClInclude Include="Decoder.hpp" />
     <ClInclude Include="FrameQueue.hpp" />
     <ClInclude Include="PacketQueue.hpp" />
   </ItemGroup>
