@@ -29,13 +29,6 @@ class Clock {
         int serial;					// clock is based on a packet with this serial
         const int *queueSerial;	// pointer to the current packet queue serial, used for obsolete clock detection
 
-        void set_clock_at(double newPts, int newSerial, double time) {
-            pts = newPts;
-            lastUpdated = time;
-            ptsDrift = pts - time;
-            serial = newSerial;
-        }
-
     public:
         enum {
             AV_SYNC_AUDIO_MASTER, // default
@@ -53,6 +46,10 @@ class Clock {
 			queueSerial(queue_serial) {
             set_clock(NAN, -1);
         }
+
+		Clock() : Clock(nullptr) {
+			queueSerial = &serial;
+		}
     
         double get_clock() {
             if (*queueSerial != serial)
@@ -92,6 +89,13 @@ class Clock {
 
 		inline double get_clock_speed() const {
 			return speed;
+		}
+
+		void set_clock_at(double newPts, int newSerial, double time) {
+			pts = newPts;
+			lastUpdated = time;
+			ptsDrift = pts - time;
+			serial = newSerial;
 		}
 
         void set_clock(double newPts, int newSerial) {

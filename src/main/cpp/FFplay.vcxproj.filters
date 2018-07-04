@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ffplay.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ffplay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -26,13 +23,10 @@
     <ClInclude Include="Clock.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PacketQueue.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameQueue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Decoder.hpp">
+    <ClInclude Include="PacketQueue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

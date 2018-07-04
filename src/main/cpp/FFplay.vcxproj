@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\DatavyuTests\Documents\FFplay\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\DatavyuTests\Documents\FFplay\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Florian\FFplay64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Florian\FFplay64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\Florian\FFplay64\include;$(IncludePath)</IncludePath>
@@ -140,12 +140,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ffplay.c" />
     <ClCompile Include="ffplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clock.hpp" />
-    <ClInclude Include="Decoder.hpp" />
     <ClInclude Include="FrameQueue.hpp" />
     <ClInclude Include="PacketQueue.hpp" />
   </ItemGroup>
