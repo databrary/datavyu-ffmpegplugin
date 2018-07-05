@@ -59,7 +59,7 @@ class PacketQueue {
             duration += pkt1->pkt.duration;
             /* XXX: should duplicate packet data in DV case */
             condition = 1;
-            cond.notify_all();
+            cond.notify_one();
             return 0;
         }
 
@@ -110,7 +110,7 @@ class PacketQueue {
             abort_request = 1;
 
             condition = 1;
-            cond.notify_all();
+            cond.notify_one();
 
             locker.unlock();
         }
