@@ -3,7 +3,8 @@ package org.datavyu.plugins.ffmpeg;
 import java.util.*;
 
 public enum MediaError {
-
+    // TODO: Update these errors for the ffmpeg case and this design
+    // TODO: Add .properties to the resource bundle for the messages
     ERROR_BASE_MEDIA(0x00000100),
     ERROR_BASE_MANAGER(0x00000200),
     ERROR_BASE_PIPELINE(0x00000300),

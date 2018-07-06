@@ -9,22 +9,41 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.Hashtable;
 
+/**
+ * This the implementation of the media player interface using ffmpeg to decode and
+ * transcode (optional) image and audio data
+ *
+ * This player has two main options to display images and play sound:
+ * 1) Use the java framework
+ * 2) Use the native SDL framework
+ */
 final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerData {
     private float mutedVolume = 1.0f;  // last volume before mute
     private boolean muteEnabled = false;
-    private AudioPlayerThread audioPlayerThread;
-    private ImagePlayerThread imagePlayerThread;
+    private AudioPlayerThread audioPlayerThread = null;
+    private ImagePlayerThread imagePlayerThread = null;
     private JFrame frame;
 
     /**
-     * Create an ffmpeg media player instance
+     * Create an ffmpeg media player instance and play through java
+     * framework
      *
      * @param source The source
-     * @param frame The frame to display (optional), if null then use SDL
+     * @param frame The frame to display
      */
     public FfmpegMediaPlayer(URI source, JFrame frame) {
         super(source);
         this.frame = frame;
+    }
+
+    /**
+     * Create an ffmpeg media player instance and play through
+     * the native SDL framework
+     *
+     * @param source The source
+     */
+    public FfmpegMediaPlayer(URI source) {
+        this(source, null);
     }
 
     @Override
@@ -33,18 +52,18 @@ final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerDa
         ffmpegInitPlayer(getNativeMediaRef(), source, audioFormat, colorSpace);
         // If we have audio data consume it
         if (hasAudioData()) {
-            audioPlayerThread = new AudioPlayerThread();
+            audioPlayerThread = new AudioPlayerThread(this);
             try {
                 audioPlayerThread.init(getAudioFormat());
                 audioPlayerThread.start();
             } catch (LineUnavailableException lu) {
-                // TODO: Add media error
+                // TODO: Add correct media error
                 throwMediaErrorException(MediaError.ERROR_GSTREAMER_ERROR.code(), lu.getMessage());
             }
         }
         // If we have image data consume it
         if (hasImageData()) {
-            imagePlayerThread = new ImagePlayerThread();
+            imagePlayerThread = new ImagePlayerThread(this);
             imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
             imagePlayerThread.start();
         }
@@ -239,155 +258,12 @@ final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerDa
     @Override
     protected void playerDispose() {
         if (imagePlayerThread != null) {
-            imagePlayerThread.stopped = true;
+            imagePlayerThread.terminte();
         }
         if (audioPlayerThread != null) {
-            audioPlayerThread.stopped = true;
+            audioPlayerThread.terminate();
         }
     }
-
-    private class AudioPlayerThread extends Thread {
-        private SourceDataLine soundLine = null;
-        //private FloatControl gainControl = null;
-        private volatile boolean stopped = false;
-
-        AudioPlayerThread() {
-            setName("FFmpeg audio player thread");
-            setDaemon(false);
-        }
-
-        private void init(AudioFormat audioFormat) throws LineUnavailableException {
-            // Get the data line
-            DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-            soundLine = (SourceDataLine) AudioSystem.getLine(info);
-            soundLine.open(audioFormat);
-            //gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
-        }
-
-        @Override
-        public void run() {
-            while (!stopped) {
-                byte[] data = null; // data will be assigned through native call
-                getAudioBuffer(data);
-                // Write blocks when data can't be consumed fast enough
-                soundLine.write(data, 0, data.length);
-            }
-        }
-
-        public void terminate() {
-            stopped = false;
-            soundLine.drain();
-            soundLine.stop();
-            soundLine.close();
-        }
-    }
-
-    // Currently this uses swing components to display the buffered image
-    // TODO(fraudies): Switch this to javafx for new GUI
-    private class ImagePlayerThread extends Thread {
-        private SampleModel sm;
-        private ComponentColorModel cm;
-        private Hashtable<String, String> properties = new Hashtable<>();
-        private BufferedImage image;
-        private JFrame frame;
-        private boolean doPaint = false;
-        private BufferStrategy strategy;
-        private static final int NUM_COLOR_CHANNELS = 3;
-        private static final int NUM_BUFFERS = 3;
-        private volatile boolean stopped = false;
-        private int width;
-        private int height;
-        private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
-        private static final double TO_MILLIS = 1000.0;
-
-        ImagePlayerThread() {
-            setName("Ffmpeg image player thread");
-            setDaemon(false);
-        }
-
-        private void updateDisplay() {
-            do {
-                do {
-                    // Make sure to create the buffer strategy before using it!
-                    Graphics graphics = strategy.getDrawGraphics();
-                    if (doPaint) {
-                        graphics.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(),  null);
-                    }
-                    graphics.dispose();
-                } while (strategy.contentsRestored());
-                strategy.show();
-            } while (strategy.contentsLost());
-        }
-
-        private void init(ColorSpace colorSpace, int width, int height, JFrame frame) {
-
-            this.frame = frame;
-            this.width = width;
-            this.height = height;
-
-            cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
-                    DataBuffer.TYPE_BYTE);
-            // Set defaults
-            sm = cm.createCompatibleSampleModel(this.width, this.height);
-            // Initialize an empty image
-            DataBufferByte dataBuffer = new DataBufferByte(new byte[this.width*this.height*NUM_COLOR_CHANNELS],
-                    this.width*this.height);
-            WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
-            // Create the original image
-            image = new BufferedImage(cm, raster, false, properties);
-
-            this.frame.setBounds(0, 0, this.width, this.height);
-            this.frame.setVisible(true);
-
-            strategy = this.frame.getBufferStrategy();
-
-            // Make sure to make the canvas visible before creating the buffer strategy
-            this.frame.createBufferStrategy(NUM_BUFFERS);
-            launcher(() -> updateDisplay());
-        }
-
-        public void run() {
-            while (!stopped) {
-                long start = System.currentTimeMillis();
-                byte[] data = null;
-                // Get the data from the native side that matches width & height
-                getImageBuffer(data);
-                // Create data buffer
-                DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
-                // Create writable raster
-                WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
-                // Create the original image
-                image = new BufferedImage(cm, raster, false, properties);
-                launcher(() -> updateDisplay());
-                // This does not measure the time to update the display
-                double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
-                // If we need to wait
-                if (waitTime > 0) {
-                    try {
-                        Thread.sleep((long) (waitTime*TO_MILLIS));
-                    } catch (InterruptedException ie) {
-                        // do nothing
-                    }
-                }
-            }
-        }
-
-        private void terminte() {
-            stopped = true;
-        }
-    }
-
-    private static void launcher(Runnable runnable) {
-        if (EventQueue.isDispatchThread()){
-            runnable.run();
-        } else {
-            try {
-                EventQueue.invokeAndWait(runnable);
-            } catch (InterruptedException | InvocationTargetException e) {
-            }
-        }
-    }
-
 
     // ********** From the MediaPlayerData interface
     @Override

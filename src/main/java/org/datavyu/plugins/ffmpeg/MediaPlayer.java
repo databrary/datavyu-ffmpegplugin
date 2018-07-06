@@ -6,10 +6,14 @@ import java.awt.color.ColorSpace;
 
 /**
  * This interface is similar to the one in javafx
- * But at the time (July 2018) we designed this we chose against making that dependency
+ * But at the time (July 2018) we decided against making a dependency on javafx
  *
- * Note, the media error listener allows to handle all media errors; if not handled these
- * get dropped
+ * Note, the media error listener allows to handle all media errors; if not
+ * handled through the listener these media errors get dropped
+ *
+ * Unlike, the original design we decided to introduce an init method that
+ * initializes the player. Add any listeners BEFORE calling the init method.
+ *
  */
 public interface MediaPlayer {
 

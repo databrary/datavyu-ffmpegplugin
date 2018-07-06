@@ -1,5 +1,10 @@
 package org.datavyu.plugins.ffmpeg;
 
+/**
+ * This player state event is for the communication of the player state
+ * between the native code which controls the state transitions and the
+ * java side which requires state transitions.
+ */
 public class PlayerStateEvent extends PlayerEvent {
 
     public enum PlayerState {

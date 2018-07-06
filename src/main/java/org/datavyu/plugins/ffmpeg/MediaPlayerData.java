@@ -4,6 +4,12 @@ import javax.sound.sampled.AudioFormat;
 import java.awt.color.ColorSpace;
 import java.nio.ByteBuffer;
 
+/**
+ * This provides the interface to the media player data
+ * when we decide to play back data through java.
+ *
+ * Otherwise, we play back data natively.
+ */
 public interface MediaPlayerData {
 
     /**

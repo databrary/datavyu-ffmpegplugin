@@ -26,8 +26,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
 
     private final Lock markerLock = new ReentrantLock();
-    private long nativeMediaRef;
-    private PlayerStateEvent.PlayerState playerState;
+    private long nativeMediaRef = 0;
+    private PlayerStateEvent.PlayerState playerState = PlayerStateEvent.PlayerState.UNKNOWN;
     private EventQueueThread eventLoop = new EventQueueThread();
     //private final Object firstFrameLock = new Object();
     private final Lock disposeLock = new ReentrantLock();
@@ -48,7 +48,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         private final Object source;
         private final MediaError error;
 
-        public MediaErrorEvent(Object source, MediaError error) {
+        MediaErrorEvent(Object source, MediaError error) {
             this.source = source;
             this.error = error;
         }
@@ -66,11 +66,11 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         }
     }
 
-    protected void initNative() {
+    void initNative() {
         eventLoop.start();
     }
 
-    protected long getNativeMediaRef() {
+    long getNativeMediaRef() {
         return nativeMediaRef;
     }
 

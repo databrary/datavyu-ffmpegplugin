@@ -1,5 +1,8 @@
 package org.datavyu.plugins.ffmpeg;
 
+/**
+ *
+ */
 public interface PlayerStateListener {
     /**
      * The ready state indicates the media is loaded.
