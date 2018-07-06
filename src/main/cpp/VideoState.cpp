@@ -1,4 +1,4 @@
-#include "VideoState.hpp"
+#include "VideoState.h"
 
 /* Private Members */
 

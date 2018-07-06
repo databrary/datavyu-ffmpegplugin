@@ -1,4 +1,4 @@
-#include "VideoState.hpp"
+#include "VideoState.h"
 
 #ifndef SDLPLAYDATA_H_
 #define SDLPLAYDATA_H_

@@ -1,4 +1,4 @@
-#include "SDLPlayData.hpp"
+#include "SDLPlayData.h"
 
 /* Private Members */
 void SDLPlayData::update_video_pts(VideoState *is, double pts, int64_t pos, int serial) {
@@ -328,7 +328,6 @@ void SDLPlayData::video_display(VideoState *is) {
 
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
-	//TODO add audio_st and video_st getter in VideoState
 	if (is->get_audio_st() && is->get_show_mode() != SHOW_MODE_VIDEO)
 		this->video_audio_display(is);
 	else if (is->get_video_st())

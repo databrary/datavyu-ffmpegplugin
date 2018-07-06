@@ -141,12 +141,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ffplay.cpp" />
+    <ClCompile Include="SDLPlayData.cpp" />
+    <ClCompile Include="VideoState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clock.hpp" />
     <ClInclude Include="Decoder.hpp" />
     <ClInclude Include="FrameQueue.hpp" />
     <ClInclude Include="PacketQueue.hpp" />
+    <ClInclude Include="SDLPlayData.h" />
+    <ClInclude Include="VideoState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

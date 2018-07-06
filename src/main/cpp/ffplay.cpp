@@ -1,4 +1,4 @@
-#include "SDLPlayData.hpp"
+#include "SDLPlayData.h"
 
 int main(int argc, char **argv) {
 	int flags;
