@@ -1,4 +1,4 @@
-#include "ffplay.hpp"
+#include "SDLPlayData.hpp"
 
 int main(int argc, char **argv) {
 	int flags;
@@ -68,18 +68,16 @@ int main(int argc, char **argv) {
 		}
 		if (!window || !renderer || !renderer_info.num_texture_formats) {
 			av_log(NULL, AV_LOG_FATAL, "Failed to create window or renderer: %s", SDL_GetError());
-			ffplay::do_exit(nullptr);
+			SDLPlayData::do_exit(nullptr);
 		}
 	}
 	
-	VideoState* is = VideoState::stream_open(input_filename, file_iformat);
-	if (!is) {
+	//VideoState* is = VideoState::stream_open(input_filename, file_iformat);
+	SDLPlayData* pPlayer = new SDLPlayData(input_filename, file_iformat);
+	if (!pPlayer->get_VideoState()) {
 		av_log(NULL, AV_LOG_FATAL, "Failed to initialize VideoState!\n");
-		ffplay::do_exit(is);
+		SDLPlayData::do_exit(pPlayer->get_VideoState());
 	}
-	
-	ffplay* player = new ffplay(is);
-	is->set_player(player);
 
 	return 0;
 }
