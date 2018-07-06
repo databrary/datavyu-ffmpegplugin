@@ -8,7 +8,6 @@
 #include "PacketQueue.hpp"
 #include "FrameQueue.hpp"
 #include "Decoder.hpp"
-#include "ffplay.hpp"
 
 extern "C" {
 #include "libavutil/avstring.h"
@@ -34,12 +33,15 @@ extern "C" {
 # include "libavfilter/buffersink.h"
 # include "libavfilter/buffersrc.h"
 #endif
-
+//Could be moved to ffplay.hpp 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
 
 #include <assert.h>
 }
+
+#ifndef VIDEOSTATE_H_
+#define VIDEOSTATE_H_
 
 /* Minimum SDL audio buffer size, in samples. */
 #define SDL_AUDIO_MIN_BUFFER_SIZE 512
@@ -141,14 +143,16 @@ static char *afilters = NULL;
 #endif
 static int autorotate = 1;
 static int find_stream_info = 1;
-static ffplay * player;
 /* current context */
 static int64_t audio_callback_time;
+
+
+class ffplay;
 
 //what will be the streamer in the future implementations
 class VideoState {
 private:
-
+	ffplay *pPlayer;
 	std::thread *read_tid;
 	AVInputFormat *iformat;
 	int abort_request;
@@ -296,7 +300,7 @@ private:
 		vp->pos = pos;
 		vp->serial = serial;
 
-		player->set_default_window_size(vp->width, vp->height, vp->sar);
+		pPlayer->set_default_window_size(vp->width, vp->height, vp->sar);
 
 		av_frame_move_ref(vp->frame, src_frame);
 		pPictq->push();
@@ -314,7 +318,7 @@ private:
 		switch (codecpar->codec_type) {
 		case AVMEDIA_TYPE_AUDIO:
 			pAuddec->abort(pSampq);
-			player->closeAudioDevice();
+			pPlayer->closeAudioDevice();
 			delete pAuddec; // TODO(fraudies): Move this to the destructor of VideoState
 			swr_free(&this->swr_ctx);
 			av_freep(&this->audio_buf1);
@@ -357,6 +361,13 @@ private:
 			default:
 				break;
 		}
+	}
+
+	int stream_has_enough_packets(AVStream *st, int stream_id, PacketQueue *queue) {
+		return stream_id < 0 ||
+			queue->is_abort_request() ||
+			(st->disposition & AV_DISPOSITION_ATTACHED_PIC) ||
+			queue->get_nb_packets() > MIN_FRAMES && (!queue->get_duration() || av_q2d(st->time_base) * queue->get_duration() > 1.0);
 	}
 
 	/* Ported this function from cmdutils */
@@ -445,13 +456,6 @@ private:
 			opts[i] = filter_codec_opts(codec_opts, s->streams[i]->codecpar->codec_id,
 				s, s->streams[i], NULL);
 		return opts;
-	}
-
-	int stream_has_enough_packets(AVStream *st, int stream_id, PacketQueue *queue) {
-		return stream_id < 0 ||
-			queue->is_abort_request() ||
-			(st->disposition & AV_DISPOSITION_ATTACHED_PIC) ||
-			queue->get_nb_packets() > MIN_FRAMES && (!queue->get_duration() || av_q2d(st->time_base) * queue->get_duration() > 1.0);
 	}
 
 	int is_realtime(AVFormatContext *s) {
@@ -673,9 +677,12 @@ public:
 
 	static VideoState *stream_open(const char *filename, AVInputFormat *iformat);
 
+	/* Controls */
+
 	void seek_chapter(int incr);
 	void stream_toggle_pause();
-	void toggle_full_screen();
+	//Moved to ffplay.cpp
+	//void toggle_full_screen();
 	void toggle_pause();
 	void toggle_mute();
 	void update_volume(int sign, double step);
@@ -683,6 +690,8 @@ public:
 	void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
 	void stream_cycle_channel(int codec_type);
 	void toggle_audio_display();
+
+	/* Setter and Getters */
 
 	bool isPaused() const { return paused; }
 
@@ -730,6 +739,8 @@ public:
 
 	FFTSample *get_rdft_data() { return rdft_data; }
 	void set_rdft_data(FFTSample *newRDFT_data) { rdft_data = newRDFT_data; }
+
+	void set_player(ffplay *player) { pPlayer = player;  }
 
 	int get_realtime() const { return realtime; }
 
@@ -855,7 +866,7 @@ public:
 		//sws_freeContext(this->img_convert_ctx);
 		//sws_freeContext(this->sub_convert_ctx);
 		av_free(this->filename);
-		player->destroyTextures();
+		pPlayer->destroyTextures();
 	}
 
 	/* prepare a new audio buffer */
@@ -874,7 +885,7 @@ public:
 				}
 				else {
 					if (show_mode != SHOW_MODE_VIDEO)
-						player->update_sample_display((int16_t *)this->audio_buf, audio_size);
+						pPlayer->update_sample_display((int16_t *)this->audio_buf, audio_size);
 					this->audio_buf_size = audio_size;
 				}
 				this->audio_buf_index = 0;
@@ -932,10 +943,10 @@ static void sdl_audio_callback_bridge(void* vs, Uint8 *stream, int len) {
 	((VideoState*)vs)->sdl_audio_callback(stream, len);
 }
 
-
+/* Controls */
 void VideoState::stream_toggle_pause() {
 	if (this->paused) {
-		player->set_frame_timer(player->get_frame_timer() + av_gettime_relative() / 1000000.0 - pVidclk->get_lastUpdated());
+		pPlayer->set_frame_timer(pPlayer->get_frame_timer() + av_gettime_relative() / 1000000.0 - pVidclk->get_lastUpdated());
 		if (this->read_pause_return != AVERROR(ENOSYS)) {
 			pVidclk->setPaused(0);
 		}
@@ -1068,7 +1079,7 @@ void VideoState::toggle_audio_display() {
 		next = (next + 1) % SHOW_MODE_NB;
 	} while (next != show_mode && (next == SHOW_MODE_VIDEO && !this->video_st || next != SHOW_MODE_VIDEO && !this->audio_st));
 	if (show_mode != next) {
-		player->set_force_refresh(1);
+		pPlayer->set_force_refresh(1);
 		show_mode = static_cast<ShowMode>(next);
 	}
 }
@@ -1133,7 +1144,6 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 		return NULL;
 	}
 
-	player = new ffplay(is);
 	return is;
 }
 
@@ -1282,7 +1292,7 @@ int VideoState::read_thread() {
 		AVCodecParameters *codecpar = st->codecpar;
 		AVRational sar = av_guess_sample_aspect_ratio(ic, st, NULL);
 		if (codecpar->width)
-			player->set_default_window_size(codecpar->width, codecpar->height, sar);
+			pPlayer->set_default_window_size(codecpar->width, codecpar->height, sar);
 	}
 
 	/* open the streams */
@@ -1545,8 +1555,7 @@ the_end:
 	return ret;
 }
 
-int VideoState::video_thread()
-{
+int VideoState::video_thread() {
 	AVFrame *frame = av_frame_alloc();
 	double pts;
 	double duration;
@@ -1805,7 +1814,7 @@ int VideoState::stream_component_open(int stream_index) {
 		}
 		if ((ret = pAuddec->start(audio_thread_bridge, this)) < 0)
 			goto out;
-		player->pauseAudioDevice();
+		pPlayer->pauseAudioDevice();
 		break;
 	case AVMEDIA_TYPE_VIDEO:
 		this->video_stream = stream_index;
@@ -1838,3 +1847,5 @@ out:
 
 	return ret;
 }
+
+#endif VIDEOSTATE_H_
