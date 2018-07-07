@@ -1,13 +1,16 @@
+#ifndef VIDEOSTATE_H_
+#define VIDEOSTATE_H_
+
 #include <inttypes.h>
 #include <math.h>
 #include <limits.h>
 #include <signal.h>
 #include <stdint.h>
 
-#include "Clock.hpp"
-#include "PacketQueue.hpp"
-#include "FrameQueue.hpp"
-#include "Decoder.hpp"
+#include "Clock.h"
+#include "PacketQueue.h"
+#include "FrameQueue.h"
+#include "Decoder.h"
 
 extern "C" {
 #include "libavutil/avstring.h"
@@ -39,9 +42,6 @@ extern "C" {
 
 #include <assert.h>
 }
-
-#ifndef VIDEOSTATE_H_
-#define VIDEOSTATE_H_
 
 /* Minimum SDL audio buffer size, in samples. */
 #define SDL_AUDIO_MIN_BUFFER_SIZE 512
@@ -114,7 +114,6 @@ static int video_disable;
 static int subtitle_disable;
 static const char* wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int seek_by_bytes = -1;
-static int display_disable;
 static int borderless;
 static int startup_volume = 100;
 static int show_status = 1;
@@ -262,6 +261,8 @@ private:
 
 	/* From cmd utils*/
 	AVDictionary **setup_find_stream_info_opts(AVFormatContext *s, AVDictionary *codec_opts);
+
+	int is_realtime(AVFormatContext *s);
 
 	/* return the wanted number of samples to get better sync if sync_type is video
 	* or external master clock */

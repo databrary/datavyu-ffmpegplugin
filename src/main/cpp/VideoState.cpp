@@ -1,4 +1,5 @@
 #include "VideoState.h"
+#include "SDLPlayData.h"
 
 /* Private Members */
 
@@ -771,7 +772,6 @@ int VideoState::read_thread() {
 			int64_t seek_max = this->seek_rel < 0 ? seek_target - this->seek_rel - 2 : INT64_MAX;
 			// FIXME the +-2 is due to rounding being not done in the correct direction in generation
 			//      of the seek_pos/seek_rel variables
-
 			ret = avformat_seek_file(this->ic, -1, seek_min, seek_target, seek_max, this->seek_flags);
 			if (ret < 0) {
 				av_log(NULL, AV_LOG_ERROR,
@@ -1325,7 +1325,6 @@ void VideoState::toggle_audio_display() {
 
 bool VideoState::isPaused() const { return paused; }
 
-int VideoState::get_step() const { return step; }
 int VideoState::get_step() const { return step; }
 int VideoState::get_frame_drops_early() const { return frame_drops_early; }
 

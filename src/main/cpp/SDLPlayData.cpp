@@ -170,7 +170,6 @@ int SDLPlayData::video_open(VideoState *is) {
 	if (!window_title)
 		window_title = input_filename;
 	SDL_SetWindowTitle(window, window_title);
-
 	SDL_SetWindowSize(window, w, h);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	if (is_full_screen)
@@ -322,7 +321,6 @@ int SDLPlayData::realloc_texture(SDL_Texture **texture, Uint32 new_format, int n
 }
 
 void SDLPlayData::video_display(VideoState *is) {
-	//TODO add width getter in VideoState
 	if (!width)
 		video_open(is);
 
@@ -595,7 +593,7 @@ void SDLPlayData::refresh_loop_wait_event(VideoState *is, SDL_Event *event) {
 		if (remaining_time > 0.0)
 			av_usleep((int64_t)(remaining_time * 1000000.0));
 		remaining_time = REFRESH_RATE;
-		if (show_mode != SHOW_MODE_NONE && (!is->isPaused() || force_refresh))
+		if (is->get_show_mode() != SHOW_MODE_NONE && (!is->isPaused() || force_refresh))
 			video_refresh(is, &remaining_time);
 		SDL_PumpEvents();
 	}
@@ -882,22 +880,23 @@ void SDLPlayData::event_loop(VideoState *is) {
 			case SDLK_DOWN:
 				incr = -60.0;
 			do_seek:
-				if (seek_by_bytes) {
-					pos = -1;
-					if (pos < 0 && is->get_video_stream() >= 0)
-						pos = is->get_pPictq()->last_pos();
-					if (pos < 0 && is->get_audio_stream() >= 0)
-						pos = is->get_pSampq()->last_pos();
-					if (pos < 0)
-						pos = avio_tell(is->get_ic()->pb);
-					if (is->get_ic()->bit_rate)
-						incr *= is->get_ic()->bit_rate / 8.0;
-					else
-						incr *= 180000.0;
-					pos += incr;
-					is->stream_seek(pos, incr, 1);
-				}
-				else {
+				//TODO FIX SEEK BY BYTES BUG
+				//if (seek_by_bytes) {
+				//	pos = -1;
+				//	if (pos < 0 && is->get_video_stream() >= 0)
+				//		pos = is->get_pPictq()->last_pos();
+				//	if (pos < 0 && is->get_audio_stream() >= 0)
+				//		pos = is->get_pSampq()->last_pos();
+				//	if (pos < 0)
+				//		pos = avio_tell(is->get_ic()->pb);
+				//	if (is->get_ic()->bit_rate)
+				//		incr *= is->get_ic()->bit_rate / 8.0;
+				//	else
+				//		incr *= 180000.0;
+				//	pos += incr;
+				//	is->stream_seek(pos, incr, 1);
+				//}
+				//else {
 					pos = is->get_master_clock();
 					if (isnan(pos))
 						pos = (double)is->get_seek_pos() / AV_TIME_BASE;
@@ -905,7 +904,7 @@ void SDLPlayData::event_loop(VideoState *is) {
 					if (is->get_ic()->start_time != AV_NOPTS_VALUE && pos < is->get_ic()->start_time / (double)AV_TIME_BASE)
 						pos = is->get_ic()->start_time / (double)AV_TIME_BASE;
 					is->stream_seek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
-				}
+				//}
 				break;
 			default:
 				break;
@@ -990,4 +989,86 @@ void SDLPlayData::event_loop(VideoState *is) {
 			break;
 		}
 	}
+}
+
+int main(int argc, char **argv) {
+	int flags;
+
+	av_log_set_flags(AV_LOG_SKIP_REPEATED);
+
+	/* register all codecs, demux and protocols */
+#if CONFIG_AVDEVICE
+	avdevice_register_all();
+#endif
+	avformat_network_init();
+	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
+
+	input_filename = "Nature_30fps_1080p.mp4";
+
+	if (!input_filename) {
+		//show_usage();
+		av_log(NULL, AV_LOG_FATAL, "An input file must be specified\n");
+		av_log(NULL, AV_LOG_FATAL,
+			"Use -h to get full help or, even better, run 'man %s'\n", program_name);
+
+		SDL_Delay(20000);
+		exit(1);
+	}
+
+	if (display_disable) {
+		video_disable = 1;
+	}
+	flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
+	if (audio_disable)
+		flags &= ~SDL_INIT_AUDIO;
+	else {
+		/* Try to work around an occasional ALSA buffer underflow issue when the
+		* period size is NPOT due to ALSA resampling by forcing the buffer size. */
+		if (!SDL_getenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE"))
+			SDL_setenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE", "1", 1);
+	}
+	if (display_disable)
+		flags &= ~SDL_INIT_VIDEO;
+	if (SDL_Init(flags)) {
+		av_log(NULL, AV_LOG_FATAL, "Could not initialize SDL - %s\n", SDL_GetError());
+		av_log(NULL, AV_LOG_FATAL, "(Did you set the DISPLAY variable?)\n");
+		exit(1);
+	}
+
+	SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
+	SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
+
+	if (!display_disable) {
+		int flags = SDL_WINDOW_HIDDEN;
+		if (borderless)
+			flags |= SDL_WINDOW_BORDERLESS;
+		else
+			flags |= SDL_WINDOW_RESIZABLE;
+		window = SDL_CreateWindow(program_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+		if (window) {
+			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+			if (!renderer) {
+				av_log(NULL, AV_LOG_WARNING, "Failed to initialize a hardware accelerated renderer: %s\n", SDL_GetError());
+				renderer = SDL_CreateRenderer(window, -1, 0);
+			}
+			if (renderer) {
+				if (!SDL_GetRendererInfo(renderer, &renderer_info))
+					av_log(NULL, AV_LOG_VERBOSE, "Initialized %s renderer.\n", renderer_info.name);
+			}
+		}
+		if (!window || !renderer || !renderer_info.num_texture_formats) {
+			av_log(NULL, AV_LOG_FATAL, "Failed to create window or renderer: %s", SDL_GetError());
+			SDLPlayData::do_exit(nullptr);
+		}
+	}
+
+	//VideoState* is = VideoState::stream_open(input_filename, file_iformat);
+	SDLPlayData* pPlayer = new SDLPlayData(input_filename, file_iformat);
+	if (!pPlayer->get_VideoState()) {
+		av_log(NULL, AV_LOG_FATAL, "Failed to initialize VideoState!\n");
+		SDLPlayData::do_exit(pPlayer->get_VideoState());
+	}
+
+	return 0;
 }

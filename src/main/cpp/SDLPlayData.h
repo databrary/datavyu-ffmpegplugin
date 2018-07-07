@@ -1,7 +1,7 @@
-#include "VideoState.h"
-
 #ifndef SDLPLAYDATA_H_
 #define SDLPLAYDATA_H_
+
+#include "VideoState.h"
 
 /* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
 #define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
@@ -46,6 +46,8 @@ static int16_t sample_array[SAMPLE_ARRAY_SIZE];
 static int sample_array_index;
 static int force_refresh;
 static double frame_timer;
+
+static int display_disable;
 
 static const struct TextureFormatEntry {
 	enum AVPixelFormat format;
