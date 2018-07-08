@@ -75,8 +75,8 @@
     <LibraryPath>C:\Users\Florian\FFplay64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Florian\FFplay64\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Florian\FFplay64\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\FFplay64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,7 +102,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_151\include\win32;C:\Program Files\Java\jdk1.8.0_151\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -140,18 +140,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ffplay.cpp" />
+    <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="Decoder.cpp" />
+    <ClCompile Include="FrameQueue.cpp" />
+    <ClCompile Include="PacketQueue.cpp" />
+    <ClCompile Include="SDLPlayData.cpp" />
+    <ClCompile Include="VideoState.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Clock.hpp" />
-    <ClInclude Include="Decoder.hpp" />
-    <ClInclude Include="FrameQueue.hpp" />
-    <ClInclude Include="JavaPlayerEventDispatcher.h" />
-    <ClInclude Include="JniUtils.h" />
-    <ClInclude Include="Media.h" />
-    <ClInclude Include="PacketQueue.hpp" />
-    <ClInclude Include="Pipeline.h" />
-    <ClInclude Include="PipelineOptions.h" />
+    <ClInclude Include="Clock.h" />
+    <ClInclude Include="Decoder.h" />
+    <ClInclude Include="FrameQueue.h" />
+    <ClInclude Include="PacketQueue.h" />
+    <ClInclude Include="SDLPlayData.h" />
+    <ClInclude Include="VideoState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
