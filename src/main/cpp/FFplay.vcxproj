@@ -146,7 +146,12 @@
     <ClInclude Include="Clock.hpp" />
     <ClInclude Include="Decoder.hpp" />
     <ClInclude Include="FrameQueue.hpp" />
+    <ClInclude Include="JavaPlayerEventDispatcher.h" />
+    <ClInclude Include="JniUtils.h" />
+    <ClInclude Include="Media.h" />
     <ClInclude Include="PacketQueue.hpp" />
+    <ClInclude Include="Pipeline.h" />
+    <ClInclude Include="PipelineOptions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
