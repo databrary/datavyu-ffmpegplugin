@@ -1003,7 +1003,7 @@ int main(int argc, char **argv) {
 	avformat_network_init();
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 
-	input_filename = "Nature_30fps_1080p.mp4";
+	input_filename = "counter.mp4";
 
 	if (!input_filename) {
 		//show_usage();
