@@ -33,6 +33,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegI
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+ * Method:    ffmpegDisposePlayer
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegDisposePlayer
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegGetAudioSyncDelay
  * Signature: (J[J)I
  */

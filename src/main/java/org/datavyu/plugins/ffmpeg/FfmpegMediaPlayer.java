@@ -263,6 +263,7 @@ final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerDa
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();
         }
+        ffmpegDisposePlayer(getNativeMediaRef());
     }
 
     // ********** From the MediaPlayerData interface
@@ -345,6 +346,7 @@ final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerDa
     // Native methods
     private native int ffmpegInitPlayer(long refNativeMedia, URI source, AudioFormat requestedAudioFormat,
                                         ColorSpace requestedColorFormat);
+    private native int ffmpegDisposePlayer(long refNativeMedia);
 
     private native int ffmpegGetAudioSyncDelay(long refNativeMedia, long[] syncDelay);
     private native int ffmpegSetAudioSyncDelay(long refNativeMedia, long delay);

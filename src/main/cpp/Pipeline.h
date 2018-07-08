@@ -59,7 +59,7 @@ public:
     void                    SetEventDispatcher(CJavaPlayerEventDispatcher* pEventDispatcher);
 
     virtual uint32_t        Init();
-    virtual uint32_t        PostBuildInit();
+    //virtual uint32_t        PostBuildInit();
     virtual void            Dispose();
 
     virtual uint32_t        Play()=0;
@@ -86,6 +86,11 @@ public:
 
     CJavaPlayerEventDispatcher* m_pEventDispatcher;
 
+	// TODO(fraudies): Clean this up... currently used to free memory
+	inline CPipelineOptions* GetCPipelineOptions() {
+		return m_pOptions;
+	}
+
 protected:
     CPipelineOptions*       m_pOptions;
     PlayerState             m_PlayerState;
@@ -97,9 +102,9 @@ protected:
     bool                    m_bAudioInitDone;
     bool                    m_bVideoInitDone;
     bool                    m_bStaticPipeline;
-    bool                    m_bDynamicElementsReady;
-    bool                    m_bAudioSinkReady;
-    bool                    m_bVideoSinkReady;
+    bool                    m_bDynamicElementsReady; // TODO: Delete or substitute
+    bool                    m_bAudioSinkReady; // TODO: Delete or substitute
+    bool                    m_bVideoSinkReady; // TODO: Delete or substitute
 };
 
 #endif  //_PIPELINE_H_

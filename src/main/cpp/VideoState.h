@@ -13,34 +13,34 @@
 #include "Decoder.h"
 
 extern "C" {
-#include "libavutil/avstring.h"
-#include "libavutil/eval.h"
-#include "libavutil/mathematics.h"
-#include "libavutil/pixdesc.h"
-#include "libavutil/imgutils.h"
-#include "libavutil/dict.h"
-#include "libavutil/parseutils.h"
-#include "libavutil/samplefmt.h"
-#include "libavutil/avassert.h"
-#include "libavutil/time.h"
-#include "libavutil/log.h"
-#include "libavformat/avformat.h"
-#include "libavdevice/avdevice.h"
-#include "libswscale/swscale.h"
-#include "libavutil/opt.h"
-#include "libavcodec/avfft.h"
-#include "libswresample/swresample.h"
+	#include "libavutil/avstring.h"
+	#include "libavutil/eval.h"
+	#include "libavutil/mathematics.h"
+	#include "libavutil/pixdesc.h"
+	#include "libavutil/imgutils.h"
+	#include "libavutil/dict.h"
+	#include "libavutil/parseutils.h"
+	#include "libavutil/samplefmt.h"
+	#include "libavutil/avassert.h"
+	#include "libavutil/time.h"
+	#include "libavutil/log.h"
+	#include "libavformat/avformat.h"
+	#include "libavdevice/avdevice.h"
+	#include "libswscale/swscale.h"
+	#include "libavutil/opt.h"
+	#include "libavcodec/avfft.h"
+	#include "libswresample/swresample.h"
 
-#if CONFIG_AVFILTER
-# include "libavfilter/avfilter.h"
-# include "libavfilter/buffersink.h"
-# include "libavfilter/buffersrc.h"
-#endif
-//Could be moved to ffplay.hpp 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_thread.h>
+	#if CONFIG_AVFILTER
+	# include "libavfilter/avfilter.h"
+	# include "libavfilter/buffersink.h"
+	# include "libavfilter/buffersrc.h"
+	#endif
+	//Could be moved to ffplay.hpp 
+	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_thread.h>
 
-#include <assert.h>
+	#include <assert.h>
 }
 
 /* Minimum SDL audio buffer size, in samples. */
@@ -109,9 +109,9 @@ static const char *input_filename;
 static const char *window_title;
 static int screen_width = 0;
 static int screen_height = 0;
-static int audio_disable;
-static int video_disable;
-static int subtitle_disable;
+static int audio_disable; // TODO(fraudies): Move this into video state
+static int video_disable; // TODO(fraudies): Move this into video state
+static int subtitle_disable; // TODO(fraudies): Move this into video state
 static const char* wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int seek_by_bytes = -1;
 static int borderless;

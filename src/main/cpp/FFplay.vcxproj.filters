@@ -53,20 +53,5 @@
     <ClInclude Include="PacketQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JavaPlayerEventDispatcher.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JniUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Pipeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Media.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PipelineOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

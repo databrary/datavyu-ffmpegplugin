@@ -991,6 +991,20 @@ void SDLPlayData::event_loop(VideoState *is) {
 	}
 }
 
+void SDLPlayData::start_display_loop() {
+	// SDL: The event loop for the SDL window
+	display_tid = new std::thread([this] {
+		SDL_Event event;
+		while (!this->stopped) {
+			this->refresh_loop_wait_event(this->get_VideoState(), &event);
+		}
+	});
+}
+
+void SDLPlayData::stop_display_loop() {
+	stopped = true;
+}
+
 int main(int argc, char **argv) {
 	int flags;
 

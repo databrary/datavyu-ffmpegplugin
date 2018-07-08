@@ -1,6 +1,7 @@
 #ifndef SDLPLAYDATA_H_
 #define SDLPLAYDATA_H_
 
+#include <atomic>
 #include "VideoState.h"
 
 /* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
@@ -107,6 +108,9 @@ private:
 
 	double vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration);
 
+	std::atomic<bool> stopped = false;
+	std::thread* display_tid = nullptr;
+
 public:
 	SDLPlayData(const char *filename, AVInputFormat *iformat);
 	~SDLPlayData();
@@ -158,5 +162,9 @@ public:
 	static void do_exit(VideoState* is);
 
 	void event_loop(VideoState *is);
+
+	void start_display_loop();
+
+	void stop_display_loop();
 };
 #endif SDLPLAYDATA_H_

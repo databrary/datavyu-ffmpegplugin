@@ -28,13 +28,8 @@
 
 #include <jni.h>
 
-#include <PipelineManagement/AudioTrack.h>
-#include <PipelineManagement/VideoTrack.h>
-#include <PipelineManagement/SubtitleTrack.h>
-#include <PipelineManagement/Pipeline.h>
-#include <PipelineManagement/VideoFrame.h>
-#include <Media.h>
-#include <MediaManagement/MediaWarningListener.h>
+#include "Pipeline.h"
+#include "Media.h"
 
 using namespace std;
 
@@ -53,6 +48,7 @@ public:
 private:
     JavaVM *m_PlayerVM;
     jobject m_PlayerInstance;
+    jlong   m_MediaReference; // FIXME: Nuke this field, it's completely unused
 
     static jmethodID m_SendWarningMethod;
 
