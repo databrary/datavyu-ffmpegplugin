@@ -1,4 +1,4 @@
-#include "PacketQueue.hpp"
+#include "PacketQueue.h"
 #include <mutex>
 #include <condition_variable>
 
@@ -60,19 +60,7 @@ class FrameQueue{
 			av_frame_unref(vp->frame);
 		}
     public:
-        FrameQueue(const PacketQueue* pktq, int max_size, int keep_last) :
-            rindex(0),
-            windex(0),
-            size(0),
-            max_size(max_size),
-            keep_last(keep_last),
-            rindex_shown(0),
-            pktq(pktq) {
-			queue = new Frame[max_size];
-            for (int i = 0; i < max_size; i++) {
-                queue[i].frame = av_frame_alloc();
-            }
-        }
+		FrameQueue(const PacketQueue* pktq, int max_size, int keep_last);
 
 		// Same like PacketQueue we should destroy the mutex 
         virtual ~FrameQueue() {
@@ -84,11 +72,7 @@ class FrameQueue{
 			delete[] queue;
         }
 
-        void signal() {
-            std::unique_lock<std::mutex> locker(mutex);
-            cond.notify_one();
-            locker.unlock();
-        }
+		void signal();
 
         inline Frame* peek() { return &queue[(rindex + rindex_shown) % max_size]; }
 
@@ -100,53 +84,19 @@ class FrameQueue{
 
 		inline int get_rindex_shown() const { return rindex_shown; }
 
-        Frame *peek_writable() {
-            // waits until we have space to put a new frame
-            std::unique_lock<std::mutex> locker(mutex);
-            cond.wait(locker, [&]{ return size < max_size || pktq->is_abort_request(); } );
-            locker.unlock();
-            return pktq->is_abort_request() ? nullptr : &queue[windex];
-        }
+		Frame *peek_writable();
 
-        Frame *peek_readable() {
-            // waits until we have a readable new frame
-            std::unique_lock<std::mutex> locker(mutex);
-            cond.wait(locker, [&]{ return size - rindex_shown > 0 || pktq->is_abort_request(); } );
-            locker.unlock();
-            return pktq->is_abort_request() ? nullptr : &queue[(rindex + rindex_shown) % max_size];
-        }
+		Frame *peek_readable();
 
-        void push() {
-            if (++windex == max_size)
-                windex = 0;
-            std::unique_lock<std::mutex> locker(mutex);
-            size++;
-            cond.notify_one();
-            locker.unlock();
-        }
+		void push();
 
-        void next() {
-            if (keep_last && !rindex_shown) {
-                rindex_shown = 1;
-                return;
-            }
-            unref_item(&queue[rindex]);
-            if (++rindex == max_size)
-                rindex = 0;
-            std::unique_lock<std::mutex> locker(mutex);
-            size--;
-            cond.notify_one();
-            locker.unlock();
-        }
+		void next();
 
         // return the number of undisplayed frames in the queue
         inline int nb_remaining() const { return size - rindex_shown; }
 
         // return last shown position
-        int64_t last_pos() {
-            Frame *fp = &queue[rindex];
-			return rindex_shown && fp->serial == pktq->get_serial() ? fp->pos : -1;
-        }
+		int64_t last_pos();
 };
 
 #endif FRAME_QUEUE_H_
