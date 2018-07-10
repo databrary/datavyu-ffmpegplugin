@@ -1,6 +1,8 @@
 #ifndef VIDEOSTATE_H_
 #define VIDEOSTATE_H_
 
+#define CONFIG_AVFILTER 0
+
 #include <inttypes.h>
 #include <math.h>
 #include <limits.h>
@@ -35,6 +37,7 @@ extern "C" {
 # include "libavfilter/avfilter.h"
 # include "libavfilter/buffersink.h"
 # include "libavfilter/buffersrc.h"
+# include "libavutil/display.h"
 #endif
 //Could be moved to ffplay.hpp 
 #include <SDL2/SDL.h>
@@ -42,6 +45,9 @@ extern "C" {
 
 #include <assert.h>
 }
+
+#define GROW_ARRAY(array, nb_elems)\
+    array = grow_array(array, sizeof(*array), &nb_elems, nb_elems + 1)
 
 /* Minimum SDL audio buffer size, in samples. */
 #define SDL_AUDIO_MIN_BUFFER_SIZE 512
@@ -239,6 +245,23 @@ private:
 	int last_video_stream, last_audio_stream, last_subtitle_stream;
 
 	std::condition_variable continue_read_thread;
+	
+	inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
+			enum AVSampleFormat fmt2, int64_t channel_count2) {
+		/* If channel count == 1, planar and non-planar formats are the same */
+		if (channel_count1 == 1 && channel_count2 == 1)
+			return av_get_packed_sample_fmt(fmt1) != av_get_packed_sample_fmt(fmt2);
+		else
+			return channel_count1 != channel_count2 || fmt1 != fmt2;
+	}
+	inline int64_t get_valid_channel_layout(int64_t channel_layout, int channels) {
+		if (channel_layout && av_get_channel_layout_nb_channels(channel_layout) == channels)
+			return channel_layout;
+		else
+			return 0;
+	}
+
+	double get_rotation(AVStream * st);
 
 	/* open a given stream. Return 0 if OK */
 	int stream_component_open(int stream_index);
@@ -374,6 +397,17 @@ public:
 
 	/* prepare a new audio buffer */
 	void sdl_audio_callback(Uint8 *stream, int len);
+
+	void set_speed(int newSpeed);
+	int get_master_clock_speed();
+#if CONFIG_AVFILTER
+	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
+	int configure_video_filters(AVFilterGraph * graph, VideoState * is, const char * vfilters, AVFrame * frame);
+	int configure_audio_filters(VideoState * is, const char * afilters, int force_output_format);
+
+	int get_vfilter_idx();
+	void set_vfilter_idx(int idx);
+#endif
 };
 
 // Note, this bridge is necessary to interface with the low-level c interface of the SDL callback

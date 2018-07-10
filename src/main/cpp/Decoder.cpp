@@ -12,6 +12,7 @@ Decoder::Decoder(AVCodecContext *avctx, PacketQueue *queue, std::condition_varia
 	start_pts_tb(av_make_q(0, 0)),
 	next_pts(0),
 	next_pts_tb(av_make_q(0, 0)),
+	step(1),
 	decoder_tid(nullptr) {
 	// Note, that pkt will need to be initialized for the case when decode_frame is never run
 	// Sidenote: the move ref code will clean this initialization
@@ -35,10 +36,10 @@ int Decoder::decode_frame(AVFrame *frame, AVSubtitle *sub) {
 					ret = avcodec_receive_frame(avctx, frame);
 					if (ret >= 0) {
 						if (decoder_reorder_pts == -1) {
-							frame->pts = frame->best_effort_timestamp;
+							frame->pts = frame->best_effort_timestamp * step;
 						}
 						else if (!decoder_reorder_pts) {
-							frame->pts = frame->pkt_dts;
+							frame->pts = frame->pkt_dts * step;
 						}
 					}
 					break;
@@ -51,7 +52,7 @@ int Decoder::decode_frame(AVFrame *frame, AVSubtitle *sub) {
 						else if (next_pts != AV_NOPTS_VALUE)
 							frame->pts = av_rescale_q(next_pts, next_pts_tb, tb);
 						if (frame->pts != AV_NOPTS_VALUE) {
-							next_pts = frame->pts + frame->nb_samples;
+							next_pts = frame->pts + frame->nb_samples ;
 							next_pts_tb = tb;
 						}
 					}
@@ -119,6 +120,10 @@ void Decoder::set_start_pts(int64_t start_pts) {
 
 void Decoder::set_start_pts_tb(AVRational start_pts_tb) {
 	this->start_pts_tb = start_pts_tb;
+}
+
+void Decoder::set_pts_step(int newStep) {
+	step = newStep;
 }
 
 // TODO(fraudies): This is tied to the audio/image/subtitle decode thread; 
