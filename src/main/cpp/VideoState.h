@@ -294,6 +294,9 @@ public:
 	void stream_toggle_pause();
 	//Moved to ffplay.cpp
 	//void toggle_full_screen();
+	void pause();
+	void stop();
+	void play();
 	void toggle_pause();
 	void toggle_mute();
 	void update_volume(int sign, double step);

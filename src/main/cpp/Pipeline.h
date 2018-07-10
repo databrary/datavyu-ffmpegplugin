@@ -95,16 +95,6 @@ protected:
     CPipelineOptions*       m_pOptions;
     PlayerState             m_PlayerState;
     PlayerState             m_PlayerPendingState;
-    bool                    m_bBufferingEnabled;
-    long                    m_lBufferingCapacity;
-    bool                    m_bHasAudio;
-    bool                    m_bHasVideo;
-    bool                    m_bAudioInitDone;
-    bool                    m_bVideoInitDone;
-    bool                    m_bStaticPipeline;
-    bool                    m_bDynamicElementsReady; // TODO: Delete or substitute
-    bool                    m_bAudioSinkReady; // TODO: Delete or substitute
-    bool                    m_bVideoSinkReady; // TODO: Delete or substitute
 };
 
 #endif  //_PIPELINE_H_

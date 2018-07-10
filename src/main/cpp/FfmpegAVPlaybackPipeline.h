@@ -44,6 +44,7 @@ private:
 	virtual uint32_t        GetAudioSyncDelay(long* plMillis);
 
 	SDLPlayData* pPlayer;
+	std::mutex stateLock;
 };
 
 #endif  //_FFMPEG_AV_PLAYBACK_PIPELINE_H_

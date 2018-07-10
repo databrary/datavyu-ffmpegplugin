@@ -1,4 +1,5 @@
 #include "FfmpegAVPlaybackPipeline.h"
+#include "FfmpegMediaErrors.h"
 
 uint32_t FfmpegAVPlaybackPipeline::Init() {
 	// TODO: Proper error handling and wiring up of input arguments
@@ -75,10 +76,25 @@ void FfmpegAVPlaybackPipeline::Dispose() {
 
 uint32_t FfmpegAVPlaybackPipeline::Play() {
 	// TODO(fraudies): Check for nullptrs
-	pPlayer->get_VideoState()->toggle_pause();
-	// TODO(fraudies): Send a state transition event
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
 
-	return 0; // no error
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+	pVideoState->play();
+
+	stateLock.lock();
+	m_PlayerState = Playing;
+	stateLock.unlock();
+
+	// Change 
+	m_pEventDispatcher->SendPlayerStateEvent(m_PlayerState, pVideoState->get_master_clock->get_clock());
+
+
+	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Stop() {
