@@ -569,6 +569,10 @@ VideoState::~VideoState() {
 	delete(pVidclk);
 	delete(pAudclk);
 	delete(pExtclk);
+#if CONFIG_AVFILTER
+	av_dict_free(&swr_opts);
+	av_dict_free(&sws_dict);
+#endif
 	// Note, that the decoders get freed in the stream close function
 }
 
@@ -766,6 +770,45 @@ int VideoState::read_thread() {
 			continue;
 		}
 #endif
+		if (this->newSpeed_req) {
+			if (this->video_stream >= 0 && this->audio_stream >= 0) {
+
+				if ((stream_has_enough_packets(this->audio_st, this->audio_stream, pAudioq) &&
+					stream_has_enough_packets(this->video_st, this->video_stream, pVideoq) &&
+					stream_has_enough_packets(this->subtitle_st, this->subtitle_stream, pSubtitleq))) {
+				
+					switch (this->get_master_sync_type()) {
+					case AV_SYNC_VIDEO_MASTER:
+						pVidclk->set_clock_speed(pts_speed);
+						break;
+					case AV_SYNC_AUDIO_MASTER:
+						pAudclk->set_clock_speed(pts_speed);
+						break;
+					default:
+						pExtclk->set_clock_speed(pts_speed);
+						break;
+					}
+
+					if (pViddec) {
+						pViddec->set_pts_step(1/pts_speed);
+
+						if (this->audio_stream >= 0) {
+							pAudioq->flush();
+							pAudioq->put_flush_packet();
+						}
+						if (this->subtitle_stream >= 0) {
+							pSubtitleq->flush();
+							pSubtitleq->put_flush_packet();
+						}
+						if (this->video_stream >= 0) {
+							pVideoq->flush();
+							pVideoq->put_flush_packet();
+						}
+					}
+					this->newSpeed_req = 0;
+				}
+			}
+		}
 		if (this->seek_req) {
 			int64_t seek_target = this->seek_pos;
 			int64_t seek_min = this->seek_rel > 0 ? seek_target - this->seek_rel + 2 : INT64_MIN;
@@ -920,7 +963,7 @@ int VideoState::audio_thread() {
 			dec_channel_layout = get_valid_channel_layout(frame->channel_layout, frame->channels);
 
 			reconfigure =
-				cmp_audio_fmts(audio_filter_src.fmt, audio_filter_src.channels, frame->format, frame->channels) 
+				cmp_audio_fmts(audio_filter_src.fmt, audio_filter_src.channels, static_cast<AVSampleFormat>(frame->format), frame->channels) 
 				|| audio_filter_src.channel_layout != dec_channel_layout 
 				|| audio_filter_src.freq != frame->sample_rate 
 				|| pAuddec->get_pkt_serial() != last_serial;
@@ -932,9 +975,9 @@ int VideoState::audio_thread() {
 				av_log(NULL, AV_LOG_DEBUG,
 					"Audio frame changed from rate:%d ch:%d fmt:%s layout:%s serial:%d to rate:%d ch:%d fmt:%s layout:%s serial:%d\n",
 					audio_filter_src.freq, audio_filter_src.channels, av_get_sample_fmt_name(audio_filter_src.fmt), buf1, last_serial,
-					frame->sample_rate, frame->channels, av_get_sample_fmt_name(frame->format), buf2, pAuddec->get_pkt_serial());
+					frame->sample_rate, frame->channels, av_get_sample_fmt_name(static_cast<AVSampleFormat>(frame->format)), buf2, pAuddec->get_pkt_serial());
 
-				audio_filter_src.fmt = frame->format;
+				audio_filter_src.fmt = static_cast<AVSampleFormat>(frame->format);
 				audio_filter_src.channels = frame->channels;
 				audio_filter_src.channel_layout = dec_channel_layout;
 				audio_filter_src.freq = frame->sample_rate;
@@ -966,7 +1009,7 @@ int VideoState::audio_thread() {
 					break;
 			}
 			if (ret == AVERROR_EOF)
-				auddec.finished = pAuddec->get_pkt_serial();
+				pAuddec->setFinished(pAuddec->get_pkt_serial());
 #endif
 		}
 	} while (ret >= 0 || ret == AVERROR(EAGAIN) || ret == AVERROR_EOF);
@@ -991,7 +1034,7 @@ int VideoState::video_thread() {
 	AVFilterContext *filt_out = NULL, *filt_in = NULL;
 	int last_w = 0;
 	int last_h = 0;
-	enum AVPixelFormat last_format = -2;
+	enum AVPixelFormat last_format = AV_PIX_FMT_NONE;
 	int last_serial = -1;
 	int last_vfilter_idx = 0;
 	if (!graph) {
@@ -1026,18 +1069,18 @@ int VideoState::video_thread() {
 				last_w, last_h,
 				(const char *)av_x_if_null(av_get_pix_fmt_name(last_format), "none"), last_serial,
 				frame->width, frame->height,
-				(const char *)av_x_if_null(av_get_pix_fmt_name(frame->format), "none"), pViddec->get_pkt_serial());
+				(const char *)av_x_if_null(av_get_pix_fmt_name(static_cast<AVPixelFormat>(frame->format)), "none"), pViddec->get_pkt_serial());
 			avfilter_graph_free(&graph);
 			graph = avfilter_graph_alloc();
 			if ((ret = configure_video_filters(graph, this, vfilters_list ? vfilters_list[vfilter_idx] : NULL, frame)) < 0) {
-				VideoState::do_exit(this);
+				SDLPlayData::do_exit(this);
 				goto the_end;
 			}
 			filt_in = in_video_filter;
 			filt_out = out_video_filter;
 			last_w = frame->width;
 			last_h = frame->height;
-			last_format = frame->format;
+			last_format = static_cast<AVPixelFormat>(frame->format);
 			last_serial = pViddec->get_pkt_serial();
 			last_vfilter_idx = vfilter_idx;
 			frame_rate = av_buffersink_get_frame_rate(filt_out);
@@ -1053,7 +1096,7 @@ int VideoState::video_thread() {
 			ret = av_buffersink_get_frame_flags(filt_out, frame, 0);
 			if (ret < 0) {
 				if (ret == AVERROR_EOF)
-					viddec.finished = viddec.pkt_serial;
+					pViddec->setFinished(pViddec->get_pkt_serial());
 				ret = 0;
 				break;
 			}
@@ -1541,44 +1584,95 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 	}
 }
 
+//TODO: remove this nasty switch by using a container; list or vector
 void VideoState::set_speed(int newSpeed) {
-	if (get_master_clock_speed() != newSpeed) {
-		if (this->video_stream >= 0
-			&& this->audio_stream >= 0) {
-			if (!paused)
-				toggle_pause();
-
-			if (!muted && newSpeed != 1) {
-				toggle_mute();
-			}
-			else if (muted && newSpeed == 1) {
-				toggle_mute();
-				pViddec->set_pts_step(1);
-				SDLPlayData::set_force_refresh(1);
-				continue_read_thread.notify_one();
-				return;
-			}
-
-			switch (this->get_master_sync_type()) {
-			case AV_SYNC_VIDEO_MASTER:
-				pVidclk->set_clock_speed(newSpeed);
-				break;
-			case AV_SYNC_AUDIO_MASTER:
-				pAudclk->set_clock_speed(newSpeed);
-				break;
-			default:
-				pExtclk->set_clock_speed(newSpeed);
-				break;
-			}
-
-			pViddec->set_pts_step(1/newSpeed);
-			SDLPlayData::set_force_refresh(1);
-			continue_read_thread.notify_one();
-
-			if (paused)
-				toggle_pause();
-		}
-	}
+	opt_add_vfilter("setpts=0.25*PTS");
+	// Note will have to divide by 1000 to get the float value of the rate
+	//int newSpeed = 0;
+	//switch (rate) {
+	//case X1D8 :
+	//	if (step = 1) {
+	//		newSpeed = rate = X1D4;
+	//		break;
+	//	}
+	//	if (step = -1) {
+	//		newSpeed = rate = X1D8;
+	//		break;
+	//	}
+	//case X1D4 :
+	//	if (step = 1) {
+	//		newSpeed = rate = X1D2;
+	//		break;
+	//	}
+	//	if (step = -1) {
+	//		newSpeed = rate = X1D8;
+	//		break;
+	//	}
+	//case X1D2 :
+	//	if (step = 1) {
+	//		newSpeed = rate = X1;
+	//		break;
+	//	}
+	//	if (step = -1) {
+	//		newSpeed = rate = X1D4;
+	//		break;
+	//	}
+	//case X1 :
+	//	if (step = 1) {
+	//		newSpeed = rate = X1D2;
+	//		break;
+	//	}
+	//	if (step = -1) {
+	//		newSpeed = rate = X2;
+	//		break;
+	//	}
+	//case X2 :
+	//	if (step = 1) {
+	//		newSpeed = rate = X1;
+	//		break;
+	//	}
+	//	if (step = -1) {
+	//		newSpeed = rate = X4;
+	//		break;
+	//	}
+	//case X4 :
+	//	if (step = 1) {
+	//		newSpeed = rate = X2;
+	//		break;
+	//	}
+	//	if (step = -1) {
+	//		newSpeed = rate = X8;
+	//		break;
+	//	}
+	//case X8 :
+	//	if (step = 1) {
+	//		newSpeed = rate = X4;
+	//		break;
+	//	}
+	//	if (step = -1) {
+	//		newSpeed = rate = X8;
+	//		break;
+	//	}
+	//default :
+	//	newSpeed = rate = X1;
+	//	break;
+	//}
+	//newSpeed = newSpeed / 1000;
+	//if (!newSpeed_req && get_master_clock_speed() != newSpeed) {
+	//	if (!isPaused() && newSpeed == 0 ) {
+	//		toggle_pause();
+	//		return; // We can't process the 0 as a new speed for the presentation time
+	//	}
+	//	if (!muted && newSpeed != 1) {
+	//		toggle_mute();
+	//	}
+	//	else if (muted && newSpeed == 1) {
+	//		toggle_mute();
+	//	}
+	//	pts_speed = newSpeed; 
+	//	newSpeed_req = 1;
+	//	continue_read_thread.notify_one();		
+	//}
 }
 
 int VideoState::get_master_clock_speed() {
@@ -1854,11 +1948,30 @@ void VideoState::set_vfilter_idx(int idx) {
 	vfilter_idx = idx;
 }
 
-static int opt_add_vfilter(void *optctx, const char *opt, const char *arg)
-{
-	GROW_ARRAY(vfilters_list, nb_vfilters);
+int VideoState::opt_add_vfilter(const char *arg) {
+
+	*vfilters_list = (const char *) grow_array( vfilters_list, sizeof(**vfilters_list), &nb_vfilters, nb_vfilters+1);
 	vfilters_list[nb_vfilters - 1] = arg;
 	return 0;
+}
+
+void *VideoState::grow_array(void *array, int elem_size, int *size, int new_size)
+{
+	if (new_size >= INT_MAX / elem_size) {
+		av_log(NULL, AV_LOG_ERROR, "Array too big.\n");
+		exit(1);
+	}
+	if (*size < new_size) {
+		uint8_t *tmp = (uint8_t*)av_realloc(array, new_size*elem_size);
+		if (!tmp) {
+			av_log(NULL, AV_LOG_ERROR, "Could not alloc buffer.\n");
+			exit(1);
+		}
+		memset(tmp + *size*elem_size, 0, (new_size - *size) * elem_size);
+		*size = new_size;
+		return tmp;
+	}
+	return array;
 }
 #endif  /* CONFIG_AVFILTER */
 

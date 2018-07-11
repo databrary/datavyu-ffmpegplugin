@@ -1,13 +1,14 @@
 #ifndef VIDEOSTATE_H_
 #define VIDEOSTATE_H_
 
-#define CONFIG_AVFILTER 0
+#define CONFIG_AVFILTER 1
 
 #include <inttypes.h>
 #include <math.h>
 #include <limits.h>
 #include <signal.h>
 #include <stdint.h>
+#include <initializer_list>
 
 #include "Clock.h"
 #include "PacketQueue.h"
@@ -39,15 +40,14 @@ extern "C" {
 # include "libavfilter/buffersrc.h"
 # include "libavutil/display.h"
 #endif
-//Could be moved to ffplay.hpp 
+//Could be moved to SDLPlayData.h
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
 
+//#include "fftools/cmdutils.h"
+
 #include <assert.h>
 }
-
-#define GROW_ARRAY(array, nb_elems)\
-    array = grow_array(array, sizeof(*array), &nb_elems, nb_elems + 1)
 
 /* Minimum SDL audio buffer size, in samples. */
 #define SDL_AUDIO_MIN_BUFFER_SIZE 512
@@ -107,9 +107,25 @@ enum ShowMode {
 	SHOW_MODE_NB
 };
 
+// Note will have to divide by 1000 to get the float value of the rate 
+//enum Rates {
+//	X1D8 = 128,
+//	X1D4 = 250,
+//	X1D2 = 500,
+//	X1 = 1000,
+//	X2 = 2000,
+//	X4 = 4000,
+//	X8 = 8000,
+//};
+
+//static const auto RatesList = {
+//	X1D8, X1D4, X1D2, X1, X2, X4, X8 
+//};
+
 /* options specified by the user */
 
 static ShowMode show_mode = SHOW_MODE_NONE;
+//static Rates rate = X1;
 static AVInputFormat *file_iformat;
 static const char *input_filename;
 static const char *window_title;
@@ -142,7 +158,7 @@ static const char *video_codec_name;
 static int64_t cursor_last_shown;
 static int cursor_hidden = 0;
 #if CONFIG_AVFILTER
-static const char **vfilters_list = NULL;
+static const char **vfilters_list;
 static int nb_vfilters = 0;
 static char *afilters = NULL;
 #endif
@@ -150,7 +166,6 @@ static int autorotate = 1;
 static int find_stream_info = 1;
 /* current context */
 static int64_t audio_callback_time;
-
 
 class SDLPlayData;
 
@@ -165,6 +180,8 @@ private:
 	int last_paused;
 	int queue_attachments_req;
 	int seek_req;
+	int newSpeed_req;
+	int pts_speed;
 	int seek_flags;
 	int64_t seek_pos;
 	int64_t seek_rel;
@@ -240,6 +257,9 @@ private:
 	AVFilterContext *in_audio_filter;   // the first filter in the audio chain
 	AVFilterContext *out_audio_filter;  // the last filter in the audio chain
 	AVFilterGraph *agraph;              // audio filter graph
+	// From cmdutils
+	AVDictionary *sws_dict;
+	AVDictionary *swr_opts;
 #endif
 
 	int last_video_stream, last_audio_stream, last_subtitle_stream;
@@ -398,7 +418,7 @@ public:
 	/* prepare a new audio buffer */
 	void sdl_audio_callback(Uint8 *stream, int len);
 
-	void set_speed(int newSpeed);
+	void set_speed(int step);
 	int get_master_clock_speed();
 #if CONFIG_AVFILTER
 	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
@@ -407,6 +427,9 @@ public:
 
 	int get_vfilter_idx();
 	void set_vfilter_idx(int idx);
+
+	int opt_add_vfilter(const char *arg);
+	void *grow_array(void *array, int elem_size, int *size, int new_size);
 #endif
 };
 

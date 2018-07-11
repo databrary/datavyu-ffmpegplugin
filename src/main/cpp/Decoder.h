@@ -55,6 +55,8 @@ class Decoder {
 
 		inline int is_finished() const { return finished; }
 
+		inline void setFinished(int f) { finished = f; }
+
 		// TODO(fraudies): This is tied to the audio/image/subtitle decode thread; 
 		// all three use the decode thread method from above with the respective object
 		// Re-design with lambda and tighter typing -- rather than passing the void pointers around
