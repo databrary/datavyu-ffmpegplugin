@@ -59,7 +59,6 @@ public:
     void                    SetEventDispatcher(CJavaPlayerEventDispatcher* pEventDispatcher);
 
     virtual uint32_t        Init();
-    //virtual uint32_t        PostBuildInit();
     virtual void            Dispose();
 
     virtual uint32_t        Play()=0;
@@ -84,17 +83,15 @@ public:
     virtual uint32_t        SetAudioSyncDelay(long lMillis);
     virtual uint32_t        GetAudioSyncDelay(long* plMillis);
 
-    CJavaPlayerEventDispatcher* m_pEventDispatcher;
-
 	// TODO(fraudies): Clean this up... currently used to free memory
 	inline CPipelineOptions* GetCPipelineOptions() {
 		return m_pOptions;
 	}
 
 protected:
-    CPipelineOptions*       m_pOptions;
-    PlayerState             m_PlayerState;
-    PlayerState             m_PlayerPendingState;
+	CJavaPlayerEventDispatcher* m_pEventDispatcher;
+	CPipelineOptions*			m_pOptions;
+    PlayerState					m_PlayerState;
 };
 
 #endif  //_PIPELINE_H_

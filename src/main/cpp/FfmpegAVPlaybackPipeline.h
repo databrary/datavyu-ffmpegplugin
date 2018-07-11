@@ -43,6 +43,9 @@ private:
 	virtual uint32_t        SetAudioSyncDelay(long lMillis);
 	virtual uint32_t        GetAudioSyncDelay(long* plMillis);
 
+	void UpdatePlayerState(PlayerState newState);
+	void SetPlayerState(PlayerState newState, bool bSilent);
+
 	SDLPlayData* pPlayer;
 	std::mutex stateLock;
 };

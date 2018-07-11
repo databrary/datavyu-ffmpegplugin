@@ -1,6 +1,16 @@
 #include "FfmpegAVPlaybackPipeline.h"
 #include "FfmpegMediaErrors.h"
 
+FfmpegAVPlaybackPipeline::FfmpegAVPlaybackPipeline(CPipelineOptions* pOptions) 
+	: CPipeline(pOptions), pPlayer(nullptr) 
+{	
+}
+
+FfmpegAVPlaybackPipeline::~FfmpegAVPlaybackPipeline() {
+	// Clean-up done in dispose that is called from the destructor of the super-class
+}
+
+
 uint32_t FfmpegAVPlaybackPipeline::Init() {
 	// TODO: Proper error handling and wiring up of input arguments
 
@@ -75,7 +85,6 @@ void FfmpegAVPlaybackPipeline::Dispose() {
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Play() {
-	// TODO(fraudies): Check for nullptrs
 	if (pPlayer == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -85,32 +94,67 @@ uint32_t FfmpegAVPlaybackPipeline::Play() {
 		return ERROR_VIDEO_STATE_NULL;
 	}
 	pVideoState->play();
-
-	stateLock.lock();
-	m_PlayerState = Playing;
-	stateLock.unlock();
-
-	// Change 
-	m_pEventDispatcher->SendPlayerStateEvent(m_PlayerState, pVideoState->get_master_clock->get_clock());
-
+	UpdatePlayerState(Playing);
 
 	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Stop() {
-	return 0; // no error
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+	pVideoState->stop();
+	UpdatePlayerState(Stopped);
+
+	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Pause() {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
 
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+	pVideoState->pause();
+	UpdatePlayerState(Paused);
+
+	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Finish() {
-
+	// TODO(fraudies): Stalling and finish need to be set from the video player
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Seek(double dSeekTime) {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
 
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+	double pos = pVideoState->get_master_clock();
+	if (isnan(pos))
+		pos = (double)pVideoState->get_seek_pos() / AV_TIME_BASE;
+	double incr = dSeekTime - pos;
+	if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && dSeekTime < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
+		dSeekTime = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
+
+	pVideoState->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+
+	// TODO(fraudies): Need to report back from ffmpeg once done with seeking and we can switch to playing etc.
+	UpdatePlayerState(Stalled);
+
+	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetDuration(double* pdDuration) {
@@ -154,190 +198,104 @@ uint32_t FfmpegAVPlaybackPipeline::GetAudioSyncDelay(long* plMillis) {
 }
 
 
-// TODO(fraudies): Wire up state transitions and decide whether to implement a halt state event
-/*
-void CGstAudioPlaybackPipeline::UpdatePlayerState(GstState newState, GstState oldState)
-{
-	m_StateLock->Enter();
-
-	PlayerState newPlayerState = m_PlayerState;
-	bool        bSilent = false;
+void FfmpegAVPlaybackPipeline::UpdatePlayerState(PlayerState newState) {
+	stateLock.lock();
+	PlayerState newPlayerState = m_PlayerState;	// If we had have the same state assign it again
+	bool bSilent = false;
 
 	switch (m_PlayerState)
 	{
 	case Unknown:
-		if ((GST_STATE_READY == oldState && GST_STATE_PAUSED == newState) || (GST_STATE_PAUSED == oldState && GST_STATE_PAUSED == newState))
+		if (Ready == newState)
 		{
 			newPlayerState = Ready;
 		}
 		break;
 
 	case Ready:
-		if (GST_STATE_PAUSED == oldState)
+		if (Playing == newState)
 		{
-			if (GST_STATE_READY == newState)
-				newPlayerState = Unknown;
-			else if (GST_STATE_PLAYING == newState)
-				newPlayerState = Playing;
+			newPlayerState = Playing;
 		}
 		break;
 
 	case Playing:
-		if (GST_STATE_PLAYING == oldState)
-		{
-			if (GST_STATE_PAUSED == newState)
-			{
-				if (m_PlayerPendingState == Stopped)
-				{
-					m_StallOnPause = false;
-					m_PlayerPendingState = Unknown;
-					newPlayerState = Stopped;
-				}
-				else if (m_StallOnPause && m_PlayerPendingState != Paused)
-				{
-					m_StallOnPause = false;
-					newPlayerState = Stalled;
-				}
-				else if (m_PlayerPendingState == Paused)
-				{
-					m_StallOnPause = false;
-					m_PlayerPendingState = Unknown;
-					newPlayerState = Paused;
-				}
-				else
-				{
-					newPlayerState = Finished;
-				}
-			}
-		}
-		else if (GST_STATE_PAUSED == oldState) // May happen during seek
-		{
-			if (GST_STATE_PAUSED == newState)
-			{
-				if (m_PlayerPendingState == Stopped)
-				{
-					m_StallOnPause = false;
-					m_PlayerPendingState = Unknown;
-					newPlayerState = Stopped;
-				}
-				else if (m_StallOnPause && m_PlayerPendingState != Paused)
-				{
-					m_StallOnPause = false;
-					newPlayerState = Stalled;
-				}
-				else if (m_PlayerPendingState == Paused)
-				{
-					m_StallOnPause = false;
-					m_PlayerPendingState = Unknown;
-					newPlayerState = Paused;
-				}
-			}
+		if (Stalled == newState || Paused == newState || Stopped == newState || Finished == newState) {
+			newPlayerState = newState;
 		}
 		break;
 
 	case Paused:
-		if (GST_STATE_PAUSED == oldState)
+		if (Stopped == newState || Playing == newState)
 		{
-			if (m_PlayerPendingState == Stopped)
-			{
-				m_PlayerPendingState = Unknown;
-				newPlayerState = Stopped;
-			}
-			else
-			{
-				if (GST_STATE_PLAYING == newState)
-					newPlayerState = Playing;
-				else if (GST_STATE_READY == newState)
-					newPlayerState = Unknown;
-			}
+			newPlayerState = newState;
 		}
 		break;
 
 	case Stopped:
-		if (GST_STATE_PAUSED == oldState)
+		if (Playing == newState || Paused == newState)
 		{
-			if (m_PlayerPendingState == Paused && GST_STATE_PAUSED == newState)
-			{
-				m_PlayerPendingState = Unknown;
-				newPlayerState = Paused;
-			}
-			else if (GST_STATE_PLAYING == newState)
-			{
-				newPlayerState = Playing;
-			}
-			else if (GST_STATE_READY == newState)
-			{
-				newPlayerState = Unknown;
-			}
+			newPlayerState = newState;
 		}
 		break;
 
 	case Stalled:
 	{
-		if (GST_STATE_PAUSED == oldState && GST_STATE_PLAYING == newState)
-			newPlayerState = Playing;
-		else if (GST_STATE_PAUSED == oldState && GST_STATE_PAUSED == newState)
-		{
-			if (m_PlayerPendingState == Stopped)
-			{
-				m_PlayerPendingState = Unknown;
-				newPlayerState = Stopped;
-			}
-			else if (m_PlayerPendingState == Paused)
-			{
-				m_PlayerPendingState = Unknown;
-				newPlayerState = Paused;
-			}
+		if (Stopped == newState || Paused == newState || Playing == newState) {
+			newPlayerState = newState;
 		}
 		break;
 	}
 
 	case Finished:
-		if (GST_STATE_PLAYING == oldState)
-		{
-			if (GST_STATE_PAUSED == newState)
-			{
-				if (m_PlayerPendingState == Stopped)
-				{
-					m_PlayerPendingState = Unknown;
-					m_bSeekInvoked = false;
-					newPlayerState = Stopped;
-				}
-				// No need to switch to paused state, since Pause is not valid in Finished state
-			}
+
+		if (Playing == newState) {
+			// We can go from Finished to Playing only when seek happens (or repeat)
+			// This state change should be silent.
+			newPlayerState = Playing;
+			bSilent = true;
 		}
-		else if (GST_STATE_PAUSED == oldState)
-		{
-			if (GST_STATE_PLAYING == newState)
-			{
-				// We can go from Finished to Playing only when seek happens (or repeat)
-				// This state change should be silent.
-				newPlayerState = Playing;
-				m_bSeekInvoked = false;
-				bSilent = true;
-			}
-			else if (GST_STATE_PAUSED == newState)
-			{
-				if (m_PlayerPendingState == Stopped)
-				{
-					m_PlayerPendingState = Unknown;
-					m_bSeekInvoked = false;
-					newPlayerState = Stopped;
-				}
-				else
-				{
-					m_bSeekInvoked = false;
-					newPlayerState = Paused;
-				}
-			}
+		if (Stopped == newState) {
+			newPlayerState = Stopped;
 		}
+
 		break;
 
 	case Error:
 		break;
 	}
 
+	// The same thread can acquire the same lock several times
 	SetPlayerState(newPlayerState, bSilent);
-	m_StateLock->Exit();
+	stateLock.unlock();
 }
-*/
+
+
+void FfmpegAVPlaybackPipeline::SetPlayerState(PlayerState newPlayerState, bool bSilent) {
+	stateLock.lock();
+
+	// Determine if we need to send an event out
+	bool updateState = newPlayerState != m_PlayerState;
+	if (updateState)
+	{
+		if (NULL != m_pEventDispatcher && !bSilent)
+		{
+			m_PlayerState = newPlayerState;
+
+			if (!m_pEventDispatcher->SendPlayerStateEvent(newPlayerState, pVideoState->get_master_clock->get_clock()))
+			{
+				m_pEventDispatcher->SendPlayerMediaErrorEvent(ERROR_JNI_SEND_PLAYER_STATE_EVENT);
+			}
+		}
+		else
+		{
+			m_PlayerState = newPlayerState;
+		}
+	}
+
+	stateLock.unlock();
+
+	if (updateState && newPlayerState == Stalled) { // Try to play
+		Play();
+	}
+}
