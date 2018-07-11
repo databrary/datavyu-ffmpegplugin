@@ -8,7 +8,6 @@
 #include <limits.h>
 #include <signal.h>
 #include <stdint.h>
-#include <initializer_list>
 
 #include "Clock.h"
 #include "PacketQueue.h"
@@ -38,7 +37,6 @@ extern "C" {
 # include "libavfilter/avfilter.h"
 # include "libavfilter/buffersink.h"
 # include "libavfilter/buffersrc.h"
-# include "libavutil/display.h"
 #endif
 //Could be moved to SDLPlayData.h
 #include <SDL2/SDL.h>
@@ -83,6 +81,9 @@ extern "C" {
 #define FRAME_QUEUE_SIZE FFMAX(SAMPLE_QUEUE_SIZE, FFMAX(VIDEO_PICTURE_QUEUE_SIZE, SUBPICTURE_QUEUE_SIZE))
 
 #define MY_AV_TIME_BASE_Q av_make_q(1, AV_TIME_BASE)
+
+// fixed point to double
+#define CONV_FP(x) ((double) (x)) / (1 << 16)
 
 typedef struct AudioParams {
 	int freq;
@@ -157,11 +158,6 @@ static const char *subtitle_codec_name;
 static const char *video_codec_name;
 static int64_t cursor_last_shown;
 static int cursor_hidden = 0;
-#if CONFIG_AVFILTER
-static const char **vfilters_list;
-static int nb_vfilters = 0;
-static char *afilters = NULL;
-#endif
 static int autorotate = 1;
 static int find_stream_info = 1;
 /* current context */
@@ -252,6 +248,10 @@ private:
 
 #if CONFIG_AVFILTER
 	int vfilter_idx;
+	const char **vfilters_list = NULL;
+	char *vfilters = (char *)"setpts=0.25*PTS";
+	int nb_vfilters = 0;
+	char *afilters = NULL;
 	AVFilterContext *in_video_filter;   // the first filter in the video chain
 	AVFilterContext *out_video_filter;  // the last filter in the video chain
 	AVFilterContext *in_audio_filter;   // the first filter in the audio chain
@@ -282,6 +282,8 @@ private:
 	}
 
 	double get_rotation(AVStream * st);
+
+	double av_display_rotation_get(const int32_t matrix[9]);
 
 	/* open a given stream. Return 0 if OK */
 	int stream_component_open(int stream_index);
@@ -422,11 +424,13 @@ public:
 	int get_master_clock_speed();
 #if CONFIG_AVFILTER
 	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
-	int configure_video_filters(AVFilterGraph * graph, VideoState * is, const char * vfilters, AVFrame * frame);
+	int configure_video_filters(AVFilterGraph * graph, VideoState * is,const char * vfilters, AVFrame * frame);
 	int configure_audio_filters(VideoState * is, const char * afilters, int force_output_format);
 
 	int get_vfilter_idx();
 	void set_vfilter_idx(int idx);
+
+	int get_nb_vfilters() const;
 
 	int opt_add_vfilter(const char *arg);
 	void *grow_array(void *array, int elem_size, int *size, int new_size);

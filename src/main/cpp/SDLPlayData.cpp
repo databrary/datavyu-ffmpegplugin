@@ -774,7 +774,7 @@ void SDLPlayData::do_exit(VideoState* is) {
 		SDL_DestroyWindow(window);
 	//uninit_opts();
 #if CONFIG_AVFILTER
-	av_freep(&vfilters_list);
+	//av_freep(&vfilters_list);
 #endif
 	avformat_network_deinit();
 	if (show_status)
@@ -853,8 +853,8 @@ void SDLPlayData::event_loop(VideoState *is) {
 				break;
 			case SDLK_w:
 #if CONFIG_AVFILTER
-				if (is->get_show_mode() == SHOW_MODE_VIDEO && is->get_vfilter_idx() < nb_vfilters - 1) {
-					if ((is->get_vfilter_idx() + 1) >= nb_vfilters)
+				if (is->get_show_mode() == SHOW_MODE_VIDEO && is->get_vfilter_idx() < is->get_nb_vfilters() - 1) {
+					if ((is->get_vfilter_idx() + 1) >= is->get_nb_vfilters())
 						is->set_vfilter_idx(0);
 				}
 				else {

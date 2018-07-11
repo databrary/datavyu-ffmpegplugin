@@ -547,7 +547,8 @@ VideoState::VideoState() :
 	pExtclk(new Clock()), // For the external clock the serial is set to itself (never triggers)
 	pViddec(nullptr), // Decoder's are created in the stream_component_open and destroyed in stream_component_close
 	pSubdec(nullptr),
-	pAuddec(nullptr) {
+	pAuddec(nullptr),
+	newSpeed_req(0){
 	// Frame queues depend on the packet queues that have not been initialized in initializer
 	pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
 	pSubpq = new FrameQueue(pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
@@ -771,6 +772,9 @@ int VideoState::read_thread() {
 		}
 #endif
 		if (this->newSpeed_req) {
+#if CONFIG_AVFILTER
+			/* Re configure the filter graph here and see if the changes are affecting the playback speed */
+#else
 			if (this->video_stream >= 0 && this->audio_stream >= 0) {
 
 				if ((stream_has_enough_packets(this->audio_st, this->audio_stream, pAudioq) &&
@@ -805,9 +809,10 @@ int VideoState::read_thread() {
 							pVideoq->put_flush_packet();
 						}
 					}
-					this->newSpeed_req = 0;
 				}
 			}
+#endif
+			this->newSpeed_req = 0;
 		}
 		if (this->seek_req) {
 			int64_t seek_target = this->seek_pos;
@@ -1072,7 +1077,9 @@ int VideoState::video_thread() {
 				(const char *)av_x_if_null(av_get_pix_fmt_name(static_cast<AVPixelFormat>(frame->format)), "none"), pViddec->get_pkt_serial());
 			avfilter_graph_free(&graph);
 			graph = avfilter_graph_alloc();
-			if ((ret = configure_video_filters(graph, this, vfilters_list ? vfilters_list[vfilter_idx] : NULL, frame)) < 0) {
+			//if ((ret = configure_video_filters(graph, this, vfilters_list ? vfilters_list[vfilter_idx] : NULL, frame)) < 0) {
+			av_log(NULL, AV_LOG_INFO, "new speed requested %s \n", vfilters);
+			if ((ret = configure_video_filters(graph, this, vfilters ? vfilters : NULL, frame)) < 0) {
 				SDLPlayData::do_exit(this);
 				goto the_end;
 			}
@@ -1162,18 +1169,12 @@ int VideoState::subtitle_thread() {
 VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat) {
 	VideoState *is = new VideoState();
 
-	//is = (VideoState*) av_mallocz(sizeof(VideoState));
 	if (!is)
 		return NULL;
 	is->filename = av_strdup(filename);
 	if (!is->filename)
 		goto fail;
 	is->iformat = iformat;
-
-	//if (!(is->continue_read_thread = new std::condition_variable())) {
-	//	av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
-	//	goto fail;
-	//}
 
 	is->audio_clock_serial = -1;
 	if (startup_volume < 0)
@@ -1488,7 +1489,6 @@ int VideoState::get_master_sync_type() {
 /* get the current master clock value */
 double VideoState::get_master_clock() {
 	double val;
-
 	switch (this->get_master_sync_type()) {
 	case AV_SYNC_VIDEO_MASTER:
 		val = pVidclk->get_clock();
@@ -1586,93 +1586,29 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 
 //TODO: remove this nasty switch by using a container; list or vector
 void VideoState::set_speed(int newSpeed) {
-	opt_add_vfilter("setpts=0.25*PTS");
-	// Note will have to divide by 1000 to get the float value of the rate
-	//int newSpeed = 0;
-	//switch (rate) {
-	//case X1D8 :
-	//	if (step = 1) {
-	//		newSpeed = rate = X1D4;
-	//		break;
-	//	}
-	//	if (step = -1) {
-	//		newSpeed = rate = X1D8;
-	//		break;
-	//	}
-	//case X1D4 :
-	//	if (step = 1) {
-	//		newSpeed = rate = X1D2;
-	//		break;
-	//	}
-	//	if (step = -1) {
-	//		newSpeed = rate = X1D8;
-	//		break;
-	//	}
-	//case X1D2 :
-	//	if (step = 1) {
-	//		newSpeed = rate = X1;
-	//		break;
-	//	}
-	//	if (step = -1) {
-	//		newSpeed = rate = X1D4;
-	//		break;
-	//	}
-	//case X1 :
-	//	if (step = 1) {
-	//		newSpeed = rate = X1D2;
-	//		break;
-	//	}
-	//	if (step = -1) {
-	//		newSpeed = rate = X2;
-	//		break;
-	//	}
-	//case X2 :
-	//	if (step = 1) {
-	//		newSpeed = rate = X1;
-	//		break;
-	//	}
-	//	if (step = -1) {
-	//		newSpeed = rate = X4;
-	//		break;
-	//	}
-	//case X4 :
-	//	if (step = 1) {
-	//		newSpeed = rate = X2;
-	//		break;
-	//	}
-	//	if (step = -1) {
-	//		newSpeed = rate = X8;
-	//		break;
-	//	}
-	//case X8 :
-	//	if (step = 1) {
-	//		newSpeed = rate = X4;
-	//		break;
-	//	}
-	//	if (step = -1) {
-	//		newSpeed = rate = X8;
-	//		break;
-	//	}
-	//default :
-	//	newSpeed = rate = X1;
-	//	break;
-	//}
-	//newSpeed = newSpeed / 1000;
-	//if (!newSpeed_req && get_master_clock_speed() != newSpeed) {
-	//	if (!isPaused() && newSpeed == 0 ) {
-	//		toggle_pause();
-	//		return; // We can't process the 0 as a new speed for the presentation time
-	//	}
-	//	if (!muted && newSpeed != 1) {
-	//		toggle_mute();
-	//	}
-	//	else if (muted && newSpeed == 1) {
-	//		toggle_mute();
-	//	}
-	//	pts_speed = newSpeed; 
-	//	newSpeed_req = 1;
-	//	continue_read_thread.notify_one();		
-	//}
+#if CONFIG_AVFILTER
+	vfilters = (char *)"setpts=2*PTS";
+	newSpeed_req = 1;
+	continue_read_thread.notify_one();
+#else
+	if (!newSpeed_req && get_master_clock_speed() != newSpeed) {
+		if (!isPaused() && newSpeed == 0 ) {
+			toggle_pause();
+			return; // We can't process the 0 as a new speed for the presentation time
+		}
+		if (!muted && newSpeed != 1) {
+			//audio_disable = 1;
+			toggle_mute();
+		}
+		else if (muted && newSpeed == 1) {
+			//audio_disable = 0;
+			toggle_mute();
+		}
+		pts_speed = newSpeed; 
+		newSpeed_req = 1;
+		continue_read_thread.notify_one();		
+	}
+#endif
 }
 
 int VideoState::get_master_clock_speed() {
@@ -1712,6 +1648,20 @@ double VideoState::get_rotation(AVStream *st) {
 			"and contact the ffmpeg-devel mailing list. (ffmpeg-devel@ffmpeg.org)");
 
 	return theta;
+}
+double VideoState::av_display_rotation_get(const int32_t matrix[9]) {
+	double rotation, scale[2];
+
+	scale[0] = hypot(CONV_FP(matrix[0]), CONV_FP(matrix[3]));
+	scale[1] = hypot(CONV_FP(matrix[1]), CONV_FP(matrix[4]));
+
+	if (scale[0] == 0.0 || scale[1] == 0.0)
+		return NAN;
+
+	rotation = atan2(CONV_FP(matrix[1]) / scale[1],
+		CONV_FP(matrix[0]) / scale[0]) * 180 / M_PI;
+
+	return -rotation;
 }
 int VideoState::configure_filtergraph(AVFilterGraph *graph, const char *filtergraph,
 	AVFilterContext *source_ctx, AVFilterContext *sink_ctx)
@@ -1757,7 +1707,7 @@ fail:
 	return ret;
 }
 
-int VideoState::configure_video_filters(AVFilterGraph *graph, VideoState *is, const char *vfilters, AVFrame *frame)
+int VideoState::configure_video_filters(AVFilterGraph *graph, VideoState *is,const char *vfilters, AVFrame *frame)
 {
 	enum AVPixelFormat pix_fmts[FF_ARRAY_ELEMS(sdl_texture_format_map)];
 	char sws_flags_str[512] = "";
@@ -1948,9 +1898,13 @@ void VideoState::set_vfilter_idx(int idx) {
 	vfilter_idx = idx;
 }
 
+int VideoState::get_nb_vfilters() const {
+	return nb_vfilters;
+}
+
 int VideoState::opt_add_vfilter(const char *arg) {
 
-	*vfilters_list = (const char *) grow_array( vfilters_list, sizeof(**vfilters_list), &nb_vfilters, nb_vfilters+1);
+	*vfilters_list = (const char *)grow_array(vfilters_list, sizeof(**vfilters_list), &nb_vfilters, nb_vfilters + 1);
 	vfilters_list[nb_vfilters - 1] = arg;
 	return 0;
 }
@@ -1962,7 +1916,7 @@ void *VideoState::grow_array(void *array, int elem_size, int *size, int new_size
 		exit(1);
 	}
 	if (*size < new_size) {
-		uint8_t *tmp = (uint8_t*)av_realloc(array, new_size*elem_size);
+		uint8_t *tmp = (uint8_t*)av_realloc_array(array, new_size,elem_size);
 		if (!tmp) {
 			av_log(NULL, AV_LOG_ERROR, "Could not alloc buffer.\n");
 			exit(1);
