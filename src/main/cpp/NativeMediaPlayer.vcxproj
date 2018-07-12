@@ -135,15 +135,19 @@
     <ClInclude Include="FrameQueue.h" />
     <ClInclude Include="PacketQueue.h" />
     <ClInclude Include="SDLPlayData.h" />
+    <ClInclude Include="VideoState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\cpp\JavaPlayerEventDispatcher.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Decoder.cpp" />
+    <ClCompile Include="FfmpegAVPlaybackPipeline.cpp" />
     <ClCompile Include="FfmpegMediaPlayer.cpp" />
     <ClCompile Include="FrameQueue.cpp" />
     <ClCompile Include="PacketQueue.cpp" />
+    <ClCompile Include="Pipeline.cpp" />
     <ClCompile Include="SDLPlayData.cpp" />
+    <ClCompile Include="VideoState.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

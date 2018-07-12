@@ -30,9 +30,10 @@
 //********** class CPipeline
 //*************************************************************************************************
 CPipeline::CPipeline(CPipelineOptions* pOptions)
-	: m_PlayerState(Unknown),
-	m_pEventDispatcher(NULL),
-	m_pOptions(pOptions)
+	: m_pEventDispatcher(NULL),
+	m_pOptions(pOptions),
+	m_PlayerState(Unknown),
+	m_PlayerPendingState(Unknown)
 {
 }
 

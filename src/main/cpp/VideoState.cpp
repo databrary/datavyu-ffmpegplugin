@@ -1197,6 +1197,37 @@ void VideoState::stream_toggle_pause() {
 	pExtclk->setPaused(!this->paused);
 }
 
+void VideoState::pause() {
+	if (!paused) {
+		stream_toggle_pause();
+	}
+}
+
+void VideoState::stop() {
+	if (!paused) {
+		stream_toggle_pause();
+		// Stop playback and seek to the start of the stream
+		double pos = get_master_clock();
+		double start = get_ic()->start_time / (double)AV_TIME_BASE;
+		double incr = start - pos;
+		stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+	}
+}
+
+void VideoState::play() {
+	if (paused) {
+		stream_toggle_pause();
+	}
+}
+
+double VideoState::get_duration() const {
+	return get_ic()->duration / (double)AV_TIME_BASE;
+}
+
+int VideoState::get_audio_volume() const {
+	return audio_volume;
+}
+
 void VideoState::toggle_pause() {
 	this->stream_toggle_pause();
 	this->step = 0;
@@ -1348,9 +1379,9 @@ Clock *VideoState::get_pExtclk() const { return pExtclk; }
 
 AudioParams VideoState::get_audio_tgt() { return audio_tgt; }
 
-Decoder *VideoState::get_pViddec() { return pViddec; }
+Decoder* VideoState::get_pViddec() { return pViddec; }
 
-AVFormatContext *VideoState::get_ic() { return ic; }
+AVFormatContext* VideoState::get_ic() const { return ic; }
 
 int64_t VideoState::get_seek_pos() const { return seek_pos; }
 

@@ -57,6 +57,9 @@
     <ClInclude Include="FfmpegAVPlaybackPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VideoState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\cpp\JavaPlayerEventDispatcher.cpp">
@@ -78,6 +81,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SDLPlayData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FfmpegAVPlaybackPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Pipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

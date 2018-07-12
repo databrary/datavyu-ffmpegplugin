@@ -149,44 +149,89 @@ uint32_t FfmpegAVPlaybackPipeline::Seek(double dSeekTime) {
 	if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && dSeekTime < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
 		dSeekTime = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
 
+	// TODO(fraudies): Need to report back from ffmpeg once done with seeking and we can switch back to playing etc.
+	UpdatePlayerState(Stalled);
+
 	pVideoState->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
 
-	// TODO(fraudies): Need to report back from ffmpeg once done with seeking and we can switch to playing etc.
-	UpdatePlayerState(Stalled);
 
 	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetDuration(double* pdDuration) {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
 
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+
+	*pdDuration = pVideoState->get_duration();
+
+	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
 
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+
+	*pdStreamTime = pVideoState->get_master_clock();
+
+	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::SetRate(float fRate) {
-
+	// TODO(fraudies): Implement this once ready
+	// At the moment we don't have a way of setting this
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetRate(float* pfRate) {
-
+	// TODO(fraudies): Implement this once ready
+	// At the moment we don't have a way of setting this
 }
 
 uint32_t FfmpegAVPlaybackPipeline::SetVolume(float fVolume) {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
 
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+
+	pVideoState->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetVolume(float* pfVolume) {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
 
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+
+	*pfVolume = pVideoState->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
+
+	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::SetBalance(float fBalance) {
-
+	// TODO(fraudies): Not sure how to wire this
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetBalance(float* pfBalance) {
-
+	// TODO(fraudies): Not sure how to wire this
 }
 
 uint32_t FfmpegAVPlaybackPipeline::SetAudioSyncDelay(long lMillis) {

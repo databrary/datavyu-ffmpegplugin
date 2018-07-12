@@ -297,6 +297,8 @@ public:
 	void pause();
 	void stop();
 	void play();
+	double get_duration() const; // returns the duration in sec
+	int get_audio_volume() const;
 	void toggle_pause();
 	void toggle_mute();
 	void update_volume(int sign, double step);
@@ -334,7 +336,7 @@ public:
 
 	Decoder *get_pViddec();
 
-	AVFormatContext *get_ic();
+	AVFormatContext* get_ic() const;
 
 	int64_t get_seek_pos() const;
 
