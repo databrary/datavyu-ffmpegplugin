@@ -30,6 +30,7 @@ class Decoder {
 		int64_t next_pts;
 		AVRational next_pts_tb;
 		std::thread *decoder_tid;
+
     public:
 		Decoder(AVCodecContext *avctx, PacketQueue *queue,
 			std::condition_variable *empty_queue_cond);
@@ -41,26 +42,17 @@ class Decoder {
 		}
 
 		int decode_frame(AVFrame *frame, AVSubtitle *sub);
-
 		void set_start_pts(int64_t start_pts);
-
 		void set_start_pts_tb(AVRational start_pts_tb);
-
-		void set_pts_step(float step);
-
 		inline int get_pkt_serial() const { return pkt_serial; }
-
 		inline const AVCodecContext* get_avctx() const { return avctx; }
-
 		inline int is_finished() const { return finished; }
-
 		inline void setFinished(int f) { finished = f; }
 
 		// TODO(fraudies): This is tied to the audio/image/subtitle decode thread; 
 		// all three use the decode thread method from above with the respective object
 		// Re-design with lambda and tighter typing -- rather than passing the void pointers around
 		int start(int(*fn)(void *), void *arg);
-
 		void abort(FrameQueue *fq);
 };
 

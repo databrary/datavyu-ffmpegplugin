@@ -109,24 +109,41 @@ enum ShowMode {
 };
 
 // Note will have to divide by 1000 to get the float value of the rate 
-//enum Rates {
-//	X1D8 = 128,
-//	X1D4 = 250,
-//	X1D2 = 500,
-//	X1 = 1000,
-//	X2 = 2000,
-//	X4 = 4000,
-//	X8 = 8000,
-//};
-
-//static const auto RatesList = {
-//	X1D8, X1D4, X1D2, X1, X2, X4, X8 
-//};
+enum Rates {
+	X1D32,
+	X1D16,
+	X1D8,
+	X1D4,
+	X1D2,
+	X1,
+	X2,
+	X4,
+	X8,
+	X16,
+	X32,
+};
+static const struct RatesEntry {
+	enum Rates rate;
+	float clock_speed;
+	float pts_speed;
+	char *command;
+} rate_speed_map[] = {
+	{ X1D32,	0.03125,	32.0,		(char *) "setpts=32.0*PTS" },
+	{ X1D16,	0.0625,		16.0,		(char *) "setpts=16.0*PTS" },
+	{ X1D8,		0.125,		8.0,		(char *) "setpts=8.0*PTS" },
+	{ X1D4,		0.25,		4.0,		(char *) "setpts=4.0*PTS" },
+	{ X1D2,		0.5,		2.0,		(char *) "setpts=2.0*PTS" },
+	{ X1,		1.0,		1.0,		(char *) "setpts=1.0*PTS" },
+	{ X2,		2.0,		0.5,		(char *) "setpts=0.5*PTS" },
+	{ X4,		4.0,		0.25,		(char *) "setpts=0.25*PTS" },
+	{ X8,		8.0,		0.125,		(char *) "setpts=0.125*PTS" },
+	{ X16,		16.0,		0.0625,		(char *) "setpts=0.0625*PTS" },
+	{ X32,		32.0,		0.03125,	(char *) "setpts=0.03125*PTS" },
+};
 
 /* options specified by the user */
 
 static ShowMode show_mode = SHOW_MODE_NONE;
-//static Rates rate = X1;
 static AVInputFormat *file_iformat;
 static const char *input_filename;
 static const char *window_title;

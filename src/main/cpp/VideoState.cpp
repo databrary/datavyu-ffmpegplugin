@@ -550,7 +550,9 @@ VideoState::VideoState() :
 	pViddec(nullptr), // Decoder's are created in the stream_component_open and destroyed in stream_component_close
 	pSubdec(nullptr),
 	pAuddec(nullptr),
-	newSpeed_req(0){
+	newSpeed_req(0),
+	last_speed(1.0),
+	pts_speed(1.0){
 	// Frame queues depend on the packet queues that have not been initialized in initializer
 	pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
 	pSubpq = new FrameQueue(pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
@@ -795,25 +797,21 @@ int VideoState::read_thread() {
 						break;
 					}
 
-					//if (pViddec && pAuddec && pSubdec) {
-					//	av_log(NULL, AV_LOG_INFO, "last_speed %d pts speed %f",last_speed, (1.0/last_speed));
-					//	pViddec->set_pts_step((1.0/last_speed));
-					//	pAuddec->set_pts_step((1.0/last_speed));
-					//	pSubdec->set_pts_step((1.0/last_speed));
+					if (pViddec && pAuddec && pSubdec) {
 
-					//	if (this->audio_stream >= 0) {
-					//		pAudioq->flush();
-					//		pAudioq->put_flush_packet();
-					//	}
-					//	if (this->subtitle_stream >= 0) {
-					//		pSubtitleq->flush();
-					//		pSubtitleq->put_flush_packet();
-					//	}
-					//	if (this->video_stream >= 0) {
-					//		pVideoq->flush();
-					//		pVideoq->put_flush_packet();
-					//	}
-					//}
+						if (this->audio_stream >= 0) {
+							pAudioq->flush();
+							pAudioq->put_flush_packet();
+						}
+						if (this->subtitle_stream >= 0) {
+							pSubtitleq->flush();
+							pSubtitleq->put_flush_packet();
+						}
+						if (this->video_stream >= 0) {
+							pVideoq->flush();
+							pVideoq->put_flush_packet();
+						}
+					}
 				}
 			}
 			this->newSpeed_req = 0;
@@ -1146,9 +1144,12 @@ int VideoState::video_thread() {
 			tb = av_buffersink_get_time_base(filt_out);
 #endif
 			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) : 0;
+#if CONFIG_AVFILTER
 			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
+#else
 			//Change the pts of the frame in the video thread better than decoder
-			//pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : (frame->pts * (1.0/last_speed)) * av_q2d(tb);
+			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : (frame->pts * pts_speed) * av_q2d(tb);
+#endif
 			ret = queue_picture(frame, pts, duration, frame->pkt_pos, pViddec->get_pkt_serial());
 			av_frame_unref(frame);
 #if CONFIG_AVFILTER
@@ -1618,45 +1619,33 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 	}
 }
 
-void VideoState::set_speed(int newSpeed) {
-	if (!newSpeed_req && last_speed != newSpeed) {
-		if (!isPaused() && newSpeed == 0) {
-			toggle_pause();
-			return; // We can't process the 0 as a new speed for the presentation time
-		}
-		if (!muted && newSpeed != 1) {
-			toggle_mute();
-		}
-		else if (muted && newSpeed == 1) {
-			toggle_mute();
-		}
+void VideoState::set_speed(const int step) {
+	int i;
+	for (i = 0; i < FF_ARRAY_ELEMS(rate_speed_map); i++) {
+		if (last_speed == rate_speed_map[i].clock_speed) {
+			if (i > 0 && i < FF_ARRAY_ELEMS(rate_speed_map) - 1) {
+				if (!isPaused() && rate_speed_map[i + step].clock_speed == 0) {
+					toggle_pause();
+					return; // We can't process the 0 as a new speed for the presentation time
+				}
+				if (!muted && rate_speed_map[i + step].clock_speed != 1) {
+					toggle_mute();
+				}
+				else if (muted && rate_speed_map[i + step].clock_speed == 1) {
+					toggle_mute();
+				}
+				last_speed = rate_speed_map[i + step].clock_speed;
 #if CONFIG_AVFILTER
-		switch (newSpeed) {
-		case (2) : 
-			vfilters = (char *) "setpts=0.5*PTS";
-			break;
-		case (4):
-			vfilters = (char *) "setpts=0.25*PTS";
-			break;
-		case (8):
-			vfilters = (char *) "setpts=0.125*PTS";
-			break;
-		case (16):
-			vfilters = (char *) "setpts=0.0625*PTS";
-			break;
-		case (32):
-			vfilters = (char *) "setpts=0.03125*PTS";
-			break;
-		default:
-			vfilters = (char *) "setpts=1.0*PTS";
-			break;
-		}
+				vfilters = rate_speed_map[i + step].command;
+#else
+				pts_speed = rate_speed_map[i + step].pts_speed;
 #endif
-		last_speed = newSpeed; 
-		newSpeed_req = 1;
-		continue_read_thread.notify_one();
+				newSpeed_req = 1;
+				continue_read_thread.notify_one();
+				return;
+			}
+		}
 	}
-
 }
 
 int VideoState::get_master_clock_speed() {
