@@ -253,7 +253,7 @@ private:
 	const char **vfilters_list = NULL;
 	char *vfilters = NULL;
 	int nb_vfilters = 0;
-	char *afilters = NULL;
+	char *afilters = (char *) "asetpts=0.25*PTS";
 	AVFilterContext *in_video_filter;   // the first filter in the video chain
 	AVFilterContext *out_video_filter;  // the last filter in the video chain
 	AVFilterContext *in_audio_filter;   // the first filter in the audio chain
@@ -426,8 +426,8 @@ public:
 	int get_master_clock_speed();
 #if CONFIG_AVFILTER
 	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
-	int configure_video_filters(AVFilterGraph * graph, VideoState * is,const char * vfilters, AVFrame * frame);
-	int configure_audio_filters(VideoState * is, const char * afilters, int force_output_format);
+	int configure_video_filters(AVFilterGraph * graph, const char * vfilters, AVFrame * frame);
+	int configure_audio_filters(const char * afilters, int force_output_format);
 
 	int get_vfilter_idx();
 	void set_vfilter_idx(int idx);
