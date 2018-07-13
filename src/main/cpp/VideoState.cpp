@@ -771,49 +771,52 @@ int VideoState::read_thread() {
 			continue;
 		}
 #endif
-		if (this->newSpeed_req) {
+
 #if CONFIG_AVFILTER
-			/* Re configure the filter graph here and see if the changes are affecting the playback speed */
 #else
+		if (this->newSpeed_req) {
 			if (this->video_stream >= 0 && this->audio_stream >= 0) {
 
 				if ((stream_has_enough_packets(this->audio_st, this->audio_stream, pAudioq) &&
 					stream_has_enough_packets(this->video_st, this->video_stream, pVideoq) &&
 					stream_has_enough_packets(this->subtitle_st, this->subtitle_stream, pSubtitleq))) {
-				
+
 					switch (this->get_master_sync_type()) {
 					case AV_SYNC_VIDEO_MASTER:
-						pVidclk->set_clock_speed(pts_speed);
+						pVidclk->set_clock_speed(last_speed);
 						break;
 					case AV_SYNC_AUDIO_MASTER:
-						pAudclk->set_clock_speed(pts_speed);
+						pAudclk->set_clock_speed(last_speed);
 						break;
 					default:
-						pExtclk->set_clock_speed(pts_speed);
+						pExtclk->set_clock_speed(last_speed);
 						break;
 					}
 
-					if (pViddec) {
-						pViddec->set_pts_step(1/pts_speed);
+					//if (pViddec && pAuddec && pSubdec) {
+					//	av_log(NULL, AV_LOG_INFO, "last_speed %d pts speed %f",last_speed, (1.0/last_speed));
+					//	pViddec->set_pts_step((1.0/last_speed));
+					//	pAuddec->set_pts_step((1.0/last_speed));
+					//	pSubdec->set_pts_step((1.0/last_speed));
 
-						if (this->audio_stream >= 0) {
-							pAudioq->flush();
-							pAudioq->put_flush_packet();
-						}
-						if (this->subtitle_stream >= 0) {
-							pSubtitleq->flush();
-							pSubtitleq->put_flush_packet();
-						}
-						if (this->video_stream >= 0) {
-							pVideoq->flush();
-							pVideoq->put_flush_packet();
-						}
-					}
+					//	if (this->audio_stream >= 0) {
+					//		pAudioq->flush();
+					//		pAudioq->put_flush_packet();
+					//	}
+					//	if (this->subtitle_stream >= 0) {
+					//		pSubtitleq->flush();
+					//		pSubtitleq->put_flush_packet();
+					//	}
+					//	if (this->video_stream >= 0) {
+					//		pVideoq->flush();
+					//		pVideoq->put_flush_packet();
+					//	}
+					//}
 				}
 			}
-#endif
 			this->newSpeed_req = 0;
 		}
+#endif // !CONFIG_AVFILTER
 		if (this->seek_req) {
 			int64_t seek_target = this->seek_pos;
 			int64_t seek_min = this->seek_rel > 0 ? seek_target - this->seek_rel + 2 : INT64_MIN;
@@ -941,6 +944,7 @@ fail:
 	return 0;
 }
 
+/* Called when the stream is opened */
 int VideoState::audio_thread() {
 	AVFrame *frame = av_frame_alloc();
 	Frame *af;
@@ -1026,6 +1030,7 @@ the_end:
 	return ret;
 }
 
+/* Called when the stream is opened */
 int VideoState::video_thread() {
 	AVFrame *frame = av_frame_alloc();
 	double pts;
@@ -1064,7 +1069,8 @@ int VideoState::video_thread() {
 			continue;
 
 #if CONFIG_AVFILTER
-		if (last_w != frame->width
+		if ( newSpeed_req
+			||last_w != frame->width
 			|| last_h != frame->height
 			|| last_format != frame->format
 			|| last_serial != pViddec->get_pkt_serial()
@@ -1078,7 +1084,6 @@ int VideoState::video_thread() {
 			avfilter_graph_free(&graph);
 			graph = avfilter_graph_alloc();
 			//if ((ret = configure_video_filters(graph, this, vfilters_list ? vfilters_list[vfilter_idx] : NULL, frame)) < 0) {
-			av_log(NULL, AV_LOG_INFO, "new speed requested %s \n", vfilters);
 			if ((ret = configure_video_filters(graph, this, vfilters ? vfilters : NULL, frame)) < 0) {
 				SDLPlayData::do_exit(this);
 				goto the_end;
@@ -1091,6 +1096,30 @@ int VideoState::video_thread() {
 			last_serial = pViddec->get_pkt_serial();
 			last_vfilter_idx = vfilter_idx;
 			frame_rate = av_buffersink_get_frame_rate(filt_out);
+			if (this->newSpeed_req) {
+				if (this->audio_stream >= 0) {
+					pAudioq->flush();
+					pAudioq->put_flush_packet();
+				}
+				if (this->subtitle_stream >= 0) {
+					pSubtitleq->flush();
+					pSubtitleq->put_flush_packet();
+				}
+				if (this->video_stream >= 0) {
+					pVideoq->flush();
+					pVideoq->put_flush_packet();
+				}
+				if (this->seek_flags & AVSEEK_FLAG_BYTE) {
+					pExtclk->set_clock(NAN, 0);
+				}
+				else {
+					pExtclk->set_clock(pExtclk->get_clock() / (double)AV_TIME_BASE, 0);
+				}
+
+			this->newSpeed_req = 0;
+			this->queue_attachments_req = 1;
+			this->eof = 0;
+			}
 		}
 
 		ret = av_buffersrc_add_frame(filt_in, frame);
@@ -1115,12 +1144,13 @@ int VideoState::video_thread() {
 #endif
 			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) : 0;
 			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
+			//Change the pts of the frame in the video thread better than decoder
+			//pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : (frame->pts * (1.0/last_speed)) * av_q2d(tb);
 			ret = queue_picture(frame, pts, duration, frame->pkt_pos, pViddec->get_pkt_serial());
 			av_frame_unref(frame);
 #if CONFIG_AVFILTER
 		}
 #endif
-
 		if (ret < 0)
 			goto the_end;
 	}
@@ -1132,6 +1162,7 @@ the_end:
 	return 0;
 }
 
+/* Called when the stream is opened */
 int VideoState::subtitle_thread() {
 	Frame *sp;
 	int got_subtitle;
@@ -1584,31 +1615,45 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 	}
 }
 
-//TODO: remove this nasty switch by using a container; list or vector
 void VideoState::set_speed(int newSpeed) {
-#if CONFIG_AVFILTER
-	vfilters = (char *)"setpts=2*PTS";
-	newSpeed_req = 1;
-	continue_read_thread.notify_one();
-#else
-	if (!newSpeed_req && get_master_clock_speed() != newSpeed) {
-		if (!isPaused() && newSpeed == 0 ) {
+	if (!newSpeed_req && last_speed != newSpeed) {
+		if (!isPaused() && newSpeed == 0) {
 			toggle_pause();
 			return; // We can't process the 0 as a new speed for the presentation time
 		}
 		if (!muted && newSpeed != 1) {
-			//audio_disable = 1;
 			toggle_mute();
 		}
 		else if (muted && newSpeed == 1) {
-			//audio_disable = 0;
 			toggle_mute();
 		}
-		pts_speed = newSpeed; 
-		newSpeed_req = 1;
-		continue_read_thread.notify_one();		
-	}
+#if CONFIG_AVFILTER
+		switch (newSpeed) {
+		case (2) : 
+			vfilters = (char *) "setpts=0.5*PTS";
+			break;
+		case (4):
+			vfilters = (char *) "setpts=0.25*PTS";
+			break;
+		case (8):
+			vfilters = (char *) "setpts=0.125*PTS";
+			break;
+		case (16):
+			vfilters = (char *) "setpts=0.0625*PTS";
+			break;
+		case (32):
+			vfilters = (char *) "setpts=0.03125*PTS";
+			break;
+		default:
+			vfilters = (char *) "setpts=1.0*PTS";
+			break;
+		}
 #endif
+		last_speed = newSpeed; 
+		newSpeed_req = 1;
+		continue_read_thread.notify_one();
+	}
+
 }
 
 int VideoState::get_master_clock_speed() {

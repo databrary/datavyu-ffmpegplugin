@@ -176,8 +176,6 @@ private:
 	int last_paused;
 	int queue_attachments_req;
 	int seek_req;
-	int newSpeed_req;
-	int pts_speed;
 	int seek_flags;
 	int64_t seek_pos;
 	int64_t seek_rel;
@@ -246,10 +244,14 @@ private:
 
 	int step;
 
+	int newSpeed_req;
+	float last_speed;
+	float pts_speed;
+
 #if CONFIG_AVFILTER
 	int vfilter_idx;
 	const char **vfilters_list = NULL;
-	char *vfilters = (char *)"setpts=0.25*PTS";
+	char *vfilters = NULL;
 	int nb_vfilters = 0;
 	char *afilters = NULL;
 	AVFilterContext *in_video_filter;   // the first filter in the video chain
@@ -420,7 +422,7 @@ public:
 	/* prepare a new audio buffer */
 	void sdl_audio_callback(Uint8 *stream, int len);
 
-	void set_speed(int step);
+	void set_speed(int newSpeed);
 	int get_master_clock_speed();
 #if CONFIG_AVFILTER
 	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);

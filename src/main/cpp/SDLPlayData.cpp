@@ -828,6 +828,7 @@ void SDLPlayData::event_loop(VideoState *is) {
 			case SDLK_a:
 				is->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
 				break;
+// TODO use a container to cycle through the available speeds
 			case SDLK_1:
 				is->set_speed(1);
 				break;

@@ -29,7 +29,6 @@ class Decoder {
 		AVRational start_pts_tb;
 		int64_t next_pts;
 		AVRational next_pts_tb;
-		int step; // The step is 1/MASTER_CLOCK_SPEED
 		std::thread *decoder_tid;
     public:
 		Decoder(AVCodecContext *avctx, PacketQueue *queue,
@@ -47,7 +46,7 @@ class Decoder {
 
 		void set_start_pts_tb(AVRational start_pts_tb);
 
-		void set_pts_step(int step);
+		void set_pts_step(float step);
 
 		inline int get_pkt_serial() const { return pkt_serial; }
 
