@@ -598,10 +598,10 @@ int VideoState::read_thread() {
 	AVDictionary *codec_opts = NULL;
 
 	memset(st_index, -1, sizeof(st_index));
-	this->last_video_stream = this->video_stream = -1;
-	this->last_audio_stream = this->audio_stream = -1;
-	this->last_subtitle_stream = this->subtitle_stream = -1;
-	this->eof = 0;
+	last_video_stream = video_stream = -1;
+	last_audio_stream = audio_stream = -1;
+	last_subtitle_stream = subtitle_stream = -1;
+	eof = 0;
 
 	ic = avformat_alloc_context();
 	if (!ic) {
@@ -615,7 +615,7 @@ int VideoState::read_thread() {
 		av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
 		scan_all_pmts_set = 1;
 	}
-	err = avformat_open_input(&ic, this->filename, this->iformat, &format_opts);
+	err = avformat_open_input(&ic, filename, iformat, &format_opts);
 	if (err < 0) {
 		ret = -1;
 		goto fail;
@@ -647,7 +647,7 @@ int VideoState::read_thread() {
 
 		if (err < 0) {
 			av_log(NULL, AV_LOG_WARNING,
-				"%s: could not find codec parameters\n", this->filename);
+				"%s: could not find codec parameters\n", filename);
 			ret = -1;
 			goto fail;
 		}
@@ -675,14 +675,14 @@ int VideoState::read_thread() {
 		ret = avformat_seek_file(ic, -1, INT64_MIN, timestamp, INT64_MAX, 0);
 		if (ret < 0) {
 			av_log(NULL, AV_LOG_WARNING, "%s: could not seek to position %0.3f\n",
-				this->filename, (double)timestamp / AV_TIME_BASE);
+				filename, (double)timestamp / AV_TIME_BASE);
 		}
 	}
 
 	this->realtime = is_realtime(ic);
 
 	if (show_status)
-		av_dump_format(ic, 0, this->filename, 0);
+		av_dump_format(ic, 0, filename, 0);
 
 	for (i = 0; i < ic->nb_streams; i++) {
 		AVStream *st = ic->streams[i];
@@ -731,42 +731,42 @@ int VideoState::read_thread() {
 
 	/* open the streams */
 	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
-		this->stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
+		stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
 	}
 
 	ret = -1;
 	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
-		ret = this->stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
+		ret = stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
 	}
 	if (show_mode == SHOW_MODE_NONE)
 		show_mode = ret >= 0 ? SHOW_MODE_VIDEO : SHOW_MODE_RDFT;
 
 	if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
-		this->stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
+		stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
 	}
 
-	if (this->video_stream < 0 && this->audio_stream < 0) {
+	if (video_stream < 0 && audio_stream < 0) {
 		av_log(NULL, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n",
-			this->filename);
+			filename);
 		ret = -1;
 		goto fail;
 	}
 
-	if (infinite_buffer < 0 && this->realtime)
+	if (infinite_buffer < 0 && realtime)
 		infinite_buffer = 1;
 
 	for (;;) {
 		if (this->abort_request)
 			break;
-		if (this->paused != this->last_paused) {
-			this->last_paused = this->paused;
-			if (this->paused)
-				this->read_pause_return = av_read_pause(ic);
+		if (paused != last_paused) {
+			last_paused = paused;
+			if (paused)
+				read_pause_return = av_read_pause(ic);
 			else
 				av_read_play(ic);
 		}
 #if CONFIG_RTSP_DEMUXER || CONFIG_MMSH_PROTOCOL
-		if (this>paused &&
+		if (paused &&
 			(!strcmp(ic->iformat->name, "rtsp") ||
 			(ic->pb && !strncmp(input_filename, "mmsh:", 5)))) {
 			/* wait 10 ms to avoid trying to get another packet */
@@ -778,14 +778,14 @@ int VideoState::read_thread() {
 
 #if CONFIG_AVFILTER
 #else
-		if (this->newSpeed_req) {
-			if (this->video_stream >= 0 && this->audio_stream >= 0) {
+		if (newSpeed_req) {
+			if (video_stream >= 0 && audio_stream >= 0) {
 
-				if ((stream_has_enough_packets(this->audio_st, this->audio_stream, pAudioq) &&
-					stream_has_enough_packets(this->video_st, this->video_stream, pVideoq) &&
-					stream_has_enough_packets(this->subtitle_st, this->subtitle_stream, pSubtitleq))) {
+				if ((stream_has_enough_packets(audio_st, audio_stream, pAudioq) &&
+					stream_has_enough_packets(video_st, video_stream, pVideoq) &&
+					stream_has_enough_packets(subtitle_st, subtitle_stream, pSubtitleq))) {
 
-					switch (this->get_master_sync_type()) {
+					switch (get_master_sync_type()) {
 					case AV_SYNC_VIDEO_MASTER:
 						pVidclk->set_clock_speed(last_speed);
 						break;
@@ -799,15 +799,15 @@ int VideoState::read_thread() {
 
 					if (pViddec && pAuddec && pSubdec) {
 
-						if (this->audio_stream >= 0) {
+						if (audio_stream >= 0) {
 							pAudioq->flush();
 							pAudioq->put_flush_packet();
 						}
-						if (this->subtitle_stream >= 0) {
+						if (subtitle_stream >= 0) {
 							pSubtitleq->flush();
 							pSubtitleq->put_flush_packet();
 						}
-						if (this->video_stream >= 0) {
+						if (video_stream >= 0) {
 							pVideoq->flush();
 							pVideoq->put_flush_packet();
 						}
@@ -1623,7 +1623,7 @@ void VideoState::set_speed(const int step) {
 	int i;
 	for (i = 0; i < FF_ARRAY_ELEMS(rate_speed_map); i++) {
 		if (last_speed == rate_speed_map[i].clock_speed) {
-			if (i > 0 && i < FF_ARRAY_ELEMS(rate_speed_map) - 1) {
+			if (i+step >= 0 && i+step < FF_ARRAY_ELEMS(rate_speed_map)) {
 				if (!isPaused() && rate_speed_map[i + step].clock_speed == 0) {
 					toggle_pause();
 					return; // We can't process the 0 as a new speed for the presentation time
@@ -1634,12 +1634,12 @@ void VideoState::set_speed(const int step) {
 				else if (muted && rate_speed_map[i + step].clock_speed == 1) {
 					toggle_mute();
 				}
-				last_speed = rate_speed_map[i + step].clock_speed;
 #if CONFIG_AVFILTER
 				vfilters = rate_speed_map[i + step].command;
 #else
 				pts_speed = rate_speed_map[i + step].pts_speed;
 #endif
+				last_speed = rate_speed_map[i + step].clock_speed;
 				newSpeed_req = 1;
 				continue_read_thread.notify_one();
 				return;
