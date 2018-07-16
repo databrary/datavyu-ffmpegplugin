@@ -23,8 +23,8 @@
  * questions.
  */
 
-#include "JavaPlayerEventDispatcher.h"
 #include "JniUtils.h"
+#include "JavaPlayerEventDispatcher.h"
 #include "org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h"
 
 static bool areJMethodIDsInitialized = false;

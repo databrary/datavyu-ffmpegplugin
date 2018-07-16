@@ -33,12 +33,8 @@ static int default_height = 480;
 
 static unsigned sws_flags = SWS_BICUBIC;
 
-static SDL_Window *window;
-static SDL_Renderer *renderer;
-static SDL_RendererInfo renderer_info = { 0 };
-static SDL_AudioDeviceID audio_dev;
-
-//SDL Textures
+//TODO:(fraudies) Cleanup allocation/deallocation of SDL Textures by moving them into SDLPlayData; 
+//TODO:(fraudies) Must do cleanup of all statics before we can handle multiple tracks
 static SDL_Texture *vis_texture;
 static SDL_Texture *sub_texture;
 static SDL_Texture *vid_texture;
@@ -48,7 +44,7 @@ static int sample_array_index;
 static int force_refresh;
 static double frame_timer;
 
-static int display_disable;
+static int display_disable = 0;
 
 static const struct TextureFormatEntry {
 	enum AVPixelFormat format;
@@ -81,7 +77,12 @@ class VideoState;
 class SDLPlayData {
 
 private:
-	VideoState *pVideoState;
+	const char* filename;
+	SDL_Window* window;
+	SDL_Renderer* renderer;
+	VideoState* pVideoState;
+	SDL_AudioDeviceID audio_dev;
+	SDL_RendererInfo renderer_info = { 0 };
 	int width, height, ytop, xleft;
 	double rdftspeed;
 	int xpos;
@@ -112,10 +113,11 @@ private:
 	std::thread* display_tid = nullptr;
 
 public:
-	SDLPlayData(const char *filename, AVInputFormat *iformat);
+	SDLPlayData(const char *filename, 
+		AVInputFormat *iformat);
 	~SDLPlayData();
 
-	static int audio_open(VideoState* is, int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
+	int audio_open(VideoState* is, int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
 		struct AudioParams *audio_hw_params);
 
 	static void set_force_refresh(int refresh);
@@ -128,19 +130,19 @@ public:
 
 	int video_open(VideoState *is);
 
-	static void closeAudioDevice();
-	static void pauseAudioDevice();
+	void closeAudioDevice();
+	void pauseAudioDevice();
 
 	void toggle_full_screen();
 
 	VideoState* get_VideoState();
 
-	static int upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsContext **img_convert_ctx);
+	int upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsContext **img_convert_ctx);
 
 	static void get_sdl_pix_fmt_and_blendmode(int format, Uint32 *sdl_pix_fmt, SDL_BlendMode *sdl_blendmode);
 
-	static int realloc_texture(SDL_Texture **texture, Uint32 new_format, int new_width, 
-								int new_height, SDL_BlendMode blendmode, int init_texture);
+	int realloc_texture(SDL_Texture **texture, Uint32 new_format, int new_width, 
+						int new_height, SDL_BlendMode blendmode, int init_texture);
 
 	/* display the current picture, if any */
 	void video_display(VideoState *is);
@@ -159,9 +161,11 @@ public:
 	/* called to display each frame */
 	void video_refresh(VideoState *is, double *remaining_time);
 
-	static void do_exit(VideoState* is);
+	void init();
 
-	void event_loop(VideoState *is);
+	void destroy();
+
+	void event_loop();
 
 	void start_display_loop();
 

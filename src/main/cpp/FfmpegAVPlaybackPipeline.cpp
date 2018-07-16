@@ -1,5 +1,6 @@
 #include "FfmpegAVPlaybackPipeline.h"
 #include "FfmpegMediaErrors.h"
+#include "JavaPlayerEventDispatcher.h"
 
 FfmpegAVPlaybackPipeline::FfmpegAVPlaybackPipeline(CPipelineOptions* pOptions) 
 	: CPipeline(pOptions), pPlayer(nullptr) 
@@ -10,76 +11,53 @@ FfmpegAVPlaybackPipeline::~FfmpegAVPlaybackPipeline() {
 	// Clean-up done in dispose that is called from the destructor of the super-class
 }
 
-
 uint32_t FfmpegAVPlaybackPipeline::Init() {
 	// TODO: Proper error handling and wiring up of input arguments
-
-	int flags;
-
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
-
-	/* register all codecs, demux and protocols */
-#if CONFIG_AVDEVICE
-	avdevice_register_all();
-#endif
-	avformat_network_init();
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
-
-	input_filename = "counter.mp4";
-
-	flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
-
-	// Assumes both video and audio are ENABLED!
-
-	/* Try to work around an occasional ALSA buffer underflow issue when the
-	* period size is NPOT due to ALSA resampling by forcing the buffer size. */
-	if (!SDL_getenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE"))
-		SDL_setenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE", "1", 1);
-
-	if (SDL_Init(flags)) {
-		av_log(NULL, AV_LOG_FATAL, "Could not initialize SDL - %s\n", SDL_GetError());
-		av_log(NULL, AV_LOG_FATAL, "(Did you set the DISPLAY variable?)\n");
-		exit(1);
-	}
-
-	SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
-	SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
-
-	int flags = SDL_WINDOW_HIDDEN;
-	if (borderless)
-		flags |= SDL_WINDOW_BORDERLESS;
-	else
-		flags |= SDL_WINDOW_RESIZABLE;
-	window = SDL_CreateWindow(program_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-	if (window) {
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-		if (!renderer) {
-			av_log(NULL, AV_LOG_WARNING, "Failed to initialize a hardware accelerated renderer: %s\n", SDL_GetError());
-			renderer = SDL_CreateRenderer(window, -1, 0);
-		}
-		if (renderer) {
-			if (!SDL_GetRendererInfo(renderer, &renderer_info))
-				av_log(NULL, AV_LOG_VERBOSE, "Initialized %s renderer.\n", renderer_info.name);
-		}
-	}
-	if (!window || !renderer || !renderer_info.num_texture_formats) {
-		av_log(NULL, AV_LOG_FATAL, "Failed to create window or renderer: %s", SDL_GetError());
-		SDLPlayData::do_exit(nullptr);
-	}
-
+	static const char* input_filename = "counter.mp4";
+	AVInputFormat *file_iformat = nullptr;
 	pPlayer = new SDLPlayData(input_filename, file_iformat);
-	if (!pPlayer->get_VideoState()) {
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (!pVideoState) {
 		av_log(NULL, AV_LOG_FATAL, "Failed to initialize VideoState!\n");
-		SDLPlayData::do_exit(pPlayer->get_VideoState());
+		pPlayer->destroy();
+		delete pPlayer;
 	}
+	pPlayer->init();
+
+	// Assign the callback functions
+	pVideoState->set_player_state_callback_func(TO_UNKNOWN, [this] {
+		this->UpdatePlayerState(Unknown);
+	});
+	pVideoState->set_player_state_callback_func(TO_READY, [this] {
+		this->UpdatePlayerState(Ready);
+	});
+	pVideoState->set_player_state_callback_func(TO_PLAYING, [this] {
+		this->UpdatePlayerState(Playing);
+	});
+	pVideoState->set_player_state_callback_func(TO_PAUSED, [this] {
+		this->UpdatePlayerState(Paused);
+	});
+	pVideoState->set_player_state_callback_func(TO_STOPPED, [this] {
+		this->UpdatePlayerState(Stopped);
+	});
+	pVideoState->set_player_state_callback_func(TO_STALLED, [this] {
+		this->UpdatePlayerState(Stalled);
+	});
+	pVideoState->set_player_state_callback_func(TO_FINISHED, [this] {
+		this->UpdatePlayerState(Finished);
+	});
 
 	pPlayer->start_display_loop();
+	UpdatePlayerState(Ready);
+
+	return ERROR_NONE;
 }
 
 void FfmpegAVPlaybackPipeline::Dispose() {
 	pPlayer->stop_display_loop();
-	SDLPlayData::do_exit(pPlayer->get_VideoState());
+	pPlayer->destroy();
 	delete pPlayer;
 	pPlayer = nullptr;
 }
@@ -131,6 +109,7 @@ uint32_t FfmpegAVPlaybackPipeline::Pause() {
 
 uint32_t FfmpegAVPlaybackPipeline::Finish() {
 	// TODO(fraudies): Stalling and finish need to be set from the video player
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Seek(double dSeekTime) {
@@ -191,11 +170,13 @@ uint32_t FfmpegAVPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 uint32_t FfmpegAVPlaybackPipeline::SetRate(float fRate) {
 	// TODO(fraudies): Implement this once ready
 	// At the moment we don't have a way of setting this
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetRate(float* pfRate) {
 	// TODO(fraudies): Implement this once ready
 	// At the moment we don't have a way of setting this
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::SetVolume(float fVolume) {
@@ -228,24 +209,141 @@ uint32_t FfmpegAVPlaybackPipeline::GetVolume(float* pfVolume) {
 
 uint32_t FfmpegAVPlaybackPipeline::SetBalance(float fBalance) {
 	// TODO(fraudies): Not sure how to wire this
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetBalance(float* pfBalance) {
 	// TODO(fraudies): Not sure how to wire this
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::SetAudioSyncDelay(long lMillis) {
-
+	// TODO(fraudies): Implement this
+	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetAudioSyncDelay(long* plMillis) {
-
+	// TODO(fraudies): Implement this
+	return ERROR_NONE; // no error
 }
 
+uint32_t FfmpegAVPlaybackPipeline::HasAudioData(bool* bAudioData) const {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+
+	*bAudioData = pVideoState->has_audio_data();
+
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegAVPlaybackPipeline::HasImageData(bool* bImageData) const {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+
+	*bImageData = pVideoState->has_image_data();
+
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegAVPlaybackPipeline::GetImageWidth(int* width) const {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+
+	*width = pVideoState->get_image_width();
+
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegAVPlaybackPipeline::GetImageHeight(int* iHeight) const {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+
+	*iHeight = pVideoState->get_image_height();
+
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegAVPlaybackPipeline::GetAudioFormat(AudioFormat* pAudioFormat) const {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+
+	*pAudioFormat = pVideoState->get_audio_format();
+
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegAVPlaybackPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+	// TODO(fraudies): Implement the pixel format for the ouput
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegAVPlaybackPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+	// TODO(fraudies): Implement the image buffer data
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegAVPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
+	if (pPlayer == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	VideoState* pVideoState = pPlayer->get_VideoState();
+	if (pVideoState == nullptr) {
+		return ERROR_VIDEO_STATE_NULL;
+	}
+	// TODO(fraudies): Implement the audio buffer data
+	return ERROR_NONE;
+}
 
 void FfmpegAVPlaybackPipeline::UpdatePlayerState(PlayerState newState) {
 	stateLock.lock();
-	PlayerState newPlayerState = m_PlayerState;	// If we had have the same state assign it again
+	PlayerState newPlayerState = m_PlayerState;	// If we assign the same state again
 	bool bSilent = false;
 
 	switch (m_PlayerState)
@@ -293,7 +391,6 @@ void FfmpegAVPlaybackPipeline::UpdatePlayerState(PlayerState newState) {
 	}
 
 	case Finished:
-
 		if (Playing == newState) {
 			// We can go from Finished to Playing only when seek happens (or repeat)
 			// This state change should be silent.
@@ -327,7 +424,7 @@ void FfmpegAVPlaybackPipeline::SetPlayerState(PlayerState newPlayerState, bool b
 		{
 			m_PlayerState = newPlayerState;
 
-			if (!m_pEventDispatcher->SendPlayerStateEvent(newPlayerState, pVideoState->get_master_clock->get_clock()))
+			if (!m_pEventDispatcher->SendPlayerStateEvent(newPlayerState, pPlayer->get_VideoState()->get_master_clock()))
 			{
 				m_pEventDispatcher->SendPlayerMediaErrorEvent(ERROR_JNI_SEND_PLAYER_STATE_EVENT);
 			}

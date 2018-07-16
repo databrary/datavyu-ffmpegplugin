@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <stdint.h>
 
+#include "AudioVideoFormats.h"
 #include "Clock.h"
 #include "PacketQueue.h"
 #include "FrameQueue.h"
@@ -101,11 +102,20 @@ enum ShowMode {
 	SHOW_MODE_NB
 };
 
+enum PlayerStateCallback {
+	TO_UNKNOWN = 0,		// 1
+	TO_READY,			// 2
+	TO_PLAYING,			// 3
+	TO_PAUSED,			// 4
+	TO_STOPPED,			// 5
+	TO_STALLED,			// 6
+	TO_FINISHED,		// 7
+	NUM_PLAYER_STATE_CALLBACKS
+};
+
 /* options specified by the user */
 
 static ShowMode show_mode = SHOW_MODE_NONE;
-static AVInputFormat *file_iformat;
-static const char *input_filename;
 static const char *window_title;
 static int screen_width = 0;
 static int screen_height = 0;
@@ -124,7 +134,7 @@ static int fast = 0;
 static int genpts = 0;
 static int lowres = 0;
 static int decoder_reorder_pts = -1;
-static int autoexit;
+static int autoexit = 0; // No auto exit
 static int exit_on_keydown;
 static int exit_on_mousedown;
 static int loop = 1;
@@ -222,6 +232,8 @@ private:
 	PacketQueue *pVideoq;
 	double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
 	int eof;
+	int image_width;
+	int image_height;
 
 	char *filename;
 
@@ -277,6 +289,7 @@ private:
 	*/
 	int audio_decode_frame();
 
+	std::function<void()> player_state_callbacks[NUM_PLAYER_STATE_CALLBACKS];
 public:
 	VideoState();
 	~VideoState();
@@ -286,7 +299,9 @@ public:
 	int video_thread();
 	int subtitle_thread();
 
-	static VideoState *stream_open(const char *filename, AVInputFormat *iformat);
+	static VideoState *stream_open(const char *filename, AVInputFormat *iformat, SDLPlayData *pPlayer);
+
+	void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);
 
 	/* Controls */
 
@@ -294,6 +309,10 @@ public:
 	void stream_toggle_pause();
 	//Moved to ffplay.cpp
 	//void toggle_full_screen();
+	int get_image_width() const; // height as coming from stream
+	int get_image_height() const; // width as coming from stream
+	bool has_audio_data() const;
+	bool has_image_data() const;
 	void pause();
 	void stop();
 	void play();
@@ -332,7 +351,8 @@ public:
 	Clock *get_pAudclk() const;
 	Clock *get_pExtclk() const;
 
-	AudioParams get_audio_tgt();
+	AudioFormat get_audio_format() const;
+	AudioParams get_audio_tgt() const;
 
 	Decoder *get_pViddec();
 
@@ -356,7 +376,7 @@ public:
 	FFTSample *get_rdft_data();
 	void set_rdft_data(FFTSample *newRDFT_data);
 
-	void set_player(SDLPlayData *player);
+	//void set_player(SDLPlayData *player);
 
 	int get_realtime() const;
 

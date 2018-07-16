@@ -32,10 +32,20 @@ int VideoState::stream_component_open(int stream_index) {
 	codec = avcodec_find_decoder(avctx->codec_id);
 
 	switch (avctx->codec_type) {
-	case AVMEDIA_TYPE_AUDIO: this->last_audio_stream = stream_index; forced_codec_name = audio_codec_name; break;
-	case AVMEDIA_TYPE_SUBTITLE: this->last_subtitle_stream = stream_index; forced_codec_name = subtitle_codec_name; break;
-	case AVMEDIA_TYPE_VIDEO: this->last_video_stream = stream_index; forced_codec_name = video_codec_name; break;
+		case AVMEDIA_TYPE_AUDIO: 
+			this->last_audio_stream = stream_index; 
+			forced_codec_name = audio_codec_name; 
+			break;
+		case AVMEDIA_TYPE_SUBTITLE: 
+			this->last_subtitle_stream = stream_index; 
+			forced_codec_name = subtitle_codec_name; 
+			break;
+		case AVMEDIA_TYPE_VIDEO: 
+			this->last_video_stream = stream_index; 
+			forced_codec_name = video_codec_name; 
+			break;
 	}
+
 	if (forced_codec_name)
 		codec = avcodec_find_decoder_by_name(forced_codec_name);
 	if (!codec) {
@@ -100,7 +110,7 @@ int VideoState::stream_component_open(int stream_index) {
 #endif
 
 		/* prepare audio output */
-		if ((ret = SDLPlayData::audio_open(this, channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
+		if ((ret = pPlayer->audio_open(this, channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
 			goto fail;
 		this->audio_hw_buf_size = ret;
 		this->audio_src = this->audio_tgt;
@@ -125,11 +135,13 @@ int VideoState::stream_component_open(int stream_index) {
 		}
 		if ((ret = pAuddec->start(audio_thread_bridge, this)) < 0)
 			goto out;
-		SDLPlayData::pauseAudioDevice();
+		pPlayer->pauseAudioDevice();
 		break;
 	case AVMEDIA_TYPE_VIDEO:
 		this->video_stream = stream_index;
 		this->video_st = ic->streams[stream_index];
+		this->image_width = avctx->width;
+		this->image_height = avctx->height;
 		pViddec = new Decoder(avctx, pVideoq, &continue_read_thread);
 		//pViddec->init(avctx, pVideoq, &continue_read_thread);
 		//decoder_init(&this->viddec, avctx, pVideoq, this->continue_read_thread);
@@ -653,7 +665,7 @@ int VideoState::read_thread() {
 	this->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
 
 	if (!window_title && (t = av_dict_get(ic->metadata, "title", NULL, 0)))
-		window_title = av_asprintf("%s - %s", t->value, input_filename);
+		window_title = av_asprintf("%s - %s", t->value, filename);
 
 	/* if seeking requested, we execute it */
 	if (start_time != AV_NOPTS_VALUE) {
@@ -847,6 +859,11 @@ int VideoState::read_thread() {
 				if (this->subtitle_stream >= 0)
 					pSubtitleq->put_null_packet(this->subtitle_stream);
 				this->eof = 1;
+
+				// Set the player state to finished
+				if (player_state_callbacks[TO_FINISHED]) {
+					player_state_callbacks[TO_FINISHED]();
+				}
 			}
 			if (ic->pb && ic->pb->error)
 				break;
@@ -858,6 +875,10 @@ int VideoState::read_thread() {
 		}
 		else {
 			this->eof = 0;
+			if (player_state_callbacks[TO_READY]) {
+				player_state_callbacks[TO_READY]();
+			}
+			// TODO(fraudies): Set the player state to ready here
 		}
 		/* check if packet is in play range specified by user, then queue, otherwise discard */
 		stream_start_time = ic->streams[pkt->stream_index]->start_time;
@@ -888,7 +909,7 @@ fail:
 		avformat_close_input(&ic);
 
 	if (ret != 0) {
-		SDLPlayData::do_exit(this);
+		pPlayer->destroy();
 	}
 	return 0;
 }
@@ -1117,8 +1138,9 @@ int VideoState::subtitle_thread() {
 }
 
 /* Public Members*/
-VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat) {
+VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat, SDLPlayData *pPlayer) {
 	VideoState *is = new VideoState();
+	is->pPlayer = pPlayer;
 
 	//is = (VideoState*) av_mallocz(sizeof(VideoState));
 	if (!is)
@@ -1153,6 +1175,16 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 
 	return is;
 }
+
+void VideoState::set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func) {
+	player_state_callbacks[callback] = func;
+}
+
+/*
+void VideoState::set_player_state_callback_value(void* value) {
+player_state_callback_value = value;
+}
+*/
 
 // Function Called from the event loop
 void VideoState::seek_chapter(int incr) {
@@ -1195,6 +1227,22 @@ void VideoState::stream_toggle_pause() {
 	pAudclk->setPaused(!this->paused);
 	pVidclk->setPaused(!this->paused);
 	pExtclk->setPaused(!this->paused);
+}
+
+int VideoState::get_image_width() const {
+	return image_width;
+}
+
+int VideoState::get_image_height() const {
+	return image_height;
+}
+
+bool VideoState::has_audio_data() const {
+	return audio_stream >= 0;
+}
+
+bool VideoState::has_image_data() const {
+	return video_stream >= 0;
 }
 
 void VideoState::pause() {
@@ -1377,7 +1425,43 @@ Clock *VideoState::get_pVidclk() const { return pVidclk; }
 Clock *VideoState::get_pAudclk() const { return pAudclk; }
 Clock *VideoState::get_pExtclk() const { return pExtclk; }
 
-AudioParams VideoState::get_audio_tgt() { return audio_tgt; }
+AudioParams VideoState::get_audio_tgt() const { return audio_tgt; }
+
+// Lot's of discussion around this (may have to clean this up)
+// See https://stackoverflow.com/questions/280162/is-there-a-way-to-do-a-c-style-compile-time-assertion-to-determine-machines-e
+// and https://stackoverflow.com/questions/1001307/detecting-endianness-programmatically-in-a-c-program
+int isBigEndian() {
+	union {
+		long int l;
+		char c[sizeof(long int)];
+	} u;
+	u.l = 1;
+	return (u.c[sizeof(long int) - 1] == 1);
+}
+
+AudioFormat VideoState::get_audio_format() const {
+	AudioParams audioParams = get_audio_tgt();
+	AudioFormat audioFormat;
+	// TODO: We need to add the audio codec to some container around AudioParams and use that here
+	switch (audioParams.fmt) {
+	case AV_SAMPLE_FMT_U8: case AV_SAMPLE_FMT_U8P:
+		audioFormat.encoding = "PCM_UNSIGNED";
+		break;
+	case AV_SAMPLE_FMT_S16: case AV_SAMPLE_FMT_S16P:
+		audioFormat.encoding = "PCM_SIGNED";
+		break;
+	default:
+		audioFormat.encoding = "Unknown";
+		break;
+	}
+	audioFormat.bigEndian = isBigEndian();
+	audioFormat.sampleRate = audioParams.freq;
+	audioFormat.sampleSizeInBits = audioParams.frame_size * sizeof(char);
+	audioFormat.channels = audioParams.channels;
+	audioFormat.frameSize = audioParams.frame_size;
+	audioFormat.frameRate = audioParams.freq;
+	return audioFormat;
+}
 
 Decoder* VideoState::get_pViddec() { return pViddec; }
 
@@ -1401,7 +1485,7 @@ void VideoState::set_rdft_bits(int newRDF_bits) { rdft_bits = newRDF_bits; }
 FFTSample *VideoState::get_rdft_data() { return rdft_data; }
 void VideoState::set_rdft_data(FFTSample *newRDFT_data) { rdft_data = newRDFT_data; }
 
-void VideoState::set_player(SDLPlayData *player) { pPlayer = player; }
+//void VideoState::set_player(SDLPlayData *player) { pPlayer = player; }
 
 int VideoState::get_realtime() const { return realtime; }
 

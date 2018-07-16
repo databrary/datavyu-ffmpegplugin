@@ -17,12 +17,16 @@ import java.util.Hashtable;
  * 1) Use the java framework
  * 2) Use the native SDL framework
  */
-final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerData {
+public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerData {
     private float mutedVolume = 1.0f;  // last volume before mute
     private boolean muteEnabled = false;
     private AudioPlayerThread audioPlayerThread = null;
     private ImagePlayerThread imagePlayerThread = null;
     private JFrame frame;
+
+    static {
+        System.loadLibrary("FfmpegMediaPlayer");
+    }
 
     /**
      * Create an ffmpeg media player instance and play through java
@@ -49,23 +53,29 @@ final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerDa
     @Override
     public void init(AudioFormat audioFormat, ColorSpace colorSpace) {
         initNative(); // start the event queue, make sure to register all state/error listeners before
+
+        // TODO: Add a switch to use SDL or not
         ffmpegInitPlayer(getNativeMediaRef(), source, audioFormat, colorSpace);
-        // If we have audio data consume it
-        if (hasAudioData()) {
-            audioPlayerThread = new AudioPlayerThread(this);
-            try {
-                audioPlayerThread.init(getAudioFormat());
-                audioPlayerThread.start();
-            } catch (LineUnavailableException lu) {
-                // TODO: Add correct media error
-                throwMediaErrorException(MediaError.ERROR_GSTREAMER_ERROR.code(), lu.getMessage());
+
+        // If we have a frame to display we will use that one to playback alongside the javax.sound framework
+        if (frame != null) {
+            // If we have audio data consume it
+            if (hasAudioData()) {
+                audioPlayerThread = new AudioPlayerThread(this);
+                try {
+                    audioPlayerThread.init(getAudioFormat());
+                    audioPlayerThread.start();
+                } catch (LineUnavailableException lu) {
+                    // TODO: Add correct media error
+                    throwMediaErrorException(MediaError.ERROR_GSTREAMER_ERROR.code(), lu.getMessage());
+                }
             }
-        }
-        // If we have image data consume it
-        if (hasImageData()) {
-            imagePlayerThread = new ImagePlayerThread(this);
-            imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
-            imagePlayerThread.start();
+            // If we have image data consume it
+            if (hasImageData()) {
+                imagePlayerThread = new ImagePlayerThread(this);
+                imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
+                imagePlayerThread.start();
+            }
         }
     }
 
@@ -344,8 +354,11 @@ final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerDa
     }
 
     // Native methods
-    private native int ffmpegInitPlayer(long refNativeMedia, URI source, AudioFormat requestedAudioFormat,
+    private native int ffmpegInitPlayer(long refNativeMedia,
+                                        URI source,
+                                        AudioFormat requestedAudioFormat,
                                         ColorSpace requestedColorFormat);
+
     private native int ffmpegDisposePlayer(long refNativeMedia);
 
     private native int ffmpegGetAudioSyncDelay(long refNativeMedia, long[] syncDelay);

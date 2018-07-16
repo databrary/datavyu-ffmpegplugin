@@ -43,6 +43,16 @@ private:
 	virtual uint32_t        SetAudioSyncDelay(long lMillis);
 	virtual uint32_t        GetAudioSyncDelay(long* plMillis);
 
+	// Fullfill the data interface
+	virtual uint32_t		HasAudioData(bool* bAudioData) const;
+	virtual uint32_t		HasImageData(bool* bImageData) const;
+	virtual uint32_t		GetImageWidth(int* iWidth) const;
+	virtual uint32_t		GetImageHeight(int* iHeight) const;
+	virtual uint32_t		GetAudioFormat(AudioFormat* pAudioParams) const;
+	virtual uint32_t		GetPixelFormat(PixelFormat* pPixelFormat) const;
+	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
+	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer);
+
 	void UpdatePlayerState(PlayerState newState);
 	void SetPlayerState(PlayerState newState, bool bSilent);
 

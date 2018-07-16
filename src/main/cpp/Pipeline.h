@@ -27,10 +27,11 @@
 #define _PIPELINE_H_
 
 #include <stdint.h>
-#include "JavaPlayerEventDispatcher.h"
 #include "PipelineOptions.h"
+#include "AudioVideoFormats.h"
 
 class CMedia;
+class CJavaPlayerEventDispatcher;
 
 /**
  * class CPipeline
@@ -83,10 +84,17 @@ public:
     virtual uint32_t        SetAudioSyncDelay(long lMillis);
     virtual uint32_t        GetAudioSyncDelay(long* plMillis);
 
+	virtual uint32_t		HasAudioData(bool* bAudioData) const;
+	virtual uint32_t		HasImageData(bool* bImageData) const;
+	virtual uint32_t		GetImageWidth(int* iWidth) const;
+	virtual uint32_t		GetImageHeight(int* iHeight) const;
+	virtual uint32_t		GetAudioFormat(AudioFormat* pAudioFormat) const;
+	virtual uint32_t		GetPixelFormat(PixelFormat* pPixelFormat) const;
+	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
+	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer);
+
 	// TODO(fraudies): Clean this up... currently used to free memory
-	inline CPipelineOptions* GetCPipelineOptions() {
-		return m_pOptions;
-	}
+	CPipelineOptions* GetCPipelineOptions();
 
 protected:
 	CJavaPlayerEventDispatcher* m_pEventDispatcher;

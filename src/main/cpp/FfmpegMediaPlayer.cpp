@@ -6,6 +6,7 @@
 #include "Pipeline.h"
 #include "FfmpegMediaErrors.h"
 #include "FfmpegAVPlaybackPipeline.h"
+#include "FfmpegJniUtils.h"
 
 using namespace std;
 
@@ -77,8 +78,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegD
 * Gets the audio sync delay for the media.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioSyncDelay
-(JNIEnv *env, jobject obj, jlong ref_media, jlongArray jrglAudioSyncDelay)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jlongArray jrglAudioSyncDelay) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -104,8 +104,8 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 * Sets the audio sync delay for the media.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegSetAudioSyncDelay
-(JNIEnv *env, jobject obj, jlong ref_media, jlong audio_sync_delay)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jlong audio_sync_delay) {
+
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
 		return ERROR_MEDIA_NULL;
@@ -127,8 +127,8 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 * The state is updated by the pipeline.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegPlay
-(JNIEnv *env, jobject obj, jlong ref_media)
-{
+(JNIEnv *env, jobject obj, jlong ref_media) {
+
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
 		return ERROR_MEDIA_NULL;
@@ -148,8 +148,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegP
 * Makes an asynchronous call to pause the media playback.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegPause
-(JNIEnv *env, jobject obj, jlong ref_media)
-{
+(JNIEnv *env, jobject obj, jlong ref_media) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -170,8 +169,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegP
 * Makes an asynchronous call to sotp the media playback.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegStop
-(JNIEnv *env, jobject obj, jlong ref_media)
-{
+(JNIEnv *env, jobject obj, jlong ref_media) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -192,8 +190,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 * Makes an asynchronous call to finish the media playback.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegFinish
-(JNIEnv *env, jobject obj, jlong ref_media)
-{
+(JNIEnv *env, jobject obj, jlong ref_media) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -214,8 +211,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegF
 * Makes a synchronous call to get the media playback rate.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetRate
-(JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfRate)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfRate) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -241,8 +237,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 * Makes an asynchronous call to set the media playback rate.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegSetRate
-(JNIEnv *env, jobject obj, jlong ref_media, jfloat rate)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jfloat rate) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -263,8 +258,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 * Makes a synchronous call to get the media presentation/stream time.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetPresentationTime
-(JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jrgdPresentationTime)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jrgdPresentationTime) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -290,8 +284,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 * Makes a synchronous call to get the audio volume.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetVolume
-(JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfVolume)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfVolume) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -317,8 +310,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 * Makes an asynchronous call to set the audio volume.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegSetVolume
-(JNIEnv *env, jobject obj, jlong ref_media, jfloat volume)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jfloat volume) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -339,8 +331,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 * Makes a synchronous call to get the audio balance.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetBalance
-(JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfBalance)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfBalance) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -366,8 +357,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 * Makes an asynchronous call to set the audio balance.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegSetBalance
-(JNIEnv *env, jobject obj, jlong ref_media, jfloat balance)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jfloat balance) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -388,8 +378,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 * Makes a synchronous call to get the duration of the media.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetDuration
-(JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jrgdDuration)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jrgdDuration) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -415,8 +404,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 * Makes an asynchronous call to seek to a presentation time in the media.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegSeek
-(JNIEnv *env, jobject obj, jlong ref_media, jdouble stream_time)
-{
+(JNIEnv *env, jobject obj, jlong ref_media, jdouble stream_time) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
@@ -430,6 +418,170 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 
 	return iRet;
 }
+
+/**
+* ffmpegHasAudioData()
+*
+* Makes a synchronous call to check if this media has audio data.
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegHasAudioData
+(JNIEnv *env, jobject obj, jlong ref_media, jbooleanArray jrbAudioData) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	bool bAudioData;
+	uint32_t uErrCode = pPipeline->HasAudioData(&bAudioData);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+	jboolean jbAudioData = (jboolean)bAudioData;
+	env->SetBooleanArrayRegion(jrbAudioData, 0, 1, &jbAudioData);
+}
+
+/**
+* ffmpegHasImageData()
+*
+* Makes a synchronous call to check if this media has image data.
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegHasImageData
+(JNIEnv *env, jobject obj, jlong ref_media, jbooleanArray jrbImageData) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	bool bImageData;
+	uint32_t uErrCode = pPipeline->HasImageData(&bImageData);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+	jboolean jbImageData = (jboolean)bImageData;
+	env->SetBooleanArrayRegion(jrbImageData, 0, 1, &jbImageData);
+}
+
+/**
+* ffmpegGetImageWidth()
+*
+* Makes a synchronous call to get the image width -- if no image data returns an error.
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetImageWidth
+(JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	int iImageWidth;
+	uint32_t uErrCode = pPipeline->GetImageWidth(&iImageWidth);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+	jint jiImageWidth = (jint)iImageWidth;
+	env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageWidth);
+}
+
+/*
+* ffmpegGetImageHeight()
+*
+* Makes a synchronous call to get the image height -- if no image data returns an error.
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetImageHeight
+(JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageHeight) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	int iImageHeight;
+	uint32_t uErrCode = pPipeline->GetImageHeight(&iImageHeight);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+	jint jiImageHeight = (jint)iImageHeight;
+	env->SetIntArrayRegion(jriImageHeight, 0, 1, &jiImageHeight);
+}
+
+/*
+* ffmpegGetAudioFormat()
+*
+* Makes a synchronous call to get the audio format -- if no audio returns an error.
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioFormat
+(JNIEnv *env, jobject obj, jlong ref_media, jobject jAudioFormat) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	AudioFormat* pAudioParams = nullptr;
+	uint32_t uErrCode = pPipeline->GetAudioFormat(pAudioParams);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+
+	uErrCode = SetAudioFormat(env, jAudioFormat, *pAudioParams);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+
+	return ERROR_NONE;
+}
+
+/*
+* ffmpegGetColorSpace()
+*
+* Makes a synchronous call to get the color space -- if no image returns an error.
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetColorSpace
+(JNIEnv *env, jobject obj, jlong ref_media, jobject jColorSpace) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	PixelFormat* pPixelFormat = nullptr;
+	uint32_t uErrCode = pPipeline->GetPixelFormat(pPixelFormat);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+
+	uErrCode = SetPixelFormat(env, jColorSpace, *pPixelFormat);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+
+	return ERROR_NONE;
+}
+
+/*
+* Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+* Method:    ffmpegGetImageBuffer
+* Signature: (J[B)I
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetImageBuffer
+(JNIEnv *, jobject, jlong, jbyteArray);
+
+/*
+* Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+* Method:    ffmpegGetAudioBuffer
+* Signature: (J[B)I
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioBuffer
+(JNIEnv *, jobject, jlong, jbyteArray);
+
+
 
 #ifdef __cplusplus
 }

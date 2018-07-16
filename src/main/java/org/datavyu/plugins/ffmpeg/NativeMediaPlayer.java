@@ -1,7 +1,5 @@
 package org.datavyu.plugins.ffmpeg;
 
-import com.sun.media.jfxmediaimpl.MediaUtils;
-
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;

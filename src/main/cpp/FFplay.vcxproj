@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Decoder.cpp" />
+    <ClCompile Include="ffplay.cpp" />
     <ClCompile Include="FrameQueue.cpp" />
     <ClCompile Include="PacketQueue.cpp" />
     <ClCompile Include="SDLPlayData.cpp" />

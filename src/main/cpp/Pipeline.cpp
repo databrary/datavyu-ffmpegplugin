@@ -166,3 +166,79 @@ uint32_t CPipeline::GetAudioSyncDelay(long* plMillis)
 
 	return ERROR_NONE;
 }
+
+uint32_t CPipeline::HasAudioData(bool* bAudioData) const {
+	if (NULL == bAudioData)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*bAudioData = false;
+
+	return ERROR_NONE;
+}
+
+uint32_t CPipeline::HasImageData(bool* bImageData) const {
+	if (NULL == bImageData)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*bImageData = false;
+
+	return ERROR_NONE;
+}
+
+uint32_t CPipeline::GetImageWidth(int* iWidth) const {
+	if (NULL == iWidth)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*iWidth = -1;
+
+	return ERROR_NONE;
+}
+
+uint32_t CPipeline::GetImageHeight(int* iHeight) const {
+	if (NULL == iHeight)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*iHeight = -1;
+
+	return ERROR_NONE;
+}
+
+uint32_t CPipeline::GetAudioFormat(AudioFormat* pAudioFormat) const {
+	if (NULL == pAudioFormat)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*pAudioFormat = AudioFormat();
+
+	return ERROR_NONE;
+}
+
+uint32_t CPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
+	if (NULL == pPixelFormat)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*pPixelFormat = PixelFormat();
+
+	return ERROR_NONE;
+}
+
+uint32_t CPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
+	if (NULL == ppImageBuffer)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*ppImageBuffer = nullptr;
+
+	return ERROR_NONE;
+}
+
+uint32_t CPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
+	if (NULL == ppAudioBuffer)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*ppAudioBuffer = nullptr;
+
+	return ERROR_NONE;
+}
+
+CPipelineOptions* CPipeline::GetCPipelineOptions() {
+	return m_pOptions;
+}
