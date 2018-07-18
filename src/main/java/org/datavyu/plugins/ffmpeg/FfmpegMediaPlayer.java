@@ -53,9 +53,10 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     @Override
     public void init(AudioFormat audioFormat, ColorSpace colorSpace) {
         initNative(); // start the event queue, make sure to register all state/error listeners before
-
+        long[] newNativeMediaRef = new long[1];
         // TODO: Add a switch to use SDL or not
-        ffmpegInitPlayer(getNativeMediaRef(), source, audioFormat, colorSpace);
+        ffmpegInitPlayer(newNativeMediaRef, source, audioFormat, colorSpace);
+        nativeMediaRef = newNativeMediaRef[0];
 
         // If we have a frame to display we will use that one to playback alongside the javax.sound framework
         if (frame != null) {
@@ -354,7 +355,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     }
 
     // Native methods
-    private native int ffmpegInitPlayer(long refNativeMedia,
+    private native int ffmpegInitPlayer(long[] newNativeMedia,
                                         URI source,
                                         AudioFormat requestedAudioFormat,
                                         ColorSpace requestedColorFormat);

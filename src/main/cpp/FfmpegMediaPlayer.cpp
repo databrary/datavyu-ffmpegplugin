@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
-(JNIEnv *env, jobject obj, jlong ref_media, jobject source, jobject audioFormat, jobject imageFormat) {
+(JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jobject source, jobject audioFormat, jobject imageFormat) {
 	// TODO(fraudies): Intialize the ffmpeg player
 
 	CPipelineOptions* pOptions = new (nothrow) CPipelineOptions();
@@ -28,7 +28,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegI
 		return ERROR_PIPELINE_CREATION;
 	}
 
-	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	CMedia* pMedia = NULL;
 	CMedia** ppMedia = &pMedia;
 
 	*ppMedia = new(nothrow) CMedia(pPipeline);
@@ -37,6 +37,15 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegI
 		delete pOptions;
 		delete pPipeline;
 		return ERROR_MEDIA_CREATION;
+	}
+
+	if (CMedia::IsValid(pMedia)) {
+		jlong lMediaHandle = (jlong)ptr_to_jlong(pMedia);
+		env->SetLongArrayRegion(jlMediaHandle, 0, 1, &lMediaHandle);
+	} else {
+		delete pOptions;
+		delete pPipeline;
+		return ERROR_MEDIA_INVALID;
 	}
 
 	CJavaPlayerEventDispatcher* pEventDispatcher = new(nothrow) CJavaPlayerEventDispatcher();

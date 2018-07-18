@@ -27,6 +27,7 @@ uint32_t FfmpegAVPlaybackPipeline::Init() {
 	pPlayer->init();
 
 	// Assign the callback functions
+	/*
 	pVideoState->set_player_state_callback_func(TO_UNKNOWN, [this] {
 		this->UpdatePlayerState(Unknown);
 	});
@@ -48,7 +49,7 @@ uint32_t FfmpegAVPlaybackPipeline::Init() {
 	pVideoState->set_player_state_callback_func(TO_FINISHED, [this] {
 		this->UpdatePlayerState(Finished);
 	});
-
+	*/
 	pPlayer->start_display_loop();
 	UpdatePlayerState(Ready);
 
@@ -414,7 +415,7 @@ void FfmpegAVPlaybackPipeline::UpdatePlayerState(PlayerState newState) {
 
 
 void FfmpegAVPlaybackPipeline::SetPlayerState(PlayerState newPlayerState, bool bSilent) {
-	stateLock.lock();
+	//stateLock.lock();
 
 	// Determine if we need to send an event out
 	bool updateState = newPlayerState != m_PlayerState;
@@ -435,7 +436,7 @@ void FfmpegAVPlaybackPipeline::SetPlayerState(PlayerState newPlayerState, bool b
 		}
 	}
 
-	stateLock.unlock();
+	//stateLock.unlock();
 
 	if (updateState && newPlayerState == Stalled) { // Try to play
 		Play();

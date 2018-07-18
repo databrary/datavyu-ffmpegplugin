@@ -24,7 +24,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
 
     private final Lock markerLock = new ReentrantLock();
-    private long nativeMediaRef = 0;
+    protected long nativeMediaRef = 0;
     private PlayerStateEvent.PlayerState playerState = PlayerStateEvent.PlayerState.UNKNOWN;
     private EventQueueThread eventLoop = new EventQueueThread();
     //private final Object firstFrameLock = new Object();

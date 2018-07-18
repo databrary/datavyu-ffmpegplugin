@@ -1,6 +1,5 @@
 package org.datavyu.plugins.ffmpeg.examples;
 
-import javafx.scene.media.MediaException;
 import org.datavyu.plugins.ffmpeg.MediaErrorListener;
 import org.datavyu.plugins.ffmpeg.MediaPlayer;
 import org.datavyu.plugins.ffmpeg.FfmpegMediaPlayer;
@@ -24,5 +23,10 @@ public class SimpleMediaPlayerExample {
         AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
         mediaPlayer.init(audioFormat, colorSpace);
         mediaPlayer.play();
+        try {
+            Thread.sleep(60*1000);
+        } catch (InterruptedException ie) {
+            System.out.println("Stopping playback after 60 secs");
+        }
     }
 }

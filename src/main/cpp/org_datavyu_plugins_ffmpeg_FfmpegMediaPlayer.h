@@ -26,10 +26,10 @@ extern "C" {
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegInitPlayer
- * Signature: (JLjava/net/URI;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;)I
+ * Signature: ([JLjava/net/URI;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
-  (JNIEnv *, jobject, jlong, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jlongArray, jobject, jobject, jobject);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
