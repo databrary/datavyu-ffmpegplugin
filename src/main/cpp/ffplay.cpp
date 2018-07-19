@@ -6,9 +6,7 @@ int main(int argc, char **argv) {
 	static const char* input_filename = "counter.mp4";
 	AVInputFormat *file_iformat = nullptr;
 	SDLPlayData* pPlayer = new SDLPlayData(input_filename, file_iformat);
-	pPlayer->init();
-	pPlayer->event_loop();
+	pPlayer->init_and_event_loop();
 	pPlayer->destroy();
-
 	return 0;
 }

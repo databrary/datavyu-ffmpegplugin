@@ -875,10 +875,7 @@ int VideoState::read_thread() {
 		}
 		else {
 			this->eof = 0;
-			if (player_state_callbacks[TO_READY]) {
-				player_state_callbacks[TO_READY]();
-			}
-			// TODO(fraudies): Set the player state to ready here
+			// TODO(fraudies): Set the player state from stalled to ready here (if ready don't do anything)
 		}
 		/* check if packet is in play range specified by user, then queue, otherwise discard */
 		stream_start_time = ic->streams[pkt->stream_index]->start_time;
@@ -1179,12 +1176,6 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 void VideoState::set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func) {
 	player_state_callbacks[callback] = func;
 }
-
-/*
-void VideoState::set_player_state_callback_value(void* value) {
-player_state_callback_value = value;
-}
-*/
 
 // Function Called from the event loop
 void VideoState::seek_chapter(int incr) {

@@ -847,7 +847,9 @@ void SDLPlayData::destroy() {
 	exit(0);
 }
 
-void SDLPlayData::event_loop() {
+void SDLPlayData::init_and_event_loop() {
+
+	init();
 	// SDL: The event loop for the SDL window
 	SDL_Event event;
 	double incr, pos, frac;
@@ -1053,12 +1055,13 @@ void SDLPlayData::event_loop() {
 	}
 }
 
-void SDLPlayData::start_display_loop() {
+void SDLPlayData::init_and_start_display_loop() {
 	// SDL: The event loop for the SDL window
 	display_tid = new std::thread([this] {
+		init();
 		SDL_Event event;
-		while (!this->stopped) {
-			this->refresh_loop_wait_event(this->get_VideoState(), &event);
+		while (!stopped) {
+			refresh_loop_wait_event(this->get_VideoState(), &event);
 		}
 	});
 }

@@ -24,10 +24,8 @@ uint32_t FfmpegAVPlaybackPipeline::Init() {
 		pPlayer->destroy();
 		delete pPlayer;
 	}
-	pPlayer->init();
 
-	// Assign the callback functions
-	/*
+	// Assign the callback functions	
 	pVideoState->set_player_state_callback_func(TO_UNKNOWN, [this] {
 		this->UpdatePlayerState(Unknown);
 	});
@@ -49,8 +47,8 @@ uint32_t FfmpegAVPlaybackPipeline::Init() {
 	pVideoState->set_player_state_callback_func(TO_FINISHED, [this] {
 		this->UpdatePlayerState(Finished);
 	});
-	*/
-	pPlayer->start_display_loop();
+	
+	pPlayer->init_and_start_display_loop();
 	UpdatePlayerState(Ready);
 
 	return ERROR_NONE;
@@ -425,7 +423,7 @@ void FfmpegAVPlaybackPipeline::SetPlayerState(PlayerState newPlayerState, bool b
 		{
 			m_PlayerState = newPlayerState;
 
-			if (!m_pEventDispatcher->SendPlayerStateEvent(newPlayerState, pPlayer->get_VideoState()->get_master_clock()))
+			if (!m_pEventDispatcher->SendPlayerStateEvent(newPlayerState, 0))
 			{
 				m_pEventDispatcher->SendPlayerMediaErrorEvent(ERROR_JNI_SEND_PLAYER_STATE_EVENT);
 			}

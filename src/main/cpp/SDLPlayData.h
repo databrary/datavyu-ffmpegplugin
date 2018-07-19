@@ -112,6 +112,8 @@ private:
 	std::atomic<bool> stopped = false;
 	std::thread* display_tid = nullptr;
 
+	void init(); // This is private because it has to be called on the same thread as the looping
+
 public:
 	SDLPlayData(const char *filename, 
 		AVInputFormat *iformat);
@@ -161,13 +163,11 @@ public:
 	/* called to display each frame */
 	void video_refresh(VideoState *is, double *remaining_time);
 
-	void init();
-
 	void destroy();
 
-	void event_loop();
+	void init_and_event_loop();
 
-	void start_display_loop();
+	void init_and_start_display_loop();
 
 	void stop_display_loop();
 };
