@@ -153,7 +153,7 @@ static int audio_disable;
 static int video_disable;
 static int subtitle_disable;
 static const char* wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
-static int seek_by_bytes = -1;
+static int seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
 static int borderless;
 static int startup_volume = 100;
 static int show_status = 1;
@@ -268,9 +268,9 @@ private:
 #if CONFIG_AVFILTER
 	int vfilter_idx;
 	const char **vfilters_list = NULL;
-	char *vfilters = NULL;
+	char *vfilters = NULL; // video filter
 	int nb_vfilters = 0;
-	char *afilters = (char *) "asetpts=0.25*PTS";
+	char *afilters = NULL; // audio filter Note: audio filter is not working
 	AVFilterContext *in_video_filter;   // the first filter in the video chain
 	AVFilterContext *out_video_filter;  // the last filter in the video chain
 	AVFilterContext *in_audio_filter;   // the first filter in the audio chain
@@ -279,6 +279,7 @@ private:
 	// From cmdutils
 	AVDictionary *sws_dict;
 	AVDictionary *swr_opts;
+	std::mutex mutex;
 #endif
 
 	int last_video_stream, last_audio_stream, last_subtitle_stream;
@@ -288,16 +289,14 @@ private:
 	inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
 			enum AVSampleFormat fmt2, int64_t channel_count2) {
 		/* If channel count == 1, planar and non-planar formats are the same */
-		if (channel_count1 == 1 && channel_count2 == 1)
-			return av_get_packed_sample_fmt(fmt1) != av_get_packed_sample_fmt(fmt2);
-		else
-			return channel_count1 != channel_count2 || fmt1 != fmt2;
+		return (channel_count1 == 1 && channel_count2 == 1) 
+				? av_get_packed_sample_fmt(fmt1) != av_get_packed_sample_fmt(fmt2) 
+				: channel_count1 != channel_count2 || fmt1 != fmt2;
 	}
 	inline int64_t get_valid_channel_layout(int64_t channel_layout, int channels) {
-		if (channel_layout && av_get_channel_layout_nb_channels(channel_layout) == channels)
-			return channel_layout;
-		else
-			return 0;
+		return (channel_layout && av_get_channel_layout_nb_channels(channel_layout) == channels) 
+					? channel_layout 
+					: 0;
 	}
 
 	double get_rotation(AVStream * st);

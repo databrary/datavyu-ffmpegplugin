@@ -885,8 +885,8 @@ void SDLPlayData::event_loop(VideoState *is) {
 			case SDLK_DOWN:
 				incr = -60.0;
 			do_seek:
-				//TODO FIX SEEK BY BYTES BUG
-				seek_by_bytes = 0;
+				//TODO: FIX SEEK BY BYTES BUG
+				// Seek by byte is set to false  
 				if (seek_by_bytes) {
 					pos = -1;
 					if (pos < 0 && is->get_video_stream() >= 0)
@@ -1009,7 +1009,7 @@ int main(int argc, char **argv) {
 	avformat_network_init();
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 
-	input_filename = "Nature_30fps_1080p.mp4";
+	input_filename = "counter.mp4";
 
 	if (!input_filename) {
 		//show_usage();

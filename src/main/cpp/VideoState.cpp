@@ -1147,8 +1147,10 @@ int VideoState::video_thread() {
 #if CONFIG_AVFILTER
 			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
 #else
-			//Change the pts of the frame in the video thread better than decoder
-			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : (frame->pts * pts_speed) * av_q2d(tb);
+			//Change the pts of the frame in the video thread better than decoder 
+			//but it is not working as expected and need to be fixed 
+			//pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : (frame->pts * pts_speed) * av_q2d(tb);
+			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
 #endif
 			ret = queue_picture(frame, pts, duration, frame->pkt_pos, pViddec->get_pkt_serial());
 			av_frame_unref(frame);
@@ -1635,7 +1637,9 @@ void VideoState::set_speed(const int step) {
 					toggle_mute();
 				}
 #if CONFIG_AVFILTER
+				std::unique_lock<std::mutex> locker(mutex);
 				vfilters = rate_speed_map[i + step].command;
+				locker.unlock();
 #else
 				pts_speed = rate_speed_map[i + step].pts_speed;
 #endif
@@ -1790,13 +1794,13 @@ int VideoState::configure_video_filters(AVFilterGraph *graph, const char *vfilte
 
 	if ((ret = avfilter_graph_create_filter(&filt_src,
 		avfilter_get_by_name("buffer"),
-		"ffplay_buffer", buffersrc_args, NULL,
+		"in", buffersrc_args, NULL,
 		graph)) < 0)
 		goto fail;
 
 	ret = avfilter_graph_create_filter(&filt_out,
 		avfilter_get_by_name("buffersink"),
-		"ffplay_buffersink", NULL, NULL, graph);
+		"out", NULL, NULL, graph);
 	if (ret < 0)
 		goto fail;
 
@@ -1812,7 +1816,7 @@ int VideoState::configure_video_filters(AVFilterGraph *graph, const char *vfilte
                                                                              \
     ret = avfilter_graph_create_filter(&filt_ctx,                            \
                                        avfilter_get_by_name(name),           \
-                                       "ffplay_" name, arg, NULL, graph);    \
+                                       name, arg, NULL, graph);    \
     if (ret < 0)                                                             \
         goto fail;                                                           \
                                                                              \
