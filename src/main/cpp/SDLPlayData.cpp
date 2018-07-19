@@ -654,11 +654,9 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 			if (delay > 0 && time - frame_timer > AV_SYNC_THRESHOLD_MAX)
 				frame_timer = time;
 
-			// Replaced SDL_LockMutex(pPictq.mutex)by the following
 			std::unique_lock<std::mutex> locker(is->get_pPictq()->get_mutex());
 			if (!isnan(vp->pts))
 				update_video_pts(is, vp->pts, vp->pos, vp->serial);
-			// Replaced SDL_UnlockMutex(this->pPictq.mutex) by
 			locker.unlock();
 
 			if (is->get_pPictq()->nb_remaining() > 1) {
@@ -747,8 +745,9 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 			else if (is->get_audio_st())
 				av_diff = is->get_master_clock() - is->get_pAudclk()->get_clock();
 			av_log(NULL, AV_LOG_INFO,
-				"%7.2f %s:%7.3f fd=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+				"%7.2f at %dX %s:%7.3f fd=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
 				is->get_master_clock(),
+				is->get_master_clock_speed(),
 				(is->get_audio_st() && is->get_video_st()) ? "A-V" : (is->get_video_st() ? "M-V" : (is->get_audio_st() ? "M-A" : "   ")),
 				av_diff,
 				is->get_frame_drops_early() + frame_drops_late,
@@ -775,7 +774,7 @@ void SDLPlayData::do_exit(VideoState* is) {
 		SDL_DestroyWindow(window);
 	//uninit_opts();
 #if CONFIG_AVFILTER
-	av_freep(&vfilters_list);
+	//av_freep(&vfilters_list);
 #endif
 	avformat_network_deinit();
 	if (show_status)
@@ -829,6 +828,12 @@ void SDLPlayData::event_loop(VideoState *is) {
 			case SDLK_a:
 				is->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
 				break;
+			case SDLK_KP_PLUS:
+				is->set_speed(1);
+				break;
+			case SDLK_KP_MINUS:
+				is->set_speed(-1);
+				break;
 			case SDLK_v:
 				is->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
 				break;
@@ -842,12 +847,12 @@ void SDLPlayData::event_loop(VideoState *is) {
 				break;
 			case SDLK_w:
 #if CONFIG_AVFILTER
-				if (is->get_show_mode() == SHOW_MODE_VIDEO && is->->vfilter_idx < nb_vfilters - 1) {
-					if (++is->->vfilter_idx >= nb_vfilters)
-						is->->vfilter_idx = 0;
+				if (is->get_show_mode() == SHOW_MODE_VIDEO && is->get_vfilter_idx() < is->get_nb_vfilters() - 1) {
+					if ((is->get_vfilter_idx() + 1) >= is->get_nb_vfilters())
+						is->set_vfilter_idx(0);
 				}
 				else {
-					is->->vfilter_idx = 0;
+					is->set_vfilter_idx(0);
 					is->toggle_audio_display();
 				}
 #else
@@ -880,23 +885,24 @@ void SDLPlayData::event_loop(VideoState *is) {
 			case SDLK_DOWN:
 				incr = -60.0;
 			do_seek:
-				//TODO FIX SEEK BY BYTES BUG
-				//if (seek_by_bytes) {
-				//	pos = -1;
-				//	if (pos < 0 && is->get_video_stream() >= 0)
-				//		pos = is->get_pPictq()->last_pos();
-				//	if (pos < 0 && is->get_audio_stream() >= 0)
-				//		pos = is->get_pSampq()->last_pos();
-				//	if (pos < 0)
-				//		pos = avio_tell(is->get_ic()->pb);
-				//	if (is->get_ic()->bit_rate)
-				//		incr *= is->get_ic()->bit_rate / 8.0;
-				//	else
-				//		incr *= 180000.0;
-				//	pos += incr;
-				//	is->stream_seek(pos, incr, 1);
-				//}
-				//else {
+				//TODO: FIX SEEK BY BYTES BUG
+				// Seek by byte is set to false  
+				if (seek_by_bytes) {
+					pos = -1;
+					if (pos < 0 && is->get_video_stream() >= 0)
+						pos = is->get_pPictq()->last_pos();
+					if (pos < 0 && is->get_audio_stream() >= 0)
+						pos = is->get_pSampq()->last_pos();
+					if (pos < 0)
+						pos = avio_tell(is->get_ic()->pb);
+					if (is->get_ic()->bit_rate)
+						incr *= is->get_ic()->bit_rate / 8.0;
+					else
+						incr *= 180000.0;
+					pos += incr;
+					is->stream_seek(pos, incr, 1);
+				}
+				else {
 					pos = is->get_master_clock();
 					if (isnan(pos))
 						pos = (double)is->get_seek_pos() / AV_TIME_BASE;
@@ -904,7 +910,7 @@ void SDLPlayData::event_loop(VideoState *is) {
 					if (is->get_ic()->start_time != AV_NOPTS_VALUE && pos < is->get_ic()->start_time / (double)AV_TIME_BASE)
 						pos = is->get_ic()->start_time / (double)AV_TIME_BASE;
 					is->stream_seek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
-				//}
+				}
 				break;
 			default:
 				break;
@@ -1003,7 +1009,7 @@ int main(int argc, char **argv) {
 	avformat_network_init();
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 
-	input_filename = "counter.mp4";
+	input_filename = "Nature_30fps_1080p.mp4";
 
 	if (!input_filename) {
 		//show_usage();
@@ -1063,7 +1069,6 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	//VideoState* is = VideoState::stream_open(input_filename, file_iformat);
 	SDLPlayData* pPlayer = new SDLPlayData(input_filename, file_iformat);
 	if (!pPlayer->get_VideoState()) {
 		av_log(NULL, AV_LOG_FATAL, "Failed to initialize VideoState!\n");

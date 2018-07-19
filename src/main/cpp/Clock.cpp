@@ -48,10 +48,6 @@ void Clock::setPaused(bool p) {
 	paused = p;
 }
 
-void Clock::set_paused(int newPaused) {
-	paused = newPaused;
-}
-
 double Clock::get_clock_speed() const {
 	return speed;
 }

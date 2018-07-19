@@ -51,7 +51,7 @@ int Decoder::decode_frame(AVFrame *frame, AVSubtitle *sub) {
 						else if (next_pts != AV_NOPTS_VALUE)
 							frame->pts = av_rescale_q(next_pts, next_pts_tb, tb);
 						if (frame->pts != AV_NOPTS_VALUE) {
-							next_pts = frame->pts + frame->nb_samples;
+							next_pts = frame->pts + frame->nb_samples ;
 							next_pts_tb = tb;
 						}
 					}
