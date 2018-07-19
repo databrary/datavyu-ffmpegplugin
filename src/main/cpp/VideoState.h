@@ -1,7 +1,7 @@
 #ifndef VIDEOSTATE_H_
 #define VIDEOSTATE_H_
 
-#define CONFIG_AVFILTER 1
+#define CONFIG_AVFILTER 0
 
 #include <inttypes.h>
 #include <math.h>
