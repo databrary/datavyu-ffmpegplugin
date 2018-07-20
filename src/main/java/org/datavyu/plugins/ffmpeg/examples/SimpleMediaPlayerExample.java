@@ -16,7 +16,7 @@ public class SimpleMediaPlayerExample {
     public static void main(String[] args) {
 
         // Create the  media player and attach any listeners
-        String movieFileName = "counter.mp4";
+        String movieFileName = "Nature_30fps_1080p.mp4";
         MediaPlayer mediaPlayer = new FfmpegMediaPlayer(URI.create(movieFileName));
         mediaPlayer.addMediaErrorListener(new MediaErrorListener() {
             @Override

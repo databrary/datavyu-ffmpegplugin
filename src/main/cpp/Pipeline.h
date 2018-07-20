@@ -59,7 +59,7 @@ public:
 
     void                    SetEventDispatcher(CJavaPlayerEventDispatcher* pEventDispatcher);
 
-    virtual uint32_t        Init();
+    virtual uint32_t        Init(const char * input_file);
     virtual void            Dispose();
 
     virtual uint32_t        Play()=0;

@@ -55,7 +55,29 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegI
 	pEventDispatcher->Init(env, obj, pMedia);
 	pPipeline->SetEventDispatcher(pEventDispatcher);
 
-	jint iRet = (jint)pPipeline->Init();
+
+	static jmethodID mid_toString = 0;
+	jstring path = NULL;
+
+	if (mid_toString == 0)
+	{
+		jclass uriClass = env->GetObjectClass(source);
+		if (NULL == uriClass)
+			return ERROR_BASE_JNI;
+
+		mid_toString = env->GetMethodID(uriClass, "getPath", "()Ljava/lang/String;");
+		if (NULL == mid_toString)
+			return ERROR_BASE_JNI;
+		env->DeleteLocalRef(uriClass);
+	}
+
+	path = (jstring)env->CallObjectMethod(source, mid_toString);
+	if (NULL == path)
+		return ERROR_BASE_JNI;
+
+	const char * input_file = env->GetStringUTFChars(path, 0);
+
+	jint iRet = (jint)pPipeline->Init(input_file);
 
 	return iRet;
 }

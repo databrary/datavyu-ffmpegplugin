@@ -15,7 +15,7 @@
 class FfmpegAVPlaybackPipeline : public CPipeline
 {
 public:
-	virtual uint32_t    Init();
+	virtual uint32_t    Init(const char * input_file);
 	virtual void        Dispose();
 	FfmpegAVPlaybackPipeline(CPipelineOptions* pOptions);
 	virtual ~FfmpegAVPlaybackPipeline();
