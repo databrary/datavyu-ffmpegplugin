@@ -4,6 +4,7 @@
 *.exp
 *.log
 *.exe
+*.pdb
 bin/
 *.iml
 .idea/*

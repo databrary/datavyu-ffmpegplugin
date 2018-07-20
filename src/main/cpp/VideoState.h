@@ -9,42 +9,41 @@
 #include <signal.h>
 #include <stdint.h>
 
+#include "AudioVideoFormats.h"
 #include "Clock.h"
 #include "PacketQueue.h"
 #include "FrameQueue.h"
 #include "Decoder.h"
 
 extern "C" {
-#include "libavutil/avstring.h"
-#include "libavutil/eval.h"
-#include "libavutil/mathematics.h"
-#include "libavutil/pixdesc.h"
-#include "libavutil/imgutils.h"
-#include "libavutil/dict.h"
-#include "libavutil/parseutils.h"
-#include "libavutil/samplefmt.h"
-#include "libavutil/avassert.h"
-#include "libavutil/time.h"
-#include "libavutil/log.h"
-#include "libavformat/avformat.h"
-#include "libavdevice/avdevice.h"
-#include "libswscale/swscale.h"
-#include "libavutil/opt.h"
-#include "libavcodec/avfft.h"
-#include "libswresample/swresample.h"
+	#include "libavutil/avstring.h"
+	#include "libavutil/eval.h"
+	#include "libavutil/mathematics.h"
+	#include "libavutil/pixdesc.h"
+	#include "libavutil/imgutils.h"
+	#include "libavutil/dict.h"
+	#include "libavutil/parseutils.h"
+	#include "libavutil/samplefmt.h"
+	#include "libavutil/avassert.h"
+	#include "libavutil/time.h"
+	#include "libavutil/log.h"
+	#include "libavformat/avformat.h"
+	#include "libavdevice/avdevice.h"
+	#include "libswscale/swscale.h"
+	#include "libavutil/opt.h"
+	#include "libavcodec/avfft.h"
+	#include "libswresample/swresample.h"
 
-#if CONFIG_AVFILTER
-# include "libavfilter/avfilter.h"
-# include "libavfilter/buffersink.h"
-# include "libavfilter/buffersrc.h"
-#endif
-//Could be moved to SDLPlayData.h
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_thread.h>
+	#if CONFIG_AVFILTER
+	# include "libavfilter/avfilter.h"
+	# include "libavfilter/buffersink.h"
+	# include "libavfilter/buffersrc.h"
+	#endif
+	//Could be moved to ffplay.hpp
+	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_thread.h>
 
-//#include "fftools/cmdutils.h"
-
-#include <assert.h>
+	#include <assert.h>
 }
 
 /* Minimum SDL audio buffer size, in samples. */
@@ -108,7 +107,18 @@ enum ShowMode {
 	SHOW_MODE_NB
 };
 
-// Note will have to divide by 1000 to get the float value of the rate 
+enum PlayerStateCallback {
+	TO_UNKNOWN = 0,		// 1
+	TO_READY,			// 2
+	TO_PLAYING,			// 3
+	TO_PAUSED,			// 4
+	TO_STOPPED,			// 5
+	TO_STALLED,			// 6
+	TO_FINISHED,		// 7
+	NUM_PLAYER_STATE_CALLBACKS
+};
+
+// Note will have to divide by 1000 to get the float value of the rate
 enum Rates {
 	X1D32,
 	X1D16,
@@ -144,14 +154,12 @@ static const struct RatesEntry {
 /* options specified by the user */
 
 static ShowMode show_mode = SHOW_MODE_NONE;
-static AVInputFormat *file_iformat;
-static const char *input_filename;
 static const char *window_title;
 static int screen_width = 0;
 static int screen_height = 0;
-static int audio_disable;
-static int video_disable;
-static int subtitle_disable;
+static int audio_disable; // TODO(fraudies): Move this into video state
+static int video_disable; // TODO(fraudies): Move this into video state
+static int subtitle_disable; // TODO(fraudies): Move this into video state
 static const char* wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
 static int borderless;
@@ -164,7 +172,7 @@ static int fast = 0;
 static int genpts = 0;
 static int lowres = 0;
 static int decoder_reorder_pts = -1;
-static int autoexit;
+static int autoexit = 0; // No auto exit
 static int exit_on_keydown;
 static int exit_on_mousedown;
 static int loop = 1;
@@ -256,6 +264,8 @@ private:
 	PacketQueue *pVideoq;
 	double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
 	int eof;
+	int image_width;
+	int image_height;
 
 	char *filename;
 
@@ -285,17 +295,17 @@ private:
 	int last_video_stream, last_audio_stream, last_subtitle_stream;
 
 	std::condition_variable continue_read_thread;
-	
+
 	inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
 			enum AVSampleFormat fmt2, int64_t channel_count2) {
 		/* If channel count == 1, planar and non-planar formats are the same */
-		return (channel_count1 == 1 && channel_count2 == 1) 
-				? av_get_packed_sample_fmt(fmt1) != av_get_packed_sample_fmt(fmt2) 
+		return (channel_count1 == 1 && channel_count2 == 1)
+				? av_get_packed_sample_fmt(fmt1) != av_get_packed_sample_fmt(fmt2)
 				: channel_count1 != channel_count2 || fmt1 != fmt2;
 	}
 	inline int64_t get_valid_channel_layout(int64_t channel_layout, int channels) {
-		return (channel_layout && av_get_channel_layout_nb_channels(channel_layout) == channels) 
-					? channel_layout 
+		return (channel_layout && av_get_channel_layout_nb_channels(channel_layout) == channels)
+					? channel_layout
 					: 0;
 	}
 
@@ -340,6 +350,7 @@ private:
 	*/
 	int audio_decode_frame();
 
+	std::function<void()> player_state_callbacks[NUM_PLAYER_STATE_CALLBACKS];
 public:
 	VideoState();
 	~VideoState();
@@ -348,8 +359,10 @@ public:
 	int audio_thread();
 	int video_thread();
 	int subtitle_thread();
+	void stream_start();
+	static VideoState *stream_open(const char *filename, AVInputFormat *iformat, SDLPlayData *pPlayer);
 
-	static VideoState *stream_open(const char *filename, AVInputFormat *iformat);
+	void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);
 
 	/* Controls */
 
@@ -357,6 +370,15 @@ public:
 	void stream_toggle_pause();
 	//Moved to ffplay.cpp
 	//void toggle_full_screen();
+	int get_image_width() const; // height as coming from stream
+	int get_image_height() const; // width as coming from stream
+	bool has_audio_data() const;
+	bool has_image_data() const;
+	void pause();
+	void stop();
+	void play();
+	double get_duration() const; // returns the duration in sec
+	int get_audio_volume() const;
 	void toggle_pause();
 	void toggle_mute();
 	void update_volume(int sign, double step);
@@ -371,6 +393,8 @@ public:
 
 	int get_step() const;
 	int get_frame_drops_early() const;
+
+	const char* get_filename() const;
 
 	AVStream *get_audio_st() const;
 	AVStream *get_video_st() const;
@@ -390,11 +414,12 @@ public:
 	Clock *get_pAudclk() const;
 	Clock *get_pExtclk() const;
 
-	AudioParams get_audio_tgt();
+	AudioFormat get_audio_format() const;
+	AudioParams get_audio_tgt() const;
 
 	Decoder *get_pViddec();
 
-	AVFormatContext *get_ic();
+	AVFormatContext* get_ic() const;
 
 	int64_t get_seek_pos() const;
 
@@ -402,7 +427,7 @@ public:
 	int get_audio_stream() const;
 
 	double get_max_frame_duration();
-	
+
 	int get_audio_write_buf_size() const;
 
 	RDFTContext *get_rdft();
@@ -414,7 +439,7 @@ public:
 	FFTSample *get_rdft_data();
 	void set_rdft_data(FFTSample *newRDFT_data);
 
-	void set_player(SDLPlayData *player);
+	//void set_player(SDLPlayData *player);
 
 	int get_realtime() const;
 
@@ -432,7 +457,7 @@ public:
 	double get_master_clock();
 
 	// Clean up memory
-	// TODO: need to review this function 
+	// TODO: need to review this function
 	void stream_close();
 
 	/* prepare a new audio buffer */

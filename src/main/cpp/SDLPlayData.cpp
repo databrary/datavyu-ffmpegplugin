@@ -65,15 +65,17 @@ double SDLPlayData::vp_duration(Frame *vp, Frame *nextvp, double max_frame_durat
 }
 
 /* Constructor */
-SDLPlayData::SDLPlayData(const char *filename, AVInputFormat *iformat) :
+SDLPlayData::SDLPlayData(
+	const char *filename,
+	AVInputFormat *iformat) :
 	ytop(0),
 	xleft(0),
 	width(0),
 	height(0),
-	rdftspeed(0.02) {
-	pVideoState = VideoState::stream_open(filename, iformat);
-	event_loop(pVideoState);
-}
+	rdftspeed(0.02),
+	pVideoState(VideoState::stream_open(filename, iformat, this)),
+	window(nullptr),
+	renderer(nullptr) {}
 
 /* Destructor */
 SDLPlayData::~SDLPlayData() {
@@ -168,7 +170,7 @@ int SDLPlayData::video_open(VideoState *is) {
 	}
 
 	if (!window_title)
-		window_title = input_filename;
+		window_title = is->get_filename();
 	SDL_SetWindowTitle(window, window_title);
 	SDL_SetWindowSize(window, w, h);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -210,12 +212,12 @@ void SDLPlayData::set_default_window_size(int width, int height, AVRational sar)
 	default_height = rect.h;
 }
 
-void SDLPlayData::closeAudioDevice() { 
-	SDL_CloseAudioDevice(audio_dev); 
+void SDLPlayData::closeAudioDevice() {
+	SDL_CloseAudioDevice(audio_dev);
 }
 
-void SDLPlayData::pauseAudioDevice() { 
-	SDL_PauseAudioDevice(audio_dev, 0); 
+void SDLPlayData::pauseAudioDevice() {
+	SDL_PauseAudioDevice(audio_dev, 0);
 }
 
 VideoState* SDLPlayData::get_VideoState() { return pVideoState; }
@@ -230,7 +232,7 @@ int SDLPlayData::upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsCon
 	Uint32 sdl_pix_fmt;
 	SDL_BlendMode sdl_blendmode;
 	get_sdl_pix_fmt_and_blendmode(frame->format, &sdl_pix_fmt, &sdl_blendmode);
-	if (SDLPlayData::realloc_texture(tex, sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888 : sdl_pix_fmt, frame->width, frame->height, sdl_blendmode, 0) < 0)
+	if (realloc_texture(tex, sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888 : sdl_pix_fmt, frame->width, frame->height, sdl_blendmode, 0) < 0)
 		return -1;
 	switch (sdl_pix_fmt) {
 	case SDL_PIXELFORMAT_UNKNOWN:
@@ -413,7 +415,7 @@ void SDLPlayData::video_image_display(VideoState *is) {
 		SDL_RenderCopy(renderer, sub_texture, sub_rect, &target);
 		}
 #endif
-	}	
+	}
 }
 
 void SDLPlayData::update_sample_display(short *samples, int samples_size) {
@@ -762,269 +764,17 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 	}
 }
 
-void SDLPlayData::do_exit(VideoState* is) {
-	// close the VideoState Stream and and destroy SDL window
-	if (is) {
-		//Clean-up memory  
-		is->stream_close();
-	}
-	if (renderer)
-		SDL_DestroyRenderer(renderer);
-	if (window)
-		SDL_DestroyWindow(window);
-	//uninit_opts();
-#if CONFIG_AVFILTER
-	//av_freep(&vfilters_list);
-#endif
-	avformat_network_deinit();
-	if (show_status)
-		printf("\n");
-	SDL_Quit();
-	av_log(NULL, AV_LOG_QUIET, "%s", "");
-	exit(0);
-}
-
-void SDLPlayData::event_loop(VideoState *is) {
-	// SDL: The event loop for the SDL window
-	SDL_Event event;
-	double incr, pos, frac;
-
-	for (;;) {
-		double x;
-		refresh_loop_wait_event(is, &event);
-		switch (event.type) {
-		case SDL_KEYDOWN:
-			if (exit_on_keydown) {
-				SDLPlayData::do_exit(is);
-				break;
-			}
-			switch (event.key.keysym.sym) {
-			case SDLK_ESCAPE:
-			case SDLK_q:
-				SDLPlayData::do_exit(is);
-				break;
-			case SDLK_f:
-				toggle_full_screen();
-				force_refresh = 1;
-				break;
-			case SDLK_p:
-			case SDLK_SPACE:
-				is->toggle_pause();
-				break;
-			case SDLK_m:
-				is->toggle_mute();
-				break;
-			case SDLK_KP_MULTIPLY:
-			case SDLK_0:
-				is->update_volume(1, SDL_VOLUME_STEP);
-				break;
-			case SDLK_KP_DIVIDE:
-			case SDLK_9:
-				is->update_volume(-1, SDL_VOLUME_STEP);
-				break;
-			case SDLK_s: // S: Step to next frame
-				is->step_to_next_frame();
-				break;
-			case SDLK_a:
-				is->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
-				break;
-			case SDLK_KP_PLUS:
-				is->set_speed(1);
-				break;
-			case SDLK_KP_MINUS:
-				is->set_speed(-1);
-				break;
-			case SDLK_v:
-				is->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
-				break;
-			case SDLK_c:
-				is->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
-				is->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
-				is->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
-				break;
-			case SDLK_t:
-				is->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
-				break;
-			case SDLK_w:
-#if CONFIG_AVFILTER
-				if (is->get_show_mode() == SHOW_MODE_VIDEO && is->get_vfilter_idx() < is->get_nb_vfilters() - 1) {
-					if ((is->get_vfilter_idx() + 1) >= is->get_nb_vfilters())
-						is->set_vfilter_idx(0);
-				}
-				else {
-					is->set_vfilter_idx(0);
-					is->toggle_audio_display();
-				}
-#else
-				is->toggle_audio_display();
-#endif
-				break;
-			case SDLK_PAGEUP:
-				if (is->get_ic()->nb_chapters <= 1) {
-					incr = 600.0;
-					goto do_seek;
-				}
-				is->seek_chapter(1);
-				break;
-			case SDLK_PAGEDOWN:
-				if (is->get_ic()->nb_chapters <= 1) {
-					incr = -600.0;
-					goto do_seek;
-				}
-				is->seek_chapter(-1);
-				break;
-			case SDLK_LEFT:
-				incr = -10.0;
-				goto do_seek;
-			case SDLK_RIGHT:
-				incr = 10.0;
-				goto do_seek;
-			case SDLK_UP:
-				incr = 60.0;
-				goto do_seek;
-			case SDLK_DOWN:
-				incr = -60.0;
-			do_seek:
-				//TODO: FIX SEEK BY BYTES BUG
-				// Seek by byte is set to false  
-				if (seek_by_bytes) {
-					pos = -1;
-					if (pos < 0 && is->get_video_stream() >= 0)
-						pos = is->get_pPictq()->last_pos();
-					if (pos < 0 && is->get_audio_stream() >= 0)
-						pos = is->get_pSampq()->last_pos();
-					if (pos < 0)
-						pos = avio_tell(is->get_ic()->pb);
-					if (is->get_ic()->bit_rate)
-						incr *= is->get_ic()->bit_rate / 8.0;
-					else
-						incr *= 180000.0;
-					pos += incr;
-					is->stream_seek(pos, incr, 1);
-				}
-				else {
-					pos = is->get_master_clock();
-					if (isnan(pos))
-						pos = (double)is->get_seek_pos() / AV_TIME_BASE;
-					pos += incr;
-					if (is->get_ic()->start_time != AV_NOPTS_VALUE && pos < is->get_ic()->start_time / (double)AV_TIME_BASE)
-						pos = is->get_ic()->start_time / (double)AV_TIME_BASE;
-					is->stream_seek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
-				}
-				break;
-			default:
-				break;
-			}
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			if (exit_on_mousedown) {
-				SDLPlayData::do_exit(is);
-				break;
-			}
-			if (event.button.button == SDL_BUTTON_LEFT) {
-				static int64_t last_mouse_left_click = 0;
-				if (av_gettime_relative() - last_mouse_left_click <= 500000) {
-					toggle_full_screen();
-					force_refresh = 1;
-					last_mouse_left_click = 0;
-				}
-				else {
-					last_mouse_left_click = av_gettime_relative();
-				}
-			}
-		case SDL_MOUSEMOTION:
-			if (cursor_hidden) {
-				SDL_ShowCursor(1);
-				cursor_hidden = 0;
-			}
-			cursor_last_shown = av_gettime_relative();
-			if (event.type == SDL_MOUSEBUTTONDOWN) {
-				if (event.button.button != SDL_BUTTON_RIGHT)
-					break;
-				x = event.button.x;
-			}
-			else {
-				if (!(event.motion.state & SDL_BUTTON_RMASK))
-					break;
-				x = event.motion.x;
-			}
-			if (seek_by_bytes || is->get_ic()->duration <= 0) {
-				uint64_t size = avio_size(is->get_ic()->pb);
-				is->stream_seek(size*x / width, 0, 1);
-			}
-			else {
-				int64_t ts;
-				int ns, hh, mm, ss;
-				int tns, thh, tmm, tss;
-				tns = is->get_ic()->duration / 1000000LL;
-				thh = tns / 3600;
-				tmm = (tns % 3600) / 60;
-				tss = (tns % 60);
-				frac = x / width;
-				ns = frac * tns;
-				hh = ns / 3600;
-				mm = (ns % 3600) / 60;
-				ss = (ns % 60);
-				av_log(NULL, AV_LOG_INFO,
-					"Seek to %2.0f%% (%2d:%02d:%02d) of total duration (%2d:%02d:%02d)       \n", frac * 100,
-					hh, mm, ss, thh, tmm, tss);
-				ts = frac * is->get_ic()->duration;
-				if (is->get_ic()->start_time != AV_NOPTS_VALUE)
-					ts += is->get_ic()->start_time;
-				is->stream_seek(ts, 0, 0);
-			}
-			break;
-		case SDL_WINDOWEVENT:
-			switch (event.window.event) {
-			case SDL_WINDOWEVENT_RESIZED:
-				screen_width = width = event.window.data1;
-				screen_height = height = event.window.data2;
-				if (vis_texture) {
-					SDL_DestroyTexture(vis_texture);
-					vis_texture = NULL;
-				}
-			case SDL_WINDOWEVENT_EXPOSED:
-				force_refresh = 1;
-			}
-			break;
-		case SDL_QUIT:
-		case FF_QUIT_EVENT:
-			SDLPlayData::do_exit(is);
-			break;
-		default:
-			break;
-		}
-	}
-}
-
-int main(int argc, char **argv) {
-	int flags;
-
-	av_log_set_flags(AV_LOG_SKIP_REPEATED);
-
+void SDLPlayData::init() {
 	/* register all codecs, demux and protocols */
 #if CONFIG_AVDEVICE
 	avdevice_register_all();
 #endif
 	avformat_network_init();
-	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
-
-	input_filename = "Nature_30fps_1080p.mp4";
-
-	if (!input_filename) {
-		//show_usage();
-		av_log(NULL, AV_LOG_FATAL, "An input file must be specified\n");
-		av_log(NULL, AV_LOG_FATAL,
-			"Use -h to get full help or, even better, run 'man %s'\n", program_name);
-
-		SDL_Delay(20000);
-		exit(1);
-	}
 
 	if (display_disable) {
 		video_disable = 1;
 	}
-	flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
+	int flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
 	if (audio_disable)
 		flags &= ~SDL_INIT_AUDIO;
 	else {
@@ -1065,15 +815,265 @@ int main(int argc, char **argv) {
 		}
 		if (!window || !renderer || !renderer_info.num_texture_formats) {
 			av_log(NULL, AV_LOG_FATAL, "Failed to create window or renderer: %s", SDL_GetError());
-			SDLPlayData::do_exit(nullptr);
+			if (renderer)
+				SDL_DestroyRenderer(renderer);
+			if (window)
+				SDL_DestroyWindow(window);
 		}
 	}
+}
 
-	SDLPlayData* pPlayer = new SDLPlayData(input_filename, file_iformat);
-	if (!pPlayer->get_VideoState()) {
-		av_log(NULL, AV_LOG_FATAL, "Failed to initialize VideoState!\n");
-		SDLPlayData::do_exit(pPlayer->get_VideoState());
+void SDLPlayData::destroy() {
+	// close the VideoState Stream and and destroy SDL window
+	if (pVideoState) {
+		//Clean-up memory
+		pVideoState->stream_close();
 	}
+	if (renderer)
+		SDL_DestroyRenderer(renderer);
+	if (window)
+		SDL_DestroyWindow(window);
+	//uninit_opts();
+#if CONFIG_AVFILTER
+	//av_freep(&vfilters_list);
+#endif
+	avformat_network_deinit();
+	if (show_status)
+		printf("\n");
+	SDL_Quit();
+	av_log(NULL, AV_LOG_QUIET, "%s", "");
+	exit(0);
+}
 
-	return 0;
+void SDLPlayData::init_and_event_loop() {
+
+	init();
+
+	pVideoState->stream_start();
+
+	// SDL: The event loop for the SDL window
+	SDL_Event event;
+	double incr, pos, frac;
+
+	for (;;) {
+		double x;
+		refresh_loop_wait_event(pVideoState, &event);
+		switch (event.type) {
+		case SDL_KEYDOWN:
+			if (exit_on_keydown) {
+				destroy();
+				break;
+			}
+			switch (event.key.keysym.sym) {
+			case SDLK_ESCAPE:
+			case SDLK_q:
+				destroy();
+				break;
+			case SDLK_f:
+				toggle_full_screen();
+				force_refresh = 1;
+				break;
+			case SDLK_p:
+			case SDLK_SPACE:
+				pVideoState->toggle_pause();
+				break;
+			case SDLK_m:
+				pVideoState->toggle_mute();
+				break;
+			case SDLK_KP_MULTIPLY:
+			case SDLK_0:
+				pVideoState->update_volume(1, SDL_VOLUME_STEP);
+				break;
+			case SDLK_KP_DIVIDE:
+			case SDLK_9:
+				pVideoState->update_volume(-1, SDL_VOLUME_STEP);
+				break;
+			case SDLK_s: // S: Step to next frame
+				pVideoState->step_to_next_frame();
+				break;
+			case SDLK_a:
+				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
+				break;
+			case SDLK_KP_PLUS:
+				pVideoState->set_speed(1);
+				break;
+			case SDLK_KP_MINUS:
+				pVideoState->set_speed(-1);
+				break;
+			case SDLK_v:
+				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
+				break;
+			case SDLK_c:
+				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
+				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
+				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
+				break;
+			case SDLK_t:
+				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
+				break;
+			case SDLK_w:
+#if CONFIG_AVFILTER
+				if (pVideoState->get_show_mode() == SHOW_MODE_VIDEO && pVideoState->->vfilter_idx < nb_vfilters - 1) {
+					if (++pVideoState->->vfilter_idx >= nb_vfilters)
+						pVideoState->->vfilter_idx = 0;
+				}
+				else {
+					pVideoState->->vfilter_idx = 0;
+					pVideoState->toggle_audio_display();
+				}
+#else
+				pVideoState->toggle_audio_display();
+#endif
+				break;
+			case SDLK_PAGEUP:
+				if (pVideoState->get_ic()->nb_chapters <= 1) {
+					incr = 600.0;
+					goto do_seek;
+				}
+				pVideoState->seek_chapter(1);
+				break;
+			case SDLK_PAGEDOWN:
+				if (pVideoState->get_ic()->nb_chapters <= 1) {
+					incr = -600.0;
+					goto do_seek;
+				}
+				pVideoState->seek_chapter(-1);
+				break;
+			case SDLK_LEFT:
+				incr = -10.0;
+				goto do_seek;
+			case SDLK_RIGHT:
+				incr = 10.0;
+				goto do_seek;
+			case SDLK_UP:
+				incr = 60.0;
+				goto do_seek;
+			case SDLK_DOWN:
+				incr = -60.0;
+			do_seek:
+				//TODO FIX SEEK BY BYTES BUG
+				if (seek_by_bytes) {
+					pos = -1;
+					if (pos < 0 && pVideoState->get_video_stream() >= 0)
+						pos = pVideoState->get_pPictq()->last_pos();
+					if (pos < 0 && pVideoState->get_audio_stream() >= 0)
+						pos = pVideoState->get_pSampq()->last_pos();
+					if (pos < 0)
+						pos = avio_tell(pVideoState->get_ic()->pb);
+					if (pVideoState->get_ic()->bit_rate)
+						incr *= pVideoState->get_ic()->bit_rate / 8.0;
+					else
+						incr *= 180000.0;
+					pos += incr;
+					pVideoState->stream_seek(pos, incr, 1);
+				}
+				else {
+					pos = pVideoState->get_master_clock();
+					if (isnan(pos))
+						pos = (double)pVideoState->get_seek_pos() / AV_TIME_BASE;
+					pos += incr;
+					if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && pos < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
+						pos = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
+					pVideoState->stream_seek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+				}
+				break;
+			default:
+				break;
+			}
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			if (exit_on_mousedown) {
+				destroy();
+				break;
+			}
+			if (event.button.button == SDL_BUTTON_LEFT) {
+				static int64_t last_mouse_left_click = 0;
+				if (av_gettime_relative() - last_mouse_left_click <= 500000) {
+					toggle_full_screen();
+					force_refresh = 1;
+					last_mouse_left_click = 0;
+				}
+				else {
+					last_mouse_left_click = av_gettime_relative();
+				}
+			}
+		case SDL_MOUSEMOTION:
+			if (cursor_hidden) {
+				SDL_ShowCursor(1);
+				cursor_hidden = 0;
+			}
+			cursor_last_shown = av_gettime_relative();
+			if (event.type == SDL_MOUSEBUTTONDOWN) {
+				if (event.button.button != SDL_BUTTON_RIGHT)
+					break;
+				x = event.button.x;
+			}
+			else {
+				if (!(event.motion.state & SDL_BUTTON_RMASK))
+					break;
+				x = event.motion.x;
+			}
+			if (seek_by_bytes || pVideoState->get_ic()->duration <= 0) {
+				uint64_t size = avio_size(pVideoState->get_ic()->pb);
+				pVideoState->stream_seek(size*x / width, 0, 1);
+			}
+			else {
+				int64_t ts;
+				int ns, hh, mm, ss;
+				int tns, thh, tmm, tss;
+				tns = pVideoState->get_ic()->duration / 1000000LL;
+				thh = tns / 3600;
+				tmm = (tns % 3600) / 60;
+				tss = (tns % 60);
+				frac = x / width;
+				ns = frac * tns;
+				hh = ns / 3600;
+				mm = (ns % 3600) / 60;
+				ss = (ns % 60);
+				av_log(NULL, AV_LOG_INFO,
+					"Seek to %2.0f%% (%2d:%02d:%02d) of total duration (%2d:%02d:%02d)       \n", frac * 100,
+					hh, mm, ss, thh, tmm, tss);
+				ts = frac * pVideoState->get_ic()->duration;
+				if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE)
+					ts += pVideoState->get_ic()->start_time;
+				pVideoState->stream_seek(ts, 0, 0);
+			}
+			break;
+		case SDL_WINDOWEVENT:
+			switch (event.window.event) {
+			case SDL_WINDOWEVENT_RESIZED:
+				screen_width = width = event.window.data1;
+				screen_height = height = event.window.data2;
+				if (vis_texture) {
+					SDL_DestroyTexture(vis_texture);
+					vis_texture = NULL;
+				}
+			case SDL_WINDOWEVENT_EXPOSED:
+				force_refresh = 1;
+			}
+			break;
+		case SDL_QUIT:
+		case FF_QUIT_EVENT:
+			destroy();
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void SDLPlayData::init_and_start_display_loop() {
+	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method)
+	pVideoState->stream_start();
+	display_tid = new std::thread([this] {
+		init();
+		SDL_Event event;
+		while (!stopped) {
+			refresh_loop_wait_event(this->get_VideoState(), &event);
+		}
+	});
+}
+
+void SDLPlayData::stop_display_loop() {
+	stopped = true;
 }
