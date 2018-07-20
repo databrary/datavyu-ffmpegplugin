@@ -66,7 +66,7 @@ double SDLPlayData::vp_duration(Frame *vp, Frame *nextvp, double max_frame_durat
 
 /* Constructor */
 SDLPlayData::SDLPlayData(
-	const char *filename, 
+	const char *filename,
 	AVInputFormat *iformat) :
 	ytop(0),
 	xleft(0),
@@ -212,12 +212,12 @@ void SDLPlayData::set_default_window_size(int width, int height, AVRational sar)
 	default_height = rect.h;
 }
 
-void SDLPlayData::closeAudioDevice() { 
+void SDLPlayData::closeAudioDevice() {
 	SDL_CloseAudioDevice(audio_dev);
 }
 
-void SDLPlayData::pauseAudioDevice() { 
-	SDL_PauseAudioDevice(audio_dev, 0); 
+void SDLPlayData::pauseAudioDevice() {
+	SDL_PauseAudioDevice(audio_dev, 0);
 }
 
 VideoState* SDLPlayData::get_VideoState() { return pVideoState; }
@@ -415,7 +415,7 @@ void SDLPlayData::video_image_display(VideoState *is) {
 		SDL_RenderCopy(renderer, sub_texture, sub_rect, &target);
 		}
 #endif
-	}	
+	}
 }
 
 void SDLPlayData::update_sample_display(short *samples, int samples_size) {
@@ -656,11 +656,9 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 			if (delay > 0 && time - frame_timer > AV_SYNC_THRESHOLD_MAX)
 				frame_timer = time;
 
-			// Replaced SDL_LockMutex(pPictq.mutex)by the following
 			std::unique_lock<std::mutex> locker(is->get_pPictq()->get_mutex());
 			if (!isnan(vp->pts))
 				update_video_pts(is, vp->pts, vp->pos, vp->serial);
-			// Replaced SDL_UnlockMutex(this->pPictq.mutex) by
 			locker.unlock();
 
 			if (is->get_pPictq()->nb_remaining() > 1) {
@@ -749,8 +747,9 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 			else if (is->get_audio_st())
 				av_diff = is->get_master_clock() - is->get_pAudclk()->get_clock();
 			av_log(NULL, AV_LOG_INFO,
-				"%7.2f %s:%7.3f fd=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+				"%7.2f at %dX %s:%7.3f fd=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
 				is->get_master_clock(),
+				is->get_master_clock_speed(),
 				(is->get_audio_st() && is->get_video_st()) ? "A-V" : (is->get_video_st() ? "M-V" : (is->get_audio_st() ? "M-A" : "   ")),
 				av_diff,
 				is->get_frame_drops_early() + frame_drops_late,
@@ -827,7 +826,7 @@ void SDLPlayData::init() {
 void SDLPlayData::destroy() {
 	// close the VideoState Stream and and destroy SDL window
 	if (pVideoState) {
-		//Clean-up memory  
+		//Clean-up memory
 		pVideoState->stream_close();
 	}
 	if (renderer)
@@ -836,7 +835,7 @@ void SDLPlayData::destroy() {
 		SDL_DestroyWindow(window);
 	//uninit_opts();
 #if CONFIG_AVFILTER
-	av_freep(&vfilters_list);
+	//av_freep(&vfilters_list);
 #endif
 	avformat_network_deinit();
 	if (show_status)
@@ -847,7 +846,7 @@ void SDLPlayData::destroy() {
 }
 
 void SDLPlayData::init_and_event_loop() {
-	
+
 	init();
 
 	pVideoState->stream_start();
@@ -894,6 +893,12 @@ void SDLPlayData::init_and_event_loop() {
 				break;
 			case SDLK_a:
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
+				break;
+			case SDLK_KP_PLUS:
+				pVideoState->set_speed(1);
+				break;
+			case SDLK_KP_MINUS:
+				pVideoState->set_speed(-1);
 				break;
 			case SDLK_v:
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
@@ -947,22 +952,22 @@ void SDLPlayData::init_and_event_loop() {
 				incr = -60.0;
 			do_seek:
 				//TODO FIX SEEK BY BYTES BUG
-				//if (seek_by_bytes) {
-				//	pos = -1;
-				//	if (pos < 0 && pVideoState->get_video_stream() >= 0)
-				//		pos = pVideoState->get_pPictq()->last_pos();
-				//	if (pos < 0 && pVideoState->get_audio_stream() >= 0)
-				//		pos = pVideoState->get_pSampq()->last_pos();
-				//	if (pos < 0)
-				//		pos = avio_tell(pVideoState->get_ic()->pb);
-				//	if (pVideoState->get_ic()->bit_rate)
-				//		incr *= pVideoState->get_ic()->bit_rate / 8.0;
-				//	else
-				//		incr *= 180000.0;
-				//	pos += incr;
-				//	pVideoState->stream_seek(pos, incr, 1);
-				//}
-				//else {
+				if (seek_by_bytes) {
+					pos = -1;
+					if (pos < 0 && pVideoState->get_video_stream() >= 0)
+						pos = pVideoState->get_pPictq()->last_pos();
+					if (pos < 0 && pVideoState->get_audio_stream() >= 0)
+						pos = pVideoState->get_pSampq()->last_pos();
+					if (pos < 0)
+						pos = avio_tell(pVideoState->get_ic()->pb);
+					if (pVideoState->get_ic()->bit_rate)
+						incr *= pVideoState->get_ic()->bit_rate / 8.0;
+					else
+						incr *= 180000.0;
+					pos += incr;
+					pVideoState->stream_seek(pos, incr, 1);
+				}
+				else {
 					pos = pVideoState->get_master_clock();
 					if (isnan(pos))
 						pos = (double)pVideoState->get_seek_pos() / AV_TIME_BASE;
@@ -970,7 +975,7 @@ void SDLPlayData::init_and_event_loop() {
 					if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && pos < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
 						pos = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
 					pVideoState->stream_seek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
-				//}
+				}
 				break;
 			default:
 				break;

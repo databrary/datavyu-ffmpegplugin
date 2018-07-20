@@ -1,6 +1,8 @@
 #ifndef VIDEOSTATE_H_
 #define VIDEOSTATE_H_
 
+#define CONFIG_AVFILTER 0
+
 #include <inttypes.h>
 #include <math.h>
 #include <limits.h>
@@ -37,7 +39,7 @@ extern "C" {
 	# include "libavfilter/buffersink.h"
 	# include "libavfilter/buffersrc.h"
 	#endif
-	//Could be moved to ffplay.hpp 
+	//Could be moved to ffplay.hpp
 	#include <SDL2/SDL.h>
 	#include <SDL2/SDL_thread.h>
 
@@ -79,6 +81,9 @@ extern "C" {
 
 #define MY_AV_TIME_BASE_Q av_make_q(1, AV_TIME_BASE)
 
+// fixed point to double
+#define CONV_FP(x) ((double) (x)) / (1 << 16)
+
 typedef struct AudioParams {
 	int freq;
 	int channels;
@@ -113,6 +118,39 @@ enum PlayerStateCallback {
 	NUM_PLAYER_STATE_CALLBACKS
 };
 
+// Note will have to divide by 1000 to get the float value of the rate
+enum Rates {
+	X1D32,
+	X1D16,
+	X1D8,
+	X1D4,
+	X1D2,
+	X1,
+	X2,
+	X4,
+	X8,
+	X16,
+	X32,
+};
+static const struct RatesEntry {
+	enum Rates rate;
+	float clock_speed;
+	float pts_speed;
+	char *command;
+} rate_speed_map[] = {
+	{ X1D32,	0.03125,	32.0,		(char *) "setpts=32.0*PTS" },
+	{ X1D16,	0.0625,		16.0,		(char *) "setpts=16.0*PTS" },
+	{ X1D8,		0.125,		8.0,		(char *) "setpts=8.0*PTS" },
+	{ X1D4,		0.25,		4.0,		(char *) "setpts=4.0*PTS" },
+	{ X1D2,		0.5,		2.0,		(char *) "setpts=2.0*PTS" },
+	{ X1,		1.0,		1.0,		(char *) "setpts=1.0*PTS" },
+	{ X2,		2.0,		0.5,		(char *) "setpts=0.5*PTS" },
+	{ X4,		4.0,		0.25,		(char *) "setpts=0.25*PTS" },
+	{ X8,		8.0,		0.125,		(char *) "setpts=0.125*PTS" },
+	{ X16,		16.0,		0.0625,		(char *) "setpts=0.0625*PTS" },
+	{ X32,		32.0,		0.03125,	(char *) "setpts=0.03125*PTS" },
+};
+
 /* options specified by the user */
 
 static ShowMode show_mode = SHOW_MODE_NONE;
@@ -123,7 +161,7 @@ static int audio_disable; // TODO(fraudies): Move this into video state
 static int video_disable; // TODO(fraudies): Move this into video state
 static int subtitle_disable; // TODO(fraudies): Move this into video state
 static const char* wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
-static int seek_by_bytes = -1;
+static int seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
 static int borderless;
 static int startup_volume = 100;
 static int show_status = 1;
@@ -145,16 +183,10 @@ static const char *subtitle_codec_name;
 static const char *video_codec_name;
 static int64_t cursor_last_shown;
 static int cursor_hidden = 0;
-#if CONFIG_AVFILTER
-static const char **vfilters_list = NULL;
-static int nb_vfilters = 0;
-static char *afilters = NULL;
-#endif
 static int autorotate = 1;
 static int find_stream_info = 1;
 /* current context */
 static int64_t audio_callback_time;
-
 
 class SDLPlayData;
 
@@ -239,18 +271,47 @@ private:
 
 	int step;
 
+	int newSpeed_req;
+	float last_speed;
+	float pts_speed;
+
 #if CONFIG_AVFILTER
 	int vfilter_idx;
+	const char **vfilters_list = NULL;
+	char *vfilters = NULL; // video filter
+	int nb_vfilters = 0;
+	char *afilters = NULL; // audio filter Note: audio filter is not working
 	AVFilterContext *in_video_filter;   // the first filter in the video chain
 	AVFilterContext *out_video_filter;  // the last filter in the video chain
 	AVFilterContext *in_audio_filter;   // the first filter in the audio chain
 	AVFilterContext *out_audio_filter;  // the last filter in the audio chain
 	AVFilterGraph *agraph;              // audio filter graph
+	// From cmdutils
+	AVDictionary *sws_dict;
+	AVDictionary *swr_opts;
+	std::mutex mutex;
 #endif
 
 	int last_video_stream, last_audio_stream, last_subtitle_stream;
 
 	std::condition_variable continue_read_thread;
+
+	inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
+			enum AVSampleFormat fmt2, int64_t channel_count2) {
+		/* If channel count == 1, planar and non-planar formats are the same */
+		return (channel_count1 == 1 && channel_count2 == 1)
+				? av_get_packed_sample_fmt(fmt1) != av_get_packed_sample_fmt(fmt2)
+				: channel_count1 != channel_count2 || fmt1 != fmt2;
+	}
+	inline int64_t get_valid_channel_layout(int64_t channel_layout, int channels) {
+		return (channel_layout && av_get_channel_layout_nb_channels(channel_layout) == channels)
+					? channel_layout
+					: 0;
+	}
+
+	double get_rotation(AVStream * st);
+
+	double av_display_rotation_get(const int32_t matrix[9]);
 
 	/* open a given stream. Return 0 if OK */
 	int stream_component_open(int stream_index);
@@ -366,7 +427,7 @@ public:
 	int get_audio_stream() const;
 
 	double get_max_frame_duration();
-	
+
 	int get_audio_write_buf_size() const;
 
 	RDFTContext *get_rdft();
@@ -396,11 +457,27 @@ public:
 	double get_master_clock();
 
 	// Clean up memory
-	// TODO: need to review this function 
+	// TODO: need to review this function
 	void stream_close();
 
 	/* prepare a new audio buffer */
 	void sdl_audio_callback(Uint8 *stream, int len);
+
+	void set_speed(int newSpeed);
+	int get_master_clock_speed();
+#if CONFIG_AVFILTER
+	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
+	int configure_video_filters(AVFilterGraph * graph, const char * vfilters, AVFrame * frame);
+	int configure_audio_filters(const char * afilters, int force_output_format);
+
+	int get_vfilter_idx();
+	void set_vfilter_idx(int idx);
+
+	int get_nb_vfilters() const;
+
+	int opt_add_vfilter(const char *arg);
+	void *grow_array(void *array, int elem_size, int *size, int new_size);
+#endif
 };
 
 // Note, this bridge is necessary to interface with the low-level c interface of the SDL callback

@@ -52,8 +52,6 @@ class Clock {
 
 		void setPaused(bool p);
 
-		void set_paused(int newPaused);
-
 		double get_clock_speed() const;
 
 		void set_clock_at(double newPts, int newSerial, double time);

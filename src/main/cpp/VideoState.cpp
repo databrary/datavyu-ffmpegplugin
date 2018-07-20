@@ -2,7 +2,6 @@
 #include "SDLPlayData.h"
 
 /* Private Members */
-
 int VideoState::stream_component_open(int stream_index) {
 	AVFormatContext *ic = this->ic;
 	AVCodecContext *avctx;
@@ -32,17 +31,17 @@ int VideoState::stream_component_open(int stream_index) {
 	codec = avcodec_find_decoder(avctx->codec_id);
 
 	switch (avctx->codec_type) {
-		case AVMEDIA_TYPE_AUDIO: 
-			this->last_audio_stream = stream_index; 
-			forced_codec_name = audio_codec_name; 
+		case AVMEDIA_TYPE_AUDIO:
+			this->last_audio_stream = stream_index;
+			forced_codec_name = audio_codec_name;
 			break;
-		case AVMEDIA_TYPE_SUBTITLE: 
-			this->last_subtitle_stream = stream_index; 
-			forced_codec_name = subtitle_codec_name; 
+		case AVMEDIA_TYPE_SUBTITLE:
+			this->last_subtitle_stream = stream_index;
+			forced_codec_name = subtitle_codec_name;
 			break;
-		case AVMEDIA_TYPE_VIDEO: 
-			this->last_video_stream = stream_index; 
-			forced_codec_name = video_codec_name; 
+		case AVMEDIA_TYPE_VIDEO:
+			this->last_video_stream = stream_index;
+			forced_codec_name = video_codec_name;
 			break;
 	}
 
@@ -84,7 +83,7 @@ int VideoState::stream_component_open(int stream_index) {
 		goto fail;
 	}
 
-	this->eof = 0;
+	eof = 0;
 	ic->streams[stream_index]->discard = AVDISCARD_DEFAULT;
 	switch (avctx->codec_type) {
 	case AVMEDIA_TYPE_AUDIO:
@@ -92,13 +91,14 @@ int VideoState::stream_component_open(int stream_index) {
 	{
 		AVFilterContext *sink;
 
-		this->audio_filter_src.freq = avctx->sample_rate;
-		this->audio_filter_src.channels = avctx->channels;
-		this->audio_filter_src.channel_layout = get_valid_channel_layout(avctx->channel_layout, avctx->channels);
-		this->audio_filter_src.fmt = avctx->sample_fmt;
-		if ((ret = configure_audio_filters(is, afilters, 0)) < 0)
+		audio_filter_src.freq = avctx->sample_rate;
+		audio_filter_src.channels = avctx->channels;
+		audio_filter_src.channel_layout = get_valid_channel_layout(avctx->channel_layout, avctx->channels);
+		audio_filter_src.fmt = avctx->sample_fmt;
+		if ((ret = configure_audio_filters(afilters, 0)) < 0)
+			av_log(NULL, AV_LOG_INFO, "stream_component_open function cannot configure the audio filter %s",afilters);
 			goto fail;
-		sink = is->out_audio_filter;
+		sink = out_audio_filter;
 		sample_rate = av_buffersink_get_sample_rate(sink);
 		nb_channels = av_buffersink_get_channels(sink);
 		channel_layout = av_buffersink_get_channel_layout(sink);
@@ -112,26 +112,26 @@ int VideoState::stream_component_open(int stream_index) {
 		/* prepare audio output */
 		if ((ret = pPlayer->audio_open(this, channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
 			goto fail;
-		this->audio_hw_buf_size = ret;
-		this->audio_src = this->audio_tgt;
-		this->audio_buf_size = 0;
-		this->audio_buf_index = 0;
+		audio_hw_buf_size = ret;
+		audio_src = this->audio_tgt;
+		audio_buf_size = 0;
+		audio_buf_index = 0;
 
 		/* init averaging filter */
-		this->audio_diff_avg_coef = exp(log(0.01) / AUDIO_DIFF_AVG_NB);
-		this->audio_diff_avg_count = 0;
+		audio_diff_avg_coef = exp(log(0.01) / AUDIO_DIFF_AVG_NB);
+		audio_diff_avg_count = 0;
 		/* since we do not have a precise anough audio FIFO fullness,
 		we correct audio sync only if larger than this threshold */
-		this->audio_diff_threshold = (double)(this->audio_hw_buf_size) / this->audio_tgt.bytes_per_sec;
+		audio_diff_threshold = (double)(audio_hw_buf_size) / audio_tgt.bytes_per_sec;
 
-		this->audio_stream = stream_index;
-		this->audio_st = ic->streams[stream_index];
+		audio_stream = stream_index;
+		audio_st = ic->streams[stream_index];
 		pAuddec = new Decoder(avctx, pAudioq, &continue_read_thread);
 		//pAuddec->init(avctx, pAudioq, &continue_read_thread);
 		//decoder_init(&this->auddec, avctx, pAudioq, this->continue_read_thread);
-		if ((this->ic->iformat->flags & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK)) && !this->ic->iformat->read_seek) {
-			pAuddec->set_start_pts(this->audio_st->start_time);
-			pAuddec->set_start_pts_tb(this->audio_st->time_base);
+		if ((ic->iformat->flags & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK)) && !ic->iformat->read_seek) {
+			pAuddec->set_start_pts(audio_st->start_time);
+			pAuddec->set_start_pts_tb(audio_st->time_base);
 		}
 		if ((ret = pAuddec->start(audio_thread_bridge, this)) < 0)
 			goto out;
@@ -147,11 +147,11 @@ int VideoState::stream_component_open(int stream_index) {
 		//decoder_init(&this->viddec, avctx, pVideoq, this->continue_read_thread);
 		if ((ret = pViddec->start(video_thread_bridge, this)) < 0)
 			goto out;
-		this->queue_attachments_req = 1;
+		queue_attachments_req = 1;
 		break;
 	case AVMEDIA_TYPE_SUBTITLE:
-		this->subtitle_stream = stream_index;
-		this->subtitle_st = ic->streams[stream_index];
+		subtitle_stream = stream_index;
+		subtitle_st = ic->streams[stream_index];
 		pSubdec = new Decoder(avctx, pSubtitleq, &continue_read_thread);
 		//decoder_init(&this->subdec, avctx, this->pSubtitleq, this->continue_read_thread);
 		//pSubdec->init(avctx, pSubtitleq, &continue_read_thread);
@@ -181,18 +181,18 @@ int VideoState::get_video_frame(AVFrame *frame) {
 		double dpts = NAN;
 
 		if (frame->pts != AV_NOPTS_VALUE)
-			dpts = av_q2d(this->video_st->time_base) * frame->pts;
+			dpts = av_q2d(video_st->time_base) * frame->pts;
 
-		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(this->ic, this->video_st, frame);
+		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(ic, video_st, frame);
 
-		if (framedrop>0 || (framedrop && this->get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) {
+		if (framedrop>0 || (framedrop && get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) {
 			if (frame->pts != AV_NOPTS_VALUE) {
-				double diff = dpts - this->get_master_clock();
+				double diff = dpts - get_master_clock();
 				if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
-					diff - this->frame_last_filter_delay < 0 &&
+					diff - frame_last_filter_delay < 0 &&
 					pViddec->get_pkt_serial() == pVidclk->get_serial() &&
 					pVideoq->get_nb_packets()) {
-					this->frame_drops_early++;
+					frame_drops_early++;
 					av_frame_unref(frame);
 					got_picture = 0;
 				}
@@ -246,16 +246,16 @@ void VideoState::stream_component_close(int stream_index) {
 		pAuddec->abort(pSampq);
 		pPlayer->closeAudioDevice();
 		delete pAuddec; // TODO(fraudies): Move this to the destructor of VideoState
-		swr_free(&this->swr_ctx);
-		av_freep(&this->audio_buf1);
-		this->audio_buf1_size = 0;
-		this->audio_buf = NULL;
+		swr_free(&swr_ctx);
+		av_freep(&audio_buf1);
+		audio_buf1_size = 0;
+		audio_buf = NULL;
 
-		if (this->rdft) {
-			av_rdft_end(this->rdft);
-			av_freep(&this->rdft_data);
-			this->rdft = NULL;
-			this->rdft_bits = 0;
+		if (rdft) {
+			av_rdft_end(rdft);
+			av_freep(&rdft_data);
+			rdft = NULL;
+			rdft_bits = 0;
 		}
 		break;
 	case AVMEDIA_TYPE_VIDEO:
@@ -273,16 +273,16 @@ void VideoState::stream_component_close(int stream_index) {
 	ic->streams[stream_index]->discard = AVDISCARD_ALL;
 	switch (codecpar->codec_type) {
 	case AVMEDIA_TYPE_AUDIO:
-		this->audio_st = NULL;
-		this->audio_stream = -1;
+		audio_st = NULL;
+		audio_stream = -1;
 		break;
 	case AVMEDIA_TYPE_VIDEO:
-		this->video_st = NULL;
-		this->video_stream = -1;
+		video_st = NULL;
+		video_stream = -1;
 		break;
 	case AVMEDIA_TYPE_SUBTITLE:
-		this->subtitle_st = NULL;
-		this->subtitle_stream = -1;
+		subtitle_st = NULL;
+		subtitle_stream = -1;
 		break;
 	default:
 		break;
@@ -301,6 +301,7 @@ int VideoState::check_stream_specifier(AVFormatContext *s, AVStream *st, const c
 	int ret = avformat_match_stream_specifier(s, st, spec);
 	if (ret < 0)
 		av_log(s, AV_LOG_ERROR, "Invalid stream specifier: %s.\n", spec);
+	return ret;
 	return ret;
 }
 
@@ -559,7 +560,10 @@ VideoState::VideoState() :
 	pExtclk(new Clock()), // For the external clock the serial is set to itself (never triggers)
 	pViddec(nullptr), // Decoder's are created in the stream_component_open and destroyed in stream_component_close
 	pSubdec(nullptr),
-	pAuddec(nullptr) {
+	pAuddec(nullptr),
+	newSpeed_req(0),
+	last_speed(1.0),
+	pts_speed(1.0){
 	// Frame queues depend on the packet queues that have not been initialized in initializer
 	pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
 	pSubpq = new FrameQueue(pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
@@ -581,6 +585,10 @@ VideoState::~VideoState() {
 	delete(pVidclk);
 	delete(pAudclk);
 	delete(pExtclk);
+#if CONFIG_AVFILTER
+	av_dict_free(&swr_opts);
+	av_dict_free(&sws_dict);
+#endif
 	// Note, that the decoders get freed in the stream close function
 }
 
@@ -601,10 +609,10 @@ int VideoState::read_thread() {
 	AVDictionary *codec_opts = NULL;
 
 	memset(st_index, -1, sizeof(st_index));
-	this->last_video_stream = this->video_stream = -1;
-	this->last_audio_stream = this->audio_stream = -1;
-	this->last_subtitle_stream = this->subtitle_stream = -1;
-	this->eof = 0;
+	last_video_stream = video_stream = -1;
+	last_audio_stream = audio_stream = -1;
+	last_subtitle_stream = subtitle_stream = -1;
+	eof = 0;
 
 	ic = avformat_alloc_context();
 	if (!ic) {
@@ -618,7 +626,7 @@ int VideoState::read_thread() {
 		av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
 		scan_all_pmts_set = 1;
 	}
-	err = avformat_open_input(&ic, this->filename, this->iformat, &format_opts);
+	err = avformat_open_input(&ic, filename, iformat, &format_opts);
 	if (err < 0) {
 		ret = -1;
 		goto fail;
@@ -650,7 +658,7 @@ int VideoState::read_thread() {
 
 		if (err < 0) {
 			av_log(NULL, AV_LOG_WARNING,
-				"%s: could not find codec parameters\n", this->filename);
+				"%s: could not find codec parameters\n", filename);
 			ret = -1;
 			goto fail;
 		}
@@ -678,14 +686,14 @@ int VideoState::read_thread() {
 		ret = avformat_seek_file(ic, -1, INT64_MIN, timestamp, INT64_MAX, 0);
 		if (ret < 0) {
 			av_log(NULL, AV_LOG_WARNING, "%s: could not seek to position %0.3f\n",
-				this->filename, (double)timestamp / AV_TIME_BASE);
+				filename, (double)timestamp / AV_TIME_BASE);
 		}
 	}
 
 	this->realtime = is_realtime(ic);
 
 	if (show_status)
-		av_dump_format(ic, 0, this->filename, 0);
+		av_dump_format(ic, 0, filename, 0);
 
 	for (i = 0; i < ic->nb_streams; i++) {
 		AVStream *st = ic->streams[i];
@@ -734,34 +742,34 @@ int VideoState::read_thread() {
 
 	/* open the streams */
 	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
-		this->stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
+		stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
 	}
 
 	ret = -1;
 	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
-		ret = this->stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
+		ret = stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
 	}
 	if (show_mode == SHOW_MODE_NONE)
 		show_mode = ret >= 0 ? SHOW_MODE_VIDEO : SHOW_MODE_RDFT;
 
 	if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
-		this->stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
+		stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
 	}
 
-	if (this->video_stream < 0 && this->audio_stream < 0) {
+	if (video_stream < 0 && audio_stream < 0) {
 		av_log(NULL, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n",
-			this->filename);
+			filename);
 		ret = -1;
 		goto fail;
 	}
 
-	if (infinite_buffer < 0 && this->realtime)
+	if (infinite_buffer < 0 && realtime)
 		infinite_buffer = 1;
 
 	if (player_state_callbacks[TO_READY]) {
 		player_state_callbacks[TO_READY]();
 	}
-	
+
 	// TODO: Need to work in TO_STOPPED state
 
 	for (;;) {
@@ -791,7 +799,7 @@ int VideoState::read_thread() {
 		}
 
 #if CONFIG_RTSP_DEMUXER || CONFIG_MMSH_PROTOCOL
-		if (this>paused &&
+		if (paused &&
 			(!strcmp(ic->iformat->name, "rtsp") ||
 			(ic->pb && !strncmp(input_filename, "mmsh:", 5)))) {
 			/* wait 10 ms to avoid trying to get another packet */
@@ -800,6 +808,48 @@ int VideoState::read_thread() {
 			continue;
 		}
 #endif
+
+#if CONFIG_AVFILTER
+#else
+		if (newSpeed_req) {
+			if (video_stream >= 0 && audio_stream >= 0) {
+
+				if ((stream_has_enough_packets(audio_st, audio_stream, pAudioq) &&
+					stream_has_enough_packets(video_st, video_stream, pVideoq) &&
+					stream_has_enough_packets(subtitle_st, subtitle_stream, pSubtitleq))) {
+
+					switch (get_master_sync_type()) {
+					case AV_SYNC_VIDEO_MASTER:
+						pVidclk->set_clock_speed(last_speed);
+						break;
+					case AV_SYNC_AUDIO_MASTER:
+						pAudclk->set_clock_speed(last_speed);
+						break;
+					default:
+						pExtclk->set_clock_speed(last_speed);
+						break;
+					}
+
+					if (pViddec && pAuddec && pSubdec) {
+
+						if (audio_stream >= 0) {
+							pAudioq->flush();
+							pAudioq->put_flush_packet();
+						}
+						if (subtitle_stream >= 0) {
+							pSubtitleq->flush();
+							pSubtitleq->put_flush_packet();
+						}
+						if (video_stream >= 0) {
+							pVideoq->flush();
+							pVideoq->put_flush_packet();
+						}
+					}
+				}
+			}
+			this->newSpeed_req = 0;
+		}
+#endif // !CONFIG_AVFILTER
 		if (this->seek_req) {
 			if (player_state_callbacks[TO_STALLED]) {
 				player_state_callbacks[TO_STALLED]();
@@ -939,6 +989,7 @@ fail:
 	return 0;
 }
 
+/* Called when the stream is opened */
 int VideoState::audio_thread() {
 	AVFrame *frame = av_frame_alloc();
 	Frame *af;
@@ -966,11 +1017,10 @@ int VideoState::audio_thread() {
 			dec_channel_layout = get_valid_channel_layout(frame->channel_layout, frame->channels);
 
 			reconfigure =
-				cmp_audio_fmts(is->audio_filter_src.fmt, audio_filter_src.channels,
-					frame->format, frame->channels) ||
-				audio_filter_src.channel_layout != dec_channel_layout ||
-				audio_filter_src.freq != frame->sample_rate ||
-				auddec.pkt_serial != last_serial;
+				cmp_audio_fmts(audio_filter_src.fmt, audio_filter_src.channels, static_cast<AVSampleFormat>(frame->format), frame->channels)
+				|| audio_filter_src.channel_layout != dec_channel_layout
+				|| audio_filter_src.freq != frame->sample_rate
+				|| pAuddec->get_pkt_serial() != last_serial;
 
 			if (reconfigure) {
 				char buf1[1024], buf2[1024];
@@ -979,15 +1029,16 @@ int VideoState::audio_thread() {
 				av_log(NULL, AV_LOG_DEBUG,
 					"Audio frame changed from rate:%d ch:%d fmt:%s layout:%s serial:%d to rate:%d ch:%d fmt:%s layout:%s serial:%d\n",
 					audio_filter_src.freq, audio_filter_src.channels, av_get_sample_fmt_name(audio_filter_src.fmt), buf1, last_serial,
-					frame->sample_rate, frame->channels, av_get_sample_fmt_name(frame->format), buf2, auddec.pkt_serial);
+					frame->sample_rate, frame->channels, av_get_sample_fmt_name(static_cast<AVSampleFormat>(frame->format)), buf2, pAuddec->get_pkt_serial());
 
-				audio_filter_src.fmt = frame->format;
+				audio_filter_src.fmt = static_cast<AVSampleFormat>(frame->format);
 				audio_filter_src.channels = frame->channels;
 				audio_filter_src.channel_layout = dec_channel_layout;
 				audio_filter_src.freq = frame->sample_rate;
-				last_serial = auddec.pkt_serial;
+				last_serial = pAuddec->get_pkt_serial();
 
-				if ((ret = configure_audio_filters(this, afilters, 1)) < 0)
+				if ((ret = configure_audio_filters(afilters, 1)) < 0)
+					av_log(NULL, AV_LOG_INFO, "audio_thread function cannot configure the audio filter");
 					goto the_end;
 			}
 
@@ -1002,18 +1053,18 @@ int VideoState::audio_thread() {
 
 				af->pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
 				af->pos = frame->pkt_pos;
-				af->serial = this->pAuddec->get_pkt_serial();
+				af->serial = pAuddec->get_pkt_serial();
 				af->duration = av_q2d(av_make_q(frame->nb_samples, frame->sample_rate));
 
 				av_frame_move_ref(af->frame, frame);
 				pSampq->push();
 
 #if CONFIG_AVFILTER
-				if (audioq.serial != auddec.pkt_serial)
+				if (pAudioq->get_serial() != pAuddec->get_pkt_serial())
 					break;
 			}
 			if (ret == AVERROR_EOF)
-				auddec.finished = auddec.pkt_serial;
+				pAuddec->setFinished(pAuddec->get_pkt_serial());
 #endif
 		}
 	} while (ret >= 0 || ret == AVERROR(EAGAIN) || ret == AVERROR_EOF);
@@ -1025,6 +1076,7 @@ the_end:
 	return ret;
 }
 
+/* Called when the stream is opened */
 int VideoState::video_thread() {
 	AVFrame *frame = av_frame_alloc();
 	double pts;
@@ -1038,7 +1090,7 @@ int VideoState::video_thread() {
 	AVFilterContext *filt_out = NULL, *filt_in = NULL;
 	int last_w = 0;
 	int last_h = 0;
-	enum AVPixelFormat last_format = -2;
+	enum AVPixelFormat last_format = AV_PIX_FMT_NONE;
 	int last_serial = -1;
 	int last_vfilter_idx = 0;
 	if (!graph) {
@@ -1063,31 +1115,57 @@ int VideoState::video_thread() {
 			continue;
 
 #if CONFIG_AVFILTER
-		if (last_w != frame->width
+		if ( newSpeed_req
+			||last_w != frame->width
 			|| last_h != frame->height
 			|| last_format != frame->format
-			|| last_serial != viddec.pkt_serial
+			|| last_serial != pViddec->get_pkt_serial()
 			|| last_vfilter_idx != vfilter_idx) {
 			av_log(NULL, AV_LOG_DEBUG,
 				"Video frame changed from size:%dx%d format:%s serial:%d to size:%dx%d format:%s serial:%d\n",
 				last_w, last_h,
 				(const char *)av_x_if_null(av_get_pix_fmt_name(last_format), "none"), last_serial,
 				frame->width, frame->height,
-				(const char *)av_x_if_null(av_get_pix_fmt_name(frame->format), "none"), viddec.pkt_serial);
+				(const char *)av_x_if_null(av_get_pix_fmt_name(static_cast<AVPixelFormat>(frame->format)), "none"), pViddec->get_pkt_serial());
 			avfilter_graph_free(&graph);
 			graph = avfilter_graph_alloc();
-			if ((ret = configure_video_filters(graph, this, vfilters_list ? vfilters_list[vfilter_idx] : NULL, frame)) < 0) {
-				ffplay::do_exit(this);
+			//if ((ret = configure_video_filters(graph, this, vfilters_list ? vfilters_list[vfilter_idx] : NULL, frame)) < 0) {
+			if ((ret = configure_video_filters(graph, vfilters ? vfilters : NULL, frame)) < 0) {
+				SDLPlayData::do_exit(this);
 				goto the_end;
 			}
 			filt_in = in_video_filter;
 			filt_out = out_video_filter;
 			last_w = frame->width;
 			last_h = frame->height;
-			last_format = frame->format;
-			last_serial = viddec.pkt_serial;
+			last_format = static_cast<AVPixelFormat>(frame->format);
+			last_serial = pViddec->get_pkt_serial();
 			last_vfilter_idx = vfilter_idx;
 			frame_rate = av_buffersink_get_frame_rate(filt_out);
+			if (this->newSpeed_req) {
+				if (this->audio_stream >= 0) {
+					pAudioq->flush();
+					pAudioq->put_flush_packet();
+				}
+				if (this->subtitle_stream >= 0) {
+					pSubtitleq->flush();
+					pSubtitleq->put_flush_packet();
+				}
+				if (this->video_stream >= 0) {
+					pVideoq->flush();
+					pVideoq->put_flush_packet();
+				}
+				if (this->seek_flags & AVSEEK_FLAG_BYTE) {
+					pExtclk->set_clock(NAN, 0);
+				}
+				else {
+					pExtclk->set_clock(pExtclk->get_clock() / (double)AV_TIME_BASE, 0);
+				}
+
+			this->newSpeed_req = 0;
+			this->queue_attachments_req = 1;
+			this->eof = 0;
+			}
 		}
 
 		ret = av_buffersrc_add_frame(filt_in, frame);
@@ -1100,7 +1178,7 @@ int VideoState::video_thread() {
 			ret = av_buffersink_get_frame_flags(filt_out, frame, 0);
 			if (ret < 0) {
 				if (ret == AVERROR_EOF)
-					viddec.finished = viddec.pkt_serial;
+					pViddec->setFinished(pViddec->get_pkt_serial());
 				ret = 0;
 				break;
 			}
@@ -1111,13 +1189,19 @@ int VideoState::video_thread() {
 			tb = av_buffersink_get_time_base(filt_out);
 #endif
 			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) : 0;
+#if CONFIG_AVFILTER
 			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
+#else
+			//Change the pts of the frame in the video thread better than decoder
+			//but it is not working as expected and need to be fixed
+			//pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : (frame->pts * pts_speed) * av_q2d(tb);
+			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
+#endif
 			ret = queue_picture(frame, pts, duration, frame->pkt_pos, pViddec->get_pkt_serial());
 			av_frame_unref(frame);
 #if CONFIG_AVFILTER
 		}
 #endif
-
 		if (ret < 0)
 			goto the_end;
 	}
@@ -1129,6 +1213,7 @@ the_end:
 	return 0;
 }
 
+/* Called when the stream is opened */
 int VideoState::subtitle_thread() {
 	Frame *sp;
 	int got_subtitle;
@@ -1296,7 +1381,7 @@ void VideoState::toggle_pause() {
 }
 
 void VideoState::toggle_mute() {
-	this->muted = !this->muted; 
+	this->muted = !this->muted;
 }
 
 void VideoState::update_volume(int sign, double step) {
@@ -1542,7 +1627,7 @@ double VideoState::compute_target_delay(double delay) {
 void VideoState::check_external_clock_speed() {
 	if (this->video_stream >= 0 && pVideoq->get_nb_packets() <= EXTERNAL_CLOCK_MIN_FRAMES ||
 		this->audio_stream >= 0 && pAudioq->get_nb_packets() <= EXTERNAL_CLOCK_MIN_FRAMES) {
-		this->pExtclk->set_clock_speed(FFMAX(EXTERNAL_CLOCK_SPEED_MIN, pExtclk->get_clock_speed() - EXTERNAL_CLOCK_SPEED_STEP));
+		pExtclk->set_clock_speed(FFMAX(EXTERNAL_CLOCK_SPEED_MIN, pExtclk->get_clock_speed() - EXTERNAL_CLOCK_SPEED_STEP));
 	}
 	else if ((this->video_stream < 0 || pVideoq->get_nb_packets() > EXTERNAL_CLOCK_MAX_FRAMES) &&
 		(this->audio_stream < 0 || pAudioq->get_nb_packets() > EXTERNAL_CLOCK_MAX_FRAMES)) {
@@ -1577,7 +1662,6 @@ int VideoState::get_master_sync_type() {
 /* get the current master clock value */
 double VideoState::get_master_clock() {
 	double val;
-
 	switch (this->get_master_sync_type()) {
 	case AV_SYNC_VIDEO_MASTER:
 		val = pVidclk->get_clock();
@@ -1673,3 +1757,375 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 	}
 }
 
+void VideoState::set_speed(const int step) {
+	int i;
+	for (i = 0; i < FF_ARRAY_ELEMS(rate_speed_map); i++) {
+		if (last_speed == rate_speed_map[i].clock_speed) {
+			if (i+step >= 0 && i+step < FF_ARRAY_ELEMS(rate_speed_map)) {
+				if (!isPaused() && rate_speed_map[i + step].clock_speed == 0) {
+					toggle_pause();
+					return; // We can't process the 0 as a new speed for the presentation time
+				}
+				if (!muted && rate_speed_map[i + step].clock_speed != 1) {
+					toggle_mute();
+				}
+				else if (muted && rate_speed_map[i + step].clock_speed == 1) {
+					toggle_mute();
+				}
+#if CONFIG_AVFILTER
+				std::unique_lock<std::mutex> locker(mutex);
+				vfilters = rate_speed_map[i + step].command;
+				locker.unlock();
+#else
+				pts_speed = rate_speed_map[i + step].pts_speed;
+#endif
+				last_speed = rate_speed_map[i + step].clock_speed;
+				newSpeed_req = 1;
+				continue_read_thread.notify_one();
+				return;
+			}
+		}
+	}
+}
+
+int VideoState::get_master_clock_speed() {
+	int speed = 0;
+	if (this->video_stream >= 0
+		&& this->audio_stream >= 0) {
+		switch (this->get_master_sync_type()) {
+		case AV_SYNC_VIDEO_MASTER:
+			speed = pVidclk->get_clock_speed();
+			break;
+		case AV_SYNC_AUDIO_MASTER:
+			speed = pAudclk->get_clock_speed();
+			break;
+		default:
+			speed = pExtclk->get_clock_speed();
+			break;
+		}
+	}
+	return speed;
+}
+
+#if CONFIG_AVFILTER
+// From cmdutil class
+double VideoState::get_rotation(AVStream *st) {
+	uint8_t* displaymatrix = av_stream_get_side_data(st,
+		AV_PKT_DATA_DISPLAYMATRIX, NULL);
+	double theta = 0;
+	if (displaymatrix)
+		theta = -av_display_rotation_get((int32_t*)displaymatrix);
+
+	theta -= 360 * floor(theta / 360 + 0.9 / 360);
+
+	if (fabs(theta - 90 * round(theta / 90)) > 2)
+		av_log(NULL, AV_LOG_WARNING, "Odd rotation angle.\n"
+			"If you want to help, upload a sample "
+			"of this file to ftp://upload.ffmpeg.org/incoming/ "
+			"and contact the ffmpeg-devel mailing list. (ffmpeg-devel@ffmpeg.org)");
+
+	return theta;
+}
+double VideoState::av_display_rotation_get(const int32_t matrix[9]) {
+	double rotation, scale[2];
+
+	scale[0] = hypot(CONV_FP(matrix[0]), CONV_FP(matrix[3]));
+	scale[1] = hypot(CONV_FP(matrix[1]), CONV_FP(matrix[4]));
+
+	if (scale[0] == 0.0 || scale[1] == 0.0)
+		return NAN;
+
+	rotation = atan2(CONV_FP(matrix[1]) / scale[1],
+		CONV_FP(matrix[0]) / scale[0]) * 180 / M_PI;
+
+	return -rotation;
+}
+int VideoState::configure_filtergraph(AVFilterGraph *graph, const char *filtergraph,
+	AVFilterContext *source_ctx, AVFilterContext *sink_ctx)
+{
+	int ret, i;
+	int nb_filters = graph->nb_filters;
+	AVFilterInOut *outputs = NULL, *inputs = NULL;
+
+	if (filtergraph) {
+		outputs = avfilter_inout_alloc();
+		inputs = avfilter_inout_alloc();
+		if (!outputs || !inputs) {
+			ret = AVERROR(ENOMEM);
+			goto fail;
+		}
+
+		outputs->name = av_strdup("in");
+		outputs->filter_ctx = source_ctx;
+		outputs->pad_idx = 0;
+		outputs->next = NULL;
+
+		inputs->name = av_strdup("out");
+		inputs->filter_ctx = sink_ctx;
+		inputs->pad_idx = 0;
+		inputs->next = NULL;
+
+		if ((ret = avfilter_graph_parse_ptr(graph, filtergraph, &inputs, &outputs, NULL)) < 0)
+			goto fail;
+	}
+	else {
+		if ((ret = avfilter_link(source_ctx, 0, sink_ctx, 0)) < 0)
+			goto fail;
+	}
+
+	/* Reorder the filters to ensure that inputs of the custom filters are merged first */
+	for (i = 0; i < graph->nb_filters - nb_filters; i++)
+		FFSWAP(AVFilterContext*, graph->filters[i], graph->filters[i + nb_filters]);
+
+	ret = avfilter_graph_config(graph, NULL);
+fail:
+	avfilter_inout_free(&outputs);
+	avfilter_inout_free(&inputs);
+	return ret;
+}
+
+int VideoState::configure_video_filters(AVFilterGraph *graph, const char *vfilters, AVFrame *frame)
+{
+	enum AVPixelFormat pix_fmts[FF_ARRAY_ELEMS(sdl_texture_format_map)];
+	char sws_flags_str[512] = "";
+	char buffersrc_args[256];
+	int ret;
+	AVFilterContext *filt_src = NULL, *filt_out = NULL, *last_filter = NULL;
+	AVCodecParameters *codecpar = video_st->codecpar;
+	AVRational fr = av_guess_frame_rate(ic, video_st, NULL);
+	AVDictionaryEntry *e = NULL;
+
+	int nb_pix_fmts = 0;
+	int i, j;
+
+	for (i = 0; i < renderer_info.num_texture_formats; i++) {
+		for (j = 0; j < FF_ARRAY_ELEMS(sdl_texture_format_map) - 1; j++) {
+			if (renderer_info.texture_formats[i] == sdl_texture_format_map[j].texture_fmt) {
+				pix_fmts[nb_pix_fmts++] = sdl_texture_format_map[j].format;
+				break;
+			}
+		}
+	}
+	pix_fmts[nb_pix_fmts] = AV_PIX_FMT_NONE;
+
+	while ((e = av_dict_get(sws_dict, "", e, AV_DICT_IGNORE_SUFFIX))) {
+		if (!strcmp(e->key, "sws_flags")) {
+			av_strlcatf(sws_flags_str, sizeof(sws_flags_str), "%s=%s:", "flags", e->value);
+		}
+		else
+			av_strlcatf(sws_flags_str, sizeof(sws_flags_str), "%s=%s:", e->key, e->value);
+	}
+	if (strlen(sws_flags_str))
+		sws_flags_str[strlen(sws_flags_str) - 1] = '\0';
+
+	graph->scale_sws_opts = av_strdup(sws_flags_str);
+
+	snprintf(buffersrc_args, sizeof(buffersrc_args),
+		"video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
+		frame->width, frame->height, frame->format,
+		video_st->time_base.num, video_st->time_base.den,
+		codecpar->sample_aspect_ratio.num, FFMAX(codecpar->sample_aspect_ratio.den, 1));
+	if (fr.num && fr.den)
+		av_strlcatf(buffersrc_args, sizeof(buffersrc_args), ":frame_rate=%d/%d", fr.num, fr.den);
+
+	if ((ret = avfilter_graph_create_filter(&filt_src,
+		avfilter_get_by_name("buffer"),
+		"in", buffersrc_args, NULL,
+		graph)) < 0)
+		goto fail;
+
+	ret = avfilter_graph_create_filter(&filt_out,
+		avfilter_get_by_name("buffersink"),
+		"out", NULL, NULL, graph);
+	if (ret < 0)
+		goto fail;
+
+	if ((ret = av_opt_set_int_list(filt_out, "pix_fmts", pix_fmts, AV_PIX_FMT_NONE, AV_OPT_SEARCH_CHILDREN)) < 0)
+		goto fail;
+
+	last_filter = filt_out;
+
+	/* Note: this macro adds a filter before the lastly added filter, so the
+	* processing order of the filters is in reverse */
+#define INSERT_FILT(name, arg) do {                                          \
+    AVFilterContext *filt_ctx;                                               \
+                                                                             \
+    ret = avfilter_graph_create_filter(&filt_ctx,                            \
+                                       avfilter_get_by_name(name),           \
+                                       name, arg, NULL, graph);    \
+    if (ret < 0)                                                             \
+        goto fail;                                                           \
+                                                                             \
+    ret = avfilter_link(filt_ctx, 0, last_filter, 0);                        \
+    if (ret < 0)                                                             \
+        goto fail;                                                           \
+                                                                             \
+    last_filter = filt_ctx;                                                  \
+} while (0)
+
+	if (autorotate) {
+		double theta = get_rotation(video_st);
+
+		if (fabs(theta - 90) < 1.0) {
+			INSERT_FILT("transpose", "clock");
+		}
+		else if (fabs(theta - 180) < 1.0) {
+			INSERT_FILT("hflip", NULL);
+			INSERT_FILT("vflip", NULL);
+		}
+		else if (fabs(theta - 270) < 1.0) {
+			INSERT_FILT("transpose", "cclock");
+		}
+		else if (fabs(theta) > 1.0) {
+			char rotate_buf[64];
+			snprintf(rotate_buf, sizeof(rotate_buf), "%f*PI/180", theta);
+			INSERT_FILT("rotate", rotate_buf);
+		}
+	}
+
+	if ((ret = configure_filtergraph(graph, vfilters, filt_src, last_filter)) < 0)
+		goto fail;
+
+	in_video_filter = filt_src;
+	out_video_filter = filt_out;
+
+fail:
+	return ret;
+}
+
+int VideoState::configure_audio_filters(const char *afilters, int force_output_format){
+	static const enum AVSampleFormat sample_fmts[] = { AV_SAMPLE_FMT_S16, AV_SAMPLE_FMT_NONE };
+	int sample_rates[2] = { 0, -1 };
+	int64_t channel_layouts[2] = { 0, -1 };
+	int channels[2] = { 0, -1 };
+	AVFilterContext *filt_asrc = NULL, *filt_asink = NULL;
+	char aresample_swr_opts[512] = "";
+	AVDictionaryEntry *e = NULL;
+	const AVFilter  *abuffer;
+	const AVFilter  *abuffersink;
+	char asrc_args[256];
+	int ret;
+	avfilter_graph_free(&agraph);
+	agraph = avfilter_graph_alloc();
+
+	if (!agraph) {
+		av_log(NULL, AV_LOG_ERROR, "Unable to create filter graph.\n");
+		return AVERROR(ENOMEM);
+	}
+	while ((e = av_dict_get(swr_opts, "", e, AV_DICT_IGNORE_SUFFIX)))
+		av_strlcatf(aresample_swr_opts, sizeof(aresample_swr_opts), "%s=%s:", e->key, e->value);
+	if (strlen(aresample_swr_opts))
+		aresample_swr_opts[strlen(aresample_swr_opts) - 1] = '\0';
+	av_opt_set(agraph, "aresample_swr_opts", aresample_swr_opts, 0);
+
+	ret = snprintf(asrc_args, sizeof(asrc_args),
+		"sample_rate=%d:sample_fmt=%s:channels=%d:time_base=%d/%d",
+		audio_filter_src.freq, av_get_sample_fmt_name(audio_filter_src.fmt),
+		audio_filter_src.channels, 1, audio_filter_src.freq);
+
+	if (audio_filter_src.channel_layout) {
+		snprintf(asrc_args + ret, sizeof(asrc_args) - ret, ":channel_layout =0x%llx", audio_filter_src.channel_layout);
+	}
+
+	abuffer = avfilter_get_by_name("abuffer");
+	if (!abuffer) {
+		av_log(NULL, AV_LOG_ERROR, "Could not find the abuffer filter.\n");
+		goto end;
+	}
+
+	ret = avfilter_graph_create_filter(&filt_asrc, abuffer, "ffplay_abuffer", asrc_args, NULL, agraph);
+	if (ret < 0) {
+		av_log(NULL, AV_LOG_ERROR, "Cannot create audio buffer source\n");
+		goto end;
+	}
+
+	abuffersink = avfilter_get_by_name("abuffersink");
+	if (!abuffersink) {
+		av_log(NULL, AV_LOG_ERROR, "Cannot create audio buffer sink\n");
+		goto end;
+	}
+	ret = avfilter_graph_create_filter(&filt_asink,	abuffersink, "ffplay_abuffersink", NULL, NULL, agraph);
+	if (ret < 0) {
+		av_log(NULL, AV_LOG_ERROR, "Cannot create audio buffer sink\n");
+		goto end;
+	}
+
+	if ((ret = av_opt_set_int_list(filt_asink, "sample_fmts", sample_fmts, AV_SAMPLE_FMT_NONE, AV_OPT_SEARCH_CHILDREN)) < 0) {
+		av_log(NULL, AV_LOG_ERROR, "configure_audio_filter, av_opt_set_int_list function failed\n");
+		goto end;
+	}
+
+	if ((ret = av_opt_set_int(filt_asink, "all_channel_counts", 1, AV_OPT_SEARCH_CHILDREN)) < 0) {
+		av_log(NULL, AV_LOG_ERROR, "configure_audio_filter, av_opt_set_int function failed\n");
+		goto end;
+	}
+
+	if (force_output_format) {
+		av_log(NULL, AV_LOG_INFO, "Is forcing the output format.\n");
+		channel_layouts[0] = audio_tgt.channel_layout;
+		channels[0] = audio_tgt.channels;
+		sample_rates[0] = audio_tgt.freq;
+		if ((ret = av_opt_set_int(filt_asink, "all_channel_counts", 0, AV_OPT_SEARCH_CHILDREN)) < 0)
+			goto end;
+		if ((ret = av_opt_set_int_list(filt_asink, "channel_layouts", channel_layouts, -1, AV_OPT_SEARCH_CHILDREN)) < 0)
+			goto end;
+		if ((ret = av_opt_set_int_list(filt_asink, "channel_counts", channels, -1, AV_OPT_SEARCH_CHILDREN)) < 0)
+			goto end;
+		if ((ret = av_opt_set_int_list(filt_asink, "sample_rates", sample_rates, -1, AV_OPT_SEARCH_CHILDREN)) < 0)
+			goto end;
+	}
+
+	if ((ret = configure_filtergraph(agraph, afilters, filt_asrc, filt_asink)) < 0) {
+		av_log(NULL, AV_LOG_INFO, "configure_audio_filter: Unable to configure agraph.\n");
+		goto end;
+	}
+
+	in_audio_filter = filt_asrc;
+	out_audio_filter = filt_asink;
+
+end:
+	if (ret < 0) {
+		avfilter_graph_free(&agraph);
+	}
+
+	return ret;
+}
+
+int VideoState::get_vfilter_idx() {
+	return vfilter_idx;
+}
+
+void VideoState::set_vfilter_idx(int idx) {
+	vfilter_idx = idx;
+}
+
+int VideoState::get_nb_vfilters() const {
+	return nb_vfilters;
+}
+
+int VideoState::opt_add_vfilter(const char *arg) {
+
+	*vfilters_list = (const char *)grow_array(vfilters_list, sizeof(**vfilters_list), &nb_vfilters, nb_vfilters + 1);
+	vfilters_list[nb_vfilters - 1] = arg;
+	return 0;
+}
+
+void *VideoState::grow_array(void *array, int elem_size, int *size, int new_size)
+{
+	if (new_size >= INT_MAX / elem_size) {
+		av_log(NULL, AV_LOG_ERROR, "Array too big.\n");
+		exit(1);
+	}
+	if (*size < new_size) {
+		uint8_t *tmp = (uint8_t*)av_realloc_array(array, new_size,elem_size);
+		if (!tmp) {
+			av_log(NULL, AV_LOG_ERROR, "Could not alloc buffer.\n");
+			exit(1);
+		}
+		memset(tmp + *size*elem_size, 0, (new_size - *size) * elem_size);
+		*size = new_size;
+		return tmp;
+	}
+	return array;
+}
+#endif  /* CONFIG_AVFILTER */
