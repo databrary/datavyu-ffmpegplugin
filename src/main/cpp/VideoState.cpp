@@ -563,7 +563,11 @@ VideoState::VideoState() :
 	pAuddec(nullptr),
 	newSpeed_req(0),
 	last_speed(1.0),
-	pts_speed(1.0){
+	pts_speed(1.0),
+	audio_disable(0),
+	video_disable(0),
+	subtitle_disable(0),
+	stopped(0){
 	// Frame queues depend on the packet queues that have not been initialized in initializer
 	pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
 	pSubpq = new FrameQueue(pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
@@ -771,6 +775,8 @@ int VideoState::read_thread() {
 	}
 
 	// TODO: Need to work in TO_STOPPED state
+	// Reda: added bool stopped when we trigger stop; when stopped both is stopped and paused are set to 1
+	// So each time we check for pause we need to check inside the condition if it is also stopped 
 
 	for (;;) {
 		if (this->abort_request)
@@ -778,8 +784,15 @@ int VideoState::read_thread() {
 		if (this->paused != this->last_paused) {
 			this->last_paused = this->paused;
 			if (this->paused) {
-				if (player_state_callbacks[TO_PAUSED]) {
-					player_state_callbacks[TO_PAUSED]();
+				if (this->stopped) {
+					if (player_state_callbacks[TO_STOPPED]) {
+						player_state_callbacks[TO_STOPPED]();
+					}
+				}
+				else {
+					if (player_state_callbacks[TO_PAUSED]) {
+						player_state_callbacks[TO_PAUSED]();
+					}
 				}
 				this->read_pause_return = av_read_pause(ic);
 			}
@@ -1344,26 +1357,23 @@ bool VideoState::has_image_data() const {
 	return video_stream >= 0;
 }
 
-void VideoState::pause() {
-	if (!paused) {
-		stream_toggle_pause();
-	}
-}
-
 void VideoState::stop() {
-	if (!paused) {
-		stream_toggle_pause();
-		// Stop playback and seek to the start of the stream
-		double pos = get_master_clock();
-		double start = get_ic()->start_time / (double)AV_TIME_BASE;
-		double incr = start - pos;
-		stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+	if (!paused) { 
+		toggle_pause(); 
+		stopped = 1;
 	}
+	// Stop playback and seek to the start of the stream
+	double pos = get_master_clock();
+	double start = get_ic()->start_time / (double)AV_TIME_BASE;
+	double incr = start - pos;
+	stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+
 }
 
 void VideoState::play() {
 	if (paused) {
-		stream_toggle_pause();
+		toggle_pause();
+		stopped = 0;
 	}
 }
 
@@ -1806,6 +1816,17 @@ int VideoState::get_master_clock_speed() {
 	}
 	return speed;
 }
+
+int VideoState::get_audio_disable() const { return audio_disable; }
+void VideoState::set_audio_disable(const int disable) { audio_disable = disable; }
+
+int VideoState::get_video_disable() const {	return video_disable; }
+void VideoState::set_video_disable(const int disable) { video_disable = disable; }
+
+int VideoState::get_subtitle_disable() const { return subtitle_disable; }
+void VideoState::set_subtitle_disable(const int disable) { subtitle_disable = disable; }
+
+int VideoState::isStopped() const { return stopped; }
 
 #if CONFIG_AVFILTER
 // From cmdutil class

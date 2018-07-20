@@ -53,16 +53,16 @@ public:
 
     virtual ~CPipelineOptions() {}
 
-    inline int  GetPipelineType() { return m_PipelineType; }
+    inline int		GetPipelineType() { return m_PipelineType; }
 
-    inline void SetBufferingEnabled(bool enabled) { m_bBufferingEnabled = enabled; }
-    inline bool GetBufferingEnabled() { return m_bBufferingEnabled; }
+    inline void		SetBufferingEnabled(bool enabled) { m_bBufferingEnabled = enabled; }
+    inline bool		GetBufferingEnabled() { return m_bBufferingEnabled; }
 
-    inline void SetStreamMimeType(int streamMimeType) { m_StreamMimeType = streamMimeType; }
-    inline int GetStreamMimeType() { return m_StreamMimeType; }
+    inline void		SetStreamMimeType(int streamMimeType) { m_StreamMimeType = streamMimeType; }
+    inline int		GetStreamMimeType() { return m_StreamMimeType; }
 
-    inline void SetHLSModeEnabled(bool enabled) { m_bHLSModeEnabled = enabled; }
-    inline bool GetHLSModeEnabled() { return m_bHLSModeEnabled; }
+    inline void		SetHLSModeEnabled(bool enabled) { m_bHLSModeEnabled = enabled; }
+    inline bool		GetHLSModeEnabled() { return m_bHLSModeEnabled; }
 
 private:
     int         m_PipelineType;

@@ -772,10 +772,10 @@ void SDLPlayData::init() {
 	avformat_network_init();
 
 	if (display_disable) {
-		video_disable = 1;
+		pVideoState->set_video_disable(1);
 	}
 	int flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
-	if (audio_disable)
+	if (pVideoState->get_audio_disable())
 		flags &= ~SDL_INIT_AUDIO;
 	else {
 		/* Try to work around an occasional ALSA buffer underflow issue when the
@@ -872,6 +872,15 @@ void SDLPlayData::init_and_event_loop() {
 			case SDLK_f:
 				toggle_full_screen();
 				force_refresh = 1;
+				break;
+			case SDLK_KP_8:
+				pVideoState->play();
+				break;
+			case SDLK_KP_5:
+				pVideoState->stop();
+				break;
+			case SDLK_KP_2:
+				pVideoState->toggle_pause();
 				break;
 			case SDLK_p:
 			case SDLK_SPACE:

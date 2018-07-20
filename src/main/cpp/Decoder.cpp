@@ -18,6 +18,12 @@ Decoder::Decoder(AVCodecContext *avctx, PacketQueue *queue, std::condition_varia
 	av_init_packet(&pkt);
 }
 
+Decoder::~Decoder() {
+	av_packet_unref(&pkt);
+	// TODO(fraudies): Clean-up design, move this de-allocation to the VideoState (where it is initialized)
+	avcodec_free_context(&avctx);
+}
+
 
 int Decoder::decode_frame(AVFrame *frame, AVSubtitle *sub) {
 	int ret = AVERROR(EAGAIN);

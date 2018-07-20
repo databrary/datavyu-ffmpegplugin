@@ -96,7 +96,7 @@ uint32_t FfmpegAVPlaybackPipeline::Pause() {
 	if (pVideoState == nullptr) {
 		return ERROR_VIDEO_STATE_NULL;
 	}
-	pVideoState->pause();
+	pVideoState->toggle_pause();
 
 	return ERROR_NONE; // no error
 }
