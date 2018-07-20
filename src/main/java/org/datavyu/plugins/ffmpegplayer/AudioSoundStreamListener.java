@@ -68,7 +68,7 @@ public class AudioSoundStreamListener implements StreamListener {
 	
 	@Override
 	public void streamStarted() {
-		soundLine.start();		
+		soundLine.start();
 	}
 
 	@SuppressWarnings("unused") // API method

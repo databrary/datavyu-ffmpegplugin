@@ -24,6 +24,8 @@ public abstract class MediaPlayer0 implements VideoStream, AudioStream {
     protected static native void stop0(int streamId);
     protected static native void pause0(int streamId);
     protected static native void close0(int streamId);
+    protected static native void seek0(int streamId, double time);
+    protected static native void setSpeed0(int streamId, float speed);
 
     protected static native ByteBuffer getImageBuffer0(int streamId);
     protected static native int loadNextImageFrame0(int streamId);
@@ -36,8 +38,6 @@ public abstract class MediaPlayer0 implements VideoStream, AudioStream {
     protected static native double getDuration0(int streamId);
     protected static native double getCurrentTime0(int streamId);
     protected static native double getAverageFrameRate0(int streamId);
-    protected static native void seek0(int streamId, double time);
-    protected static native void setSpeed0(int streamId, float speed);
 
     protected static native ByteBuffer getAudioBuffer0(int streamId, int nByte);
     protected static native boolean loadNextAudioData0(int streamId);

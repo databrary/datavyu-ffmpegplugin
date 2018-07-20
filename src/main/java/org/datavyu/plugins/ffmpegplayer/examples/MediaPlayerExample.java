@@ -53,8 +53,6 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 
 	private JLabel timeStamp;
 
-	private JLabel duration;
-
 	public MediaPlayerExample() {
 		setLayout(new BorderLayout());
 
@@ -73,18 +71,21 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		JButton open = new JButton("Open File");
 		JButton play = new JButton("Play");
 		JButton stop = new JButton("Stop");
+		JButton pause = new JButton("Pause");
 		JButton stepBackward = new JButton("<");
 		JButton stepForward = new JButton(">");
 
 		tools.add(open);
 		tools.add(play);
 		tools.add(stop);
+		tools.add(pause);
 		tools.add(stepBackward);
 		tools.add(stepForward);
 
 		open.addActionListener(new OpenFileSelection());
 		play.addActionListener(new PlaySelection());
 		stop.addActionListener(new StopSelection());
+		pause.addActionListener(new PauseSelection());
 		stepBackward.addActionListener(new StepBackwardSelection());
 		stepForward.addActionListener(new StepForwardSelection());
 		slider.addChangeListener(new SliderSelection());
@@ -142,7 +143,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 		tools.add(new JLabel("Speed:"));
 
 		timeStamp = new JLabel("00:00:00:000");
-		duration = new JLabel("00:00:00:000");
+		JLabel duration = new JLabel("00:00:00:000");
 		tools.add(speedsPanel);
 
 		JLabel frameNumber = new JLabel("0");
@@ -299,14 +300,24 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
         }
     }
 
+    class PauseSelection implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (MediaPlayer mediaPlayer : mediaPlayers){
+				timer.stop();
+				mediaPlayer.pause();
+			}
+		}
+	}
+
 	class StepBackwardSelection implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-            long stepSize = (long) Math.ceil(MILLI_IN_SEC / getMaxFrameRate()); // step size is in milliseconds
-            for (MediaPlayer mediaPlayer : mediaPlayers) {
-                // TODO: Check boundaries, add modulo
-                mediaPlayer.seek(mediaPlayer.getCurrentTime() - stepSize);
-            }
+			long stepSize = (long) Math.ceil(MILLI_IN_SEC / getMaxFrameRate()); // step size is in milliseconds
+			for (MediaPlayer mediaPlayer : mediaPlayers) {
+				// TODO: Check boundaries, add modulo
+				mediaPlayer.seek(mediaPlayer.getCurrentTime() - stepSize);
+			}
 		}
 	}
 
@@ -381,7 +392,7 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 					.setVersion(version)
 					.setColorSpace(colorSpace)
 					.setAudioFormat(audioFormat)
-                    .addAudioStreamListener(new AudioVisualizer(audioFormat)) // Add audio visualizer
+//                    .addAudioStreamListener(new AudioVisualizer(audioFormat)) // Add audio visualizer
                     .addAudioStreamListener(new AudioSoundStreamListener(audioFormat)) // Add the audio sound listener
                     .addImageStreamListener(new ImageStreamListenerFrame(frame, colorSpace)) // Add video display
 					.build();
@@ -389,6 +400,9 @@ public class MediaPlayerExample extends JPanel implements WindowListener {
 			if (mediaPlayer.hasError()) {
 				throw mediaPlayer.getError();
 			}
+
+			frame.setBounds(0, 0, 640, 480);
+			frame.setVisible(true);
         }
 
         MediaPlayer getMovieStreamProvider() {
