@@ -68,7 +68,6 @@ double SDLPlayData::vp_duration(Frame *vp, Frame *nextvp, double max_frame_durat
 SDLPlayData::SDLPlayData(
 	const char *filename, 
 	AVInputFormat *iformat) :
-	filename(filename),
 	ytop(0),
 	xleft(0),
 	width(0),
@@ -171,7 +170,7 @@ int SDLPlayData::video_open(VideoState *is) {
 	}
 
 	if (!window_title)
-		window_title = filename;
+		window_title = is->get_filename();
 	SDL_SetWindowTitle(window, window_title);
 	SDL_SetWindowSize(window, w, h);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);

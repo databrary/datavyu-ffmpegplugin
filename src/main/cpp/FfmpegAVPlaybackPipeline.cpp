@@ -11,13 +11,12 @@ FfmpegAVPlaybackPipeline::~FfmpegAVPlaybackPipeline() {
 	// Clean-up done in dispose that is called from the destructor of the super-class
 }
 
-uint32_t FfmpegAVPlaybackPipeline::Init(const char * input_file) {
+uint32_t FfmpegAVPlaybackPipeline::Init(const char * filename) {
 	// TODO: Proper error handling and wiring up of input arguments
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
-	static const char* input_filename = (const char *)input_file;
 	AVInputFormat *file_iformat = nullptr;
-	pPlayer = new SDLPlayData(input_filename, file_iformat);
+	pPlayer = new SDLPlayData(filename, file_iformat);
 	VideoState* pVideoState = pPlayer->get_VideoState();
 	if (!pVideoState) {
 		av_log(NULL, AV_LOG_FATAL, "Failed to initialize VideoState!\n");

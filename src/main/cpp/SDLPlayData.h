@@ -77,7 +77,6 @@ class VideoState;
 class SDLPlayData {
 
 private:
-	const char* filename;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	VideoState* pVideoState;
@@ -115,8 +114,7 @@ private:
 	void init(); // This is private because it has to be called on the same thread as the looping
 
 public:
-	SDLPlayData(const char *filename, 
-		AVInputFormat *iformat);
+	SDLPlayData(const char *filename, AVInputFormat *iformat);
 	~SDLPlayData();
 
 	int audio_open(VideoState* is, int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,

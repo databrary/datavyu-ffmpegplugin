@@ -333,6 +333,8 @@ public:
 	int get_step() const;
 	int get_frame_drops_early() const;
 
+	const char* get_filename() const;
+
 	AVStream *get_audio_st() const;
 	AVStream *get_video_st() const;
 	AVStream *get_subtitle_st() const;

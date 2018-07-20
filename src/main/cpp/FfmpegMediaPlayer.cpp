@@ -15,8 +15,7 @@ extern "C" {
 #endif
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
-(JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jobject source, jobject audioFormat, jobject imageFormat) {
-	// TODO(fraudies): Intialize the ffmpeg player
+(JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath, jobject audioFormat, jobject imageFormat) {
 
 	CPipelineOptions* pOptions = new (nothrow) CPipelineOptions();
 	if (NULL == pOptions) {
@@ -55,29 +54,11 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegI
 	pEventDispatcher->Init(env, obj, pMedia);
 	pPipeline->SetEventDispatcher(pEventDispatcher);
 
+	const char* filename = env->GetStringUTFChars(sourcePath, 0);
 
-	static jmethodID mid_toString = 0;
-	jstring path = NULL;
+	jint iRet = (jint)pPipeline->Init(filename);
 
-	if (mid_toString == 0)
-	{
-		jclass uriClass = env->GetObjectClass(source);
-		if (NULL == uriClass)
-			return ERROR_BASE_JNI;
-
-		mid_toString = env->GetMethodID(uriClass, "getPath", "()Ljava/lang/String;");
-		if (NULL == mid_toString)
-			return ERROR_BASE_JNI;
-		env->DeleteLocalRef(uriClass);
-	}
-
-	path = (jstring)env->CallObjectMethod(source, mid_toString);
-	if (NULL == path)
-		return ERROR_BASE_JNI;
-
-	const char * input_file = env->GetStringUTFChars(path, 0);
-
-	jint iRet = (jint)pPipeline->Init(input_file);
+	env->ReleaseStringUTFChars(sourcePath, filename);
 
 	return iRet;
 }

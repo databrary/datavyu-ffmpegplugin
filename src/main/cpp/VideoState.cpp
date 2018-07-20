@@ -1398,6 +1398,8 @@ bool VideoState::isPaused() const { return paused; }
 int VideoState::get_step() const { return step; }
 int VideoState::get_frame_drops_early() const { return frame_drops_early; }
 
+const char* VideoState::get_filename() const { return filename; }
+
 AVStream *VideoState::get_audio_st() const { return audio_st; }
 AVStream *VideoState::get_video_st() const { return video_st; }
 AVStream *VideoState::get_subtitle_st() const { return subtitle_st; }
