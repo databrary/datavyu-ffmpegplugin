@@ -596,7 +596,7 @@ int VideoState::read_thread() {
 	std::mutex wait_mutex;
 	int scan_all_pmts_set = 0;
 	int64_t pkt_ts;
-
+	bool was_stalled = false;
 	AVDictionary *format_opts = NULL;
 	AVDictionary *codec_opts = NULL;
 
@@ -758,16 +758,38 @@ int VideoState::read_thread() {
 	if (infinite_buffer < 0 && this->realtime)
 		infinite_buffer = 1;
 
+	if (player_state_callbacks[TO_READY]) {
+		player_state_callbacks[TO_READY]();
+	}
+	
+	// TODO: Need to work in TO_STOPPED state
+
 	for (;;) {
 		if (this->abort_request)
 			break;
 		if (this->paused != this->last_paused) {
 			this->last_paused = this->paused;
-			if (this->paused)
+			if (this->paused) {
+				if (player_state_callbacks[TO_PAUSED]) {
+					player_state_callbacks[TO_PAUSED]();
+				}
 				this->read_pause_return = av_read_pause(ic);
-			else
+			}
+			else {
 				av_read_play(ic);
+				if (player_state_callbacks[TO_PLAYING]) {
+					player_state_callbacks[TO_PLAYING]();
+				}
+			}
 		}
+
+		if (was_stalled) {
+			if (player_state_callbacks[TO_READY]) {
+				player_state_callbacks[TO_READY]();
+			}
+			was_stalled = false;
+		}
+
 #if CONFIG_RTSP_DEMUXER || CONFIG_MMSH_PROTOCOL
 		if (this>paused &&
 			(!strcmp(ic->iformat->name, "rtsp") ||
@@ -779,6 +801,11 @@ int VideoState::read_thread() {
 		}
 #endif
 		if (this->seek_req) {
+			if (player_state_callbacks[TO_STALLED]) {
+				player_state_callbacks[TO_STALLED]();
+				was_stalled = true;
+			}
+
 			int64_t seek_target = this->seek_pos;
 			int64_t seek_min = this->seek_rel > 0 ? seek_target - this->seek_rel + 2 : INT64_MIN;
 			int64_t seek_max = this->seek_rel < 0 ? seek_target - this->seek_rel - 2 : INT64_MAX;
@@ -908,6 +935,7 @@ fail:
 	if (ret != 0) {
 		pPlayer->destroy();
 	}
+
 	return 0;
 }
 
@@ -1137,20 +1165,15 @@ int VideoState::subtitle_thread() {
 /* Public Members*/
 VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat, SDLPlayData *pPlayer) {
 	VideoState *is = new VideoState();
-	is->pPlayer = pPlayer;
-
-	//is = (VideoState*) av_mallocz(sizeof(VideoState));
 	if (!is)
 		return NULL;
+
+	is->pPlayer = pPlayer;
 	is->filename = av_strdup(filename);
 	if (!is->filename)
-		goto fail;
-	is->iformat = iformat;
+		return NULL;
 
-	//if (!(is->continue_read_thread = new std::condition_variable())) {
-	//	av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
-	//	goto fail;
-	//}
+	is->iformat = iformat;
 
 	is->audio_clock_serial = -1;
 	if (startup_volume < 0)
@@ -1162,15 +1185,15 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 	is->audio_volume = startup_volume;
 	is->muted = 0;
 	is->av_sync_type = av_sync_type_input;
-	is->read_tid = new std::thread(read_thread_bridge, is);
-	if (!is->read_tid) {
-		av_log(NULL, AV_LOG_FATAL, "Unable to create reader thread\n");
-	fail:
-		is->stream_close();
-		return NULL;
-	}
-
 	return is;
+}
+
+void VideoState::stream_start() {
+	this->read_tid = new (std::nothrow) std::thread(read_thread_bridge, this);
+	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method)
+	if (!this->read_tid) {
+		av_log(NULL, AV_LOG_FATAL, "Unable to create reader thread\n");
+	}
 }
 
 void VideoState::set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func) {

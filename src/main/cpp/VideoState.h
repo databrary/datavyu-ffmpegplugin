@@ -298,7 +298,7 @@ public:
 	int audio_thread();
 	int video_thread();
 	int subtitle_thread();
-
+	void stream_start();
 	static VideoState *stream_open(const char *filename, AVInputFormat *iformat, SDLPlayData *pPlayer);
 
 	void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);

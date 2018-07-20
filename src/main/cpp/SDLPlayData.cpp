@@ -847,8 +847,11 @@ void SDLPlayData::destroy() {
 }
 
 void SDLPlayData::init_and_event_loop() {
-
+	
 	init();
+
+	pVideoState->stream_start();
+
 	// SDL: The event loop for the SDL window
 	SDL_Event event;
 	double incr, pos, frac;
@@ -1055,7 +1058,8 @@ void SDLPlayData::init_and_event_loop() {
 }
 
 void SDLPlayData::init_and_start_display_loop() {
-	// SDL: The event loop for the SDL window
+	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method)
+	pVideoState->stream_start();
 	display_tid = new std::thread([this] {
 		init();
 		SDL_Event event;

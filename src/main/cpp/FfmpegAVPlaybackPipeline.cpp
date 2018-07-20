@@ -48,7 +48,6 @@ uint32_t FfmpegAVPlaybackPipeline::Init(const char * filename) {
 	});
 	
 	pPlayer->init_and_start_display_loop();
-	UpdatePlayerState(Ready);
 
 	return ERROR_NONE;
 }
@@ -70,7 +69,6 @@ uint32_t FfmpegAVPlaybackPipeline::Play() {
 		return ERROR_VIDEO_STATE_NULL;
 	}
 	pVideoState->play();
-	UpdatePlayerState(Playing);
 
 	return ERROR_NONE; // no error
 }
@@ -85,7 +83,6 @@ uint32_t FfmpegAVPlaybackPipeline::Stop() {
 		return ERROR_VIDEO_STATE_NULL;
 	}
 	pVideoState->stop();
-	UpdatePlayerState(Stopped);
 
 	return ERROR_NONE; // no error
 }
@@ -100,7 +97,6 @@ uint32_t FfmpegAVPlaybackPipeline::Pause() {
 		return ERROR_VIDEO_STATE_NULL;
 	}
 	pVideoState->pause();
-	UpdatePlayerState(Paused);
 
 	return ERROR_NONE; // no error
 }
@@ -126,11 +122,7 @@ uint32_t FfmpegAVPlaybackPipeline::Seek(double dSeekTime) {
 	if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && dSeekTime < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
 		dSeekTime = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
 
-	// TODO(fraudies): Need to report back from ffmpeg once done with seeking and we can switch back to playing etc.
-	UpdatePlayerState(Stalled);
-
 	pVideoState->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
-
 
 	return ERROR_NONE; // no error
 }
@@ -340,6 +332,7 @@ uint32_t FfmpegAVPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
 }
 
 void FfmpegAVPlaybackPipeline::UpdatePlayerState(PlayerState newState) {
+	// Don't need state lock anymore because we update it only from one thread (in the read_thread)
 	//stateLock.lock();
 	PlayerState newPlayerState = m_PlayerState;	// If we assign the same state again
 	bool bSilent = false;
