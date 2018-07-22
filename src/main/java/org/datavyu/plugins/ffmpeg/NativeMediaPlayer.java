@@ -293,7 +293,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public void stop() {
         try {
             playerStop();
-            playerSeek(startTime);
         } catch (MediaException me) {
             sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
         }

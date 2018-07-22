@@ -3,7 +3,7 @@
 
 #include "PipelineOptions.h"
 #include "Pipeline.h"
-#include "SDLPlayData.h"
+#include "FfmpegSdlAvPlayback.h"
 
 /**
 * class FfmpegAVPlaybackPipeline
@@ -56,7 +56,7 @@ private:
 	void UpdatePlayerState(PlayerState newState);
 	void SetPlayerState(PlayerState newState, bool bSilent);
 
-	SDLPlayData* pPlayer;
+	FfmpegSdlAvPlayback* pSdlPlayback;
 	std::mutex stateLock;
 };
 

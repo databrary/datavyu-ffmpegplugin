@@ -1,8 +1,9 @@
-#ifndef SDLPLAYDATA_H_
-#define SDLPLAYDATA_H_
+#ifndef FFMPEGSDLAVPLAYBACK_H_
+#define FFMPEGSDLAVPLAYBACK_H_
 
 #include <atomic>
 #include "VideoState.h"
+#include "FfmpegAVPlayback.h"
 
 /* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
 #define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
@@ -30,19 +31,10 @@ const char program_name[] = "Datavyu-ffmpeg-plugin";
 
 static int default_width = 640;
 static int default_height = 480;
-
 static unsigned sws_flags = SWS_BICUBIC;
-
-//TODO:(fraudies) Cleanup allocation/deallocation of SDL Textures by moving them into SDLPlayData; 
-//TODO:(fraudies) Must do cleanup of all statics before we can handle multiple tracks
-static SDL_Texture *vis_texture;
-static SDL_Texture *sub_texture;
-static SDL_Texture *vid_texture;
 
 static int16_t sample_array[SAMPLE_ARRAY_SIZE];
 static int sample_array_index;
-static int force_refresh;
-static double frame_timer;
 
 static int display_disable = 0;
 
@@ -74,13 +66,12 @@ static const struct TextureFormatEntry {
 
 class VideoState;
 
-class SDLPlayData {
+class FfmpegSdlAvPlayback : public FfmpegAvPlayback {
 
 private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
-	VideoState* pVideoState;
-	SDL_AudioDeviceID audio_dev;
+	SDL_AudioDeviceID audio_dev = 0;
 	SDL_RendererInfo renderer_info = { 0 };
 	int width, height, ytop, xleft;
 	double rdftspeed;
@@ -89,14 +80,18 @@ private:
 	struct SwsContext *img_convert_ctx;
 	struct SwsContext *sub_convert_ctx;
 
+	SDL_Texture *vis_texture;
+	SDL_Texture *sub_texture;
+	SDL_Texture *vid_texture;
+
+	int force_refresh;
+
 	int last_i_start;
 
 	int frame_drops_late;
 
 	double last_vis_time;
 	int is_full_screen;
-
-	void update_video_pts(VideoState *is, double pts, int64_t pos, int serial);
 
 	inline int compute_mod(int a, int b);
 
@@ -112,30 +107,27 @@ private:
 	std::thread* display_tid = nullptr;
 
 	void init(); // This is private because it has to be called on the same thread as the looping
-
+	int video_open(const char* filename);
+	void closeAudioDevice();
+	void video_image_display();
+	void stop_display_loop();
+	void toggle_audio_display();
 public:
-	SDLPlayData(const char *filename, AVInputFormat *iformat);
-	~SDLPlayData();
+	FfmpegSdlAvPlayback(const char *filename, AVInputFormat *iformat);
+	~FfmpegSdlAvPlayback();
 
-	int audio_open(VideoState* is, int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
+	VideoState* get_VideoState();
+
+	int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
 		struct AudioParams *audio_hw_params);
 
-	static void set_force_refresh(int refresh);
+	void set_force_refresh(int refresh);
 
-	static int get_frame_timer();
-	static void set_frame_timer(int newFrame_timer);
-
-	static void destroyTextures();
 	static void set_default_window_size(int width, int height, AVRational sar);
 
-	int video_open(VideoState *is);
-
-	void closeAudioDevice();
 	void pauseAudioDevice();
 
 	void toggle_full_screen();
-
-	VideoState* get_VideoState();
 
 	int upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsContext **img_convert_ctx);
 
@@ -145,28 +137,25 @@ public:
 						int new_height, SDL_BlendMode blendmode, int init_texture);
 
 	/* display the current picture, if any */
-	void video_display(VideoState *is);
+	void video_display();
 
-	void video_image_display(VideoState *is);
 
 	/* copy samples for viewing in editor window */
 	// Called from the audio call back
 	static void update_sample_display(short *samples, int samples_size);
 
-	void video_audio_display(VideoState *is);
+	void video_audio_display();
 
 	// Function Called from the event loop
-	void refresh_loop_wait_event(VideoState *is, SDL_Event *event);
+	void refresh_loop_wait_event(SDL_Event *event);
 
 	/* called to display each frame */
-	void video_refresh(VideoState *is, double *remaining_time);
+	void video_refresh(double *remaining_time);
 
 	void destroy();
 
 	void init_and_event_loop();
 
 	void init_and_start_display_loop();
-
-	void stop_display_loop();
 };
-#endif SDLPLAYDATA_H_
+#endif FFMPEGSDLAVPLAYBACK_H_

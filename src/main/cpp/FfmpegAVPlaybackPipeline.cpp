@@ -1,9 +1,10 @@
 #include "FfmpegAVPlaybackPipeline.h"
 #include "FfmpegMediaErrors.h"
 #include "JavaPlayerEventDispatcher.h"
+#include "FfmpegSdlAvPlayback.h"
 
 FfmpegAVPlaybackPipeline::FfmpegAVPlaybackPipeline(CPipelineOptions* pOptions) 
-	: CPipeline(pOptions), pPlayer(nullptr) 
+	: CPipeline(pOptions), pSdlPlayback(nullptr) 
 {	
 }
 
@@ -16,87 +17,65 @@ uint32_t FfmpegAVPlaybackPipeline::Init(const char * filename) {
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	AVInputFormat *file_iformat = nullptr;
-	pPlayer = new SDLPlayData(filename, file_iformat);
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (!pVideoState) {
-		av_log(NULL, AV_LOG_FATAL, "Failed to initialize VideoState!\n");
-		pPlayer->destroy();
-		delete pPlayer;
-	}
+	pSdlPlayback = new FfmpegSdlAvPlayback(filename, file_iformat);
 
 	// Assign the callback functions	
-	pVideoState->set_player_state_callback_func(TO_UNKNOWN, [this] {
+	pSdlPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {
 		this->UpdatePlayerState(Unknown);
 	});
-	pVideoState->set_player_state_callback_func(TO_READY, [this] {
+	pSdlPlayback->set_player_state_callback_func(TO_READY, [this] {
 		this->UpdatePlayerState(Ready);
 	});
-	pVideoState->set_player_state_callback_func(TO_PLAYING, [this] {
+	pSdlPlayback->set_player_state_callback_func(TO_PLAYING, [this] {
 		this->UpdatePlayerState(Playing);
 	});
-	pVideoState->set_player_state_callback_func(TO_PAUSED, [this] {
+	pSdlPlayback->set_player_state_callback_func(TO_PAUSED, [this] {
 		this->UpdatePlayerState(Paused);
 	});
-	pVideoState->set_player_state_callback_func(TO_STOPPED, [this] {
+	pSdlPlayback->set_player_state_callback_func(TO_STOPPED, [this] {
 		this->UpdatePlayerState(Stopped);
 	});
-	pVideoState->set_player_state_callback_func(TO_STALLED, [this] {
+	pSdlPlayback->set_player_state_callback_func(TO_STALLED, [this] {
 		this->UpdatePlayerState(Stalled);
 	});
-	pVideoState->set_player_state_callback_func(TO_FINISHED, [this] {
+	pSdlPlayback->set_player_state_callback_func(TO_FINISHED, [this] {
 		this->UpdatePlayerState(Finished);
 	});
 	
-	pPlayer->init_and_start_display_loop();
+	pSdlPlayback->init_and_start_display_loop();
 
 	return ERROR_NONE;
 }
 
 void FfmpegAVPlaybackPipeline::Dispose() {
-	pPlayer->stop_display_loop();
-	pPlayer->destroy();
-	delete pPlayer;
-	pPlayer = nullptr;
+	pSdlPlayback->destroy();
+	delete pSdlPlayback;
+	pSdlPlayback = nullptr;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Play() {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-	pVideoState->play();
+	pSdlPlayback->play();
 
 	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Stop() {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-	pVideoState->stop();
+	pSdlPlayback->stop();
 
 	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Pause() {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-	pVideoState->toggle_pause();
+	pSdlPlayback->toggle_pause();
 
 	return ERROR_NONE; // no error
 }
@@ -107,52 +86,36 @@ uint32_t FfmpegAVPlaybackPipeline::Finish() {
 }
 
 uint32_t FfmpegAVPlaybackPipeline::Seek(double dSeekTime) {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-	double pos = pVideoState->get_master_clock();
+	double pos = pSdlPlayback->get_master_clock();
 	if (isnan(pos))
-		pos = (double)pVideoState->get_seek_pos() / AV_TIME_BASE;
+		pos = (double)pSdlPlayback->get_seek_pos() / AV_TIME_BASE;
 	double incr = dSeekTime - pos;
-	if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && dSeekTime < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
-		dSeekTime = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
+	if (pSdlPlayback->get_start_time() != AV_NOPTS_VALUE && dSeekTime < pSdlPlayback->get_start_time() / (double)AV_TIME_BASE)
+		dSeekTime = pSdlPlayback->get_start_time() / (double)AV_TIME_BASE;
 
-	pVideoState->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+	pSdlPlayback->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
 
 	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetDuration(double* pdDuration) {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-
-	*pdDuration = pVideoState->get_duration();
+	*pdDuration = pSdlPlayback->get_duration();
 
 	return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
 
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-
-	*pdStreamTime = pVideoState->get_master_clock();
+	*pdStreamTime = pSdlPlayback->get_master_clock();
 
 	return ERROR_NONE; // no error
 }
@@ -170,29 +133,19 @@ uint32_t FfmpegAVPlaybackPipeline::GetRate(float* pfRate) {
 }
 
 uint32_t FfmpegAVPlaybackPipeline::SetVolume(float fVolume) {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-
-	pVideoState->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
+	// TODO(fraudies): Implement this once ready
+	//pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetVolume(float* pfVolume) {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-
-	*pfVolume = pVideoState->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
+	// TODO(fraudies): Implement this once ready
+	//*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
 
 	return ERROR_NONE; // no error
 }
@@ -218,114 +171,74 @@ uint32_t FfmpegAVPlaybackPipeline::GetAudioSyncDelay(long* plMillis) {
 }
 
 uint32_t FfmpegAVPlaybackPipeline::HasAudioData(bool* bAudioData) const {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-
-	*bAudioData = pVideoState->has_audio_data();
+	// TODO(fraudies): Implement this
+	//*bAudioData = pSdlPlayback->has_audio_data();
 
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::HasImageData(bool* bImageData) const {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-
-	*bImageData = pVideoState->has_image_data();
+	// TODO(fraudies): Implement this
+	//*bImageData = pSdlPlayback->has_image_data();
 
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetImageWidth(int* width) const {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-
-	*width = pVideoState->get_image_width();
+	// TODO(fraudies): Implement this
+	//*width = pSdlPlayback->get_image_width();
 
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetImageHeight(int* iHeight) const {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-
-	*iHeight = pVideoState->get_image_height();
+	// TODO(fraudies): Implement this
+	//*iHeight = pSdlPlayback->get_image_height();
 
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetAudioFormat(AudioFormat* pAudioFormat) const {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
-	}
-
-	*pAudioFormat = pVideoState->get_audio_format();
+	// TODO(fraudies): Implement this
+	//*pAudioFormat = pSdlPlayback->get_audio_format();
 
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
-	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
 	}
 	// TODO(fraudies): Implement the pixel format for the ouput
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
-	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
 	}
 	// TODO(fraudies): Implement the image buffer data
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegAVPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
-	if (pPlayer == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
-	}
-
-	VideoState* pVideoState = pPlayer->get_VideoState();
-	if (pVideoState == nullptr) {
-		return ERROR_VIDEO_STATE_NULL;
 	}
 	// TODO(fraudies): Implement the audio buffer data
 	return ERROR_NONE;

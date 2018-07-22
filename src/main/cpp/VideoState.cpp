@@ -1,5 +1,5 @@
 #include "VideoState.h"
-#include "SDLPlayData.h"
+#include "FfmpegSdlAvPlayback.h"
 
 /* Private Members */
 int VideoState::stream_component_open(int stream_index) {
@@ -110,8 +110,13 @@ int VideoState::stream_component_open(int stream_index) {
 #endif
 
 		/* prepare audio output */
-		if ((ret = pPlayer->audio_open(this, channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
+		if (!audio_open_callback)
 			goto fail;
+
+		if ((ret = audio_open_callback(channel_layout, nb_channels, sample_rate, &this->audio_tgt) < 0))
+			goto fail;
+		//if ((ret = pPlayer->audio_open(channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
+		//	goto fail;
 		audio_hw_buf_size = ret;
 		audio_src = this->audio_tgt;
 		audio_buf_size = 0;
@@ -135,7 +140,10 @@ int VideoState::stream_component_open(int stream_index) {
 		}
 		if ((ret = pAuddec->start(audio_thread_bridge, this)) < 0)
 			goto out;
-		pPlayer->pauseAudioDevice();
+		//pPlayer->pauseAudioDevice();
+		if (pause_audio_device_callback)
+			pause_audio_device_callback();
+
 		break;
 	case AVMEDIA_TYPE_VIDEO:
 		this->video_stream = stream_index;
@@ -226,7 +234,7 @@ int VideoState::queue_picture(AVFrame *src_frame, double pts, double duration, i
 	vp->pos = pos;
 	vp->serial = serial;
 
-	SDLPlayData::set_default_window_size(vp->width, vp->height, vp->sar);
+	FfmpegSdlAvPlayback::set_default_window_size(vp->width, vp->height, vp->sar);
 
 	av_frame_move_ref(vp->frame, src_frame);
 	pPictq->push();
@@ -244,8 +252,8 @@ void VideoState::stream_component_close(int stream_index) {
 	switch (codecpar->codec_type) {
 	case AVMEDIA_TYPE_AUDIO:
 		pAuddec->abort(pSampq);
-		pPlayer->closeAudioDevice();
-		delete pAuddec; // TODO(fraudies): Move this to the destructor of VideoState
+		//pPlayer->closeAudioDevice(); Moved to destroy in FfmpegSdlAvPlayback
+		delete pAuddec;
 		swr_free(&swr_ctx);
 		av_freep(&audio_buf1);
 		audio_buf1_size = 0;
@@ -260,11 +268,11 @@ void VideoState::stream_component_close(int stream_index) {
 		break;
 	case AVMEDIA_TYPE_VIDEO:
 		pViddec->abort(pPictq);
-		delete pViddec; // TODO(fraudies): Move this to the destructor of VideoState
+		delete pViddec;
 		break;
 	case AVMEDIA_TYPE_SUBTITLE:
 		pSubdec->abort(pSubpq);
-		delete pSubdec; // TODO(fraudies): Move this to the destructor of VideoState
+		delete pSubdec;
 		break;
 	default:
 		break;
@@ -567,7 +575,7 @@ VideoState::VideoState() :
 	audio_disable(0),
 	video_disable(0),
 	subtitle_disable(0),
-	stopped(0){
+	stopped(false) {
 	// Frame queues depend on the packet queues that have not been initialized in initializer
 	pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
 	pSubpq = new FrameQueue(pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
@@ -741,7 +749,7 @@ int VideoState::read_thread() {
 		AVCodecParameters *codecpar = st->codecpar;
 		AVRational sar = av_guess_sample_aspect_ratio(ic, st, NULL);
 		if (codecpar->width)
-			SDLPlayData::set_default_window_size(codecpar->width, codecpar->height, sar);
+			FfmpegSdlAvPlayback::set_default_window_size(codecpar->width, codecpar->height, sar);
 	}
 
 	/* open the streams */
@@ -803,7 +811,8 @@ int VideoState::read_thread() {
 				}
 			}
 		}
-
+		// TODO(fraudies): See if we can clean-up the state transitions by using the same states
+		// in this loop as there are in the Pipeline.h
 		if (was_stalled) {
 			if (player_state_callbacks[TO_READY]) {
 				player_state_callbacks[TO_READY]();
@@ -903,7 +912,7 @@ int VideoState::read_thread() {
 			this->queue_attachments_req = 1;
 			this->eof = 0;
 			if (this->paused)
-				this->step_to_next_frame();
+				step_to_next_frame_callback(); // Assume that is set--otherwise fail hard here
 		}
 		if (this->queue_attachments_req) {
 			if (this->video_st && this->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC) {
@@ -995,8 +1004,9 @@ fail:
 	if (ic && !this->ic)
 		avformat_close_input(&ic);
 
-	if (ret != 0) {
-		pPlayer->destroy();
+	if (ret != 0 && destroy_callback) {
+		//pPlayer->destroy();
+		destroy_callback();
 	}
 
 	return 0;
@@ -1261,12 +1271,11 @@ int VideoState::subtitle_thread() {
 }
 
 /* Public Members*/
-VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat, SDLPlayData *pPlayer) {
+VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat) {
 	VideoState *is = new VideoState();
 	if (!is)
 		return NULL;
 
-	is->pPlayer = pPlayer;
 	is->filename = av_strdup(filename);
 	if (!is->filename)
 		return NULL;
@@ -1298,6 +1307,22 @@ void VideoState::set_player_state_callback_func(PlayerStateCallback callback, co
 	player_state_callbacks[callback] = func;
 }
 
+void VideoState::set_audio_open_callback(const std::function<int(int64_t, int, int, struct AudioParams*)> func) {
+	audio_open_callback = func;
+}
+
+void VideoState::set_pause_audio_device_callback(const std::function<void()> func) {
+	pause_audio_device_callback = func;
+}
+
+void VideoState::set_destroy_callback(const std::function<void()> func) {
+	destroy_callback = func;
+}
+
+void VideoState::set_step_to_next_frame_callback(const std::function<void()> func) {
+	step_to_next_frame_callback = func;
+}
+
 // Function Called from the event loop
 void VideoState::seek_chapter(int incr) {
 	int64_t pos = this->get_master_clock() * AV_TIME_BASE;
@@ -1324,23 +1349,6 @@ void VideoState::seek_chapter(int incr) {
 	this->stream_seek(av_rescale_q(this->ic->chapters[i]->start, this->ic->chapters[i]->time_base, MY_AV_TIME_BASE_Q), 0, 0);
 }
 
-/* Controls */
-void VideoState::stream_toggle_pause() {
-	if (this->paused) {
-		SDLPlayData::set_frame_timer(SDLPlayData::get_frame_timer() + av_gettime_relative() / 1000000.0 - pVidclk->get_lastUpdated());
-		if (this->read_pause_return != AVERROR(ENOSYS)) {
-			pVidclk->setPaused(0);
-		}
-		pVidclk->set_clock(pVidclk->get_clock(), pVidclk->get_serial());
-	}
-	pExtclk->set_clock(pExtclk->get_clock(), pExtclk->get_serial());
-
-	this->paused = !this->paused;
-	pAudclk->setPaused(!this->paused);
-	pVidclk->setPaused(!this->paused);
-	pExtclk->setPaused(!this->paused);
-}
-
 int VideoState::get_image_width() const {
 	return image_width;
 }
@@ -1357,37 +1365,12 @@ bool VideoState::has_image_data() const {
 	return video_stream >= 0;
 }
 
-void VideoState::stop() {
-	if (!paused) { 
-		toggle_pause(); 
-		stopped = 1;
-	}
-	// Stop playback and seek to the start of the stream
-	double pos = get_master_clock();
-	double start = get_ic()->start_time / (double)AV_TIME_BASE;
-	double incr = start - pos;
-	stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
-
-}
-
-void VideoState::play() {
-	if (paused) {
-		toggle_pause();
-		stopped = 0;
-	}
-}
-
 double VideoState::get_duration() const {
 	return get_ic()->duration / (double)AV_TIME_BASE;
 }
 
 int VideoState::get_audio_volume() const {
 	return audio_volume;
-}
-
-void VideoState::toggle_pause() {
-	this->stream_toggle_pause();
-	this->step = 0;
 }
 
 void VideoState::toggle_mute() {
@@ -1400,11 +1383,9 @@ void VideoState::update_volume(int sign, double step) {
 	this->audio_volume = av_clip(this->audio_volume == new_volume ? (this->audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME);
 }
 
-void VideoState::step_to_next_frame() {
-	/* if the stream is paused unpause it, then step */
-	if (this->paused)
-		this->stream_toggle_pause();
-	this->step = 1;
+void VideoState::update_pts(double pts, int64_t pos, int serial) {
+	get_pVidclk()->set_clock(pts, serial);
+	Clock::sync_clock_to_slave(get_pExtclk(), get_pVidclk());
 }
 
 /* seek in the stream */
@@ -1500,20 +1481,28 @@ the_end:
 	this->stream_component_open(stream_index);
 }
 
-void VideoState::toggle_audio_display() {
-	int next = show_mode;
-	do {
-		next = (next + 1) % SHOW_MODE_NB;
-	} while (next != show_mode && (next == SHOW_MODE_VIDEO && !this->video_st || next != SHOW_MODE_VIDEO && !this->audio_st));
-	if (show_mode != next) {
-		SDLPlayData::set_force_refresh(1);
-		show_mode = static_cast<ShowMode>(next);
-	}
+int VideoState::get_read_pause_return() const {
+	return read_pause_return;
 }
 
-bool VideoState::isPaused() const { return paused; }
+bool VideoState::get_paused() const { return paused; }
+
+void VideoState::set_paused(bool new_paused) {
+	paused = new_paused;
+}
+
+bool VideoState::get_stopped() const { return stopped; }
+
+void VideoState::set_stopped(bool new_stopped) {
+	stopped = new_stopped;
+}
 
 int VideoState::get_step() const { return step; }
+
+void VideoState::set_step(bool new_step) {
+	step = new_step;
+}
+
 int VideoState::get_frame_drops_early() const { return frame_drops_early; }
 
 const char* VideoState::get_filename() const { return filename; }
@@ -1651,15 +1640,15 @@ void VideoState::check_external_clock_speed() {
 }
 
 /* get the current synchronization type */
-int VideoState::get_master_sync_type() {
-	if (this->av_sync_type == AV_SYNC_VIDEO_MASTER) {
-		if (this->video_st)
+int VideoState::get_master_sync_type() const {
+	if (av_sync_type == AV_SYNC_VIDEO_MASTER) {
+		if (video_st != nullptr)
 			return AV_SYNC_VIDEO_MASTER;
 		else
 			return AV_SYNC_AUDIO_MASTER;
 	}
-	else if (this->av_sync_type == AV_SYNC_AUDIO_MASTER) {
-		if (this->audio_st)
+	else if (av_sync_type == AV_SYNC_AUDIO_MASTER) {
+		if (audio_st != nullptr)
 			return AV_SYNC_AUDIO_MASTER;
 		else
 			return AV_SYNC_EXTERNAL_CLOCK;
@@ -1670,18 +1659,18 @@ int VideoState::get_master_sync_type() {
 }
 
 /* get the current master clock value */
-double VideoState::get_master_clock() {
+double VideoState::get_master_clock() const {
 	double val;
-	switch (this->get_master_sync_type()) {
-	case AV_SYNC_VIDEO_MASTER:
-		val = pVidclk->get_clock();
-		break;
-	case AV_SYNC_AUDIO_MASTER:
-		val = pAudclk->get_clock();
-		break;
-	default:
-		val = pExtclk->get_clock();
-		break;
+	switch (get_master_sync_type()) {
+		case AV_SYNC_VIDEO_MASTER:
+			val = pVidclk->get_clock();
+			break;
+		case AV_SYNC_AUDIO_MASTER:
+			val = pAudclk->get_clock();
+			break;
+		default:
+			val = pExtclk->get_clock();
+			break;
 	}
 	return val;
 }
@@ -1719,7 +1708,6 @@ void VideoState::stream_close() {
 	//sws_freeContext(this->img_convert_ctx);
 	//sws_freeContext(this->sub_convert_ctx);
 	av_free(this->filename);
-	SDLPlayData::destroyTextures();
 }
 
 /* prepare a new audio buffer */
@@ -1738,7 +1726,7 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 			}
 			else {
 				if (show_mode != SHOW_MODE_VIDEO)
-					SDLPlayData::update_sample_display((int16_t *)this->audio_buf, audio_size);
+					FfmpegSdlAvPlayback::update_sample_display((int16_t *)this->audio_buf, audio_size);
 				this->audio_buf_size = audio_size;
 			}
 			this->audio_buf_index = 0;
@@ -1767,12 +1755,14 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 	}
 }
 
-void VideoState::set_speed(const int step) {
+void VideoState::set_rate(const int step) {
+	// TODO(fraudies): Move this into FfmpegAVPlayback
+	/*
 	int i;
 	for (i = 0; i < FF_ARRAY_ELEMS(rate_speed_map); i++) {
 		if (last_speed == rate_speed_map[i].clock_speed) {
 			if (i+step >= 0 && i+step < FF_ARRAY_ELEMS(rate_speed_map)) {
-				if (!isPaused() && rate_speed_map[i + step].clock_speed == 0) {
+				if (!get_paused() && rate_speed_map[i + step].clock_speed == 0) {
 					toggle_pause();
 					return; // We can't process the 0 as a new speed for the presentation time
 				}
@@ -1796,6 +1786,11 @@ void VideoState::set_speed(const int step) {
 			}
 		}
 	}
+	*/
+}
+
+float VideoState::get_rate() const {
+	return pts_speed;
 }
 
 int VideoState::get_master_clock_speed() {
@@ -1826,7 +1821,7 @@ void VideoState::set_video_disable(const int disable) { video_disable = disable;
 int VideoState::get_subtitle_disable() const { return subtitle_disable; }
 void VideoState::set_subtitle_disable(const int disable) { subtitle_disable = disable; }
 
-int VideoState::isStopped() const { return stopped; }
+//int VideoState::isStopped() const { return stopped; }
 
 #if CONFIG_AVFILTER
 // From cmdutil class
