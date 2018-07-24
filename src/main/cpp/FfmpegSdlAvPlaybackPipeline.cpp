@@ -1,23 +1,21 @@
 #include "FfmpegSdlAvPlaybackPipeline.h"
 #include "FfmpegMediaErrors.h"
 #include "JavaPlayerEventDispatcher.h"
-#include "FfmpegSdlAvPlayback.h"
 
 FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(CPipelineOptions* pOptions) 
 	: CPipeline(pOptions), pSdlPlayback(nullptr) 
-{	
-}
+{}
 
 FfmpegSdlAvPlaybackPipeline::~FfmpegSdlAvPlaybackPipeline() {
 	// Clean-up done in dispose that is called from the destructor of the super-class
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char * filename) {
+uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char * input_file) {
 	// TODO: Proper error handling and wiring up of input arguments
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	AVInputFormat *file_iformat = nullptr;
-	pSdlPlayback = new FfmpegSdlAvPlayback(filename, file_iformat);
+	pSdlPlayback = new FfmpegSdlAvPlayback(input_file, file_iformat);
 
 	// Assign the callback functions	
 	pSdlPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {

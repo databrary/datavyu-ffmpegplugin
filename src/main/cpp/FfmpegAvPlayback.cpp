@@ -50,6 +50,8 @@ void FfmpegAvPlayback::stop() {
 		pVideoState->set_stopped(true);
 	}
 	// Stop playback and seek to the start of the stream
+	// TODO(Reda): Remove seeking to the start_time when stopping the stream 
+	// Datavyu behavior Stop -> set speed to 0x, Pause-> keep current speed of the playback 
 	double pos = get_master_clock();
 	double start = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
 	double incr = start - pos;

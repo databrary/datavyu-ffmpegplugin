@@ -3,6 +3,9 @@
 
 #include "Pipeline.h"
 #include "FfmpegJavaAvPlayback.h"
+#include "FfmpegMediaErrors.h"; 
+#include "JavaPlayerEventDispatcher.h"
+
 
 // TODO(Reda): Implement this interface
 class FfmpegJavaAvPlaybackPipline : public CPipeline {

@@ -4,6 +4,7 @@
 #include "PipelineFactory.h"
 #include "PipelineOptions.h"
 #include "FfmpegSdlAvPlaybackPipeline.h"
+#include "FfmpegJavaAvPlaybackPipline.h"
 #include "FfmpegMediaErrors.h"
 
 class FfmpegPipelineFactory : public PipelineFactory {

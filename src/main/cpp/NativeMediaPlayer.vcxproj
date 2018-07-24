@@ -150,6 +150,8 @@
     <ClCompile Include="..\cpp\JavaPlayerEventDispatcher.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="FfmpegAvPlayback.cpp" />
+    <ClCompile Include="FfmpegJavaAvPlayback.cpp" />
+    <ClCompile Include="FfmpegJavaAvPlaybackPipline.cpp" />
     <ClCompile Include="FfmpegPipelineFactory.cpp" />
     <ClCompile Include="PipelineFactory.cpp" />
     <ClCompile Include="Media.cpp" />
