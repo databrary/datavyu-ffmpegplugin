@@ -5,7 +5,7 @@
 #include "Media.h"
 #include "Pipeline.h"
 #include "FfmpegMediaErrors.h"
-#include "FfmpegAVPlaybackPipeline.h"
+#include "PipelineFactory.h"
 #include "FfmpegJniUtils.h"
 
 using namespace std;
@@ -15,15 +15,26 @@ extern "C" {
 #endif
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
-(JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath, jobject audioFormat, jobject imageFormat) {
+(JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath, jobject audioFormat, jobject imageFormat, jboolean streamData) {
 
-	CPipelineOptions* pOptions = new (nothrow) CPipelineOptions();
+	CPipelineOptions* pOptions = new (nothrow) CPipelineOptions(streamData);
 	if (NULL == pOptions) {
 		return ERROR_MEMORY_ALLOCATION;
 	}
 
-	CPipeline* pPipeline = new (nothrow) FfmpegAVPlaybackPipeline(pOptions);
-	if (NULL == pPipeline) {
+	PipelineFactory*   pPipelineFactory = NULL;
+	uint32_t           uRetCode;
+
+	uRetCode = PipelineFactory::GetInstance(&pPipelineFactory);
+	if (ERROR_NONE != uRetCode)
+		return uRetCode;
+	else if (NULL == pPipelineFactory)
+		return ERROR_FACTORY_NULL;
+
+	CPipeline* pPipeline = NULL;
+
+	uRetCode = pPipelineFactory->CreatePlayerPipeline(pOptions, &pPipeline);
+	if (ERROR_NONE != uRetCode) {
 		return ERROR_PIPELINE_CREATION;
 	}
 

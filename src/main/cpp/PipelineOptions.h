@@ -43,12 +43,12 @@ public:
     };
 public:
 	// TODO(fraudies): Add the audio and video format here
-	// TODO(fraudies): Add the option about JNI/SDL playback (call it stream data true|false)
-    CPipelineOptions(int pipelineType=kAVPlaybackPipeline, bool havePreferredFormat = false)
+    CPipelineOptions(bool streamData, int pipelineType=kAVPlaybackPipeline, bool havePreferredFormat = false)
     :   m_PipelineType(pipelineType),
         m_bBufferingEnabled(false),
         m_StreamMimeType(-1),
-        m_bHLSModeEnabled(false)
+        m_bHLSModeEnabled(false),
+		m_StreamData(streamData)
     {}
 
     virtual ~CPipelineOptions() {}
@@ -62,13 +62,17 @@ public:
     inline int		GetStreamMimeType() { return m_StreamMimeType; }
 
     inline void		SetHLSModeEnabled(bool enabled) { m_bHLSModeEnabled = enabled; }
-    inline bool		GetHLSModeEnabled() { return m_bHLSModeEnabled; }
+    inline bool		GetHLSModeEnabled() { return m_bHLSModeEnabled; }    
+	
+	inline void		SetStreamData(bool enabled) { m_StreamData = enabled; }
+    inline bool		GetStreamData() { return m_StreamData; }
 
 private:
     int         m_PipelineType;
     bool        m_bBufferingEnabled;
     int         m_StreamMimeType;
     bool        m_bHLSModeEnabled;
+	bool		m_StreamData;
 };
 
 #endif  //_PIPELINE_OPTIONS_H_

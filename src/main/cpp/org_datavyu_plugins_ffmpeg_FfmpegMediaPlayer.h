@@ -29,7 +29,7 @@ extern "C" {
  * Signature: ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
-  (JNIEnv *, jobject, jlongArray, jstring, jobject, jobject);
+  (JNIEnv *, jobject, jlongArray, jstring, jobject, jobject, jboolean);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
