@@ -1,0 +1,9 @@
+#ifndef FFMPEGAVJAVAPIPELINE_H_
+#define FFMPEGAVJAVAPIPELINE_H_
+
+class FfmpegAVJavaPipline {
+
+};
+
+#endif // !FFMPEGAVJAVAPIPELINE_H_
+
