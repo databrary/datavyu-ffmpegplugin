@@ -132,9 +132,9 @@
     <ClInclude Include="AudioVideoFormats.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Decoder.h" />
-    <ClInclude Include="FfmpegAVJavaPipline.h" />
+    <ClInclude Include="FfmpegJavaAvPlaybackPipline.h" />
     <ClInclude Include="FfmpegAvPlayback.h" />
-    <ClInclude Include="FfmpegAVPlaybackPipeline.h" />
+    <ClInclude Include="FfmpegSdlAvPlaybackPipeline.h" />
     <ClInclude Include="FfmpegJavaAvPlayback.h" />
     <ClInclude Include="FfmpegJniUtils.h" />
     <ClInclude Include="FfmpegMediaErrors.h" />
@@ -154,7 +154,7 @@
     <ClCompile Include="PipelineFactory.cpp" />
     <ClCompile Include="Media.cpp" />
     <ClCompile Include="Decoder.cpp" />
-    <ClCompile Include="FfmpegAVPlaybackPipeline.cpp" />
+    <ClCompile Include="FfmpegSdlAvPlaybackPipeline.cpp" />
     <ClCompile Include="FfmpegJniUtils.cpp" />
     <ClCompile Include="FfmpegMediaPlayer.cpp" />
     <ClCompile Include="FrameQueue.cpp" />

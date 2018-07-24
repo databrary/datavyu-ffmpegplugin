@@ -13,10 +13,9 @@ uint32_t FfmpegPipelineFactory::CreatePlayerPipeline(CPipelineOptions *pOptions,
 	
 	*ppPipeline = NULL;
 	if (pOptions->GetStreamData())
-		//TODO(Reda): rename FfmpegAVPlaybackPipeline suggestion: FfmpegSDLAVPipeline
-		*ppPipeline = new (nothrow) FfmpegAVPlaybackPipeline(pOptions);
+		*ppPipeline = new (nothrow) FfmpegSdlAvPlaybackPipeline(pOptions);
 	else
-		//TODO(Reda) call FfmpegJAVAAVPipeline 
+		//TODO(Reda) create instance of FfmpegJavaAvPlaybackPipline here
 		return ERROR_PIPELINE_NULL;
 
 	if (NULL == ppPipeline)

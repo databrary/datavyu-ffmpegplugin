@@ -51,9 +51,6 @@
     <ClInclude Include="PacketQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FfmpegAVPlaybackPipeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="VideoState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -81,7 +78,10 @@
     <ClInclude Include="FfmpegPipelineFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FfmpegAVJavaPipline.h">
+    <ClInclude Include="FfmpegSdlAvPlaybackPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FfmpegJavaAvPlaybackPipline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -102,9 +102,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PacketQueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FfmpegAVPlaybackPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Pipeline.cpp">
@@ -132,6 +129,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FfmpegPipelineFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FfmpegSdlAvPlaybackPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

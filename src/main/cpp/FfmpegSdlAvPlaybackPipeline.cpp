@@ -1,18 +1,18 @@
-#include "FfmpegAVPlaybackPipeline.h"
+#include "FfmpegSdlAvPlaybackPipeline.h"
 #include "FfmpegMediaErrors.h"
 #include "JavaPlayerEventDispatcher.h"
 #include "FfmpegSdlAvPlayback.h"
 
-FfmpegAVPlaybackPipeline::FfmpegAVPlaybackPipeline(CPipelineOptions* pOptions) 
+FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(CPipelineOptions* pOptions) 
 	: CPipeline(pOptions), pSdlPlayback(nullptr) 
 {	
 }
 
-FfmpegAVPlaybackPipeline::~FfmpegAVPlaybackPipeline() {
+FfmpegSdlAvPlaybackPipeline::~FfmpegSdlAvPlaybackPipeline() {
 	// Clean-up done in dispose that is called from the destructor of the super-class
 }
 
-uint32_t FfmpegAVPlaybackPipeline::Init(const char * filename) {
+uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char * filename) {
 	// TODO: Proper error handling and wiring up of input arguments
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
@@ -47,13 +47,13 @@ uint32_t FfmpegAVPlaybackPipeline::Init(const char * filename) {
 	return ERROR_NONE;
 }
 
-void FfmpegAVPlaybackPipeline::Dispose() {
+void FfmpegSdlAvPlaybackPipeline::Dispose() {
 	pSdlPlayback->destroy();
 	delete pSdlPlayback;
 	pSdlPlayback = nullptr;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::Play() {
+uint32_t FfmpegSdlAvPlaybackPipeline::Play() {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -62,7 +62,7 @@ uint32_t FfmpegAVPlaybackPipeline::Play() {
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegAVPlaybackPipeline::Stop() {
+uint32_t FfmpegSdlAvPlaybackPipeline::Stop() {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -71,7 +71,7 @@ uint32_t FfmpegAVPlaybackPipeline::Stop() {
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegAVPlaybackPipeline::Pause() {
+uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -80,12 +80,12 @@ uint32_t FfmpegAVPlaybackPipeline::Pause() {
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegAVPlaybackPipeline::Finish() {
+uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
 	// TODO(fraudies): Stalling and finish need to be set from the video player
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::Seek(double dSeekTime) {
+uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -101,7 +101,7 @@ uint32_t FfmpegAVPlaybackPipeline::Seek(double dSeekTime) {
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetDuration(double* pdDuration) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetDuration(double* pdDuration) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -110,7 +110,7 @@ uint32_t FfmpegAVPlaybackPipeline::GetDuration(double* pdDuration) {
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -120,19 +120,19 @@ uint32_t FfmpegAVPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegAVPlaybackPipeline::SetRate(float fRate) {
+uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
 	// TODO(fraudies): Implement this once ready
 	// At the moment we don't have a way of setting this
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetRate(float* pfRate) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetRate(float* pfRate) {
 	// TODO(fraudies): Implement this once ready
 	// At the moment we don't have a way of setting this
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::SetVolume(float fVolume) {
+uint32_t FfmpegSdlAvPlaybackPipeline::SetVolume(float fVolume) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -140,7 +140,7 @@ uint32_t FfmpegAVPlaybackPipeline::SetVolume(float fVolume) {
 	//pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetVolume(float* pfVolume) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetVolume(float* pfVolume) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -150,27 +150,27 @@ uint32_t FfmpegAVPlaybackPipeline::GetVolume(float* pfVolume) {
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegAVPlaybackPipeline::SetBalance(float fBalance) {
+uint32_t FfmpegSdlAvPlaybackPipeline::SetBalance(float fBalance) {
 	// TODO(fraudies): Not sure how to wire this
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetBalance(float* pfBalance) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetBalance(float* pfBalance) {
 	// TODO(fraudies): Not sure how to wire this
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::SetAudioSyncDelay(long lMillis) {
+uint32_t FfmpegSdlAvPlaybackPipeline::SetAudioSyncDelay(long lMillis) {
 	// TODO(fraudies): Implement this
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetAudioSyncDelay(long* plMillis) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioSyncDelay(long* plMillis) {
 	// TODO(fraudies): Implement this
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegAVPlaybackPipeline::HasAudioData(bool* bAudioData) const {
+uint32_t FfmpegSdlAvPlaybackPipeline::HasAudioData(bool* bAudioData) const {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -180,7 +180,7 @@ uint32_t FfmpegAVPlaybackPipeline::HasAudioData(bool* bAudioData) const {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::HasImageData(bool* bImageData) const {
+uint32_t FfmpegSdlAvPlaybackPipeline::HasImageData(bool* bImageData) const {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -190,7 +190,7 @@ uint32_t FfmpegAVPlaybackPipeline::HasImageData(bool* bImageData) const {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetImageWidth(int* width) const {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetImageWidth(int* width) const {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -200,7 +200,7 @@ uint32_t FfmpegAVPlaybackPipeline::GetImageWidth(int* width) const {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetImageHeight(int* iHeight) const {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int* iHeight) const {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -210,7 +210,7 @@ uint32_t FfmpegAVPlaybackPipeline::GetImageHeight(int* iHeight) const {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetAudioFormat(AudioFormat* pAudioFormat) const {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioFormat(AudioFormat* pAudioFormat) const {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -220,7 +220,7 @@ uint32_t FfmpegAVPlaybackPipeline::GetAudioFormat(AudioFormat* pAudioFormat) con
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -228,7 +228,7 @@ uint32_t FfmpegAVPlaybackPipeline::GetPixelFormat(PixelFormat* pPixelFormat) con
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -236,7 +236,7 @@ uint32_t FfmpegAVPlaybackPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegAVPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
@@ -244,7 +244,7 @@ uint32_t FfmpegAVPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
 	return ERROR_NONE;
 }
 
-void FfmpegAVPlaybackPipeline::UpdatePlayerState(PlayerState newState) {
+void FfmpegSdlAvPlaybackPipeline::UpdatePlayerState(PlayerState newState) {
 	// Don't need state lock anymore because we update it only from one thread (in the read_thread)
 	//stateLock.lock();
 	PlayerState newPlayerState = m_PlayerState;	// If we assign the same state again
@@ -317,7 +317,7 @@ void FfmpegAVPlaybackPipeline::UpdatePlayerState(PlayerState newState) {
 }
 
 
-void FfmpegAVPlaybackPipeline::SetPlayerState(PlayerState newPlayerState, bool bSilent) {
+void FfmpegSdlAvPlaybackPipeline::SetPlayerState(PlayerState newPlayerState, bool bSilent) {
 	//stateLock.lock();
 
 	// Determine if we need to send an event out

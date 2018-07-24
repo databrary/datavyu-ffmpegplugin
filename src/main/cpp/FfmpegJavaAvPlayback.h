@@ -3,8 +3,9 @@
 
 #include "FfmpegAvPlayback.h"
 
-class FfmepJavaAvPlayback : public FfmepJavaAvPlayback {
-	// Define the methods for the java hock-up here
+// TODO(Reda): Implement this interface (Most of it is implemented in the super-class)
+// Only the definition for the methods for the java hock-up go here
+class FfmpegJavaAvPlayback : public FfmpegAvPlayback {
 
 };
 

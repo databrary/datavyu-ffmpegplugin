@@ -12,13 +12,13 @@
 *
 * Note, currently this pipeline uses SDL to play audio/image
 */
-class FfmpegAVPlaybackPipeline : public CPipeline
+class FfmpegSdlAvPlaybackPipeline : public CPipeline
 {
 public:
 	virtual uint32_t    Init(const char * input_file);
 	virtual void        Dispose();
-	FfmpegAVPlaybackPipeline(CPipelineOptions* pOptions);
-	virtual ~FfmpegAVPlaybackPipeline();
+	FfmpegSdlAvPlaybackPipeline(CPipelineOptions* pOptions);
+	virtual ~FfmpegSdlAvPlaybackPipeline();
 
 private:
 	virtual uint32_t        Play();
@@ -57,7 +57,6 @@ private:
 	void SetPlayerState(PlayerState newState, bool bSilent);
 
 	FfmpegSdlAvPlayback* pSdlPlayback;
-	std::mutex stateLock;
 };
 
 #endif  //_FFMPEG_AV_PLAYBACK_PIPELINE_H_
