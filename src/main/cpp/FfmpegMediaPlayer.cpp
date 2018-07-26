@@ -621,8 +621,6 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 	memcpy(pDes, pSrc, len);
 
 	env->ReleasePrimitiveArrayCritical((jarray)ppImageBuffer, pSrc, 0);
-
-	return ERROR_NONE;
 }
 
 /*
