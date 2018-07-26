@@ -25,14 +25,14 @@ public:
 	void set_audioSyncDelay(long lMillis);
 	long get_audioSyncDelay();
 
-	bool has_image_data();
-	bool has_audio_data();
-
 	int get_image_width();
 	int get_image_height();
 
 	AudioFormat get_audio_format();
 	PixelFormat get_pixel_format();
+
+	uint8_t ** get_image_buffer();
+	uint8_t ** get_audio_buffer();
 };
 
 #endif // end of FFMPEGJAVAAVPLAYBACK_H_

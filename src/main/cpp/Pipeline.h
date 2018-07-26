@@ -29,6 +29,7 @@
 #include <stdint.h>
 #include "PipelineOptions.h"
 #include "AudioVideoFormats.h"
+#include "JavaPlayerEventDispatcher.h"
 
 class CMedia;
 class CJavaPlayerEventDispatcher;
@@ -95,6 +96,10 @@ public:
 
 	// TODO(fraudies): Clean this up... currently used to free memory
 	CPipelineOptions* GetCPipelineOptions();
+
+	void UpdatePlayerState(PlayerState newState);
+
+	void SetPlayerState(PlayerState newPlayerState, bool bSilent);
 
 protected:
 	CJavaPlayerEventDispatcher* m_pEventDispatcher;

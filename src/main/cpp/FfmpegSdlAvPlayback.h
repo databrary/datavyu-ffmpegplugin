@@ -21,10 +21,6 @@
 
 #define CURSOR_HIDE_DELAY 1000000
 
-/* NOTE: the size must be big enough to compensate the hardware audio buffersize size */
-/* TODO: We assume that a decoded and resampled frame fits into this buffer */
-#define SAMPLE_ARRAY_SIZE (8 * 65536)
-
 #define FF_QUIT_EVENT    (SDL_USEREVENT + 2)
 
 const char program_name[] = "Datavyu-ffmpeg-plugin";
@@ -32,11 +28,6 @@ const char program_name[] = "Datavyu-ffmpeg-plugin";
 static int default_width = 640;
 static int default_height = 480;
 static unsigned sws_flags = SWS_BICUBIC;
-
-static int16_t sample_array[SAMPLE_ARRAY_SIZE];
-static int sample_array_index;
-
-static int display_disable = 0;
 
 static const struct TextureFormatEntry {
 	enum AVPixelFormat format;
@@ -73,7 +64,7 @@ private:
 	SDL_Renderer* renderer;
 	SDL_AudioDeviceID audio_dev = 0;
 	SDL_RendererInfo renderer_info = { 0 };
-	int width, height, ytop, xleft;
+	int ytop, xleft;
 	double rdftspeed;
 	int xpos;
 
@@ -84,11 +75,7 @@ private:
 	SDL_Texture *sub_texture;
 	SDL_Texture *vid_texture;
 
-	int force_refresh;
-
 	int last_i_start;
-
-	int frame_drops_late;
 
 	double last_vis_time;
 	int is_full_screen;
@@ -100,9 +87,7 @@ private:
 	static void calculate_display_rect(SDL_Rect *rect,
 		int scr_xleft, int scr_ytop, int scr_width, int scr_height,
 		int pic_width, int pic_height, AVRational pic_sar);
-
-	double vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration);
-
+	
 	std::atomic<bool> stopped = false;
 	std::thread* display_tid = nullptr;
 
@@ -120,9 +105,7 @@ public:
 
 	int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
 		struct AudioParams *audio_hw_params);
-
-	void set_force_refresh(int refresh);
-
+	
 	static void set_default_window_size(int width, int height, AVRational sar);
 
 	void pauseAudioDevice();

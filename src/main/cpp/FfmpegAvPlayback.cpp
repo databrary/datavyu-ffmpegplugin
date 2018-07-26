@@ -1,5 +1,25 @@
 #include "FfmpegAvPlayback.h"
 
+inline int FfmpegAvPlayback::compute_mod(int a, int b) {
+	return a < 0 ? a % b + b : a % b;
+}
+
+void FfmpegAvPlayback::set_force_refresh(int refresh) {
+	force_refresh = refresh;
+}
+
+double FfmpegAvPlayback::vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration) {
+	if (vp->serial == nextvp->serial) {
+		double duration = nextvp->pts - vp->pts;
+		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
+			return vp->duration;
+		else
+			return duration;
+	}
+	else {
+		return 0.0;
+	}
+}
 
 void FfmpegAvPlayback::stream_toggle_pause() {
 	
@@ -28,8 +48,11 @@ void FfmpegAvPlayback::stream_toggle_pause() {
 }
 
 FfmpegAvPlayback::FfmpegAvPlayback(const char *filename, AVInputFormat *iformat) :
-	pVideoState(VideoState::stream_open(filename, iformat)) {
-}
+	pVideoState(VideoState::stream_open(filename, iformat)),
+	display_disable(0),
+	width(0),
+	height(0)
+{ }
 
 FfmpegAvPlayback::~FfmpegAvPlayback() {}
 

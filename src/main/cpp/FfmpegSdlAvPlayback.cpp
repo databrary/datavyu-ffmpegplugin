@@ -1,10 +1,6 @@
 #include "FfmpegSdlAvPlayback.h"
 
 /* Private Members */
-inline int FfmpegSdlAvPlayback::compute_mod(int a, int b) {
-	return a < 0 ? a % b + b : a % b;
-}
-
 inline void FfmpegSdlAvPlayback::fill_rectangle(int x, int y, int w, int h) {
 	SDL_Rect rect;
 	rect.x = x;
@@ -45,27 +41,12 @@ void FfmpegSdlAvPlayback::calculate_display_rect(SDL_Rect *rect,
 	rect->h = FFMAX(height, 1);
 }
 
-double FfmpegSdlAvPlayback::vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration) {
-	if (vp->serial == nextvp->serial) {
-		double duration = nextvp->pts - vp->pts;
-		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
-			return vp->duration;
-		else
-			return duration;
-	}
-	else {
-		return 0.0;
-	}
-}
-
 FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(
 	const char *filename,
 	AVInputFormat *iformat) : 
 	FfmpegAvPlayback(filename, iformat),
 	ytop(0),
 	xleft(0),
-	width(0),
-	height(0),
 	rdftspeed(0.02),
 	window(nullptr),
 	renderer(nullptr) {
@@ -187,10 +168,6 @@ int FfmpegSdlAvPlayback::video_open(const char* filename) {
 	height = h;
 
 	return 0;
-}
-
-void FfmpegSdlAvPlayback::set_force_refresh(int refresh) {
-	force_refresh = refresh;
 }
 
 void FfmpegSdlAvPlayback::set_default_window_size(int width, int height, AVRational sar) {
@@ -594,11 +571,16 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 
 	Frame *sp, *sp2;
 
-	if (!pVideoState->get_paused() && pVideoState->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK && pVideoState->get_realtime())
+	if (!pVideoState->get_paused() 
+			&& pVideoState->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK 
+			&& pVideoState->get_realtime())
 		pVideoState->check_external_clock_speed();
 
-	if (!display_disable && pVideoState->get_show_mode() != SHOW_MODE_VIDEO && pVideoState->get_audio_st()) {
+	if (!display_disable 
+			&& pVideoState->get_show_mode() != SHOW_MODE_VIDEO 
+			&& pVideoState->get_audio_st()) {
 		time = av_gettime_relative() / 1000000.0;
+
 		if (force_refresh || last_vis_time + rdftspeed < time) {
 			video_display();
 			last_vis_time = time;
