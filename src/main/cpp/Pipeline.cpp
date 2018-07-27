@@ -24,6 +24,7 @@
 */
 
 #include "Pipeline.h"
+#include "JavaPlayerEventDispatcher.h"
 #include "FfmpegMediaErrors.h"
 
 //*************************************************************************************************
@@ -237,6 +238,102 @@ uint32_t CPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
 	*ppAudioBuffer = nullptr;
 
 	return ERROR_NONE;
+}
+
+void CPipeline::UpdatePlayerState(PlayerState newState) {
+	PlayerState newPlayerState = m_PlayerState;	// If we assign the same state again
+	bool bSilent = false;
+
+	switch (m_PlayerState)
+	{
+	case Unknown:
+		if (Ready == newState)
+		{
+			newPlayerState = Ready;
+		}
+		break;
+
+	case Ready:
+		if (Playing == newState)
+		{
+			newPlayerState = Playing;
+		}
+		break;
+
+	case Playing:
+		if (Stalled == newState || Paused == newState || Stopped == newState || Finished == newState) {
+			newPlayerState = newState;
+		}
+		break;
+
+	case Paused:
+		if (Stopped == newState || Playing == newState)
+		{
+			newPlayerState = newState;
+		}
+		break;
+
+	case Stopped:
+		if (Playing == newState || Paused == newState)
+		{
+			newPlayerState = newState;
+		}
+		break;
+
+	case Stalled:
+	{
+		if (Stopped == newState || Paused == newState || Playing == newState) {
+			newPlayerState = newState;
+		}
+		break;
+	}
+
+	case Finished:
+		if (Playing == newState) {
+			// We can go from Finished to Playing only when seek happens (or repeat)
+			// This state change should be silent.
+			newPlayerState = Playing;
+			bSilent = true;
+		}
+		if (Stopped == newState) {
+			newPlayerState = Stopped;
+		}
+
+		break;
+
+	case Error:
+		break;
+	}
+
+	// The same thread can acquire the same lock several times
+	SetPlayerState(newPlayerState, bSilent);
+}
+
+
+void CPipeline::SetPlayerState(PlayerState newPlayerState, bool bSilent) {
+
+	// Determine if we need to send an event out
+	bool updateState = newPlayerState != m_PlayerState;
+	if (updateState)
+	{
+		if (NULL != m_pEventDispatcher && !bSilent)
+		{
+			m_PlayerState = newPlayerState;
+
+			if (!m_pEventDispatcher->SendPlayerStateEvent(newPlayerState, 0))
+			{
+				m_pEventDispatcher->SendPlayerMediaErrorEvent(ERROR_JNI_SEND_PLAYER_STATE_EVENT);
+			}
+		}
+		else
+		{
+			m_PlayerState = newPlayerState;
+		}
+	}
+
+	if (updateState && newPlayerState == Stalled) { // Try to play
+		Play();
+	}
 }
 
 CPipelineOptions* CPipeline::GetCPipelineOptions() {

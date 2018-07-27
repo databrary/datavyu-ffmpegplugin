@@ -13,9 +13,9 @@ uint32_t FfmpegPipelineFactory::CreatePlayerPipeline(CPipelineOptions *pOptions,
 	
 	*ppPipeline = NULL;
 	if (pOptions->GetStreamData())
-		*ppPipeline = new (nothrow) FfmpegSdlAvPlaybackPipeline(pOptions);
-	else
 		*ppPipeline = new (nothrow) FfmpegJavaAvPlaybackPipline(pOptions);
+	else
+		*ppPipeline = new (nothrow) FfmpegSdlAvPlaybackPipeline(pOptions);
 
 	if (NULL == ppPipeline)
 		return ERROR_PIPELINE_NULL;

@@ -25,9 +25,6 @@ public:
 	void set_audioSyncDelay(long lMillis);
 	long get_audioSyncDelay();
 
-	bool has_image_data();
-	bool has_audio_data();
-
 	int get_image_width();
 	int get_image_height();
 

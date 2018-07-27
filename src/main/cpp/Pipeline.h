@@ -30,6 +30,7 @@
 #include "PipelineOptions.h"
 #include "AudioVideoFormats.h"
 
+
 class CMedia;
 class CJavaPlayerEventDispatcher;
 
@@ -96,11 +97,16 @@ public:
 	// TODO(fraudies): Clean this up... currently used to free memory
 	CPipelineOptions* GetCPipelineOptions();
 
+
+
 protected:
 	CJavaPlayerEventDispatcher* m_pEventDispatcher;
 	CPipelineOptions*			m_pOptions;
     PlayerState					m_PlayerState;
 	PlayerState					m_PlayerPendingState; // This is necessary to get from stalled into the next correct state
+
+	void UpdatePlayerState(PlayerState newState);
+	void SetPlayerState(PlayerState newPlayerState, bool bSilent);
 };
 
 #endif  //_PIPELINE_H_

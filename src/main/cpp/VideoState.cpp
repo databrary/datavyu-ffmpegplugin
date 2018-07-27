@@ -1350,11 +1350,11 @@ void VideoState::seek_chapter(int incr) {
 }
 
 int VideoState::get_image_width() const {
-	return image_width;
+	return video_st ? image_width : 0;
 }
 
 int VideoState::get_image_height() const {
-	return image_height;
+	return video_st ? image_height : 0;
 }
 
 bool VideoState::has_audio_data() const {

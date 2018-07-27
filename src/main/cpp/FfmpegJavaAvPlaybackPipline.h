@@ -3,8 +3,7 @@
 
 #include "Pipeline.h"
 #include "FfmpegJavaAvPlayback.h"
-#include "FfmpegMediaErrors.h"; 
-#include "JavaPlayerEventDispatcher.h"
+#include "FfmpegMediaErrors.h";
 
 
 // TODO(Reda): Implement this interface
@@ -47,9 +46,6 @@ private:
 	virtual uint32_t		GetPixelFormat(PixelFormat* pPixelFormat) const;
 	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
 	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer);
-
-	void UpdatePlayerState(PlayerState newState);
-	void SetPlayerState(PlayerState newState, bool bSilent);
 
 	FfmpegJavaAvPlayback* pJavaPlayback;
 };

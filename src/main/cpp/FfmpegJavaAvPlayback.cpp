@@ -74,42 +74,20 @@ long FfmpegJavaAvPlayback::get_audioSyncDelay() {
 	return 0;
 }
 
-// Has image data to display by checking the video frameque
-// different than has_image_data of the VideoState
-bool FfmpegJavaAvPlayback::has_image_data() {
-	if (pVideoState->get_video_st()) {
-		if (pVideoState->get_pPictq()->nb_remaining() > 0) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
-// Has image data to display by checking the audio frameque
-// different than has_audio_data of the VideoState
-bool FfmpegJavaAvPlayback::has_audio_data() {
-	if (pVideoState->get_audio_st()) {
-		if (pVideoState->get_pSampq()->nb_remaining() > 0) {
-			return true;
-		}
-	}
-
-	return false;
-}
-
 int FfmpegJavaAvPlayback::get_image_width() {
-	return pVideoState->get_video_st() ? pVideoState->get_image_width() : 0;
+	return pVideoState->get_image_width();
 }
 
 int FfmpegJavaAvPlayback::get_image_height() {
-	return pVideoState->get_video_st() ? pVideoState->get_image_height() : 0;
+	return pVideoState->get_image_height();
 }
 
+//TODO(Reda): implement get audio format function
 AudioFormat FfmpegJavaAvPlayback::get_audio_format() {
 	return AudioFormat();
 }
 
+//TODO(Reda): implement get audio format function
 PixelFormat FfmpegJavaAvPlayback::get_pixel_format() {
 	return PixelFormat();
 }

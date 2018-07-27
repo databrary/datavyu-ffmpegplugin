@@ -53,9 +53,6 @@ private:
 	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
 	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer);
 
-	void UpdatePlayerState(PlayerState newState);
-	void SetPlayerState(PlayerState newState, bool bSilent);
-
 	FfmpegSdlAvPlayback* pSdlPlayback;
 };
 
