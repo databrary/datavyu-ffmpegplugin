@@ -28,6 +28,10 @@ public:
 	int get_image_width();
 	int get_image_height();
 
+	bool has_image_data() const;
+
+	uint8_t ** get_image_buffer();
+
 	AudioFormat get_audio_format();
 	PixelFormat get_pixel_format();
 };

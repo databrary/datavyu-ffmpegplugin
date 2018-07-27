@@ -178,11 +178,6 @@ uint32_t CPipeline::HasAudioData(bool* bAudioData) const {
 }
 
 uint32_t CPipeline::HasImageData(bool* bImageData) const {
-	if (NULL == bImageData)
-		return ERROR_FUNCTION_PARAM_NULL;
-
-	*bImageData = false;
-
 	return ERROR_NONE;
 }
 
@@ -223,11 +218,6 @@ uint32_t CPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
 }
 
 uint32_t CPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
-	if (NULL == ppImageBuffer)
-		return ERROR_FUNCTION_PARAM_NULL;
-
-	*ppImageBuffer = nullptr;
-
 	return ERROR_NONE;
 }
 

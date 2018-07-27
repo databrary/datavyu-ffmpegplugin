@@ -20,6 +20,7 @@ import java.util.Hashtable;
 public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaPlayerData {
     private float mutedVolume = 1.0f;  // last volume before mute
     private boolean muteEnabled = false;
+    private boolean streamData;
     private AudioPlayerThread audioPlayerThread = null;
     private ImagePlayerThread imagePlayerThread = null;
     private JFrame frame;
@@ -37,6 +38,12 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
      */
     public FfmpegMediaPlayer(URI source, JFrame frame) {
         super(source);
+        // SDL switch
+        if (frame == null)
+            this.streamData = false;
+        else
+            this.streamData = true;
+
         this.frame = frame;
     }
 
@@ -54,8 +61,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     public void init(AudioFormat audioFormat, ColorSpace colorSpace) {
         initNative(); // start the event queue, make sure to register all state/error listeners before
         long[] newNativeMediaRef = new long[1];
-        // TODO: Add a switch to use SDL or not
-        ffmpegInitPlayer(newNativeMediaRef, source.getPath(), audioFormat, colorSpace, false);
+        ffmpegInitPlayer(newNativeMediaRef, source.getPath(), audioFormat, colorSpace, streamData);
         nativeMediaRef = newNativeMediaRef[0];
 
         // If we have a frame to display we will use that one to playback alongside the javax.sound framework
@@ -64,7 +70,11 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             if (hasAudioData()) {
                 audioPlayerThread = new AudioPlayerThread(this);
                 try {
-                    audioPlayerThread.init(getAudioFormat());
+                    //TODO(Reda): remove this if statement when getAudioFormat() will be implemented
+                    if(audioFormat == null)
+                        audioPlayerThread.init(getAudioFormat());
+                    else
+                        audioPlayerThread.init(audioFormat);
                     audioPlayerThread.start();
                 } catch (LineUnavailableException lu) {
                     // TODO: Add correct media error
@@ -74,7 +84,11 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             // If we have image data consume it
             if (hasImageData()) {
                 imagePlayerThread = new ImagePlayerThread(this);
-                imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
+                //TODO(Reda): remove this if statement when getColorSpace() will be implemented
+                if (colorSpace == null)
+                    imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
+                else
+                    imagePlayerThread.init(colorSpace, getImageWidth(), getImageHeight(), frame);
                 imagePlayerThread.start();
             }
         }

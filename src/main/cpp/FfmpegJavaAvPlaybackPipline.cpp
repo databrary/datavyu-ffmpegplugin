@@ -207,8 +207,10 @@ uint32_t FfmpegJavaAvPlaybackPipline::HasImageData(bool* bImageData) const {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
+	if (NULL == bImageData)
+		return ERROR_FUNCTION_PARAM_NULL;
 
-	//*bImageData = pJavaPlayback->has_image_data();
+	*bImageData = pJavaPlayback->has_image_data();
 
 	return ERROR_NONE;
 }
@@ -254,7 +256,10 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetImageBuffer(uint8_t** ppImageBuffer) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	// TODO(fraudies): Implement the image buffer data
+	if (NULL == ppImageBuffer)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	ppImageBuffer = pJavaPlayback->get_image_buffer();
 	return ERROR_NONE;
 }
 
