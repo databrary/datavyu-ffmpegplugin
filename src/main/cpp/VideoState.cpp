@@ -115,8 +115,6 @@ int VideoState::stream_component_open(int stream_index) {
 
 		if ((ret = audio_open_callback(channel_layout, nb_channels, sample_rate, &this->audio_tgt) < 0))
 			goto fail;
-		//if ((ret = pPlayer->audio_open(channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
-		//	goto fail;
 		audio_hw_buf_size = ret;
 		audio_src = this->audio_tgt;
 		audio_buf_size = 0;
@@ -132,18 +130,14 @@ int VideoState::stream_component_open(int stream_index) {
 		audio_stream = stream_index;
 		audio_st = ic->streams[stream_index];
 		pAuddec = new Decoder(avctx, pAudioq, &continue_read_thread);
-		//pAuddec->init(avctx, pAudioq, &continue_read_thread);
-		//decoder_init(&this->auddec, avctx, pAudioq, this->continue_read_thread);
 		if ((ic->iformat->flags & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK)) && !ic->iformat->read_seek) {
 			pAuddec->set_start_pts(audio_st->start_time);
 			pAuddec->set_start_pts_tb(audio_st->time_base);
 		}
 		if ((ret = pAuddec->start(audio_thread_bridge, this)) < 0)
 			goto out;
-		//pPlayer->pauseAudioDevice();
 		if (pause_audio_device_callback)
 			pause_audio_device_callback();
-
 		break;
 	case AVMEDIA_TYPE_VIDEO:
 		this->video_stream = stream_index;
@@ -151,8 +145,6 @@ int VideoState::stream_component_open(int stream_index) {
 		this->image_width = avctx->width;
 		this->image_height = avctx->height;
 		pViddec = new Decoder(avctx, pVideoq, &continue_read_thread);
-		//pViddec->init(avctx, pVideoq, &continue_read_thread);
-		//decoder_init(&this->viddec, avctx, pVideoq, this->continue_read_thread);
 		if ((ret = pViddec->start(video_thread_bridge, this)) < 0)
 			goto out;
 		queue_attachments_req = 1;
@@ -161,8 +153,6 @@ int VideoState::stream_component_open(int stream_index) {
 		subtitle_stream = stream_index;
 		subtitle_st = ic->streams[stream_index];
 		pSubdec = new Decoder(avctx, pSubtitleq, &continue_read_thread);
-		//decoder_init(&this->subdec, avctx, this->pSubtitleq, this->continue_read_thread);
-		//pSubdec->init(avctx, pSubtitleq, &continue_read_thread);
 		if ((ret = pSubdec->start(subtitle_thread_bridge, this)) < 0)
 			goto out;
 		break;

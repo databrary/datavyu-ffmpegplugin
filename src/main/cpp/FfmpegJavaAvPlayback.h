@@ -29,8 +29,10 @@ public:
 	int get_image_height();
 
 	bool has_image_data() const;
+	bool has_audio_data() const;
 
 	uint8_t ** get_image_buffer();
+	void get_audio_buffer(uint8_t * stream, int len);
 
 	AudioFormat get_audio_format();
 	PixelFormat get_pixel_format();

@@ -233,7 +233,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer, const int len) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}

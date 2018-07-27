@@ -86,6 +86,10 @@ bool FfmpegJavaAvPlayback::has_image_data() const {
 	return pVideoState->has_image_data();
 }
 
+bool FfmpegJavaAvPlayback::has_audio_data() const {
+	return pVideoState->has_audio_data();
+}
+
 uint8_t ** FfmpegJavaAvPlayback::get_image_buffer() {
 	if (pVideoState->get_show_mode() != SHOW_MODE_NONE
 		&& (!pVideoState->get_paused() || force_refresh)) {
@@ -181,6 +185,10 @@ uint8_t ** FfmpegJavaAvPlayback::get_image_buffer() {
 		}
 		force_refresh = 0;
 	}
+}
+
+void FfmpegJavaAvPlayback::get_audio_buffer(uint8_t * stream, int len) {
+	pVideoState->sdl_audio_callback(stream, len);
 }
 
 //TODO(Reda): implement get audio format function

@@ -155,7 +155,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::SetBalance(float fBalance) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-
 	pJavaPlayback->set_balance(fBalance);
 
 	return ERROR_NONE;
@@ -166,17 +165,14 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetBalance(float* pfBalance) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-
 	*pfBalance = pJavaPlayback->get_balance();
 
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::SetAudioSyncDelay(long lMillis) {
-	// TODO(fraudies): Implement this
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
-
 
 	pJavaPlayback->set_audioSyncDelay(lMillis);
 
@@ -184,10 +180,8 @@ uint32_t FfmpegJavaAvPlaybackPipline::SetAudioSyncDelay(long lMillis) {
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::GetAudioSyncDelay(long* plMillis) {
-	// TODO(fraudies): Implement this
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
-
 
 	*plMillis = pJavaPlayback->get_audioSyncDelay();
 
@@ -198,7 +192,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::HasAudioData(bool* bAudioData) const {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	//*bAudioData = pJavaPlayback->has_audio_data();
+	*bAudioData = pJavaPlayback->has_audio_data();
 
 	return ERROR_NONE;
 }
@@ -206,9 +200,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::HasAudioData(bool* bAudioData) const {
 uint32_t FfmpegJavaAvPlaybackPipline::HasImageData(bool* bImageData) const {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
-
-	if (NULL == bImageData)
-		return ERROR_FUNCTION_PARAM_NULL;
 
 	*bImageData = pJavaPlayback->has_image_data();
 
@@ -218,7 +209,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::HasImageData(bool* bImageData) const {
 uint32_t FfmpegJavaAvPlaybackPipline::GetImageWidth(int* width) const {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
-
 
 	*width = pJavaPlayback->get_image_width();
 
@@ -256,18 +246,17 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetImageBuffer(uint8_t** ppImageBuffer) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	if (NULL == ppImageBuffer)
-		return ERROR_FUNCTION_PARAM_NULL;
-
 	ppImageBuffer = pJavaPlayback->get_image_buffer();
+
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
+uint32_t FfmpegJavaAvPlaybackPipline::GetAudioBuffer(uint8_t** ppAudioBuffer, const int len) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	// TODO(fraudies): Implement the audio buffer data
+	pJavaPlayback->get_audio_buffer(*ppAudioBuffer, len);
+
 	return ERROR_NONE;
 }
 

@@ -153,13 +153,11 @@ uint32_t CPipeline::GetBalance(float* pfBalance)
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::SetAudioSyncDelay(long lMillis)
-{
+uint32_t CPipeline::SetAudioSyncDelay(long lMillis) {
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::GetAudioSyncDelay(long* plMillis)
-{
+uint32_t CPipeline::GetAudioSyncDelay(long* plMillis) {
 	if (NULL == plMillis)
 		return ERROR_FUNCTION_PARAM_NULL;
 
@@ -178,6 +176,11 @@ uint32_t CPipeline::HasAudioData(bool* bAudioData) const {
 }
 
 uint32_t CPipeline::HasImageData(bool* bImageData) const {
+	if (NULL == bImageData)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*bImageData = false;
+
 	return ERROR_NONE;
 }
 
@@ -218,10 +221,15 @@ uint32_t CPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
 }
 
 uint32_t CPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
+	if (NULL == ppImageBuffer)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*ppImageBuffer = nullptr;
+
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
+uint32_t CPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer, const int len) {
 	if (NULL == ppAudioBuffer)
 		return ERROR_FUNCTION_PARAM_NULL;
 
