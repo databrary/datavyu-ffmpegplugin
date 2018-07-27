@@ -34,6 +34,9 @@ public:
 
 	AudioFormat get_audio_format();
 	PixelFormat get_pixel_format();
+
+	uint8_t ** get_image_buffer();
+	uint8_t ** get_audio_buffer();
 };
 
 #endif // end of FFMPEGJAVAAVPLAYBACK_H_

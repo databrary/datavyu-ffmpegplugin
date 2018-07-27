@@ -1,10 +1,6 @@
 #include "FfmpegSdlAvPlayback.h"
 
 /* Private Members */
-inline int FfmpegSdlAvPlayback::compute_mod(int a, int b) {
-	return a < 0 ? a % b + b : a % b;
-}
-
 inline void FfmpegSdlAvPlayback::fill_rectangle(int x, int y, int w, int h) {
 	SDL_Rect rect;
 	rect.x = x;
@@ -575,11 +571,16 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 
 	Frame *sp, *sp2;
 
-	if (!pVideoState->get_paused() && pVideoState->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK && pVideoState->get_realtime())
+	if (!pVideoState->get_paused() 
+			&& pVideoState->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK 
+			&& pVideoState->get_realtime())
 		pVideoState->check_external_clock_speed();
 
-	if (!display_disable && pVideoState->get_show_mode() != SHOW_MODE_VIDEO && pVideoState->get_audio_st()) {
+	if (!display_disable 
+			&& pVideoState->get_show_mode() != SHOW_MODE_VIDEO 
+			&& pVideoState->get_audio_st()) {
 		time = av_gettime_relative() / 1000000.0;
+
 		if (force_refresh || last_vis_time + rdftspeed < time) {
 			video_display();
 			last_vis_time = time;

@@ -1,8 +1,28 @@
 #include "FfmpegAvPlayback.h"
 
+inline int FfmpegAvPlayback::compute_mod(int a, int b) {
+	return a < 0 ? a % b + b : a % b;
+}
+
+void FfmpegAvPlayback::set_force_refresh(int refresh) {
+	force_refresh = refresh;
+}
+
+double FfmpegAvPlayback::vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration) {
+	if (vp->serial == nextvp->serial) {
+		double duration = nextvp->pts - vp->pts;
+		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
+			return vp->duration;
+		else
+			return duration;
+	}
+	else {
+		return 0.0;
+	}
+}
 
 void FfmpegAvPlayback::stream_toggle_pause() {
-	
+
 	// Get all the clocks
 	Clock* pExtclk = pVideoState->get_pExtclk();
 	Clock* pVidclk = pVideoState->get_pVidclk();
@@ -31,7 +51,7 @@ FfmpegAvPlayback::FfmpegAvPlayback(const char *filename, AVInputFormat *iformat)
 	pVideoState(VideoState::stream_open(filename, iformat)),
 	display_disable(0),
 	width(0),
-	height(0) 
+	height(0)
 { }
 
 FfmpegAvPlayback::~FfmpegAvPlayback() {}
@@ -53,8 +73,8 @@ void FfmpegAvPlayback::stop() {
 		pVideoState->set_stopped(true);
 	}
 	// Stop playback and seek to the start of the stream
-	// TODO(Reda): Remove seeking to start_time when stopping the stream 
-	// Datavyu behavior Stop -> set speed to 0x, Pause-> keep current speed of the playback 
+	// TODO(Reda): Remove seeking to start_time when stopping the stream
+	// Datavyu behavior Stop -> set speed to 0x, Pause-> keep current speed of the playback
 	double pos = get_master_clock();
 	double start = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
 	double incr = start - pos;

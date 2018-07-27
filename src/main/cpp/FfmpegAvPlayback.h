@@ -3,6 +3,13 @@
 
 #include "VideoState.h"
 
+/* NOTE: the size must be big enough to compensate the hardware audio buffersize size */
+/* TODO: We assume that a decoded and resampled frame fits into this buffer */
+#define SAMPLE_ARRAY_SIZE (8 * 65536)
+
+static int16_t sample_array[SAMPLE_ARRAY_SIZE];
+static int sample_array_index;
+
 class FfmpegAvPlayback {
 protected:
 	VideoState * pVideoState;
@@ -12,7 +19,7 @@ protected:
 
 	int force_refresh;
 	int display_disable;
-	
+
 	int frame_drops_late;
 
 	void stream_toggle_pause();

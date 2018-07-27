@@ -78,14 +78,16 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegD
 (JNIEnv *env, jobject object, jlong ref_media) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
-	// TODO(fraudies): When/where do we delete the event dispatcher?	
+	// TODO(fraudies): When/where do we delete the event dispatcher?
 	pPipeline->Dispose();
 
 	delete pPipeline->GetCPipelineOptions();
@@ -104,12 +106,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 (JNIEnv *env, jobject obj, jlong ref_media, jlongArray jrglAudioSyncDelay) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	long lAudioSyncDelay;
 	uint32_t uErrCode = pPipeline->GetAudioSyncDelay(&lAudioSyncDelay);
@@ -130,12 +134,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 (JNIEnv *env, jobject obj, jlong ref_media, jlong audio_sync_delay) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	jint iRet = (jint)pPipeline->SetAudioSyncDelay((long)audio_sync_delay);
 
@@ -146,19 +152,21 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 * ffmpegPlay()
 *
 * Makes an asynchronous call to play the media.
-* 
+*
 * The state is updated by the pipeline.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegPlay
 (JNIEnv *env, jobject obj, jlong ref_media) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	jint iRet = (jint)pPipeline->Play();
 
@@ -174,12 +182,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegP
 (JNIEnv *env, jobject obj, jlong ref_media) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	jint iRet = (jint)pPipeline->Pause();
 
@@ -195,12 +205,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 (JNIEnv *env, jobject obj, jlong ref_media) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	jint iRet = (jint)pPipeline->Stop();
 
@@ -216,12 +228,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegF
 (JNIEnv *env, jobject obj, jlong ref_media) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	jint iRet = (jint)pPipeline->Finish();
 
@@ -237,12 +251,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 (JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfRate) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	float fRate;
 	uint32_t uRetCode = pPipeline->GetRate(&fRate);
@@ -263,12 +279,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 (JNIEnv *env, jobject obj, jlong ref_media, jfloat rate) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	jint iRet = (jint)pPipeline->SetRate(rate);
 
@@ -284,12 +302,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 (JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jrgdPresentationTime) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	double dPresentationTime;
 	uint32_t uRetCode = pPipeline->GetStreamTime(&dPresentationTime);
@@ -310,12 +330,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 (JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfVolume) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	float fVolume;
 	uint32_t uRetCode = pPipeline->GetVolume(&fVolume);
@@ -336,12 +358,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 (JNIEnv *env, jobject obj, jlong ref_media, jfloat volume) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	jint iRet = (jint)pPipeline->SetVolume((float)volume);
 
@@ -357,12 +381,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 (JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfBalance) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	float fBalance;
 	uint32_t uErrCode = pPipeline->GetBalance(&fBalance);
@@ -383,12 +409,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 (JNIEnv *env, jobject obj, jlong ref_media, jfloat balance) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	jint iRet = (jint)pPipeline->SetBalance((float)balance);
 
@@ -404,12 +432,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 (JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jrgdDuration) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	double dDuration;
 	uint32_t uErrCode = pPipeline->GetDuration(&dDuration);
@@ -430,12 +460,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 (JNIEnv *env, jobject obj, jlong ref_media, jdouble stream_time) {
 
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	jint iRet = (jint)pPipeline->Seek(stream_time);
 
@@ -450,12 +482,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegHasAudioData
 (JNIEnv *env, jobject obj, jlong ref_media, jbooleanArray jrbAudioData) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	bool bAudioData;
 	uint32_t uErrCode = pPipeline->HasAudioData(&bAudioData);
@@ -473,12 +507,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegH
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegHasImageData
 (JNIEnv *env, jobject obj, jlong ref_media, jbooleanArray jrbImageData) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	bool bImageData;
 	uint32_t uErrCode = pPipeline->HasImageData(&bImageData);
@@ -496,12 +532,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegH
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetImageWidth
 (JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	int iImageWidth;
 	uint32_t uErrCode = pPipeline->GetImageWidth(&iImageWidth);
@@ -519,12 +557,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetImageHeight
 (JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageHeight) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	int iImageHeight;
 	uint32_t uErrCode = pPipeline->GetImageHeight(&iImageHeight);
@@ -542,12 +582,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioFormat
 (JNIEnv *env, jobject obj, jlong ref_media, jobject jAudioFormat) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	AudioFormat* pAudioParams = nullptr;
 	uint32_t uErrCode = pPipeline->GetAudioFormat(pAudioParams);
@@ -569,12 +611,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetColorSpace
 (JNIEnv *env, jobject obj, jlong ref_media, jobject jColorSpace) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
+	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
+	}
 
 	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-	if (NULL == pPipeline)
+	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
+	}
 
 	PixelFormat* pPixelFormat = nullptr;
 	uint32_t uErrCode = pPipeline->GetPixelFormat(pPixelFormat);
@@ -629,7 +673,38 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 * Signature: (J[B)I
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioBuffer
-(JNIEnv *, jobject, jlong, jbyteArray);
+(JNIEnv *env, jobject obj, jlong ref_media, jbyteArray refToData) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia) {
+		return ERROR_MEDIA_NULL;
+	}
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline) {
+		return ERROR_PIPELINE_NULL;
+	}
+
+	uint8_t** ppAudioBuffer = nullptr;
+	uint32_t uErrCode = pPipeline->GetImageBuffer(ppAudioBuffer);
+	if (ERROR_NONE != uErrCode) {
+		return ERROR_BASE_JNI;
+	}
+
+	if (NULL == ppAudioBuffer)
+		return ERROR_BASE_JNI;
+
+	jint len = env->GetArrayLength(refToData);
+
+	jbyteArray *pSrc = (jbyteArray *)env->GetPrimitiveArrayCritical((jarray)ppAudioBuffer, 0);
+	jbyteArray *pDes = (jbyteArray *)env->GetDirectBufferAddress(refToData);
+
+	/* We need to check in case the VM tried to make a copy. */
+	if (pSrc == NULL || pDes == NULL) {
+		return ERROR_MEMORY_ALLOCATION;
+	}
+	memcpy(pDes, pSrc, len);
+	env->ReleasePrimitiveArrayCritical((jarray)ppAudioBuffer, pSrc, 0);
+}
 
 
 

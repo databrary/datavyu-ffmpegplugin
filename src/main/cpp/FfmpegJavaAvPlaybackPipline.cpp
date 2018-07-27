@@ -6,7 +6,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
 	AVInputFormat *file_iformat = nullptr;
 	pJavaPlayback = new FfmpegJavaAvPlayback(input_file, file_iformat);
 
-	// Assign the callback functions	
+	// Assign the callback functions
 	pJavaPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {
 		this->UpdatePlayerState(Unknown);
 	});
@@ -40,8 +40,8 @@ void FfmpegJavaAvPlaybackPipline::Dispose() {
 	pJavaPlayback = nullptr;
 }
 
-FfmpegJavaAvPlaybackPipline::FfmpegJavaAvPlaybackPipline(CPipelineOptions * pOptions) 
-	: CPipeline(pOptions), pJavaPlayback(nullptr) 
+FfmpegJavaAvPlaybackPipline::FfmpegJavaAvPlaybackPipline(CPipelineOptions * pOptions)
+	: CPipeline(pOptions), pJavaPlayback(nullptr)
 { }
 
 FfmpegJavaAvPlaybackPipline::~FfmpegJavaAvPlaybackPipline() {
@@ -109,9 +109,8 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetDuration(double* pdDuration) {
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double* pdStreamTime) {
-	if (pJavaPlayback == nullptr) {
+	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
-	}
 
 	*pdStreamTime = pJavaPlayback->get_master_clock();
 
@@ -173,7 +172,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetBalance(float* pfBalance) {
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::SetAudioSyncDelay(long lMillis) {
-	// TODO(fraudies): Implement this
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
@@ -184,7 +182,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::SetAudioSyncDelay(long lMillis) {
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::GetAudioSyncDelay(long* plMillis) {
-	// TODO(fraudies): Implement this
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
@@ -218,7 +215,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::HasImageData(bool* bImageData) const {
 uint32_t FfmpegJavaAvPlaybackPipline::GetImageWidth(int* width) const {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
-
 
 	*width = pJavaPlayback->get_image_width();
 
@@ -270,6 +266,3 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
 	// TODO(fraudies): Implement the audio buffer data
 	return ERROR_NONE;
 }
-
-
-

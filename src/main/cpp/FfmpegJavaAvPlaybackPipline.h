@@ -51,4 +51,3 @@ private:
 };
 
 #endif // !FFMPEGJAVAAVPLAYBACKPIPELINE_H_
-
