@@ -43,18 +43,16 @@ public interface MediaPlayerData {
     /**
      * Update the byte buffer with the most recent audio data to play
      *
-     * @param data The data that is updated on the native side
      * @return The audio data
      */
-    void updateAudioData(byte[] data);
+    ByteBuffer getAudioData();
 
     /**
      * Update the byte buffer with the most recent image data to play
      *
-     * @param data The data that is updated on the native side
      * @return The image data
      */
-    void updateImageData(byte[] data);
+    ByteBuffer getImageData();
 
     /**
      * Get the width of the image in pixels

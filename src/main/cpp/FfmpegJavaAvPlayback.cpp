@@ -170,19 +170,22 @@ bool FfmpegJavaAvPlayback::do_display() {
 	return display;
 }
 
-void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long len) {
+void FfmpegJavaAvPlayback::get_image_buffer(uint8_t** ppImageData, long* pLen) {
 	bool doUpdate = do_display();
 	if (doUpdate) {
 		Frame *vp = pVideoState->get_pPictq()->peek_last();
-		long srcLen = vp->frame->width * vp->frame->height * 3 * sizeof(uint8_t);
-		if (srcLen == len) {
-			memcpy(pImageData, vp->frame->data[0], vp->frame->width * vp->frame->height);
-		}
+		*pLen = vp->frame->width * vp->frame->height * 3 * sizeof(uint8_t);
+		*ppImageData = vp->frame->data[0];
+	}
+	else {
+		*pLen = 0;
+		*ppImageData = nullptr;
 	}
 }
 
-void FfmpegJavaAvPlayback::update_audio_buffer(uint8_t* pAudioData, const long len) {
-	pVideoState->sdl_audio_callback(pAudioData, len);
+void FfmpegJavaAvPlayback::get_audio_buffer(uint8_t** ppAudioData, long* pLen) {
+	*pLen = 4 * 1024; // TODO(fraudies): Change me to the defined size
+	pVideoState->sdl_audio_callback(*ppAudioData, *pLen);
 }
 
 //TODO(Reda): implement get audio format function

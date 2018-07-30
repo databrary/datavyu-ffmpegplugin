@@ -242,20 +242,20 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetPixelFormat(PixelFormat* pPixelFormat) 
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::UpdateImageBuffer(uint8_t* pImageData, const long len) {
+uint32_t FfmpegJavaAvPlaybackPipline::GetImageBuffer(uint8_t** ppImageData, long* pLen) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	pJavaPlayback->update_image_buffer(pImageData, len);
+	pJavaPlayback->get_image_buffer(ppImageData, pLen);
 
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::UpdateAudioBuffer(uint8_t* pAudioData, const long len) {
+uint32_t FfmpegJavaAvPlaybackPipline::GetAudioBuffer(uint8_t** ppAudioData, long* pLen) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	pJavaPlayback->update_audio_buffer(pAudioData, len);
+	pJavaPlayback->get_audio_buffer(ppAudioData, pLen);
 
 	return ERROR_NONE;
 }

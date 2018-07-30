@@ -28,7 +28,8 @@ public class AudioPlayerThread extends Thread {
     @Override
     public void run() {
         while (!stopped) {
-            mediaPlayerData.updateAudioData(data);
+            ByteBuffer buffer = mediaPlayerData.getAudioData();
+            buffer.get(data, 0, data.length); // TODO(fraudies): See if we can remove this copy here
             // Write blocks when data can't be consumed fast enough
             soundLine.write(data, 0, data.length);
         }

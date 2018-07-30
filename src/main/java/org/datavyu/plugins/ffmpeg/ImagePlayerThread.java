@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.*;
+import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
 // Currently this uses swing components to display the buffered image
@@ -78,7 +78,8 @@ public class ImagePlayerThread extends Thread {
         while (!stopped) {
             long start = System.currentTimeMillis();
             // Get the data from the native side that matches width & height
-            mediaPlayerData.updateImageData(data);
+            ByteBuffer imageData = mediaPlayerData.getImageData();
+            imageData.get(data, 0, imageData.capacity()); // TODO(fraudies): Check if we can get rid of this copy
             // Create data buffer
             DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
             // Create writable raster

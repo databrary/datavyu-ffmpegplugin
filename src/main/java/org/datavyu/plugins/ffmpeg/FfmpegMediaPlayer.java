@@ -382,19 +382,23 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     }
 
     @Override
-    public void updateAudioData(byte[] data) {
-        int rc = ffmpegUpdateAudioData(getNativeMediaRef(), data);
+    public ByteBuffer getAudioData() {
+        ByteBuffer[] buffers = new ByteBuffer[1];
+        int rc = ffmpegGetAudioBuffer(getNativeMediaRef(), buffers);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+        return buffers[0];
     }
 
     @Override
-    public void updateImageData(byte[] data) {
-        int rc = ffmpegUpdateImageData(getNativeMediaRef(), data);
+    public ByteBuffer getImageData() {
+        ByteBuffer[] buffers = new ByteBuffer[1];
+        int rc = ffmpegGetImageBuffer(getNativeMediaRef(), buffers);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+        return buffers[0];
     }
 
     // Native methods
@@ -428,6 +432,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private native int ffmpegGetImageHeight(long refNativeMedia, int [] height);
     private native int ffmpegGetAudioFormat(long refNativeMedia, AudioFormat refToAudioFormat);
     private native int ffmpegGetColorSpace(long refNativeMedia, ColorSpace refToColorSpace);
-    private native int ffmpegUpdateImageData(long refNativeMedia, byte[] data);
-    private native int ffmpegUpdateAudioData(long refNativeMedia, byte[] data);
+    private native int ffmpegGetImageBuffer(long refNativeMedia, ByteBuffer[] data);
+    private native int ffmpegGetAudioBuffer(long refNativeMedia, ByteBuffer[] data);
 }
