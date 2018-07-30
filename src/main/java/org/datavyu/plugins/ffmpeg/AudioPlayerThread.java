@@ -8,7 +8,7 @@ public class AudioPlayerThread extends Thread {
     private SourceDataLine soundLine = null;
     //private FloatControl gainControl = null; // TODO: Check if we need to hock this up
     private volatile boolean stopped = false;
-    private ByteBuffer audioData;
+    private byte[] data;
 
     AudioPlayerThread(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
@@ -22,16 +22,15 @@ public class AudioPlayerThread extends Thread {
         soundLine = (SourceDataLine) AudioSystem.getLine(info);
         soundLine.open(audioFormat);
         //gainControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
-        audioData = ByteBuffer.allocate(bufferSize);
+        data = new byte[bufferSize];
     }
 
     @Override
     public void run() {
         while (!stopped) {
-            byte[] data = null; // data will be assigned through native call
-            mediaPlayerData.updateAudioBuffer(audioData);
+            mediaPlayerData.updateAudioData(data);
             // Write blocks when data can't be consumed fast enough
-            soundLine.write(audioData.array(), 0, audioData.capacity());
+            soundLine.write(data, 0, data.length);
         }
     }
 

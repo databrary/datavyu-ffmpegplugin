@@ -176,7 +176,7 @@ void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long l
 		Frame *vp = pVideoState->get_pPictq()->peek_last();
 		long srcLen = vp->frame->width * vp->frame->height * 3 * sizeof(uint8_t);
 		if (srcLen == len) {
-			memcpy(pImageData, vp->frame->data[0], len);
+			memcpy(pImageData, vp->frame->data[0], vp->frame->width * vp->frame->height);
 		}
 	}
 }

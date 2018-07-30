@@ -590,11 +590,11 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 
 /*
 * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
-* Method:    ffmpegUpdateImageBuffer
-* Signature: (JLjava/nio/ByteBuffer;)I
+* Method:    ffmpegUpdateImageData
+* Signature: (J[B)I
 */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateImageBuffer
-(JNIEnv *env, jobject obj, jlong ref_media, jobject imageBuffer) {
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateImageData
+(JNIEnv *env, jobject obj, jlong ref_media, jbyteArray data) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
@@ -604,24 +604,20 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegU
 		return ERROR_PIPELINE_NULL;
 	}
 
-	jlong len = env->GetDirectBufferCapacity(imageBuffer);
-
-	uint32_t uErrCode = pPipeline->UpdateImageBuffer(
-		static_cast<uint8_t*>(env->GetDirectBufferAddress(imageBuffer)), 
-		env->GetDirectBufferCapacity(imageBuffer));
-
-	if (ERROR_NONE != uErrCode) {
-		return ERROR_BASE_JNI;
-	}
+	jbyte* pData = env->GetByteArrayElements(data, 0);
+	jlong len = env->GetArrayLength(data);
+	uint32_t uErrCode = pPipeline->UpdateImageBuffer((uint8_t*)pData, len);
+	env->ReleaseByteArrayElements(data, pData, JNI_COMMIT);
+	return uErrCode;
 }
 
 /*
 * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
-* Method:    ffmpegUpdateAudioBuffer
-* Signature: (JLjava/nio/ByteBuffer;)I
+* Method:    ffmpegUpdateAudioData
+* Signature: (J[B)I
 */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateAudioBuffer
-(JNIEnv *env, jobject obj, jlong ref_media, jobject audioBuffer) {
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateAudioData
+(JNIEnv *env, jobject obj, jlong ref_media, jbyteArray data) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
@@ -631,9 +627,11 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegU
 		return ERROR_PIPELINE_NULL;
 	}
 	// TODO(fraudies): Check if we need to make an extra copy (it may be that the audio data is still read while this is writing)
-	pPipeline->UpdateAudioBuffer(
-		static_cast<uint8_t*>(env->GetDirectBufferAddress(audioBuffer)), 
-		env->GetDirectBufferCapacity(audioBuffer));
+	jbyte* pData = env->GetByteArrayElements(data, 0);
+	jlong len = env->GetArrayLength(data);
+	uint32_t uErrCode = pPipeline->UpdateAudioBuffer((uint8_t*)pData, len);
+	env->ReleaseByteArrayElements(data, pData, 0);
+	return uErrCode;
 }
 
 #ifdef __cplusplus

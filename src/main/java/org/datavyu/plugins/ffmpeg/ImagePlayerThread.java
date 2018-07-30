@@ -16,7 +16,6 @@ public class ImagePlayerThread extends Thread {
     private ComponentColorModel cm;
     private Hashtable<String, String> properties = new Hashtable<>();
     private BufferedImage image;
-    private ByteBuffer imageData;
     private byte[] data;
     private JFrame frame;
     private boolean doPaint = false;
@@ -54,7 +53,6 @@ public class ImagePlayerThread extends Thread {
         this.width = width;
         this.height = height;
         // Allocate byte buffer
-        this.imageData = ByteBuffer.allocateDirect(this.width*this.height*NUM_COLOR_CHANNELS);
         this.data = new byte[this.width*this.height*NUM_COLOR_CHANNELS];
 
         cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
@@ -80,8 +78,7 @@ public class ImagePlayerThread extends Thread {
         while (!stopped) {
             long start = System.currentTimeMillis();
             // Get the data from the native side that matches width & height
-            mediaPlayerData.updateImageBuffer(imageData);
-            imageData.get(data, 0, data.length); // TODO(fraudies): See if we can remove this copy
+            mediaPlayerData.updateImageData(data);
             // Create data buffer
             DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
             // Create writable raster

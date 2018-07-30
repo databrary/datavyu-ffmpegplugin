@@ -211,19 +211,19 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
- * Method:    ffmpegUpdateImageBuffer
- * Signature: (JLjava/nio/ByteBuffer;)I
+ * Method:    ffmpegUpdateImageData
+ * Signature: (J[B)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateImageBuffer
-  (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateImageData
+  (JNIEnv *, jobject, jlong, jbyteArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
- * Method:    ffmpegUpdateAudioBuffer
- * Signature: (JLjava/nio/ByteBuffer;)I
+ * Method:    ffmpegUpdateAudioData
+ * Signature: (J[B)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateAudioBuffer
-  (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateAudioData
+  (JNIEnv *, jobject, jlong, jbyteArray);
 
 #ifdef __cplusplus
 }
