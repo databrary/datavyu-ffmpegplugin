@@ -44,8 +44,8 @@ private:
 	virtual uint32_t		GetImageHeight(int* iHeight) const;
 	virtual uint32_t		GetAudioFormat(AudioFormat* pAudioParams) const;
 	virtual uint32_t		GetPixelFormat(PixelFormat* pPixelFormat) const;
-	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
-	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer, const int len);
+	virtual uint32_t		UpdateImageBuffer(uint8_t* pImageData, const long len);
+	virtual uint32_t		UpdateAudioBuffer(uint8_t* pAudioData, const long len);
 
 	FfmpegJavaAvPlayback* pJavaPlayback;
 };

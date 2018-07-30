@@ -590,11 +590,11 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 
 /*
 * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
-* Method:    ffmpegGetImageBuffer
-* Signature: (J[B)I
+* Method:    ffmpegUpdateImageBuffer
+* Signature: (JLjava/nio/ByteBuffer;)I
 */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetImageBuffer
-(JNIEnv *env, jobject obj, jlong ref_media, jbyteArray refToData) {
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateImageBuffer
+(JNIEnv *env, jobject obj, jlong ref_media, jobject imageBuffer) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
@@ -603,33 +603,25 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
 	}
-	uint8_t** ppImageBuffer = nullptr;
-	uint32_t uErrCode = pPipeline->GetImageBuffer(ppImageBuffer);
+
+	jlong len = env->GetDirectBufferCapacity(imageBuffer);
+
+	uint32_t uErrCode = pPipeline->UpdateImageBuffer(
+		static_cast<uint8_t*>(env->GetDirectBufferAddress(imageBuffer)), 
+		env->GetDirectBufferCapacity(imageBuffer));
+
 	if (ERROR_NONE != uErrCode) {
 		return ERROR_BASE_JNI;
 	}
-	if (NULL == ppImageBuffer)
-		return ERROR_BASE_JNI;
-	jint len = env->GetArrayLength(refToData);
-
-	jbyteArray *pSrc = (jbyteArray *)env->GetPrimitiveArrayCritical((jarray)ppImageBuffer, 0);
-	jbyteArray *pDes = (jbyteArray *)env->GetDirectBufferAddress(refToData);
-	/* We need to check in case the VM tried to make a copy. */
-	if (pSrc == NULL || pDes == NULL) {
-		return ERROR_MEMORY_ALLOCATION;
-	}
-	memcpy(pDes, pSrc, len);
-
-	env->ReleasePrimitiveArrayCritical((jarray)ppImageBuffer, pSrc, 0);
 }
 
 /*
 * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
-* Method:    ffmpegGetAudioBuffer
-* Signature: (J[B)I
+* Method:    ffmpegUpdateAudioBuffer
+* Signature: (JLjava/nio/ByteBuffer;)I
 */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioBuffer
-(JNIEnv *env, jobject obj, jlong ref_media, jbyteArray refToData) {
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateAudioBuffer
+(JNIEnv *env, jobject obj, jlong ref_media, jobject audioBuffer) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia) {
 		return ERROR_MEDIA_NULL;
@@ -638,28 +630,11 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 	if (NULL == pPipeline) {
 		return ERROR_PIPELINE_NULL;
 	}
-	uint8_t** ppAudioBuffer = nullptr;
-	jint len = env->GetArrayLength(refToData);
-	uint32_t uErrCode = pPipeline->GetAudioBuffer(ppAudioBuffer, len);
-	if (ERROR_NONE != uErrCode) {
-		return ERROR_BASE_JNI;
-	}
-	if (NULL == ppAudioBuffer)
-		return ERROR_BASE_JNI;
-	
-
-	jbyteArray *pSrc = (jbyteArray *)env->GetPrimitiveArrayCritical((jarray)ppAudioBuffer, 0);
-	jbyteArray *pDes = (jbyteArray *)env->GetDirectBufferAddress(refToData);
-	/* We need to check in case the VM tried to make a copy. */
-	if (pSrc == NULL || pDes == NULL) {
-		return ERROR_MEMORY_ALLOCATION;
-	}
-	memcpy(pDes, pSrc, len);
-
-	env->ReleasePrimitiveArrayCritical((jarray)ppAudioBuffer, pSrc, 0);
+	// TODO(fraudies): Check if we need to make an extra copy (it may be that the audio data is still read while this is writing)
+	pPipeline->UpdateAudioBuffer(
+		static_cast<uint8_t*>(env->GetDirectBufferAddress(audioBuffer)), 
+		env->GetDirectBufferCapacity(audioBuffer));
 }
-
-
 
 #ifdef __cplusplus
 }

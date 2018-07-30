@@ -4,8 +4,6 @@
 #include "VideoState.h"
 #include "FfmpegAVPlayback.h"
 
-// TODO(Reda): Implement this interface (Most of it is implemented in the super-class)
-// Only the definition for the methods for the java hock-up go here
 class FfmpegJavaAvPlayback : public FfmpegAvPlayback {
 private:
 	void init();
@@ -17,7 +15,7 @@ public:
 
 	void destroy();
 
-	void init_and_start_display_loop();
+	void init_and_start_stream();
 
 	void set_balance(float fBalance);
 	float get_balance();
@@ -31,8 +29,10 @@ public:
 	bool has_image_data() const;
 	bool has_audio_data() const;
 
-	uint8_t ** get_image_buffer();
-	void get_audio_buffer(uint8_t * stream, int len);
+	bool do_display();
+
+	void update_image_buffer(uint8_t* pImageData, const long len);
+	void update_audio_buffer(uint8_t* pAudioData, const long len);
 
 	AudioFormat get_audio_format();
 	PixelFormat get_pixel_format();

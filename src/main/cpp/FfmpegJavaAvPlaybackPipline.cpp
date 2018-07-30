@@ -29,7 +29,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
 		this->UpdatePlayerState(Finished);
 	});
 
-	pJavaPlayback->init_and_start_display_loop();
+	pJavaPlayback->init_and_start_stream();
 
 	return ERROR_NONE;
 }
@@ -54,7 +54,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Play() {
 
 	pJavaPlayback->play();
 
-	return ERROR_NONE; // no error
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Stop() {
@@ -63,7 +63,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Stop() {
 
 	pJavaPlayback->stop();
 
-	return ERROR_NONE; // no error
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Pause() {
@@ -72,7 +72,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Pause() {
 
 	pJavaPlayback->toggle_pause();
 
-	return ERROR_NONE; // no error
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
@@ -96,7 +96,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double dSeekTime) {
 
 	pJavaPlayback->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
 
-	return ERROR_NONE; // no error
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::GetDuration(double* pdDuration) {
@@ -105,7 +105,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetDuration(double* pdDuration) {
 
 	*pdDuration = pJavaPlayback->get_duration();
 
-	return ERROR_NONE; // no error
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double* pdStreamTime) {
@@ -115,7 +115,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double* pdStreamTime) {
 
 	*pdStreamTime = pJavaPlayback->get_master_clock();
 
-	return ERROR_NONE; // no error
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::SetRate(float fRate) {
@@ -147,7 +147,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetVolume(float* pfVolume) {
 	// TODO(fraudies): Implement this once ready
 	//*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
 
-	return ERROR_NONE; // no error
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::SetBalance(float fBalance) {
@@ -176,7 +176,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::SetAudioSyncDelay(long lMillis) {
 
 	pJavaPlayback->set_audioSyncDelay(lMillis);
 
-	return ERROR_NONE; // no error
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::GetAudioSyncDelay(long* plMillis) {
@@ -185,7 +185,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetAudioSyncDelay(long* plMillis) {
 
 	*plMillis = pJavaPlayback->get_audioSyncDelay();
 
-	return ERROR_NONE; // no error
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::HasAudioData(bool* bAudioData) const {
@@ -242,20 +242,20 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetPixelFormat(PixelFormat* pPixelFormat) 
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetImageBuffer(uint8_t** ppImageBuffer) {
+uint32_t FfmpegJavaAvPlaybackPipline::UpdateImageBuffer(uint8_t* pImageData, const long len) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	ppImageBuffer = pJavaPlayback->get_image_buffer();
+	pJavaPlayback->update_image_buffer(pImageData, len);
 
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetAudioBuffer(uint8_t** ppAudioBuffer, const int len) {
+uint32_t FfmpegJavaAvPlaybackPipline::UpdateAudioBuffer(uint8_t* pAudioData, const long len) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	pJavaPlayback->get_audio_buffer(*ppAudioBuffer, len);
+	pJavaPlayback->update_audio_buffer(pAudioData, len);
 
 	return ERROR_NONE;
 }

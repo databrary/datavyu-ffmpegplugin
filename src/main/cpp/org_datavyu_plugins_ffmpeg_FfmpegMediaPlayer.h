@@ -23,10 +23,12 @@ extern "C" {
 #define org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_eventPlayerFinished 106L
 #undef org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_eventPlayerError
 #define org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_eventPlayerError 107L
+#undef org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_AUDIO_BUFFER_SIZE
+#define org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_AUDIO_BUFFER_SIZE 4096L
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegInitPlayer
- * Signature: ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;)I
+ * Signature: ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;Z)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
   (JNIEnv *, jobject, jlongArray, jstring, jobject, jobject, jboolean);
@@ -209,19 +211,19 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
- * Method:    ffmpegGetImageBuffer
- * Signature: (J[B)I
+ * Method:    ffmpegUpdateImageBuffer
+ * Signature: (JLjava/nio/ByteBuffer;)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetImageBuffer
-  (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateImageBuffer
+  (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
- * Method:    ffmpegGetAudioBuffer
- * Signature: (J[B)I
+ * Method:    ffmpegUpdateAudioBuffer
+ * Signature: (JLjava/nio/ByteBuffer;)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioBuffer
-  (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegUpdateAudioBuffer
+  (JNIEnv *, jobject, jlong, jobject);
 
 #ifdef __cplusplus
 }

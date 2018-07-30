@@ -220,20 +220,20 @@ uint32_t CPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
-	if (NULL == ppImageBuffer)
+uint32_t CPipeline::UpdateImageBuffer(uint8_t* pImageData, const long len) {
+	if (NULL == pImageData || len == 0)
 		return ERROR_FUNCTION_PARAM_NULL;
 
-	*ppImageBuffer = nullptr;
+	pImageData = nullptr;
 
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer, const int len) {
-	if (NULL == ppAudioBuffer)
+uint32_t CPipeline::UpdateAudioBuffer(uint8_t* pAudioData, const long len) {
+	if (NULL == pAudioData || len == 0)
 		return ERROR_FUNCTION_PARAM_NULL;
 
-	*ppAudioBuffer = nullptr;
+	pAudioData = nullptr;
 
 	return ERROR_NONE;
 }

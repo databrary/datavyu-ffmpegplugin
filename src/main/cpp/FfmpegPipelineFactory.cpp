@@ -7,9 +7,6 @@ FfmpegPipelineFactory::~FfmpegPipelineFactory()
 {}
 
 uint32_t FfmpegPipelineFactory::CreatePlayerPipeline(CPipelineOptions *pOptions, CPipeline **ppPipeline) {
-
-	//if (NULL == pOptions->GetStreamData())
-	//	return ERROR_BASE_PIPELINE;
 	
 	*ppPipeline = NULL;
 	if (pOptions->GetStreamData())

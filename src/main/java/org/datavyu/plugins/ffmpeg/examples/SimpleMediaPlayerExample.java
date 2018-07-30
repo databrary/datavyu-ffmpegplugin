@@ -1,8 +1,6 @@
 package org.datavyu.plugins.ffmpeg.examples;
 
-import org.datavyu.plugins.ffmpeg.MediaErrorListener;
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
-import org.datavyu.plugins.ffmpeg.FfmpegMediaPlayer;
+import org.datavyu.plugins.ffmpeg.*;
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 
 import javax.sound.sampled.AudioFormat;
@@ -18,12 +16,11 @@ public class SimpleMediaPlayerExample {
         // Create the  media player and attach any listeners
         String movieFileName = "Nature_30fps_1080p.mp4";
 
-//        Open a Jframe for data streaming through Java
-        JFrame displayFrame = new JFrame();
-        MediaPlayer mediaPlayer = new FfmpegMediaPlayer(URI.create(movieFileName),displayFrame);
+        // Open a Jframe for data streaming through Java
+        MediaPlayer mediaPlayer = new FfmpegMediaPlayer(URI.create(movieFileName), new JFrame());
 
         // Stream through SDL
-//        MediaPlayer mediaPlayer = new FfmpegMediaPlayer(URI.create(movieFileName));
+        //MediaPlayer mediaPlayer = new FfmpegMediaPlayer(URI.create(movieFileName));
 
         mediaPlayer.addMediaErrorListener(new MediaErrorListener() {
             @Override

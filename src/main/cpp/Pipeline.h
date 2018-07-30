@@ -91,8 +91,8 @@ public:
 	virtual uint32_t		GetImageHeight(int* iHeight) const;
 	virtual uint32_t		GetAudioFormat(AudioFormat* pAudioFormat) const;
 	virtual uint32_t		GetPixelFormat(PixelFormat* pPixelFormat) const;
-	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
-	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer, const int len);
+	virtual uint32_t		UpdateImageBuffer(uint8_t* pImageBuffer, const long len);
+	virtual uint32_t		UpdateAudioBuffer(uint8_t* pAudioBuffer, const long len);
 
 	// TODO(fraudies): Clean this up... currently used to free memory
 	CPipelineOptions* GetCPipelineOptions();

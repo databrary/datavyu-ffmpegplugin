@@ -45,7 +45,7 @@ public interface MediaPlayer {
      * @throws IllegalArgumentException if <code>listener</code> is
      * <code>null</code>.
      */
-    void addMediaPlayerListener(PlayerStateListener listener);
+    void addMediaPlayerStateListener(PlayerStateListener listener);
 
     /**
      * Removes a listener for media state.
@@ -54,7 +54,7 @@ public interface MediaPlayer {
      * @throws IllegalArgumentException if <code>listener</code> is
      * <code>null</code>.
      */
-    void removeMediaPlayerListener(PlayerStateListener listener);
+    void removeMediaPlayerStateListener(PlayerStateListener listener);
 
     /**
      * Set the amount of time to delay for the audio.
