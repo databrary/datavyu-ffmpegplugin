@@ -90,7 +90,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             if (hasImageData()) {
                 initAndStartImagePlayer();
             }
-            removeInitListener();
+            //removeInitListener();
         }
         @Override
         public void onPlaying(PlayerStateEvent evt) { }

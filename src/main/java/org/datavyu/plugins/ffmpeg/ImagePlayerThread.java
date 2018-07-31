@@ -18,7 +18,6 @@ public class ImagePlayerThread extends Thread {
     private BufferedImage image;
     private byte[] data;
     private JFrame frame;
-    private boolean doPaint = false;
     private BufferStrategy strategy;
     private static final int NUM_COLOR_CHANNELS = 3;
     private static final int NUM_BUFFERS = 3;
@@ -38,9 +37,7 @@ public class ImagePlayerThread extends Thread {
         do {
             do {
                 Graphics graphics = strategy.getDrawGraphics();
-                if (doPaint) {
-                    graphics.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(),  null);
-                }
+                graphics.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(),  null);
                 graphics.dispose();
             } while (strategy.contentsRestored());
             strategy.show();
