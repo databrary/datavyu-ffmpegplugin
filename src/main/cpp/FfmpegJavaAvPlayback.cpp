@@ -174,7 +174,7 @@ void FfmpegJavaAvPlayback::get_image_buffer(uint8_t** ppImageData, long* pLen) {
 	bool doUpdate = do_display();
 	if (doUpdate) {
 		Frame *vp = pVideoState->get_pPictq()->peek_last();
-		*pLen = vp->frame->width * vp->frame->height * 3 * sizeof(uint8_t);
+		*pLen = vp->frame->width * vp->frame->height * sizeof(uint8_t);
 		*ppImageData = vp->frame->data[0];
 	}
 	else {
