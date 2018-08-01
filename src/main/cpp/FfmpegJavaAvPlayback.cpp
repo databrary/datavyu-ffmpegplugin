@@ -55,6 +55,7 @@ void FfmpegJavaAvPlayback::destroy() {
 
 void FfmpegJavaAvPlayback::init_and_start_stream() {
 	init();
+	sws_freeContext(img_convert_ctx);
 	pVideoState->stream_start();
 }
 
@@ -174,9 +175,27 @@ void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long l
 	bool doUpdate = do_display();
 	if (doUpdate) {
 		Frame *vp = pVideoState->get_pPictq()->peek_last();
-		long srcLen = vp->frame->width * vp->frame->height * 3 * sizeof(uint8_t);
-		if (srcLen == len) {
-			memcpy(pImageData, vp->frame->data[0], vp->frame->width * vp->frame->height);
+		// AV_PIX_FMT_RGB24
+		img_convert_ctx = sws_getCachedContext(
+			img_convert_ctx,
+			vp->frame->width, vp->frame->height, static_cast<AVPixelFormat>(vp->frame->format), 
+			vp->frame->width, vp->frame->height, AV_PIX_FMT_RGB24,
+			SWS_BICUBIC, NULL, NULL, NULL);
+		// TODO(fraudies): Support formats natively
+		if (img_convert_ctx != NULL) {
+			//avcodec_align_dimensions2(img_convert_ctx, &width, &height, aligns);
+			uint8_t *pixels[4];
+			int pitch[4];
+			sws_scale(img_convert_ctx, (const uint8_t * const *) vp->frame->data, vp->frame->linesize,
+				0, vp->frame->height, pixels, pitch);
+			// TODO: Check who frees the memory
+			int numPlane = 3;// av_frame_get_channels(vp->frame);
+			long lenForPlane = vp->frame->width * vp->frame->height * sizeof(uint8_t);
+			if (numPlane * lenForPlane == len) {
+				for (int iPlane = 0; iPlane < numPlane; ++iPlane) {
+					memcpy(pImageData + iPlane * lenForPlane, pixels[iPlane], lenForPlane);
+				}
+			}
 		}
 	}
 }

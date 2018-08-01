@@ -6,6 +6,7 @@
 
 class FfmpegJavaAvPlayback : public FfmpegAvPlayback {
 private:
+	struct SwsContext *img_convert_ctx;
 	void init();
 public:
 	FfmpegJavaAvPlayback(const char *filename, AVInputFormat *iformat);

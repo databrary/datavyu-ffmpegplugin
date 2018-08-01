@@ -75,10 +75,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
         imagePlayerThread.start();
     }
 
-    private void removeInitListener() {
-        removeMediaPlayerStateListener(initListener);
-    }
-
     private PlayerStateListener initListener = new PlayerStateListener() {
         @Override
         public void onReady(PlayerStateEvent evt) {
@@ -90,7 +86,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             if (hasImageData()) {
                 initAndStartImagePlayer();
             }
-            removeInitListener();
         }
         @Override
         public void onPlaying(PlayerStateEvent evt) { }
