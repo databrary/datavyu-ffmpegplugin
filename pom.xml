@@ -37,7 +37,7 @@
             <resource>
                 <directory>./</directory>
                 <includes>
-                    <include>MediaPlayer0.dll</include>
+                    <include>FfmpegMediaPlayer.dll</include>
                 </includes>
             </resource>
         </resources>
