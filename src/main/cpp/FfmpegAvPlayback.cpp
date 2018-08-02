@@ -79,6 +79,10 @@ double FfmpegAvPlayback::get_master_clock() const {
 	return pVideoState->get_master_clock();
 }
 
+double FfmpegAvPlayback::get_fps() const {
+	return pVideoState->get_fps();
+}
+
 void FfmpegAvPlayback::set_rate(double rate) {
 	// TODO(fraudies): Here is a miss-match between the API's (rate/vs step)
 	pVideoState->set_rate(rate);

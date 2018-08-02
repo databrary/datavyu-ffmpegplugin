@@ -82,6 +82,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
   (JNIEnv *, jobject, jlong);
 
 /*
+* Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+* Method:    ffmpegStepForward
+* Signature: (J)I
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegStepForward
+  (JNIEnv *, jobject, jlong);
+
+/*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegFinish
  * Signature: (J)I
@@ -111,6 +119,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
  * Signature: (J[D)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetPresentationTime
+  (JNIEnv *, jobject, jlong, jdoubleArray);
+
+/*
+* Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+* Method:    ffmpegGetFps
+* Signature: (J[D)I
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetFps
   (JNIEnv *, jobject, jlong, jdoubleArray);
 
 /*

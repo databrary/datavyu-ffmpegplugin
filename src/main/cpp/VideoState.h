@@ -298,6 +298,8 @@ private:
 	int last_audio_stream;
 	int last_subtitle_stream;
 
+	int fps;
+
 	std::condition_variable continue_read_thread;
 
 	inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
@@ -457,6 +459,8 @@ public:
 	/* get the current master clock value */
 	double get_master_clock() const;
 
+	double get_fps() const;
+
 	void stream_close();
 
 	/* prepare a new audio buffer */
@@ -475,6 +479,8 @@ public:
 
 	int get_subtitle_disable() const;
 	void set_subtitle_disable(const int disable);
+
+
 
 	//int isStopped() const;
 

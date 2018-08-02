@@ -18,12 +18,14 @@ private:
 	virtual uint32_t        Play();
 	virtual uint32_t        Stop();
 	virtual uint32_t        Pause();
+	virtual uint32_t        StepForward();
 	virtual uint32_t        Finish();
 
 	virtual uint32_t        Seek(double dSeekTime);
 
 	virtual uint32_t        GetDuration(double* pdDuration);
 	virtual uint32_t        GetStreamTime(double* pdStreamTime);
+	virtual uint32_t        GetFPS(double* pdFps);
 
 	virtual uint32_t        SetRate(float fRate);
 	virtual uint32_t        GetRate(float* pfRate);

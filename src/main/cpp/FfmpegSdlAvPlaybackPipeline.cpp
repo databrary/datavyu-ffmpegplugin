@@ -117,6 +117,17 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 	return ERROR_NONE; // no error
 }
 
+uint32_t FfmpegSdlAvPlaybackPipeline::GetFPS(double * pdFps)
+{
+	if (pSdlPlayback == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	*pdFps = pSdlPlayback->get_fps();
+
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
 	// TODO(fraudies): Implement this once ready
 	// At the moment we don't have a way of setting this

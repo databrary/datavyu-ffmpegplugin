@@ -75,6 +75,15 @@ uint32_t FfmpegJavaAvPlaybackPipline::Pause() {
 	return ERROR_NONE;
 }
 
+uint32_t FfmpegJavaAvPlaybackPipline::StepForward() {
+	if (pJavaPlayback == nullptr)
+		return ERROR_PLAYER_NULL;
+
+	pJavaPlayback->step_to_next_frame();
+
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
 	// TODO(fraudies): Stalling and finish need to be set from the video player
 	return ERROR_NONE;
@@ -114,6 +123,17 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double* pdStreamTime) {
 	}
 
 	*pdStreamTime = pJavaPlayback->get_master_clock();
+
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegJavaAvPlaybackPipline::GetFPS(double* pdFps)
+{
+	if (pJavaPlayback == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	*pdFps = pJavaPlayback->get_fps();
 
 	return ERROR_NONE;
 }
