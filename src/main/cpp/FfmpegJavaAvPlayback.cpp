@@ -7,6 +7,8 @@ void FfmpegJavaAvPlayback::init() {
 #endif
 	avformat_network_init();
 
+
+
 	//if (display_disable) {
 	//	pVideoState->set_video_disable(1);
 	//}
@@ -181,21 +183,15 @@ void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long l
 			vp->frame->width, vp->frame->height, static_cast<AVPixelFormat>(vp->frame->format), 
 			vp->frame->width, vp->frame->height, AV_PIX_FMT_RGB24,
 			SWS_BICUBIC, NULL, NULL, NULL);
-		// TODO(fraudies): Support formats natively
 		if (img_convert_ctx != NULL) {
-			//avcodec_align_dimensions2(img_convert_ctx, &width, &height, aligns);
-			uint8_t *pixels[4];
+			// I left the pixels allocation/free here to support resizing through sws_scale natively
+			uint8_t* pixels[4];
 			int pitch[4];
+			av_image_alloc(pixels, pitch, vp->width, vp->height, AV_PIX_FMT_RGB24, 1);
 			sws_scale(img_convert_ctx, (const uint8_t * const *) vp->frame->data, vp->frame->linesize,
 				0, vp->frame->height, pixels, pitch);
-			// TODO: Check who frees the memory
-			int numPlane = 3;// av_frame_get_channels(vp->frame);
-			long lenForPlane = vp->frame->width * vp->frame->height * sizeof(uint8_t);
-			if (numPlane * lenForPlane == len) {
-				for (int iPlane = 0; iPlane < numPlane; ++iPlane) {
-					memcpy(pImageData + iPlane * lenForPlane, pixels[iPlane], lenForPlane);
-				}
-			}
+			memcpy(pImageData, pixels[0], vp->frame->width * vp->frame->height * 3 * sizeof(uint8_t));
+			av_freep(&pixels[0]);
 		}
 	}
 }

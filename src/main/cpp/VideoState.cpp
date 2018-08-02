@@ -140,15 +140,14 @@ int VideoState::stream_component_open(int stream_index) {
 			pause_audio_device_callback();
 		break;
 	case AVMEDIA_TYPE_VIDEO:
-		//int aligns[AV_NUM_DATA_POINTERS];
-		// TODO: Check if this resolves the sws_scale problem
-		//avcodec_align_dimensions2(avctx, &avctx->width, &avctx->height, aligns);
-		avcodec_align_dimensions(avctx, &avctx->width, &avctx->height);
+		this->image_width = avctx->width;
+		this->image_height = avctx->height;
+
+		// TODO(fraudies): Alignment for the source does not seem to be necessary, but test with more res
+		// avcodec_align_dimensions(avctx, &avctx->width, &avctx->height);
 
 		this->video_stream = stream_index;
 		this->video_st = ic->streams[stream_index];
-		this->image_width = avctx->width;
-		this->image_height = avctx->height;
 
 		pViddec = new Decoder(avctx, pVideoq, &continue_read_thread);
 		if ((ret = pViddec->start(video_thread_bridge, this)) < 0)
