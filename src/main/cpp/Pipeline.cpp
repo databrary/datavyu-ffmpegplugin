@@ -78,7 +78,7 @@ uint32_t CPipeline::Pause()
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::StepForwad()
+uint32_t CPipeline::StepForward()
 {
 	return ERROR_NONE;
 }

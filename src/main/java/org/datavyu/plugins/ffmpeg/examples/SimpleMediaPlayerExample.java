@@ -57,7 +57,7 @@ public class SimpleMediaPlayerExample {
                         mediaPlayer.play();
                         break;
                     case KeyEvent.VK_S:
-                        System.out.println("Step Forward, with FPS : "  + mediaPlayer.getFps());
+                        System.out.println("Step Forward");
                         mediaPlayer.stepForward();
                         break;
                     case KeyEvent.VK_NUMPAD6:

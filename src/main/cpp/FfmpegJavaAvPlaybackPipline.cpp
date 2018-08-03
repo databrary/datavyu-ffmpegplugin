@@ -127,7 +127,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double* pdStreamTime) {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetFPS(double* pdFps)
+uint32_t FfmpegJavaAvPlaybackPipline::GetFps(double* pdFps)
 {
 	if (pJavaPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;

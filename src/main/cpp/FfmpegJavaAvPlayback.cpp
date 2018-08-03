@@ -7,8 +7,6 @@ void FfmpegJavaAvPlayback::init() {
 #endif
 	avformat_network_init();
 
-
-
 	//if (display_disable) {
 	//	pVideoState->set_video_disable(1);
 	//}

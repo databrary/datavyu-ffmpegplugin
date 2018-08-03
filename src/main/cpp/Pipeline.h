@@ -66,7 +66,7 @@ public:
     virtual uint32_t        Play()=0;
     virtual uint32_t        Stop();
     virtual uint32_t        Pause();
-    virtual uint32_t        StepForwad();
+    virtual uint32_t        StepForward();
     virtual uint32_t        Finish();
 
     virtual uint32_t        Seek(double dSeekTime);

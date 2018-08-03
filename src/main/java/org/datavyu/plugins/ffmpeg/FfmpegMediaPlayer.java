@@ -210,12 +210,12 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
 
     @Override
     protected double playerGetFps() throws MediaException {
-        double[] presentationTime = new double[1];
-        int rc = ffmpegGetFps(getNativeMediaRef(), presentationTime);
+        double[] framePerSecond = new double[1];
+        int rc = ffmpegGetFps(getNativeMediaRef(), framePerSecond);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
-        return presentationTime[0];
+        return framePerSecond[0];
     }
 
     @Override

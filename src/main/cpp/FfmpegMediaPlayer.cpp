@@ -222,7 +222,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 	if (NULL == pPipeline)
 		return ERROR_PIPELINE_NULL;
 
-	jint iRet = (jint)pPipeline->StepForwad();
+	jint iRet = (jint)pPipeline->StepForward();
 
 	return iRet;
 }
@@ -340,7 +340,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 	uint32_t uRetCode = pPipeline->GetFps(&dFps);
 	if (ERROR_NONE != uRetCode)
 		return uRetCode;
-	jdouble jdPresentationTime = (double)dFps;
+
 	env->SetDoubleArrayRegion(jdFps, 0, 1, &dFps);
 
 	return ERROR_NONE;

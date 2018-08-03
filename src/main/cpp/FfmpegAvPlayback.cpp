@@ -47,20 +47,22 @@ void FfmpegAvPlayback::play() {
 	}
 }
 
+// Stop and put the playback speed to 0x
+// Note the playback speed is not implemetnted yet
 void FfmpegAvPlayback::stop() {
 	if (!pVideoState->get_paused()) {
 		toggle_pause();
 		pVideoState->set_stopped(true);
 	}
-	// Stop playback and seek to the start of the stream
-	// TODO(Reda): Remove seeking to start_time when stopping the stream 
-	// Datavyu behavior Stop -> set speed to 0x, Pause-> keep current speed of the playback 
-	double pos = get_master_clock();
+	// Stop playback and seek to the start of the stream 
+	/*double pos = get_master_clock();
 	double start = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
 	double incr = start - pos;
-	stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+	stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);*/
 }
 
+// pause and keep the playback speed.
+// Note the playback speed is not implemetnted yet
 void FfmpegAvPlayback::toggle_pause() {
 	stream_toggle_pause();
 	pVideoState->set_step(false);

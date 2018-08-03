@@ -151,6 +151,7 @@ int VideoState::stream_component_open(int stream_index) {
 
 		// Calculate the Frame rate (FPS) of the video stream
 		if (this->video_st) {
+			AVRational f = av_guess_frame_rate(ic, video_st, NULL);
 			AVRational rational = this->video_st->avg_frame_rate;
 			if(rational.den == rational.num == 0)
 				rational = this->video_st->r_frame_rate;
