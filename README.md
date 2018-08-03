@@ -27,7 +27,7 @@ caller is responsible for stopping the audio playback.
 1. Download and install the Java 8 JDK (http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 1. Download the SDL2 development libraries for Visual C++ 32/64-bit (https://www.libsdl.org/download-2.0.php) and unzip them to a directory (we'll use `C:\SDL2`)
 1. Go to the `include` folder in `C:\SDL2`. Create a new directory called `SDL2` inside of the `include` folder and then move all of the files in the `include` folder into the `SDL2` folder (this is for compatibility due to SDL packaging the Visual Studio distribution differently than the rest of their distributions).
-1. Unzip the Dev version of ffmpeg to a directory (we will use C:\FFmpeg-dev as an example)
+1. Unzip the Dev version of ffmpeg to a directory (we will use `C:\FFmpeg-dev` as an example)
 1. Clone this repository to a directory of your choosing.
 1. In Visual Studio, open MediaPlayer.sln using `File -> Open -> Project/Solution` and navigating to `src\main\cpp` in the folder where you cloned this repository.
 1. Once the solution is open, we have to tell Visual Studio where to find the FFmpeg, Java, and SDL headers and libraries.
@@ -35,7 +35,7 @@ caller is responsible for stopping the audio playback.
 	1. Right click the `FfmpegMediaPlayer` project under `Solution 'MediaPlayer'` and click `Properties`.
 	1. In the left pane under `Configuration Properties` click `VC++ Directories`.
 		1. Add a directory to `Include Directories` that points to `C:\FFmpeg-dev\include`.
-		1. Add a directory to `Include Directories` that points to `C:\SDL2\include` (not the SDL2 folder you created).
+		1. Add a directory to `Include Directories` that points to `C:\SDL2\include` (not the SDL2 folder inside of `include`).
 		1. Add a directory to `Include Directories` that points to `C:\Program Files\Java\jdk1.8.0_YOURVERSION\include`
 		1. Add a directory to `Include Directories` that points to `C:\Program Files\Java\jdk1.8.0_YOURVERSION\include\win32`
 		1. Add a directory to `Library Directories` that points to `C:\FFmpeg-dev\lib`.
