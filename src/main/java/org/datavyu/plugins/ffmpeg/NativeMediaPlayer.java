@@ -231,6 +231,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
     protected abstract void playerStop() throws MediaException;
 
+    protected abstract void playerStepForward() throws MediaException;
+
     protected abstract void playerPause() throws MediaException;
 
     protected abstract void playerFinish() throws MediaException;
@@ -240,6 +242,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     protected abstract void playerSetRate(float rate) throws MediaException;
 
     protected abstract double playerGetPresentationTime() throws MediaException;
+
+    protected abstract double playerGetFps() throws MediaException;
 
     protected abstract boolean playerGetMute() throws MediaException;
 
@@ -309,6 +313,15 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     }
 
     @Override
+    public void stepForward() {
+        try {
+            playerStepForward();
+        } catch (MediaException me) {
+            sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+        }
+    }
+
+    @Override
     public float getRate() {
         try {
             return playerGetRate();
@@ -332,6 +345,16 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public double getPresentationTime() {
         try {
             return playerGetPresentationTime();
+        } catch (MediaException me) {
+            sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+        }
+        return -1.0;
+    }
+
+    @Override
+    public double getFps() {
+        try {
+            return playerGetFps();
         } catch (MediaException me) {
             sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
         }

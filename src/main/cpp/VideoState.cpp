@@ -149,6 +149,16 @@ int VideoState::stream_component_open(int stream_index) {
 		this->video_stream = stream_index;
 		this->video_st = ic->streams[stream_index];
 
+		// Calculate the Frame rate (FPS) of the video stream
+		if (this->video_st) {
+			AVRational f = av_guess_frame_rate(ic, video_st, NULL);
+			AVRational rational = this->video_st->avg_frame_rate;
+			if(rational.den == rational.num == 0)
+				rational = this->video_st->r_frame_rate;
+
+			this->fps = rational.num / rational.den;
+		}
+
 		pViddec = new Decoder(avctx, pVideoq, &continue_read_thread);
 		if ((ret = pViddec->start(video_thread_bridge, this)) < 0)
 			goto out;
@@ -1668,6 +1678,10 @@ double VideoState::get_master_clock() const {
 			break;
 	}
 	return val;
+}
+
+double VideoState::get_fps() const {
+	return video_st ? this->fps : 0;
 }
 
 void VideoState::stream_close() {

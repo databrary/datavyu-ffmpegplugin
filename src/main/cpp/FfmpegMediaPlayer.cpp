@@ -202,7 +202,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegP
 /**
 * ffmpegStop()
 *
-* Makes an asynchronous call to sotp the media playback.
+* Makes an asynchronous call to stop the media playback.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegStop
 (JNIEnv *env, jobject obj, jlong ref_media) {
@@ -216,6 +216,26 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 		return ERROR_PIPELINE_NULL;
 
 	jint iRet = (jint)pPipeline->Stop();
+
+	return iRet;
+}
+
+/**
+* ffmpegStepForward()
+*
+* Makes an asynchronous call to step to the next frame of the media.
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegStepForward
+(JNIEnv *env, jobject obj, jlong ref_media){
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	jint iRet = (jint)pPipeline->StepForward();
 
 	return iRet;
 }
@@ -310,6 +330,31 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 		return uRetCode;
 	jdouble jdPresentationTime = (double)dPresentationTime;
 	env->SetDoubleArrayRegion(jrgdPresentationTime, 0, 1, &jdPresentationTime);
+
+	return ERROR_NONE;
+}
+
+/*
+* ffmpegGetFps()
+*
+* Makes a synchronous call to get the media frame rate (FPS).
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetFps
+(JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jdFps) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	double dFps;
+	uint32_t uRetCode = pPipeline->GetFps(&dFps);
+	if (ERROR_NONE != uRetCode)
+		return uRetCode;
+
+	env->SetDoubleArrayRegion(jdFps, 0, 1, &dFps);
 
 	return ERROR_NONE;
 }

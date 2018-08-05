@@ -165,6 +165,14 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     }
 
     @Override
+    protected void playerStepForward() throws MediaException {
+        int rc = ffmpegStepForward(getNativeMediaRef());
+        if (0 != rc) {
+            throwMediaErrorException(rc, null);
+        }
+    }
+
+    @Override
     protected void playerFinish() throws MediaException {
         int rc = ffmpegFinish(getNativeMediaRef());
         if (0 != rc) {
@@ -198,6 +206,16 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             throwMediaErrorException(rc, null);
         }
         return presentationTime[0];
+    }
+
+    @Override
+    protected double playerGetFps() throws MediaException {
+        double[] framePerSecond = new double[1];
+        int rc = ffmpegGetFps(getNativeMediaRef(), framePerSecond);
+        if (0 != rc) {
+            throwMediaErrorException(rc, null);
+        }
+        return framePerSecond[0];
     }
 
     @Override
@@ -406,10 +424,12 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private native int ffmpegPlay(long refNativeMedia);
     private native int ffmpegPause(long refNativeMedia);
     private native int ffmpegStop(long refNativeMedia);
+    private native int ffmpegStepForward(long refNativeMedia);
     private native int ffmpegFinish(long refNativeMedia);
     private native int ffmpegGetRate(long refNativeMedia, float[] rate);
     private native int ffmpegSetRate(long refNativeMedia, float rate);
     private native int ffmpegGetPresentationTime(long refNativeMedia, double[] time);
+    private native int ffmpegGetFps(long refNativeMedia, double[] fps);
     private native int ffmpegGetVolume(long refNativeMedia, float[] volume);
     private native int ffmpegSetVolume(long refNativeMedia, float volume);
     private native int ffmpegGetBalance(long refNativeMedia, float[] balance);

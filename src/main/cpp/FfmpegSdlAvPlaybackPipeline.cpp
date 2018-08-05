@@ -77,6 +77,16 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
 	return ERROR_NONE; // no error
 }
 
+uint32_t FfmpegSdlAvPlaybackPipeline::StepForward()
+{
+	if (pSdlPlayback == nullptr)
+		return ERROR_PLAYER_NULL;
+
+	pSdlPlayback->step_to_next_frame();
+
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
 	// TODO(fraudies): Stalling and finish need to be set from the video player
 	return ERROR_NONE;
@@ -115,6 +125,17 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 	*pdStreamTime = pSdlPlayback->get_master_clock();
 
 	return ERROR_NONE; // no error
+}
+
+uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double * pdFps)
+{
+	if (pSdlPlayback == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	*pdFps = pSdlPlayback->get_fps();
+
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
