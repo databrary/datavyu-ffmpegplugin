@@ -4,9 +4,12 @@
 #include <jni.h>
 #include "AudioVideoFormats.h"
 
-uint32_t SetAudioFormat(JNIEnv *env, jobject jAudioFormat, const AudioFormat& audioFormat);
+// This mapping is taken from java.awt.color.ColorSpace.java
+#define TYPE_RGB 5
 
-uint32_t SetPixelFormat(JNIEnv *env, jobject jPixelFormat, const PixelFormat& pixelFormat);
+uint32_t SetJAudioFormat(JNIEnv *env, jobject jAudioFormat, const AudioFormat& audioFormat);
+
+uint32_t SetJPixelFormat(JNIEnv *env, jobject jPixelFormat, const PixelFormat& pixelFormat);
 
 uint32_t GetAudioFormat(JNIEnv *env, jobject jAudioFormat, AudioFormat* audioFormat);
 

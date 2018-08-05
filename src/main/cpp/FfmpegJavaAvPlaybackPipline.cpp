@@ -5,9 +5,10 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	AVInputFormat *file_iformat = nullptr;
 	pJavaPlayback = new FfmpegJavaAvPlayback(input_file, 
-		file_iformat, m_pOptions->GetAudioFormat(), m_pOptions->GetPixelFormat());
+		file_iformat, m_pOptions->GetAudioFormat(), m_pOptions->GetPixelFormat(), 
+		m_pOptions->GetAudioBufferSizeInBy());
 
-	// Assign the callback functions	
+	// Assign the callback functions
 	pJavaPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {
 		this->UpdatePlayerState(Unknown);
 	});
@@ -249,7 +250,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetAudioFormat(AudioFormat* pAudioFormat) 
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	*pAudioFormat = pJavaPlayback->get_audio_format();
+	pJavaPlayback->get_audio_format(pAudioFormat);
 
 	return ERROR_NONE;
 }
@@ -258,7 +259,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetPixelFormat(PixelFormat* pPixelFormat) 
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	*pPixelFormat = pJavaPlayback->get_pixel_format();
+	pJavaPlayback->get_pixel_format(pPixelFormat);
 
 	return ERROR_NONE;
 }

@@ -1378,14 +1378,12 @@ int VideoState::get_audio_volume() const {
 	return audio_volume;
 }
 
-void VideoState::toggle_mute() {
-	this->muted = !this->muted;
+void VideoState::set_audio_volume(int new_audio_volume) {
+	audio_volume = new_audio_volume;
 }
 
-void VideoState::update_volume(int sign, double step) {
-	double volume_level = this->audio_volume ? (20 * log(this->audio_volume / (double)SDL_MIX_MAXVOLUME) / log(10)) : -1000.0;
-	int new_volume = lrint(SDL_MIX_MAXVOLUME * pow(10.0, (volume_level + sign * step) / 20.0));
-	this->audio_volume = av_clip(this->audio_volume == new_volume ? (this->audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME);
+void VideoState::toggle_mute() {
+	this->muted = !this->muted;
 }
 
 void VideoState::update_pts(double pts, int64_t pos, int serial) {
@@ -1720,9 +1718,10 @@ void VideoState::stream_close() {
 }
 
 /* prepare a new audio buffer */
+// TODO(fraudies): This method requires clean-up since we use it both for SDL and Java playback but most parts are specific to the SDL
+// E.g. we need to push the regulation of balance, volume into the SDL only part
 void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 	int audio_size, len1;
-	// TODO: Need to set audio target!!!
 	audio_callback_time = av_gettime_relative();
 
 	while (len > 0) {
@@ -1731,6 +1730,7 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 			if (audio_size < 0) {
 				/* if error, just output silence */
 				this->audio_buf = NULL;
+				// TODO(fraudies): Need to use the default buffer in case of the java playback
 				this->audio_buf_size = SDL_AUDIO_MIN_BUFFER_SIZE / this->audio_tgt.frame_size * this->audio_tgt.frame_size;
 			}
 			else {
@@ -1743,6 +1743,7 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 		len1 = this->audio_buf_size - this->audio_buf_index;
 		if (len1 > len)
 			len1 = len;
+		// TODO(fraudies): We should move this volume regulation (not mute) to the SDL only part
 		if (!this->muted && this->audio_buf && this->audio_volume == SDL_MIX_MAXVOLUME)
 			memcpy(stream, (uint8_t *)this->audio_buf + this->audio_buf_index, len1);
 		else {

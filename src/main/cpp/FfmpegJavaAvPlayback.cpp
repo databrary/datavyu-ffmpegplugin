@@ -17,9 +17,11 @@ FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(
 	const char * filename,
 	AVInputFormat * iformat,
 	const AudioFormat *pAudioFormat,
-	const PixelFormat *pPixelFormat):
-FfmpegAvPlayback(filename, iformat), pAudioFormat(pAudioFormat), pPixelFormat(pPixelFormat) {
-	// TODO(fraudies): Add audio open callback
+	const PixelFormat *pPixelFormat,
+	const int audioBufferSizeInBy) : FfmpegAvPlayback(filename, iformat), 
+		pAudioFormat(pAudioFormat), 
+		pPixelFormat(pPixelFormat),
+		audioBufferSizeInBy(audioBufferSizeInBy) {
 
 	pVideoState->set_destroy_callback([this] {
 		this->destroy();
@@ -43,18 +45,9 @@ VideoState * FfmpegJavaAvPlayback::get_VideoState() { return pVideoState; }
 
 int FfmpegJavaAvPlayback::audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
 	int wanted_sample_rate, struct AudioParams *audio_hw_params) {
-	audio_hw_params->channels = pAudioFormat->channels;
-	audio_hw_params->frame_size = pAudioFormat->frameSize;
-	audio_hw_params->freq = pAudioFormat->sampleRate;
-	audio_hw_params->bytes_per_sec = pAudioFormat->frameRate;
-	audio_hw_params->channel_layout = av_get_default_channel_layout(pAudioFormat->channels);
-	if (strcmp("PCM_UNSIGNED", pAudioFormat->encoding.c_str()) == 0) {
-		audio_hw_params->fmt = AV_SAMPLE_FMT_U8;
-	} else if (strcmp("PCM_SIGNED", pAudioFormat->encoding.c_str()) == 0) {
-		audio_hw_params->fmt = AV_SAMPLE_FMT_S16;
-	}
-	// TODO: Catch cases where we can't map the format
-	return 4 * 1024; // TODO(fraudies): Get the size for the audio buffer here
+	// TODO(fraudies): If we need to change the audio format overwrite pAudioFormat here
+	pAudioFormat->toAudioParams(audio_hw_params);
+	return audioBufferSizeInBy;
 }
 
 void FfmpegJavaAvPlayback::destroy() {
@@ -195,19 +188,22 @@ void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long l
 	bool doUpdate = do_display();
 	if (doUpdate) {
 		Frame *vp = pVideoState->get_pPictq()->peek_last();
-		// AV_PIX_FMT_RGB24
 		img_convert_ctx = sws_getCachedContext(
 			img_convert_ctx,
 			vp->frame->width, vp->frame->height, static_cast<AVPixelFormat>(vp->frame->format), 
-			vp->frame->width, vp->frame->height, AV_PIX_FMT_RGB24,
+			vp->frame->width, vp->frame->height, pPixelFormat->type,
 			SWS_BICUBIC, NULL, NULL, NULL);
 		if (img_convert_ctx != NULL) {
-			// I left the pixels allocation/free here to support resizing through sws_scale natively
+			// TODO(fraudies): Add switch case statement for the different pixel formats
+
+
+			// Left the pixels allocation/free here to support resizing through sws_scale natively
 			uint8_t* pixels[4];
 			int pitch[4];
 			av_image_alloc(pixels, pitch, vp->width, vp->height, AV_PIX_FMT_RGB24, 1);
 			sws_scale(img_convert_ctx, (const uint8_t * const *) vp->frame->data, vp->frame->linesize,
 				0, vp->frame->height, pixels, pitch);
+			// Maybe check that we have 3 components
 			memcpy(pImageData, pixels[0], vp->frame->width * vp->frame->height * 3 * sizeof(uint8_t));
 			av_freep(&pixels[0]);
 		}
@@ -218,12 +214,10 @@ void FfmpegJavaAvPlayback::update_audio_buffer(uint8_t* pAudioData, const long l
 	pVideoState->sdl_audio_callback(pAudioData, len);
 }
 
-//TODO(Reda): implement get audio format function
-AudioFormat FfmpegJavaAvPlayback::get_audio_format() {
-	return AudioFormat();
+void FfmpegJavaAvPlayback::get_audio_format(AudioFormat* pAudioFormat) {
+	*pAudioFormat = *this->pAudioFormat;
 }
 
-//TODO(Reda): implement get audio format function
-PixelFormat FfmpegJavaAvPlayback::get_pixel_format() {
-	return PixelFormat();
+void FfmpegJavaAvPlayback::get_pixel_format(PixelFormat* pPixelFormat) {
+	*pPixelFormat = *this->pPixelFormat;
 }

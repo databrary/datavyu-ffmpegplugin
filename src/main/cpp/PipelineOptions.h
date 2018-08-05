@@ -49,11 +49,13 @@ public:
 		bool streamData,
 		AudioFormat audioFormat,
 		PixelFormat pixelFormat,
+		int audioBufferSizeInBy,
 		int pipelineType = kAVPlaybackPipeline, 
 		bool havePreferredFormat = false)
 		: m_StreamData(streamData),
 		m_audioFormat(audioFormat),
 		m_pixelFormat(pixelFormat),
+		m_audioBufferSizeInBy(audioBufferSizeInBy),
 		m_PipelineType(pipelineType),
         m_bBufferingEnabled(false),
         m_StreamMimeType(-1),
@@ -76,12 +78,14 @@ public:
 	inline void		SetStreamData(bool enabled) { m_StreamData = enabled; }
     inline bool		GetStreamData() { return m_StreamData; }
 
-	inline const AudioFormat* GetAudioFormat() { return &m_audioFormat; }
-	inline const PixelFormat* GetPixelFormat() { return &m_pixelFormat; }
+	inline const AudioFormat* GetAudioFormat() const { return &m_audioFormat; }
+	inline const PixelFormat* GetPixelFormat() const { return &m_pixelFormat; }
+	inline const int GetAudioBufferSizeInBy() const { return m_audioBufferSizeInBy;  }
 private:
 	bool		m_StreamData;
 	AudioFormat m_audioFormat;
 	PixelFormat m_pixelFormat;
+	int			m_audioBufferSizeInBy;
 	int         m_PipelineType;
     bool        m_bBufferingEnabled;
     int         m_StreamMimeType;

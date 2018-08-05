@@ -28,10 +28,10 @@ extern "C" {
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegInitPlayer
- * Signature: ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;Z)I
+ * Signature: ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;IZ)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
-  (JNIEnv *, jobject, jlongArray, jstring, jobject, jobject, jboolean);
+  (JNIEnv *, jobject, jlongArray, jstring, jobject, jobject, jint, jboolean);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
@@ -82,10 +82,10 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
   (JNIEnv *, jobject, jlong);
 
 /*
-* Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
-* Method:    ffmpegStepForward
-* Signature: (J)I
-*/
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+ * Method:    ffmpegStepForward
+ * Signature: (J)I
+ */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegStepForward
   (JNIEnv *, jobject, jlong);
 
@@ -122,10 +122,10 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
   (JNIEnv *, jobject, jlong, jdoubleArray);
 
 /*
-* Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
-* Method:    ffmpegGetFps
-* Signature: (J[D)I
-*/
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+ * Method:    ffmpegGetFps
+ * Signature: (J[D)I
+ */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetFps
   (JNIEnv *, jobject, jlong, jdoubleArray);
 
@@ -212,18 +212,18 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegGetAudioFormat
- * Signature: (JLjavax/sound/sampled/AudioFormat;)I
+ * Signature: (J[Ljavax/sound/sampled/AudioFormat;)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioFormat
-  (JNIEnv *, jobject, jlong, jobject);
+  (JNIEnv *, jobject, jlong, jobjectArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegGetColorSpace
- * Signature: (JLjava/awt/color/ColorSpace;)I
+ * Signature: (J[Ljava/awt/color/ColorSpace;)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetColorSpace
-  (JNIEnv *, jobject, jlong, jobject);
+  (JNIEnv *, jobject, jlong, jobjectArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
