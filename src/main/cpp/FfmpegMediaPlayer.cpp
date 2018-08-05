@@ -15,16 +15,29 @@ extern "C" {
 #endif
 
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
-(JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath, jobject audioFormat, jobject imageFormat, jboolean streamData) {
+(JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath, 
+	jobject jAudioFormat, jobject jImageFormat, jboolean streamData) {
 
-	CPipelineOptions* pOptions = new (nothrow) CPipelineOptions(streamData);
+	uint32_t uRetCode;
+	AudioFormat audioFormat;
+
+	uRetCode = GetAudioFormat(env, jAudioFormat, &audioFormat);
+	if (ERROR_NONE != uRetCode) {
+		return uRetCode;
+	}
+
+	PixelFormat pixelFormat;
+	uRetCode = GetPixelFormat(env, jImageFormat, &pixelFormat);
+	if (ERROR_NONE != uRetCode) {
+		return uRetCode;
+	}
+
+	CPipelineOptions* pOptions = new (nothrow) CPipelineOptions(streamData, audioFormat, pixelFormat);
 	if (NULL == pOptions) {
 		return ERROR_MEMORY_ALLOCATION;
 	}
 
-	PipelineFactory*   pPipelineFactory = NULL;
-	uint32_t           uRetCode;
-
+	PipelineFactory* pPipelineFactory = NULL;
 	uRetCode = PipelineFactory::GetInstance(&pPipelineFactory);
 	if (ERROR_NONE != uRetCode)
 		return uRetCode;

@@ -10,16 +10,25 @@ void FfmpegJavaAvPlayback::init() {
 	//if (display_disable) {
 	//	pVideoState->set_video_disable(1);
 	//}
+
 }
 
 FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(
 	const char * filename,
-	AVInputFormat * iformat):
-FfmpegAvPlayback(filename, iformat) {
+	AVInputFormat * iformat,
+	const AudioFormat *pAudioFormat,
+	const PixelFormat *pPixelFormat):
+FfmpegAvPlayback(filename, iformat), pAudioFormat(pAudioFormat), pPixelFormat(pPixelFormat) {
 	// TODO(fraudies): Add audio open callback
 
 	pVideoState->set_destroy_callback([this] {
 		this->destroy();
+	});
+
+	// TODO: Clean-up this callback as the first three parameters are not used here
+	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels,
+		int wanted_sample_rate, struct AudioParams *audio_hw_params) {
+		return this->audio_open(wanted_channel_layout, wanted_nb_channels, wanted_sample_rate, audio_hw_params);		
 	});
 
 	pVideoState->set_step_to_next_frame_callback([this] {
@@ -32,11 +41,26 @@ FfmpegJavaAvPlayback::~FfmpegJavaAvPlayback()
 
 VideoState * FfmpegJavaAvPlayback::get_VideoState() { return pVideoState; }
 
-void FfmpegJavaAvPlayback::destroy() {
-	// only necessary when using as library -- has no effect otherwise
-	// stop_display_loop();
+int FfmpegJavaAvPlayback::audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
+	int wanted_sample_rate, struct AudioParams *audio_hw_params) {
+	audio_hw_params->channels = pAudioFormat->channels;
+	audio_hw_params->frame_size = pAudioFormat->frameSize;
+	audio_hw_params->freq = pAudioFormat->sampleRate;
+	audio_hw_params->bytes_per_sec = pAudioFormat->frameRate;
+	audio_hw_params->channel_layout = av_get_default_channel_layout(pAudioFormat->channels);
+	if (strcmp("PCM_UNSIGNED", pAudioFormat->encoding.c_str()) == 0) {
+		audio_hw_params->fmt = AV_SAMPLE_FMT_U8;
+	} else if (strcmp("PCM_SIGNED", pAudioFormat->encoding.c_str()) == 0) {
+		audio_hw_params->fmt = AV_SAMPLE_FMT_S16;
+	}
+	// TODO: Catch cases where we can't map the format
+	return 4 * 1024; // TODO(fraudies): Get the size for the audio buffer here
+}
 
-	// close the VideoState Stream
+void FfmpegJavaAvPlayback::destroy() {
+	// stop_display_loop(); // only necessary when using as library -- has no effect otherwise
+	sws_freeContext(img_convert_ctx);
+
 	if (pVideoState)
 		pVideoState->stream_close();
 
@@ -45,9 +69,6 @@ void FfmpegJavaAvPlayback::destroy() {
 #endif
 	avformat_network_deinit();
 
-	if (show_status)
-		printf("\n");
-
 	av_log(NULL, AV_LOG_QUIET, "%s", "");
 
 	exit(0);
@@ -55,7 +76,6 @@ void FfmpegJavaAvPlayback::destroy() {
 
 void FfmpegJavaAvPlayback::init_and_start_stream() {
 	init();
-	sws_freeContext(img_convert_ctx);
 	pVideoState->stream_start();
 }
 

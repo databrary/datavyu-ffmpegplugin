@@ -1363,11 +1363,11 @@ int VideoState::get_image_height() const {
 }
 
 bool VideoState::has_audio_data() const {
-	return audio_stream >= 0;
+	return last_audio_stream >= 0;
 }
 
 bool VideoState::has_image_data() const {
-	return video_stream >= 0;
+	return last_video_stream >= 0;
 }
 
 double VideoState::get_duration() const {
@@ -1722,7 +1722,7 @@ void VideoState::stream_close() {
 /* prepare a new audio buffer */
 void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 	int audio_size, len1;
-
+	// TODO: Need to set audio target!!!
 	audio_callback_time = av_gettime_relative();
 
 	while (len > 0) {

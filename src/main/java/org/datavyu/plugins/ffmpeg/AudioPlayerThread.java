@@ -1,7 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
 import javax.sound.sampled.*;
-import java.nio.ByteBuffer;
 
 public class AudioPlayerThread extends Thread {
     private MediaPlayerData mediaPlayerData;
