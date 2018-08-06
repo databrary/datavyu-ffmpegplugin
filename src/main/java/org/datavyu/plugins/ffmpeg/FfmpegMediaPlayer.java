@@ -1,9 +1,16 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
+
 import javax.sound.sampled.*;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.color.ColorSpace;
+import java.awt.image.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.util.Hashtable;
 
 import static java.awt.color.ColorSpace.CS_sRGB;
 

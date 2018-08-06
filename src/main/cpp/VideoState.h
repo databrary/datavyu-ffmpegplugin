@@ -343,7 +343,6 @@ private:
 	int audio_decode_frame();
 
 	std::function<void()> player_state_callbacks[NUM_PLAYER_STATE_CALLBACKS];
-	std::function<void()> current_player_state_callback;
 	// int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
 	//struct AudioParams *audio_hw_params)
 	std::function<int(int64_t, int, int, struct AudioParams*)> audio_open_callback;
@@ -414,7 +413,7 @@ public:
 	Clock *get_pAudclk() const;
 	Clock *get_pExtclk() const;
 
-	//AudioFormat get_audio_format() const;
+	AudioFormat get_audio_format() const;
 	AudioParams get_audio_tgt() const;
 
 	Decoder *get_pViddec();

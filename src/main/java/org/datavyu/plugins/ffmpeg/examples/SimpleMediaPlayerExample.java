@@ -34,6 +34,7 @@ public class SimpleMediaPlayerExample {
 
         // Initialize and start playing
         mediaPlayer.init(audioFormat, colorSpace);
+        mediaPlayer.play();
 
         // Open a Jframe for debugging purposes
         JFrame frame = new JFrame();
