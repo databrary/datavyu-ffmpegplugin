@@ -413,7 +413,7 @@ public:
 	Clock *get_pAudclk() const;
 	Clock *get_pExtclk() const;
 
-	AudioFormat get_audio_format() const;
+	//AudioFormat get_audio_format() const;
 	AudioParams get_audio_tgt() const;
 
 	Decoder *get_pViddec();

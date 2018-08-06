@@ -580,6 +580,7 @@ VideoState::VideoState() :
 	audio_disable(0),
 	video_disable(0),
 	subtitle_disable(0),
+	paused(true), // Disable audo play when streamig through Java, Note: need to change to false when using SDL
 	stopped(false) {
 	// Frame queues depend on the packet queues that have not been initialized in initializer
 	pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
@@ -1542,29 +1543,30 @@ int isBigEndian() {
 	return (u.c[sizeof(long int) - 1] == 1);
 }
 
-AudioFormat VideoState::get_audio_format() const {
-	AudioParams audioParams = get_audio_tgt();
-	AudioFormat audioFormat;
-	// TODO: We need to add the audio codec to some container around AudioParams and use that here
-	switch (audioParams.fmt) {
-	case AV_SAMPLE_FMT_U8: case AV_SAMPLE_FMT_U8P:
-		audioFormat.encoding = "PCM_UNSIGNED";
-		break;
-	case AV_SAMPLE_FMT_S16: case AV_SAMPLE_FMT_S16P:
-		audioFormat.encoding = "PCM_SIGNED";
-		break;
-	default:
-		audioFormat.encoding = "Unknown";
-		break;
-	}
-	audioFormat.bigEndian = isBigEndian();
-	audioFormat.sampleRate = audioParams.freq;
-	audioFormat.sampleSizeInBits = audioParams.frame_size * sizeof(char);
-	audioFormat.channels = audioParams.channels;
-	audioFormat.frameSize = audioParams.frame_size;
-	audioFormat.frameRate = audioParams.freq;
-	return audioFormat;
-}
+//TODO(Reda): Review this function, not used in both Java and SDL Player 
+//AudioFormat VideoState::get_audio_format() const {
+//	AudioParams audioParams = get_audio_tgt();
+//	AudioFormat audioFormat;
+//	// TODO: We need to add the audio codec to some container around AudioParams and use that here
+//	switch (audioParams.fmt) {
+//	case AV_SAMPLE_FMT_U8: case AV_SAMPLE_FMT_U8P:
+//		audioFormat.encoding = "PCM_UNSIGNED";
+//		break;
+//	case AV_SAMPLE_FMT_S16: case AV_SAMPLE_FMT_S16P:
+//		audioFormat.encoding = "PCM_SIGNED";
+//		break;
+//	default:
+//		audioFormat.encoding = "Unknown";
+//		break;
+//	}
+//	audioFormat.bigEndian = isBigEndian();
+//	audioFormat.sampleRate = audioParams.freq;
+//	audioFormat.sampleSizeInBits = audioParams.frame_size * sizeof(char);
+//	audioFormat.channels = audioParams.channels;
+//	audioFormat.frameSize = audioParams.frame_size;
+//	audioFormat.frameRate = audioParams.freq;
+//	return audioFormat;
+//}
 
 Decoder* VideoState::get_pViddec() { return pViddec; }
 
