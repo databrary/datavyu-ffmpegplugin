@@ -45,27 +45,12 @@ void FfmpegSdlAvPlayback::calculate_display_rect(SDL_Rect *rect,
 	rect->h = FFMAX(height, 1);
 }
 
-double FfmpegSdlAvPlayback::vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration) {
-	if (vp->serial == nextvp->serial) {
-		double duration = nextvp->pts - vp->pts;
-		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
-			return vp->duration;
-		else
-			return duration;
-	}
-	else {
-		return 0.0;
-	}
-}
-
 FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(
 	const char *filename,
 	AVInputFormat *iformat) : 
 	FfmpegAvPlayback(filename, iformat),
 	ytop(0),
 	xleft(0),
-	width(0),
-	height(0),
 	rdftspeed(0.02),
 	window(nullptr),
 	renderer(nullptr) {
@@ -187,10 +172,6 @@ int FfmpegSdlAvPlayback::video_open(const char* filename) {
 	height = h;
 
 	return 0;
-}
-
-void FfmpegSdlAvPlayback::set_force_refresh(int refresh) {
-	force_refresh = refresh;
 }
 
 void FfmpegSdlAvPlayback::set_default_window_size(int width, int height, AVRational sar) {
@@ -572,6 +553,18 @@ void FfmpegSdlAvPlayback::video_audio_display() {
 	}
 }
 
+
+int FfmpegSdlAvPlayback::get_audio_volume() const {
+	return pVideoState->get_audio_volume();
+}
+
+void FfmpegSdlAvPlayback::update_volume(int sign, double step) {
+	int audio_volume = get_audio_volume();
+	double volume_level = audio_volume ? (20 * log(audio_volume / (double)SDL_MIX_MAXVOLUME) / log(10)) : -1000.0;
+	int new_volume = lrint(SDL_MIX_MAXVOLUME * pow(10.0, (volume_level + sign * step) / 20.0));
+	pVideoState->set_audio_volume(av_clip(audio_volume == new_volume ? (audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME));
+}
+
 void FfmpegSdlAvPlayback::refresh_loop_wait_event(SDL_Event *event) {
 	double remaining_time = 0.0;
 	SDL_PumpEvents();
@@ -905,11 +898,11 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				break;
 			case SDLK_KP_MULTIPLY:
 			case SDLK_0:
-				pVideoState->update_volume(1, SDL_VOLUME_STEP);
+				update_volume(1, SDL_VOLUME_STEP);
 				break;
 			case SDLK_KP_DIVIDE:
 			case SDLK_9:
-				pVideoState->update_volume(-1, SDL_VOLUME_STEP);
+				update_volume(-1, SDL_VOLUME_STEP);
 				break;
 			case SDLK_s: // S: Step to next frame
 				step_to_next_frame();

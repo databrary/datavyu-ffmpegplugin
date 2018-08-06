@@ -98,6 +98,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
                         }
                     }
                 } catch (Exception e) {
+                    System.err.println(e);
                     // eventQueue.take() can throw InterruptedException,
                     // also in rare case it can throw wrong
                     // IllegalMonitorStateException
@@ -204,14 +205,14 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     }
 
     @Override
-    public void addMediaPlayerListener(PlayerStateListener listener) {
+    public void addMediaPlayerStateListener(PlayerStateListener listener) {
         if (listener != null) {
             playerStateListeners.add(new WeakReference(listener));
         }
     }
 
     @Override
-    public void removeMediaPlayerListener(PlayerStateListener listener) {
+    public void removeMediaPlayerStateListener(PlayerStateListener listener) {
         if (listener != null) {
             for (ListIterator<WeakReference<PlayerStateListener>> it = playerStateListeners.listIterator(); it.hasNext();) {
                 PlayerStateListener l = it.next().get();
@@ -230,6 +231,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
     protected abstract void playerStop() throws MediaException;
 
+    protected abstract void playerStepForward() throws MediaException;
+
     protected abstract void playerPause() throws MediaException;
 
     protected abstract void playerFinish() throws MediaException;
@@ -239,6 +242,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     protected abstract void playerSetRate(float rate) throws MediaException;
 
     protected abstract double playerGetPresentationTime() throws MediaException;
+
+    protected abstract double playerGetFps() throws MediaException;
 
     protected abstract boolean playerGetMute() throws MediaException;
 
@@ -308,6 +313,15 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     }
 
     @Override
+    public void stepForward() {
+        try {
+            playerStepForward();
+        } catch (MediaException me) {
+            sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+        }
+    }
+
+    @Override
     public float getRate() {
         try {
             return playerGetRate();
@@ -331,6 +345,16 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public double getPresentationTime() {
         try {
             return playerGetPresentationTime();
+        } catch (MediaException me) {
+            sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+        }
+        return -1.0;
+    }
+
+    @Override
+    public double getFps() {
+        try {
+            return playerGetFps();
         } catch (MediaException me) {
             sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
         }

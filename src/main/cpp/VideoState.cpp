@@ -115,8 +115,6 @@ int VideoState::stream_component_open(int stream_index) {
 
 		if ((ret = audio_open_callback(channel_layout, nb_channels, sample_rate, &this->audio_tgt) < 0))
 			goto fail;
-		//if ((ret = pPlayer->audio_open(channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
-		//	goto fail;
 		audio_hw_buf_size = ret;
 		audio_src = this->audio_tgt;
 		audio_buf_size = 0;
@@ -132,27 +130,36 @@ int VideoState::stream_component_open(int stream_index) {
 		audio_stream = stream_index;
 		audio_st = ic->streams[stream_index];
 		pAuddec = new Decoder(avctx, pAudioq, &continue_read_thread);
-		//pAuddec->init(avctx, pAudioq, &continue_read_thread);
-		//decoder_init(&this->auddec, avctx, pAudioq, this->continue_read_thread);
 		if ((ic->iformat->flags & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK)) && !ic->iformat->read_seek) {
 			pAuddec->set_start_pts(audio_st->start_time);
 			pAuddec->set_start_pts_tb(audio_st->time_base);
 		}
 		if ((ret = pAuddec->start(audio_thread_bridge, this)) < 0)
 			goto out;
-		//pPlayer->pauseAudioDevice();
 		if (pause_audio_device_callback)
 			pause_audio_device_callback();
-
 		break;
 	case AVMEDIA_TYPE_VIDEO:
-		this->video_stream = stream_index;
-		this->video_st = ic->streams[stream_index];
 		this->image_width = avctx->width;
 		this->image_height = avctx->height;
+
+		// TODO(fraudies): Alignment for the source does not seem to be necessary, but test with more res
+		// avcodec_align_dimensions(avctx, &avctx->width, &avctx->height);
+
+		this->video_stream = stream_index;
+		this->video_st = ic->streams[stream_index];
+
+		// Calculate the Frame rate (FPS) of the video stream
+		if (this->video_st) {
+			AVRational f = av_guess_frame_rate(ic, video_st, NULL);
+			AVRational rational = this->video_st->avg_frame_rate;
+			if(rational.den == rational.num == 0)
+				rational = this->video_st->r_frame_rate;
+
+			this->fps = rational.num / rational.den;
+		}
+
 		pViddec = new Decoder(avctx, pVideoq, &continue_read_thread);
-		//pViddec->init(avctx, pVideoq, &continue_read_thread);
-		//decoder_init(&this->viddec, avctx, pVideoq, this->continue_read_thread);
 		if ((ret = pViddec->start(video_thread_bridge, this)) < 0)
 			goto out;
 		queue_attachments_req = 1;
@@ -161,8 +168,6 @@ int VideoState::stream_component_open(int stream_index) {
 		subtitle_stream = stream_index;
 		subtitle_st = ic->streams[stream_index];
 		pSubdec = new Decoder(avctx, pSubtitleq, &continue_read_thread);
-		//decoder_init(&this->subdec, avctx, this->pSubtitleq, this->continue_read_thread);
-		//pSubdec->init(avctx, pSubtitleq, &continue_read_thread);
 		if ((ret = pSubdec->start(subtitle_thread_bridge, this)) < 0)
 			goto out;
 		break;
@@ -575,6 +580,7 @@ VideoState::VideoState() :
 	audio_disable(0),
 	video_disable(0),
 	subtitle_disable(0),
+	paused(true), // Disable audo play when streamig through Java, Note: need to change to false when using SDL
 	stopped(false) {
 	// Frame queues depend on the packet queues that have not been initialized in initializer
 	pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
@@ -1350,19 +1356,19 @@ void VideoState::seek_chapter(int incr) {
 }
 
 int VideoState::get_image_width() const {
-	return image_width;
+	return video_st ? image_width : 0;
 }
 
 int VideoState::get_image_height() const {
-	return image_height;
+	return video_st ? image_height : 0;
 }
 
 bool VideoState::has_audio_data() const {
-	return audio_stream >= 0;
+	return last_audio_stream >= 0;
 }
 
 bool VideoState::has_image_data() const {
-	return video_stream >= 0;
+	return last_video_stream >= 0;
 }
 
 double VideoState::get_duration() const {
@@ -1373,14 +1379,12 @@ int VideoState::get_audio_volume() const {
 	return audio_volume;
 }
 
-void VideoState::toggle_mute() {
-	this->muted = !this->muted;
+void VideoState::set_audio_volume(int new_audio_volume) {
+	audio_volume = new_audio_volume;
 }
 
-void VideoState::update_volume(int sign, double step) {
-	double volume_level = this->audio_volume ? (20 * log(this->audio_volume / (double)SDL_MIX_MAXVOLUME) / log(10)) : -1000.0;
-	int new_volume = lrint(SDL_MIX_MAXVOLUME * pow(10.0, (volume_level + sign * step) / 20.0));
-	this->audio_volume = av_clip(this->audio_volume == new_volume ? (this->audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME);
+void VideoState::toggle_mute() {
+	this->muted = !this->muted;
 }
 
 void VideoState::update_pts(double pts, int64_t pos, int serial) {
@@ -1539,29 +1543,30 @@ int isBigEndian() {
 	return (u.c[sizeof(long int) - 1] == 1);
 }
 
-AudioFormat VideoState::get_audio_format() const {
-	AudioParams audioParams = get_audio_tgt();
-	AudioFormat audioFormat;
-	// TODO: We need to add the audio codec to some container around AudioParams and use that here
-	switch (audioParams.fmt) {
-	case AV_SAMPLE_FMT_U8: case AV_SAMPLE_FMT_U8P:
-		audioFormat.encoding = "PCM_UNSIGNED";
-		break;
-	case AV_SAMPLE_FMT_S16: case AV_SAMPLE_FMT_S16P:
-		audioFormat.encoding = "PCM_SIGNED";
-		break;
-	default:
-		audioFormat.encoding = "Unknown";
-		break;
-	}
-	audioFormat.bigEndian = isBigEndian();
-	audioFormat.sampleRate = audioParams.freq;
-	audioFormat.sampleSizeInBits = audioParams.frame_size * sizeof(char);
-	audioFormat.channels = audioParams.channels;
-	audioFormat.frameSize = audioParams.frame_size;
-	audioFormat.frameRate = audioParams.freq;
-	return audioFormat;
-}
+//TODO(Reda): Review this function, not used in both Java and SDL Player 
+//AudioFormat VideoState::get_audio_format() const {
+//	AudioParams audioParams = get_audio_tgt();
+//	AudioFormat audioFormat;
+//	// TODO: We need to add the audio codec to some container around AudioParams and use that here
+//	switch (audioParams.fmt) {
+//	case AV_SAMPLE_FMT_U8: case AV_SAMPLE_FMT_U8P:
+//		audioFormat.encoding = "PCM_UNSIGNED";
+//		break;
+//	case AV_SAMPLE_FMT_S16: case AV_SAMPLE_FMT_S16P:
+//		audioFormat.encoding = "PCM_SIGNED";
+//		break;
+//	default:
+//		audioFormat.encoding = "Unknown";
+//		break;
+//	}
+//	audioFormat.bigEndian = isBigEndian();
+//	audioFormat.sampleRate = audioParams.freq;
+//	audioFormat.sampleSizeInBits = audioParams.frame_size * sizeof(char);
+//	audioFormat.channels = audioParams.channels;
+//	audioFormat.frameSize = audioParams.frame_size;
+//	audioFormat.frameRate = audioParams.freq;
+//	return audioFormat;
+//}
 
 Decoder* VideoState::get_pViddec() { return pViddec; }
 
@@ -1675,6 +1680,10 @@ double VideoState::get_master_clock() const {
 	return val;
 }
 
+double VideoState::get_fps() const {
+	return video_st ? this->fps : 0;
+}
+
 void VideoState::stream_close() {
 	/* XXX: use a special url_shutdown call to abort parse cleanly */
 	this->abort_request = 1;
@@ -1711,9 +1720,10 @@ void VideoState::stream_close() {
 }
 
 /* prepare a new audio buffer */
+// TODO(fraudies): This method requires clean-up since we use it both for SDL and Java playback but most parts are specific to the SDL
+// E.g. we need to push the regulation of balance, volume into the SDL only part
 void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 	int audio_size, len1;
-
 	audio_callback_time = av_gettime_relative();
 
 	while (len > 0) {
@@ -1722,6 +1732,7 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 			if (audio_size < 0) {
 				/* if error, just output silence */
 				this->audio_buf = NULL;
+				// TODO(fraudies): Need to use the default buffer in case of the java playback
 				this->audio_buf_size = SDL_AUDIO_MIN_BUFFER_SIZE / this->audio_tgt.frame_size * this->audio_tgt.frame_size;
 			}
 			else {
@@ -1734,6 +1745,7 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 		len1 = this->audio_buf_size - this->audio_buf_index;
 		if (len1 > len)
 			len1 = len;
+		// TODO(fraudies): We should move this volume regulation (not mute) to the SDL only part
 		if (!this->muted && this->audio_buf && this->audio_volume == SDL_MIX_MAXVOLUME)
 			memcpy(stream, (uint8_t *)this->audio_buf + this->audio_buf_index, len1);
 		else {

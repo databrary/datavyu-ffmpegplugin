@@ -24,6 +24,7 @@
 */
 
 #include "Pipeline.h"
+#include "JavaPlayerEventDispatcher.h"
 #include "FfmpegMediaErrors.h"
 
 //*************************************************************************************************
@@ -77,6 +78,11 @@ uint32_t CPipeline::Pause()
 	return ERROR_NONE;
 }
 
+uint32_t CPipeline::StepForward()
+{
+	return ERROR_NONE;
+}
+
 uint32_t CPipeline::Finish()
 {
 	return ERROR_NONE;
@@ -103,6 +109,16 @@ uint32_t CPipeline::GetStreamTime(double* pdStreamTime)
 		return ERROR_FUNCTION_PARAM_NULL;
 
 	*pdStreamTime = 0.0;
+
+	return ERROR_NONE;
+}
+
+uint32_t CPipeline::GetFps(double* pdFps)
+{
+	if (NULL == pdFps)
+		return ERROR_FUNCTION_PARAM_NULL;
+
+	*pdFps = 0.0;
 
 	return ERROR_NONE;
 }
@@ -152,13 +168,11 @@ uint32_t CPipeline::GetBalance(float* pfBalance)
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::SetAudioSyncDelay(long lMillis)
-{
+uint32_t CPipeline::SetAudioSyncDelay(long lMillis) {
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::GetAudioSyncDelay(long* plMillis)
-{
+uint32_t CPipeline::GetAudioSyncDelay(long* plMillis) {
 	if (NULL == plMillis)
 		return ERROR_FUNCTION_PARAM_NULL;
 
@@ -221,22 +235,118 @@ uint32_t CPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
-	if (NULL == ppImageBuffer)
+uint32_t CPipeline::UpdateImageBuffer(uint8_t* pImageData, const long len) {
+	if (NULL == pImageData || len == 0)
 		return ERROR_FUNCTION_PARAM_NULL;
 
-	*ppImageBuffer = nullptr;
+	pImageData = nullptr;
 
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
-	if (NULL == ppAudioBuffer)
+uint32_t CPipeline::UpdateAudioBuffer(uint8_t* pAudioData, const long len) {
+	if (NULL == pAudioData || len == 0)
 		return ERROR_FUNCTION_PARAM_NULL;
 
-	*ppAudioBuffer = nullptr;
+	pAudioData = nullptr;
 
 	return ERROR_NONE;
+}
+
+void CPipeline::UpdatePlayerState(PlayerState newState) {
+	PlayerState newPlayerState = m_PlayerState;	// If we assign the same state again
+	bool bSilent = false;
+
+	switch (m_PlayerState)
+	{
+	case Unknown:
+		if (Ready == newState)
+		{
+			newPlayerState = Ready;
+		}
+		break;
+
+	case Ready:
+		if (Playing == newState)
+		{
+			newPlayerState = Playing;
+		}
+		break;
+
+	case Playing:
+		if (Stalled == newState || Paused == newState || Stopped == newState || Finished == newState) {
+			newPlayerState = newState;
+		}
+		break;
+
+	case Paused:
+		if (Stopped == newState || Playing == newState)
+		{
+			newPlayerState = newState;
+		}
+		break;
+
+	case Stopped:
+		if (Playing == newState || Paused == newState)
+		{
+			newPlayerState = newState;
+		}
+		break;
+
+	case Stalled:
+	{
+		if (Stopped == newState || Paused == newState || Playing == newState) {
+			newPlayerState = newState;
+		}
+		break;
+	}
+
+	case Finished:
+		if (Playing == newState) {
+			// We can go from Finished to Playing only when seek happens (or repeat)
+			// This state change should be silent.
+			newPlayerState = Playing;
+			bSilent = true;
+		}
+		if (Stopped == newState) {
+			newPlayerState = Stopped;
+		}
+
+		break;
+
+	case Error:
+		break;
+	}
+
+	// The same thread can acquire the same lock several times
+	SetPlayerState(newPlayerState, bSilent);
+}
+
+
+void CPipeline::SetPlayerState(PlayerState newPlayerState, bool bSilent) {
+
+	// Determine if we need to send an event out
+	bool updateState = newPlayerState != m_PlayerState;
+	if (updateState)
+	{
+		if (NULL != m_pEventDispatcher && !bSilent)
+		{
+			m_PlayerState = newPlayerState;
+
+			if (!m_pEventDispatcher->SendPlayerStateEvent(newPlayerState, 0))
+			{
+				m_pEventDispatcher->SendPlayerMediaErrorEvent(ERROR_JNI_SEND_PLAYER_STATE_EVENT);
+			}
+		}
+		else
+		{
+			m_PlayerState = newPlayerState;
+		}
+	}
+
+	if (updateState && newPlayerState == Stalled) { // Try to play
+		Play();
+	}
 }
 
 CPipelineOptions* CPipeline::GetCPipelineOptions() {

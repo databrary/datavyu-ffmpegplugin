@@ -45,7 +45,7 @@ public interface MediaPlayer {
      * @throws IllegalArgumentException if <code>listener</code> is
      * <code>null</code>.
      */
-    void addMediaPlayerListener(PlayerStateListener listener);
+    void addMediaPlayerStateListener(PlayerStateListener listener);
 
     /**
      * Removes a listener for media state.
@@ -54,7 +54,7 @@ public interface MediaPlayer {
      * @throws IllegalArgumentException if <code>listener</code> is
      * <code>null</code>.
      */
-    void removeMediaPlayerListener(PlayerStateListener listener);
+    void removeMediaPlayerStateListener(PlayerStateListener listener);
 
     /**
      * Set the amount of time to delay for the audio.
@@ -83,7 +83,7 @@ public interface MediaPlayer {
     void play();
 
     /**
-     * Stops playing of the media and resets the play time to 0.
+     * Stops playing of the media.
      */
     void stop();
 
@@ -92,6 +92,11 @@ public interface MediaPlayer {
      * playing the media from where it left off.
      */
     void pause();
+
+    /**
+     * Step to the next frame and pause the media.
+     */
+    void stepForward();
 
     /**
      * Get the rate of playback.
@@ -116,6 +121,13 @@ public interface MediaPlayer {
      * @return the current presentation time
      */
     double getPresentationTime();
+
+    /**
+     * Gets Frame rate (expressed in frames per second) of the current video stream
+     *
+     * @return the current video frame rate
+     */
+    double getFps();
 
     /**
      * Gets the current volume.

@@ -7,16 +7,12 @@ FfmpegPipelineFactory::~FfmpegPipelineFactory()
 {}
 
 uint32_t FfmpegPipelineFactory::CreatePlayerPipeline(CPipelineOptions *pOptions, CPipeline **ppPipeline) {
-
-	if (NULL == pOptions->GetStreamData())
-		return ERROR_BASE_PIPELINE;
 	
 	*ppPipeline = NULL;
 	if (pOptions->GetStreamData())
-		*ppPipeline = new (nothrow) FfmpegSdlAvPlaybackPipeline(pOptions);
+		*ppPipeline = new (nothrow) FfmpegJavaAvPlaybackPipline(pOptions);
 	else
-		//TODO(Reda) create instance of FfmpegJavaAvPlaybackPipline here
-		return ERROR_PIPELINE_NULL;
+		*ppPipeline = new (nothrow) FfmpegSdlAvPlaybackPipeline(pOptions);
 
 	if (NULL == ppPipeline)
 		return ERROR_PIPELINE_NULL;

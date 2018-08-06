@@ -1,23 +1,20 @@
 #include "FfmpegSdlAvPlaybackPipeline.h"
 #include "FfmpegMediaErrors.h"
-#include "JavaPlayerEventDispatcher.h"
-#include "FfmpegSdlAvPlayback.h"
 
 FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(CPipelineOptions* pOptions) 
 	: CPipeline(pOptions), pSdlPlayback(nullptr) 
-{	
-}
+{}
 
 FfmpegSdlAvPlaybackPipeline::~FfmpegSdlAvPlaybackPipeline() {
 	// Clean-up done in dispose that is called from the destructor of the super-class
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char * filename) {
+uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char * input_file) {
 	// TODO: Proper error handling and wiring up of input arguments
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	AVInputFormat *file_iformat = nullptr;
-	pSdlPlayback = new FfmpegSdlAvPlayback(filename, file_iformat);
+	pSdlPlayback = new FfmpegSdlAvPlayback(input_file, file_iformat);
 
 	// Assign the callback functions	
 	pSdlPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {
@@ -80,6 +77,16 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
 	return ERROR_NONE; // no error
 }
 
+uint32_t FfmpegSdlAvPlaybackPipeline::StepForward()
+{
+	if (pSdlPlayback == nullptr)
+		return ERROR_PLAYER_NULL;
+
+	pSdlPlayback->step_to_next_frame();
+
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
 	// TODO(fraudies): Stalling and finish need to be set from the video player
 	return ERROR_NONE;
@@ -120,6 +127,17 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 	return ERROR_NONE; // no error
 }
 
+uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double * pdFps)
+{
+	if (pSdlPlayback == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	*pdFps = pSdlPlayback->get_fps();
+
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
 	// TODO(fraudies): Implement this once ready
 	// At the moment we don't have a way of setting this
@@ -136,18 +154,16 @@ uint32_t FfmpegSdlAvPlaybackPipeline::SetVolume(float fVolume) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this once ready
-	//pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
+	pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetVolume(float* pfVolume) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this once ready
-	//*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
-
-	return ERROR_NONE; // no error
+	*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetBalance(float fBalance) {
@@ -171,177 +187,65 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioSyncDelay(long* plMillis) {
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::HasAudioData(bool* bAudioData) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*bAudioData = pSdlPlayback->has_audio_data();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::HasImageData(bool* bImageData) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*bImageData = pSdlPlayback->has_image_data();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageWidth(int* width) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*width = pSdlPlayback->get_image_width();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int* iHeight) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*iHeight = pSdlPlayback->get_image_height();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioFormat(AudioFormat* pAudioFormat) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*pAudioFormat = pSdlPlayback->get_audio_format();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement the pixel format for the ouput
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement the image buffer data
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer) {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer, const int len) {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement the audio buffer data
 	return ERROR_NONE;
-}
-
-void FfmpegSdlAvPlaybackPipeline::UpdatePlayerState(PlayerState newState) {
-	// Don't need state lock anymore because we update it only from one thread (in the read_thread)
-	//stateLock.lock();
-	PlayerState newPlayerState = m_PlayerState;	// If we assign the same state again
-	bool bSilent = false;
-
-	switch (m_PlayerState)
-	{
-	case Unknown:
-		if (Ready == newState)
-		{
-			newPlayerState = Ready;
-		}
-		break;
-
-	case Ready:
-		if (Playing == newState)
-		{
-			newPlayerState = Playing;
-		}
-		break;
-
-	case Playing:
-		if (Stalled == newState || Paused == newState || Stopped == newState || Finished == newState) {
-			newPlayerState = newState;
-		}
-		break;
-
-	case Paused:
-		if (Stopped == newState || Playing == newState)
-		{
-			newPlayerState = newState;
-		}
-		break;
-
-	case Stopped:
-		if (Playing == newState || Paused == newState)
-		{
-			newPlayerState = newState;
-		}
-		break;
-
-	case Stalled:
-	{
-		if (Stopped == newState || Paused == newState || Playing == newState) {
-			newPlayerState = newState;
-		}
-		break;
-	}
-
-	case Finished:
-		if (Playing == newState) {
-			// We can go from Finished to Playing only when seek happens (or repeat)
-			// This state change should be silent.
-			newPlayerState = Playing;
-			bSilent = true;
-		}
-		if (Stopped == newState) {
-			newPlayerState = Stopped;
-		}
-
-		break;
-
-	case Error:
-		break;
-	}
-
-	// The same thread can acquire the same lock several times
-	SetPlayerState(newPlayerState, bSilent);
-	//stateLock.unlock();
-}
-
-
-void FfmpegSdlAvPlaybackPipeline::SetPlayerState(PlayerState newPlayerState, bool bSilent) {
-	//stateLock.lock();
-
-	// Determine if we need to send an event out
-	bool updateState = newPlayerState != m_PlayerState;
-	if (updateState)
-	{
-		if (NULL != m_pEventDispatcher && !bSilent)
-		{
-			m_PlayerState = newPlayerState;
-
-			if (!m_pEventDispatcher->SendPlayerStateEvent(newPlayerState, 0))
-			{
-				m_pEventDispatcher->SendPlayerMediaErrorEvent(ERROR_JNI_SEND_PLAYER_STATE_EVENT);
-			}
-		}
-		else
-		{
-			m_PlayerState = newPlayerState;
-		}
-	}
-
-	//stateLock.unlock();
-
-	if (updateState && newPlayerState == Stalled) { // Try to play
-		Play();
-	}
 }

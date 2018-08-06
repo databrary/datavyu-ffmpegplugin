@@ -30,6 +30,7 @@
 #include "PipelineOptions.h"
 #include "AudioVideoFormats.h"
 
+
 class CMedia;
 class CJavaPlayerEventDispatcher;
 
@@ -65,12 +66,14 @@ public:
     virtual uint32_t        Play()=0;
     virtual uint32_t        Stop();
     virtual uint32_t        Pause();
+    virtual uint32_t        StepForward();
     virtual uint32_t        Finish();
 
     virtual uint32_t        Seek(double dSeekTime);
 
     virtual uint32_t        GetDuration(double* pdDuration);
     virtual uint32_t        GetStreamTime(double* pdStreamTime);
+	virtual uint32_t		GetFps(double* pdFps);
 
     virtual uint32_t        SetRate(float fRate);
     virtual uint32_t        GetRate(float* pfRate);
@@ -90,17 +93,22 @@ public:
 	virtual uint32_t		GetImageHeight(int* iHeight) const;
 	virtual uint32_t		GetAudioFormat(AudioFormat* pAudioFormat) const;
 	virtual uint32_t		GetPixelFormat(PixelFormat* pPixelFormat) const;
-	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
-	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer);
+	virtual uint32_t		UpdateImageBuffer(uint8_t* pImageBuffer, const long len);
+	virtual uint32_t		UpdateAudioBuffer(uint8_t* pAudioBuffer, const long len);
 
 	// TODO(fraudies): Clean this up... currently used to free memory
 	CPipelineOptions* GetCPipelineOptions();
+
+
 
 protected:
 	CJavaPlayerEventDispatcher* m_pEventDispatcher;
 	CPipelineOptions*			m_pOptions;
     PlayerState					m_PlayerState;
 	PlayerState					m_PlayerPendingState; // This is necessary to get from stalled into the next correct state
+
+	void UpdatePlayerState(PlayerState newState);
+	void SetPlayerState(PlayerState newPlayerState, bool bSilent);
 };
 
 #endif  //_PIPELINE_H_

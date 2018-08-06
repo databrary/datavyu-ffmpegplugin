@@ -8,9 +8,18 @@ protected:
 	VideoState * pVideoState;
 	double frame_timer;
 
+	int width, height;
+
+	int force_refresh;
+	int display_disable;
+	
+	int frame_drops_late;
+
 	void stream_toggle_pause();
 	int get_frame_timer();
 	void set_frame_timer(int newFrame_timer);
+	void set_force_refresh(int refresh);
+	double vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration);
 public:
 
 	FfmpegAvPlayback(const char *filename, AVInputFormat *iformat);
@@ -22,6 +31,7 @@ public:
 	virtual void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
 	virtual double get_duration() const;
 	virtual double get_master_clock() const;
+	virtual double get_fps() const;
 	virtual void set_rate(double rate);
 	virtual double get_rate() const;
 	// TODO(fraudies): add volume, balance, audio sync delay

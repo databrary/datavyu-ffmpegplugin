@@ -28,8 +28,11 @@ void FfmpegAvPlayback::stream_toggle_pause() {
 }
 
 FfmpegAvPlayback::FfmpegAvPlayback(const char *filename, AVInputFormat *iformat) :
-	pVideoState(VideoState::stream_open(filename, iformat)) {
-}
+	pVideoState(VideoState::stream_open(filename, iformat)),
+	display_disable(0),
+	width(0),
+	height(0) 
+{ }
 
 FfmpegAvPlayback::~FfmpegAvPlayback() {}
 
@@ -44,18 +47,22 @@ void FfmpegAvPlayback::play() {
 	}
 }
 
+// Stop and put the playback speed to 0x
+// Note the playback speed is not implemetnted yet
 void FfmpegAvPlayback::stop() {
 	if (!pVideoState->get_paused()) {
 		toggle_pause();
 		pVideoState->set_stopped(true);
 	}
-	// Stop playback and seek to the start of the stream
-	double pos = get_master_clock();
+	// Stop playback and seek to the start of the stream 
+	/*double pos = get_master_clock();
 	double start = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
 	double incr = start - pos;
-	stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+	stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);*/
 }
 
+// pause and keep the playback speed.
+// Note the playback speed is not implemetnted yet
 void FfmpegAvPlayback::toggle_pause() {
 	stream_toggle_pause();
 	pVideoState->set_step(false);
@@ -72,6 +79,10 @@ double FfmpegAvPlayback::get_duration() const {
 
 double FfmpegAvPlayback::get_master_clock() const {
 	return pVideoState->get_master_clock();
+}
+
+double FfmpegAvPlayback::get_fps() const {
+	return pVideoState->get_fps();
 }
 
 void FfmpegAvPlayback::set_rate(double rate) {
@@ -97,6 +108,24 @@ int FfmpegAvPlayback::get_frame_timer() {
 
 void FfmpegAvPlayback::set_frame_timer(int newFrame_timer) {
 	frame_timer = newFrame_timer;
+}
+
+void FfmpegAvPlayback::set_force_refresh(int refresh) {
+	force_refresh = refresh;
+}
+
+double FfmpegAvPlayback::vp_duration(Frame * vp, Frame * nextvp, double max_frame_duration) {
+	if (vp->serial == nextvp->serial) {
+		double duration = nextvp->pts - vp->pts;
+		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
+			return vp->duration;
+		else
+			return duration;
+	}
+	else {
+		return 0.0;
+
+	}
 }
 
 void FfmpegAvPlayback::step_to_next_frame() {

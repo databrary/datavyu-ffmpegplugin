@@ -36,8 +36,6 @@ static unsigned sws_flags = SWS_BICUBIC;
 static int16_t sample_array[SAMPLE_ARRAY_SIZE];
 static int sample_array_index;
 
-static int display_disable = 0;
-
 static const struct TextureFormatEntry {
 	enum AVPixelFormat format;
 	int texture_fmt;
@@ -73,7 +71,7 @@ private:
 	SDL_Renderer* renderer;
 	SDL_AudioDeviceID audio_dev = 0;
 	SDL_RendererInfo renderer_info = { 0 };
-	int width, height, ytop, xleft;
+	int ytop, xleft;
 	double rdftspeed;
 	int xpos;
 
@@ -101,8 +99,6 @@ private:
 		int scr_xleft, int scr_ytop, int scr_width, int scr_height,
 		int pic_width, int pic_height, AVRational pic_sar);
 
-	double vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration);
-
 	std::atomic<bool> stopped = false;
 	std::thread* display_tid = nullptr;
 
@@ -120,8 +116,6 @@ public:
 
 	int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
 		struct AudioParams *audio_hw_params);
-
-	void set_force_refresh(int refresh);
 
 	static void set_default_window_size(int width, int height, AVRational sar);
 
@@ -145,6 +139,10 @@ public:
 	static void update_sample_display(short *samples, int samples_size);
 
 	void video_audio_display();
+
+	int get_audio_volume() const;
+
+	void update_volume(int sign, double step);
 
 	// Function Called from the event loop
 	void refresh_loop_wait_event(SDL_Event *event);

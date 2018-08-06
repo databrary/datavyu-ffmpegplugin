@@ -24,12 +24,14 @@ private:
 	virtual uint32_t        Play();
 	virtual uint32_t        Stop();
 	virtual uint32_t        Pause();
+	virtual uint32_t        StepForward();
 	virtual uint32_t        Finish();
 
 	virtual uint32_t        Seek(double dSeekTime);
 
 	virtual uint32_t        GetDuration(double* pdDuration);
 	virtual uint32_t        GetStreamTime(double* pdStreamTime);
+	virtual uint32_t        GetFps(double* pdFps);
 
 	virtual uint32_t        SetRate(float fRate);
 	virtual uint32_t        GetRate(float* pfRate);
@@ -51,10 +53,7 @@ private:
 	virtual uint32_t		GetAudioFormat(AudioFormat* pAudioParams) const;
 	virtual uint32_t		GetPixelFormat(PixelFormat* pPixelFormat) const;
 	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
-	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer);
-
-	void UpdatePlayerState(PlayerState newState);
-	void SetPlayerState(PlayerState newState, bool bSilent);
+	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer, const int len);
 
 	FfmpegSdlAvPlayback* pSdlPlayback;
 };
