@@ -42,8 +42,8 @@ public:
 
 	bool do_display();
 
-	void update_image_buffer(uint8_t* pImageData, const long len);
-	void update_audio_buffer(uint8_t* pAudioData, const long len);
+	void get_image_buffer(uint8_t** ppImageData, long* pLen);
+	void get_audio_buffer(uint8_t** ppAudioData, long* pLen);
 
 	void get_audio_format(AudioFormat* pAudioFormat);
 	void get_pixel_format(PixelFormat* pPixelFormat);

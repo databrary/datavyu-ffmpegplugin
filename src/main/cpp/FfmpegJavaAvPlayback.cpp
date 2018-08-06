@@ -184,7 +184,7 @@ bool FfmpegJavaAvPlayback::do_display() {
 	return display;
 }
 
-void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long len) {
+void FfmpegJavaAvPlayback::get_image_buffer(uint8_t** ppImageData, long* pLen) {
 	bool doUpdate = do_display();
 	if (doUpdate) {
 		Frame *vp = pVideoState->get_pPictq()->peek_last();
@@ -195,7 +195,6 @@ void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long l
 			SWS_BICUBIC, NULL, NULL, NULL);
 		if (img_convert_ctx != NULL) {
 			// TODO(fraudies): Add switch case statement for the different pixel formats
-
 
 			// Left the pixels allocation/free here to support resizing through sws_scale natively
 			uint8_t* pixels[4];
@@ -210,8 +209,9 @@ void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long l
 	}
 }
 
-void FfmpegJavaAvPlayback::update_audio_buffer(uint8_t* pAudioData, const long len) {
-	pVideoState->sdl_audio_callback(pAudioData, len);
+void FfmpegJavaAvPlayback::get_audio_buffer(uint8_t** ppAudioData, long* pLen) {
+	*pLen = 4 * 1024; // TODO(fraudies): Change me to the defined size
+	pVideoState->sdl_audio_callback(*ppAudioData, *pLen);
 }
 
 void FfmpegJavaAvPlayback::get_audio_format(AudioFormat* pAudioFormat) {

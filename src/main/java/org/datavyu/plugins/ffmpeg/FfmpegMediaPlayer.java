@@ -404,19 +404,23 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     }
 
     @Override
-    public void updateAudioData(byte[] data) {
-        int rc = ffmpegUpdateAudioData(getNativeMediaRef(), data);
+    public ByteBuffer getAudioData() {
+        ByteBuffer[] buffers = new ByteBuffer[1];
+        int rc = ffmpegGetAudioBuffer(getNativeMediaRef(), buffers);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+        return buffers[0];
     }
 
     @Override
-    public void updateImageData(byte[] data) {
-        int rc = ffmpegUpdateImageData(getNativeMediaRef(), data);
+    public ByteBuffer getImageData() {
+        ByteBuffer[] buffers = new ByteBuffer[1];
+        int rc = ffmpegGetImageBuffer(getNativeMediaRef(), buffers);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+        return buffers[0];
     }
 
     // Native methods

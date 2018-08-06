@@ -235,20 +235,20 @@ uint32_t CPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::UpdateImageBuffer(uint8_t* pImageData, const long len) {
-	if (NULL == pImageData || len == 0)
+uint32_t CPipeline::GetImageBuffer(uint8_t** ppImageData, long* pLen) {
+	if (NULL == ppImageData)
 		return ERROR_FUNCTION_PARAM_NULL;
 
-	pImageData = nullptr;
+	ppImageData = nullptr;
 
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::UpdateAudioBuffer(uint8_t* pAudioData, const long len) {
-	if (NULL == pAudioData || len == 0)
+uint32_t CPipeline::GetAudioBuffer(uint8_t** ppAudioData, long* pLen) {
+	if (NULL == ppAudioData)
 		return ERROR_FUNCTION_PARAM_NULL;
 
-	pAudioData = nullptr;
+	ppAudioData = nullptr;
 
 	return ERROR_NONE;
 }
