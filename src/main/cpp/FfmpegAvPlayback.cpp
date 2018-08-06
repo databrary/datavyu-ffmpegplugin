@@ -40,6 +40,7 @@ void FfmpegAvPlayback::set_player_state_callback_func(PlayerStateCallback callba
 	pVideoState->set_player_state_callback_func(callback, func);
 }
 
+
 void FfmpegAvPlayback::play() {
 	if (pVideoState->get_paused()) {
 		toggle_pause();
