@@ -580,6 +580,7 @@ VideoState::VideoState() :
 	audio_disable(0),
 	video_disable(0),
 	subtitle_disable(0),
+	paused(true), // Disable auto play (Note set pause to false when using ffplay.cpp)
 	stopped(false) {
 	// Frame queues depend on the packet queues that have not been initialized in initializer
 	pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
@@ -838,6 +839,7 @@ int VideoState::read_thread() {
 
 #if CONFIG_AVFILTER
 #else
+		// Fast Playback is not working natively, we are using the fake fast plyaback implmented in Datavyu
 		if (newSpeed_req) {
 			if (video_stream >= 0 && audio_stream >= 0) {
 
@@ -1542,29 +1544,30 @@ int isBigEndian() {
 	return (u.c[sizeof(long int) - 1] == 1);
 }
 
-AudioFormat VideoState::get_audio_format() const {
-	AudioParams audioParams = get_audio_tgt();
-	AudioFormat audioFormat;
-	// TODO: We need to add the audio codec to some container around AudioParams and use that here
-	switch (audioParams.fmt) {
-	case AV_SAMPLE_FMT_U8: case AV_SAMPLE_FMT_U8P:
-		audioFormat.encoding = "PCM_UNSIGNED";
-		break;
-	case AV_SAMPLE_FMT_S16: case AV_SAMPLE_FMT_S16P:
-		audioFormat.encoding = "PCM_SIGNED";
-		break;
-	default:
-		audioFormat.encoding = "Unknown";
-		break;
-	}
-	audioFormat.bigEndian = isBigEndian();
-	audioFormat.sampleRate = audioParams.freq;
-	audioFormat.sampleSizeInBits = audioParams.frame_size * sizeof(char);
-	audioFormat.channels = audioParams.channels;
-	audioFormat.frameSize = audioParams.frame_size;
-	audioFormat.frameRate = audioParams.freq;
-	return audioFormat;
-}
+//TODO(Reda): Review this function, not used in both Java and SDL Player (Generate unresolved linker error with SDL Player)
+//AudioFormat VideoState::get_audio_format() const {
+//	AudioParams audioParams = get_audio_tgt();
+//	AudioFormat audioFormat;
+//	// TODO: We need to add the audio codec to some container around AudioParams and use that here
+//	switch (audioParams.fmt) {
+//	case AV_SAMPLE_FMT_U8: case AV_SAMPLE_FMT_U8P:
+//		audioFormat.encoding = "PCM_UNSIGNED";
+//		break;
+//	case AV_SAMPLE_FMT_S16: case AV_SAMPLE_FMT_S16P:
+//		audioFormat.encoding = "PCM_SIGNED";
+//		break;
+//	default:
+//		audioFormat.encoding = "Unknown";
+//		break;
+//	}
+//	audioFormat.bigEndian = isBigEndian();
+//	audioFormat.sampleRate = audioParams.freq;
+//	audioFormat.sampleSizeInBits = audioParams.frame_size * sizeof(char);
+//	audioFormat.channels = audioParams.channels;
+//	audioFormat.frameSize = audioParams.frame_size;
+//	audioFormat.frameRate = audioParams.freq;
+//	return audioFormat;
+//}
 
 Decoder* VideoState::get_pViddec() { return pViddec; }
 
