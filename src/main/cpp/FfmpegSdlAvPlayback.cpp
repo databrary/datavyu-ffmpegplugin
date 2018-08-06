@@ -553,18 +553,6 @@ void FfmpegSdlAvPlayback::video_audio_display() {
 	}
 }
 
-
-int FfmpegSdlAvPlayback::get_audio_volume() const {
-	return pVideoState->get_audio_volume();
-}
-
-void FfmpegSdlAvPlayback::update_volume(int sign, double step) {
-	int audio_volume = get_audio_volume();
-	double volume_level = audio_volume ? (20 * log(audio_volume / (double)SDL_MIX_MAXVOLUME) / log(10)) : -1000.0;
-	int new_volume = lrint(SDL_MIX_MAXVOLUME * pow(10.0, (volume_level + sign * step) / 20.0));
-	pVideoState->set_audio_volume(av_clip(audio_volume == new_volume ? (audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME));
-}
-
 void FfmpegSdlAvPlayback::refresh_loop_wait_event(SDL_Event *event) {
 	double remaining_time = 0.0;
 	SDL_PumpEvents();
@@ -898,11 +886,11 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				break;
 			case SDLK_KP_MULTIPLY:
 			case SDLK_0:
-				update_volume(1, SDL_VOLUME_STEP);
+				pVideoState->update_volume(1, SDL_VOLUME_STEP);
 				break;
 			case SDLK_KP_DIVIDE:
 			case SDLK_9:
-				update_volume(-1, SDL_VOLUME_STEP);
+				pVideoState->update_volume(-1, SDL_VOLUME_STEP);
 				break;
 			case SDLK_s: // S: Step to next frame
 				step_to_next_frame();

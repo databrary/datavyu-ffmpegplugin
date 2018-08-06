@@ -140,10 +140,6 @@ public:
 
 	void video_audio_display();
 
-	int get_audio_volume() const;
-
-	void update_volume(int sign, double step);
-
 	// Function Called from the event loop
 	void refresh_loop_wait_event(SDL_Event *event);
 

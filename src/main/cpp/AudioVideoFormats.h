@@ -2,24 +2,7 @@
 #define _AUDIO_VIDEO_FORMATS_H_
 #include <string>
 
-extern "C" {
-	#include "libavutil/samplefmt.h"
-	#include "libavutil/pixfmt.h"
-}
-
-// TODO(fraudies): Consolidate AudioParams and AudioFormat
-typedef struct AudioParams {
-	int					freq;
-	int					channels;
-	int64_t				channel_layout;
-	enum AVSampleFormat fmt;
-	int					frame_size;
-	int					bytes_per_sec;
-} AudioParams;
-
-
-class AudioFormat {
-public:
+typedef struct AudioFormat {
 	std::string encoding;
 	float sampleRate;
 	int sampleSizeInBits;
@@ -27,15 +10,25 @@ public:
 	int frameSize;
 	float frameRate;
 	bool bigEndian;
-	AudioFormat();
-	void toAudioParams(AudioParams* pAudioParams) const;
 };
 
-class PixelFormat {
-public:
-	AVPixelFormat type;
-	int numComponents;
-	PixelFormat();
+// These types are taken from java.awt.color.ColorSpace
+enum PixelFormatType {
+	TYPE_XYZ = 0,
+	TYPE_Lab = 1,
+	TYPE_Luv = 2,
+	TYPE_YCbCr = 3,
+	TYPE_Yxy = 4,
+	TYPE_RGB = 5,
+	TYPE_GRAY = 6,
+	TYPE_HSV = 7,
+	TYPE_HLS = 8,
+	TYPE_CMYK = 9,
+	TYPE_CMY = 11
+};
+
+typedef struct PixelFormat {
+	PixelFormatType type;
 };
 
 #endif // _AUDIO_VIDEO_FORMATS_H_

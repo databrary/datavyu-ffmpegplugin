@@ -78,11 +78,6 @@ uint32_t CPipeline::Pause()
 	return ERROR_NONE;
 }
 
-uint32_t CPipeline::StepForward()
-{
-	return ERROR_NONE;
-}
-
 uint32_t CPipeline::Finish()
 {
 	return ERROR_NONE;
@@ -109,16 +104,6 @@ uint32_t CPipeline::GetStreamTime(double* pdStreamTime)
 		return ERROR_FUNCTION_PARAM_NULL;
 
 	*pdStreamTime = 0.0;
-
-	return ERROR_NONE;
-}
-
-uint32_t CPipeline::GetFps(double* pdFps)
-{
-	if (NULL == pdFps)
-		return ERROR_FUNCTION_PARAM_NULL;
-
-	*pdFps = 0.0;
 
 	return ERROR_NONE;
 }

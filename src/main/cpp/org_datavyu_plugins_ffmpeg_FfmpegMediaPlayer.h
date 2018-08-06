@@ -28,10 +28,10 @@ extern "C" {
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegInitPlayer
- * Signature: ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;IZ)I
+ * Signature: ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;Z)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
-  (JNIEnv *, jobject, jlongArray, jstring, jobject, jobject, jint, jboolean);
+  (JNIEnv *, jobject, jlongArray, jstring, jobject, jobject, jboolean);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
@@ -83,14 +83,6 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
- * Method:    ffmpegStepForward
- * Signature: (J)I
- */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegStepForward
-  (JNIEnv *, jobject, jlong);
-
-/*
- * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegFinish
  * Signature: (J)I
  */
@@ -119,14 +111,6 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
  * Signature: (J[D)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetPresentationTime
-  (JNIEnv *, jobject, jlong, jdoubleArray);
-
-/*
- * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
- * Method:    ffmpegGetFps
- * Signature: (J[D)I
- */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetFps
   (JNIEnv *, jobject, jlong, jdoubleArray);
 
 /*
@@ -212,18 +196,18 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegGetAudioFormat
- * Signature: (J[Ljavax/sound/sampled/AudioFormat;)I
+ * Signature: (JLjavax/sound/sampled/AudioFormat;)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioFormat
-  (JNIEnv *, jobject, jlong, jobjectArray);
+  (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
  * Method:    ffmpegGetColorSpace
- * Signature: (J[Ljava/awt/color/ColorSpace;)I
+ * Signature: (JLjava/awt/color/ColorSpace;)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetColorSpace
-  (JNIEnv *, jobject, jlong, jobjectArray);
+  (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer

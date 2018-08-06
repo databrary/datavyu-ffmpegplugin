@@ -30,8 +30,6 @@
 #include <list>
 #include <string>
 
-#include "FfmpegJniUtils.h"
-
 using namespace std;
 typedef list<string> ContentTypesList;
 
@@ -45,21 +43,12 @@ public:
     };
 public:
 	// TODO(fraudies): Add the audio and video format here
-    CPipelineOptions(
-		bool streamData,
-		AudioFormat audioFormat,
-		PixelFormat pixelFormat,
-		int audioBufferSizeInBy,
-		int pipelineType = kAVPlaybackPipeline, 
-		bool havePreferredFormat = false)
-		: m_StreamData(streamData),
-		m_audioFormat(audioFormat),
-		m_pixelFormat(pixelFormat),
-		m_audioBufferSizeInBy(audioBufferSizeInBy),
-		m_PipelineType(pipelineType),
+    CPipelineOptions(bool streamData, int pipelineType=kAVPlaybackPipeline, bool havePreferredFormat = false)
+    :   m_PipelineType(pipelineType),
         m_bBufferingEnabled(false),
         m_StreamMimeType(-1),
-        m_bHLSModeEnabled(false)
+        m_bHLSModeEnabled(false),
+		m_StreamData(streamData)
     {}
 
     virtual ~CPipelineOptions() {}
@@ -78,18 +67,12 @@ public:
 	inline void		SetStreamData(bool enabled) { m_StreamData = enabled; }
     inline bool		GetStreamData() { return m_StreamData; }
 
-	inline const AudioFormat* GetAudioFormat() const { return &m_audioFormat; }
-	inline const PixelFormat* GetPixelFormat() const { return &m_pixelFormat; }
-	inline const int GetAudioBufferSizeInBy() const { return m_audioBufferSizeInBy;  }
 private:
-	bool		m_StreamData;
-	AudioFormat m_audioFormat;
-	PixelFormat m_pixelFormat;
-	int			m_audioBufferSizeInBy;
-	int         m_PipelineType;
+    int         m_PipelineType;
     bool        m_bBufferingEnabled;
     int         m_StreamMimeType;
     bool        m_bHLSModeEnabled;
+	bool		m_StreamData;
 };
 
 #endif  //_PIPELINE_OPTIONS_H_
