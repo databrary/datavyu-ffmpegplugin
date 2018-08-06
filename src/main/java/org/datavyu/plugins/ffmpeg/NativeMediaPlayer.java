@@ -98,6 +98,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
                         }
                     }
                 } catch (Exception e) {
+                    System.err.println(e);
                     // eventQueue.take() can throw InterruptedException,
                     // also in rare case it can throw wrong
                     // IllegalMonitorStateException
@@ -204,14 +205,14 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     }
 
     @Override
-    public void addMediaPlayerListener(PlayerStateListener listener) {
+    public void addMediaPlayerStateListener(PlayerStateListener listener) {
         if (listener != null) {
             playerStateListeners.add(new WeakReference(listener));
         }
     }
 
     @Override
-    public void removeMediaPlayerListener(PlayerStateListener listener) {
+    public void removeMediaPlayerStateListener(PlayerStateListener listener) {
         if (listener != null) {
             for (ListIterator<WeakReference<PlayerStateListener>> it = playerStateListeners.listIterator(); it.hasNext();) {
                 PlayerStateListener l = it.next().get();

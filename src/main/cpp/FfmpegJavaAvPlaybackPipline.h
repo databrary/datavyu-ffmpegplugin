@@ -3,6 +3,8 @@
 
 #include "Pipeline.h"
 #include "FfmpegJavaAvPlayback.h"
+#include "FfmpegMediaErrors.h";
+
 
 // TODO(Reda): Implement this interface
 class FfmpegJavaAvPlaybackPipline : public CPipeline {
@@ -42,11 +44,8 @@ private:
 	virtual uint32_t		GetImageHeight(int* iHeight) const;
 	virtual uint32_t		GetAudioFormat(AudioFormat* pAudioParams) const;
 	virtual uint32_t		GetPixelFormat(PixelFormat* pPixelFormat) const;
-	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
-	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer);
-
-	void UpdatePlayerState(PlayerState newState);
-	void SetPlayerState(PlayerState newState, bool bSilent);
+	virtual uint32_t		GetImageBuffer(uint8_t** ppImageData, long* pLen);
+	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioData, long* pLen);
 
 	FfmpegJavaAvPlayback* pJavaPlayback;
 };

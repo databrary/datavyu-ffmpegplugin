@@ -588,23 +588,54 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 	return ERROR_NONE;
 }
 
+
 /*
 * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
 * Method:    ffmpegGetImageBuffer
-* Signature: (J[B)I
+* Signature: (J[Ljava/nio/ByteBuffer;)I
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetImageBuffer
-(JNIEnv *, jobject, jlong, jbyteArray);
+(JNIEnv *env, jobject obj, jlong ref_media, jobjectArray jData) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia) {
+		return ERROR_MEDIA_NULL;
+	}
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline) {
+		return ERROR_PIPELINE_NULL;
+	}
+	uint8_t* pData = nullptr;
+	long len = -1;
+	uint32_t uErrCode = pPipeline->GetImageBuffer(&pData, &len);
+	if (uErrCode != ERROR_NONE)
+		return uErrCode;
+	env->SetObjectArrayElement(jData, 0, env->NewDirectByteBuffer(static_cast<void*>(pData), len));
+	return ERROR_NONE;
+}
 
 /*
 * Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
 * Method:    ffmpegGetAudioBuffer
-* Signature: (J[B)I
+* Signature: (J[Ljava/nio/ByteBuffer;)I
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioBuffer
-(JNIEnv *, jobject, jlong, jbyteArray);
-
-
+(JNIEnv *env, jobject obj, jlong ref_media, jobjectArray jData) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia) {
+		return ERROR_MEDIA_NULL;
+	}
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline) {
+		return ERROR_PIPELINE_NULL;
+	}
+	uint8_t* pData = nullptr;
+	long len = -1;
+	uint32_t uErrCode = pPipeline->GetAudioBuffer(&pData, &len);
+	if (uErrCode != ERROR_NONE)
+		return uErrCode;
+	env->SetObjectArrayElement(jData, 0, env->NewDirectByteBuffer(static_cast<void*>(pData), len));
+	return ERROR_NONE;
+}
 
 #ifdef __cplusplus
 }

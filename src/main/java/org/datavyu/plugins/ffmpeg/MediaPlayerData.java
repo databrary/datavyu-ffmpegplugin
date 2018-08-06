@@ -41,18 +41,18 @@ public interface MediaPlayerData {
     ColorSpace getColorSpace();
 
     /**
-     * Gets the most recent audio buffer to play
+     * Update the byte buffer with the most recent audio data to play
      *
      * @return The audio data
      */
-    void getAudioBuffer(byte[] data);
+    ByteBuffer getAudioData();
 
     /**
-     * Gets the most recent image buffer to play
+     * Update the byte buffer with the most recent image data to play
      *
      * @return The image data
      */
-    void getImageBuffer(byte[] data);
+    ByteBuffer getImageData();
 
     /**
      * Get the width of the image in pixels

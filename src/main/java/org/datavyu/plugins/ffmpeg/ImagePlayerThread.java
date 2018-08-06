@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
 // Currently this uses swing components to display the buffered image
@@ -15,8 +16,8 @@ public class ImagePlayerThread extends Thread {
     private ComponentColorModel cm;
     private Hashtable<String, String> properties = new Hashtable<>();
     private BufferedImage image;
+    private byte[] data;
     private JFrame frame;
-    private boolean doPaint = false;
     private BufferStrategy strategy;
     private static final int NUM_COLOR_CHANNELS = 3;
     private static final int NUM_BUFFERS = 3;
@@ -36,9 +37,7 @@ public class ImagePlayerThread extends Thread {
         do {
             do {
                 Graphics graphics = strategy.getDrawGraphics();
-                if (doPaint) {
-                    graphics.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(),  null);
-                }
+                graphics.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(),  null);
                 graphics.dispose();
             } while (strategy.contentsRestored());
             strategy.show();
@@ -50,14 +49,15 @@ public class ImagePlayerThread extends Thread {
         this.frame = frame;
         this.width = width;
         this.height = height;
+        // Allocate byte buffer
+        this.data = new byte[this.width*this.height*NUM_COLOR_CHANNELS];
 
         cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
                 DataBuffer.TYPE_BYTE);
         // Set defaults
         sm = cm.createCompatibleSampleModel(this.width, this.height);
         // Initialize an empty image
-        DataBufferByte dataBuffer = new DataBufferByte(new byte[this.width*this.height*NUM_COLOR_CHANNELS],
-                this.width*this.height);
+        DataBufferByte dataBuffer = new DataBufferByte(this.data, this.width*this.height);
         WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
@@ -74,9 +74,9 @@ public class ImagePlayerThread extends Thread {
     public void run() {
         while (!stopped) {
             long start = System.currentTimeMillis();
-            byte[] data = null;
             // Get the data from the native side that matches width & height
-            mediaPlayerData.getImageBuffer(data);
+            ByteBuffer imageData = mediaPlayerData.getImageData();
+            imageData.get(data, 0, imageData.capacity()); // TODO(fraudies): Check if we can get rid of this copy
             // Create data buffer
             DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
             // Create writable raster

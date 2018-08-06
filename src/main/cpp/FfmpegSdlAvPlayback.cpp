@@ -45,27 +45,12 @@ void FfmpegSdlAvPlayback::calculate_display_rect(SDL_Rect *rect,
 	rect->h = FFMAX(height, 1);
 }
 
-double FfmpegSdlAvPlayback::vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration) {
-	if (vp->serial == nextvp->serial) {
-		double duration = nextvp->pts - vp->pts;
-		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
-			return vp->duration;
-		else
-			return duration;
-	}
-	else {
-		return 0.0;
-	}
-}
-
 FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(
 	const char *filename,
 	AVInputFormat *iformat) : 
 	FfmpegAvPlayback(filename, iformat),
 	ytop(0),
 	xleft(0),
-	width(0),
-	height(0),
 	rdftspeed(0.02),
 	window(nullptr),
 	renderer(nullptr) {
@@ -187,10 +172,6 @@ int FfmpegSdlAvPlayback::video_open(const char* filename) {
 	height = h;
 
 	return 0;
-}
-
-void FfmpegSdlAvPlayback::set_force_refresh(int refresh) {
-	force_refresh = refresh;
 }
 
 void FfmpegSdlAvPlayback::set_default_window_size(int width, int height, AVRational sar) {

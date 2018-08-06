@@ -1,5 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
+
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
@@ -7,6 +9,7 @@ import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
 /**
@@ -23,6 +26,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private AudioPlayerThread audioPlayerThread = null;
     private ImagePlayerThread imagePlayerThread = null;
     private JFrame frame;
+    private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
 
     static {
         System.loadLibrary("FfmpegMediaPlayer");
@@ -50,33 +54,70 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
         this(source, null);
     }
 
+    private void initAndStartAudioPlayer() {
+        audioPlayerThread = new AudioPlayerThread(this);
+        try {
+            // TODO(fraudies): Use getAudioFormat() once wired up
+            AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
+            audioPlayerThread.init(audioFormat, AUDIO_BUFFER_SIZE);
+            audioPlayerThread.start();
+        } catch (LineUnavailableException lu) {
+            // TODO: Add correct media error
+            throwMediaErrorException(MediaError.ERROR_GSTREAMER_ERROR.code(), lu.getMessage());
+        }
+    }
+
+    private void initAndStartImagePlayer() {
+        imagePlayerThread = new ImagePlayerThread(this);
+        // TODO(fraudies): Use getColorSpace() once wired up
+        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        imagePlayerThread.init(colorSpace, getImageWidth(), getImageHeight(), frame);
+        imagePlayerThread.start();
+    }
+
+    private void removeInitListener() {
+        removeMediaPlayerStateListener(initListener);
+    }
+
+    private PlayerStateListener initListener = new PlayerStateListener() {
+        @Override
+        public void onReady(PlayerStateEvent evt) {
+            // If we have audio data consume it
+            if (hasAudioData()) {
+                initAndStartAudioPlayer();
+            }
+            // If we have image data consume it
+            if (hasImageData()) {
+                initAndStartImagePlayer();
+            }
+            //removeInitListener();
+        }
+        @Override
+        public void onPlaying(PlayerStateEvent evt) { }
+        @Override
+        public void onPause(PlayerStateEvent evt) { }
+        @Override
+        public void onStop(PlayerStateEvent evt) { }
+        @Override
+        public void onStall(PlayerStateEvent evt) { }
+        @Override
+        public void onFinish(PlayerStateEvent evt) { }
+        @Override
+        public void onHalt(PlayerStateEvent evt) { }
+    };
+
     @Override
     public void init(AudioFormat audioFormat, ColorSpace colorSpace) {
         initNative(); // start the event queue, make sure to register all state/error listeners before
         long[] newNativeMediaRef = new long[1];
-        // TODO: Add a switch to use SDL or not
-        ffmpegInitPlayer(newNativeMediaRef, source.getPath(), audioFormat, colorSpace, true);
+        boolean streamData = frame != null;
+        String filename = source.getPath();
+        ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, streamData);
         nativeMediaRef = newNativeMediaRef[0];
 
         // If we have a frame to display we will use that one to playback alongside the javax.sound framework
-        if (frame != null) {
-            // If we have audio data consume it
-            if (hasAudioData()) {
-                audioPlayerThread = new AudioPlayerThread(this);
-                try {
-                    audioPlayerThread.init(getAudioFormat());
-                    audioPlayerThread.start();
-                } catch (LineUnavailableException lu) {
-                    // TODO: Add correct media error
-                    throwMediaErrorException(MediaError.ERROR_GSTREAMER_ERROR.code(), lu.getMessage());
-                }
-            }
-            // If we have image data consume it
-            if (hasImageData()) {
-                imagePlayerThread = new ImagePlayerThread(this);
-                imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
-                imagePlayerThread.start();
-            }
+        if (streamData) {
+            addMediaPlayerStateListener(initListener);
         }
     }
 
@@ -320,6 +361,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
 
     @Override
     public AudioFormat getAudioFormat() {
+        // TODO(fraudies): Change this to array of AudioFormat
         AudioFormat ref = null; //new AudioFormat(null, 0F, 0, 0, 0, 0F, false);
         int rc = ffmpegGetAudioFormat(getNativeMediaRef(), ref);
         if (0 != rc) {
@@ -330,6 +372,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
 
     @Override
     public ColorSpace getColorSpace() {
+        // TODO(fraudies): Change this to array of ColorSpace
         ColorSpace ref = null; // filled by native side
         int rc = ffmpegGetColorSpace(getNativeMediaRef(), ref);
         if (0 != rc) {
@@ -339,19 +382,23 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     }
 
     @Override
-    public void getAudioBuffer(byte[] data) {
-        int rc = ffmpegGetAudioBuffer(getNativeMediaRef(), data);
+    public ByteBuffer getAudioData() {
+        ByteBuffer[] buffers = new ByteBuffer[1];
+        int rc = ffmpegGetAudioBuffer(getNativeMediaRef(), buffers);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+        return buffers[0];
     }
 
     @Override
-    public void getImageBuffer(byte[] data) {
-        int rc = ffmpegGetImageBuffer(getNativeMediaRef(), data);
+    public ByteBuffer getImageData() {
+        ByteBuffer[] buffers = new ByteBuffer[1];
+        int rc = ffmpegGetImageBuffer(getNativeMediaRef(), buffers);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+        return buffers[0];
     }
 
     // Native methods
@@ -385,6 +432,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private native int ffmpegGetImageHeight(long refNativeMedia, int [] height);
     private native int ffmpegGetAudioFormat(long refNativeMedia, AudioFormat refToAudioFormat);
     private native int ffmpegGetColorSpace(long refNativeMedia, ColorSpace refToColorSpace);
-    private native int ffmpegGetImageBuffer(long refNativeMedia, byte[] refToData);
-    private native int ffmpegGetAudioBuffer(long refNativeMedia, byte[] refToData);
+    private native int ffmpegGetImageBuffer(long refNativeMedia, ByteBuffer[] data);
+    private native int ffmpegGetAudioBuffer(long refNativeMedia, ByteBuffer[] data);
 }

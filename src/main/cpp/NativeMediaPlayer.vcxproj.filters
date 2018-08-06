@@ -134,5 +134,11 @@
     <ClCompile Include="FfmpegSdlAvPlaybackPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FfmpegJavaAvPlaybackPipline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FfmpegJavaAvPlayback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

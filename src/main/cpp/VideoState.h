@@ -391,8 +391,10 @@ public:
 	/* Setter and Getters */
 	bool get_paused() const;
 	void set_paused(bool new_paused);
+
 	bool get_stopped() const;
 	void set_stopped(bool new_stopped);
+
 	int get_step() const;
 	void set_step(bool new_step);
 
@@ -422,7 +424,6 @@ public:
 	AudioParams get_audio_tgt() const;
 
 	Decoder *get_pViddec();
-
 	AVFormatContext *get_ic() const;
 
 	int64_t get_seek_pos() const;
@@ -431,7 +432,6 @@ public:
 	int get_audio_stream() const;
 
 	double get_max_frame_duration();
-
 	int get_audio_write_buf_size() const;
 
 	RDFTContext *get_rdft();
@@ -444,7 +444,6 @@ public:
 	void set_rdft_data(FFTSample *newRDFT_data);
 
 	int get_realtime() const;
-
 	inline int decode_interrupt_cb() const;
 
 	double compute_target_delay(double delay);

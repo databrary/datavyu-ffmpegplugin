@@ -51,10 +51,7 @@ private:
 	virtual uint32_t		GetAudioFormat(AudioFormat* pAudioParams) const;
 	virtual uint32_t		GetPixelFormat(PixelFormat* pPixelFormat) const;
 	virtual uint32_t		GetImageBuffer(uint8_t** ppImageBuffer);
-	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer);
-
-	void UpdatePlayerState(PlayerState newState);
-	void SetPlayerState(PlayerState newState, bool bSilent);
+	virtual uint32_t		GetAudioBuffer(uint8_t** ppAudioBuffer, const int len);
 
 	FfmpegSdlAvPlayback* pSdlPlayback;
 };
