@@ -40,7 +40,7 @@ class Clock {
 
 		Clock();
     
-		double get_clock();
+		double get_clock() const;
 
 		double get_pts() const;
 

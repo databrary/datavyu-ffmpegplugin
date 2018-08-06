@@ -142,18 +142,20 @@
   <ItemGroup>
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Decoder.cpp" />
+    <ClCompile Include="FfmpegAvPlayback.cpp" />
+    <ClCompile Include="FfmpegSdlAvPlayback.cpp" />
     <ClCompile Include="ffplay.cpp" />
     <ClCompile Include="FrameQueue.cpp" />
     <ClCompile Include="PacketQueue.cpp" />
-    <ClCompile Include="SDLPlayData.cpp" />
     <ClCompile Include="VideoState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Decoder.h" />
+    <ClInclude Include="FfmpegAvPlayback.h" />
+    <ClInclude Include="FfmpegSdlAvPlayback.h" />
     <ClInclude Include="FrameQueue.h" />
     <ClInclude Include="PacketQueue.h" />
-    <ClInclude Include="SDLPlayData.h" />
     <ClInclude Include="VideoState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

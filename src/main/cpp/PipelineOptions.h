@@ -30,6 +30,8 @@
 #include <list>
 #include <string>
 
+#include "FfmpegJniUtils.h"
+
 using namespace std;
 typedef list<string> ContentTypesList;
 
@@ -43,9 +45,18 @@ public:
     };
 public:
 	// TODO(fraudies): Add the audio and video format here
-	// TODO(fraudies): Add the option about JNI/SDL playback (call it stream data true|false)
-    CPipelineOptions(int pipelineType=kAVPlaybackPipeline, bool havePreferredFormat = false)
-    :   m_PipelineType(pipelineType),
+    CPipelineOptions(
+		bool streamData,
+		AudioFormat audioFormat,
+		PixelFormat pixelFormat,
+		int audioBufferSizeInBy,
+		int pipelineType = kAVPlaybackPipeline, 
+		bool havePreferredFormat = false)
+		: m_StreamData(streamData),
+		m_audioFormat(audioFormat),
+		m_pixelFormat(pixelFormat),
+		m_audioBufferSizeInBy(audioBufferSizeInBy),
+		m_PipelineType(pipelineType),
         m_bBufferingEnabled(false),
         m_StreamMimeType(-1),
         m_bHLSModeEnabled(false)
@@ -53,19 +64,29 @@ public:
 
     virtual ~CPipelineOptions() {}
 
-    inline int  GetPipelineType() { return m_PipelineType; }
+    inline int		GetPipelineType() { return m_PipelineType; }
 
-    inline void SetBufferingEnabled(bool enabled) { m_bBufferingEnabled = enabled; }
-    inline bool GetBufferingEnabled() { return m_bBufferingEnabled; }
+    inline void		SetBufferingEnabled(bool enabled) { m_bBufferingEnabled = enabled; }
+    inline bool		GetBufferingEnabled() { return m_bBufferingEnabled; }
 
-    inline void SetStreamMimeType(int streamMimeType) { m_StreamMimeType = streamMimeType; }
-    inline int GetStreamMimeType() { return m_StreamMimeType; }
+    inline void		SetStreamMimeType(int streamMimeType) { m_StreamMimeType = streamMimeType; }
+    inline int		GetStreamMimeType() { return m_StreamMimeType; }
 
-    inline void SetHLSModeEnabled(bool enabled) { m_bHLSModeEnabled = enabled; }
-    inline bool GetHLSModeEnabled() { return m_bHLSModeEnabled; }
+    inline void		SetHLSModeEnabled(bool enabled) { m_bHLSModeEnabled = enabled; }
+    inline bool		GetHLSModeEnabled() { return m_bHLSModeEnabled; }    
+	
+	inline void		SetStreamData(bool enabled) { m_StreamData = enabled; }
+    inline bool		GetStreamData() { return m_StreamData; }
 
+	inline const AudioFormat* GetAudioFormat() const { return &m_audioFormat; }
+	inline const PixelFormat* GetPixelFormat() const { return &m_pixelFormat; }
+	inline const int GetAudioBufferSizeInBy() const { return m_audioBufferSizeInBy;  }
 private:
-    int         m_PipelineType;
+	bool		m_StreamData;
+	AudioFormat m_audioFormat;
+	PixelFormat m_pixelFormat;
+	int			m_audioBufferSizeInBy;
+	int         m_PipelineType;
     bool        m_bBufferingEnabled;
     int         m_StreamMimeType;
     bool        m_bHLSModeEnabled;

@@ -84,15 +84,6 @@ extern "C" {
 // fixed point to double
 #define CONV_FP(x) ((double) (x)) / (1 << 16)
 
-typedef struct AudioParams {
-	int freq;
-	int channels;
-	int64_t channel_layout;
-	enum AVSampleFormat fmt;
-	int frame_size;
-	int bytes_per_sec;
-} AudioParams;
-
 enum {
 	AV_SYNC_AUDIO_MASTER, /* default choice */
 	AV_SYNC_VIDEO_MASTER,
@@ -133,10 +124,10 @@ enum Rates {
 	X32,
 };
 static const struct RatesEntry {
-	enum Rates rate;
-	float clock_speed;
-	float pts_speed;
-	char *command;
+	enum Rates	rate;
+	float		clock_speed;
+	float		pts_speed;
+	char		*command;
 } rate_speed_map[] = {
 	{ X1D32,	0.03125,	32.0,		(char *) "setpts=32.0*PTS" },
 	{ X1D16,	0.0625,		16.0,		(char *) "setpts=16.0*PTS" },
@@ -153,59 +144,55 @@ static const struct RatesEntry {
 
 /* options specified by the user */
 
-static ShowMode show_mode = SHOW_MODE_NONE;
-static const char *window_title;
-static int screen_width = 0;
-static int screen_height = 0;
-static int audio_disable; // TODO(fraudies): Move this into video state
-static int video_disable; // TODO(fraudies): Move this into video state
-static int subtitle_disable; // TODO(fraudies): Move this into video state
-static const char* wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
-static int seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
-static int borderless;
-static int startup_volume = 100;
-static int show_status = 1;
-static int av_sync_type_input = AV_SYNC_AUDIO_MASTER;
-static int64_t start_time = AV_NOPTS_VALUE;
-static int64_t duration = AV_NOPTS_VALUE;
-static int fast = 0;
-static int genpts = 0;
-static int lowres = 0;
-static int decoder_reorder_pts = -1;
-static int autoexit = 0; // No auto exit
-static int exit_on_keydown;
-static int exit_on_mousedown;
-static int loop = 1;
-static int framedrop = -1;
-static int infinite_buffer = -1;
-static const char *audio_codec_name;
-static const char *subtitle_codec_name;
-static const char *video_codec_name;
-static int64_t cursor_last_shown;
-static int cursor_hidden = 0;
-static int autorotate = 1;
-static int find_stream_info = 1;
-/* current context */
-static int64_t audio_callback_time;
+static ShowMode			show_mode = SHOW_MODE_NONE;
+static const char		*window_title;
+static int				screen_width = 0;
+static int				screen_height = 0;
+static const char		*wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
+static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
+static int				borderless;
+static int				startup_volume = 100;
+static int				show_status = 1;
+static int				av_sync_type_input = AV_SYNC_AUDIO_MASTER;
+static int64_t			start_time = AV_NOPTS_VALUE;
+static int64_t			duration = AV_NOPTS_VALUE;
+static int				fast = 0;
+static int				genpts = 0;
+static int				lowres = 0;
+static int				decoder_reorder_pts = -1;
+static int				autoexit = 0; // No auto exit
+static int				exit_on_keydown;
+static int				exit_on_mousedown;
+static int				loop = 1;
+static int				framedrop = -1;
+static int				infinite_buffer = -1;
+static const char		*audio_codec_name;
+static const char		*subtitle_codec_name;
+static const char		*video_codec_name;
+static int64_t			cursor_last_shown;
+static int				cursor_hidden = 0;
+static int				autorotate = 1;
+static int				find_stream_info = 1;
 
-class SDLPlayData;
+/* current context */
+static int64_t			audio_callback_time;
 
 //what will be the streamer in the future implementations
 class VideoState {
 private:
-	SDLPlayData *pPlayer;
 	std::thread *read_tid;
 	AVInputFormat *iformat;
 	int abort_request;
-	int paused;
+	bool paused; // TODO(fraudies): Check if this need to be atomic
 	int last_paused;
+	bool stopped; // TODO(fraudies): Need atomic here for thread safety
 	int queue_attachments_req;
 	int seek_req;
 	int seek_flags;
-	int64_t seek_pos;
+	int64_t	seek_pos;
 	int64_t seek_rel;
-	int read_pause_return;
-	AVFormatContext *ic;
+	int	read_pause_return;
+	AVFormatContext	*ic;
 	int realtime;
 
 	Clock *pAudclk;
@@ -222,7 +209,7 @@ private:
 
 	int audio_stream;
 
-	int av_sync_type;
+	int	av_sync_type;
 
 	double audio_clock;
 	int audio_clock_serial;
@@ -232,19 +219,21 @@ private:
 	int audio_diff_avg_count;
 	AVStream *audio_st;
 	PacketQueue *pAudioq;
-	int audio_hw_buf_size;
+	int	audio_hw_buf_size;
 	uint8_t *audio_buf;
 	uint8_t *audio_buf1;
 	unsigned int audio_buf_size; /* in bytes */
 	unsigned int audio_buf1_size;
 	int audio_buf_index; /* in bytes */
-	int audio_write_buf_size;
-	int audio_volume;
+	int	audio_write_buf_size;
+	int	audio_volume;
 	int muted;
 	struct AudioParams audio_src;
+
 #if CONFIG_AVFILTER
 	struct AudioParams audio_filter_src;
 #endif
+
 	struct AudioParams audio_tgt;
 	struct SwrContext *swr_ctx;
 	int frame_drops_early;
@@ -261,7 +250,7 @@ private:
 	double frame_last_filter_delay;
 	int video_stream;
 	AVStream *video_st;
-	PacketQueue *pVideoq;
+	PacketQueue	*pVideoq;
 	double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
 	int eof;
 	int image_width;
@@ -269,30 +258,38 @@ private:
 
 	char *filename;
 
-	int step;
+	bool step; // TODO(fraudies): Check if this need to be atomic
 
 	int newSpeed_req;
 	float last_speed;
 	float pts_speed;
 
+	int audio_disable;
+	int video_disable; 
+	int subtitle_disable; 
+
 #if CONFIG_AVFILTER
 	int vfilter_idx;
 	const char **vfilters_list = NULL;
-	char *vfilters = NULL; // video filter
+	char *vfilters = NULL;	// video filter
 	int nb_vfilters = 0;
-	char *afilters = NULL; // audio filter Note: audio filter is not working
+	char *afilters = NULL;	// audio filter Note: audio filter is not working
 	AVFilterContext *in_video_filter;   // the first filter in the video chain
 	AVFilterContext *out_video_filter;  // the last filter in the video chain
 	AVFilterContext *in_audio_filter;   // the first filter in the audio chain
 	AVFilterContext *out_audio_filter;  // the last filter in the audio chain
-	AVFilterGraph *agraph;              // audio filter graph
-	// From cmdutils
-	AVDictionary *sws_dict;
-	AVDictionary *swr_opts;
-	std::mutex mutex;
+	AVFilterGraph *agraph;            // audio filter graph
+	
+	AVDictionary *sws_dict;			// From cmdutils
+	AVDictionary *swr_opts;			// From cmdutils
+	std::mutex mutex;				// From cmdutils
 #endif
 
-	int last_video_stream, last_audio_stream, last_subtitle_stream;
+	int last_video_stream;
+	int last_audio_stream;
+	int last_subtitle_stream;
+
+	int fps;
 
 	std::condition_variable continue_read_thread;
 
@@ -303,26 +300,21 @@ private:
 				? av_get_packed_sample_fmt(fmt1) != av_get_packed_sample_fmt(fmt2)
 				: channel_count1 != channel_count2 || fmt1 != fmt2;
 	}
+
 	inline int64_t get_valid_channel_layout(int64_t channel_layout, int channels) {
 		return (channel_layout && av_get_channel_layout_nb_channels(channel_layout) == channels)
-					? channel_layout
-					: 0;
+					? channel_layout : 0;
 	}
 
 	double get_rotation(AVStream * st);
-
 	double av_display_rotation_get(const int32_t matrix[9]);
 
 	/* open a given stream. Return 0 if OK */
 	int stream_component_open(int stream_index);
-
 	int get_video_frame(AVFrame *frame);
 
-	// TODO REVIEW THIS FUNCTION
 	int queue_picture(AVFrame *src_frame, double pts, double duration, int64_t pos, int serial);
-
 	void stream_component_close(int stream_index);
-
 	int stream_has_enough_packets(AVStream *st, int stream_id, PacketQueue *queue);
 
 	/* Ported this function from cmdutils */
@@ -330,7 +322,7 @@ private:
 
 	/*ported this function from cmdutils*/
 	AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id, AVFormatContext *s,
-		AVStream *st, AVCodec *codec);
+										AVStream *st, AVCodec *codec);
 
 	/* From cmd utils*/
 	AVDictionary **setup_find_stream_info_opts(AVFormatContext *s, AVDictionary *codec_opts);
@@ -351,6 +343,12 @@ private:
 	int audio_decode_frame();
 
 	std::function<void()> player_state_callbacks[NUM_PLAYER_STATE_CALLBACKS];
+	// int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
+	//struct AudioParams *audio_hw_params)
+	std::function<int(int64_t, int, int, struct AudioParams*)> audio_open_callback;
+	std::function<void()> pause_audio_device_callback;
+	std::function<void()> destroy_callback; // TODO(fraudies): Possibly clean-up through destructor
+	std::function<void()> step_to_next_frame_callback;
 public:
 	VideoState();
 	~VideoState();
@@ -360,41 +358,42 @@ public:
 	int video_thread();
 	int subtitle_thread();
 	void stream_start();
-	static VideoState *stream_open(const char *filename, AVInputFormat *iformat, SDLPlayData *pPlayer);
+	static VideoState *stream_open(const char *filename, AVInputFormat *iformat);
 
 	void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);
+	void set_audio_open_callback(const std::function<int(int64_t, int, int, struct AudioParams*)> func);
+	void set_pause_audio_device_callback(const std::function<void()> func);
+	void set_destroy_callback(const std::function<void()> func);
+	void set_step_to_next_frame_callback(const std::function<void()> func);
 
 	/* Controls */
-
 	void seek_chapter(int incr);
-	void stream_toggle_pause();
-	//Moved to ffplay.cpp
-	//void toggle_full_screen();
 	int get_image_width() const; // height as coming from stream
 	int get_image_height() const; // width as coming from stream
 	bool has_audio_data() const;
 	bool has_image_data() const;
-	void pause();
-	void stop();
-	void play();
 	double get_duration() const; // returns the duration in sec
 	int get_audio_volume() const;
-	void toggle_pause();
+	void set_audio_volume(int new_audio_volume);
 	void toggle_mute();
-	void update_volume(int sign, double step);
-	void step_to_next_frame();
+	void update_pts(double pts, int64_t pos, int serial);
 	void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
 	void stream_cycle_channel(int codec_type);
-	void toggle_audio_display();
+	int get_read_pause_return() const;
 
 	/* Setter and Getters */
+	bool get_paused() const;
+	void set_paused(bool new_paused);
 
-	bool isPaused() const;
+	bool get_stopped() const;
+	void set_stopped(bool new_stopped);
 
 	int get_step() const;
+	void set_step(bool new_step);
+
 	int get_frame_drops_early() const;
 
-	const char* get_filename() const;
+	const char *get_filename() const;
 
 	AVStream *get_audio_st() const;
 	AVStream *get_video_st() const;
@@ -414,12 +413,11 @@ public:
 	Clock *get_pAudclk() const;
 	Clock *get_pExtclk() const;
 
-	AudioFormat get_audio_format() const;
+	//AudioFormat get_audio_format() const;
 	AudioParams get_audio_tgt() const;
 
 	Decoder *get_pViddec();
-
-	AVFormatContext* get_ic() const;
+	AVFormatContext *get_ic() const;
 
 	int64_t get_seek_pos() const;
 
@@ -427,7 +425,6 @@ public:
 	int get_audio_stream() const;
 
 	double get_max_frame_duration();
-
 	int get_audio_write_buf_size() const;
 
 	RDFTContext *get_rdft();
@@ -439,10 +436,7 @@ public:
 	FFTSample *get_rdft_data();
 	void set_rdft_data(FFTSample *newRDFT_data);
 
-	//void set_player(SDLPlayData *player);
-
 	int get_realtime() const;
-
 	inline int decode_interrupt_cb() const;
 
 	double compute_target_delay(double delay);
@@ -451,20 +445,36 @@ public:
 	void check_external_clock_speed();
 
 	/* get the current synchronization type */
-	int get_master_sync_type();
+	int get_master_sync_type() const;
 
 	/* get the current master clock value */
-	double get_master_clock();
+	double get_master_clock() const;
 
-	// Clean up memory
-	// TODO: need to review this function
+	double get_fps() const;
+
 	void stream_close();
 
 	/* prepare a new audio buffer */
 	void sdl_audio_callback(Uint8 *stream, int len);
 
-	void set_speed(int newSpeed);
+	void set_rate(int step);
+	float get_rate() const;
+
 	int get_master_clock_speed();
+
+	int get_audio_disable() const;
+	void set_audio_disable(const int disable);
+
+	int get_video_disable() const;
+	void set_video_disable(const int disable);
+
+	int get_subtitle_disable() const;
+	void set_subtitle_disable(const int disable);
+
+
+
+	//int isStopped() const;
+
 #if CONFIG_AVFILTER
 	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
 	int configure_video_filters(AVFilterGraph * graph, const char * vfilters, AVFrame * frame);

@@ -15,7 +15,7 @@ Clock::Clock() : Clock(nullptr) {
 	queueSerial = &serial;
 }
 
-double Clock::get_clock() {
+double Clock::get_clock() const {
 	if (*queueSerial != serial)
 		return NAN;
 	if (paused) {

@@ -132,27 +132,39 @@
     <ClInclude Include="AudioVideoFormats.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Decoder.h" />
-    <ClInclude Include="FfmpegAVPlaybackPipeline.h" />
+    <ClInclude Include="FfmpegJavaAvPlaybackPipline.h" />
+    <ClInclude Include="FfmpegAvPlayback.h" />
+    <ClInclude Include="FfmpegSdlAvPlaybackPipeline.h" />
+    <ClInclude Include="FfmpegJavaAvPlayback.h" />
     <ClInclude Include="FfmpegJniUtils.h" />
     <ClInclude Include="FfmpegMediaErrors.h" />
+    <ClInclude Include="FfmpegPipelineFactory.h" />
     <ClInclude Include="FrameQueue.h" />
     <ClInclude Include="PacketQueue.h" />
-    <ClInclude Include="SDLPlayData.h" />
+    <ClInclude Include="FfmpegSdlAvPlayback.h" />
+    <ClInclude Include="PipelineFactory.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="VideoState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\cpp\JavaPlayerEventDispatcher.cpp" />
+    <ClCompile Include="AudioVideoFormats.cpp" />
     <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="FfmpegAvPlayback.cpp" />
+    <ClCompile Include="FfmpegJavaAvPlayback.cpp" />
+    <ClCompile Include="FfmpegJavaAvPlaybackPipline.cpp" />
+    <ClCompile Include="FfmpegPipelineFactory.cpp" />
+    <ClCompile Include="PipelineFactory.cpp" />
     <ClCompile Include="Media.cpp" />
     <ClCompile Include="Decoder.cpp" />
-    <ClCompile Include="FfmpegAVPlaybackPipeline.cpp" />
+    <ClCompile Include="FfmpegSdlAvPlaybackPipeline.cpp" />
     <ClCompile Include="FfmpegJniUtils.cpp" />
     <ClCompile Include="FfmpegMediaPlayer.cpp" />
     <ClCompile Include="FrameQueue.cpp" />
     <ClCompile Include="JniUtils.cpp" />
     <ClCompile Include="PacketQueue.cpp" />
     <ClCompile Include="Pipeline.cpp" />
-    <ClCompile Include="SDLPlayData.cpp" />
+    <ClCompile Include="FfmpegSdlAvPlayback.cpp" />
     <ClCompile Include="VideoState.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

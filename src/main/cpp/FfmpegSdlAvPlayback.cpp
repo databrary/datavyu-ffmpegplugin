@@ -1,17 +1,11 @@
-#include "SDLPlayData.h"
+#include "FfmpegSdlAvPlayback.h"
 
 /* Private Members */
-void SDLPlayData::update_video_pts(VideoState *is, double pts, int64_t pos, int serial) {
-	/* update current video pts */
-	is->get_pVidclk()->set_clock(pts, serial);
-	Clock::sync_clock_to_slave(is->get_pExtclk(), is->get_pVidclk());
-}
-
-inline int SDLPlayData::compute_mod(int a, int b) {
+inline int FfmpegSdlAvPlayback::compute_mod(int a, int b) {
 	return a < 0 ? a % b + b : a % b;
 }
 
-inline void SDLPlayData::fill_rectangle(int x, int y, int w, int h) {
+inline void FfmpegSdlAvPlayback::fill_rectangle(int x, int y, int w, int h) {
 	SDL_Rect rect;
 	rect.x = x;
 	rect.y = y;
@@ -21,7 +15,7 @@ inline void SDLPlayData::fill_rectangle(int x, int y, int w, int h) {
 		SDL_RenderFillRect(renderer, &rect);
 }
 
-void SDLPlayData::calculate_display_rect(SDL_Rect *rect,
+void FfmpegSdlAvPlayback::calculate_display_rect(SDL_Rect *rect,
 	int scr_xleft, int scr_ytop, int scr_width, int scr_height,
 	int pic_width, int pic_height, AVRational pic_sar) {
 	float aspect_ratio;
@@ -51,40 +45,36 @@ void SDLPlayData::calculate_display_rect(SDL_Rect *rect,
 	rect->h = FFMAX(height, 1);
 }
 
-double SDLPlayData::vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration) {
-	if (vp->serial == nextvp->serial) {
-		double duration = nextvp->pts - vp->pts;
-		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
-			return vp->duration;
-		else
-			return duration;
-	}
-	else {
-		return 0.0;
-	}
-}
-
-/* Constructor */
-SDLPlayData::SDLPlayData(
+FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(
 	const char *filename,
-	AVInputFormat *iformat) :
+	AVInputFormat *iformat) : 
+	FfmpegAvPlayback(filename, iformat),
 	ytop(0),
 	xleft(0),
-	width(0),
-	height(0),
 	rdftspeed(0.02),
-	pVideoState(VideoState::stream_open(filename, iformat, this)),
 	window(nullptr),
-	renderer(nullptr) {}
+	renderer(nullptr) {
+	// Set callback functions
+	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels, 
+		int wanted_sample_rate, struct AudioParams *audio_hw_params) {
+		return this->audio_open(wanted_channel_layout, wanted_nb_channels, wanted_sample_rate,
+			audio_hw_params);
+	});
+	pVideoState->set_pause_audio_device_callback([this] {
+		this->pauseAudioDevice();
+	});
+	pVideoState->set_destroy_callback([this] {
+		this->destroy();
+	});
+	pVideoState->set_step_to_next_frame_callback([this] {
+		this->step_to_next_frame();
+	});
+}
 
-/* Destructor */
-SDLPlayData::~SDLPlayData() {
-	sws_freeContext(this->img_convert_ctx);
-	sws_freeContext(this->sub_convert_ctx);
-};
+FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {};
 
 /* Public Members */
-int SDLPlayData::audio_open(VideoState* is, int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
+int FfmpegSdlAvPlayback::audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
 	struct AudioParams *audio_hw_params) {
 	SDL_AudioSpec wanted_spec, spec;
 	const char *env;
@@ -114,7 +104,7 @@ int SDLPlayData::audio_open(VideoState* is, int64_t wanted_channel_layout, int w
 	wanted_spec.silence = 0;
 	wanted_spec.samples = FFMAX(SDL_AUDIO_MIN_BUFFER_SIZE, 2 << av_log2(wanted_spec.freq / SDL_AUDIO_MAX_CALLBACKS_PER_SEC));
 	wanted_spec.callback = sdl_audio_callback_bridge;
-	wanted_spec.userdata = is; // need to add the object instance here
+	wanted_spec.userdata = pVideoState;
 	while (!(audio_dev = SDL_OpenAudioDevice(NULL, 0, &wanted_spec, &spec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE))) {
 		av_log(NULL, AV_LOG_WARNING, "SDL_OpenAudio (%d channels, %d Hz): %s\n",
 			wanted_spec.channels, wanted_spec.freq, SDL_GetError());
@@ -157,7 +147,7 @@ int SDLPlayData::audio_open(VideoState* is, int64_t wanted_channel_layout, int w
 	return spec.size;
 }
 
-int SDLPlayData::video_open(VideoState *is) {
+int FfmpegSdlAvPlayback::video_open(const char* filename) {
 	int w, h;
 
 	if (screen_width) {
@@ -170,7 +160,7 @@ int SDLPlayData::video_open(VideoState *is) {
 	}
 
 	if (!window_title)
-		window_title = is->get_filename();
+		window_title = filename;
 	SDL_SetWindowTitle(window, window_title);
 	SDL_SetWindowSize(window, w, h);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -184,50 +174,29 @@ int SDLPlayData::video_open(VideoState *is) {
 	return 0;
 }
 
-void SDLPlayData::set_force_refresh(int refresh) {
-	force_refresh = refresh;
-}
-
-int SDLPlayData::get_frame_timer() {
-	return frame_timer;
-}
-
-void SDLPlayData::set_frame_timer(int newFrame_timer) {
-	frame_timer = newFrame_timer;
-}
-
-void SDLPlayData::destroyTextures() {
-	if (vis_texture)
-		SDL_DestroyTexture(vis_texture);
-	if (vid_texture)
-		SDL_DestroyTexture(vid_texture);
-	if (sub_texture)
-		SDL_DestroyTexture(sub_texture);
-}
-
-void SDLPlayData::set_default_window_size(int width, int height, AVRational sar) {
+void FfmpegSdlAvPlayback::set_default_window_size(int width, int height, AVRational sar) {
 	SDL_Rect rect;
 	calculate_display_rect(&rect, 0, 0, INT_MAX, height, width, height, sar);
 	default_width = rect.w;
 	default_height = rect.h;
 }
 
-void SDLPlayData::closeAudioDevice() {
+void FfmpegSdlAvPlayback::closeAudioDevice() {
 	SDL_CloseAudioDevice(audio_dev);
 }
 
-void SDLPlayData::pauseAudioDevice() {
+void FfmpegSdlAvPlayback::pauseAudioDevice() {
 	SDL_PauseAudioDevice(audio_dev, 0);
 }
 
-VideoState* SDLPlayData::get_VideoState() { return pVideoState; }
+VideoState* FfmpegSdlAvPlayback::get_VideoState() { return pVideoState; }
 
-void SDLPlayData::toggle_full_screen() {
+void FfmpegSdlAvPlayback::toggle_full_screen() {
 	is_full_screen = !is_full_screen;
 	SDL_SetWindowFullscreen(window, is_full_screen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
-int SDLPlayData::upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsContext **img_convert_ctx) {
+int FfmpegSdlAvPlayback::upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsContext **img_convert_ctx) {
 	int ret = 0;
 	Uint32 sdl_pix_fmt;
 	SDL_BlendMode sdl_blendmode;
@@ -282,7 +251,7 @@ int SDLPlayData::upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsCon
 	return ret;
 }
 
-void SDLPlayData::get_sdl_pix_fmt_and_blendmode(int format, Uint32 *sdl_pix_fmt, SDL_BlendMode *sdl_blendmode) {
+void FfmpegSdlAvPlayback::get_sdl_pix_fmt_and_blendmode(int format, Uint32 *sdl_pix_fmt, SDL_BlendMode *sdl_blendmode) {
 	int i;
 	*sdl_blendmode = SDL_BLENDMODE_NONE;
 	*sdl_pix_fmt = SDL_PIXELFORMAT_UNKNOWN;
@@ -299,7 +268,7 @@ void SDLPlayData::get_sdl_pix_fmt_and_blendmode(int format, Uint32 *sdl_pix_fmt,
 	}
 }
 
-int SDLPlayData::realloc_texture(SDL_Texture **texture, Uint32 new_format, int new_width, int new_height, SDL_BlendMode blendmode, int init_texture) {
+int FfmpegSdlAvPlayback::realloc_texture(SDL_Texture **texture, Uint32 new_format, int new_width, int new_height, SDL_BlendMode blendmode, int init_texture) {
 	Uint32 format;
 	int access, w, h;
 	if (!*texture || SDL_QueryTexture(*texture, &format, &access, &w, &h) < 0 || new_width != w || new_height != h || new_format != format) {
@@ -322,28 +291,28 @@ int SDLPlayData::realloc_texture(SDL_Texture **texture, Uint32 new_format, int n
 	return 0;
 }
 
-void SDLPlayData::video_display(VideoState *is) {
+void FfmpegSdlAvPlayback::video_display() {
 	if (!width)
-		video_open(is);
+		video_open(pVideoState->get_filename());
 
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
-	if (is->get_audio_st() && is->get_show_mode() != SHOW_MODE_VIDEO)
-		this->video_audio_display(is);
-	else if (is->get_video_st())
-		this->video_image_display(is);
+	if (pVideoState->get_audio_st() && pVideoState->get_show_mode() != SHOW_MODE_VIDEO)
+		this->video_audio_display();
+	else if (pVideoState->get_video_st())
+		video_image_display();
 	SDL_RenderPresent(renderer);
 }
 
-void SDLPlayData::video_image_display(VideoState *is) {
+void FfmpegSdlAvPlayback::video_image_display() {
 	Frame *vp;
 	Frame *sp = NULL;
 	SDL_Rect rect;
 
-	vp = is->get_pPictq()->peek_last();
-	if (is->get_subtitle_st()) {
-		if (is->get_pSubpq()->nb_remaining() > 0) {
-			sp = is->get_pSubpq()->peek();
+	vp = pVideoState->get_pPictq()->peek_last();
+	if (pVideoState->get_subtitle_st()) {
+		if (pVideoState->get_pSubpq()->nb_remaining() > 0) {
+			sp = pVideoState->get_pSubpq()->peek();
 
 			if (vp->pts >= sp->pts + ((float)sp->sub.start_display_time / 1000)) {
 				if (!sp->uploaded) {
@@ -418,7 +387,7 @@ void SDLPlayData::video_image_display(VideoState *is) {
 	}
 }
 
-void SDLPlayData::update_sample_display(short *samples, int samples_size) {
+void FfmpegSdlAvPlayback::update_sample_display(short *samples, int samples_size) {
 	int size, len;
 
 	size = samples_size / sizeof(short);
@@ -435,7 +404,7 @@ void SDLPlayData::update_sample_display(short *samples, int samples_size) {
 	}
 }
 
-void SDLPlayData::video_audio_display(VideoState *is) {
+void FfmpegSdlAvPlayback::video_audio_display() {
 	int i, i_start, x, y1, y, ys, delay, n, nb_display_channels;
 	int ch, channels, h, h2;
 	int64_t time_diff;
@@ -446,19 +415,19 @@ void SDLPlayData::video_audio_display(VideoState *is) {
 	nb_freq = 1 << (rdft_bits - 1);
 
 	/* compute display index : center on currently output samples */
-	channels = is->get_audio_tgt().channels;
+	channels = pVideoState->get_audio_tgt().channels;
 	nb_display_channels = channels;
-	if (!is->isPaused()) {
-		int data_used = is->get_show_mode() == SHOW_MODE_WAVES ? width : (2 * nb_freq);
+	if (!pVideoState->get_paused()) {
+		int data_used = pVideoState->get_show_mode() == SHOW_MODE_WAVES ? width : (2 * nb_freq);
 		n = 2 * channels;
-		delay = is->get_audio_write_buf_size();
+		delay = pVideoState->get_audio_write_buf_size();
 		delay /= n;
 
 		/* to be more precise, we take into account the time spent since
 		the last buffer computation */
 		if (audio_callback_time) {
 			time_diff = av_gettime_relative() - audio_callback_time;
-			delay -= (time_diff * is->get_audio_tgt().freq) / 1000000;
+			delay -= (time_diff * pVideoState->get_audio_tgt().freq) / 1000000;
 		}
 
 		delay += 2 * data_used;
@@ -466,7 +435,7 @@ void SDLPlayData::video_audio_display(VideoState *is) {
 			delay = data_used;
 
 		i_start = x = compute_mod(sample_array_index - delay * channels, SAMPLE_ARRAY_SIZE);
-		if (is->get_show_mode() == SHOW_MODE_WAVES) {
+		if (pVideoState->get_show_mode() == SHOW_MODE_WAVES) {
 			h = INT_MIN;
 			for (i = 0; i < 1000; i += channels) {
 				int idx = (SAMPLE_ARRAY_SIZE + x - i) % SAMPLE_ARRAY_SIZE;
@@ -488,7 +457,7 @@ void SDLPlayData::video_audio_display(VideoState *is) {
 		i_start = last_i_start;
 	}
 
-	if (is->get_show_mode() == SHOW_MODE_WAVES) {
+	if (pVideoState->get_show_mode() == SHOW_MODE_WAVES) {
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
 		/* total height for one channel */
@@ -526,14 +495,14 @@ void SDLPlayData::video_audio_display(VideoState *is) {
 			return;
 
 		nb_display_channels = FFMIN(nb_display_channels, 2);
-		if (rdft_bits != is->get_rdft_bits()) {
-			av_rdft_end(is->get_rdft());
-			av_free(is->get_rdft_data());
-			is->set_rdft(av_rdft_init(rdft_bits, DFT_R2C));
-			is->set_rdft_bits(rdft_bits);
-			is->set_rdft_data((FFTSample*)av_malloc_array(nb_freq, 4 * sizeof(*is->get_rdft_data())));
+		if (rdft_bits != pVideoState->get_rdft_bits()) {
+			av_rdft_end(pVideoState->get_rdft());
+			av_free(pVideoState->get_rdft_data());
+			pVideoState->set_rdft(av_rdft_init(rdft_bits, DFT_R2C));
+			pVideoState->set_rdft_bits(rdft_bits);
+			pVideoState->set_rdft_data((FFTSample*)av_malloc_array(nb_freq, 4 * sizeof(*pVideoState->get_rdft_data())));
 		}
-		if (!is->get_rdft() || !is->get_rdft_data()) {
+		if (!pVideoState->get_rdft() || !pVideoState->get_rdft_data()) {
 			av_log(NULL, AV_LOG_ERROR, "Failed to allocate buffers for RDFT, switching to waves display\n");
 			show_mode = SHOW_MODE_WAVES;
 		}
@@ -547,7 +516,7 @@ void SDLPlayData::video_audio_display(VideoState *is) {
 			uint32_t *pixels;
 			int pitch;
 			for (ch = 0; ch < nb_display_channels; ch++) {
-				data[ch] = is->get_rdft_data() + 2 * nb_freq * ch;
+				data[ch] = pVideoState->get_rdft_data() + 2 * nb_freq * ch;
 				i = i_start + ch;
 				for (x = 0; x < 2 * nb_freq; x++) {
 					double w = (x - nb_freq) * (1.0 / nb_freq);
@@ -556,7 +525,7 @@ void SDLPlayData::video_audio_display(VideoState *is) {
 					if (i >= SAMPLE_ARRAY_SIZE)
 						i -= SAMPLE_ARRAY_SIZE;
 				}
-				av_rdft_calc(is->get_rdft(), data[ch]);
+				av_rdft_calc(pVideoState->get_rdft(), data[ch]);
 			}
 			/* Least efficient way to do this, we should of course
 			* directly access it but it is more than fast enough. */
@@ -577,14 +546,26 @@ void SDLPlayData::video_audio_display(VideoState *is) {
 			}
 			SDL_RenderCopy(renderer, vis_texture, NULL, NULL);
 		}
-		if (!is->isPaused())
+		if (!pVideoState->get_paused())
 			xpos++;
 		if (xpos >= width)
 			xpos = this->xleft;
 	}
 }
 
-void SDLPlayData::refresh_loop_wait_event(VideoState *is, SDL_Event *event) {
+
+int FfmpegSdlAvPlayback::get_audio_volume() const {
+	return pVideoState->get_audio_volume();
+}
+
+void FfmpegSdlAvPlayback::update_volume(int sign, double step) {
+	int audio_volume = get_audio_volume();
+	double volume_level = audio_volume ? (20 * log(audio_volume / (double)SDL_MIX_MAXVOLUME) / log(10)) : -1000.0;
+	int new_volume = lrint(SDL_MIX_MAXVOLUME * pow(10.0, (volume_level + sign * step) / 20.0));
+	pVideoState->set_audio_volume(av_clip(audio_volume == new_volume ? (audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME));
+}
+
+void FfmpegSdlAvPlayback::refresh_loop_wait_event(SDL_Event *event) {
 	double remaining_time = 0.0;
 	SDL_PumpEvents();
 	while (!SDL_PeepEvents(event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT)) {
@@ -595,32 +576,32 @@ void SDLPlayData::refresh_loop_wait_event(VideoState *is, SDL_Event *event) {
 		if (remaining_time > 0.0)
 			av_usleep((int64_t)(remaining_time * 1000000.0));
 		remaining_time = REFRESH_RATE;
-		if (is->get_show_mode() != SHOW_MODE_NONE && (!is->isPaused() || force_refresh))
-			video_refresh(is, &remaining_time);
+		if (pVideoState->get_show_mode() != SHOW_MODE_NONE && (!pVideoState->get_paused() || force_refresh))
+			video_refresh(&remaining_time);
 		SDL_PumpEvents();
 	}
 }
 
-void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
+void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 	double time;
 
 	Frame *sp, *sp2;
 
-	if (!is->isPaused() && is->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK && is->get_realtime())
-		is->check_external_clock_speed();
+	if (!pVideoState->get_paused() && pVideoState->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK && pVideoState->get_realtime())
+		pVideoState->check_external_clock_speed();
 
-	if (!display_disable && is->get_show_mode() != SHOW_MODE_VIDEO && is->get_audio_st()) {
+	if (!display_disable && pVideoState->get_show_mode() != SHOW_MODE_VIDEO && pVideoState->get_audio_st()) {
 		time = av_gettime_relative() / 1000000.0;
 		if (force_refresh || last_vis_time + rdftspeed < time) {
-			video_display(is);
+			video_display();
 			last_vis_time = time;
 		}
 		*remaining_time = FFMIN(*remaining_time, last_vis_time + rdftspeed - time);
 	}
 
-	if (is->get_video_st()) {
+	if (pVideoState->get_video_st()) {
 	retry:
-		if (is->get_pPictq()->nb_remaining() == 0) {
+		if (pVideoState->get_pPictq()->nb_remaining() == 0) {
 			// nothing to do, no picture to display in the queue
 		}
 		else {
@@ -628,23 +609,23 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 			Frame *vp, *lastvp;
 
 			/* dequeue the picture */
-			lastvp = is->get_pPictq()->peek_last();
-			vp = is->get_pPictq()->peek();
+			lastvp = pVideoState->get_pPictq()->peek_last();
+			vp = pVideoState->get_pPictq()->peek();
 
-			if (vp->serial != is->get_pVideoq()->get_serial()) {
-				is->get_pPictq()->next();
+			if (vp->serial != pVideoState->get_pVideoq()->get_serial()) {
+				pVideoState->get_pPictq()->next();
 				goto retry;
 			}
 
 			if (lastvp->serial != vp->serial)
 				frame_timer = av_gettime_relative() / 1000000.0;
 
-			if (is->isPaused())
+			if (pVideoState->get_paused())
 				goto display;
 
 			/* compute nominal last_duration */
-			last_duration = vp_duration(lastvp, vp, is->get_max_frame_duration());
-			delay = is->compute_target_delay(last_duration);
+			last_duration = vp_duration(lastvp, vp, pVideoState->get_max_frame_duration());
+			delay = pVideoState->compute_target_delay(last_duration);
 
 			time = av_gettime_relative() / 1000000.0;
 			if (time < frame_timer + delay) {
@@ -656,33 +637,33 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 			if (delay > 0 && time - frame_timer > AV_SYNC_THRESHOLD_MAX)
 				frame_timer = time;
 
-			std::unique_lock<std::mutex> locker(is->get_pPictq()->get_mutex());
+			std::unique_lock<std::mutex> locker(pVideoState->get_pPictq()->get_mutex());
 			if (!isnan(vp->pts))
-				update_video_pts(is, vp->pts, vp->pos, vp->serial);
+				pVideoState->update_pts(vp->pts, vp->pos, vp->serial);
 			locker.unlock();
 
-			if (is->get_pPictq()->nb_remaining() > 1) {
-				Frame *nextvp = is->get_pPictq()->peek_next();
-				duration = vp_duration(vp, nextvp, is->get_max_frame_duration());
-				if (!is->get_step() && (framedrop>0 || (framedrop && is->get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) && time > frame_timer + duration) {
+			if (pVideoState->get_pPictq()->nb_remaining() > 1) {
+				Frame *nextvp = pVideoState->get_pPictq()->peek_next();
+				duration = vp_duration(vp, nextvp, pVideoState->get_max_frame_duration());
+				if (!pVideoState->get_step() && (framedrop>0 || (framedrop && pVideoState->get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) && time > frame_timer + duration) {
 					frame_drops_late++;
-					is->get_pPictq()->next();
+					pVideoState->get_pPictq()->next();
 					goto retry;
 				}
 			}
 
-			if (is->get_subtitle_st()) {
-				while (is->get_pSubpq()->nb_remaining() > 0) {
-					sp = is->get_pSubpq()->peek();
+			if (pVideoState->get_subtitle_st()) {
+				while (pVideoState->get_pSubpq()->nb_remaining() > 0) {
+					sp = pVideoState->get_pSubpq()->peek();
 
-					if (is->get_pSubpq()->nb_remaining() > 1)
-						sp2 = is->get_pSubpq()->peek_next();
+					if (pVideoState->get_pSubpq()->nb_remaining() > 1)
+						sp2 = pVideoState->get_pSubpq()->peek_next();
 					else
 						sp2 = NULL;
 
-					if (sp->serial != is->get_pSubtitleq()->get_serial()
-						|| (is->get_pVidclk()->get_pts() > (sp->pts + ((float)sp->sub.end_display_time / 1000)))
-						|| (sp2 && is->get_pVidclk()->get_pts() > (sp2->pts + ((float)sp2->sub.start_display_time / 1000))))
+					if (sp->serial != pVideoState->get_pSubtitleq()->get_serial()
+						|| (pVideoState->get_pVidclk()->get_pts() > (sp->pts + ((float)sp->sub.end_display_time / 1000)))
+						|| (sp2 && pVideoState->get_pVidclk()->get_pts() > (sp2->pts + ((float)sp2->sub.start_display_time / 1000))))
 					{
 						if (sp->uploaded) {
 							int i;
@@ -699,7 +680,7 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 								}
 							}
 						}
-						is->get_pSubpq()->next();
+						pVideoState->get_pSubpq()->next();
 					}
 					else {
 						break;
@@ -707,19 +688,19 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 				}
 			}
 
-			is->get_pPictq()->next();
+			pVideoState->get_pPictq()->next();
 			force_refresh = 1;
 
-			if (is->get_step() && !is->isPaused())
-				is->stream_toggle_pause();
+			if (pVideoState->get_step() && !pVideoState->get_paused())
+				stream_toggle_pause();
 		}
 	display:
 		/* display picture */
 		if (!display_disable
 			&& force_refresh
-			&& (is->get_show_mode() == SHOW_MODE_VIDEO)
-			&& is->get_pPictq()->get_rindex_shown())
-			video_display(is);
+			&& (pVideoState->get_show_mode() == SHOW_MODE_VIDEO)
+			&& pVideoState->get_pPictq()->get_rindex_shown())
+			video_display();
 	}
 	force_refresh = 0;
 	if (show_status) {
@@ -733,38 +714,38 @@ void SDLPlayData::video_refresh(VideoState *is, double *remaining_time) {
 			aqsize = 0;
 			vqsize = 0;
 			sqsize = 0;
-			if (is->get_audio_st())
-				aqsize = is->get_pAudioq()->get_size();
-			if (is->get_video_st())
-				vqsize = is->get_pVideoq()->get_size();
-			if (is->get_subtitle_st())
-				sqsize = is->get_pSubtitleq()->get_size();
+			if (pVideoState->get_audio_st())
+				aqsize = pVideoState->get_pAudioq()->get_size();
+			if (pVideoState->get_video_st())
+				vqsize = pVideoState->get_pVideoq()->get_size();
+			if (pVideoState->get_subtitle_st())
+				sqsize = pVideoState->get_pSubtitleq()->get_size();
 			av_diff = 0;
-			if (is->get_audio_st() && is->get_video_st())
-				av_diff = is->get_pAudclk()->get_clock() - is->get_pVidclk()->get_clock();
-			else if (is->get_video_st())
-				av_diff = is->get_master_clock() - is->get_pVidclk()->get_clock();
-			else if (is->get_audio_st())
-				av_diff = is->get_master_clock() - is->get_pAudclk()->get_clock();
+			if (pVideoState->get_audio_st() && pVideoState->get_video_st())
+				av_diff = pVideoState->get_pAudclk()->get_clock() - pVideoState->get_pVidclk()->get_clock();
+			else if (pVideoState->get_video_st())
+				av_diff = pVideoState->get_master_clock() - pVideoState->get_pVidclk()->get_clock();
+			else if (pVideoState->get_audio_st())
+				av_diff = pVideoState->get_master_clock() - pVideoState->get_pAudclk()->get_clock();
 			av_log(NULL, AV_LOG_INFO,
 				"%7.2f at %dX %s:%7.3f fd=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
-				is->get_master_clock(),
-				is->get_master_clock_speed(),
-				(is->get_audio_st() && is->get_video_st()) ? "A-V" : (is->get_video_st() ? "M-V" : (is->get_audio_st() ? "M-A" : "   ")),
+				pVideoState->get_master_clock(),
+				pVideoState->get_master_clock_speed(),
+				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
 				av_diff,
-				is->get_frame_drops_early() + frame_drops_late,
+				pVideoState->get_frame_drops_early() + frame_drops_late,
 				aqsize / 1024,
 				vqsize / 1024,
 				sqsize,
-				is->get_video_st() ? is->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
-				is->get_video_st() ? is->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
+				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
+				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
 			fflush(stdout);
 			last_time = cur_time;
 		}
 	}
 }
 
-void SDLPlayData::init() {
+void FfmpegSdlAvPlayback::init() {
 	/* register all codecs, demux and protocols */
 #if CONFIG_AVDEVICE
 	avdevice_register_all();
@@ -772,10 +753,10 @@ void SDLPlayData::init() {
 	avformat_network_init();
 
 	if (display_disable) {
-		video_disable = 1;
+		pVideoState->set_video_disable(1);
 	}
 	int flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
-	if (audio_disable)
+	if (pVideoState->get_audio_disable())
 		flags &= ~SDL_INIT_AUDIO;
 	else {
 		/* Try to work around an occasional ALSA buffer underflow issue when the
@@ -823,29 +804,55 @@ void SDLPlayData::init() {
 	}
 }
 
-void SDLPlayData::destroy() {
-	// close the VideoState Stream and and destroy SDL window
-	if (pVideoState) {
-		//Clean-up memory
+void FfmpegSdlAvPlayback::destroy() {
+
+	// only necessary when using as library -- has no effect otherwise
+	stop_display_loop(); 
+
+	// close the VideoState Stream
+	if (pVideoState)
 		pVideoState->stream_close();
-	}
+
+	if (audio_dev)
+		closeAudioDevice();
+	
+	// Cleanup textures
+	if (vis_texture)
+		SDL_DestroyTexture(vis_texture);
+
+	if (vid_texture)
+		SDL_DestroyTexture(vid_texture);
+	
+	if (sub_texture)
+		SDL_DestroyTexture(sub_texture);
+
+	// Cleanup resampling
+	sws_freeContext(img_convert_ctx);
+	sws_freeContext(sub_convert_ctx);
+
+	// Cleanup SDL components
 	if (renderer)
 		SDL_DestroyRenderer(renderer);
+
 	if (window)
 		SDL_DestroyWindow(window);
-	//uninit_opts();
+
 #if CONFIG_AVFILTER
 	//av_freep(&vfilters_list);
 #endif
 	avformat_network_deinit();
+
 	if (show_status)
 		printf("\n");
+
 	SDL_Quit();
+	
 	av_log(NULL, AV_LOG_QUIET, "%s", "");
+	
 	exit(0);
 }
 
-void SDLPlayData::init_and_event_loop() {
+void FfmpegSdlAvPlayback::init_and_event_loop() {
 
 	init();
 
@@ -857,7 +864,7 @@ void SDLPlayData::init_and_event_loop() {
 
 	for (;;) {
 		double x;
-		refresh_loop_wait_event(pVideoState, &event);
+		refresh_loop_wait_event(&event);
 		switch (event.type) {
 		case SDL_KEYDOWN:
 			if (exit_on_keydown) {
@@ -873,32 +880,41 @@ void SDLPlayData::init_and_event_loop() {
 				toggle_full_screen();
 				force_refresh = 1;
 				break;
+			case SDLK_KP_8:
+				play();
+				break;
+			case SDLK_KP_5:
+				stop();
+				break;
+			case SDLK_KP_2:
+				toggle_pause();
+				break;
 			case SDLK_p:
 			case SDLK_SPACE:
-				pVideoState->toggle_pause();
+				toggle_pause();
 				break;
 			case SDLK_m:
 				pVideoState->toggle_mute();
 				break;
 			case SDLK_KP_MULTIPLY:
 			case SDLK_0:
-				pVideoState->update_volume(1, SDL_VOLUME_STEP);
+				update_volume(1, SDL_VOLUME_STEP);
 				break;
 			case SDLK_KP_DIVIDE:
 			case SDLK_9:
-				pVideoState->update_volume(-1, SDL_VOLUME_STEP);
+				update_volume(-1, SDL_VOLUME_STEP);
 				break;
 			case SDLK_s: // S: Step to next frame
-				pVideoState->step_to_next_frame();
+				step_to_next_frame();
 				break;
 			case SDLK_a:
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
 				break;
 			case SDLK_KP_PLUS:
-				pVideoState->set_speed(1);
+				pVideoState->set_rate(1);
 				break;
 			case SDLK_KP_MINUS:
-				pVideoState->set_speed(-1);
+				pVideoState->set_rate(-1);
 				break;
 			case SDLK_v:
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
@@ -922,7 +938,7 @@ void SDLPlayData::init_and_event_loop() {
 					pVideoState->toggle_audio_display();
 				}
 #else
-				pVideoState->toggle_audio_display();
+				toggle_audio_display();
 #endif
 				break;
 			case SDLK_PAGEUP:
@@ -1062,18 +1078,31 @@ void SDLPlayData::init_and_event_loop() {
 	}
 }
 
-void SDLPlayData::init_and_start_display_loop() {
+void FfmpegSdlAvPlayback::init_and_start_display_loop() {
 	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method)
 	pVideoState->stream_start();
 	display_tid = new std::thread([this] {
 		init();
 		SDL_Event event;
 		while (!stopped) {
-			refresh_loop_wait_event(this->get_VideoState(), &event);
+			refresh_loop_wait_event(&event);
 		}
 	});
 }
 
-void SDLPlayData::stop_display_loop() {
+void FfmpegSdlAvPlayback::stop_display_loop() {
 	stopped = true;
+}
+
+void FfmpegSdlAvPlayback::toggle_audio_display() {
+	int next = show_mode;
+	do {
+		next = (next + 1) % SHOW_MODE_NB;
+		
+	} while (next != show_mode && (next == SHOW_MODE_VIDEO 
+			&& !pVideoState->get_video_st() || next != SHOW_MODE_VIDEO && !pVideoState->get_audio_st()));
+	if (show_mode != next) {
+		set_force_refresh(1);
+		show_mode = static_cast<ShowMode>(next);
+	}
 }
