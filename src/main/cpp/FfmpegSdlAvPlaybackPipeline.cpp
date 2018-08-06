@@ -77,6 +77,16 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
 	return ERROR_NONE; // no error
 }
 
+uint32_t FfmpegSdlAvPlaybackPipeline::StepForward()
+{
+	if (pSdlPlayback == nullptr)
+		return ERROR_PLAYER_NULL;
+
+	pSdlPlayback->step_to_next_frame();
+
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
 	// TODO(fraudies): Stalling and finish need to be set from the video player
 	return ERROR_NONE;
@@ -117,6 +127,17 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 	return ERROR_NONE; // no error
 }
 
+uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double * pdFps)
+{
+	if (pSdlPlayback == nullptr) {
+		return ERROR_PLAYER_NULL;
+	}
+
+	*pdFps = pSdlPlayback->get_fps();
+
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
 	// TODO(fraudies): Implement this once ready
 	// At the moment we don't have a way of setting this
@@ -133,18 +154,16 @@ uint32_t FfmpegSdlAvPlaybackPipeline::SetVolume(float fVolume) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this once ready
-	//pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
+	pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetVolume(float* pfVolume) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this once ready
-	//*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
-
-	return ERROR_NONE; // no error
+	*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetBalance(float fBalance) {
@@ -168,75 +187,65 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioSyncDelay(long* plMillis) {
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::HasAudioData(bool* bAudioData) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*bAudioData = pSdlPlayback->has_audio_data();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::HasImageData(bool* bImageData) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*bImageData = pSdlPlayback->has_image_data();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageWidth(int* width) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*width = pSdlPlayback->get_image_width();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int* iHeight) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*iHeight = pSdlPlayback->get_image_height();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioFormat(AudioFormat* pAudioFormat) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement this
-	//*pAudioFormat = pSdlPlayback->get_audio_format();
-
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetPixelFormat(PixelFormat* pPixelFormat) const {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement the pixel format for the ouput
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageBuffer(uint8_t** ppImageBuffer) {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement the image buffer data
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioBuffer(uint8_t** ppAudioBuffer, const int len) {
+	// Not implemented
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYER_NULL;
 	}
-	// TODO(fraudies): Implement the audio buffer data
 	return ERROR_NONE;
 }

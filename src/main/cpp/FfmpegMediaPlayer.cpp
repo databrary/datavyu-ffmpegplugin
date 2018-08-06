@@ -14,17 +14,35 @@ using namespace std;
 extern "C" {
 #endif
 
+/*
+* Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+* Method:    ffmpegInitPlayer
+* Signature: ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;IZ)I
+*/
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegInitPlayer
-(JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath, jobject audioFormat, jobject imageFormat, jboolean streamData) {
+(JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath, 
+	jobject jAudioFormat, jobject jColorSpace, jint jAudioBufferSizeInBy, jboolean jStreamData) {
 
-	CPipelineOptions* pOptions = new (nothrow) CPipelineOptions(streamData);
+	uint32_t uRetCode;
+	AudioFormat audioFormat;
+	uRetCode = GetAudioFormat(env, jAudioFormat, &audioFormat);
+	if (ERROR_NONE != uRetCode) {
+		return uRetCode;
+	}
+
+	PixelFormat pixelFormat;
+	uRetCode = GetPixelFormat(env, jColorSpace, &pixelFormat);
+	if (ERROR_NONE != uRetCode) {
+		return uRetCode;
+	}
+
+	CPipelineOptions* pOptions = new (nothrow) CPipelineOptions(jStreamData, 
+		audioFormat, pixelFormat, jAudioBufferSizeInBy);
 	if (NULL == pOptions) {
 		return ERROR_MEMORY_ALLOCATION;
 	}
 
-	PipelineFactory*   pPipelineFactory = NULL;
-	uint32_t           uRetCode;
-
+	PipelineFactory* pPipelineFactory = NULL;
 	uRetCode = PipelineFactory::GetInstance(&pPipelineFactory);
 	if (ERROR_NONE != uRetCode)
 		return uRetCode;
@@ -189,7 +207,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegP
 /**
 * ffmpegStop()
 *
-* Makes an asynchronous call to sotp the media playback.
+* Makes an asynchronous call to stop the media playback.
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegStop
 (JNIEnv *env, jobject obj, jlong ref_media) {
@@ -203,6 +221,26 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegS
 		return ERROR_PIPELINE_NULL;
 
 	jint iRet = (jint)pPipeline->Stop();
+
+	return iRet;
+}
+
+/**
+* ffmpegStepForward()
+*
+* Makes an asynchronous call to step to the next frame of the media.
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegStepForward
+(JNIEnv *env, jobject obj, jlong ref_media){
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	jint iRet = (jint)pPipeline->StepForward();
 
 	return iRet;
 }
@@ -297,6 +335,31 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 		return uRetCode;
 	jdouble jdPresentationTime = (double)dPresentationTime;
 	env->SetDoubleArrayRegion(jrgdPresentationTime, 0, 1, &jdPresentationTime);
+
+	return ERROR_NONE;
+}
+
+/*
+* ffmpegGetFps()
+*
+* Makes a synchronous call to get the media frame rate (FPS).
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetFps
+(JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jdFps) {
+	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	double dFps;
+	uint32_t uRetCode = pPipeline->GetFps(&dFps);
+	if (ERROR_NONE != uRetCode)
+		return uRetCode;
+
+	env->SetDoubleArrayRegion(jdFps, 0, 1, &dFps);
 
 	return ERROR_NONE;
 }
@@ -463,6 +526,8 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegH
 		return uErrCode;
 	jboolean jbAudioData = (jboolean)bAudioData;
 	env->SetBooleanArrayRegion(jrbAudioData, 0, 1, &jbAudioData);
+
+	return ERROR_NONE;
 }
 
 /**
@@ -486,6 +551,8 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegH
 		return uErrCode;
 	jboolean jbImageData = (jboolean)bImageData;
 	env->SetBooleanArrayRegion(jrbImageData, 0, 1, &jbImageData);
+
+	return ERROR_NONE;
 }
 
 /**
@@ -509,6 +576,8 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 		return uErrCode;
 	jint jiImageWidth = (jint)iImageWidth;
 	env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageWidth);
+
+	return ERROR_NONE;
 }
 
 /*
@@ -532,15 +601,17 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 		return uErrCode;
 	jint jiImageHeight = (jint)iImageHeight;
 	env->SetIntArrayRegion(jriImageHeight, 0, 1, &jiImageHeight);
+
+	return ERROR_NONE;
 }
 
 /*
-* ffmpegGetAudioFormat()
-*
-* Makes a synchronous call to get the audio format -- if no audio returns an error.
+* Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+* Method:    ffmpegGetAudioFormat
+* Signature: (J[Ljavax/sound/sampled/AudioFormat;)I
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetAudioFormat
-(JNIEnv *env, jobject obj, jlong ref_media, jobject jAudioFormat) {
+(JNIEnv *env, jobject obj, jlong ref_media, jobjectArray jrAudioFormat) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
 		return ERROR_MEDIA_NULL;
@@ -549,12 +620,17 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 	if (NULL == pPipeline)
 		return ERROR_PIPELINE_NULL;
 
-	AudioFormat* pAudioParams = nullptr;
-	uint32_t uErrCode = pPipeline->GetAudioFormat(pAudioParams);
+	AudioFormat audioParams;
+	uint32_t uErrCode = pPipeline->GetAudioFormat(&audioParams);
 	if (ERROR_NONE != uErrCode)
 		return uErrCode;
+	
+	jobject jAudioFormat = env->GetObjectArrayElement(jrAudioFormat, 0);
+	if (jAudioFormat == nullptr) {
+		return ERROR_AUDIO_FORMAT_NULL;
+	}
 
-	uErrCode = SetAudioFormat(env, jAudioFormat, *pAudioParams);
+	uErrCode = SetJAudioFormat(env, jAudioFormat, audioParams);
 	if (ERROR_NONE != uErrCode)
 		return uErrCode;
 
@@ -562,12 +638,12 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 }
 
 /*
-* ffmpegGetColorSpace()
-*
-* Makes a synchronous call to get the color space -- if no image returns an error.
+* Class:     org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer
+* Method:    ffmpegGetColorSpace
+* Signature: (J[Ljava/awt/color/ColorSpace;)I
 */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegGetColorSpace
-(JNIEnv *env, jobject obj, jlong ref_media, jobject jColorSpace) {
+(JNIEnv *env, jobject obj, jlong ref_media, jobjectArray jrColorSpace) {
 	CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
 	if (NULL == pMedia)
 		return ERROR_MEDIA_NULL;
@@ -576,12 +652,17 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegG
 	if (NULL == pPipeline)
 		return ERROR_PIPELINE_NULL;
 
-	PixelFormat* pPixelFormat = nullptr;
-	uint32_t uErrCode = pPipeline->GetPixelFormat(pPixelFormat);
+	PixelFormat pixelFormat;
+	uint32_t uErrCode = pPipeline->GetPixelFormat(&pixelFormat);
 	if (ERROR_NONE != uErrCode)
 		return uErrCode;
 
-	uErrCode = SetPixelFormat(env, jColorSpace, *pPixelFormat);
+	jobject jColorSpace = env->GetObjectArrayElement(jrColorSpace, 0);
+	if (jColorSpace == nullptr) {
+		return ERROR_COLOR_SPACE_NULL;
+	}
+
+	uErrCode = SetJPixelFormat(env, jColorSpace, pixelFormat);
 	if (ERROR_NONE != uErrCode)
 		return uErrCode;
 

@@ -6,10 +6,21 @@
 
 class FfmpegJavaAvPlayback : public FfmpegAvPlayback {
 private:
+	const AudioFormat* pAudioFormat;
+	const PixelFormat* pPixelFormat;
+	const int audioBufferSizeInBy;
+	struct SwsContext* img_convert_ctx;
 	void init();
 public:
-	FfmpegJavaAvPlayback(const char *filename, AVInputFormat *iformat);
+	FfmpegJavaAvPlayback(const char *filename, 
+		AVInputFormat *iformat, 
+		const AudioFormat *pAudioFormat, 
+		const PixelFormat *pPixelFormat,
+		const int audioBufferSizeInBy);
 	~FfmpegJavaAvPlayback();
+
+	int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
+		int wanted_sample_rate, struct AudioParams *audio_hw_params);
 
 	VideoState* get_VideoState();
 
@@ -34,8 +45,8 @@ public:
 	void get_image_buffer(uint8_t** ppImageData, long* pLen);
 	void get_audio_buffer(uint8_t** ppAudioData, long* pLen);
 
-	AudioFormat get_audio_format();
-	PixelFormat get_pixel_format();
+	void get_audio_format(AudioFormat* pAudioFormat);
+	void get_pixel_format(PixelFormat* pPixelFormat);
 };
 
 #endif // end of FFMPEGJAVAAVPLAYBACK_H_
