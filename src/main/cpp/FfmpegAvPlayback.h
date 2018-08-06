@@ -31,7 +31,6 @@ public:
 	virtual void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
 	virtual double get_duration() const;
 	virtual double get_master_clock() const;
-	virtual double get_fps() const;
 	virtual void set_rate(double rate);
 	virtual double get_rate() const;
 	// TODO(fraudies): add volume, balance, audio sync delay

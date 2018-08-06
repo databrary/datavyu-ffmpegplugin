@@ -84,6 +84,15 @@ extern "C" {
 // fixed point to double
 #define CONV_FP(x) ((double) (x)) / (1 << 16)
 
+typedef struct AudioParams {
+	int					freq;
+	int					channels;
+	int64_t				channel_layout;
+	enum AVSampleFormat fmt;
+	int					frame_size;
+	int					bytes_per_sec;
+} AudioParams;
+
 enum {
 	AV_SYNC_AUDIO_MASTER, /* default choice */
 	AV_SYNC_VIDEO_MASTER,
@@ -289,8 +298,6 @@ private:
 	int last_audio_stream;
 	int last_subtitle_stream;
 
-	int fps;
-
 	std::condition_variable continue_read_thread;
 
 	inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
@@ -374,8 +381,8 @@ public:
 	bool has_image_data() const;
 	double get_duration() const; // returns the duration in sec
 	int get_audio_volume() const;
-	void set_audio_volume(int new_audio_volume);
 	void toggle_mute();
+	void update_volume(int sign, double step);
 	void update_pts(double pts, int64_t pos, int serial);
 	void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
 	void stream_cycle_channel(int codec_type);
@@ -450,8 +457,6 @@ public:
 	/* get the current master clock value */
 	double get_master_clock() const;
 
-	double get_fps() const;
-
 	void stream_close();
 
 	/* prepare a new audio buffer */
@@ -470,8 +475,6 @@ public:
 
 	int get_subtitle_disable() const;
 	void set_subtitle_disable(const int disable);
-
-
 
 	//int isStopped() const;
 

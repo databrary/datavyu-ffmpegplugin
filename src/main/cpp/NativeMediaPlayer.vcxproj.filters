@@ -140,8 +140,5 @@
     <ClCompile Include="FfmpegJavaAvPlayback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AudioVideoFormats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

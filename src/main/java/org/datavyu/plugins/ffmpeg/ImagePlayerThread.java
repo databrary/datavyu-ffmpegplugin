@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
 // Currently this uses swing components to display the buffered image

@@ -12,8 +12,6 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Hashtable;
 
-import static java.awt.color.ColorSpace.CS_sRGB;
-
 /**
  * This the implementation of the media player interface using ffmpeg to decode and
  * transcode (optional) image and audio data
@@ -59,7 +57,9 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private void initAndStartAudioPlayer() {
         audioPlayerThread = new AudioPlayerThread(this);
         try {
-            audioPlayerThread.init(getAudioFormat(), AUDIO_BUFFER_SIZE);
+            // TODO(fraudies): Use getAudioFormat() once wired up
+            AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
+            audioPlayerThread.init(audioFormat, AUDIO_BUFFER_SIZE);
             audioPlayerThread.start();
         } catch (LineUnavailableException lu) {
             // TODO: Add correct media error
@@ -69,8 +69,14 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
 
     private void initAndStartImagePlayer() {
         imagePlayerThread = new ImagePlayerThread(this);
-        imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
+        // TODO(fraudies): Use getColorSpace() once wired up
+        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        imagePlayerThread.init(colorSpace, getImageWidth(), getImageHeight(), frame);
         imagePlayerThread.start();
+    }
+
+    private void removeInitListener() {
+        removeMediaPlayerStateListener(initListener);
     }
 
     private PlayerStateListener initListener = new PlayerStateListener() {
@@ -84,6 +90,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             if (hasImageData()) {
                 initAndStartImagePlayer();
             }
+            //removeInitListener();
         }
         @Override
         public void onPlaying(PlayerStateEvent evt) { }
@@ -105,7 +112,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
         long[] newNativeMediaRef = new long[1];
         boolean streamData = frame != null;
         String filename = source.getPath();
-        ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
+        ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, streamData);
         nativeMediaRef = newNativeMediaRef[0];
 
         // If we have a frame to display we will use that one to playback alongside the javax.sound framework
@@ -163,14 +170,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     }
 
     @Override
-    protected void playerStepForward() throws MediaException {
-        int rc = ffmpegStepForward(getNativeMediaRef());
-        if (0 != rc) {
-            throwMediaErrorException(rc, null);
-        }
-    }
-
-    @Override
     protected void playerFinish() throws MediaException {
         int rc = ffmpegFinish(getNativeMediaRef());
         if (0 != rc) {
@@ -204,16 +203,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             throwMediaErrorException(rc, null);
         }
         return presentationTime[0];
-    }
-
-    @Override
-    protected double playerGetFps() throws MediaException {
-        double[] framePerSecond = new double[1];
-        int rc = ffmpegGetFps(getNativeMediaRef(), framePerSecond);
-        if (0 != rc) {
-            throwMediaErrorException(rc, null);
-        }
-        return framePerSecond[0];
     }
 
     @Override
@@ -372,35 +361,24 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
 
     @Override
     public AudioFormat getAudioFormat() {
-        // Add a dummy audio format object to the array because creating that object in JNI is a hassle
-        // Note, that the values of the object will be filled by the native code
-        // Why use the array at all? To be consistent with the other methods
-        AudioFormat[] audioFormat = {
-                new AudioFormat(
-                        new AudioFormat.Encoding("none"),
-                        0f,
-                        0,
-                        0,
-                        0,
-                        0f,
-                        false)};
-        int rc = ffmpegGetAudioFormat(getNativeMediaRef(), audioFormat);
+        // TODO(fraudies): Change this to array of AudioFormat
+        AudioFormat ref = null; //new AudioFormat(null, 0F, 0, 0, 0, 0F, false);
+        int rc = ffmpegGetAudioFormat(getNativeMediaRef(), ref);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
-        return audioFormat[0];
+        return ref;
     }
 
     @Override
     public ColorSpace getColorSpace() {
-        // Add a dummy value, this value will be overwritten from the native code
-        // We add the dummy here because creating an object instance is easier in java than native code
-        ColorSpace[] colorSpace = {ColorSpace.getInstance(CS_sRGB)};
-        int rc = ffmpegGetColorSpace(getNativeMediaRef(), colorSpace);
+        // TODO(fraudies): Change this to array of ColorSpace
+        ColorSpace ref = null; // filled by native side
+        int rc = ffmpegGetColorSpace(getNativeMediaRef(), ref);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
-        return colorSpace[0];
+        return ref;
     }
 
     @Override
@@ -428,7 +406,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
                                         String sourcePath,
                                         AudioFormat requestedAudioFormat,
                                         ColorSpace requestedColorFormat,
-                                        int audioBufferSizeInBy,
                                         boolean streamData);
 
     private native int ffmpegDisposePlayer(long refNativeMedia);
@@ -438,12 +415,10 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private native int ffmpegPlay(long refNativeMedia);
     private native int ffmpegPause(long refNativeMedia);
     private native int ffmpegStop(long refNativeMedia);
-    private native int ffmpegStepForward(long refNativeMedia);
     private native int ffmpegFinish(long refNativeMedia);
     private native int ffmpegGetRate(long refNativeMedia, float[] rate);
     private native int ffmpegSetRate(long refNativeMedia, float rate);
     private native int ffmpegGetPresentationTime(long refNativeMedia, double[] time);
-    private native int ffmpegGetFps(long refNativeMedia, double[] fps);
     private native int ffmpegGetVolume(long refNativeMedia, float[] volume);
     private native int ffmpegSetVolume(long refNativeMedia, float volume);
     private native int ffmpegGetBalance(long refNativeMedia, float[] balance);
@@ -455,8 +430,8 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private native int ffmpegHasImageData(long refNativeMedia, boolean[] hasData);
     private native int ffmpegGetImageWidth(long refNativeMedia, int[] width);
     private native int ffmpegGetImageHeight(long refNativeMedia, int [] height);
-    private native int ffmpegGetAudioFormat(long refNativeMedia, AudioFormat[] audioFormat);
-    private native int ffmpegGetColorSpace(long refNativeMedia, ColorSpace[] colorSpace);
-    private native int ffmpegUpdateImageData(long refNativeMedia, byte[] data);
-    private native int ffmpegUpdateAudioData(long refNativeMedia, byte[] data);
+    private native int ffmpegGetAudioFormat(long refNativeMedia, AudioFormat refToAudioFormat);
+    private native int ffmpegGetColorSpace(long refNativeMedia, ColorSpace refToColorSpace);
+    private native int ffmpegGetImageBuffer(long refNativeMedia, ByteBuffer[] data);
+    private native int ffmpegGetAudioBuffer(long refNativeMedia, ByteBuffer[] data);
 }

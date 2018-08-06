@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg.examples;
 
 import org.datavyu.plugins.ffmpeg.*;
+import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
@@ -13,7 +14,7 @@ public class SimpleMediaPlayerExample {
     public static void main(String[] args) {
 
         // Create the  media player and attach any listeners
-        String movieFileName = "Nature_30fps_1080p.mp4"; //"NIAGARA_FALLS_60fps_1080p.mp4"; //"DatavyuSampleVideo.mp4"; //"Nature_30fps_1080p.mp4";
+        String movieFileName = "Nature_30fps_1080p.mp4";
 
         // Open a Jframe for data streaming through Java
         MediaPlayer mediaPlayer = new FfmpegMediaPlayer(URI.create(movieFileName), new JFrame());
@@ -29,8 +30,8 @@ public class SimpleMediaPlayerExample {
         });
 
         // Define the audio format and color space that we would like to have
-        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB); // This is the only one we support
-        AudioFormat audioFormat = AudioPlayerThread.getMonoFormat(); // There are only two audio formats we support
+        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        AudioFormat audioFormat = AudioSoundStreamListener.getNewMonoFormat();
 
         // Initialize and start playing
         mediaPlayer.init(audioFormat, colorSpace);
@@ -46,7 +47,6 @@ public class SimpleMediaPlayerExample {
             @Override
             public void keyPressed(KeyEvent e) {
                 double currentTime, nextTime;
-                float currentVolume, nextVolume;
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_NUMPAD5:
                         System.out.println("Stop");
@@ -55,10 +55,6 @@ public class SimpleMediaPlayerExample {
                     case KeyEvent.VK_NUMPAD8:
                         System.out.println("Play");
                         mediaPlayer.play();
-                        break;
-                    case KeyEvent.VK_S:
-                        System.out.println("Step Forward");
-                        mediaPlayer.stepForward();
                         break;
                     case KeyEvent.VK_NUMPAD6:
                         System.out.println("Speed +1");
@@ -95,18 +91,6 @@ public class SimpleMediaPlayerExample {
                         nextTime = currentTime - 5;
                         System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
                         mediaPlayer.seek(nextTime);
-                        break;
-                    case KeyEvent.VK_0:
-                        currentVolume = mediaPlayer.getVolume();
-                        nextVolume = currentVolume - 1;
-                        System.out.println("Change volume from " + currentVolume + " dB to " + nextVolume + " dB");
-                        mediaPlayer.setVolume(nextVolume);
-                        break;
-                    case KeyEvent.VK_9:
-                        currentVolume = mediaPlayer.getVolume();
-                        nextVolume = currentVolume + 1;
-                        System.out.println("Change volume from " + currentVolume + " dB to " + nextVolume + " dB");
-                        mediaPlayer.setVolume(nextVolume);
                         break;
                     case KeyEvent.VK_ESCAPE:
                         mediaPlayer.dispose();

@@ -4,11 +4,9 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	AVInputFormat *file_iformat = nullptr;
-	pJavaPlayback = new FfmpegJavaAvPlayback(input_file, 
-		file_iformat, m_pOptions->GetAudioFormat(), m_pOptions->GetPixelFormat(), 
-		m_pOptions->GetAudioBufferSizeInBy());
+	pJavaPlayback = new FfmpegJavaAvPlayback(input_file, file_iformat);
 
-	// Assign the callback functions
+	// Assign the callback functions	
 	pJavaPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {
 		this->UpdatePlayerState(Unknown);
 	});
@@ -77,15 +75,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::Pause() {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::StepForward() {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYER_NULL;
-
-	pJavaPlayback->step_to_next_frame();
-
-	return ERROR_NONE;
-}
-
 uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
 	// TODO(fraudies): Stalling and finish need to be set from the video player
 	return ERROR_NONE;
@@ -125,17 +114,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double* pdStreamTime) {
 	}
 
 	*pdStreamTime = pJavaPlayback->get_master_clock();
-
-	return ERROR_NONE;
-}
-
-uint32_t FfmpegJavaAvPlaybackPipline::GetFps(double* pdFps)
-{
-	if (pJavaPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
-	}
-
-	*pdFps = pJavaPlayback->get_fps();
 
 	return ERROR_NONE;
 }
@@ -250,7 +228,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetAudioFormat(AudioFormat* pAudioFormat) 
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	pJavaPlayback->get_audio_format(pAudioFormat);
+	*pAudioFormat = pJavaPlayback->get_audio_format();
 
 	return ERROR_NONE;
 }
@@ -259,7 +237,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetPixelFormat(PixelFormat* pPixelFormat) 
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYER_NULL;
 
-	pJavaPlayback->get_pixel_format(pPixelFormat);
+	*pPixelFormat = pJavaPlayback->get_pixel_format();
 
 	return ERROR_NONE;
 }

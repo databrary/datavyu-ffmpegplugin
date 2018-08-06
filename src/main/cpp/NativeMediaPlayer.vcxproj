@@ -148,7 +148,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\cpp\JavaPlayerEventDispatcher.cpp" />
-    <ClCompile Include="AudioVideoFormats.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="FfmpegAvPlayback.cpp" />
     <ClCompile Include="FfmpegJavaAvPlayback.cpp" />

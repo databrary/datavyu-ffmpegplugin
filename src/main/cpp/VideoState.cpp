@@ -140,25 +140,10 @@ int VideoState::stream_component_open(int stream_index) {
 			pause_audio_device_callback();
 		break;
 	case AVMEDIA_TYPE_VIDEO:
-		this->image_width = avctx->width;
-		this->image_height = avctx->height;
-
-		// TODO(fraudies): Alignment for the source does not seem to be necessary, but test with more res
-		// avcodec_align_dimensions(avctx, &avctx->width, &avctx->height);
-
 		this->video_stream = stream_index;
 		this->video_st = ic->streams[stream_index];
-
-		// Calculate the Frame rate (FPS) of the video stream
-		if (this->video_st) {
-			AVRational f = av_guess_frame_rate(ic, video_st, NULL);
-			AVRational rational = this->video_st->avg_frame_rate;
-			if(rational.den == rational.num == 0)
-				rational = this->video_st->r_frame_rate;
-
-			this->fps = rational.num / rational.den;
-		}
-
+		this->image_width = avctx->width;
+		this->image_height = avctx->height;
 		pViddec = new Decoder(avctx, pVideoq, &continue_read_thread);
 		if ((ret = pViddec->start(video_thread_bridge, this)) < 0)
 			goto out;
@@ -1363,11 +1348,11 @@ int VideoState::get_image_height() const {
 }
 
 bool VideoState::has_audio_data() const {
-	return last_audio_stream >= 0;
+	return audio_stream >= 0;
 }
 
 bool VideoState::has_image_data() const {
-	return last_video_stream >= 0;
+	return video_stream >= 0;
 }
 
 double VideoState::get_duration() const {
@@ -1378,12 +1363,14 @@ int VideoState::get_audio_volume() const {
 	return audio_volume;
 }
 
-void VideoState::set_audio_volume(int new_audio_volume) {
-	audio_volume = new_audio_volume;
-}
-
 void VideoState::toggle_mute() {
 	this->muted = !this->muted;
+}
+
+void VideoState::update_volume(int sign, double step) {
+	double volume_level = this->audio_volume ? (20 * log(this->audio_volume / (double)SDL_MIX_MAXVOLUME) / log(10)) : -1000.0;
+	int new_volume = lrint(SDL_MIX_MAXVOLUME * pow(10.0, (volume_level + sign * step) / 20.0));
+	this->audio_volume = av_clip(this->audio_volume == new_volume ? (this->audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME);
 }
 
 void VideoState::update_pts(double pts, int64_t pos, int serial) {
@@ -1678,10 +1665,6 @@ double VideoState::get_master_clock() const {
 	return val;
 }
 
-double VideoState::get_fps() const {
-	return video_st ? this->fps : 0;
-}
-
 void VideoState::stream_close() {
 	/* XXX: use a special url_shutdown call to abort parse cleanly */
 	this->abort_request = 1;
@@ -1718,10 +1701,9 @@ void VideoState::stream_close() {
 }
 
 /* prepare a new audio buffer */
-// TODO(fraudies): This method requires clean-up since we use it both for SDL and Java playback but most parts are specific to the SDL
-// E.g. we need to push the regulation of balance, volume into the SDL only part
 void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 	int audio_size, len1;
+
 	audio_callback_time = av_gettime_relative();
 
 	while (len > 0) {
@@ -1730,7 +1712,6 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 			if (audio_size < 0) {
 				/* if error, just output silence */
 				this->audio_buf = NULL;
-				// TODO(fraudies): Need to use the default buffer in case of the java playback
 				this->audio_buf_size = SDL_AUDIO_MIN_BUFFER_SIZE / this->audio_tgt.frame_size * this->audio_tgt.frame_size;
 			}
 			else {
@@ -1743,7 +1724,6 @@ void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
 		len1 = this->audio_buf_size - this->audio_buf_index;
 		if (len1 > len)
 			len1 = len;
-		// TODO(fraudies): We should move this volume regulation (not mute) to the SDL only part
 		if (!this->muted && this->audio_buf && this->audio_volume == SDL_MIX_MAXVOLUME)
 			memcpy(stream, (uint8_t *)this->audio_buf + this->audio_buf_index, len1);
 		else {
