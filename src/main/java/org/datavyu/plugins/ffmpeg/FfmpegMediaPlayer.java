@@ -4,6 +4,9 @@ import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.color.ColorSpace;
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static java.awt.color.ColorSpace.CS_sRGB;
 
@@ -22,6 +25,10 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private ImagePlayerThread imagePlayerThread = null;
     private JFrame frame;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
+
+    private ReentrantLock lock = new ReentrantLock();
+    private Condition readyCondition = lock.newCondition();
+
 
     static {
         System.loadLibrary("FfmpegMediaPlayer");
@@ -69,13 +76,19 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private PlayerStateListener initListener = new PlayerStateListener() {
         @Override
         public void onReady(PlayerStateEvent evt) {
-            // If we have audio data consume it
-            if (hasAudioData()) {
-                initAndStartAudioPlayer();
-            }
-            // If we have image data consume it
-            if (hasImageData()) {
-                initAndStartImagePlayer();
+            lock.lock();
+            try{
+                readyCondition.signal();
+                // If we have audio data consume it
+                if (hasAudioData()) {
+                    initAndStartAudioPlayer();
+                }
+                // If we have image data consume it
+                if (hasImageData()) {
+                    initAndStartImagePlayer();
+                }
+            }finally {
+                lock.unlock();
             }
         }
         @Override
@@ -94,16 +107,24 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
 
     @Override
     public void init(AudioFormat audioFormat, ColorSpace colorSpace) {
-        initNative(); // start the event queue, make sure to register all state/error listeners before
-        long[] newNativeMediaRef = new long[1];
-        boolean streamData = frame != null;
-        String filename = source.getPath();
-        ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
-        nativeMediaRef = newNativeMediaRef[0];
+        lock.lock();
+        try{
+            initNative(); // start the event queue, make sure to register all state/error listeners before
+            long[] newNativeMediaRef = new long[1];
+            boolean streamData = frame != null;
+            String filename = source.getPath();
+            ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
+            nativeMediaRef = newNativeMediaRef[0];
 
-        // If we have a frame to display we will use that one to playback alongside the javax.sound framework
-        if (streamData) {
-            addMediaPlayerStateListener(initListener);
+            // If we have a frame to display we will use that one to playback alongside the javax.sound framework
+            if (streamData) {
+                addMediaPlayerStateListener(initListener);
+            }
+            readyCondition.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
         }
     }
 
