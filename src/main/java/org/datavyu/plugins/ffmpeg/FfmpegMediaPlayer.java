@@ -3,7 +3,9 @@ package org.datavyu.plugins.ffmpeg;
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.color.ColorSpace;
+import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,7 +31,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private ReentrantLock lock = new ReentrantLock();
     private Condition readyCondition = lock.newCondition();
 
-
     static {
         System.loadLibrary("FfmpegMediaPlayer");
     }
@@ -38,23 +39,46 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
      * Create an ffmpeg media player instance and play through java
      * framework
      *
-     * @param source The source
+     * @param source The URI source
      * @param frame The frame to display
      */
     public FfmpegMediaPlayer(URI source, JFrame frame) {
         super(source);
+//        this.buildURIString(source);
         this.frame = frame;
+    }
+
+    /**
+     * Create an ffmpeg media player instance and play through java
+     * framework
+     *
+     * @param sourceFile The File source
+     * @param frame The frame to display
+     */
+    public FfmpegMediaPlayer(File sourceFile, JFrame frame) {
+        this(sourceFile.toURI(), frame);
     }
 
     /**
      * Create an ffmpeg media player instance and play through
      * the native SDL framework
      *
-     * @param source The source
+     * @param source The URI source
      */
     public FfmpegMediaPlayer(URI source) {
         this(source, null);
     }
+
+    /**
+     * Create an ffmpeg media player instance and play through
+     * the native SDL framework
+     *
+     * @param sourceFile The File source
+     */
+    public FfmpegMediaPlayer(File sourceFile) {
+        this(sourceFile, null);
+    }
+
 
     private void initAndStartAudioPlayer() {
         audioPlayerThread = new AudioPlayerThread(this);
@@ -113,7 +137,9 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             long[] newNativeMediaRef = new long[1];
             boolean streamData = frame != null;
             String filename = source.getPath();
+
             ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
+
             nativeMediaRef = newNativeMediaRef[0];
 
             // If we have a frame to display we will use that one to playback alongside the javax.sound framework
