@@ -4,6 +4,7 @@ import org.datavyu.plugins.ffmpeg.*;
 
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -14,11 +15,13 @@ public class SimpleMediaPlayerExample {
     public static void main(String[] args) {
 
         // Create the  media player and attach any listeners
+
         String movieFileName = "Nature_30fps_1080p.mp4"; //"NIAGARA_FALLS_60fps_1080p.mp4"; //"DatavyuSampleVideo.mp4"; //"Nature_30fps_1080p.mp4";
 
+        // Absolute path
 //        String movieFileName = "C:\\Users\\DatavyuTests\\Documents\\Databrary\\datavyu-ffmpegplugin\\Nature_30fps_1080p.mp4";
 
-
+        // Create the media player using the constructor with File
         MediaPlayer mediaPlayer = new FfmpegMediaPlayer(new File(movieFileName), new JFrame());
 
         // Open a Jframe for data streaming through Java

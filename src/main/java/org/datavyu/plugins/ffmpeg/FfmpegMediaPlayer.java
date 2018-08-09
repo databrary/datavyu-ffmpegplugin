@@ -2,11 +2,10 @@ package org.datavyu.plugins.ffmpeg;
 
 import javax.sound.sampled.*;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -25,7 +24,9 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private boolean muteEnabled = false;
     private AudioPlayerThread audioPlayerThread = null;
     private ImagePlayerThread imagePlayerThread = null;
+    private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
     private JFrame frame;
+    private Container container;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
 
     private ReentrantLock lock = new ReentrantLock();
@@ -59,81 +60,17 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
         this.buildSourcePath(sourceFile);
     }
 
-    private void buildSourcePath(File sourceFile) {
-
-        if (sourceURI == null) {
-            throw new NullPointerException("uri == null!");
-        }
-
-        if (sourceFile == null){
-            throw new NullPointerException("File == null!");
-        }
-
-        // Get the scheme part.
-        String uriString = sourceURI.toASCIIString();
-        String scheme = sourceURI.getScheme();
-        if (scheme == null) {
-            throw new IllegalArgumentException("uri.getScheme() == null! uri == '" + sourceURI + "'");
-        }
-        scheme = scheme.toLowerCase();
-
-        protocol = scheme;
-
-        // if we are on Windows Platform and the protocol used is file we use the absolute path
-        if(protocol.equals("file")){
-            String path = sourceFile.getAbsolutePath();
-            if(System.getProperty("os.name").toLowerCase().indexOf("win") != -1){
-                sourcePath = path.replace("\\","/");
-            } else {
-                //TODO(Reda): Test on Mac
-                int index = path.indexOf("/~/");
-                if (index != -1) {
-                    sourcePath = path.substring(0, index)
-                            + System.getProperty("user.home")
-                            + path.substring(index + 2);
-                }
-            }
-        } else {
-            try {
-                //TODO(Reda): Test with using uri for protocols different than file
-                // Note: streaming from http(s) or rtmp is not implemented yet
-                // Ensure the correct number of '/'s follows the ':'.
-                int firstSlash = uriString.indexOf("/");
-                if (firstSlash != -1 && uriString.charAt(firstSlash + 1) != '/') {
-                    // Only one '/' after the ':'.
-                    if (protocol.equals("file")) {
-                        // Map file:/somepath to file:///somepath
-                        uriString = uriString.replaceFirst("/", "///");
-                    } else if (protocol.equals("http") || protocol.equals("https")) {
-                        // Map http:/somepath to http://somepath
-                        uriString = uriString.replaceFirst("/", "//");
-                    }
-                }
-                // On non-Windows systems, replace "/~/" with home directory path + "/".
-                if (System.getProperty("os.name").toLowerCase().indexOf("win") == -1
-                        && protocol.equals("file")) {
-                    int index = uriString.indexOf("/~/");
-                    if (index != -1) {
-                        uriString = uriString.substring(0, index) + sourcePath;
-                    }
-                }
-
-                // Recreate the URI if needed
-                sourceURI = new URI(uriString);
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        if (System.getProperty("os.name").toLowerCase().indexOf("win") != -1
-                && protocol.equals("file")) {
-            String path = sourceFile.getAbsolutePath();
-            sourcePath =  path.replace("\\","/");
-        } else {
-
-
-        }
+    /**
+     * Create an ffmpeg media player instance and play through java
+     * Datavyu container
+     *
+     * @param sourceFile The File source
+     * @param container The Container to display
+     */
+    public FfmpegMediaPlayer(File sourceFile, Container container) {
+        this(sourceFile.toURI(), null);
+        this.buildSourcePath(sourceFile);
+        this.container = container;
     }
 
     /**
@@ -156,6 +93,27 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
         this(sourceFile, null);
     }
 
+    private void buildSourcePath(File sourceFile) {
+        if (sourceFile == null){
+            throw new NullPointerException("File == null!");
+        }
+
+        // if we are on Windows Platform and the protocol used is file we use the absolute path
+        if(protocol.equals("file")){
+            String path = sourceFile.getAbsolutePath();
+            if(System.getProperty("os.name").toLowerCase().indexOf("win") != -1){
+                sourcePath = path.replace("\\","/");
+            } else {
+                //TODO(Reda): Test on Mac
+                int index = path.indexOf("/~/");
+                if (index != -1) {
+                    sourcePath = path.substring(0, index)
+                            + System.getProperty("user.home")
+                            + path.substring(index + 2);
+                }
+            }
+        }
+    }
 
     private void initAndStartAudioPlayer() {
         audioPlayerThread = new AudioPlayerThread(this);
@@ -169,9 +127,16 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     }
 
     private void initAndStartImagePlayer() {
-        imagePlayerThread = new ImagePlayerThread(this);
-        imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
-        imagePlayerThread.start();
+        if (this.frame != null) {
+            imagePlayerThread = new ImagePlayerThread(this);
+            imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
+            imagePlayerThread.start();
+        } else {
+            imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
+            imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
+            imageCanvasPlayerThread.start();
+        }
+
     }
 
     private PlayerStateListener initListener = new PlayerStateListener() {
@@ -212,7 +177,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
         try{
             initNative(); // start the event queue, make sure to register all state/error listeners before
             long[] newNativeMediaRef = new long[1];
-            boolean streamData = frame != null;
+            boolean streamData = frame != null || container != null;
             String filename;
 
             if(protocol.equals("file"))
@@ -444,6 +409,9 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     protected void playerDispose() {
         if (imagePlayerThread != null) {
             imagePlayerThread.terminte();
+        }
+        if (imageCanvasPlayerThread != null) {
+            imageCanvasPlayerThread.terminte();
         }
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();

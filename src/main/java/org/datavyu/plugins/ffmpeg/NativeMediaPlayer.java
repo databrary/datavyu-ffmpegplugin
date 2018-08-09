@@ -2,6 +2,7 @@ package org.datavyu.plugins.ffmpeg;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -35,12 +36,14 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     private double stopTime = Double.POSITIVE_INFINITY;
     private boolean isStartTimeUpdated = false;
     private boolean isStopTimeSet = false;
+
     protected URI sourceURI;
     protected String sourcePath; // used for the file protocol
     protected String protocol;
 
     NativeMediaPlayer(URI source) {
         this.sourceURI = source;
+        initURI();
     }
 
     public static class MediaErrorEvent extends PlayerEvent {
@@ -72,6 +75,56 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
     long getNativeMediaRef() {
         return nativeMediaRef;
+    }
+
+
+    private void initURI() {
+        if(sourceURI == null){
+            throw new NullPointerException("uri == null!");
+        }
+
+        // Get the scheme part.
+        String uriString = sourceURI.toASCIIString();
+        String scheme = sourceURI.getScheme();
+        if (scheme == null) {
+            throw new IllegalArgumentException("uri.getScheme() == null! uri == '" + sourceURI + "'");
+        }
+        scheme = scheme.toLowerCase();
+
+        protocol = scheme;
+        if(!protocol.equals("file")) {
+            try {
+                //TODO(Reda): Test with using uri for protocols different than file
+                // Note: streaming from http(s) or rtmp is not implemented yet
+                // Ensure the correct number of '/'s follows the ':'.
+                int firstSlash = uriString.indexOf("/");
+                if (firstSlash != -1 && uriString.charAt(firstSlash + 1) != '/') {
+                    // Only one '/' after the ':'.
+                    if (protocol.equals("file")) {
+                        // Map file:/somepath to file:///somepath
+                        uriString = uriString.replaceFirst("/", "///");
+                    } else if (protocol.equals("http") || protocol.equals("https")) {
+                        // Map http:/somepath to http://somepath
+                        uriString = uriString.replaceFirst("/", "//");
+                    }
+                }
+                // On non-Windows systems, replace "/~/" with home directory path + "/".
+                if (System.getProperty("os.name").toLowerCase().indexOf("win") == -1
+                        && protocol.equals("file")) {
+                    int index = uriString.indexOf("/~/");
+                    if (index != -1) {
+                        uriString = uriString.substring(0, index)
+                                + System.getProperty("user.home")
+                                + uriString.substring(index + 2);;
+                    }
+                }
+
+                // Recreate the URI if needed
+                sourceURI = new URI(uriString);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private class EventQueueThread extends Thread {
