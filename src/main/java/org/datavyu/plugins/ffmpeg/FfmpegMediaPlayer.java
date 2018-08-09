@@ -44,7 +44,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
      */
     public FfmpegMediaPlayer(URI source, JFrame frame) {
         super(source);
-//        this.buildURIString(source);
         this.frame = frame;
     }
 
@@ -57,6 +56,84 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
      */
     public FfmpegMediaPlayer(File sourceFile, JFrame frame) {
         this(sourceFile.toURI(), frame);
+        this.buildSourcePath(sourceFile);
+    }
+
+    private void buildSourcePath(File sourceFile) {
+
+        if (sourceURI == null) {
+            throw new NullPointerException("uri == null!");
+        }
+
+        if (sourceFile == null){
+            throw new NullPointerException("File == null!");
+        }
+
+        // Get the scheme part.
+        String uriString = sourceURI.toASCIIString();
+        String scheme = sourceURI.getScheme();
+        if (scheme == null) {
+            throw new IllegalArgumentException("uri.getScheme() == null! uri == '" + sourceURI + "'");
+        }
+        scheme = scheme.toLowerCase();
+
+        protocol = scheme;
+
+        // if we are on Windows Platform and the protocol used is file we use the absolute path
+        if(protocol.equals("file")){
+            String path = sourceFile.getAbsolutePath();
+            if(System.getProperty("os.name").toLowerCase().indexOf("win") != -1){
+                sourcePath = path.replace("\\","/");
+            } else {
+                //TODO(Reda): Test on Mac
+                int index = path.indexOf("/~/");
+                if (index != -1) {
+                    sourcePath = path.substring(0, index)
+                            + System.getProperty("user.home")
+                            + path.substring(index + 2);
+                }
+            }
+        } else {
+            try {
+                //TODO(Reda): Test with using uri for protocols different than file
+                // Note: streaming from http(s) or rtmp is not implemented yet
+                // Ensure the correct number of '/'s follows the ':'.
+                int firstSlash = uriString.indexOf("/");
+                if (firstSlash != -1 && uriString.charAt(firstSlash + 1) != '/') {
+                    // Only one '/' after the ':'.
+                    if (protocol.equals("file")) {
+                        // Map file:/somepath to file:///somepath
+                        uriString = uriString.replaceFirst("/", "///");
+                    } else if (protocol.equals("http") || protocol.equals("https")) {
+                        // Map http:/somepath to http://somepath
+                        uriString = uriString.replaceFirst("/", "//");
+                    }
+                }
+                // On non-Windows systems, replace "/~/" with home directory path + "/".
+                if (System.getProperty("os.name").toLowerCase().indexOf("win") == -1
+                        && protocol.equals("file")) {
+                    int index = uriString.indexOf("/~/");
+                    if (index != -1) {
+                        uriString = uriString.substring(0, index) + sourcePath;
+                    }
+                }
+
+                // Recreate the URI if needed
+                sourceURI = new URI(uriString);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        if (System.getProperty("os.name").toLowerCase().indexOf("win") != -1
+                && protocol.equals("file")) {
+            String path = sourceFile.getAbsolutePath();
+            sourcePath =  path.replace("\\","/");
+        } else {
+
+
+        }
     }
 
     /**
@@ -136,7 +213,12 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             initNative(); // start the event queue, make sure to register all state/error listeners before
             long[] newNativeMediaRef = new long[1];
             boolean streamData = frame != null;
-            String filename = source.getPath();
+            String filename;
+
+            if(protocol.equals("file"))
+                filename = sourcePath;
+            else
+                filename = sourceURI.getPath();
 
             ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
 

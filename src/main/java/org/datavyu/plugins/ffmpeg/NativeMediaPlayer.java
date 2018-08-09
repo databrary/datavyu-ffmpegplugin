@@ -35,10 +35,12 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     private double stopTime = Double.POSITIVE_INFINITY;
     private boolean isStartTimeUpdated = false;
     private boolean isStopTimeSet = false;
-    protected URI source;
+    protected URI sourceURI;
+    protected String sourcePath; // used for the file protocol
+    protected String protocol;
 
     NativeMediaPlayer(URI source) {
-        this.source = source;
+        this.sourceURI = source;
     }
 
     public static class MediaErrorEvent extends PlayerEvent {
