@@ -2,9 +2,10 @@ package org.datavyu.plugins.ffmpeg;
 
 import javax.sound.sampled.*;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.color.ColorSpace;
+import java.io.File;
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,12 +24,13 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private boolean muteEnabled = false;
     private AudioPlayerThread audioPlayerThread = null;
     private ImagePlayerThread imagePlayerThread = null;
+    private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
     private JFrame frame;
+    private Container container;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
 
     private ReentrantLock lock = new ReentrantLock();
     private Condition readyCondition = lock.newCondition();
-
 
     static {
         System.loadLibrary("FfmpegMediaPlayer");
@@ -38,7 +40,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
      * Create an ffmpeg media player instance and play through java
      * framework
      *
-     * @param source The source
+     * @param source The URI source
      * @param frame The frame to display
      */
     public FfmpegMediaPlayer(URI source, JFrame frame) {
@@ -47,13 +49,70 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     }
 
     /**
+     * Create an ffmpeg media player instance and play through java
+     * framework
+     *
+     * @param sourceFile The File source
+     * @param frame The frame to display
+     */
+    public FfmpegMediaPlayer(File sourceFile, JFrame frame) {
+        this(sourceFile.toURI(), frame);
+        this.buildSourcePath(sourceFile);
+    }
+
+    /**
+     * Create an ffmpeg media player instance and play through java
+     * Datavyu container
+     *
+     * @param sourceFile The File source
+     * @param container The Container to display
+     */
+    public FfmpegMediaPlayer(File sourceFile, Container container) {
+        this(sourceFile.toURI(), null);
+        this.buildSourcePath(sourceFile);
+        this.container = container;
+    }
+
+    /**
      * Create an ffmpeg media player instance and play through
      * the native SDL framework
      *
-     * @param source The source
+     * @param source The URI source
      */
     public FfmpegMediaPlayer(URI source) {
         this(source, null);
+    }
+
+    /**
+     * Create an ffmpeg media player instance and play through
+     * the native SDL framework
+     *
+     * @param sourceFile The File source
+     */
+    public FfmpegMediaPlayer(File sourceFile) {
+        this(sourceFile, null);
+    }
+
+    private void buildSourcePath(File sourceFile) {
+        if (sourceFile == null){
+            throw new NullPointerException("File == null!");
+        }
+
+        // if we are on Windows Platform and the protocol used is file we use the absolute path
+        if(protocol.equals("file")){
+            String path = sourceFile.getAbsolutePath();
+            if(System.getProperty("os.name").toLowerCase().indexOf("win") != -1){
+                sourcePath = path.replace("\\","/");
+            } else {
+                //TODO(Reda): Test on Mac
+                int index = path.indexOf("/~/");
+                if (index != -1) {
+                    sourcePath = path.substring(0, index)
+                            + System.getProperty("user.home")
+                            + path.substring(index + 2);
+                }
+            }
+        }
     }
 
     private void initAndStartAudioPlayer() {
@@ -68,9 +127,16 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     }
 
     private void initAndStartImagePlayer() {
-        imagePlayerThread = new ImagePlayerThread(this);
-        imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
-        imagePlayerThread.start();
+        if (this.frame != null) {
+            imagePlayerThread = new ImagePlayerThread(this);
+            imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
+            imagePlayerThread.start();
+        } else {
+            imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
+            imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
+            imageCanvasPlayerThread.start();
+        }
+
     }
 
     private PlayerStateListener initListener = new PlayerStateListener() {
@@ -111,9 +177,16 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
         try{
             initNative(); // start the event queue, make sure to register all state/error listeners before
             long[] newNativeMediaRef = new long[1];
-            boolean streamData = frame != null;
-            String filename = source.getPath();
+            boolean streamData = frame != null || container != null;
+            String filename;
+
+            if(protocol.equals("file"))
+                filename = sourcePath;
+            else
+                filename = sourceURI.getPath();
+
             ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
+
             nativeMediaRef = newNativeMediaRef[0];
 
             // If we have a frame to display we will use that one to playback alongside the javax.sound framework
@@ -336,6 +409,9 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     protected void playerDispose() {
         if (imagePlayerThread != null) {
             imagePlayerThread.terminte();
+        }
+        if (imageCanvasPlayerThread != null) {
+            imageCanvasPlayerThread.terminte();
         }
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();

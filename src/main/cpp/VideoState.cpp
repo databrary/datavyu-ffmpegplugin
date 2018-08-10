@@ -825,6 +825,13 @@ int VideoState::read_thread() {
 			}
 			was_stalled = false;
 		}
+		else {
+			if (!this->paused) {
+				if (player_state_callbacks[TO_PLAYING]) {
+					player_state_callbacks[TO_PLAYING]();
+				}
+			}
+		}
 
 #if CONFIG_RTSP_DEMUXER || CONFIG_MMSH_PROTOCOL
 		if (paused &&
