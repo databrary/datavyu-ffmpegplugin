@@ -540,9 +540,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
     @Override
     public void seek(double streamTime) {
-        if (playerState == PlayerStateEvent.PlayerState.STOPPED) {
-            return; // No seek in stopped state
-        }
 
         if (streamTime < 0.0) {
             streamTime = 0.0;
