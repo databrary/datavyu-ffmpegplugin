@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
  *
  * Otherwise, we play back data natively.
  */
-public interface MediaPlayerData {
+public interface MediaPlayerData extends MediaPlayer {
 
     /**
      * Checks if the media has audio data
