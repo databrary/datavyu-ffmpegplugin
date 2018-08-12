@@ -103,12 +103,8 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegD
 	if (NULL == pPipeline)
 		return ERROR_PIPELINE_NULL;
 
-	// TODO(fraudies): When/where do we delete the event dispatcher?	
-	pPipeline->Dispose();
-
-	delete pPipeline->GetCPipelineOptions();
-	delete pPipeline;
-	delete pMedia;
+	// deletes the pipeline by first calling dispose, also deletes pipeline options, and java dispatcher
+	delete pMedia; 
 
 	return 0;
 }

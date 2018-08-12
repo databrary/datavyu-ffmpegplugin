@@ -58,8 +58,6 @@ void FfmpegJavaAvPlayback::destroy() {
 	avformat_network_deinit();
 
 	av_log(NULL, AV_LOG_QUIET, "%s", "");
-
-	exit(0);
 }
 
 void FfmpegJavaAvPlayback::init_and_start_stream() {
