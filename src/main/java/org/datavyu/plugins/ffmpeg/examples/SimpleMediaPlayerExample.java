@@ -4,6 +4,8 @@ import org.datavyu.plugins.ffmpeg.*;
 
 import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.KeyEvent;
@@ -43,6 +45,18 @@ public class SimpleMediaPlayerExample {
 
         // Open a Jframe for debugging purposes
         JFrame frame = new JFrame();
+
+        JSlider slider = new JSlider(0, (int) mediaPlayer.getDuration(),0);
+        slider.setFocusable(false);
+        slider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                int newTime = slider.getValue();
+                mediaPlayer.seek(newTime);
+            }
+        });
+
+        frame.add(slider, BorderLayout.SOUTH);
 
         frame.addKeyListener(new KeyListener() {
             @Override
@@ -126,6 +140,7 @@ public class SimpleMediaPlayerExample {
             public void keyReleased(KeyEvent e) { }
         });
 
+        frame.pack();
         frame.setSize(640, 480);
         frame.setVisible(true);
     }
