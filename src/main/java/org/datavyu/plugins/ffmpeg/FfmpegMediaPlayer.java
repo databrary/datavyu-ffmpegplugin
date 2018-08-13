@@ -344,22 +344,39 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
                 return mutedVolume;
         }
         float[] volume = new float[1];
-        int rc = ffmpegGetVolume(getNativeMediaRef(), volume);
-        if (0 != rc) {
-            throwMediaErrorException(rc, null);
-        }
+
+        volume[0] = audioPlayerThread.getVolume();
+
+//        int rc = ffmpegGetVolume(getNativeMediaRef(), volume);
+//        if (0 != rc) {
+//            throwMediaErrorException(rc, null);
+//        }
         return volume[0];
     }
 
     @Override
     protected synchronized void playerSetVolume(float volume) throws MediaException {
         if (!muteEnabled) {
-            int rc = ffmpegSetVolume(getNativeMediaRef(), volume);
-            if (0 != rc) {
-                throwMediaErrorException(rc, null);
+            //TODO(Reda:) remove audioPlayerThread.setVolume when ffmpegSetVolume will be fully implemented
+            if (volume == 0 ) {
+                audioPlayerThread.setMute(true);
             } else {
+                if(audioPlayerThread.isMute()){
+                    audioPlayerThread.setMute(false); // make sure that the audio is un muted
+                }else{
+                    audioPlayerThread.setVolume(volume); // Update the volume of the SoundDataLine
+                }
                 mutedVolume = volume;
             }
+
+            //Todo(Reda:) uncomment this code when ready
+//            int rc = ffmpegSetVolume(getNativeMediaRef(), volume);
+
+//            if (0 != rc) {
+//                throwMediaErrorException(rc, null);
+//            } else {
+//                mutedVolume = volume;
+//            }
         } else {
             mutedVolume = volume;
         }
