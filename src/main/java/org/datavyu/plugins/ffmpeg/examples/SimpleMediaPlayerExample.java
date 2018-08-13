@@ -118,15 +118,23 @@ public class SimpleMediaPlayerExample {
                         break;
                     case KeyEvent.VK_0:
                         currentVolume = mediaPlayer.getVolume();
-                        nextVolume = currentVolume - 1;
+                        nextVolume = currentVolume - 0.1F;
                         System.out.println("Change volume from " + currentVolume + " dB to " + nextVolume + " dB");
                         mediaPlayer.setVolume(nextVolume);
                         break;
                     case KeyEvent.VK_9:
                         currentVolume = mediaPlayer.getVolume();
-                        nextVolume = currentVolume + 1;
+                        nextVolume = currentVolume + 0.1F;
                         System.out.println("Change volume from " + currentVolume + " dB to " + nextVolume + " dB");
                         mediaPlayer.setVolume(nextVolume);
+                        break;
+                    case KeyEvent.VK_M:
+                        System.out.println("Mute");
+                        mediaPlayer.setMute(true);
+                        break;
+                    case KeyEvent.VK_N:
+                        System.out.println("Un-mute");
+                        mediaPlayer.setMute(false);
                         break;
                     case KeyEvent.VK_ESCAPE:
                         mediaPlayer.dispose();
