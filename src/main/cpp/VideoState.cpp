@@ -626,6 +626,8 @@ int VideoState::read_thread() {
 	AVDictionary *format_opts = NULL;
 	AVDictionary *codec_opts = NULL;
 
+	// TODO(fraudies): Move the below initialization into the init method so that the object on the java side is initialized inside the constructor
+
 	memset(st_index, -1, sizeof(st_index));
 	last_video_stream = video_stream = -1;
 	last_audio_stream = audio_stream = -1;

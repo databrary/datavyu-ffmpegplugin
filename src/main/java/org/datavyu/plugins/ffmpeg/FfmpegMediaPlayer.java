@@ -29,9 +29,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
     private Container container;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
 
-    private ReentrantLock lock = new ReentrantLock();
-    private Condition readyCondition = lock.newCondition();
-
     static {
         System.loadLibrary("FfmpegMediaPlayer");
     }
@@ -101,7 +98,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
         // if we are on Windows Platform and the protocol used is file we use the absolute path
         if(protocol.equals("file")){
             String path = sourceFile.getAbsolutePath();
-            if(System.getProperty("os.name").toLowerCase().indexOf("win") != -1){
+            if(System.getProperty("os.name").toLowerCase().contains("win")){
                 sourcePath = path.replace("\\","/");
             } else {
                 //TODO(Reda): Test on Mac
@@ -180,7 +177,7 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             boolean streamData = frame != null || container != null;
             String filename;
 
-            if(protocol.equals("file"))
+            if (protocol.equals("file"))
                 filename = sourcePath;
             else
                 filename = sourceURI.getPath();
