@@ -807,7 +807,7 @@ void FfmpegSdlAvPlayback::init() {
 void FfmpegSdlAvPlayback::destroy() {
 
 	// only necessary when using as library -- has no effect otherwise
-	stop_display_loop(); 
+	stop_display_loop();
 
 	// close the VideoState Stream
 	if (pVideoState)
@@ -842,14 +842,9 @@ void FfmpegSdlAvPlayback::destroy() {
 #endif
 	avformat_network_deinit();
 
-	if (show_status)
-		printf("\n");
-
 	SDL_Quit();
 	
 	av_log(NULL, AV_LOG_QUIET, "%s", "");
-	
-	exit(0);
 }
 
 void FfmpegSdlAvPlayback::init_and_event_loop() {
@@ -869,12 +864,14 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 		case SDL_KEYDOWN:
 			if (exit_on_keydown) {
 				destroy();
+				exit(0); // need to exit here to avoid joinable exception
 				break;
 			}
 			switch (event.key.keysym.sym) {
 			case SDLK_ESCAPE:
 			case SDLK_q:
 				destroy();
+				exit(0); // need to exit here to avoid joinable exception
 				break;
 			case SDLK_f:
 				toggle_full_screen();
@@ -1071,6 +1068,7 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 		case SDL_QUIT:
 		case FF_QUIT_EVENT:
 			destroy();
+			exit(0);  // need to exit here to avoid joinable exception
 			break;
 		default:
 			break;

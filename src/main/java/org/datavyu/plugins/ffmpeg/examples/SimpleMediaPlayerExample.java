@@ -24,11 +24,8 @@ public class SimpleMediaPlayerExample {
         // Create the media player using the constructor with File
         MediaPlayerData mediaPlayer = new FfmpegMediaPlayer(new File(movieFileName), new JFrame());
 
-        // Open a Jframe for data streaming through Java
-//        MediaPlayer mediaPlayer = new FfmpegMediaPlayer(URI.create(movieFileName), new JFrame());
-
         // Stream through SDL
-        //MediaPlayer mediaPlayer = new FfmpegMediaPlayer(URI.create(movieFileName));
+        //MediaPlayer mediaPlayer = new FfmpegMediaPlayer(new File(movieFileName));
 
         mediaPlayer.addMediaErrorListener(new MediaErrorListener() {
             @Override
@@ -46,6 +43,7 @@ public class SimpleMediaPlayerExample {
 
         // Open a Jframe for debugging purposes
         JFrame frame = new JFrame();
+
         frame.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -127,6 +125,7 @@ public class SimpleMediaPlayerExample {
             @Override
             public void keyReleased(KeyEvent e) { }
         });
+
         frame.setSize(640, 480);
         frame.setVisible(true);
     }

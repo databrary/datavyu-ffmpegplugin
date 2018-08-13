@@ -684,7 +684,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegU
 	jbyte* pData = env->GetByteArrayElements(data, 0);
 	jlong len = env->GetArrayLength(data);
 	uint32_t uErrCode = pPipeline->UpdateImageBuffer((uint8_t*)pData, len);
-	env->ReleaseByteArrayElements(data, pData, JNI_COMMIT);
+	env->ReleaseByteArrayElements(data, pData, 0);
 	return uErrCode;
 }
 
