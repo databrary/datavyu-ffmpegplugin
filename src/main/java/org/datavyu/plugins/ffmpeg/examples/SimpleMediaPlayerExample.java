@@ -11,7 +11,6 @@ import java.awt.color.ColorSpace;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.net.URI;
 
 public class SimpleMediaPlayerExample {
     public static void main(String[] args) {

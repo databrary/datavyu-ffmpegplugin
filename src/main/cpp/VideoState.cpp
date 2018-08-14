@@ -247,7 +247,6 @@ int VideoState::queue_picture(AVFrame *src_frame, double pts, double duration, i
 }
 
 void VideoState::stream_component_close(int stream_index) {
-	AVFormatContext *ic = this->ic;
 	AVCodecParameters *codecpar;
 
 	if (stream_index < 0 || stream_index >= ic->nb_streams)
@@ -612,183 +611,13 @@ VideoState::~VideoState() {
 
 //* this thread gets the stream from the disk or the network */
 int VideoState::read_thread() {
-	AVFormatContext *ic = NULL;
-	int err, i, ret;
-	int st_index[AVMEDIA_TYPE_NB];
+	int ret;
 	AVPacket pkt1, *pkt = &pkt1;
+	bool was_stalled = false;
+	std::mutex wait_mutex;
 	int64_t stream_start_time;
 	int pkt_in_play_range = 0;
-	AVDictionaryEntry *t;
-	std::mutex wait_mutex;
-	int scan_all_pmts_set = 0;
 	int64_t pkt_ts;
-	bool was_stalled = false;
-	AVDictionary *format_opts = NULL;
-	AVDictionary *codec_opts = NULL;
-
-	// TODO(fraudies): Move the below initialization into the init method so that the object on the java side is initialized inside the constructor
-
-	memset(st_index, -1, sizeof(st_index));
-	last_video_stream = video_stream = -1;
-	last_audio_stream = audio_stream = -1;
-	last_subtitle_stream = subtitle_stream = -1;
-	eof = 0;
-
-	ic = avformat_alloc_context();
-	if (!ic) {
-		av_log(NULL, AV_LOG_FATAL, "Could not allocate context.\n");
-		ret = AVERROR(ENOMEM);
-		goto fail;
-	}
-	ic->interrupt_callback.callback = decode_interrupt_cb_bridge;
-	ic->interrupt_callback.opaque = this;
-	if (!av_dict_get(format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE)) {
-		av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
-		scan_all_pmts_set = 1;
-	}
-	err = avformat_open_input(&ic, filename, iformat, &format_opts);
-	if (err < 0) {
-		ret = -1;
-		goto fail;
-	}
-	if (scan_all_pmts_set)
-		av_dict_set(&format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE);
-
-	if ((t = av_dict_get(format_opts, "", NULL, AV_DICT_IGNORE_SUFFIX))) {
-		av_log(NULL, AV_LOG_ERROR, "Option %s not found.\n", t->key);
-		ret = AVERROR_OPTION_NOT_FOUND;
-		goto fail;
-	}
-	this->ic = ic;
-
-	if (genpts)
-		ic->flags |= AVFMT_FLAG_GENPTS;
-
-	av_format_inject_global_side_data(ic);
-
-	if (find_stream_info) {
-		AVDictionary **opts = setup_find_stream_info_opts(ic, codec_opts);
-		int orig_nb_streams = ic->nb_streams;
-
-		err = avformat_find_stream_info(ic, opts);
-
-		for (i = 0; i < orig_nb_streams; i++)
-			av_dict_free(&opts[i]);
-		av_freep(&opts);
-
-		if (err < 0) {
-			av_log(NULL, AV_LOG_WARNING,
-				"%s: could not find codec parameters\n", filename);
-			ret = -1;
-			goto fail;
-		}
-	}
-
-	if (ic->pb)
-		ic->pb->eof_reached = 0; // FIXME hack, ffplay maybe should not use avio_feof() to test for the end
-
-	if (seek_by_bytes < 0)
-		seek_by_bytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
-
-	this->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
-
-	if (!window_title && (t = av_dict_get(ic->metadata, "title", NULL, 0)))
-		window_title = av_asprintf("%s - %s", t->value, filename);
-
-	/* if seeking requested, we execute it */
-	if (start_time != AV_NOPTS_VALUE) {
-		int64_t timestamp;
-
-		timestamp = start_time;
-		/* add the stream start time */
-		if (ic->start_time != AV_NOPTS_VALUE)
-			timestamp += ic->start_time;
-		ret = avformat_seek_file(ic, -1, INT64_MIN, timestamp, INT64_MAX, 0);
-		if (ret < 0) {
-			av_log(NULL, AV_LOG_WARNING, "%s: could not seek to position %0.3f\n",
-				filename, (double)timestamp / AV_TIME_BASE);
-		}
-	}
-
-	this->realtime = is_realtime(ic);
-
-	if (show_status)
-		av_dump_format(ic, 0, filename, 0);
-
-	for (i = 0; i < ic->nb_streams; i++) {
-		AVStream *st = ic->streams[i];
-		enum AVMediaType type = st->codecpar->codec_type;
-		st->discard = AVDISCARD_ALL;
-		if (type >= 0 && wanted_stream_spec[type] && st_index[type] == -1)
-			if (avformat_match_stream_specifier(ic, st, wanted_stream_spec[type]) > 0)
-				st_index[type] = i;
-	}
-	for (i = 0; i < AVMEDIA_TYPE_NB; i++) {
-		if (wanted_stream_spec[i] && st_index[i] == -1) {
-			av_log(NULL, AV_LOG_ERROR, "Stream specifier %s does not match any %s stream\n",
-				wanted_stream_spec[i],
-				av_get_media_type_string(static_cast<AVMediaType>(i)));
-			st_index[i] = INT_MAX;
-		}
-	}
-
-	if (!video_disable)
-		st_index[AVMEDIA_TYPE_VIDEO] =
-		av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO,
-			st_index[AVMEDIA_TYPE_VIDEO], -1, NULL, 0);
-	if (!audio_disable)
-		st_index[AVMEDIA_TYPE_AUDIO] =
-		av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO,
-			st_index[AVMEDIA_TYPE_AUDIO],
-			st_index[AVMEDIA_TYPE_VIDEO],
-			NULL, 0);
-	if (!video_disable && !subtitle_disable)
-		st_index[AVMEDIA_TYPE_SUBTITLE] =
-		av_find_best_stream(ic, AVMEDIA_TYPE_SUBTITLE,
-			st_index[AVMEDIA_TYPE_SUBTITLE],
-			(st_index[AVMEDIA_TYPE_AUDIO] >= 0 ?
-				st_index[AVMEDIA_TYPE_AUDIO] :
-				st_index[AVMEDIA_TYPE_VIDEO]),
-			NULL, 0);
-
-	show_mode = show_mode;
-	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
-		AVStream *st = ic->streams[st_index[AVMEDIA_TYPE_VIDEO]];
-		AVCodecParameters *codecpar = st->codecpar;
-		AVRational sar = av_guess_sample_aspect_ratio(ic, st, NULL);
-		if (codecpar->width)
-			FfmpegSdlAvPlayback::set_default_window_size(codecpar->width, codecpar->height, sar);
-	}
-
-	/* open the streams */
-	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
-		stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
-	}
-
-	ret = -1;
-	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
-		ret = stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
-	}
-	if (show_mode == SHOW_MODE_NONE)
-		show_mode = ret >= 0 ? SHOW_MODE_VIDEO : SHOW_MODE_RDFT;
-
-	if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
-		stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
-	}
-
-	if (video_stream < 0 && audio_stream < 0) {
-		av_log(NULL, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n",
-			filename);
-		ret = -1;
-		goto fail;
-	}
-
-	if (infinite_buffer < 0 && realtime)
-		infinite_buffer = 1;
-
-	if (player_state_callbacks[TO_READY]) {
-		player_state_callbacks[TO_READY]();
-	}
 
 	// TODO: Need to work in TO_STOPPED state
 	// Reda: added bool stopped when we trigger stop; when stopped both is stopped and paused are set to 1
@@ -1016,11 +845,10 @@ int VideoState::read_thread() {
 
 	ret = 0;
 fail:
-	if (ic && !this->ic)
+	if (ret != 0 && ic)
 		avformat_close_input(&ic);
 
 	if (ret != 0 && destroy_callback) {
-		//pPlayer->destroy();
 		destroy_callback();
 	}
 
@@ -1311,10 +1139,192 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 }
 
 void VideoState::stream_start() {
+
+	// Initialization moved from read thread into main thread
+	int err, i, ret;
+	int st_index[AVMEDIA_TYPE_NB];
+	AVDictionaryEntry *t;
+	int scan_all_pmts_set = 0;
+	AVDictionary *format_opts = NULL;
+	AVDictionary *codec_opts = NULL;
+
+	memset(st_index, -1, sizeof(st_index));
+	last_video_stream = video_stream = -1;
+	last_audio_stream = audio_stream = -1;
+	last_subtitle_stream = subtitle_stream = -1;
+	eof = 0;
+
+	ic = avformat_alloc_context();
+	if (!ic) {
+		av_log(NULL, AV_LOG_FATAL, "Could not allocate context.\n");
+		ret = AVERROR(ENOMEM);
+		goto fail;
+	}
+	ic->interrupt_callback.callback = decode_interrupt_cb_bridge;
+	ic->interrupt_callback.opaque = this;
+	if (!av_dict_get(format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE)) {
+		av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
+		scan_all_pmts_set = 1;
+	}
+	err = avformat_open_input(&ic, filename, iformat, &format_opts);
+	if (err < 0) {
+		ret = -1;
+		goto fail;
+	}
+	if (scan_all_pmts_set)
+		av_dict_set(&format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE);
+
+	if ((t = av_dict_get(format_opts, "", NULL, AV_DICT_IGNORE_SUFFIX))) {
+		av_log(NULL, AV_LOG_ERROR, "Option %s not found.\n", t->key);
+		ret = AVERROR_OPTION_NOT_FOUND;
+		goto fail;
+	}
+
+	if (genpts)
+		ic->flags |= AVFMT_FLAG_GENPTS;
+
+	av_format_inject_global_side_data(ic);
+
+	if (find_stream_info) {
+		AVDictionary **opts = setup_find_stream_info_opts(ic, codec_opts);
+		int orig_nb_streams = ic->nb_streams;
+
+		err = avformat_find_stream_info(ic, opts);
+
+		for (i = 0; i < orig_nb_streams; i++)
+			av_dict_free(&opts[i]);
+		av_freep(&opts);
+
+		if (err < 0) {
+			av_log(NULL, AV_LOG_WARNING,
+				"%s: could not find codec parameters\n", filename);
+			ret = -1;
+			goto fail;
+		}
+	}
+
+	if (ic->pb)
+		ic->pb->eof_reached = 0; // FIXME hack, ffplay maybe should not use avio_feof() to test for the end
+
+	if (seek_by_bytes < 0)
+		seek_by_bytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
+
+	this->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
+
+	if (!window_title && (t = av_dict_get(ic->metadata, "title", NULL, 0)))
+		window_title = av_asprintf("%s - %s", t->value, filename);
+
+	/* if seeking requested, we execute it */
+	if (start_time != AV_NOPTS_VALUE) {
+		int64_t timestamp;
+
+		timestamp = start_time;
+		/* add the stream start time */
+		if (ic->start_time != AV_NOPTS_VALUE)
+			timestamp += ic->start_time;
+		ret = avformat_seek_file(ic, -1, INT64_MIN, timestamp, INT64_MAX, 0);
+		if (ret < 0) {
+			av_log(NULL, AV_LOG_WARNING, "%s: could not seek to position %0.3f\n",
+				filename, (double)timestamp / AV_TIME_BASE);
+		}
+	}
+
+	realtime = is_realtime(ic);
+
+	if (show_status)
+		av_dump_format(ic, 0, filename, 0);
+
+	for (i = 0; i < ic->nb_streams; i++) {
+		AVStream *st = ic->streams[i];
+		enum AVMediaType type = st->codecpar->codec_type;
+		st->discard = AVDISCARD_ALL;
+		if (type >= 0 && wanted_stream_spec[type] && st_index[type] == -1)
+			if (avformat_match_stream_specifier(ic, st, wanted_stream_spec[type]) > 0)
+				st_index[type] = i;
+	}
+	for (i = 0; i < AVMEDIA_TYPE_NB; i++) {
+		if (wanted_stream_spec[i] && st_index[i] == -1) {
+			av_log(NULL, AV_LOG_ERROR, "Stream specifier %s does not match any %s stream\n",
+				wanted_stream_spec[i],
+				av_get_media_type_string(static_cast<AVMediaType>(i)));
+			st_index[i] = INT_MAX;
+		}
+	}
+
+	if (!video_disable)
+		st_index[AVMEDIA_TYPE_VIDEO] =
+		av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO,
+			st_index[AVMEDIA_TYPE_VIDEO], -1, NULL, 0);
+	if (!audio_disable)
+		st_index[AVMEDIA_TYPE_AUDIO] =
+		av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO,
+			st_index[AVMEDIA_TYPE_AUDIO],
+			st_index[AVMEDIA_TYPE_VIDEO],
+			NULL, 0);
+	if (!video_disable && !subtitle_disable)
+		st_index[AVMEDIA_TYPE_SUBTITLE] =
+		av_find_best_stream(ic, AVMEDIA_TYPE_SUBTITLE,
+			st_index[AVMEDIA_TYPE_SUBTITLE],
+			(st_index[AVMEDIA_TYPE_AUDIO] >= 0 ?
+				st_index[AVMEDIA_TYPE_AUDIO] :
+				st_index[AVMEDIA_TYPE_VIDEO]),
+			NULL, 0);
+
+	show_mode = show_mode;
+	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
+		AVStream *st = ic->streams[st_index[AVMEDIA_TYPE_VIDEO]];
+		AVCodecParameters *codecpar = st->codecpar;
+		AVRational sar = av_guess_sample_aspect_ratio(ic, st, NULL);
+		if (codecpar->width)
+			FfmpegSdlAvPlayback::set_default_window_size(codecpar->width, codecpar->height, sar);
+	}
+
+	/* open the streams */
+	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
+		stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
+	}
+
+	ret = -1;
+	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
+		ret = stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
+	}
+	if (show_mode == SHOW_MODE_NONE)
+		show_mode = ret >= 0 ? SHOW_MODE_VIDEO : SHOW_MODE_RDFT;
+
+	if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
+		stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
+	}
+
+	if (video_stream < 0 && audio_stream < 0) {
+		av_log(NULL, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n",
+			filename);
+		ret = -1;
+		goto fail;
+	}
+
+	if (infinite_buffer < 0 && realtime)
+		infinite_buffer = 1;
+
+	if (player_state_callbacks[TO_READY]) {
+		player_state_callbacks[TO_READY]();
+	}
+
 	this->read_tid = new (std::nothrow) std::thread(read_thread_bridge, this);
 	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method)
 	if (!this->read_tid) {
 		av_log(NULL, AV_LOG_FATAL, "Unable to create reader thread\n");
+		ret = -1;
+		goto fail;
+	}
+
+	ret = 0;
+
+fail:
+	if (ret != 0 && ic)
+		avformat_close_input(&ic);
+
+	if (ret != 0 && destroy_callback) {
+		destroy_callback();
 	}
 }
 

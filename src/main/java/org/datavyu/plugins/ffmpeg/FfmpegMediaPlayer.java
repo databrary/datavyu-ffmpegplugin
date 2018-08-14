@@ -133,68 +133,31 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
             imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
             imageCanvasPlayerThread.start();
         }
-
     }
-
-    private PlayerStateListener initListener = new PlayerStateListener() {
-        @Override
-        public void onReady(PlayerStateEvent evt) {
-            lock.lock();
-            try{
-                readyCondition.signal();
-                // If we have audio data consume it
-                if (hasAudioData()) {
-                    initAndStartAudioPlayer();
-                }
-                // If we have image data consume it
-                if (hasImageData()) {
-                    initAndStartImagePlayer();
-                }
-            }finally {
-                lock.unlock();
-            }
-        }
-        @Override
-        public void onPlaying(PlayerStateEvent evt) { }
-        @Override
-        public void onPause(PlayerStateEvent evt) { }
-        @Override
-        public void onStop(PlayerStateEvent evt) { }
-        @Override
-        public void onStall(PlayerStateEvent evt) { }
-        @Override
-        public void onFinish(PlayerStateEvent evt) { }
-        @Override
-        public void onHalt(PlayerStateEvent evt) { }
-    };
 
     @Override
     public void init(AudioFormat audioFormat, ColorSpace colorSpace) {
-        lock.lock();
-        try{
-            initNative(); // start the event queue, make sure to register all state/error listeners before
-            long[] newNativeMediaRef = new long[1];
-            boolean streamData = frame != null || container != null;
-            String filename;
+        initNative(); // start the event queue, make sure to register all state/error listeners before
+        long[] newNativeMediaRef = new long[1];
+        boolean streamData = frame != null || container != null;
+        String filename;
 
-            if (protocol.equals("file"))
-                filename = sourcePath;
-            else
-                filename = sourceURI.getPath();
+        if (protocol.equals("file"))
+            filename = sourcePath;
+        else
+            filename = sourceURI.getPath();
 
-            ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
+        ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
 
-            nativeMediaRef = newNativeMediaRef[0];
+        nativeMediaRef = newNativeMediaRef[0];
 
-            // If we have a frame to display we will use that one to playback alongside the javax.sound framework
-            if (streamData) {
-                addMediaPlayerStateListener(initListener);
-            }
-            readyCondition.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
+        // If we have audio data consume it
+        if (hasAudioData()) {
+            initAndStartAudioPlayer();
+        }
+        // If we have image data consume it
+        if (hasImageData()) {
+            initAndStartImagePlayer();
         }
     }
 
