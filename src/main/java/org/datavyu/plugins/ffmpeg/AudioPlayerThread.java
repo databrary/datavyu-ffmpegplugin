@@ -20,6 +20,8 @@ public class AudioPlayerThread extends Thread {
             2,
             44100,
             false);
+    private FloatControl volumeControl;
+    private BooleanControl muteControl;
 
     /**
      * Get new audio format for mono playback.
@@ -56,9 +58,39 @@ public class AudioPlayerThread extends Thread {
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
         soundLine = (SourceDataLine) AudioSystem.getLine(info);
         soundLine.open(audioFormat);
+
+        volumeControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
+        muteControl = (BooleanControl)soundLine.getControl(BooleanControl.Type.MUTE);
+
         data = new byte[bufferSize];
         soundLine.start();
     }
+
+    public void setVolume(final float newVolume){
+        // Adjust the volume on the output line.
+        if (soundLine.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            // Convert from linear to decibel
+            float db = (float) (20.0f * Math.log10(newVolume));
+            volumeControl.setValue(db);
+        }
+    }
+
+    public float getVolume() {
+        if (soundLine.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+            // Convert from decibel to linear
+            float linear = (float) Math.pow(10.0F, volumeControl.getValue()/20.0F);
+            return linear;
+        }
+        return 0;
+    }
+
+    public void setMute(final boolean newMute){
+        if(soundLine.isControlSupported(BooleanControl.Type.MUTE)){
+            muteControl.setValue(newMute);
+        }
+    }
+
+    public boolean isMute(){ return muteControl.getValue(); }
 
     @Override
     public void run() {
