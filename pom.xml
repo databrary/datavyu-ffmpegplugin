@@ -118,11 +118,19 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- FFmpeg-libs and sdl-libs are not used -->
         <!-- FFmpeg 4.0 Version -->
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>ffmpeg-libs</artifactId>
-            <version>0.4</version>
+            <version>0.5</version>
+        </dependency>
+
+        <!-- SDl 2.0.8 -->
+        <dependency>
+            <groupId>datavyu</groupId>
+            <artifactId>sdl-libs</artifactId>
+            <version>0.1</version>
         </dependency>
 
     </dependencies>
