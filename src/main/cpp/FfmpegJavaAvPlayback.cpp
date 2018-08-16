@@ -126,7 +126,7 @@ bool FfmpegJavaAvPlayback::do_display() {
 			if (lastvp->serial != vp->serial)
 				frame_timer = av_gettime_relative() / 1000000.0;
 
-			if (pVideoState->get_paused())
+			if (pVideoState->get_paused() && !force_refresh)
 				goto display;
 
 			/* compute nominal last_duration */
@@ -171,8 +171,8 @@ bool FfmpegJavaAvPlayback::do_display() {
 			&& (pVideoState->get_show_mode() == SHOW_MODE_VIDEO)
 			&& pVideoState->get_pPictq()->get_rindex_shown())
 			display = true;
+			force_refresh = 0;
 	}
-	force_refresh = 0;
 
 	return display;
 }

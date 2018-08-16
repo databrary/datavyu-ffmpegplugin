@@ -82,8 +82,6 @@ private:
 	SDL_Texture *sub_texture;
 	SDL_Texture *vid_texture;
 
-	int force_refresh;
-
 	int last_i_start;
 
 	int frame_drops_late;

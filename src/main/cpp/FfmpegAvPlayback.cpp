@@ -31,7 +31,8 @@ FfmpegAvPlayback::FfmpegAvPlayback(const char *filename, AVInputFormat *iformat)
 	pVideoState(VideoState::stream_open(filename, iformat)),
 	display_disable(0),
 	width(0),
-	height(0) 
+	height(0),
+	force_refresh(1)
 { }
 
 FfmpegAvPlayback::~FfmpegAvPlayback() {}

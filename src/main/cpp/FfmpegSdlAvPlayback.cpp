@@ -53,8 +53,7 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(
 	xleft(0),
 	rdftspeed(0.02),
 	window(nullptr),
-	renderer(nullptr),
-	force_refresh(1)
+	renderer(nullptr)
 {
 	// Set callback functions
 	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels, 
