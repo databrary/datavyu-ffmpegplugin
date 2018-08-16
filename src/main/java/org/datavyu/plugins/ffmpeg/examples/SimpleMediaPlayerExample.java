@@ -11,14 +11,13 @@ import java.awt.color.ColorSpace;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.net.URI;
 
 public class SimpleMediaPlayerExample {
     public static void main(String[] args) {
 
         // Create the  media player and attach any listeners
 
-        String movieFileName = "Nature_30fps_1080p.mp4"; //"NIAGARA_FALLS_60fps_1080p.mp4"; //"DatavyuSampleVideo.mp4"; //"Nature_30fps_1080p.mp4";
+        String movieFileName = "counter.mp4"; //"DatavyuSampleVideo.mp4"; //"Nature_30fps_1080p.mp4";
 
         // Absolute path
         //String movieFileName = "C:\\Users\\DatavyuTests\\Documents\\Databrary\\datavyu-ffmpegplugin\\Nature_30fps_1080p.mp4";

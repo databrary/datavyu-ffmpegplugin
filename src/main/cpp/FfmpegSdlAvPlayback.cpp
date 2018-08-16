@@ -53,7 +53,8 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(
 	xleft(0),
 	rdftspeed(0.02),
 	window(nullptr),
-	renderer(nullptr) {
+	renderer(nullptr)
+{
 	// Set callback functions
 	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels, 
 		int wanted_sample_rate, struct AudioParams *audio_hw_params) {
@@ -620,7 +621,8 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 			if (lastvp->serial != vp->serial)
 				frame_timer = av_gettime_relative() / 1000000.0;
 
-			if (pVideoState->get_paused())
+			// Force refresh overrides paused
+			if (pVideoState->get_paused() && !force_refresh)
 				goto display;
 
 			/* compute nominal last_duration */
@@ -699,10 +701,12 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 		if (!display_disable
 			&& force_refresh
 			&& (pVideoState->get_show_mode() == SHOW_MODE_VIDEO)
-			&& pVideoState->get_pPictq()->get_rindex_shown())
+			&& pVideoState->get_pPictq()->get_rindex_shown()) {
 			video_display();
+			force_refresh = 0; // only reset force refresh when displayed
+		}
 	}
-	force_refresh = 0;
+	//force_refresh = 0;
 	if (show_status) {
 		static int64_t last_time;
 		int64_t cur_time;
