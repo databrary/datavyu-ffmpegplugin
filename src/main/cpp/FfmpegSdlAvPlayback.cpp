@@ -1081,13 +1081,31 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 }
 
 void FfmpegSdlAvPlayback::init_and_start_display_loop() {
-	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method)
+	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method signature)
 	pVideoState->stream_start();
 	display_tid = new std::thread([this] {
 		init();
 		SDL_Event event;
 		while (!stopped) {
 			refresh_loop_wait_event(&event);
+			// Add handling of resizing the window
+			switch (event.type) {
+			case SDL_WINDOWEVENT:
+				switch (event.window.event) {
+				case SDL_WINDOWEVENT_RESIZED:
+					screen_width = width = event.window.data1;
+					screen_height = height = event.window.data2;
+					if (vis_texture) {
+						SDL_DestroyTexture(vis_texture);
+						vis_texture = NULL;
+					}
+				case SDL_WINDOWEVENT_EXPOSED:
+					force_refresh = 1;
+				}
+				break;
+			default:
+				break;
+			}
 		}
 	});
 }
