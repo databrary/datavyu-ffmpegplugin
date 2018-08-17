@@ -852,15 +852,11 @@ void FfmpegSdlAvPlayback::destroy() {
 }
 
 void FfmpegSdlAvPlayback::init_and_event_loop() {
-
-	init();
-
-	pVideoState->stream_start();
-
-	// SDL: The event loop for the SDL window
 	SDL_Event event;
 	double incr, pos, frac;
-
+	// Initialize first before starting the stream
+	init();
+	pVideoState->stream_start();
 	for (;;) {
 		double x;
 		refresh_loop_wait_event(&event);
@@ -1080,11 +1076,20 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 	}
 }
 
+
+
 void FfmpegSdlAvPlayback::init_and_start_display_loop() {
+	std::mutex mtx;
+	std::condition_variable cv;
+	bool initialized = false;
+
 	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method signature)
-	pVideoState->stream_start();
-	display_tid = new std::thread([this] {
+	display_tid = new std::thread([this, &initialized, &cv] {
+
 		init();
+		initialized = true;
+		cv.notify_all();
+
 		SDL_Event event;
 		while (!stopped) {
 			refresh_loop_wait_event(&event);
@@ -1108,6 +1113,10 @@ void FfmpegSdlAvPlayback::init_and_start_display_loop() {
 			}
 		}
 	});
+
+	std::unique_lock<std::mutex> lck(mtx);
+	cv.wait(lck, [&initialized] {return initialized; });
+	pVideoState->stream_start();
 }
 
 void FfmpegSdlAvPlayback::stop_display_loop() {
