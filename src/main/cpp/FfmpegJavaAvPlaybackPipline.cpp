@@ -1,25 +1,12 @@
 #include "FfmpegJavaAvPlaybackPipline.h"
 
 uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
-
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	AVInputFormat *file_iformat = nullptr;
-	pJavaPlayback = new (std::nothrow) FfmpegJavaAvPlayback(
-		m_pOptions->GetAudioFormat(), 
-		m_pOptions->GetPixelFormat(), 
+	pJavaPlayback = new FfmpegJavaAvPlayback(input_file, 
+		file_iformat, m_pOptions->GetAudioFormat(), m_pOptions->GetPixelFormat(), 
 		m_pOptions->GetAudioBufferSizeInBy());
-
-	if (!pJavaPlayback) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to initialize the java playback pipeline");
-		return ERROR_PIPELINE_NULL;
-	}
-
-	int err = pJavaPlayback->Init(input_file, file_iformat);
-	if (err) {
-		delete pJavaPlayback;
-		return err;
-	}
 
 	// Assign the callback functions
 	pJavaPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {
@@ -44,7 +31,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
 		this->UpdatePlayerState(Finished);
 	});
 
-	pJavaPlayback->start_stream();
+	pJavaPlayback->init_and_start_stream();
 
 	return ERROR_NONE;
 }

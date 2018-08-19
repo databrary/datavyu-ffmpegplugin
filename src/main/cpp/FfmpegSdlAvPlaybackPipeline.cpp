@@ -14,17 +14,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char * input_file) {
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	AVInputFormat *file_iformat = nullptr;
-	pSdlPlayback = new (std::nothrow) FfmpegSdlAvPlayback();
-
-	if (!pSdlPlayback) {
-		return ERROR_PIPELINE_NULL;
-	}
-
-	int err = pSdlPlayback->Init(input_file, file_iformat);
-	if (err) {
-		delete pSdlPlayback;
-		return err;
-	}
+	pSdlPlayback = new FfmpegSdlAvPlayback(input_file, file_iformat);
 
 	// Assign the callback functions	
 	pSdlPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {

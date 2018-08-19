@@ -5,7 +5,7 @@
 
 class FfmpegAvPlayback {
 protected:
-	VideoState* pVideoState;
+	VideoState * pVideoState;
 	double frame_timer;
 
 	int width, height;
@@ -21,8 +21,8 @@ protected:
 	void set_force_refresh(int refresh);
 	double vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration);
 public:
-	FfmpegAvPlayback();
-	int Init(const char *filename, AVInputFormat *iformat);
+
+	FfmpegAvPlayback(const char *filename, AVInputFormat *iformat);
 	virtual ~FfmpegAvPlayback();
 	virtual void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);
 	virtual void play();

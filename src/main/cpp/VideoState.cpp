@@ -559,184 +559,49 @@ int VideoState::audio_decode_frame() {
 	return resampled_data_size;
 }
 
-// Note, queues and clocks get initialized in the create_video_state function
-// The initialization order is correct now, but it is not garuanteed that some
-// of these might be null; hence, we initialize this in the create function
-VideoState::VideoState() : 
-	abort_request(0),
-	paused(true), // TRUE
-	last_paused(0),
-	stopped(false),
-	queue_attachments_req(0),
-	seek_req(0),
-	seek_flags(0),
-	seek_pos(0),
-	seek_rel(0),
-	read_pause_return(0),
-	realtime(0),
-	av_sync_type(0),
-	fps(0),
-	subtitle_stream(0),
-	frame_last_returned_time(0),
-	frame_last_filter_delay(0),
-	video_stream(0),
-	max_frame_duration(0),
-	eof(0),
-	image_width(0),
-	image_height(0),
-	step(false),
+/* Constructor */
+VideoState::VideoState() :
+	pVideoq(new PacketQueue()),
+	pAudioq(new PacketQueue()),
+	pSubtitleq(new PacketQueue()),
+	pPictq(nullptr),
+	pSubpq(nullptr),
+	pSampq(nullptr),
+	pVidclk(nullptr),
+	pAudclk(nullptr),
+	pExtclk(new Clock()), // For the external clock the serial is set to itself (never triggers)
+	pViddec(nullptr), // Decoder's are created in the stream_component_open and destroyed in stream_component_close
+	pSubdec(nullptr),
+	pAuddec(nullptr),
 	newSpeed_req(0),
-	last_speed(1.0), // 1.0
-	pts_speed(1.0), // 1.0
+	last_speed(1.0),
+	pts_speed(1.0),
 	audio_disable(0),
 	video_disable(0),
 	subtitle_disable(0),
-	last_video_stream(0),
-	last_audio_stream(0),
-	last_subtitle_stream(0),
-	filename(nullptr),
-	pAudioq(nullptr),
-	pVideoq(nullptr),
-	pSubtitleq(nullptr),
-	pSampq(nullptr),
-	pPictq(nullptr),
-	pSubpq(nullptr),
-	pAudclk(nullptr),
-	pVidclk(nullptr),
-	pExtclk(nullptr),
-	pAuddec(nullptr),
-	pViddec(nullptr),
-	pSubdec(nullptr),
-	read_tid(nullptr),
-	iformat(nullptr),
-	ic(nullptr),
-	swr_ctx(nullptr),
-	audio_st(nullptr),
-	subtitle_st(nullptr),
-	video_st(nullptr),
-	audio_stream(0),
-	audio_clock(0.0),
-	audio_clock_serial(0),
-	audio_diff_cum(0.0),
-	audio_diff_avg_coef(0.0),
-	audio_diff_threshold(0.0),
-	audio_diff_avg_count(0),
-	audio_hw_buf_size(0),
-	audio_buf(nullptr),
-	audio_buf1(nullptr),
-	audio_buf_size(0), /* in bytes */
-	audio_buf1_size(0),
-	audio_buf_index(0), /* in bytes */
-	audio_write_buf_size(0),
-	audio_volume(0),
-	muted(0),
-	frame_drops_early(0),
-	rdft(nullptr),
-	rdft_bits(0),
-	rdft_data(nullptr)
-#if CONFIG_AVFILTER
-	,
-	vfilter_idx(0),
-	vfilters_list(nullptr),
-	vfilters(nullptr), // video filter
-	nb_vfilters(0),
-	afilters(nullptr), // audio filter Note: audio filter is not working
-	in_video_filter(nullptr),   // the first filter in the video chain
-	out_video_filter(nullptr),  // the last filter in the video chain
-	in_audio_filter(nullptr),   // the first filter in the audio chain
-	out_audio_filter(nullptr),  // the last filter in the audio chain
-	agraph(nullptr),            // audio filter graph
-	sws_dict(nullptr),			// From cmdutils
-	swr_opts(nullptr),			// From cmdutils
-#endif
-{}
-
-VideoState* VideoState::crate_video_state() {
-	// Create the video state
-	VideoState* vs = new (std::nothrow) VideoState();
-	if (!vs) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create new video state");
-		return nullptr;
-	}
-
-	// Initialize packet queues
-	vs->pAudioq = new (std::nothrow) PacketQueue();
-	if (!vs->pAudioq) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create packet queue for audio");
-		delete vs;
-		return nullptr;
-	}
-	vs->pVideoq = new (std::nothrow) PacketQueue();
-	if (!vs->pVideoq) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create packet queue for video");
-		delete vs;
-		return nullptr;
-	}
-	vs->pSubtitleq = new (std::nothrow) PacketQueue();
-	if (!vs->pSubtitleq) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create packet queue for subtitles");
-		delete vs;
-		return nullptr;
-	}
-
-	// Handle frame queues
-	vs->pSampq = FrameQueue::create_frame_queue(vs->pAudioq, SAMPLE_QUEUE_SIZE, 1);
-	if (!vs->pSampq) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue for audio");
-		delete vs;
-		return nullptr;
-	}
-	vs->pPictq = FrameQueue::create_frame_queue(vs->pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
-	if (!vs->pPictq) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue for video");
-		delete vs;
-		return nullptr;
-	}
-	vs->pSubpq = FrameQueue::create_frame_queue(vs->pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
-	if (!vs->pSubpq) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue for subtitle");
-		delete vs;
-		return nullptr;
-	}
-
-	// Create clocks
-	vs->pAudclk = new (std::nothrow) Clock(vs->pAudioq->get_p_serial());
-	if (!vs->pAudclk) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create clock for audio");
-		delete vs;
-		return nullptr;
-	}
-	vs->pVidclk = new (std::nothrow) Clock(vs->pVideoq->get_p_serial());
-	if (!vs->pVidclk) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create clock for video");
-		delete vs;
-		return nullptr;
-	}
-	vs->pExtclk = new (std::nothrow) Clock();
-	if (!vs->pExtclk) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create clock for external");
-		delete vs;
-		return nullptr;
-	}
-
-	return vs;
+	paused(true), // Disable audo play when streamig through Java, Note: need to change to false when using SDL
+	stopped(false) {
+	// Frame queues depend on the packet queues that have not been initialized in initializer
+	pPictq = new FrameQueue(pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
+	pSubpq = new FrameQueue(pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
+	pSampq = new FrameQueue(pAudioq, SAMPLE_QUEUE_SIZE, 1);
+	// Clocks depend on packet queues that have not been initialized in initializer
+	pVidclk = new Clock(pVideoq->get_p_serial());
+	pAudclk = new Clock(pAudioq->get_p_serial());
+	// TODO(fraudies): Define these attributes in the right order in the class, then move all back to the initializers
 }
-
 
 /* Destructor */
 VideoState::~VideoState() {
-	if (pVideoq) delete(pVideoq);
-	if (pAudioq) delete(pAudioq);
-	if (pSubtitleq) delete(pSubtitleq);
-
-	if (pPictq) delete(pPictq);
-	if (pSubpq) delete(pSubpq);
-	if (pSampq) delete(pSampq);
-	
-	if (pVidclk) delete(pVidclk);
-	if (pAudclk) delete(pAudclk);
-	if (pExtclk) delete(pExtclk);
-
+	delete(pVideoq);
+	delete(pAudioq);
+	delete(pSubtitleq);
+	delete(pPictq);
+	delete(pSubpq);
+	delete(pSampq);
+	delete(pVidclk);
+	delete(pAudclk);
+	delete(pExtclk);
 #if CONFIG_AVFILTER
 	av_dict_free(&swr_opts);
 	av_dict_free(&sws_dict);
@@ -1250,7 +1115,7 @@ int VideoState::subtitle_thread() {
 
 /* Public Members*/
 VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat) {
-	VideoState *is = VideoState::crate_video_state();
+	VideoState *is = new VideoState();
 	if (!is)
 		return NULL;
 

@@ -59,48 +59,44 @@ class FrameQueue{
 		static void unref_item(Frame *vp) {
 			av_frame_unref(vp->frame);
 		}
+    public:
+		FrameQueue(const PacketQueue* pktq, int max_size, int keep_last);
 
-		FrameQueue(const PacketQueue* pktq, int max_size, int keep_last); // private because of memory management
-public:
-	// Use this method to create a new frame queue to ensure cases where memory allocation fails are handled properly
-	static FrameQueue* create_frame_queue(const PacketQueue* pktq, int max_size, int keep_last);
-
-    virtual ~FrameQueue() {
-        for (int i = 0; i < max_size; i++) {
-            Frame *vp = &queue[i];
-			if (vp) {
-				unref_item(vp);
-				av_frame_free(&vp->frame);
-			}
+		// Same like PacketQueue we should destroy the mutex 
+        virtual ~FrameQueue() {
+            for (int i = 0; i < max_size; i++) {
+                Frame *vp = &queue[i];
+                unref_item(vp);
+                av_frame_free(&vp->frame);
+            }
+			delete[] queue;
         }
-		delete[] queue;
-    }
 
-	void signal();
+		void signal();
 
-    inline Frame* peek() { return &queue[(rindex + rindex_shown) % max_size]; }
+        inline Frame* peek() { return &queue[(rindex + rindex_shown) % max_size]; }
 
-    inline Frame* peek_next() { return &queue[(rindex + rindex_shown + 1) % max_size]; }
+        inline Frame* peek_next() { return &queue[(rindex + rindex_shown + 1) % max_size]; }
 
-    inline Frame* peek_last() { return &queue[rindex]; }
+        inline Frame* peek_last() { return &queue[rindex]; }
 
-	inline std::mutex & get_mutex() { return mutex; }
+		inline std::mutex & get_mutex() { return mutex; }
 
-	inline int get_rindex_shown() const { return rindex_shown; }
+		inline int get_rindex_shown() const { return rindex_shown; }
 
-	Frame *peek_writable();
+		Frame *peek_writable();
 
-	Frame *peek_readable();
+		Frame *peek_readable();
 
-	void push();
+		void push();
 
-	void next();
+		void next();
 
-    // return the number of undisplayed frames in the queue
-    inline int nb_remaining() const { return size - rindex_shown; }
+        // return the number of undisplayed frames in the queue
+        inline int nb_remaining() const { return size - rindex_shown; }
 
-    // return last shown position
-	int64_t last_pos();
+        // return last shown position
+		int64_t last_pos();
 };
 
 #endif FRAME_QUEUE_H_
