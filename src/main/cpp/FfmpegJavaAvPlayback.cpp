@@ -1,22 +1,30 @@
 #include "FfmpegJavaAvPlayback.h"
+#include "FfmpegMediaErrors.h"
 
-void FfmpegJavaAvPlayback::init() {
+FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
+	const PixelFormat *pPixelFormat,
+	const int audioBufferSizeInBy) : FfmpegAvPlayback(),
+		pAudioFormat(pAudioFormat), 
+		pPixelFormat(pPixelFormat),
+		audioBufferSizeInBy(audioBufferSizeInBy),
+		img_convert_ctx(nullptr) 
+{ }
+
+FfmpegJavaAvPlayback::~FfmpegJavaAvPlayback()
+{ }
+
+int FfmpegJavaAvPlayback::Init(const char * filename, AVInputFormat * iformat) {
+
 	/* register all codecs, demux and protocols */
 #if CONFIG_AVDEVICE
 	avdevice_register_all();
 #endif
 	avformat_network_init();
-}
 
-FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(
-	const char * filename,
-	AVInputFormat * iformat,
-	const AudioFormat *pAudioFormat,
-	const PixelFormat *pPixelFormat,
-	const int audioBufferSizeInBy) : FfmpegAvPlayback(filename, iformat), 
-		pAudioFormat(pAudioFormat), 
-		pPixelFormat(pPixelFormat),
-		audioBufferSizeInBy(audioBufferSizeInBy) {
+	int err = FfmpegAvPlayback::Init(filename, iformat);  // initializes the video state
+	if (err) {
+		return err;
+	}
 
 	pVideoState->set_destroy_callback([this] {
 		this->destroy();
@@ -25,16 +33,15 @@ FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(
 	// TODO: Clean-up this callback as the first three parameters are not used here
 	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels,
 		int wanted_sample_rate, struct AudioParams *audio_hw_params) {
-		return this->audio_open(wanted_channel_layout, wanted_nb_channels, wanted_sample_rate, audio_hw_params);		
+		return this->audio_open(wanted_channel_layout, wanted_nb_channels, wanted_sample_rate, audio_hw_params);
 	});
 
 	pVideoState->set_step_to_next_frame_callback([this] {
 		this->step_to_next_frame();
 	});
-}
 
-FfmpegJavaAvPlayback::~FfmpegJavaAvPlayback()
-{ }
+	return ERROR_NONE;
+}
 
 VideoState * FfmpegJavaAvPlayback::get_VideoState() { return pVideoState; }
 
@@ -60,8 +67,7 @@ void FfmpegJavaAvPlayback::destroy() {
 	av_log(NULL, AV_LOG_QUIET, "%s", "");
 }
 
-void FfmpegJavaAvPlayback::init_and_start_stream() {
-	init();
+void FfmpegJavaAvPlayback::start_stream() {
 	pVideoState->stream_start();
 }
 

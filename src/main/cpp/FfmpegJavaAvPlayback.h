@@ -10,14 +10,14 @@ private:
 	const PixelFormat* pPixelFormat;
 	const int audioBufferSizeInBy;
 	struct SwsContext* img_convert_ctx;
-	void init();
 public:
-	FfmpegJavaAvPlayback(const char *filename, 
-		AVInputFormat *iformat, 
-		const AudioFormat *pAudioFormat, 
+	FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
 		const PixelFormat *pPixelFormat,
 		const int audioBufferSizeInBy);
-	~FfmpegJavaAvPlayback();
+	virtual ~FfmpegJavaAvPlayback();
+
+	int Init(const char *filename,
+		AVInputFormat *iformat);
 
 	int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
 		int wanted_sample_rate, struct AudioParams *audio_hw_params);
@@ -26,7 +26,7 @@ public:
 
 	void destroy();
 
-	void init_and_start_stream();
+	void start_stream();
 
 	void set_balance(float fBalance);
 	float get_balance();

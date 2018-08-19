@@ -16,7 +16,7 @@
 
 TEST_CASE( "Create and delete (pass)", "[create-delete]" ) {
 	PacketQueue packetQueue;
-    FrameQueue frameQueue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+    FrameQueue frameQueue = FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
 }
 
 TEST_CASE( "Test single write and read (pass)", "[single-read-write]" ) {
@@ -26,7 +26,7 @@ TEST_CASE( "Test single write and read (pass)", "[single-read-write]" ) {
 	packetQueue.start();
 
 	// Initialize the frame queue
-	FrameQueue frameQueue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+	FrameQueue frameQueue = FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
 
 	// Write
 	Frame* pWriteable = frameQueue.peek_writable();
@@ -48,7 +48,7 @@ TEST_CASE("Test status (pass)", "[status]") {
 	packetQueue.start();
 
 	// Initialize the frame queue
-	FrameQueue frameQueue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+	FrameQueue frameQueue = FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
 
 	// Test the intial status of the frame queue
 	REQUIRE(frameQueue.nb_remaining() == 0);
@@ -75,7 +75,7 @@ TEST_CASE("Test multi-threaded write and read (pass)", "[multi-threaded-read-wri
 	packetQueue.start();
 
 	// Initialize the frame queue with smaller size to test for blocking/unblocking
-	FrameQueue frameQueue(&packetQueue, VIDEO_PICTURE_QUEUE_SIZE, 1);
+	FrameQueue frameQueue = FrameQueue::create_frame_queue(&packetQueue, VIDEO_PICTURE_QUEUE_SIZE, 1);
 
 	// Write some frames
 	std::thread writer([&frameQueue] {
@@ -108,7 +108,7 @@ TEST_CASE("Test signal", "[signal]") {
 	packetQueue.start();
 
 	// Initialize the frame queue
-	FrameQueue frameQueue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+	FrameQueue frameQueue = FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
 
 	// Read packet but blocked
 	std::thread reader([&frameQueue] {
@@ -127,7 +127,7 @@ TEST_CASE("Test peek, peek next, and peek last", "[peek-next-last]") {
 	packetQueue.start();
 
 	// Initialize the frame queue
-	FrameQueue frameQueue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+	FrameQueue frameQueue = FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
 
 	// Write frames with pos 1, 2, 3, 4
 	for (int writes = 1; writes <= 4; ++writes) {

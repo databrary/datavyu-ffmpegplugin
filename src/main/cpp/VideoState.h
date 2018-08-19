@@ -180,8 +180,6 @@ static int64_t			audio_callback_time;
 //what will be the streamer in the future implementations
 class VideoState {
 private:
-	std::thread *read_tid;
-	AVInputFormat *iformat;
 	int abort_request;
 	bool paused; // TODO(fraudies): Check if this need to be atomic
 	int last_paused;
@@ -192,33 +190,68 @@ private:
 	int64_t	seek_pos;
 	int64_t seek_rel;
 	int	read_pause_return;
-	AVFormatContext	*ic;
 	int realtime;
+	int	av_sync_type;
+	int fps;
+	int subtitle_stream;
+
+	double frame_last_returned_time;
+	double frame_last_filter_delay;
+	int video_stream;
+	double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
+	int eof;
+	int image_width;
+	int image_height;
+	bool step; // TODO(fraudies): Check if this need to be atomic
+
+	int newSpeed_req;
+	float last_speed;
+	float pts_speed;
+
+	int audio_disable;
+	int video_disable;
+	int subtitle_disable;
+
+	int last_video_stream;
+	int last_audio_stream;
+	int last_subtitle_stream;
+
+	std::condition_variable continue_read_thread;
+
+	char *filename;
+
+	PacketQueue *pAudioq;
+	PacketQueue	*pVideoq;
+	PacketQueue *pSubtitleq;
+
+	FrameQueue *pSampq;
+	FrameQueue *pPictq;
+	FrameQueue *pSubpq;
 
 	Clock *pAudclk;
 	Clock *pVidclk;
 	Clock *pExtclk;
 
-	FrameQueue *pPictq;
-	FrameQueue *pSubpq;
-	FrameQueue *pSampq;
-
 	Decoder *pAuddec;
 	Decoder *pViddec;
 	Decoder *pSubdec;
 
+	std::thread *read_tid;
+	AVInputFormat *iformat;
+	AVFormatContext	*ic;
+	struct SwrContext *swr_ctx;
+
+	AVStream *audio_st;
+	AVStream *subtitle_st;
+	AVStream *video_st;
+
 	int audio_stream;
-
-	int	av_sync_type;
-
 	double audio_clock;
 	int audio_clock_serial;
 	double audio_diff_cum; /* used for AV difference average computation */
 	double audio_diff_avg_coef;
 	double audio_diff_threshold;
 	int audio_diff_avg_count;
-	AVStream *audio_st;
-	PacketQueue *pAudioq;
 	int	audio_hw_buf_size;
 	uint8_t *audio_buf;
 	uint8_t *audio_buf1;
@@ -235,38 +268,11 @@ private:
 #endif
 
 	struct AudioParams audio_tgt;
-	struct SwrContext *swr_ctx;
 	int frame_drops_early;
 
 	RDFTContext *rdft;
 	int rdft_bits;
 	FFTSample *rdft_data;
-
-	int subtitle_stream;
-	AVStream *subtitle_st;
-	PacketQueue *pSubtitleq;
-
-	double frame_last_returned_time;
-	double frame_last_filter_delay;
-	int video_stream;
-	AVStream *video_st;
-	PacketQueue	*pVideoq;
-	double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
-	int eof;
-	int image_width;
-	int image_height;
-
-	char *filename;
-
-	bool step; // TODO(fraudies): Check if this need to be atomic
-
-	int newSpeed_req;
-	float last_speed;
-	float pts_speed;
-
-	int audio_disable;
-	int video_disable; 
-	int subtitle_disable; 
 
 #if CONFIG_AVFILTER
 	int vfilter_idx;
@@ -284,14 +290,6 @@ private:
 	AVDictionary *swr_opts;			// From cmdutils
 	std::mutex mutex;				// From cmdutils
 #endif
-
-	int last_video_stream;
-	int last_audio_stream;
-	int last_subtitle_stream;
-
-	int fps;
-
-	std::condition_variable continue_read_thread;
 
 	inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
 			enum AVSampleFormat fmt2, int64_t channel_count2) {
@@ -349,8 +347,10 @@ private:
 	std::function<void()> pause_audio_device_callback;
 	std::function<void()> destroy_callback; // TODO(fraudies): Possibly clean-up through destructor
 	std::function<void()> step_to_next_frame_callback;
-public:
 	VideoState();
+public:
+	static VideoState* crate_video_state();
+
 	~VideoState();
 
 	int read_thread();

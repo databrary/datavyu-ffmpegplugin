@@ -100,15 +100,17 @@ private:
 	std::atomic<bool> stopped = false;
 	std::thread* display_tid = nullptr;
 
-	void init(); // This is private because it has to be called on the same thread as the looping
+	void InitSdl(); // This is private because it has to be called on the same thread as the looping
 	int video_open(const char* filename);
 	void closeAudioDevice();
 	void video_image_display();
 	void stop_display_loop();
 	void toggle_audio_display();
 public:
-	FfmpegSdlAvPlayback(const char *filename, AVInputFormat *iformat);
+	FfmpegSdlAvPlayback();
 	~FfmpegSdlAvPlayback();
+
+	int Init(const char *filename, AVInputFormat *iformat);
 
 	VideoState* get_VideoState();
 
@@ -152,6 +154,6 @@ public:
 
 	void init_and_event_loop();
 
-	void init_and_start_display_loop();
+	int init_and_start_display_loop();
 };
 #endif FFMPEGSDLAVPLAYBACK_H_
