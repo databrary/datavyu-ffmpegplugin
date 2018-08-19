@@ -1,5 +1,5 @@
 #include "FfmpegAvPlayback.h"
-#include "FfmpegMediaErrors.h"
+
 
 void FfmpegAvPlayback::stream_toggle_pause() {
 	
@@ -27,23 +27,13 @@ void FfmpegAvPlayback::stream_toggle_pause() {
 	pExtclk->setPaused(flipped);
 }
 
-FfmpegAvPlayback::FfmpegAvPlayback() :
-	pVideoState(nullptr),
+FfmpegAvPlayback::FfmpegAvPlayback(const char *filename, AVInputFormat *iformat) :
+	pVideoState(VideoState::stream_open(filename, iformat)),
 	display_disable(0),
 	width(0),
 	height(0),
 	force_refresh(1)
 { }
-
-int FfmpegAvPlayback::Init(const char *filename, AVInputFormat *iformat) {
-	pVideoState = VideoState::stream_open(filename, iformat);
-
-	if (!pVideoState) {
-		return ERROR_PLAYER_NULL;
-	}
-
-	return ERROR_NONE;
-}
 
 FfmpegAvPlayback::~FfmpegAvPlayback() {}
 
@@ -117,8 +107,8 @@ int FfmpegAvPlayback::get_frame_timer() {
 	return frame_timer;
 }
 
-void FfmpegAvPlayback::set_frame_timer(int new_frame_timer) {
-	frame_timer = new_frame_timer;
+void FfmpegAvPlayback::set_frame_timer(int newFrame_timer) {
+	frame_timer = newFrame_timer;
 }
 
 void FfmpegAvPlayback::set_force_refresh(int refresh) {

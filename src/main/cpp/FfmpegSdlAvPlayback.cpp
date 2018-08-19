@@ -1,5 +1,4 @@
 #include "FfmpegSdlAvPlayback.h"
-#include "FfmpegMediaErrors.h"
 
 /* Private Members */
 inline int FfmpegSdlAvPlayback::compute_mod(int a, int b) {
@@ -46,35 +45,18 @@ void FfmpegSdlAvPlayback::calculate_display_rect(SDL_Rect *rect,
 	rect->h = FFMAX(height, 1);
 }
 
-FfmpegSdlAvPlayback::FfmpegSdlAvPlayback() : 
-	FfmpegAvPlayback(),
+FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(
+	const char *filename,
+	AVInputFormat *iformat) : 
+	FfmpegAvPlayback(filename, iformat),
 	ytop(0),
 	xleft(0),
 	rdftspeed(0.02),
 	window(nullptr),
-	renderer(nullptr),
-	img_convert_ctx(nullptr),
-	sub_convert_ctx(nullptr),
-	vis_texture(nullptr),
-	sub_texture(nullptr),
-	vid_texture(nullptr) {}
-
-FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {}
-
-int FfmpegSdlAvPlayback::Init(const char *filename, AVInputFormat *iformat) {
-	/* register all codecs, demux and protocols */
-#if CONFIG_AVDEVICE
-	avdevice_register_all();
-#endif
-	avformat_network_init();
-
-	int err = FfmpegAvPlayback::Init(filename, iformat);
-	if (err) {
-		return err;
-	}
-
+	renderer(nullptr)
+{
 	// Set callback functions
-	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels,
+	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels, 
 		int wanted_sample_rate, struct AudioParams *audio_hw_params) {
 		return this->audio_open(wanted_channel_layout, wanted_nb_channels, wanted_sample_rate,
 			audio_hw_params);
@@ -88,9 +70,9 @@ int FfmpegSdlAvPlayback::Init(const char *filename, AVInputFormat *iformat) {
 	pVideoState->set_step_to_next_frame_callback([this] {
 		this->step_to_next_frame();
 	});
-
-	return ERROR_NONE;
 }
+
+FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {};
 
 /* Public Members */
 int FfmpegSdlAvPlayback::audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
@@ -767,7 +749,12 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 	}
 }
 
-void FfmpegSdlAvPlayback::InitSdl() {
+void FfmpegSdlAvPlayback::init() {
+	/* register all codecs, demux and protocols */
+#if CONFIG_AVDEVICE
+	avdevice_register_all();
+#endif
+	avformat_network_init();
 
 	if (display_disable) {
 		pVideoState->set_video_disable(1);
@@ -868,7 +855,7 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 	SDL_Event event;
 	double incr, pos, frac;
 	// Initialize first before starting the stream
-	InitSdl();
+	init();
 	pVideoState->stream_start();
 	for (;;) {
 		double x;
@@ -1091,15 +1078,15 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 
 
 
-int FfmpegSdlAvPlayback::init_and_start_display_loop() {
+void FfmpegSdlAvPlayback::init_and_start_display_loop() {
 	std::mutex mtx;
 	std::condition_variable cv;
 	bool initialized = false;
 
 	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method signature)
-	display_tid = new (std::nothrow) std::thread([this, &initialized, &cv] {
+	display_tid = new std::thread([this, &initialized, &cv] {
 
-		InitSdl();
+		init();
 		initialized = true;
 		cv.notify_all();
 
@@ -1127,16 +1114,9 @@ int FfmpegSdlAvPlayback::init_and_start_display_loop() {
 		}
 	});
 
-	if (!display_tid) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create playback thread");
-		return -1;
-	}
-
 	std::unique_lock<std::mutex> lck(mtx);
 	cv.wait(lck, [&initialized] {return initialized; });
 	pVideoState->stream_start();
-
-	return 0;
 }
 
 void FfmpegSdlAvPlayback::stop_display_loop() {
