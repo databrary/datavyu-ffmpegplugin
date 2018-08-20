@@ -471,8 +471,6 @@ public:
 	int get_subtitle_disable() const;
 	void set_subtitle_disable(const int disable);
 
-
-
 	//int isStopped() const;
 
 #if CONFIG_AVFILTER
