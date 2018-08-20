@@ -14,6 +14,12 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char * input_file) {
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	AVInputFormat *file_iformat = nullptr;
+
+	struct stat buffer;
+	if (stat(input_file, &buffer) != 0) {
+		return ERROR_MEDIA_INVALID;
+	}
+
 	pSdlPlayback = new FfmpegSdlAvPlayback(input_file, file_iformat);
 
 	// Assign the callback functions	

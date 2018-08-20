@@ -89,10 +89,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
             throw new NullPointerException("File == null!");
         }
 
-        if (!sourceFile.exists() && !sourceFile.isDirectory()){
-            throw new IllegalArgumentException("Invalid Video File");
-        }
-
         // if we are on Windows Platform and the protocol used is file we use the absolute path
         if(protocol.equals("file")){
             String path = sourceFile.getAbsolutePath();
