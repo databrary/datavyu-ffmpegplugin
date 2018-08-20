@@ -37,24 +37,12 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
      * Create an ffmpeg media player instance and play through java
      * framework
      *
-     * @param source The URI source
-     * @param frame The frame to display
-     */
-    public FfmpegMediaPlayer(URI source, JFrame frame) {
-        super(source);
-        this.frame = frame;
-    }
-
-    /**
-     * Create an ffmpeg media player instance and play through java
-     * framework
-     *
      * @param sourceFile The File source
      * @param frame The frame to display
      */
     public FfmpegMediaPlayer(File sourceFile, JFrame frame) {
-        this(sourceFile.toURI(), frame);
-        this.buildSourcePath(sourceFile);
+        super(sourceFile);
+        this.frame = frame;
     }
 
     /**
@@ -65,19 +53,8 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
      * @param container The Container to display
      */
     public FfmpegMediaPlayer(File sourceFile, Container container) {
-        this(sourceFile.toURI(), null);
-        this.buildSourcePath(sourceFile);
+        this(sourceFile, null);
         this.container = container;
-    }
-
-    /**
-     * Create an ffmpeg media player instance and play through
-     * the native SDL framework
-     *
-     * @param source The URI source
-     */
-    public FfmpegMediaPlayer(URI source) {
-        this(source, null);
     }
 
     /**
@@ -88,28 +65,6 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
      */
     public FfmpegMediaPlayer(File sourceFile) {
         this(sourceFile, null);
-    }
-
-    private void buildSourcePath(File sourceFile) {
-        if (sourceFile == null){
-            throw new NullPointerException("File == null!");
-        }
-
-        // if we are on Windows Platform and the protocol used is file we use the absolute path
-        if(protocol.equals("file")){
-            String path = sourceFile.getAbsolutePath();
-            if(System.getProperty("os.name").toLowerCase().contains("win")){
-                sourcePath = path.replace("\\","/");
-            } else {
-                //TODO(Reda): Test on Mac
-                int index = path.indexOf("/~/");
-                if (index != -1) {
-                    sourcePath = path.substring(0, index)
-                            + System.getProperty("user.home")
-                            + path.substring(index + 2);
-                }
-            }
-        }
     }
 
     private void initAndStartAudioPlayer() {
