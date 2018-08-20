@@ -1705,10 +1705,13 @@ double VideoState::get_fps() const {
 
 void VideoState::stream_close() {
 	/* XXX: use a special url_shutdown call to abort parse cleanly */
-	this->abort_request = 1;
-	read_tid->join();
-	delete read_tid;
-	read_tid = nullptr;
+
+	abort_request = 1;
+	if (read_tid) {
+		read_tid->join();
+		delete read_tid;
+		read_tid = nullptr;
+	}
 
 	/* close each stream */
 	if (this->audio_stream >= 0)
