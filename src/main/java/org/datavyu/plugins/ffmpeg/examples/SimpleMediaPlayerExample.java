@@ -23,7 +23,7 @@ public class SimpleMediaPlayerExample {
         //String movieFileName = "C:\\Users\\DatavyuTests\\Documents\\Databrary\\datavyu-ffmpegplugin\\Nature_30fps_1080p.mp4";
 
         // Create the media player using the constructor with File
-        MediaPlayerData mediaPlayer = new FfmpegMediaPlayer(new File(movieFileName), new JFrame());
+        MediaPlayerData mediaPlayer = new FfmpegMediaPlayer(new File(movieFileName));
 
         // Stream through SDL
         //MediaPlayer mediaPlayer = new FfmpegMediaPlayer(new File(movieFileName));
