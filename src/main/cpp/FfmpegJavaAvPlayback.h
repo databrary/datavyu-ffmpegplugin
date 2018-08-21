@@ -26,7 +26,7 @@ public:
 
 	void destroy();
 
-	void start_stream();
+	int start_stream();
 
 	void set_balance(float fBalance);
 	float get_balance();

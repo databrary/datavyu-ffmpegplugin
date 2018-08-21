@@ -147,7 +147,10 @@ public final class FfmpegMediaPlayer extends NativeMediaPlayer implements MediaP
         else
             filename = sourceURI.getPath();
 
-        ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
+        int rc = ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE, streamData);
+        if (0 != rc) {
+            throwMediaErrorException(rc, null);
+        }
 
         nativeMediaRef = newNativeMediaRef[0];
 

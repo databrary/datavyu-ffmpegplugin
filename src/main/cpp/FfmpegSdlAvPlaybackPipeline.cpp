@@ -49,7 +49,10 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char * input_file) {
 		this->UpdatePlayerState(Finished);
 	});
 	
-	pSdlPlayback->init_and_start_display_loop();
+	err = pSdlPlayback->init_and_start_display_loop();
+	if (err) {
+		return err;
+	}
 
 	return ERROR_NONE;
 }

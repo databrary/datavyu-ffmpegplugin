@@ -67,8 +67,8 @@ void FfmpegJavaAvPlayback::destroy() {
 	av_log(NULL, AV_LOG_QUIET, "%s", "");
 }
 
-void FfmpegJavaAvPlayback::start_stream() {
-	pVideoState->stream_start();
+int FfmpegJavaAvPlayback::start_stream() {
+	return pVideoState->stream_start();
 }
 
 void FfmpegJavaAvPlayback::set_balance(float fBalance) {

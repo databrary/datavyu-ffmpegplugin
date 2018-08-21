@@ -1273,7 +1273,7 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 	return is;
 }
 
-void VideoState::stream_start() {
+int VideoState::stream_start() {
 
 	// Initialization moved from read thread into main thread
 	int err, i, ret;
@@ -1303,7 +1303,7 @@ void VideoState::stream_start() {
 	}
 	err = avformat_open_input(&ic, filename, iformat, &format_opts);
 	if (err < 0) {
-		ret = -1;
+		// TODO(fraudies): Change error code to a more meaningful value
 		goto fail;
 	}
 	if (scan_all_pmts_set)
@@ -1452,7 +1452,7 @@ void VideoState::stream_start() {
 		goto fail;
 	}
 
-	ret = 0;
+	return 0;
 
 fail:
 	if (ret != 0 && ic)
@@ -1461,6 +1461,8 @@ fail:
 	if (ret != 0 && destroy_callback) {
 		destroy_callback();
 	}
+
+	return ret;
 }
 
 void VideoState::set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func) {
@@ -1849,14 +1851,15 @@ void VideoState::stream_close() {
 	}
 
 	/* close each stream */
-	if (this->audio_stream >= 0)
-		this->stream_component_close(this->audio_stream);
-	if (this->video_stream >= 0)
-		this->stream_component_close(this->video_stream);
-	if (this->subtitle_stream >= 0)
-		this->stream_component_close(this->subtitle_stream);
+	if (audio_stream >= 0)
+		stream_component_close(this->audio_stream);
+	if (video_stream >= 0)
+		stream_component_close(this->video_stream);
+	if (subtitle_stream >= 0)
+		stream_component_close(this->subtitle_stream);
 
-	avformat_close_input(&this->ic);
+	if (ic)
+		avformat_close_input(&ic);
 
 	// TODO Need to be added to the ~PacketQueue(); flush, destroy both mutex and condition
 	//this->pVideoq->packet_queue_destroy();

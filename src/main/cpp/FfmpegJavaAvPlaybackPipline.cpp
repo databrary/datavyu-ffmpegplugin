@@ -44,9 +44,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
 		this->UpdatePlayerState(Finished);
 	});
 
-	pJavaPlayback->start_stream();
-
-	return ERROR_NONE;
+	return pJavaPlayback->start_stream();
 }
 
 void FfmpegJavaAvPlaybackPipline::Dispose() {

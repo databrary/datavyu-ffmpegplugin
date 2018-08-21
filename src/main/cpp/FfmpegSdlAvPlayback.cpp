@@ -1134,9 +1134,7 @@ int FfmpegSdlAvPlayback::init_and_start_display_loop() {
 
 	std::unique_lock<std::mutex> lck(mtx);
 	cv.wait(lck, [&initialized] {return initialized; });
-	pVideoState->stream_start();
-
-	return 0;
+	return pVideoState->stream_start();
 }
 
 void FfmpegSdlAvPlayback::stop_display_loop() {
