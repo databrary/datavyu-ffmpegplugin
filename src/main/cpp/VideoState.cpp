@@ -619,7 +619,6 @@ int VideoState::read_thread() {
 	int pkt_in_play_range = 0;
 	int64_t pkt_ts;
 
-	// TODO: Need to work in TO_STOPPED state
 	// Reda: added bool stopped when we trigger stop; when stopped both is stopped and paused are set to 1
 	// So each time we check for pause we need to check inside the condition if it is also stopped 
 
@@ -642,26 +641,32 @@ int VideoState::read_thread() {
 				this->read_pause_return = av_read_pause(ic);
 			}
 			else {
-				av_read_play(ic);
+				av_read_play(ic); // Start Playing a network based stream
 				if (player_state_callbacks[TO_PLAYING]) {
 					player_state_callbacks[TO_PLAYING]();
 				}
 			}
 		}
-		// TODO(fraudies): See if we can clean-up the state transitions by using the same states
-		// in this loop as there are in the Pipeline.h
+
 		if (was_stalled) {
-			if (player_state_callbacks[TO_READY]) {
-				player_state_callbacks[TO_READY]();
+			if (this->paused) {
+				if (this->stopped) {
+					if (player_state_callbacks[TO_STOPPED]) {
+						player_state_callbacks[TO_STOPPED]();
+					}
+				}
+				else {
+					if (player_state_callbacks[TO_PAUSED]) {
+						player_state_callbacks[TO_PAUSED]();
+					}
+				}
+			}
+			else {
+				if (player_state_callbacks[TO_PLAYING]) {
+					player_state_callbacks[TO_PLAYING]();
+				}
 			}
 			was_stalled = false;
-		}
-		else {
-			if (!this->paused) {
-				if (player_state_callbacks[TO_PLAYING]) {
-					player_state_callbacks[TO_PLAYING]();
-				}
-			}
 		}
 
 #if CONFIG_RTSP_DEMUXER || CONFIG_MMSH_PROTOCOL
@@ -755,9 +760,18 @@ int VideoState::read_thread() {
 			this->seek_req = 0;
 			this->queue_attachments_req = 1;
 			this->eof = 0;
-			if (this->paused)
-				step_to_next_frame_callback(); // Assume that is set--otherwise fail hard here
+			if (this->paused) {
+				step_to_next_frame_callback();// Assume that is set--otherwise fail hard here
+			}
+			else {
+				if (player_state_callbacks[TO_PLAYING]) {
+					player_state_callbacks[TO_PLAYING]();
+				}
+				if (was_stalled)
+					was_stalled = false;
+			}
 		}
+		
 		if (this->queue_attachments_req) {
 			if (this->video_st && this->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC) {
 				AVPacket copy = { 0 };
