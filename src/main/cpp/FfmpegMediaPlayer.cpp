@@ -87,6 +87,10 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer_ffmpegI
 
 	jint iRet = (jint)pPipeline->Init(filename);
 
+	if (0 != iRet) {
+		return ERROR_MEDIA_INVALID;
+	}
+
 	env->ReleaseStringUTFChars(sourcePath, filename);
 
 	return iRet;

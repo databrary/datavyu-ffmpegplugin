@@ -1,5 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,14 +39,20 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     private boolean isStopTimeSet = false;
 
     protected URI sourceURI;
+    protected File sourceFile;
     protected String sourcePath; // used for the file protocol
     protected String protocol;
 
-    NativeMediaPlayer(URI source) {
+    private NativeMediaPlayer(URI source) {
         this.sourceURI = source;
-        initURI();
     }
 
+    NativeMediaPlayer(File sourceFile){
+        this(sourceFile.toURI());
+        this.sourceFile = sourceFile;
+        initURI();
+        buildSourcePath(this.sourceFile);
+    }
     public static class MediaErrorEvent extends PlayerEvent {
 
         private final Object source;
@@ -77,6 +84,27 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         return nativeMediaRef;
     }
 
+    private void buildSourcePath(File sourceFile) {
+        if (sourceFile == null){
+            throw new NullPointerException("File == null!");
+        }
+
+        // if we are on Windows Platform and the protocol used is file we use the absolute path
+        if(protocol.equals("file")){
+            String path = sourceFile.getAbsolutePath();
+            if(System.getProperty("os.name").toLowerCase().contains("win")){
+                sourcePath = path.replace("\\","/");
+            } else {
+                //TODO(Reda): Test on Mac
+                int index = path.indexOf("/~/");
+                if (index != -1) {
+                    sourcePath = path.substring(0, index)
+                            + System.getProperty("user.home")
+                            + path.substring(index + 2);
+                }
+            }
+        }
+    }
 
     private void initURI() {
         if(sourceURI == null){

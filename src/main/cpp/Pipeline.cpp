@@ -54,7 +54,7 @@ void CPipeline::SetEventDispatcher(CJavaPlayerEventDispatcher* pEventDispatcher)
 	m_pEventDispatcher = pEventDispatcher;
 }
 
-uint32_t CPipeline::Init(const char * filename)
+uint32_t CPipeline::Init(const char * input_file)
 {
 	return ERROR_NONE;
 }
