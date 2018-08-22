@@ -343,6 +343,10 @@ void CPipeline::SetPlayerState(PlayerState newPlayerState, bool bSilent) {
 			m_PlayerState = newPlayerState;
 		}
 	}
+
+	if (updateState && newPlayerState == Stalled) { // Try to play
+		Play();
+	}
 }
 
 CPipelineOptions* CPipeline::GetCPipelineOptions() {

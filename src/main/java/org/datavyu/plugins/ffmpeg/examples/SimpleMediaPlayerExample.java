@@ -17,7 +17,7 @@ public class SimpleMediaPlayerExample {
 
         // Create the  media player and attach any listeners
 
-        String movieFileName = "Nature_30fps_1080p.mp4";
+        String movieFileName = "Nature_30fps_1080p1.mp4";
 
         // Absolute path
         //String movieFileName = "C:\\Users\\DatavyuTests\\Documents\\Databrary\\datavyu-ffmpegplugin\\Nature_30fps_1080p.mp4";

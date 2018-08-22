@@ -11,11 +11,34 @@ FrameQueue::FrameQueue(const PacketQueue* pktq, int max_size, int keep_last) :
 	max_size(max_size),
 	keep_last(keep_last),
 	rindex_shown(0),
-	pktq(pktq) {
-	queue = new Frame[max_size];
-	for (int i = 0; i < max_size; i++) {
-		queue[i].frame = av_frame_alloc();
+	pktq(pktq) {}
+
+FrameQueue* FrameQueue::create_frame_queue(const PacketQueue* pktq, int max_size, int keep_last) {
+	FrameQueue *fq = new (std::nothrow) FrameQueue(pktq, max_size, keep_last);
+
+	if (!fq) {
+		av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue object");
+		return nullptr;
 	}
+
+	fq->queue = new (std::nothrow) Frame[max_size](); // initialize with zeros
+
+	if (!fq->queue) {
+		av_log(NULL, AV_LOG_ERROR, "Unable to initialize frame queue");
+		return nullptr;
+	}
+
+	for (int i = 0; i < max_size; i++) {
+		fq->queue[i].frame = av_frame_alloc();
+
+		if (!fq->queue[i].frame) {
+			av_log(NULL, AV_LOG_ERROR, "Unable to create frame in queue");
+			delete fq; // will clean up any memory allocated before
+			return nullptr;
+		}
+	}
+
+	return fq;
 }
 
 void FrameQueue::signal() {
