@@ -46,7 +46,7 @@ void FfmpegSdlAvPlayback::calculate_display_rect(SDL_Rect *rect,
 	rect->h = FFMAX(height, 1);
 }
 
-FfmpegSdlAvPlayback::FfmpegSdlAvPlayback() : 
+FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume) : 
 	FfmpegAvPlayback(),
 	ytop(0),
 	xleft(0),
@@ -57,7 +57,18 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback() :
 	sub_convert_ctx(nullptr),
 	vis_texture(nullptr),
 	sub_texture(nullptr),
-	vid_texture(nullptr) {}
+	vid_texture(nullptr),
+	last_i_start(0), 
+	frame_drops_late(0), 
+	last_vis_time(0), 
+	is_full_screen(0), 
+	audio_volume(0) {
+	if (startup_volume < 0)
+		av_log(NULL, AV_LOG_WARNING, "-volume=%d < 0, setting to 0\n", startup_volume);
+	if (startup_volume > 100)
+		av_log(NULL, AV_LOG_WARNING, "-volume=%d > 100, setting to 100\n", startup_volume);
+	audio_volume = av_clip(SDL_MIX_MAXVOLUME * av_clip(startup_volume, 0, 100) / 100, 0, SDL_MIX_MAXVOLUME);
+}
 
 FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {}
 
@@ -68,7 +79,7 @@ int FfmpegSdlAvPlayback::Init(const char *filename, AVInputFormat *iformat) {
 #endif
 	avformat_network_init();
 
-	int err = FfmpegAvPlayback::Init(filename, iformat);
+	int err = FfmpegAvPlayback::Init(filename, iformat, SDL_AUDIO_MIN_BUFFER_SIZE);
 	if (err) {
 		return err;
 	}
@@ -123,7 +134,7 @@ int FfmpegSdlAvPlayback::audio_open(int64_t wanted_channel_layout, int wanted_nb
 	wanted_spec.silence = 0;
 	wanted_spec.samples = FFMAX(SDL_AUDIO_MIN_BUFFER_SIZE, 2 << av_log2(wanted_spec.freq / SDL_AUDIO_MAX_CALLBACKS_PER_SEC));
 	wanted_spec.callback = sdl_audio_callback_bridge;
-	wanted_spec.userdata = pVideoState;
+	wanted_spec.userdata = this;
 	while (!(audio_dev = SDL_OpenAudioDevice(NULL, 0, &wanted_spec, &spec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE))) {
 		av_log(NULL, AV_LOG_WARNING, "SDL_OpenAudio (%d channels, %d Hz): %s\n",
 			wanted_spec.channels, wanted_spec.freq, SDL_GetError());
@@ -574,14 +585,14 @@ void FfmpegSdlAvPlayback::video_audio_display() {
 
 
 int FfmpegSdlAvPlayback::get_audio_volume() const {
-	return pVideoState->get_audio_volume();
+	return audio_volume;
 }
 
 void FfmpegSdlAvPlayback::update_volume(int sign, double step) {
 	int audio_volume = get_audio_volume();
 	double volume_level = audio_volume ? (20 * log(audio_volume / (double)SDL_MIX_MAXVOLUME) / log(10)) : -1000.0;
 	int new_volume = lrint(SDL_MIX_MAXVOLUME * pow(10.0, (volume_level + sign * step) / 20.0));
-	pVideoState->set_audio_volume(av_clip(audio_volume == new_volume ? (audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME));
+	audio_volume = av_clip(audio_volume == new_volume ? (audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME);
 }
 
 void FfmpegSdlAvPlayback::refresh_loop_wait_event(SDL_Event *event) {
@@ -768,6 +779,13 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 }
 
 void FfmpegSdlAvPlayback::InitSdl() {
+
+	if (pVideoState->get_image_width()) {
+		FfmpegSdlAvPlayback::set_default_window_size(
+			pVideoState->get_image_width(),
+			pVideoState->get_image_height(),
+			pVideoState->get_image_sample_aspect_ratio());
+	}
 
 	if (display_disable) {
 		pVideoState->set_video_disable(1);
@@ -1089,8 +1107,6 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 	}
 }
 
-
-
 int FfmpegSdlAvPlayback::init_and_start_display_loop() {
 	std::mutex mtx;
 	std::condition_variable cv;
@@ -1134,7 +1150,17 @@ int FfmpegSdlAvPlayback::init_and_start_display_loop() {
 
 	std::unique_lock<std::mutex> lck(mtx);
 	cv.wait(lck, [&initialized] {return initialized; });
-	return pVideoState->stream_start();
+	int err = pVideoState->stream_start();
+	if (err) return err;
+
+	if (pVideoState->get_image_width()) {
+		FfmpegSdlAvPlayback::set_default_window_size(
+			pVideoState->get_image_width(),
+			pVideoState->get_image_height(),
+			pVideoState->get_image_sample_aspect_ratio());
+	}
+
+	return 0;
 }
 
 void FfmpegSdlAvPlayback::stop_display_loop() {

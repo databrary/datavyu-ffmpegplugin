@@ -60,7 +60,7 @@ public class AudioPlayerThread extends Thread {
         soundLine.open(audioFormat);
 
         volumeControl = (FloatControl) soundLine.getControl(FloatControl.Type.MASTER_GAIN);
-        muteControl = (BooleanControl)soundLine.getControl(BooleanControl.Type.MUTE);
+        muteControl = (BooleanControl) soundLine.getControl(BooleanControl.Type.MUTE);
 
         data = new byte[bufferSize];
         soundLine.start();
@@ -68,29 +68,28 @@ public class AudioPlayerThread extends Thread {
 
     public void setVolume(final float newVolume){
         // Adjust the volume on the output line.
-        if (soundLine.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-            // Convert from linear to decibel
-            float db = (float) (20.0f * Math.log10(newVolume));
-            volumeControl.setValue(db);
+        if (volumeControl != null) {
+            volumeControl.setValue((float) (20.0f * Math.log10(newVolume)));
         }
     }
 
     public float getVolume() {
-        if (soundLine.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+        if (volumeControl != null) {
             // Convert from decibel to linear
-            float linear = (float) Math.pow(10.0F, volumeControl.getValue()/20.0F);
-            return linear;
+            return (float) Math.pow(10.0F, volumeControl.getValue()/20.0F);
         }
         return 0;
     }
 
     public void setMute(final boolean newMute){
-        if(soundLine.isControlSupported(BooleanControl.Type.MUTE)){
+        if(muteControl != null){
             muteControl.setValue(newMute);
         }
     }
 
-    public boolean isMute(){ return muteControl.getValue(); }
+    public boolean isMute(){
+        return muteControl != null && muteControl.getValue();
+    }
 
     @Override
     public void run() {

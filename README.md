@@ -4,22 +4,36 @@ This plugin was developed by Florian Raudies.
 
 This repo holds the native c++/java code that composes the ffmpeg plugin. The final files that produce the dll's are
 
-    org_datavyu_plugins_ffmpegplayer_MovieStream.cpp
-    org_datavyu_plugins_ffmpegplayer_MovieStream.h
+    FfmpegSdlMediaPlayer.cpp
+    FfmpegJavaMediaPlayer.cpp
 
-The other source code files contain org.datavyu.plugins.ffmpegplayer.prototypes for video playback, audio playback, etc.
+The dll compile for these two are organized as the two VSS projects
 
-The compile instructions for the plugin are in the cpp file.
+1. FfmpegSdlMediaPlayer
+2. FfmpegJavaMediaPlayer
 
-The compile instructions for the ffmpeg code are in doc/Libraries.txt.
+To compile the dll's for these two projects follow the directions under "Compiling Native Code".
+
+## JNI bridge
+The design and development of this bridge follows the JavaFx project closely. The javafx for project is here: http://hg.openjdk.java.net/openjfx/jfx/rt
+
+To compile the wrapper classes for the JNI bridge use the following commands
+
+    javah -d ../cpp org.datavyu.plugins.ffmpeg.NativeMediaPlayer
+    javah -d ../cpp org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer
+    javah -d ../cpp org.datavyu.plugins.ffmpeg.FfmpegJavaMediaPlayer
+    
+from the folder
+
+    src/main/java
+
+Note, from `NativeMediaPlayer.class` we only use the produced stub `org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h` to
+get the state codes.
 
 
 ## Native Code
-The native code interfaces to the c API from ffmpeg using JNI. It implements buffers for audio and video data,
-different playback speeds, especially fast backward playback through a sophisticate buffering strategy. It  also
-implements a strategy to keep the audio and video in sync.  Notice, that at this point the audio playback is only
-supported at 1x. Whenever, the caller plays video back at a different rate at 1x the sound playback will stop. The
-caller is responsible for stopping the audio playback.
+The native code interfaces to the c API from ffmpeg using JNI. Notice, that at this point the audio playback is only
+supported at 1x. Whenever, the caller plays video back at a different rate at 1x the sound playback will stop.
 
 ## Compiling Native Code (Windows) in Visual Studio
 1. Download and install Microsoft Visual Studio Community Edition (https://visualstudio.microsoft.com/vs/community/)
@@ -72,6 +86,7 @@ and deployed with
 
     mvn deploy
     
-Notice, the latter command deploys to the local cache '.m2' and a maven server if setup. At the moment, we do not have a 
-maven server setup and that step of the deploy fails. Instead, we manually copy files '*.jar' and '*.pom' unto the 
-'wwww' server.
+Emergency deployment (not recommended): If tests are broken you can exclude them from the deployment
+through the command
+
+    mvn -Dmaven.test.skip=true deploy

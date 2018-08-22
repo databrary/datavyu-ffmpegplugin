@@ -5,6 +5,11 @@
 #include "VideoState.h"
 #include "FfmpegAVPlayback.h"
 
+extern "C" {
+	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_thread.h>
+}
+
 /* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
 #define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
 
@@ -62,7 +67,7 @@ static const struct TextureFormatEntry {
 	{ AV_PIX_FMT_NONE,           SDL_PIXELFORMAT_UNKNOWN },
 };
 
-class VideoState;
+//class VideoState;
 
 class FfmpegSdlAvPlayback : public FfmpegAvPlayback {
 
@@ -89,6 +94,8 @@ private:
 	double last_vis_time;
 	int is_full_screen;
 
+	int audio_volume;
+
 	inline int compute_mod(int a, int b);
 
 	inline void fill_rectangle(int x, int y, int w, int h);
@@ -107,7 +114,7 @@ private:
 	void stop_display_loop();
 	void toggle_audio_display();
 public:
-	FfmpegSdlAvPlayback();
+	FfmpegSdlAvPlayback(int startup_volume = SDL_MIX_MAXVOLUME);
 	~FfmpegSdlAvPlayback();
 
 	int Init(const char *filename, AVInputFormat *iformat);
@@ -156,4 +163,18 @@ public:
 
 	int init_and_start_display_loop();
 };
+
+static void sdl_audio_callback_bridge(void* vs, Uint8 *stream, int len) {
+	FfmpegSdlAvPlayback* pFfmpegSdlAvPlayback = static_cast<FfmpegSdlAvPlayback*>(vs);
+	VideoState* pVideoState = pFfmpegSdlAvPlayback->get_VideoState();
+	pVideoState->audio_callback(stream, len);
+
+	//if (show_mode != SHOW_MODE_VIDEO)
+	//	FfmpegSdlAvPlayback::update_sample_display((int16_t *)audio_buf, audio_size);
+	// https://github.com/davidsiaw/SDL2/blob/c315c99d46f89ef8dbb1b4eeab0fe38ea8a8b6c5/src/audio/SDL_mixer.c
+	// Note, the mixer can work inplace using the same stream as src and dest
+	if (!pVideoState->get_muted() && stream)
+		SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len, pFfmpegSdlAvPlayback->get_audio_volume());
+}
+
 #endif FFMPEGSDLAVPLAYBACK_H_

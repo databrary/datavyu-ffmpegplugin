@@ -55,7 +55,7 @@ void FfmpegJavaAvPlaybackPipline::Dispose() {
 }
 
 FfmpegJavaAvPlaybackPipline::FfmpegJavaAvPlaybackPipline(CPipelineOptions * pOptions) 
-	: CPipeline(pOptions), pJavaPlayback(nullptr) 
+	: CPipelineData(pOptions), pJavaPlayback(nullptr) 
 { }
 
 FfmpegJavaAvPlaybackPipline::~FfmpegJavaAvPlaybackPipline() {

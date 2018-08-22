@@ -1,5 +1,5 @@
 #include "VideoState.h"
-#include "FfmpegSdlAvPlayback.h"
+//#include "FfmpegSdlAvPlayback.h"
 
 /* Private Members */
 int VideoState::stream_component_open(int stream_index) {
@@ -142,6 +142,7 @@ int VideoState::stream_component_open(int stream_index) {
 	case AVMEDIA_TYPE_VIDEO:
 		this->image_width = avctx->width;
 		this->image_height = avctx->height;
+		this->image_sample_aspect_ratio = avctx->sample_aspect_ratio;
 
 		// TODO(fraudies): Alignment for the source does not seem to be necessary, but test with more res
 		// avcodec_align_dimensions(avctx, &avctx->width, &avctx->height);
@@ -239,7 +240,7 @@ int VideoState::queue_picture(AVFrame *src_frame, double pts, double duration, i
 	vp->pos = pos;
 	vp->serial = serial;
 
-	FfmpegSdlAvPlayback::set_default_window_size(vp->width, vp->height, vp->sar);
+	//FfmpegSdlAvPlayback::set_default_window_size(vp->width, vp->height, vp->sar);
 
 	av_frame_move_ref(vp->frame, src_frame);
 	pPictq->push();
@@ -562,7 +563,7 @@ int VideoState::audio_decode_frame() {
 // Note, queues and clocks get initialized in the create_video_state function
 // The initialization order is correct now, but it is not garuanteed that some
 // of these might be null; hence, we initialize this in the create function
-VideoState::VideoState() : 
+VideoState::VideoState(int audio_buffer_size) : 
 	abort_request(0),
 	paused(true), // TRUE
 	last_paused(0),
@@ -584,6 +585,7 @@ VideoState::VideoState() :
 	eof(0),
 	image_width(0),
 	image_height(0),
+	image_sample_aspect_ratio(av_make_q(0, 0)),
 	step(false),
 	newSpeed_req(0),
 	last_speed(1.0), // 1.0
@@ -622,13 +624,13 @@ VideoState::VideoState() :
 	audio_diff_threshold(0.0),
 	audio_diff_avg_count(0),
 	audio_hw_buf_size(0),
+	audio_buffer_size(audio_buffer_size),
 	audio_buf(nullptr),
 	audio_buf1(nullptr),
 	audio_buf_size(0), /* in bytes */
 	audio_buf1_size(0),
 	audio_buf_index(0), /* in bytes */
 	audio_write_buf_size(0),
-	audio_volume(0),
 	muted(0),
 	frame_drops_early(0),
 	rdft(nullptr),
@@ -651,9 +653,9 @@ VideoState::VideoState() :
 #endif
 {}
 
-VideoState* VideoState::crate_video_state() {
+VideoState* VideoState::create_video_state(int audio_buffer_size) {
 	// Create the video state
-	VideoState* vs = new (std::nothrow) VideoState();
+	VideoState* vs = new (std::nothrow) VideoState(audio_buffer_size);
 	if (!vs) {
 		av_log(NULL, AV_LOG_ERROR, "Unable to create new video state");
 		return nullptr;
@@ -1249,8 +1251,8 @@ int VideoState::subtitle_thread() {
 }
 
 /* Public Members*/
-VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat) {
-	VideoState *is = VideoState::crate_video_state();
+VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat, int audio_buffer_size) {
+	VideoState *is = VideoState::create_video_state(audio_buffer_size);
 	if (!is)
 		return NULL;
 
@@ -1261,13 +1263,15 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 	is->iformat = iformat;
 
 	is->audio_clock_serial = -1;
+	/*
 	if (startup_volume < 0)
-		av_log(NULL, AV_LOG_WARNING, "-volume=%d < 0, setting to 0\n", startup_volume);
+	av_log(NULL, AV_LOG_WARNING, "-volume=%d < 0, setting to 0\n", startup_volume);
 	if (startup_volume > 100)
-		av_log(NULL, AV_LOG_WARNING, "-volume=%d > 100, setting to 100\n", startup_volume);
+	av_log(NULL, AV_LOG_WARNING, "-volume=%d > 100, setting to 100\n", startup_volume);
 	startup_volume = av_clip(startup_volume, 0, 100);
 	startup_volume = av_clip(SDL_MIX_MAXVOLUME * startup_volume / 100, 0, SDL_MIX_MAXVOLUME);
 	is->audio_volume = startup_volume;
+	*/
 	is->muted = 0;
 	is->av_sync_type = av_sync_type_input;
 	return is;
@@ -1405,14 +1409,20 @@ int VideoState::stream_start() {
 				st_index[AVMEDIA_TYPE_VIDEO]),
 			NULL, 0);
 
-	show_mode = show_mode;
+	//show_mode = show_mode;
+	/*
 	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
-		AVStream *st = ic->streams[st_index[AVMEDIA_TYPE_VIDEO]];
-		AVCodecParameters *codecpar = st->codecpar;
-		AVRational sar = av_guess_sample_aspect_ratio(ic, st, NULL);
-		if (codecpar->width)
-			FfmpegSdlAvPlayback::set_default_window_size(codecpar->width, codecpar->height, sar);
+	AVStream *st = ic->streams[st_index[AVMEDIA_TYPE_VIDEO]];
+	AVCodecParameters *codecpar = st->codecpar;
+	//AVRational sar = av_guess_sample_aspect_ratio(ic, st, NULL);
+	//default_image_width = codecpar->width;
+	//default_image_height = codecpar->height;
+	//default_image_sar = av_guess_sample_aspect_ratio(ic, st, NULL);
+
+	//if (codecpar->width)
+	//	FfmpegSdlAvPlayback::set_default_window_size(codecpar->width, codecpar->height, sar);
 	}
+	*/
 
 	/* open the streams */
 	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
@@ -1445,7 +1455,6 @@ int VideoState::stream_start() {
 	}
 
 	this->read_tid = new (std::nothrow) std::thread(read_thread_bridge, this);
-	// TODO(fraudies): Check for the case when the thread can't be initialized and return appropriate error (change method)
 	if (!this->read_tid) {
 		av_log(NULL, AV_LOG_FATAL, "Unable to create reader thread\n");
 		ret = -1;
@@ -1512,11 +1521,15 @@ void VideoState::seek_chapter(int incr) {
 }
 
 int VideoState::get_image_width() const {
-	return video_st ? image_width : 0;
+	return image_width;
 }
 
 int VideoState::get_image_height() const {
-	return video_st ? image_height : 0;
+	return image_height;
+}
+
+AVRational VideoState::get_image_sample_aspect_ratio() const {
+	return image_sample_aspect_ratio;
 }
 
 bool VideoState::has_audio_data() const {
@@ -1529,14 +1542,6 @@ bool VideoState::has_image_data() const {
 
 double VideoState::get_duration() const {
 	return get_ic()->duration / (double)AV_TIME_BASE;
-}
-
-int VideoState::get_audio_volume() const {
-	return audio_volume;
-}
-
-void VideoState::set_audio_volume(int new_audio_volume) {
-	audio_volume = new_audio_volume;
 }
 
 void VideoState::toggle_mute() {
@@ -1699,31 +1704,6 @@ int isBigEndian() {
 	return (u.c[sizeof(long int) - 1] == 1);
 }
 
-//TODO(Reda): Review this function, not used in both Java and SDL Player 
-//AudioFormat VideoState::get_audio_format() const {
-//	AudioParams audioParams = get_audio_tgt();
-//	AudioFormat audioFormat;
-//	// TODO: We need to add the audio codec to some container around AudioParams and use that here
-//	switch (audioParams.fmt) {
-//	case AV_SAMPLE_FMT_U8: case AV_SAMPLE_FMT_U8P:
-//		audioFormat.encoding = "PCM_UNSIGNED";
-//		break;
-//	case AV_SAMPLE_FMT_S16: case AV_SAMPLE_FMT_S16P:
-//		audioFormat.encoding = "PCM_SIGNED";
-//		break;
-//	default:
-//		audioFormat.encoding = "Unknown";
-//		break;
-//	}
-//	audioFormat.bigEndian = isBigEndian();
-//	audioFormat.sampleRate = audioParams.freq;
-//	audioFormat.sampleSizeInBits = audioParams.frame_size * sizeof(char);
-//	audioFormat.channels = audioParams.channels;
-//	audioFormat.frameSize = audioParams.frame_size;
-//	audioFormat.frameRate = audioParams.freq;
-//	return audioFormat;
-//}
-
 Decoder* VideoState::get_pViddec() { return pViddec; }
 
 AVFormatContext* VideoState::get_ic() const { return ic; }
@@ -1745,8 +1725,6 @@ void VideoState::set_rdft_bits(int newRDF_bits) { rdft_bits = newRDF_bits; }
 
 FFTSample *VideoState::get_rdft_data() { return rdft_data; }
 void VideoState::set_rdft_data(FFTSample *newRDFT_data) { rdft_data = newRDFT_data; }
-
-//void VideoState::set_player(SDLPlayData *player) { pPlayer = player; }
 
 int VideoState::get_realtime() const { return realtime; }
 
@@ -1861,69 +1839,53 @@ void VideoState::stream_close() {
 	if (ic)
 		avformat_close_input(&ic);
 
-	// TODO Need to be added to the ~PacketQueue(); flush, destroy both mutex and condition
-	//this->pVideoq->packet_queue_destroy();
-	//this->pAudioq->packet_queue_destroy();
-	//this->pSubtitleq->packet_queue_destroy();
-
-	/* free all pictures */
-	//this->pPictq->frame_queue_destory();
-	//this->pSampq->frame_queue_destory();
-	//this->pSubpq->frame_queue_destory();
-	//SDL_DestroyCond(this->continue_read_thread);
-	//delete this->continue_read_thread; // TODO(fraudies): remove allocation & deallocation
-
-	//Moved to the destructor of ffplay.cpp
-	//sws_freeContext(this->img_convert_ctx);
-	//sws_freeContext(this->sub_convert_ctx);
 	av_free(this->filename);
 }
 
 /* prepare a new audio buffer */
 // TODO(fraudies): This method requires clean-up since we use it both for SDL and Java playback but most parts are specific to the SDL
 // E.g. we need to push the regulation of balance, volume into the SDL only part
-void VideoState::sdl_audio_callback(Uint8 *stream, int len) {
+void VideoState::audio_callback(uint8_t *stream, int len) {
 	int audio_size, len1;
 	audio_callback_time = av_gettime_relative();
 
 	while (len > 0) {
-		if (this->audio_buf_index >= this->audio_buf_size) {
+		if (audio_buf_index >= audio_buf_size) {
 			audio_size = audio_decode_frame();
 			if (audio_size < 0) {
 				/* if error, just output silence */
-				this->audio_buf = NULL;
-				// TODO(fraudies): Need to use the default buffer in case of the java playback
-				this->audio_buf_size = SDL_AUDIO_MIN_BUFFER_SIZE / this->audio_tgt.frame_size * this->audio_tgt.frame_size;
+				audio_buf = NULL;
+				audio_buf_size = audio_buffer_size / audio_tgt.frame_size * audio_tgt.frame_size;
 			}
 			else {
-				if (show_mode != SHOW_MODE_VIDEO)
-					FfmpegSdlAvPlayback::update_sample_display((int16_t *)this->audio_buf, audio_size);
-				this->audio_buf_size = audio_size;
+				//if (show_mode != SHOW_MODE_VIDEO)
+				//	FfmpegSdlAvPlayback::update_sample_display((int16_t *)audio_buf, audio_size);
+				audio_buf_size = audio_size;
 			}
-			this->audio_buf_index = 0;
+			audio_buf_index = 0;
 		}
-		len1 = this->audio_buf_size - this->audio_buf_index;
+		len1 = audio_buf_size - audio_buf_index;
 		if (len1 > len)
 			len1 = len;
 		// TODO(fraudies): We should move this volume regulation (not mute) to the SDL only part
-		if (!this->muted && this->audio_buf && this->audio_volume == SDL_MIX_MAXVOLUME)
-			memcpy(stream, (uint8_t *)this->audio_buf + this->audio_buf_index, len1);
+		if (!muted && audio_buf /* && audio_volume == SDL_MIX_MAXVOLUME*/)
+			memcpy(stream, (uint8_t *)audio_buf + audio_buf_index, len1);
 		else {
 			memset(stream, 0, len1);
-			if (!this->muted && this->audio_buf)
-				SDL_MixAudioFormat(stream, (uint8_t *)this->audio_buf + this->audio_buf_index, AUDIO_S16SYS, len1, this->audio_volume);
+			//if (!muted && audio_buf)
+			//	SDL_MixAudioFormat(stream, (uint8_t *)audio_buf + audio_buf_index, AUDIO_S16SYS, len1, audio_volume);
 		}
 		len -= len1;
 		stream += len1;
-		this->audio_buf_index += len1;
+		audio_buf_index += len1;
 	}
-	this->audio_write_buf_size = this->audio_buf_size - this->audio_buf_index;
+	audio_write_buf_size = audio_buf_size - audio_buf_index;
 	/* Let's assume the audio driver that is used by SDL has two periods. */
-	if (!isnan(this->audio_clock)) {
-		pAudclk->set_clock_at(this->audio_clock
-			- (double)(2 * this->audio_hw_buf_size + this->audio_write_buf_size)
-			/ this->audio_tgt.bytes_per_sec, this->audio_clock_serial, audio_callback_time / 1000000.0);
-		Clock::sync_clock_to_slave(this->pExtclk, this->pAudclk);
+	if (!isnan(audio_clock)) {
+		pAudclk->set_clock_at(audio_clock
+			- (double)(2 * audio_hw_buf_size + audio_write_buf_size)
+			/ audio_tgt.bytes_per_sec, audio_clock_serial, audio_callback_time / 1000000.0);
+		Clock::sync_clock_to_slave(pExtclk, pAudclk);
 	}
 }
 
@@ -1992,8 +1954,6 @@ void VideoState::set_video_disable(const int disable) { video_disable = disable;
 
 int VideoState::get_subtitle_disable() const { return subtitle_disable; }
 void VideoState::set_subtitle_disable(const int disable) { subtitle_disable = disable; }
-
-//int VideoState::isStopped() const { return stopped; }
 
 #if CONFIG_AVFILTER
 // From cmdutil class

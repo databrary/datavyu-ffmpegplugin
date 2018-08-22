@@ -2,7 +2,6 @@ package org.datavyu.plugins.ffmpeg;
 
 import javax.sound.sampled.AudioFormat;
 import java.awt.color.ColorSpace;
-import java.nio.ByteBuffer;
 
 /**
  * This provides the interface to the media player data

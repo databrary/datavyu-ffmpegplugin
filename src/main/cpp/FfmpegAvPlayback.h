@@ -22,7 +22,7 @@ protected:
 	double vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration);
 public:
 	FfmpegAvPlayback();
-	int Init(const char *filename, AVInputFormat *iformat);
+	int Init(const char *filename, AVInputFormat *iformat, int audio_buffer_size);
 	virtual ~FfmpegAvPlayback();
 	virtual void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);
 	virtual void play();
