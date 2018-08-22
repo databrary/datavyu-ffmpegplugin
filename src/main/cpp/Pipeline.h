@@ -27,6 +27,7 @@
 #define _PIPELINE_H_
 
 #include <stdint.h>
+#include <sys/stat.h>
 #include "PipelineOptions.h"
 #include "AudioVideoFormats.h"
 

@@ -5,6 +5,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	AVInputFormat *file_iformat = nullptr;
+
 	pJavaPlayback = new (std::nothrow) FfmpegJavaAvPlayback(
 		m_pOptions->GetAudioFormat(), 
 		m_pOptions->GetPixelFormat(), 
