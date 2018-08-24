@@ -966,16 +966,16 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				pVideoState->seek_chapter(-1);
 				break;
 			case SDLK_LEFT:
-				incr = -10.0;
+				incr = -1.0;
 				goto do_seek;
 			case SDLK_RIGHT:
-				incr = 10.0;
+				incr = 1.0;
 				goto do_seek;
 			case SDLK_UP:
-				incr = 60.0;
+				incr = 5.0;
 				goto do_seek;
 			case SDLK_DOWN:
-				incr = -60.0;
+				incr = -5.0;
 			do_seek:
 				//TODO FIX SEEK BY BYTES BUG
 				if (seek_by_bytes) {
@@ -995,11 +995,26 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				}
 				else {
 					pos = pVideoState->get_master_clock();
-					if (isnan(pos))
+					if (isnan(pos)) {
 						pos = (double)pVideoState->get_seek_pos() / AV_TIME_BASE;
+#ifdef _DEBUG
+						printf("Seek Position Requested - Master Clock Return NaN \n");
+#endif // _DEBUG
+					}
 					pos += incr;
 					if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && pos < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
 						pos = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
+#ifdef _DEBUG
+					printf("Seeking From Time %7.2f sec To %7.2f sec with Incr %7.2f sec \n",
+						(pos-incr),
+						pos,
+						incr);
+					printf("Clocks Before Seek: Ext : %7.2f sec - Aud : %7.2f sec - Vid : %7.2f sec - Error : %7.2f\n",
+						pVideoState->get_pExtclk()->get_clock(),
+						pVideoState->get_pAudclk()->get_clock(),
+						pVideoState->get_pVidclk()->get_clock(),
+						abs(pVideoState->get_pExtclk()->get_clock() - pVideoState->get_pAudclk()->get_clock()));
+#endif // _DEBUG
 					pVideoState->stream_seek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
 				}
 				break;

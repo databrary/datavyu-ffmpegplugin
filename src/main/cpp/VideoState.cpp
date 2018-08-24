@@ -569,7 +569,7 @@ VideoState::VideoState() :
 	stopped(false),
 	queue_attachments_req(0),
 	seek_req(0),
-	seek_flags(0),
+	seek_flags(AVSEEK_FLAG_ANY), // AV_SEEK_BACKWARD
 	seek_pos(0),
 	seek_rel(0),
 	read_pause_return(0),
@@ -890,6 +890,14 @@ int VideoState::read_thread() {
 			this->seek_req = 0;
 			this->queue_attachments_req = 1;
 			this->eof = 0;
+#ifdef _DEBUG
+			printf("Clocks After Seek: Ext : %7.2f sec - Aud : %7.2f sec - Vid : %7.2f sec - Error : %7.2f sec\n",
+					get_pExtclk()->get_clock(),
+					get_pAudclk()->get_clock(),
+					get_pVidclk()->get_clock(),
+					abs(get_pExtclk()->get_clock() - get_pAudclk()->get_clock()));
+#endif // _DEBUG
+
 			if (this->paused)
 				step_to_next_frame_callback(); // Assume that is set--otherwise fail hard here
 		}
