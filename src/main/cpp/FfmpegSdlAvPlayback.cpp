@@ -46,7 +46,7 @@ void FfmpegSdlAvPlayback::calculate_display_rect(SDL_Rect *rect,
 	rect->h = FFMAX(height, 1);
 }
 
-FfmpegSdlAvPlayback::FfmpegSdlAvPlayback() : 
+FfmpegSdlAvPlayback::FfmpegSdlAvPlayback() :
 	FfmpegAvPlayback(),
 	ytop(0),
 	xleft(0),
@@ -57,7 +57,10 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback() :
 	sub_convert_ctx(nullptr),
 	vis_texture(nullptr),
 	sub_texture(nullptr),
-	vid_texture(nullptr) {}
+	vid_texture(nullptr),
+	screen_width(0),
+	screen_height(0),
+	is_full_screen(0){}
 
 FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {}
 
