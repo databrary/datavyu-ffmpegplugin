@@ -17,7 +17,7 @@ public class SimpleMediaPlayerExample {
 
         // Create the  media player and attach any listeners
 
-        String movieFileName = "Nature_30fps_1080p1.mp4";
+        String movieFileName = "Nature_30fps_1080p.mp4";
 
         // Absolute path
         //String movieFileName = "C:\\Users\\DatavyuTests\\Documents\\Databrary\\datavyu-ffmpegplugin\\Nature_30fps_1080p.mp4";
@@ -93,25 +93,25 @@ public class SimpleMediaPlayerExample {
                         break;
                     case KeyEvent.VK_LEFT:
                         currentTime = mediaPlayer.getPresentationTime();
-                        nextTime = currentTime - 1;
+                        nextTime = currentTime - 1.0;
                         System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
                         mediaPlayer.seek(nextTime);
                         break;
                     case KeyEvent.VK_RIGHT:
                         currentTime = mediaPlayer.getPresentationTime();
-                        nextTime = currentTime + 1;
+                        nextTime = currentTime + 1.0;
                         System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
                         mediaPlayer.seek(nextTime);
                         break;
                     case KeyEvent.VK_UP:
                         currentTime = mediaPlayer.getPresentationTime();
-                        nextTime = currentTime + 5;
+                        nextTime = currentTime + 5.0;
                         System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
                         mediaPlayer.seek(nextTime);
                         break;
                     case KeyEvent.VK_DOWN:
                         currentTime = mediaPlayer.getPresentationTime();
-                        nextTime = currentTime - 5;
+                        nextTime = currentTime - 5.0;
                         System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
                         mediaPlayer.seek(nextTime);
                         break;
