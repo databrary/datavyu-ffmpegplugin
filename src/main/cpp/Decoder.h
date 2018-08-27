@@ -12,9 +12,6 @@ extern "C" {
 #ifndef DECODER_H_
 #define DECODER_H_
 
-// Note, I stripped out the sub title and replaced the SDL mutex by the std mutex
-// and the SDL_Thread by the std::thread
-
 class Decoder {
     private:
 		AVPacket pkt;
@@ -47,10 +44,7 @@ class Decoder {
 		inline int is_finished() const { return finished; }
 		inline void	setFinished(int f) { finished = f; }
 
-		// TODO(fraudies): This is tied to the audio/image/subtitle decode thread; 
-		// all three use the decode thread method from above with the respective object
-		// Re-design with lambda and tighter typing -- rather than passing the void pointers around
-		int	start(int(*fn)(void *), void *arg);
+		int start(const std::function<void()>& decoding);
 		void abort(FrameQueue *fq);
 };
 

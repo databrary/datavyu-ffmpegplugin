@@ -127,12 +127,9 @@ void Decoder::set_start_pts_tb(AVRational start_pts_tb) {
 	this->start_pts_tb = start_pts_tb;
 }
 
-// TODO(fraudies): This is tied to the audio/image/subtitle decode thread; 
-// all three use the decode thread method from above with the respective object
-// Re-design with lambda and tighter typing -- rather than passing the void pointers around
-int Decoder::start(int(*fn)(void *), void *arg) {
+int Decoder::start(const std::function<void()>& decoding) {
 	queue->start();
-	decoder_tid = new std::thread(fn, arg);
+	decoder_tid = new std::thread([decoding] { decoding(); });
 	if (!decoder_tid) {
 		av_log(NULL, AV_LOG_ERROR, "Can't create thread");
 		return AVERROR(ENOMEM);

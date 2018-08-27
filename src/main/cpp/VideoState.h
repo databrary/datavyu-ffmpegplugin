@@ -357,10 +357,10 @@ public:
 	static VideoState *stream_open(const char *filename, AVInputFormat *iformat, int audio_buffer_size);
 
 	void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);
-	void set_audio_open_callback(const std::function<int(int64_t, int, int, struct AudioParams*)> func);
-	void set_pause_audio_device_callback(const std::function<void()> func);
-	void set_destroy_callback(const std::function<void()> func);
-	void set_step_to_next_frame_callback(const std::function<void()> func);
+	void set_audio_open_callback(const std::function<int(int64_t, int, int, struct AudioParams*)>& func);
+	void set_pause_audio_device_callback(const std::function<void()>& func);
+	void set_destroy_callback(const std::function<void()>& func);
+	void set_step_to_next_frame_callback(const std::function<void()>& func);
 
 	/* Controls */
 	void seek_chapter(int incr);
@@ -469,10 +469,6 @@ public:
 	int get_subtitle_disable() const;
 	void set_subtitle_disable(const int disable);
 
-
-
-	//int isStopped() const;
-
 #if CONFIG_AVFILTER
 	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
 	int configure_video_filters(AVFilterGraph * graph, const char * vfilters, AVFrame * frame);
@@ -488,29 +484,9 @@ public:
 #endif
 };
 
-// Note, this bridge is necessary to interface with the low-level c interface of the SDL callback
+// Note, this bridge is necessary to interface with ffmpeg's call decode interrupt handle
 static int decode_interrupt_cb_bridge(void *vs) {
-	return ((VideoState*)vs)->decode_interrupt_cb();
-}
-
-// TODO(fraudies): Remove bridge and change interface of the start method in Decoder
-static int audio_thread_bridge(void *vs) {
-	return ((VideoState*)vs)->audio_thread();
-}
-
-// TODO(fraudies): Remove bridge and change interface of the start method in Decoder
-static int video_thread_bridge(void* vs) {
-	return ((VideoState*)vs)->video_thread();
-}
-
-// TODO(fraudies): Remove bridge and change interface of the start method in Decoder
-static int subtitle_thread_bridge(void* vs) {
-	return ((VideoState*)vs)->subtitle_thread();
-}
-
-static int read_thread_bridge(void* vs) {
-	return static_cast<VideoState*>(vs)->read_thread();
-	//return ((VideoState*)vs)->read_thread();
+	return static_cast<VideoState*>(vs)->decode_interrupt_cb();
 }
 
 #endif VIDEOSTATE_H_
