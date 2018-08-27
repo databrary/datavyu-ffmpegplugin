@@ -1,12 +1,10 @@
-#define CATCH_CONFIG_MAIN  // Catch provides a main
-
 #include <thread>
 
-#include "catch.hpp"
-#include "PacketQueue.hpp"
+#include "gtest/gtest.h"
+#include "PacketQueue.h"
 
 extern "C" {
-	#include <libavcodec/avcodec.h> // codecs
+#include <libavcodec/avcodec.h> // codecs
 }
 
 // Compile with:
@@ -14,22 +12,22 @@ extern "C" {
 
 // Run with: TestPacketQueue.exe in the 'datavy-ffmpegplugin' directory
 
-TEST_CASE( "Create, start, flush, delete (pass)", "[create-delete]" ) {
+TEST ( PacketQueueTest, CreateDeletePacketTest ) {
     PacketQueue packetQueue;
     packetQueue.start();
     packetQueue.flush();
 }
 
-TEST_CASE( "Flush queue (pass)", "[flush-queue]") {
+TEST ( PacketQueueTest,  FlushPacketQueueTest) {
     // Prepare the queue
     PacketQueue packetQueue;
     packetQueue.start();
     packetQueue.flush(); // flushes all packets
     AVPacket getPkt;
-    REQUIRE( 0 == packetQueue.get(&getPkt, 0, nullptr) ); // non-blocking get of empty queue
+	ASSERT_TRUE( 0 == packetQueue.get(&getPkt, 0, nullptr) ); // non-blocking get of empty queue
 }
 
-TEST_CASE( "Put and get packet (pass)", "[put-get]" ) {
+TEST (PacketQueueTest, PutGetPacketTest ) {
     // Create and initialize some packets
     uint8_t dummy = 123;
     AVPacket putPkt;
@@ -41,24 +39,24 @@ TEST_CASE( "Put and get packet (pass)", "[put-get]" ) {
     PacketQueue packetQueue;
     packetQueue.start();
     packetQueue.flush();
-    REQUIRE( 0 == packetQueue.put(&putPkt) );
-    REQUIRE( 0 < packetQueue.get(&getPkt, 1, nullptr) );
-    REQUIRE( getPkt.pos == putPkt.pos );
-    REQUIRE( *getPkt.data == *putPkt.data);
+	ASSERT_TRUE( 0 == packetQueue.put(&putPkt) );
+	ASSERT_TRUE( 0 < packetQueue.get(&getPkt, 1, nullptr) );
+	ASSERT_TRUE( getPkt.pos == putPkt.pos );
+	ASSERT_TRUE( *getPkt.data == *putPkt.data);
     // Note, I don't free the packets here to simplify the code
 }
 
-TEST_CASE( "Put and get flush pkt (pass)", "[put-get-flush-packet]" ) {
+TEST (PacketQueueTest , PutGetFlushPacketTest ) {
     AVPacket getPkt;
     PacketQueue packetQueue;
     packetQueue.start();
     packetQueue.flush();
     packetQueue.put_flush_packet();
-    REQUIRE( 0 < packetQueue.get(&getPkt, 1, nullptr) );
-    REQUIRE( packetQueue.is_flush_packet(&getPkt) == true );
+	ASSERT_TRUE( 0 < packetQueue.get(&getPkt, 1, nullptr) );
+	ASSERT_TRUE( packetQueue.is_flush_packet(getPkt) == true );
 }
 
-TEST_CASE( "Abort blocked read (pass)", "[abort-blocked-read]" ) {
+TEST (PacketQueueTest, AbortBlockReadPacketTest ) {
     // Prepare the queue
     PacketQueue packetQueue;
     packetQueue.start();
@@ -67,14 +65,14 @@ TEST_CASE( "Abort blocked read (pass)", "[abort-blocked-read]" ) {
     // Read packet but blocked
     std::thread reader([&packetQueue]{
         AVPacket getPkt;
-        REQUIRE( -1 == packetQueue.get(&getPkt, 1, nullptr) ); // abort returns -1
+		ASSERT_TRUE( -1 == packetQueue.get(&getPkt, 1, nullptr) ); // abort returns -1
     });
 
     packetQueue.abort();
     reader.join();
 }
 
-TEST_CASE( "Multi-threaded put and get (pass)", "[multi-threaded-put-get]" ) {
+TEST (PacketQueueTest, MultiThreadPutGetPacketTest ) {
     // Prepare the queue
     PacketQueue packetQueue;
     packetQueue.start();
@@ -94,11 +92,16 @@ TEST_CASE( "Multi-threaded put and get (pass)", "[multi-threaded-put-get]" ) {
     std::thread reader([&packetQueue]{
         AVPacket getPkt;
         for (int reads = 0; reads < 10; reads++) {
-            REQUIRE( 0 < packetQueue.get(&getPkt, 1, nullptr) );
-            REQUIRE( getPkt.pos == reads );
+			ASSERT_TRUE( 0 < packetQueue.get(&getPkt, 1, nullptr) );
+			ASSERT_TRUE( getPkt.pos == reads );
         }
     });
 
     writer.join();
     reader.join();
+}
+
+int main(int argc, char **argv) {
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }
