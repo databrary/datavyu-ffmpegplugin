@@ -92,6 +92,9 @@ private:
 	int frame_drops_late;
 
 	double last_vis_time;
+
+	int screen_width;
+	int screen_height;
 	int is_full_screen;
 
 	int audio_volume;

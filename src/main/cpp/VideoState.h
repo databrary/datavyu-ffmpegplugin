@@ -143,8 +143,6 @@ static const struct RatesEntry {
 
 static ShowMode			show_mode = SHOW_MODE_NONE;
 static const char		*window_title;
-static int				screen_width = 0;
-static int				screen_height = 0;
 static const char		*wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
 static int				borderless;
