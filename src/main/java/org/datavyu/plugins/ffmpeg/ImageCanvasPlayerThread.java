@@ -32,6 +32,18 @@ public class ImageCanvasPlayerThread extends Thread {
         setDaemon(false);
     }
 
+    private void updateDisplay() {
+        do {
+            do {
+                Graphics graphics = strategy.getDrawGraphics();
+                graphics.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(),  null);
+                graphics.dispose();
+            } while (strategy.contentsRestored());
+            strategy.show();
+        } while (strategy.contentsLost());
+    }
+
+
     public void init(ColorSpace colorSpace, int width, int height, Container container) {
 
         this.container = container;
@@ -53,32 +65,11 @@ public class ImageCanvasPlayerThread extends Thread {
 
         initContainer();
 
-        launcher(() -> canvas.paint(null));
+        launcher(() -> updateDisplay());
     }
 
     private void initContainer(){
-        this.canvas = new Canvas(){
-            @Override
-            public void paint(Graphics g) {
-                if(strategy == null){
-                    canvas.createBufferStrategy(NUM_BUFFERS);
-                    strategy = canvas.getBufferStrategy();
-                }
-                do {
-                    do {
-                        Graphics graphics = strategy.getDrawGraphics();
-                        graphics.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(),  null);
-                        graphics.dispose();
-                    } while (strategy.contentsRestored());
-                    strategy.show();
-                } while (strategy.contentsLost());
-            }
-
-            @Override
-            public void update(Graphics g) {
-                paint(g);
-            }
-        };
+        this.canvas = new Canvas();
 
         this.container.add(canvas, BorderLayout.CENTER);
 
@@ -89,12 +80,10 @@ public class ImageCanvasPlayerThread extends Thread {
         this.canvas.createBufferStrategy(NUM_BUFFERS);
         strategy = this.canvas.getBufferStrategy();
 
-
-
         this.container.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
-                launcher(() -> canvas.paint(null));
+                launcher(() -> updateDisplay());
             }
 
             @Override
@@ -119,7 +108,7 @@ public class ImageCanvasPlayerThread extends Thread {
             WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
             // Create the original image
             image = new BufferedImage(cm, raster, false, properties);
-            launcher(() -> canvas.paint(null));
+            launcher(() -> updateDisplay());
             // This does not measure the time to update the display
             double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
             // If we need to wait

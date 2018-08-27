@@ -116,6 +116,17 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
 	double incr = dSeekTime - pos;
 	if (pSdlPlayback->get_start_time() != AV_NOPTS_VALUE && dSeekTime < pSdlPlayback->get_start_time() / (double)AV_TIME_BASE)
 		dSeekTime = pSdlPlayback->get_start_time() / (double)AV_TIME_BASE;
+#ifdef _DEBUG
+	printf("Seeking From Time %7.2f sec To %7.2f sec with Incr %7.2f sec \n",
+		(pos - incr),
+		dSeekTime,
+		incr);
+	printf("Clocks Before Seek: Ext : %7.2f sec - Aud : %7.2f sec - Vid : %7.2f sec - Error : %7.2f\n",
+		pSdlPlayback->get_VideoState()->get_pExtclk()->get_clock(),
+		pSdlPlayback->get_VideoState()->get_pAudclk()->get_clock(),
+		pSdlPlayback->get_VideoState()->get_pVidclk()->get_clock(),
+		abs(pSdlPlayback->get_VideoState()->get_pExtclk()->get_clock() - pSdlPlayback->get_VideoState()->get_pAudclk()->get_clock()));
+#endif // _DEBUG
 
 	pSdlPlayback->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
 
@@ -136,7 +147,13 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 		return ERROR_PLAYER_NULL;
 	}
 
-	*pdStreamTime = pSdlPlayback->get_master_clock();
+	// The master clock (Audio Clock by default) could return NaN and affect 
+	// performance while seeking. However returning the external clock should 
+	// resolve this issue (Note that the timestamp return by the external is not as
+	// accurate as the audio clock  (Master))
+	//*pdStreamTime = pSdlPlayback->get_master_clock();
+
+	*pdStreamTime = pSdlPlayback->get_VideoState()->get_pExtclk()->get_clock();
 
 	return ERROR_NONE; // no error
 }
