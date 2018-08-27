@@ -1193,6 +1193,7 @@ void FfmpegSdlAvPlayback::stop_display_loop() {
 }
 
 void FfmpegSdlAvPlayback::toggle_audio_display() {
+	// TODO(fraudies): Next fixing, it does not seem to advance the show_mode
 	int next = show_mode;
 	do {
 		next = (next + 1) % SHOW_MODE_NB;

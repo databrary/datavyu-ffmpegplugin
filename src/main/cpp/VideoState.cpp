@@ -1,5 +1,4 @@
 #include "VideoState.h"
-//#include "FfmpegSdlAvPlayback.h"
 
 /* Private Members */
 int VideoState::stream_component_open(int stream_index) {
@@ -134,7 +133,8 @@ int VideoState::stream_component_open(int stream_index) {
 			pAuddec->set_start_pts(audio_st->start_time);
 			pAuddec->set_start_pts_tb(audio_st->time_base);
 		}
-		if ((ret = pAuddec->start(audio_thread_bridge, this)) < 0)
+		//if ((ret = pAuddec->start(audio_thread_bridge, this)) < 0)
+		if ((ret = pAuddec->start([this] { this->audio_thread(); })) < 0)
 			goto out;
 		if (pause_audio_device_callback)
 			pause_audio_device_callback();
@@ -161,7 +161,8 @@ int VideoState::stream_component_open(int stream_index) {
 		}
 
 		pViddec = new Decoder(avctx, pVideoq, &continue_read_thread);
-		if ((ret = pViddec->start(video_thread_bridge, this)) < 0)
+		//if ((ret = pViddec->start(video_thread_bridge, this)) < 0)
+		if ((ret = pViddec->start([this] { this->video_thread(); })) < 0)
 			goto out;
 		queue_attachments_req = 1;
 		break;
@@ -169,7 +170,8 @@ int VideoState::stream_component_open(int stream_index) {
 		subtitle_stream = stream_index;
 		subtitle_st = ic->streams[stream_index];
 		pSubdec = new Decoder(avctx, pSubtitleq, &continue_read_thread);
-		if ((ret = pSubdec->start(subtitle_thread_bridge, this)) < 0)
+		//if ((ret = pSubdec->start(subtitle_thread_bridge, this)) < 0)
+		if ((ret = pSubdec->start([this] {this->subtitle_thread(); })) < 0)
 			goto out;
 		break;
 	default:
@@ -1430,21 +1432,6 @@ int VideoState::stream_start() {
 				st_index[AVMEDIA_TYPE_VIDEO]),
 			NULL, 0);
 
-	//show_mode = show_mode;
-	/*
-	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
-	AVStream *st = ic->streams[st_index[AVMEDIA_TYPE_VIDEO]];
-	AVCodecParameters *codecpar = st->codecpar;
-	//AVRational sar = av_guess_sample_aspect_ratio(ic, st, NULL);
-	//default_image_width = codecpar->width;
-	//default_image_height = codecpar->height;
-	//default_image_sar = av_guess_sample_aspect_ratio(ic, st, NULL);
-
-	//if (codecpar->width)
-	//	FfmpegSdlAvPlayback::set_default_window_size(codecpar->width, codecpar->height, sar);
-	}
-	*/
-
 	/* open the streams */
 	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
 		stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
@@ -1475,8 +1462,8 @@ int VideoState::stream_start() {
 		player_state_callbacks[TO_READY]();
 	}
 
-	this->read_tid = new (std::nothrow) std::thread(read_thread_bridge, this);
-	if (!this->read_tid) {
+	read_tid = new (std::nothrow) std::thread([this] { this->read_thread(); });
+	if (!read_tid) {
 		av_log(NULL, AV_LOG_FATAL, "Unable to create reader thread\n");
 		ret = -1;
 		goto fail;
@@ -1499,19 +1486,19 @@ void VideoState::set_player_state_callback_func(PlayerStateCallback callback, co
 	player_state_callbacks[callback] = func;
 }
 
-void VideoState::set_audio_open_callback(const std::function<int(int64_t, int, int, struct AudioParams*)> func) {
+void VideoState::set_audio_open_callback(const std::function<int(int64_t, int, int, struct AudioParams*)>& func) {
 	audio_open_callback = func;
 }
 
-void VideoState::set_pause_audio_device_callback(const std::function<void()> func) {
+void VideoState::set_pause_audio_device_callback(const std::function<void()>& func) {
 	pause_audio_device_callback = func;
 }
 
-void VideoState::set_destroy_callback(const std::function<void()> func) {
+void VideoState::set_destroy_callback(const std::function<void()>& func) {
 	destroy_callback = func;
 }
 
-void VideoState::set_step_to_next_frame_callback(const std::function<void()> func) {
+void VideoState::set_step_to_next_frame_callback(const std::function<void()>& func) {
 	step_to_next_frame_callback = func;
 }
 

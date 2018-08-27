@@ -131,6 +131,9 @@ public:
 
 	void pauseAudioDevice();
 
+	/* copy samples for viewing in editor window */
+	static void update_sample_display(short *samples, int samples_size);
+
 	void toggle_full_screen();
 
 	int upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsContext **img_convert_ctx);
@@ -142,11 +145,6 @@ public:
 
 	/* display the current picture, if any */
 	void video_display();
-
-
-	/* copy samples for viewing in editor window */
-	// Called from the audio call back
-	static void update_sample_display(short *samples, int samples_size);
 
 	void video_audio_display();
 
@@ -172,10 +170,11 @@ static void sdl_audio_callback_bridge(void* vs, Uint8 *stream, int len) {
 	VideoState* pVideoState = pFfmpegSdlAvPlayback->get_VideoState();
 	pVideoState->audio_callback(stream, len);
 
-	//if (show_mode != SHOW_MODE_VIDEO)
-	//	FfmpegSdlAvPlayback::update_sample_display((int16_t *)audio_buf, audio_size);
+	if (show_mode != SHOW_MODE_VIDEO)
+		FfmpegSdlAvPlayback::update_sample_display((int16_t *)stream, len);
+
+	// Note, the mixer can work inplace using the same stream as src and dest, see source code here
 	// https://github.com/davidsiaw/SDL2/blob/c315c99d46f89ef8dbb1b4eeab0fe38ea8a8b6c5/src/audio/SDL_mixer.c
-	// Note, the mixer can work inplace using the same stream as src and dest
 	if (!pVideoState->get_muted() && stream)
 		SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len, pFfmpegSdlAvPlayback->get_audio_volume());
 }
