@@ -25,6 +25,10 @@ public class ImageCanvasPlayerThread extends Thread {
     private int height;
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
+    private int imgWidth;
+    private int imgHeight;
+    private int x1, y1, x2, y2;
+    private boolean updateScale = true;
 
     ImageCanvasPlayerThread(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
@@ -36,7 +40,10 @@ public class ImageCanvasPlayerThread extends Thread {
         do {
             do {
                 Graphics graphics = strategy.getDrawGraphics();
-                graphics.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(),  null);
+                if(updateScale){
+                    scaleImage();
+                }
+                graphics.drawImage(image,x1, y1, x2, y2, 0, 0, imgWidth, imgHeight, null);
                 graphics.dispose();
             } while (strategy.contentsRestored());
             strategy.show();
@@ -83,6 +90,7 @@ public class ImageCanvasPlayerThread extends Thread {
         this.container.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
+                updateScale = true;
                 launcher(() -> updateDisplay());
             }
 
@@ -126,6 +134,38 @@ public class ImageCanvasPlayerThread extends Thread {
         stopped = true;
     }
 
+    private void scaleImage(){
+        imgWidth = width;
+        imgHeight = height;
+
+        double imgRatio = (double) imgHeight / imgWidth;
+
+        int canvasWidth = canvas.getWidth();
+        int canvasHeight = canvas.getHeight();
+
+        double canvasAspect = (double) canvasHeight / canvasWidth;
+
+        x1 = 0;
+        y1 = 0;
+        x2 = 0;
+        y2 = 0;
+
+        if (canvasAspect > imgRatio) {
+            y1 = canvasHeight;
+            // keep image aspect ratio
+            canvasHeight = (int) (canvasWidth * imgRatio);
+            y1 = (y1 - canvasHeight) / 2;
+        } else {
+            x1 = canvasWidth;
+            // keep image aspect ratio
+            canvasWidth = (int) (canvasHeight / imgRatio);
+            x1 = (x1 - canvasWidth) / 2;
+        }
+        x2 = canvasWidth + x1;
+        y2 = canvasHeight + y1;
+
+        updateScale = false;
+    }
     private static void launcher(Runnable runnable) {
         if (EventQueue.isDispatchThread()){
             runnable.run();
