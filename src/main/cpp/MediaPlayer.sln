@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MediaPlayer", "FFplay.vcxproj", "{6EA34670-B97C-440E-860D-3B5AF0BE87D8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NativeMediaPlayer", "NativeMediaPlayer.vcxproj", "{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FfmpegJavaMediaPlayer", "FfmpegJavaMediaPlayer.vcxproj", "{C841902E-8956-4E65-9524-E5063AFBD1C2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FfmpegSdlMediaPlayer", "FfmpegSdlMediaPlayer.vcxproj", "{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +25,22 @@ Global
 		{6EA34670-B97C-440E-860D-3B5AF0BE87D8}.Release|x64.Build.0 = Release|x64
 		{6EA34670-B97C-440E-860D-3B5AF0BE87D8}.Release|x86.ActiveCfg = Release|Win32
 		{6EA34670-B97C-440E-860D-3B5AF0BE87D8}.Release|x86.Build.0 = Release|Win32
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Debug|x64.ActiveCfg = Debug|x64
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Debug|x64.Build.0 = Debug|x64
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Debug|x86.ActiveCfg = Debug|Win32
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Debug|x86.Build.0 = Debug|Win32
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Release|x64.ActiveCfg = Release|x64
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Release|x64.Build.0 = Release|x64
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Release|x86.ActiveCfg = Release|Win32
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Release|x86.Build.0 = Release|Win32
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Debug|x64.ActiveCfg = Debug|x64
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Debug|x64.Build.0 = Debug|x64
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Debug|x86.ActiveCfg = Debug|Win32
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Debug|x86.Build.0 = Debug|Win32
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Release|x64.ActiveCfg = Release|x64
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Release|x64.Build.0 = Release|x64
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Release|x86.ActiveCfg = Release|Win32
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Release|x86.Build.0 = Release|Win32
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Debug|x64.ActiveCfg = Debug|x64
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Debug|x64.Build.0 = Debug|x64
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Debug|x86.ActiveCfg = Debug|Win32
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Debug|x86.Build.0 = Debug|Win32
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Release|x64.ActiveCfg = Release|x64
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Release|x64.Build.0 = Release|x64
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Release|x86.ActiveCfg = Release|Win32
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

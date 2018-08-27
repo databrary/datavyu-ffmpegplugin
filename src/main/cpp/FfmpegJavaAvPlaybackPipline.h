@@ -1,13 +1,13 @@
 #ifndef FFMPEGJAVAAVPLAYBACKPIPELINE_H_
 #define FFMPEGJAVAAVPLAYBACKPIPELINE_H_
 
-#include "Pipeline.h"
+#include "PipelineData.h"
 #include "FfmpegJavaAvPlayback.h"
 #include "FfmpegMediaErrors.h";
 
 
 // TODO(Reda): Implement this interface
-class FfmpegJavaAvPlaybackPipline : public CPipeline {
+class FfmpegJavaAvPlaybackPipline : public CPipelineData {
 public:
 	virtual uint32_t    Init(const char * input_file);
 	virtual void        Dispose();

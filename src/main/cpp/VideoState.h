@@ -39,9 +39,6 @@ extern "C" {
 	# include "libavfilter/buffersink.h"
 	# include "libavfilter/buffersrc.h"
 	#endif
-	//Could be moved to ffplay.hpp
-	#include <SDL2/SDL.h>
-	#include <SDL2/SDL_thread.h>
 
 	#include <assert.h>
 }
@@ -149,7 +146,6 @@ static const char		*window_title;
 static const char		*wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
 static int				borderless;
-static int				startup_volume = 100;
 static int				show_status = 1;
 static int				av_sync_type_input = AV_SYNC_AUDIO_MASTER;
 static int64_t			start_time = AV_NOPTS_VALUE;
@@ -200,6 +196,7 @@ private:
 	int eof;
 	int image_width;
 	int image_height;
+	AVRational image_sample_aspect_ratio;
 	bool step; // TODO(fraudies): Check if this need to be atomic
 
 	int newSpeed_req;
@@ -251,13 +248,14 @@ private:
 	double audio_diff_threshold;
 	int audio_diff_avg_count;
 	int	audio_hw_buf_size;
+	int audio_buffer_size;
 	uint8_t *audio_buf;
 	uint8_t *audio_buf1;
 	unsigned int audio_buf_size; /* in bytes */
 	unsigned int audio_buf1_size;
 	int audio_buf_index; /* in bytes */
 	int	audio_write_buf_size;
-	int	audio_volume;
+	//int	audio_volume;
 	int muted;
 	struct AudioParams audio_src;
 
@@ -345,9 +343,9 @@ private:
 	std::function<void()> pause_audio_device_callback;
 	std::function<void()> destroy_callback; // TODO(fraudies): Possibly clean-up through destructor
 	std::function<void()> step_to_next_frame_callback;
-	VideoState();
+	VideoState(int audio_buffer_size);
 public:
-	static VideoState* crate_video_state();
+	static VideoState* create_video_state(int audio_buffer_size);
 
 	~VideoState();
 
@@ -356,7 +354,7 @@ public:
 	int video_thread();
 	int subtitle_thread();
 	int stream_start();
-	static VideoState *stream_open(const char *filename, AVInputFormat *iformat);
+	static VideoState *stream_open(const char *filename, AVInputFormat *iformat, int audio_buffer_size);
 
 	void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);
 	void set_audio_open_callback(const std::function<int(int64_t, int, int, struct AudioParams*)> func);
@@ -368,11 +366,12 @@ public:
 	void seek_chapter(int incr);
 	int get_image_width() const; // height as coming from stream
 	int get_image_height() const; // width as coming from stream
+	AVRational get_image_sample_aspect_ratio() const;
 	bool has_audio_data() const;
 	bool has_image_data() const;
 	double get_duration() const; // returns the duration in sec
-	int get_audio_volume() const;
-	void set_audio_volume(int new_audio_volume);
+	//int get_audio_volume() const;
+	//void set_audio_volume(int new_audio_volume);
 	void toggle_mute();
 	void update_pts(double pts, int64_t pos, int serial);
 	void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
@@ -413,6 +412,7 @@ public:
 
 	//AudioFormat get_audio_format() const;
 	AudioParams get_audio_tgt() const;
+	inline int get_muted() const { return muted; }
 
 	Decoder *get_pViddec();
 	AVFormatContext *get_ic() const;
@@ -453,7 +453,7 @@ public:
 	void stream_close();
 
 	/* prepare a new audio buffer */
-	void sdl_audio_callback(Uint8 *stream, int len);
+	void audio_callback(uint8_t *stream, int len);
 
 	void set_rate(int step);
 	float get_rate() const;
@@ -509,11 +509,8 @@ static int subtitle_thread_bridge(void* vs) {
 }
 
 static int read_thread_bridge(void* vs) {
-	return ((VideoState*)vs)->read_thread();
-}
-
-static void sdl_audio_callback_bridge(void* vs, Uint8 *stream, int len) {
-	((VideoState*)vs)->sdl_audio_callback(stream, len);
+	return static_cast<VideoState*>(vs)->read_thread();
+	//return ((VideoState*)vs)->read_thread();
 }
 
 #endif VIDEOSTATE_H_

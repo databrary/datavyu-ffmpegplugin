@@ -21,7 +21,7 @@ int FfmpegJavaAvPlayback::Init(const char * filename, AVInputFormat * iformat) {
 #endif
 	avformat_network_init();
 
-	int err = FfmpegAvPlayback::Init(filename, iformat);  // initializes the video state
+	int err = FfmpegAvPlayback::Init(filename, iformat, audioBufferSizeInBy);  // initializes the video state
 	if (err) {
 		return err;
 	}
@@ -210,7 +210,7 @@ void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long l
 }
 
 void FfmpegJavaAvPlayback::update_audio_buffer(uint8_t* pAudioData, const long len) {
-	pVideoState->sdl_audio_callback(pAudioData, len);
+	pVideoState->audio_callback(pAudioData, len);
 }
 
 void FfmpegJavaAvPlayback::get_audio_format(AudioFormat* pAudioFormat) {

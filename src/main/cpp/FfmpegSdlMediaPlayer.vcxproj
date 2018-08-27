@@ -20,10 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}</ProjectGuid>
-    <RootNamespace>NativeMediaPlayer</RootNamespace>
+    <ProjectGuid>{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}</ProjectGuid>
+    <RootNamespace>FfmpegSdlMediaPlayer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
-    <ProjectName>FfmpegMediaPlayer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -122,49 +121,44 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\cpp\JavaPlayerEventDispatcher.h" />
-    <ClInclude Include="..\cpp\JniUtils.h" />
-    <ClInclude Include="..\cpp\Media.h" />
-    <ClInclude Include="..\cpp\org_datavyu_plugins_ffmpeg_FfmpegMediaPlayer.h" />
-    <ClInclude Include="..\cpp\org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h" />
-    <ClInclude Include="..\cpp\Pipeline.h" />
-    <ClInclude Include="..\cpp\PipelineOptions.h" />
     <ClInclude Include="AudioVideoFormats.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Decoder.h" />
-    <ClInclude Include="FfmpegJavaAvPlaybackPipline.h" />
     <ClInclude Include="FfmpegAvPlayback.h" />
-    <ClInclude Include="FfmpegSdlAvPlaybackPipeline.h" />
+    <ClInclude Include="FfmpegJavaAVPipline.h" />
     <ClInclude Include="FfmpegJavaAvPlayback.h" />
+    <ClInclude Include="FfmpegJavaAvPlaybackPipline.h" />
     <ClInclude Include="FfmpegJniUtils.h" />
     <ClInclude Include="FfmpegMediaErrors.h" />
-    <ClInclude Include="FfmpegPipelineFactory.h" />
-    <ClInclude Include="FrameQueue.h" />
-    <ClInclude Include="PacketQueue.h" />
     <ClInclude Include="FfmpegSdlAvPlayback.h" />
-    <ClInclude Include="PipelineFactory.h" />
+    <ClInclude Include="FfmpegSdlAvPlaybackPipeline.h" />
+    <ClInclude Include="FrameQueue.h" />
+    <ClInclude Include="JavaPlayerEventDispatcher.h" />
+    <ClInclude Include="JniUtils.h" />
+    <ClInclude Include="Media.h" />
+    <ClInclude Include="org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer.h" />
+    <ClInclude Include="org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h" />
+    <ClInclude Include="PacketQueue.h" />
+    <ClInclude Include="Pipeline.h" />
+    <ClInclude Include="PipelineOptions.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="VideoState.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\cpp\JavaPlayerEventDispatcher.cpp" />
     <ClCompile Include="AudioVideoFormats.cpp" />
     <ClCompile Include="Clock.cpp" />
-    <ClCompile Include="FfmpegAvPlayback.cpp" />
-    <ClCompile Include="FfmpegJavaAvPlayback.cpp" />
-    <ClCompile Include="FfmpegJavaAvPlaybackPipline.cpp" />
-    <ClCompile Include="FfmpegPipelineFactory.cpp" />
-    <ClCompile Include="PipelineFactory.cpp" />
-    <ClCompile Include="Media.cpp" />
     <ClCompile Include="Decoder.cpp" />
-    <ClCompile Include="FfmpegSdlAvPlaybackPipeline.cpp" />
+    <ClCompile Include="FfmpegAvPlayback.cpp" />
     <ClCompile Include="FfmpegJniUtils.cpp" />
-    <ClCompile Include="FfmpegMediaPlayer.cpp" />
+    <ClCompile Include="FfmpegSdlAvPlayback.cpp" />
+    <ClCompile Include="FfmpegSdlAvPlaybackPipeline.cpp" />
+    <ClCompile Include="FfmpegSdlMediaPlayer.cpp" />
     <ClCompile Include="FrameQueue.cpp" />
+    <ClCompile Include="JavaPlayerEventDispatcher.cpp" />
     <ClCompile Include="JniUtils.cpp" />
+    <ClCompile Include="Media.cpp" />
     <ClCompile Include="PacketQueue.cpp" />
     <ClCompile Include="Pipeline.cpp" />
-    <ClCompile Include="FfmpegSdlAvPlayback.cpp" />
     <ClCompile Include="VideoState.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
