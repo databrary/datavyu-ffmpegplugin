@@ -9,7 +9,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FfmpegJavaMediaPlayer", "Ff
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FfmpegSdlMediaPlayer", "FfmpegSdlMediaPlayer.vcxproj", "{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VideoState", "VideoState.vcxitems", "{90F330AA-8E8C-4625-87CD-A321C52CB6E9}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		VideoState.vcxitems*{6ea34670-b97c-440e-860d-3b5af0be87d8}*SharedItemsImports = 4
+		VideoState.vcxitems*{90f330aa-8e8c-4625-87cd-a321c52cb6e9}*SharedItemsImports = 9
+		VideoState.vcxitems*{c691a93f-cd1e-4fc6-a79c-22b2bd38bb0c}*SharedItemsImports = 4
+		VideoState.vcxitems*{c841902e-8956-4e65-9524-e5063afbd1c2}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86

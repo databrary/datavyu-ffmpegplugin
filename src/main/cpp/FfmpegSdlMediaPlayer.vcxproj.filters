@@ -15,64 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AudioVideoFormats.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Clock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Decoder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FfmpegAvPlayback.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FfmpegJavaAVPipline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FfmpegJavaAvPlayback.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FfmpegJavaAvPlaybackPipline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FfmpegJniUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FfmpegMediaErrors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FfmpegSdlAvPlayback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FfmpegSdlAvPlaybackPipeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JavaPlayerEventDispatcher.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JniUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Media.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PacketQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Pipeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PipelineOptions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Singleton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer.h">
@@ -83,46 +29,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioVideoFormats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Clock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Decoder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FfmpegAvPlayback.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FfmpegJniUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FfmpegSdlAvPlayback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FfmpegSdlAvPlaybackPipeline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameQueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JavaPlayerEventDispatcher.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JniUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Media.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PacketQueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Pipeline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FfmpegSdlMediaPlayer.cpp">

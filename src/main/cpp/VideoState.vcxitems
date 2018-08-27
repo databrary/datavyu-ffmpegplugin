@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{90f330aa-8e8c-4625-87cd-a321c52cb6e9}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)AudioVideoFormats.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Clock.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Decoder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FfmpegAvPlayback.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FfmpegJniUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FrameQueue.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)JavaPlayerEventDispatcher.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)JniUtils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Media.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)PacketQueue.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Pipeline.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)VideoState.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AudioVideoFormats.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Clock.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Decoder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegAvPlayback.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegJniUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegMediaErrors.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FrameQueue.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)JavaPlayerEventDispatcher.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)JniUtils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Media.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PacketQueue.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Pipeline.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PipelineOptions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Singleton.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)VideoState.h" />
+  </ItemGroup>
+</Project>

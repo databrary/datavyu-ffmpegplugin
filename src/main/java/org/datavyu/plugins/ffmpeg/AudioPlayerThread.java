@@ -43,7 +43,6 @@ public class AudioPlayerThread extends Thread {
 
     private MediaPlayerData mediaPlayerData;
     private SourceDataLine soundLine = null;
-    // TODO(fraudies): Add volume control
     private volatile boolean stopped = false;
     private byte[] data;
 

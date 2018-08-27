@@ -55,6 +55,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="VideoState.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -126,45 +127,15 @@ copy /Y "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\..\..\$(ProjectName).
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AudioVideoFormats.h" />
-    <ClInclude Include="Clock.h" />
-    <ClInclude Include="Decoder.h" />
-    <ClInclude Include="FfmpegAvPlayback.h" />
-    <ClInclude Include="FfmpegJavaAVPipline.h" />
-    <ClInclude Include="FfmpegJavaAvPlayback.h" />
-    <ClInclude Include="FfmpegJavaAvPlaybackPipline.h" />
-    <ClInclude Include="FfmpegJniUtils.h" />
-    <ClInclude Include="FfmpegMediaErrors.h" />
     <ClInclude Include="FfmpegSdlAvPlayback.h" />
     <ClInclude Include="FfmpegSdlAvPlaybackPipeline.h" />
-    <ClInclude Include="FrameQueue.h" />
-    <ClInclude Include="JavaPlayerEventDispatcher.h" />
-    <ClInclude Include="JniUtils.h" />
-    <ClInclude Include="Media.h" />
     <ClInclude Include="org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer.h" />
     <ClInclude Include="org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h" />
-    <ClInclude Include="PacketQueue.h" />
-    <ClInclude Include="Pipeline.h" />
-    <ClInclude Include="PipelineOptions.h" />
-    <ClInclude Include="Singleton.h" />
-    <ClInclude Include="VideoState.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioVideoFormats.cpp" />
-    <ClCompile Include="Clock.cpp" />
-    <ClCompile Include="Decoder.cpp" />
-    <ClCompile Include="FfmpegAvPlayback.cpp" />
-    <ClCompile Include="FfmpegJniUtils.cpp" />
     <ClCompile Include="FfmpegSdlAvPlayback.cpp" />
     <ClCompile Include="FfmpegSdlAvPlaybackPipeline.cpp" />
     <ClCompile Include="FfmpegSdlMediaPlayer.cpp" />
-    <ClCompile Include="FrameQueue.cpp" />
-    <ClCompile Include="JavaPlayerEventDispatcher.cpp" />
-    <ClCompile Include="JniUtils.cpp" />
-    <ClCompile Include="Media.cpp" />
-    <ClCompile Include="PacketQueue.cpp" />
-    <ClCompile Include="Pipeline.cpp" />
-    <ClCompile Include="VideoState.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

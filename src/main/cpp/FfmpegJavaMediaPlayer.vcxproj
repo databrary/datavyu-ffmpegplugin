@@ -19,45 +19,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AudioVideoFormats.h" />
-    <ClInclude Include="Clock.h" />
-    <ClInclude Include="Decoder.h" />
-    <ClInclude Include="FfmpegAvPlayback.h" />
     <ClInclude Include="FfmpegJavaAVPipline.h" />
     <ClInclude Include="FfmpegJavaAvPlayback.h" />
     <ClInclude Include="FfmpegJavaAvPlaybackPipline.h" />
-    <ClInclude Include="FfmpegJniUtils.h" />
-    <ClInclude Include="FfmpegMediaErrors.h" />
-    <ClInclude Include="FrameQueue.h" />
-    <ClInclude Include="JavaPlayerEventDispatcher.h" />
-    <ClInclude Include="JniUtils.h" />
-    <ClInclude Include="Media.h" />
     <ClInclude Include="org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer.h" />
     <ClInclude Include="org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h" />
-    <ClInclude Include="PacketQueue.h" />
-    <ClInclude Include="Pipeline.h" />
     <ClInclude Include="PipelineData.h" />
-    <ClInclude Include="PipelineOptions.h" />
-    <ClInclude Include="Singleton.h" />
-    <ClInclude Include="VideoState.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AudioVideoFormats.cpp" />
-    <ClCompile Include="Clock.cpp" />
     <ClCompile Include="PipelineData.cpp" />
-    <ClCompile Include="Decoder.cpp" />
-    <ClCompile Include="FfmpegAvPlayback.cpp" />
     <ClCompile Include="FfmpegJavaAvPlayback.cpp" />
     <ClCompile Include="FfmpegJavaAvPlaybackPipline.cpp" />
     <ClCompile Include="FfmpegJavaMediaPlayer.cpp" />
-    <ClCompile Include="FfmpegJniUtils.cpp" />
-    <ClCompile Include="FrameQueue.cpp" />
-    <ClCompile Include="JavaPlayerEventDispatcher.cpp" />
-    <ClCompile Include="JniUtils.cpp" />
-    <ClCompile Include="Media.cpp" />
-    <ClCompile Include="PacketQueue.cpp" />
-    <ClCompile Include="Pipeline.cpp" />
-    <ClCompile Include="VideoState.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -96,6 +69,7 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
+    <Import Project="VideoState.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
