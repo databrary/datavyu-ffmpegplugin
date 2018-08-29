@@ -25,10 +25,6 @@ public class ImagePlayerThread extends Thread {
     private int height;
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
-    private int imgWidth;
-    private int imgHeight;
-    private int x1, y1, x2, y2;
-    private boolean updateScale;
 
     ImagePlayerThread(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
@@ -40,8 +36,7 @@ public class ImagePlayerThread extends Thread {
         do {
             do {
                 Graphics graphics = strategy.getDrawGraphics();
-                scaleImage();
-                graphics.drawImage(image, x1, y1, x2, y2, 0, 0, imgWidth, imgHeight, null);
+                graphics.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(),  null);
                 graphics.dispose();
             } while (strategy.contentsRestored());
             strategy.show();
@@ -103,38 +98,6 @@ public class ImagePlayerThread extends Thread {
     public void terminte() {
         stopped = true;
     }
-
-    private void scaleImage(){
-        imgWidth = width;
-        imgHeight = height;
-
-        double imgRatio = (double) imgHeight / imgWidth;
-
-        int frameWidth = frame.getWidth();
-        int frameHeight = frame.getHeight();
-
-        double frameAspect = (double) frameHeight / frameWidth;
-
-        x1 = 0;
-        y1 = 0;
-        x2 = 0;
-        y2 = 0;
-
-        if (frameAspect > imgRatio) {
-            y1 = frameHeight;
-            // keep image aspect ratio
-            frameHeight = (int) (frameWidth * imgRatio);
-            y1 = (y1 - frameHeight) / 2;
-        } else {
-            x1 = frameWidth;
-            // keep image aspect ratio
-            frameWidth = (int) (frameHeight / imgRatio);
-            x1 = (x1 - frameWidth) / 2;
-        }
-        x2 = frameWidth + x1;
-        y2 = frameHeight + y1;
-    }
-
 
     private static void launcher(Runnable runnable) {
         if (EventQueue.isDispatchThread()){
