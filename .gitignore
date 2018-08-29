@@ -50,3 +50,6 @@ resource.h
 
 # Video Files
 *.mp4
+
+# Google Test Package
+packages/

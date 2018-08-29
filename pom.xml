@@ -37,7 +37,8 @@
             <resource>
                 <directory>./</directory>
                 <includes>
-                    <include>FfmpegMediaPlayer.dll</include>
+                    <include>FfmpegJavaMediaPlayer.dll</include>
+                    <include>FfmpegSdlMediaPlayer.dll</include>
                 </includes>
             </resource>
         </resources>

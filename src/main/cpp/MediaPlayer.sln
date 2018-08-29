@@ -5,11 +5,19 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MediaPlayer", "FFplay.vcxproj", "{6EA34670-B97C-440E-860D-3B5AF0BE87D8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FfmpegMediaPlayer", "NativeMediaPlayer.vcxproj", "{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FfmpegJavaMediaPlayer", "FfmpegJavaMediaPlayer.vcxproj", "{C841902E-8956-4E65-9524-E5063AFBD1C2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GTestFfmpegMediaPlayer", "GTestFfmpegMediaPlayer.vcxproj", "{2AD3FDA8-51D3-4AF3-8DDB-951EAEA968FC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FfmpegSdlMediaPlayer", "FfmpegSdlMediaPlayer.vcxproj", "{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VideoState", "VideoState.vcxitems", "{90F330AA-8E8C-4625-87CD-A321C52CB6E9}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		VideoState.vcxitems*{6ea34670-b97c-440e-860d-3b5af0be87d8}*SharedItemsImports = 4
+		VideoState.vcxitems*{90f330aa-8e8c-4625-87cd-a321c52cb6e9}*SharedItemsImports = 9
+		VideoState.vcxitems*{c691a93f-cd1e-4fc6-a79c-22b2bd38bb0c}*SharedItemsImports = 4
+		VideoState.vcxitems*{c841902e-8956-4e65-9524-e5063afbd1c2}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -25,22 +33,22 @@ Global
 		{6EA34670-B97C-440E-860D-3B5AF0BE87D8}.Release|x64.Build.0 = Release|x64
 		{6EA34670-B97C-440E-860D-3B5AF0BE87D8}.Release|x86.ActiveCfg = Release|Win32
 		{6EA34670-B97C-440E-860D-3B5AF0BE87D8}.Release|x86.Build.0 = Release|Win32
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Debug|x64.ActiveCfg = Debug|x64
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Debug|x64.Build.0 = Debug|x64
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Debug|x86.ActiveCfg = Debug|Win32
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Debug|x86.Build.0 = Debug|Win32
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Release|x64.ActiveCfg = Release|x64
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Release|x64.Build.0 = Release|x64
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Release|x86.ActiveCfg = Release|Win32
-		{BA4AE265-4EF4-47AD-9C6F-27292DD731DB}.Release|x86.Build.0 = Release|Win32
-		{2AD3FDA8-51D3-4AF3-8DDB-951EAEA968FC}.Debug|x64.ActiveCfg = Debug|x64
-		{2AD3FDA8-51D3-4AF3-8DDB-951EAEA968FC}.Debug|x64.Build.0 = Debug|x64
-		{2AD3FDA8-51D3-4AF3-8DDB-951EAEA968FC}.Debug|x86.ActiveCfg = Debug|Win32
-		{2AD3FDA8-51D3-4AF3-8DDB-951EAEA968FC}.Debug|x86.Build.0 = Debug|Win32
-		{2AD3FDA8-51D3-4AF3-8DDB-951EAEA968FC}.Release|x64.ActiveCfg = Release|x64
-		{2AD3FDA8-51D3-4AF3-8DDB-951EAEA968FC}.Release|x64.Build.0 = Release|x64
-		{2AD3FDA8-51D3-4AF3-8DDB-951EAEA968FC}.Release|x86.ActiveCfg = Release|Win32
-		{2AD3FDA8-51D3-4AF3-8DDB-951EAEA968FC}.Release|x86.Build.0 = Release|Win32
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Debug|x64.ActiveCfg = Debug|x64
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Debug|x64.Build.0 = Debug|x64
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Debug|x86.ActiveCfg = Debug|Win32
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Debug|x86.Build.0 = Debug|Win32
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Release|x64.ActiveCfg = Release|x64
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Release|x64.Build.0 = Release|x64
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Release|x86.ActiveCfg = Release|Win32
+		{C841902E-8956-4E65-9524-E5063AFBD1C2}.Release|x86.Build.0 = Release|Win32
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Debug|x64.ActiveCfg = Debug|x64
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Debug|x64.Build.0 = Debug|x64
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Debug|x86.ActiveCfg = Debug|Win32
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Debug|x86.Build.0 = Debug|Win32
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Release|x64.ActiveCfg = Release|x64
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Release|x64.Build.0 = Release|x64
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Release|x86.ActiveCfg = Release|Win32
+		{C691A93F-CD1E-4FC6-A79C-22B2BD38BB0C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

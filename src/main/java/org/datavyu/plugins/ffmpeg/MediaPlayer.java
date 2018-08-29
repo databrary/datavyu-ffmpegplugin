@@ -70,11 +70,8 @@ public interface MediaPlayer {
 
     /**
      * Initializes all resources to play the media.
-     *
-     * @param audioFormat The requested audio format
-     * @param colorSpace The requested color space
      */
-    void init(AudioFormat audioFormat, ColorSpace colorSpace);
+    void init();
 
     /**
      * Begins playing of the media.  To ensure smooth playback, catch the
