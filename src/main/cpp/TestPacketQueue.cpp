@@ -1,16 +1,13 @@
-#include <thread>
-
 #include "gtest/gtest.h"
+
 #include "PacketQueue.h"
 
+#include <thread>
+
 extern "C" {
-#include <libavcodec/avcodec.h> // codecs
+	#include <libavcodec/avcodec.h> // codecs
 }
 
-// Compile with:
-// cl -EHsc -I%CATCH_SINGLE_INCLUDE% TestPacketQueue.cpp /Fe"..\..\..\TestPacketQueue" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib"
-
-// Run with: TestPacketQueue.exe in the 'datavy-ffmpegplugin' directory
 
 TEST ( PacketQueueTest, CreateDeletePacketTest ) {
     PacketQueue packetQueue;

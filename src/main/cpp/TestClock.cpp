@@ -1,10 +1,11 @@
 #include "gtest/gtest.h"
 
+#include "gtest/gtest.h";
+#include "Clock.h"
+
 #include <limits>
 #include <chrono>
 #include <thread>
-
-#include "Clock.h"
 
 TEST (ClockTest, CreateDeleteClockTest) {
     int serial = 0;
@@ -64,8 +65,3 @@ TEST (ClockTest, SpeedClockTest) {
 		ASSERT_TRUE(fabs(clock.get_clock() - (newTime - (newTime - time) * (1.0 - speed))) < std::numeric_limits<float>::epsilon());
 	}
 }
-
-//int main(int argc, char **argv) {
-//	::testing::InitGoogleTest(&argc, argv);
-//	return RUN_ALL_TESTS();
-//}

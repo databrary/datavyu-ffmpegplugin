@@ -1,18 +1,11 @@
-// Test cases for the frame queue
-//
-// Compile with
-// cl -EHsc -I%CATCH_SINGLE_INCLUDE% TestFrameQueue.cpp /Fe"..\..\..\TestFrameQueue" /I"C:\Users\Florian\FFmpeg\FFmpeg-n3.4" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavcodec\avcodec.lib" "C:\Users\Florian\FFmpeg\FFmpeg-n3.4\libavutil\avutil.lib"
-//
-// Run from the 'datavyu-ffmpegplugin' directory
-// TestFrameQueue.exe
-
-#include <thread>
-
 #include "gtest/gtest.h"
+
 #include "PacketQueue.h"
 #include "FrameQueue.h"
 
-TEST( FrameQueueTest, CreateDeleteFrameQueueTest ) {
+#include <thread>
+
+TEST(FrameQueueTest, CreateDeleteFrameQueueTest ) {
 	PacketQueue packetQueue;
     FrameQueue* frameQueue = FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
 }
