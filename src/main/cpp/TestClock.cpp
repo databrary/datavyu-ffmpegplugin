@@ -7,9 +7,11 @@
 #include <chrono>
 #include <thread>
 
+
 TEST (ClockTest, CreateDeleteClockTest) {
     int serial = 0;
     Clock clock(&serial);
+	ASSERT_EQ(clock.get_serial(), 0.0);
 }
 
 TEST (ClockTest, SetGetClockTest) {
@@ -24,7 +26,8 @@ TEST (ClockTest, SetGetClockTest) {
 	// Set clock with same serial and get time
 	double time = av_gettime_relative() / MICRO;
 	clock.set_clock(time, serial);
-	ASSERT_TRUE(fabs(clock.get_clock() - time) < std::numeric_limits<float>::epsilon());
+	// ASSERT LESS THAN
+	ASSERT_LT(fabs(clock.get_clock() - time), std::numeric_limits<float>::epsilon());
 
 	// Wait for 100 msec
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -32,10 +35,11 @@ TEST (ClockTest, SetGetClockTest) {
 	double newTime = av_gettime_relative() / MICRO;
 
 	// Note, that in this setup ptsDrift ~= 0
-	ASSERT_TRUE(fabs(clock.get_clock() - (newTime - (newTime - time) * (1.0 - speed))) < std::numeric_limits<float>::epsilon());
+	// ASSERT LESS THAN
+	ASSERT_LT(fabs(clock.get_clock() - (newTime - (newTime - time) * (1.0 - speed))), std::numeric_limits<float>::epsilon());
 }
 
-TEST(ClockTest, PauseClockTest) {
+TEST (ClockTest, PauseClockTest) {
 	int serial = 0;
 	Clock clock(&serial);
 
@@ -45,7 +49,7 @@ TEST(ClockTest, PauseClockTest) {
 	clock.setPaused(1);
 
 	// When paused, returns last pts
-	ASSERT_TRUE(clock.get_clock() == pts);
+	ASSERT_EQ(clock.get_clock(), pts);
 }
 
 TEST (ClockTest, SpeedClockTest) {
@@ -62,6 +66,7 @@ TEST (ClockTest, SpeedClockTest) {
 		// Wait for 100 msec
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		double newTime = av_gettime_relative() / MICRO;
-		ASSERT_TRUE(fabs(clock.get_clock() - (newTime - (newTime - time) * (1.0 - speed))) < std::numeric_limits<float>::epsilon());
+		// ASSERT LESS THAN
+		ASSERT_LT(fabs(clock.get_clock() - (newTime - (newTime - time) * (1.0 - speed))), std::numeric_limits<float>::epsilon());
 	}
 }
