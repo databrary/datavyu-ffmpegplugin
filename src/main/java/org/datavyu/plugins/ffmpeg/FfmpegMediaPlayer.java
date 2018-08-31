@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
 import java.io.File;
+import java.net.URI;
 
 /**
  * Uses ffmpeg to decode and transcode (optional) image and audio data
@@ -12,16 +13,16 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
     /**
      * Create an ffmpeg media player instance
      *
-     * @param sourceFile The File source
+     * @param mediaPath The path to the media
      */
-    public FfmpegMediaPlayer(File sourceFile) {
-        super(sourceFile);
+    public FfmpegMediaPlayer(URI mediaPath) {
+        super(mediaPath);
     }
 
-    void throwMediaErrorException(int code, String message)
+    void throwMediaErrorException(int code, Throwable cause)
             throws MediaException {
         MediaError me = MediaError.getFromCode(code);
-        throw new MediaException(message, null, me);
+        throw new MediaException(me.description(), cause, me);
     }
 
     @Override

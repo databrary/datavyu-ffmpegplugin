@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
 import java.io.File;
+import java.net.URI;
 
 /**
  * Uses the SDL framework to playback the images and sound natively
@@ -15,22 +16,16 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
         System.loadLibrary("FfmpegSdlMediaPlayer");
     }
 
-    public FfmpegSdlMediaPlayer(File sourceFile) {
-        super(sourceFile);
+    public FfmpegSdlMediaPlayer(URI mediaPath) {
+        super(mediaPath);
     }
 
     @Override
     public void init() {
         initNative(); // start the event queue, make sure to register all state/error listeners before
         long[] newNativeMediaRef = new long[1];
-        String filename;
 
-        if (protocol.equals("file"))
-            filename = sourcePath;
-        else
-            filename = sourceURI.getPath();
-
-        int rc = ffmpegInitPlayer(newNativeMediaRef, filename);
+        int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }

@@ -23,6 +23,7 @@
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Decoder.h" />
     <ClInclude Include="FfmpegAvPlayback.h" />
+    <ClInclude Include="FfmpegErrorUtils.h" />
     <ClInclude Include="FfmpegJavaAVPipline.h" />
     <ClInclude Include="FfmpegJavaAvPlayback.h" />
     <ClInclude Include="FfmpegJavaAvPlaybackPipline.h" />
@@ -44,6 +45,7 @@
   <ItemGroup>
     <ClCompile Include="AudioVideoFormats.cpp" />
     <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="FfmpegErrorUtils.cpp" />
     <ClCompile Include="PipelineData.cpp" />
     <ClCompile Include="Decoder.cpp" />
     <ClCompile Include="FfmpegAvPlayback.cpp" />

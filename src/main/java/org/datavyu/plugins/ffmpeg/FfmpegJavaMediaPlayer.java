@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.io.File;
+import java.net.URI;
 
 import static java.awt.color.ColorSpace.CS_sRGB;
 
@@ -38,13 +39,27 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
      * Create an ffmpeg media player instance and play through java
      * framework
      *
-     * @param sourceFile The File source
+     * @param mediaPath The media path
+     * @param frame The frame to display
+     */
+    public FfmpegJavaMediaPlayer(URI mediaPath, JFrame frame) {
+        super(mediaPath);
+        this.frame = frame;
+        this.audioFormat = AudioPlayerThread.getMonoFormat();
+        this.colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+    }
+
+    /**
+     * Create an ffmpeg media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
      * @param frame The frame to display
      * @param audioFormat The audio format used for playback
      * @param colorSpace The color space used for playback
      */
-    public FfmpegJavaMediaPlayer(File sourceFile, JFrame frame, AudioFormat audioFormat, ColorSpace colorSpace) {
-        super(sourceFile);
+    public FfmpegJavaMediaPlayer(URI mediaPath, JFrame frame, AudioFormat audioFormat, ColorSpace colorSpace) {
+        super(mediaPath);
         this.frame = frame;
         this.audioFormat = audioFormat;
         this.colorSpace = colorSpace;
@@ -54,13 +69,13 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
      * Create an ffmpeg media player instance and play through java
      * Datavyu container
      *
-     * @param sourceFile The File source
+     * @param mediaPath The File source
      * @param container The Container to display
      * @param audioFormat The audio format used for playback
      * @param colorSpace The color space used for playback
      */
-    public FfmpegJavaMediaPlayer(File sourceFile, Container container, AudioFormat audioFormat, ColorSpace colorSpace) {
-        this(sourceFile, null, audioFormat, colorSpace);
+    public FfmpegJavaMediaPlayer(URI mediaPath, Container container, AudioFormat audioFormat, ColorSpace colorSpace) {
+        this(mediaPath, null, audioFormat, colorSpace);
         this.container = container;
     }
 
@@ -70,8 +85,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
             audioPlayerThread.init(getAudioFormat(), AUDIO_BUFFER_SIZE);
             audioPlayerThread.start();
         } catch (LineUnavailableException lu) {
-            // TODO: Add correct media error
-            throwMediaErrorException(MediaError.ERROR_GSTREAMER_ERROR.code(), lu.getMessage());
+            throwMediaErrorException(MediaError.ERROR_FFMPEG_AUDIO_LINE_UNAVAILABLE.code(), lu);
         }
     }
 
@@ -91,14 +105,8 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     public void init() {
         initNative(); // start the event queue, make sure to register all state/error listeners before
         long[] newNativeMediaRef = new long[1];
-        String filename;
 
-        if (protocol.equals("file"))
-            filename = sourcePath;
-        else
-            filename = sourceURI.getPath();
-
-        int rc = ffmpegInitPlayer(newNativeMediaRef, filename, audioFormat, colorSpace, AUDIO_BUFFER_SIZE);
+        int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath, audioFormat, colorSpace, AUDIO_BUFFER_SIZE);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
