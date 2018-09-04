@@ -8,6 +8,7 @@
 TEST(FrameQueueTest, CreateDeleteFrameQueueTest ) {
 	PacketQueue packetQueue;
     FrameQueue* frameQueue = FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+	delete frameQueue;
 }
 
 TEST(FrameQueueTest, SingleReadWRite ) {
@@ -31,8 +32,6 @@ TEST(FrameQueueTest, SingleReadWRite ) {
 	ASSERT_EQ(pReadable->pos, pWriteable->pos);
 
 	delete frameQueue;
-	delete pWriteable;
-	delete pReadable;
 }
 
 TEST(FrameQueueTest, StatusFrameTest) {
@@ -169,5 +168,4 @@ TEST(FrameQueueTest, PeekLastNextFrameTest) {
 	ASSERT_EQ(pReadable->pos, 2);
 
 	delete frameQueue;
-	delete pReadable;
 }

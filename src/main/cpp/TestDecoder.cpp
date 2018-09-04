@@ -12,6 +12,5 @@ TEST (DecoderTest, CreateDeleteTest) {
 	PacketQueue packetQueue;
 	AVCodecContext* pAvctx = avcodec_alloc_context3(NULL);
 	Decoder decoder(pAvctx, &packetQueue, &empty_queue_cond);
-	delete(pAvctx);
 }
 

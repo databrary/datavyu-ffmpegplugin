@@ -11,7 +11,7 @@
 TEST (ClockTest, CreateDeleteClockTest) {
     int serial = 0;
     Clock clock(&serial);
-	ASSERT_EQ(clock.get_serial(), 0.0);
+	ASSERT_EQ(clock.get_serial(), -1.0);
 }
 
 TEST (ClockTest, SetGetClockTest) {
