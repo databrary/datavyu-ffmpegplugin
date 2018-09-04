@@ -1,9 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -29,30 +27,30 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     protected long nativeMediaRef = 0;
     private PlayerStateEvent.PlayerState playerState = PlayerStateEvent.PlayerState.UNKNOWN;
     private EventQueueThread eventLoop = new EventQueueThread();
-    //private final Object firstFrameLock = new Object();
     private final Lock disposeLock = new ReentrantLock();
     private boolean isDisposed = false;
-    private Runnable onDispose;
     private double startTime = 0.0;
     private double stopTime = Double.POSITIVE_INFINITY;
     private boolean isStartTimeUpdated = false;
     private boolean isStopTimeSet = false;
 
-    protected URI sourceURI;
-    protected File sourceFile;
-    protected String sourcePath; // used for the file protocol
-    protected String protocol;
+    String mediaPath;
 
-    private NativeMediaPlayer(URI source) {
-        this.sourceURI = source;
+    private static String resolveURI(URI mediaPath) {
+        // If file get the "modified" path
+        if (mediaPath.getScheme().equals("file")) {
+            // If file and windows strip off any leading / for files
+            return System.getProperty("os.name").toLowerCase().contains("win") ?
+                    mediaPath.getPath().replaceFirst("/*", "") : mediaPath.getPath();
+        }
+        // TODO(fraudies): Check if we need make any custom transforms for schemas other than file
+        return mediaPath.toString();
     }
 
-    NativeMediaPlayer(File sourceFile){
-        this(sourceFile.toURI());
-        this.sourceFile = sourceFile;
-        initURI();
-        buildSourcePath(this.sourceFile);
+    protected NativeMediaPlayer(URI mediaPath) {
+        this.mediaPath = resolveURI(mediaPath);
     }
+
     public static class MediaErrorEvent extends PlayerEvent {
 
         private final Object source;
@@ -82,77 +80,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
     long getNativeMediaRef() {
         return nativeMediaRef;
-    }
-
-    private void buildSourcePath(File sourceFile) {
-        if (sourceFile == null){
-            throw new NullPointerException("File == null!");
-        }
-
-        // if we are on Windows Platform and the protocol used is file we use the absolute path
-        if(protocol.equals("file")){
-            String path = sourceFile.getAbsolutePath();
-            if(System.getProperty("os.name").toLowerCase().contains("win")){
-                sourcePath = path.replace("\\","/");
-            } else {
-                //TODO(Reda): Test on Mac
-                int index = path.indexOf("/~/");
-                if (index != -1) {
-                    sourcePath = path.substring(0, index)
-                            + System.getProperty("user.home")
-                            + path.substring(index + 2);
-                }
-            }
-        }
-    }
-
-    private void initURI() {
-        if(sourceURI == null){
-            throw new NullPointerException("uri == null!");
-        }
-
-        // Get the scheme part.
-        String uriString = sourceURI.toASCIIString();
-        String scheme = sourceURI.getScheme();
-        if (scheme == null) {
-            throw new IllegalArgumentException("uri.getScheme() == null! uri == '" + sourceURI + "'");
-        }
-        scheme = scheme.toLowerCase();
-
-        protocol = scheme;
-        if(!protocol.equals("file")) {
-            try {
-                //TODO(Reda): Test with using uri for protocols different than file
-                // Note: streaming from http(s) or rtmp is not implemented yet
-                // Ensure the correct number of '/'s follows the ':'.
-                int firstSlash = uriString.indexOf("/");
-                if (firstSlash != -1 && uriString.charAt(firstSlash + 1) != '/') {
-                    // Only one '/' after the ':'.
-                    if (protocol.equals("file")) {
-                        // Map file:/somepath to file:///somepath
-                        uriString = uriString.replaceFirst("/", "///");
-                    } else if (protocol.equals("http") || protocol.equals("https")) {
-                        // Map http:/somepath to http://somepath
-                        uriString = uriString.replaceFirst("/", "//");
-                    }
-                }
-                // On non-Windows systems, replace "/~/" with home directory path + "/".
-                if (System.getProperty("os.name").toLowerCase().indexOf("win") == -1
-                        && protocol.equals("file")) {
-                    int index = uriString.indexOf("/~/");
-                    if (index != -1) {
-                        uriString = uriString.substring(0, index)
-                                + System.getProperty("user.home")
-                                + uriString.substring(index + 2);;
-                    }
-                }
-
-                // Recreate the URI if needed
-                sourceURI = new URI(uriString);
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private class EventQueueThread extends Thread {
@@ -615,15 +542,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
                     eventLoop = null;
                 }
 
-                /*
-                synchronized (firstFrameLock) {
-                    if (firstFrameEvent != null) {
-                        firstFrameEvent.getFrameData().releaseFrame();
-                        firstFrameEvent = null;
-                    }
-                }
-                */
-
                 // Terminate native layer
                 playerDispose();
 
@@ -633,10 +551,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
                 if (errorListeners != null) {
                     errorListeners.clear();
-                }
-
-                if (onDispose != null) {
-                    onDispose.run();
                 }
 
                 isDisposed = true;

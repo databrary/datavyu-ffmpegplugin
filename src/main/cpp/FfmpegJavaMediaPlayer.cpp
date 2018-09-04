@@ -39,7 +39,7 @@ extern "C" {
 		CPipelineOptions* pOptions = new (nothrow) CPipelineOptions(
 			audioFormat, pixelFormat, jAudioBufferSizeInBy);
 		if (NULL == pOptions) {
-			return ERROR_MEMORY_ALLOCATION;
+			return ERROR_SYSTEM_ENOMEM;
 		}
 
 		CPipelineData* pPipelineData = new (nothrow) FfmpegJavaAvPlaybackPipline(pOptions);
@@ -70,7 +70,7 @@ extern "C" {
 
 		CJavaPlayerEventDispatcher* pEventDispatcher = new(nothrow) CJavaPlayerEventDispatcher();
 		if (NULL == pEventDispatcher)
-			return ERROR_MEMORY_ALLOCATION;
+			return ERROR_SYSTEM_ENOMEM;
 
 		pEventDispatcher->Init(env, obj, pMedia);
 		pPipelineData->SetEventDispatcher(pEventDispatcher);
@@ -78,10 +78,6 @@ extern "C" {
 		const char* filename = env->GetStringUTFChars(sourcePath, 0);
 
 		jint iRet = (jint)pPipelineData->Init(filename);
-
-		if (0 != iRet) {
-			return ERROR_MEDIA_INVALID;
-		}
 
 		env->ReleaseStringUTFChars(sourcePath, filename);
 
@@ -528,7 +524,7 @@ extern "C" {
 
 		jobject jAudioFormat = env->GetObjectArrayElement(jrAudioFormat, 0);
 		if (jAudioFormat == nullptr) {
-			return ERROR_AUDIO_FORMAT_NULL;
+			return ERROR_FFMPEG_AUDIO_FORMAT_NULL;
 		}
 
 		uErrCode = SetJAudioFormat(env, jAudioFormat, audioParams);
@@ -560,7 +556,7 @@ extern "C" {
 
 		jobject jColorSpace = env->GetObjectArrayElement(jrColorSpace, 0);
 		if (jColorSpace == nullptr) {
-			return ERROR_COLOR_SPACE_NULL;
+			return ERROR_FFMPEG_COLOR_SPACE_NULL;
 		}
 
 		uErrCode = SetJPixelFormat(env, jColorSpace, pixelFormat);

@@ -66,7 +66,7 @@ void FfmpegSdlAvPlaybackPipeline::Dispose() {
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Play() {
 	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 	pSdlPlayback->play();
 
@@ -75,7 +75,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Play() {
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Stop() {
 	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 	pSdlPlayback->stop();
 
@@ -84,7 +84,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Stop() {
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
 	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 	pSdlPlayback->toggle_pause();
 
@@ -94,7 +94,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
 uint32_t FfmpegSdlAvPlaybackPipeline::StepForward()
 {
 	if (pSdlPlayback == nullptr)
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 
 	pSdlPlayback->step_to_next_frame();
 
@@ -108,7 +108,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
 	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 	double pos = pSdlPlayback->get_master_clock();
 	if (isnan(pos))
@@ -135,7 +135,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetDuration(double* pdDuration) {
 	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 	*pdDuration = pSdlPlayback->get_duration();
 
@@ -144,7 +144,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetDuration(double* pdDuration) {
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 
 	// The master clock (Audio Clock by default) could return NaN and affect 
@@ -161,7 +161,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double * pdFps)
 {
 	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 
 	*pdFps = pSdlPlayback->get_fps();
@@ -183,7 +183,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetRate(float* pfRate) {
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetVolume(float fVolume) {
 	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 	pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
 	return ERROR_NONE;
@@ -191,7 +191,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::SetVolume(float fVolume) {
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetVolume(float* pfVolume) {
 	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 	*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
 	return ERROR_NONE;

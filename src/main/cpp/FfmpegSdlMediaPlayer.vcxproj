@@ -130,6 +130,7 @@ copy /Y "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\..\..\$(ProjectName).
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Decoder.h" />
     <ClInclude Include="FfmpegAvPlayback.h" />
+    <ClInclude Include="FfmpegErrorUtils.h" />
     <ClInclude Include="FfmpegJavaAVPipline.h" />
     <ClInclude Include="FfmpegJavaAvPlayback.h" />
     <ClInclude Include="FfmpegJavaAvPlaybackPipline.h" />
@@ -154,6 +155,7 @@ copy /Y "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\..\..\$(ProjectName).
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Decoder.cpp" />
     <ClCompile Include="FfmpegAvPlayback.cpp" />
+    <ClCompile Include="FfmpegErrorUtils.cpp" />
     <ClCompile Include="FfmpegJniUtils.cpp" />
     <ClCompile Include="FfmpegSdlAvPlayback.cpp" />
     <ClCompile Include="FfmpegSdlAvPlaybackPipeline.cpp" />

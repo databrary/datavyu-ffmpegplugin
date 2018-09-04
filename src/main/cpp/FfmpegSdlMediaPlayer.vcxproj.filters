@@ -81,6 +81,9 @@
     <ClInclude Include="org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FfmpegErrorUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioVideoFormats.cpp">
@@ -126,6 +129,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FfmpegSdlMediaPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FfmpegErrorUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

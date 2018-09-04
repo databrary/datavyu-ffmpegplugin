@@ -1,4 +1,4 @@
-package org.datavyu.benchmark;
+package org.datavyu.plugins.ffmpeg;
 
 import javafx.util.Pair;
 import org.apache.logging.log4j.Level;

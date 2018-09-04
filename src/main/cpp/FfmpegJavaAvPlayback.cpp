@@ -1,5 +1,6 @@
 #include "FfmpegJavaAvPlayback.h"
 #include "FfmpegMediaErrors.h"
+#include "FfmpegErrorUtils.h"
 
 FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
 	const PixelFormat *pPixelFormat,
@@ -68,7 +69,7 @@ void FfmpegJavaAvPlayback::destroy() {
 }
 
 int FfmpegJavaAvPlayback::start_stream() {
-	return pVideoState->stream_start();
+	return ffmpegToJavaErrNo(pVideoState->stream_start());
 }
 
 void FfmpegJavaAvPlayback::set_balance(float fBalance) {

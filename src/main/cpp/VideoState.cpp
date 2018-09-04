@@ -1303,7 +1303,7 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 int VideoState::stream_start() {
 
 	// Initialization moved from read thread into main thread
-	int err, i, ret;
+	int i, ret;
 	int st_index[AVMEDIA_TYPE_NB];
 	AVDictionaryEntry *t;
 	int scan_all_pmts_set = 0;
@@ -1328,9 +1328,8 @@ int VideoState::stream_start() {
 		av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
 		scan_all_pmts_set = 1;
 	}
-	err = avformat_open_input(&ic, filename, iformat, &format_opts);
-	if (err < 0) {
-		// TODO(fraudies): Change error code to a more meaningful value
+	ret = avformat_open_input(&ic, filename, iformat, &format_opts);
+	if (ret < 0) {
 		goto fail;
 	}
 	if (scan_all_pmts_set)
@@ -1351,16 +1350,15 @@ int VideoState::stream_start() {
 		AVDictionary **opts = setup_find_stream_info_opts(ic, codec_opts);
 		int orig_nb_streams = ic->nb_streams;
 
-		err = avformat_find_stream_info(ic, opts);
+		ret = avformat_find_stream_info(ic, opts);
 
 		for (i = 0; i < orig_nb_streams; i++)
 			av_dict_free(&opts[i]);
 		av_freep(&opts);
 
-		if (err < 0) {
-			av_log(NULL, AV_LOG_WARNING,
-				"%s: could not find codec parameters\n", filename);
-			ret = -1;
+		if (ret < 0) {
+			av_log(NULL, AV_LOG_WARNING, "%s: could not find codec parameters\n", filename);
+			//ret = -1;
 			goto fail;
 		}
 	}
@@ -1449,9 +1447,8 @@ int VideoState::stream_start() {
 	}
 
 	if (video_stream < 0 && audio_stream < 0) {
-		av_log(NULL, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n",
-			filename);
-		ret = -1;
+		av_log(NULL, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n", filename);
+		ret = AVERROR_STREAM_NOT_FOUND;
 		goto fail;
 	}
 
@@ -1465,7 +1462,7 @@ int VideoState::stream_start() {
 	read_tid = new (std::nothrow) std::thread([this] { this->read_thread(); });
 	if (!read_tid) {
 		av_log(NULL, AV_LOG_FATAL, "Unable to create reader thread\n");
-		ret = -1;
+		ret = AVERROR(ENOMEM);
 		goto fail;
 	}
 
