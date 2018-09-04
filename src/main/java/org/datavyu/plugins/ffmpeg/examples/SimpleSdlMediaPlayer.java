@@ -3,21 +3,15 @@ package org.datavyu.plugins.ffmpeg.examples;
 import org.datavyu.plugins.ffmpeg.*;
 
 import java.io.File;
+import java.net.URI;
 
 public class SimpleSdlMediaPlayer {
     public static void main(String[] args) {
-        String movieFileName = "Nature_30fps_1080p.mp4";
+        // Define the media file
+        URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
 
         // Create the media player using the constructor with File
-        MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(new File(movieFileName));
-
-        // Register an error listener
-        mediaPlayer.addMediaErrorListener(new MediaErrorListener() {
-            @Override
-            public void onError(Object source, int errorCode, String message) {
-                System.err.println("Error " + errorCode + ": " + message);
-            }
-        });
+        MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
 
         // Initialize the player
         mediaPlayer.init();

@@ -38,7 +38,7 @@ int FfmpegAvPlayback::Init(const char *filename, AVInputFormat *iformat, int aud
 	pVideoState = VideoState::stream_open(filename, iformat, audio_buffer_size);
 
 	if (!pVideoState) {
-		return ERROR_PLAYER_NULL;
+		return ERROR_PLAYBACK_NULL;
 	}
 
 	return ERROR_NONE;

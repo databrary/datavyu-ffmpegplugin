@@ -22,7 +22,7 @@ extern "C" {
 
 		CPipelineOptions* pOptions = new (nothrow) CPipelineOptions();
 		if (NULL == pOptions) {
-			return ERROR_MEMORY_ALLOCATION;
+			return ERROR_SYSTEM_ENOMEM;
 		}
 
 		CPipeline* pPipeline = new (std::nothrow) FfmpegSdlAvPlaybackPipeline(pOptions);
@@ -54,7 +54,7 @@ extern "C" {
 
 		CJavaPlayerEventDispatcher* pEventDispatcher = new(nothrow) CJavaPlayerEventDispatcher();
 		if (NULL == pEventDispatcher)
-			return ERROR_MEMORY_ALLOCATION;
+			return ERROR_SYSTEM_ENOMEM;
 
 		pEventDispatcher->Init(env, obj, pMedia);
 		pPipeline->SetEventDispatcher(pEventDispatcher);
@@ -62,10 +62,6 @@ extern "C" {
 		const char* filename = env->GetStringUTFChars(sourcePath, 0);
 
 		jint iRet = (jint)pPipeline->Init(filename);
-
-		if (0 != iRet) {
-			return ERROR_MEDIA_INVALID;
-		}
 
 		env->ReleaseStringUTFChars(sourcePath, filename);
 

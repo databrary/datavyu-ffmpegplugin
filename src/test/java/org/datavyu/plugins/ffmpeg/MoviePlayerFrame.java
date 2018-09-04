@@ -1,5 +1,6 @@
-package org.datavyu.benchmark;
+package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.ffmpeg.MoviePlayerControl;
 import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 import org.datavyu.plugins.ffmpegplayer.MediaPlayer;
 import org.datavyu.plugins.ffmpegplayer.ImageStreamListenerFrame;

@@ -1,5 +1,6 @@
 #include "FfmpegSdlAvPlayback.h"
 #include "FfmpegMediaErrors.h"
+#include "FfmpegErrorUtils.h"
 
 /* Private Members */
 inline int FfmpegSdlAvPlayback::compute_mod(int a, int b) {
@@ -1175,7 +1176,7 @@ int FfmpegSdlAvPlayback::init_and_start_display_loop() {
 
 	std::unique_lock<std::mutex> lck(mtx);
 	cv.wait(lck, [&initialized] {return initialized; });
-	int err = pVideoState->stream_start();
+	int err = ffmpegToJavaErrNo(pVideoState->stream_start());
 	if (err) return err;
 
 	if (pVideoState->get_image_width()) {

@@ -6,67 +6,67 @@ uint32_t SetJAudioFormat(JNIEnv *env, jobject jAudioFormat, const AudioFormat& a
 	// Get the audio format class
 	jclass audioFormatClass = env->GetObjectClass(jAudioFormat);
 	if (audioFormatClass == nullptr) {
-		return ERROR_AUDIO_FORMAT_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_NULL;
 	}
 
 	// Set the audio encoding (nested class)
 	jfieldID encodingId = env->GetFieldID(audioFormatClass, "encoding", "Ljavax/sound/sampled/AudioFormat$Encoding;");
 	if (encodingId == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENCODING_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENCODING_ID_NULL;
 	}
 	jobject jEncoding = env->GetObjectField(jAudioFormat, encodingId);
 	if (jEncoding == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENCODING_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENCODING_NULL;
 	}
 	jclass encodingClass = env->GetObjectClass(jEncoding);
 	if (encodingClass == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENCODING_CLASS_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENCODING_CLASS_NULL;
 	}
 	jfieldID encodingNameId = env->GetFieldID(encodingClass, "name", "Ljava/lang/String;");
 	if (encodingNameId == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENCODING_NAME_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENCODING_NAME_ID_NULL;
 	}
 	env->SetObjectField(jEncoding, encodingNameId, env->NewStringUTF(audioFormat.encoding.c_str()));
 
 	// Set endianess
 	jfieldID bigEndianId = env->GetFieldID(audioFormatClass, "bigEndian", "Z");
 	if (bigEndianId == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENDIAN_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENDIAN_ID_NULL;
 	}
 	env->SetBooleanField(jAudioFormat, bigEndianId, (jboolean)audioFormat.bigEndian);
 
 	// Set sample rate
 	jfieldID sampleRateId = env->GetFieldID(audioFormatClass, "sampleRate", "F");
 	if (sampleRateId == nullptr) {
-		return ERROR_AUDIO_FORMAT_SAMPLE_RATE_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_SAMPLE_RATE_ID_NULL;
 	}
 	env->SetFloatField(jAudioFormat, sampleRateId, (jfloat)audioFormat.sampleRate);
 
 	// Set sample size in bits
 	jfieldID sampleSizeInBitsId = env->GetFieldID(audioFormatClass, "sampleSizeInBits", "I");
 	if (sampleSizeInBitsId == nullptr) {
-		return ERROR_AUDIO_FORMAT_SAMPLE_SIZE_IN_BITS_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_SAMPLE_SIZE_IN_BITS_ID_NULL;
 	}
 	env->SetIntField(jAudioFormat, sampleSizeInBitsId, (jint)(audioFormat.sampleSizeInBits));
 
 	// Set the number of channels
 	jfieldID channelsId = env->GetFieldID(audioFormatClass, "channels", "I");
 	if (channelsId == nullptr) {
-		return ERROR_AUDIO_FORMAT_CHANNELS_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_CHANNELS_ID_NULL;
 	}
 	env->SetIntField(jAudioFormat, channelsId, (jint)audioFormat.channels);
 
 	// Set the frame size in bytes
 	jfieldID frameSizeId = env->GetFieldID(audioFormatClass, "frameSize", "I");
 	if (frameSizeId == nullptr) {
-		return ERROR_AUDIO_FORMAT_FRAME_SIZE_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_FRAME_SIZE_ID_NULL;
 	}
 	env->SetIntField(jAudioFormat, frameSizeId, (jint)audioFormat.frameSize);
 
 	// Set the frame rate in Hertz
 	jfieldID frameRateId = env->GetFieldID(audioFormatClass, "frameRate", "F");
 	if (frameRateId == nullptr) {
-		return ERROR_AUDIO_FORMAT_FRAME_RATE_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_FRAME_RATE_ID_NULL;
 	}
 	env->SetFloatField(jAudioFormat, frameRateId, (jfloat)audioFormat.frameRate);
 
@@ -79,13 +79,13 @@ uint32_t SetJPixelFormat(JNIEnv *env, jobject jColorSpace, const PixelFormat& pi
 	// Get the audio format class
 	jclass colorSpaceClass = env->GetObjectClass(jColorSpace);
 	if (colorSpaceClass == nullptr) {
-		return ERROR_COLOR_SPACE_NULL;
+		return ERROR_FFMPEG_COLOR_SPACE_NULL;
 	}
 
 	// Set int type
 	jfieldID typeId = env->GetFieldID(colorSpaceClass, "type", "I");
 	if (typeId == nullptr) {
-		return ERROR_COLOR_SPACE_TYPE_NULL;
+		return ERROR_FFMPEG_COLOR_SPACE_TYPE_NULL;
 	}
 	int type = 65535; // Unmapped id to be used as unknown here
 
@@ -100,7 +100,7 @@ uint32_t SetJPixelFormat(JNIEnv *env, jobject jColorSpace, const PixelFormat& pi
 	// Set number of color channels
 	jfieldID numChannelId = env->GetFieldID(colorSpaceClass, "numComponents", "I");
 	if (typeId == nullptr) {
-		return ERROR_COLOR_SPACE_NUM_COMPONENT_NULL;
+		return ERROR_FFMPEG_COLOR_SPACE_NUM_COMPONENT_NULL;
 	}
 	env->SetIntField(jColorSpace, numChannelId, pixelFormat.numComponents);
 
@@ -112,25 +112,25 @@ uint32_t GetAudioFormat(JNIEnv *env, jobject jAudioFormat, AudioFormat* audioFor
 	// Get the audio format class
 	jclass audioFormatClass = env->GetObjectClass(jAudioFormat);
 	if (audioFormatClass == nullptr) {
-		return ERROR_AUDIO_FORMAT_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_NULL;
 	}
 
 	// Get the audio encoding (nested class)
 	jfieldID encodingId = env->GetFieldID(audioFormatClass, "encoding", "Ljavax/sound/sampled/AudioFormat$Encoding;");
 	if (encodingId == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENCODING_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENCODING_ID_NULL;
 	}
 	jobject jEncoding = env->GetObjectField(jAudioFormat, encodingId);
 	if (jEncoding == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENCODING_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENCODING_NULL;
 	}
 	jclass encodingClass = env->GetObjectClass(jEncoding);
 	if (encodingClass == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENCODING_CLASS_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENCODING_CLASS_NULL;
 	}
 	jfieldID encodingNameId = env->GetFieldID(encodingClass, "name", "Ljava/lang/String;");
 	if (encodingNameId == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENCODING_NAME_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENCODING_NAME_ID_NULL;
 	}
 	jstring jEncodingName = (jstring) env->GetObjectField(jEncoding, encodingNameId);
 	int len = env->GetStringUTFLength(jEncodingName);
@@ -141,42 +141,42 @@ uint32_t GetAudioFormat(JNIEnv *env, jobject jAudioFormat, AudioFormat* audioFor
 	// Set endianess
 	jfieldID bigEndianId = env->GetFieldID(audioFormatClass, "bigEndian", "Z");
 	if (bigEndianId == nullptr) {
-		return ERROR_AUDIO_FORMAT_ENDIAN_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_ENDIAN_ID_NULL;
 	}
 	audioFormat->bigEndian = env->GetBooleanField(jAudioFormat, bigEndianId);
 
 	// Set sample rate
 	jfieldID sampleRateId = env->GetFieldID(audioFormatClass, "sampleRate", "F");
 	if (sampleRateId == nullptr) {
-		return ERROR_AUDIO_FORMAT_SAMPLE_RATE_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_SAMPLE_RATE_ID_NULL;
 	}
 	audioFormat->sampleRate = env->GetFloatField(jAudioFormat, sampleRateId);
 
 	// Set sample size in bits
 	jfieldID sampleSizeInBitsId = env->GetFieldID(audioFormatClass, "sampleSizeInBits", "I");
 	if (sampleSizeInBitsId == nullptr) {
-		return ERROR_AUDIO_FORMAT_SAMPLE_SIZE_IN_BITS_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_SAMPLE_SIZE_IN_BITS_ID_NULL;
 	}
 	audioFormat->sampleSizeInBits = env->GetIntField(jAudioFormat, sampleSizeInBitsId);
 
 	// Set the number of channels
 	jfieldID channelsId = env->GetFieldID(audioFormatClass, "channels", "I");
 	if (channelsId == nullptr) {
-		return ERROR_AUDIO_FORMAT_CHANNELS_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_CHANNELS_ID_NULL;
 	}
 	audioFormat->channels = env->GetIntField(jAudioFormat, channelsId);
 
 	// Set the frame size in bytes
 	jfieldID frameSizeId = env->GetFieldID(audioFormatClass, "frameSize", "I");
 	if (frameSizeId == nullptr) {
-		return ERROR_AUDIO_FORMAT_FRAME_SIZE_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_FRAME_SIZE_ID_NULL;
 	}
 	audioFormat->frameSize = env->GetIntField(jAudioFormat, frameSizeId);
 
 	// Set the frame rate in Hertz
 	jfieldID frameRateId = env->GetFieldID(audioFormatClass, "frameRate", "F");
 	if (frameRateId == nullptr) {
-		return ERROR_AUDIO_FORMAT_FRAME_RATE_ID_NULL;
+		return ERROR_FFMPEG_AUDIO_FORMAT_FRAME_RATE_ID_NULL;
 	}
 	audioFormat->frameRate = env->GetFloatField(jAudioFormat, frameRateId);
 
@@ -188,13 +188,13 @@ uint32_t GetPixelFormat(JNIEnv *env, jobject jColorSpace, PixelFormat* pixelForm
 	// Get the audio format class
 	jclass colorSpaceClass = env->GetObjectClass(jColorSpace);
 	if (colorSpaceClass == nullptr) {
-		return ERROR_COLOR_SPACE_NULL;
+		return ERROR_FFMPEG_COLOR_SPACE_NULL;
 	}
 
 	// Set int type
 	jfieldID typeId = env->GetFieldID(colorSpaceClass, "type", "I");
 	if (typeId == nullptr) {
-		return ERROR_COLOR_SPACE_TYPE_NULL;
+		return ERROR_FFMPEG_COLOR_SPACE_TYPE_NULL;
 	}
 	int type = env->GetIntField(jColorSpace, typeId);
 	
@@ -209,7 +209,7 @@ uint32_t GetPixelFormat(JNIEnv *env, jobject jColorSpace, PixelFormat* pixelForm
 	// Set number of color channels
 	jfieldID numChannelId = env->GetFieldID(colorSpaceClass, "numComponents", "I");
 	if (typeId == nullptr) {
-		return ERROR_COLOR_SPACE_NUM_COMPONENT_NULL;
+		return ERROR_FFMPEG_COLOR_SPACE_NUM_COMPONENT_NULL;
 	}
 	pixelFormat->numComponents = env->GetIntField(jColorSpace, numChannelId);
 
