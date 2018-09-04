@@ -18,6 +18,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Clock.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Decoder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FfmpegAvPlayback.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)FfmpegErrorUtils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FfmpegJniUtils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)FrameQueue.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)JavaPlayerEventDispatcher.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Clock.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Decoder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegAvPlayback.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegErrorUtils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegJniUtils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegMediaErrors.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FrameQueue.h" />
