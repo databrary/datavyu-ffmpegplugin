@@ -40,9 +40,9 @@ class Clock {
 
 		Clock();
     
-		double get_clock() const;
+		double get_clock() const; // keeps always track of the actual time (independent of the speed)
 
-		double get_pts() const;
+		double get_pts() const; // keeps always track of the actual time as much as possible
 
 		double get_lastUpdated() const;
 

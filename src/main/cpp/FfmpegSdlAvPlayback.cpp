@@ -764,12 +764,13 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 			else if (pVideoState->get_audio_st())
 				av_diff = pVideoState->get_master_clock() - pVideoState->get_pAudclk()->get_clock();
 			av_log(NULL, AV_LOG_INFO,
-				"%7.2f at %dX %s:%7.3f fd=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+				"%7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
 				pVideoState->get_master_clock(),
-				pVideoState->get_master_clock_speed(),
+				1.0/pVideoState->get_pts_speed(),
 				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
 				av_diff,
-				pVideoState->get_frame_drops_early() + frame_drops_late,
+				pVideoState->get_frame_drops_early(),
+				frame_drops_late,
 				aqsize / 1024,
 				vqsize / 1024,
 				sqsize,
@@ -887,10 +888,11 @@ void FfmpegSdlAvPlayback::destroy() {
 
 void FfmpegSdlAvPlayback::init_and_event_loop() {
 	SDL_Event event;
-	double incr, pos, frac;
+	double incr, pos, frac, rate;
 	// Initialize first before starting the stream
 	InitSdl();
 	pVideoState->stream_start();
+	rate = 1;
 
 	if (pVideoState->get_image_width()) {
 		FfmpegSdlAvPlayback::set_default_window_size(
@@ -950,10 +952,12 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
 				break;
 			case SDLK_KP_PLUS:
-				pVideoState->set_rate(1);
+				rate *= 2;
+				pVideoState->set_rate(rate);
 				break;
 			case SDLK_KP_MINUS:
-				pVideoState->set_rate(-1);
+				rate /= 2;
+				pVideoState->set_rate(rate);
 				break;
 			case SDLK_v:
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);

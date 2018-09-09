@@ -147,7 +147,7 @@ static const char		*wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
 static int				borderless;
 static int				show_status = 1;
-static int				av_sync_type_input = AV_SYNC_AUDIO_MASTER;
+static int				av_sync_type_input = AV_SYNC_EXTERNAL_CLOCK; // AV_SYNC_AUDIO_MASTER;
 static int64_t			start_time = AV_NOPTS_VALUE;
 static int64_t			duration = AV_NOPTS_VALUE;
 static int				fast = 0;
@@ -199,9 +199,9 @@ private:
 	AVRational image_sample_aspect_ratio;
 	bool step; // TODO(fraudies): Check if this need to be atomic
 
-	int newSpeed_req;
-	float last_speed;
-	float pts_speed;
+	double rate;
+	int new_rate_req;
+	double pts_speed;
 
 	int audio_disable;
 	int video_disable;
@@ -449,14 +449,15 @@ public:
 	double get_master_clock() const;
 
 	double get_fps() const;
+	double get_pts_speed() const;
 
 	void stream_close();
 
 	/* prepare a new audio buffer */
 	void audio_callback(uint8_t *stream, int len);
 
-	void set_rate(int step);
-	float get_rate() const;
+	void set_rate(double rate);
+	double get_rate() const;
 
 	int get_master_clock_speed();
 

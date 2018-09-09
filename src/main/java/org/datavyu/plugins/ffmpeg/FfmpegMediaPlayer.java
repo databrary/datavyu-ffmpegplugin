@@ -1,6 +1,5 @@
 package org.datavyu.plugins.ffmpeg;
 
-import java.io.File;
 import java.net.URI;
 
 /**

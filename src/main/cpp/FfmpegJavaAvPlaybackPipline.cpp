@@ -147,8 +147,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double* pdStreamTime) {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetFps(double* pdFps)
-{
+uint32_t FfmpegJavaAvPlaybackPipline::GetFps(double* pdFps) {
 	if (pJavaPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
@@ -159,14 +158,22 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetFps(double* pdFps)
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::SetRate(float fRate) {
-	// TODO(fraudies): Implement this once ready
-	// At the moment we don't have a way of setting this
+	if (pJavaPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	pJavaPlayback->set_rate(fRate);
+
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::GetRate(float* pfRate) {
-	// TODO(fraudies): Implement this once ready
-	// At the moment we don't have a way of setting this
+	if (pJavaPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	*pfRate = (float) pJavaPlayback->get_rate();
+
 	return ERROR_NONE;
 }
 

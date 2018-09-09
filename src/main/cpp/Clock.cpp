@@ -23,7 +23,6 @@ double Clock::get_clock() const {
 	}
 	else {
 		double time = av_gettime_relative() / MICRO;
-		// TODO(fraudies): Check if this holds for negative speeds as well
 		return ptsDrift + time - (time - lastUpdated) * (1.0 - speed);
 	}
 }

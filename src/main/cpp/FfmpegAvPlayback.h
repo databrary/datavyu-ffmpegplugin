@@ -34,8 +34,6 @@ public:
 	virtual double get_fps() const;
 	virtual void set_rate(double rate);
 	virtual double get_rate() const;
-	// TODO(fraudies): add volume, balance, audio sync delay
-
 	int64_t get_start_time() const;
 	int64_t get_seek_pos() const;
 	void step_to_next_frame();

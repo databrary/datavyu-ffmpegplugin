@@ -197,12 +197,13 @@ int VideoState::get_video_frame(AVFrame *frame) {
 		double dpts = NAN;
 
 		if (frame->pts != AV_NOPTS_VALUE)
-			dpts = av_q2d(video_st->time_base) * frame->pts;
+			dpts = av_q2d(video_st->time_base) * frame->pts * pts_speed;
 
 		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(ic, video_st, frame);
 
 		if (framedrop>0 || (framedrop && get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) {
 			if (frame->pts != AV_NOPTS_VALUE) {
+				// TODO(fraudies): Scale dpts
 				double diff = dpts - get_master_clock();
 				if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
 					diff - frame_last_filter_delay < 0 &&
@@ -589,9 +590,9 @@ VideoState::VideoState(int audio_buffer_size) :
 	image_height(0),
 	image_sample_aspect_ratio(av_make_q(0, 0)),
 	step(false),
-	newSpeed_req(0),
-	last_speed(1.0), // 1.0
-	pts_speed(1.0), // 1.0
+	new_rate_req(0),
+	rate(1.0),
+	pts_speed(1.0),
 	audio_disable(0),
 	video_disable(0),
 	subtitle_disable(0),
@@ -633,7 +634,7 @@ VideoState::VideoState(int audio_buffer_size) :
 	audio_buf1_size(0),
 	audio_buf_index(0), /* in bytes */
 	audio_write_buf_size(0),
-	muted(0),
+	muted(1),
 	frame_drops_early(0),
 	rdft(nullptr),
 	rdft_bits(0),
@@ -821,7 +822,26 @@ int VideoState::read_thread() {
 
 #if CONFIG_AVFILTER
 #else
-		if (newSpeed_req) {
+		if (new_rate_req) {
+			pts_speed = 1/rate;
+
+			if (audio_stream >= 0) {
+				pAudioq->flush();
+				pAudioq->put_flush_packet();
+			}
+			if (subtitle_stream >= 0) {
+				pSubtitleq->flush();
+				pSubtitleq->put_flush_packet();
+			}
+			if (video_stream >= 0) {
+				pVideoq->flush();
+				pVideoq->put_flush_packet();
+			}
+			new_rate_req = 0;
+		}
+
+		/*
+				if (new_pts_speed_req) {
 			if (video_stream >= 0 && audio_stream >= 0) {
 
 				if ((stream_has_enough_packets(audio_st, audio_stream, pAudioq) &&
@@ -857,8 +877,10 @@ int VideoState::read_thread() {
 					}
 				}
 			}
-			this->newSpeed_req = 0;
-		}
+			this->new_pts_speed_req = 0;
+		}		
+		*/
+
 #endif // !CONFIG_AVFILTER
 		if (this->seek_req) {
 			if (player_state_callbacks[TO_STALLED]) {
@@ -1214,14 +1236,13 @@ int VideoState::video_thread() {
 				frame_last_filter_delay = 0;
 			tb = av_buffersink_get_time_base(filt_out);
 #endif
-			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) : 0;
+			// Set clock speed
+			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) * pts_speed : 0;
 #if CONFIG_AVFILTER
 			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
 #else
-			//Change the pts of the frame in the video thread better than decoder
-			//but it is not working as expected and need to be fixed
-			//pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : (frame->pts * pts_speed) * av_q2d(tb);
-			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
+			// Set clock speed
+			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb) * pts_speed;
 #endif
 			ret = queue_picture(frame, pts, duration, frame->pkt_pos, pViddec->get_pkt_serial());
 			av_frame_unref(frame);
@@ -1295,7 +1316,7 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 	startup_volume = av_clip(SDL_MIX_MAXVOLUME * startup_volume / 100, 0, SDL_MIX_MAXVOLUME);
 	is->audio_volume = startup_volume;
 	*/
-	is->muted = 0;
+	//is->muted = 0;
 	is->av_sync_type = av_sync_type_input;
 	return is;
 }
@@ -1823,6 +1844,10 @@ double VideoState::get_fps() const {
 	return video_st ? this->fps : 0;
 }
 
+double VideoState::get_pts_speed() const {
+	return pts_speed;
+}
+
 void VideoState::stream_close() {
 	/* XXX: use a special url_shutdown call to abort parse cleanly */
 
@@ -1886,7 +1911,7 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 	}
 	audio_write_buf_size = audio_buf_size - audio_buf_index;
 	/* Let's assume the audio driver that is used by SDL has two periods. */
-	if (!isnan(audio_clock)) {
+	if (!isnan(audio_clock) && !muted) {
 		pAudclk->set_clock_at(audio_clock
 			- (double)(2 * audio_hw_buf_size + audio_write_buf_size)
 			/ audio_tgt.bytes_per_sec, audio_clock_serial, audio_callback_time / 1000000.0);
@@ -1894,7 +1919,11 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 	}
 }
 
-void VideoState::set_rate(const int step) {
+void VideoState::set_rate(double new_rate) {
+	// TODO(fraudies): Check that the rate is within range
+	rate = new_rate;
+	new_rate_req = 1;
+
 	// TODO(fraudies): Move this into FfmpegAVPlayback
 	/*
 	int i;
@@ -1928,8 +1957,8 @@ void VideoState::set_rate(const int step) {
 	*/
 }
 
-float VideoState::get_rate() const {
-	return pts_speed;
+double VideoState::get_rate() const {
+	return rate;
 }
 
 int VideoState::get_master_clock_speed() {

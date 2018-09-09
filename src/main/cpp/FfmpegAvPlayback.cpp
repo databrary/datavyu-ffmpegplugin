@@ -96,7 +96,6 @@ double FfmpegAvPlayback::get_fps() const {
 }
 
 void FfmpegAvPlayback::set_rate(double rate) {
-	// TODO(fraudies): Here is a miss-match between the API's (rate/vs step)
 	pVideoState->set_rate(rate);
 }
 
@@ -126,7 +125,9 @@ void FfmpegAvPlayback::set_force_refresh(int refresh) {
 
 double FfmpegAvPlayback::vp_duration(Frame * vp, Frame * nextvp, double max_frame_duration) {
 	if (vp->serial == nextvp->serial) {
-		double duration = nextvp->pts - vp->pts;
+		// TODO(fraudies): Could set playback rate here
+		//double pts_speed = pVideoState->get_pts_speed();
+		double duration = (nextvp->pts - vp->pts); // *pts_speed;
 		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
 			return vp->duration;
 		else
