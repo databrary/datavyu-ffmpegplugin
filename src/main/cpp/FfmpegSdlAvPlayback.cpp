@@ -876,7 +876,7 @@ void FfmpegSdlAvPlayback::destroy() {
 	if (window)
 		SDL_DestroyWindow(window);
 
-#if CONFIG_AVFILTER
+#if CONFIG_VIDEO_FILTER
 	//av_freep(&vfilters_list);
 #endif
 	avformat_network_deinit();
@@ -971,13 +971,13 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
 				break;
 			case SDLK_w:
-#if CONFIG_AVFILTER
-				if (pVideoState->get_show_mode() == SHOW_MODE_VIDEO && pVideoState->->vfilter_idx < nb_vfilters - 1) {
-					if (++pVideoState->->vfilter_idx >= nb_vfilters)
-						pVideoState->->vfilter_idx = 0;
+#if CONFIG_VIDEO_FILTER
+				if (pVideoState->get_show_mode() == SHOW_MODE_VIDEO && pVideoState->vfilter_idx < nb_vfilters - 1) {
+					if (++pVideoState->vfilter_idx >= nb_vfilters)
+						pVideoState->vfilter_idx = 0;
 				}
 				else {
-					pVideoState->->vfilter_idx = 0;
+					pVideoState->vfilter_idx = 0;
 					pVideoState->toggle_audio_display();
 				}
 #else
@@ -1030,14 +1030,14 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 					pos = pVideoState->get_master_clock();
 					if (isnan(pos)) {
 						pos = (double)pVideoState->get_seek_pos() / AV_TIME_BASE;
-#ifdef _DEBUG
+#if _DEBUG
 						printf("Seek Position Requested - Master Clock Return NaN \n");
 #endif // _DEBUG
 					}
 					pos += incr;
 					if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && pos < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
 						pos = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
-#ifdef _DEBUG
+#if _DEBUG
 					printf("Seeking From Time %7.2f sec To %7.2f sec with Incr %7.2f sec \n",
 						(pos-incr),
 						pos,

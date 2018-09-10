@@ -60,7 +60,7 @@ void FfmpegJavaAvPlayback::destroy() {
 	if (pVideoState)
 		pVideoState->stream_close();
 
-#if CONFIG_AVFILTER
+#if CONFIG_VIDEO_FILTER
 	//av_freep(&vfilters_list);
 #endif
 	avformat_network_deinit();
