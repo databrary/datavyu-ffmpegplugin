@@ -158,8 +158,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 	return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double * pdFps)
-{
+uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double * pdFps) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
@@ -170,14 +169,22 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double * pdFps)
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
-	// TODO(fraudies): Implement this once ready
-	// At the moment we don't have a way of setting this
+	if (pSdlPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	pSdlPlayback->set_rate(fRate);
+
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetRate(float* pfRate) {
-	// TODO(fraudies): Implement this once ready
-	// At the moment we don't have a way of setting this
+	if (pSdlPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	*pfRate = pSdlPlayback->get_rate();
+
 	return ERROR_NONE;
 }
 

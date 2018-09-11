@@ -484,6 +484,8 @@ int VideoState::audio_decode_frame() {
 		af->frame->channel_layout : av_get_default_channel_layout(af->frame->channels);
 	wanted_nb_samples = synchronize_audio(af->frame->nb_samples);
 
+	af->frame->sample_rate /= pts_speed;
+
 	if (af->frame->format != this->audio_src.fmt ||
 		dec_channel_layout != this->audio_src.channel_layout ||
 		af->frame->sample_rate != this->audio_src.freq ||
@@ -816,7 +818,6 @@ int VideoState::read_thread() {
 #endif
 		if (new_rate_req) {
 			pts_speed = 1/rate;
-
 			if (audio_stream >= 0) {
 				pAudioq->flush();
 				pAudioq->put_flush_packet();
@@ -829,6 +830,10 @@ int VideoState::read_thread() {
 				pVideoq->flush();
 				pVideoq->put_flush_packet();
 			}
+			// TODO(fraudies): Check here what we need to do to reset the clocks so they don't get stuck
+			// When toggeling the pause the external clock is set but that did not work here
+			//pExtclk->set_clock(pExtclk->get_clock(), pExtclk->get_serial());
+			//set_clock(&is->extclk, get_clock(&is->extclk), is->extclk.serial);
 			new_rate_req = 0;
 		}
 
@@ -1054,7 +1059,8 @@ int VideoState::audio_thread() {
 				af->pos = frame->pkt_pos;
 				af->serial = pAuddec->get_pkt_serial();
 				af->duration = av_q2d(av_make_q(frame->nb_samples, frame->sample_rate));
-				//af->frame->sample_rate = af->frame->sample_rate * pts_speed;
+				// TODO(fraudies): Check why this does not affect the sample_rate
+				//af->frame->sample_rate = frame->sample_rate / pts_speed;
 
 				av_frame_move_ref(af->frame, frame);
 				pSampq->push();
@@ -2173,6 +2179,14 @@ int VideoState::configure_audio_filters(const char *afilters, int force_output_f
 	}
 	//while ((e = av_dict_get(swr_opts, "", e, AV_DICT_IGNORE_SUFFIX)))
 	//	av_strlcatf(aresample_swr_opts, sizeof(aresample_swr_opts), "%s=%s:", e->key, e->value);
+
+	//if (force_output_format) {
+	//  // This does not work
+	//	char aresample_value[64];
+	//	sprintf(aresample_value, "%d", (int)(audio_tgt.freq * pts_speed) );
+	//	av_strlcatf(aresample_swr_opts, sizeof(aresample_swr_opts), "%s=%s:", "aresample", aresample_value);
+	//}
+	
 	if (strlen(aresample_swr_opts))
 		aresample_swr_opts[strlen(aresample_swr_opts) - 1] = '\0';
 	av_opt_set(agraph, "aresample_swr_opts", aresample_swr_opts, 0);
