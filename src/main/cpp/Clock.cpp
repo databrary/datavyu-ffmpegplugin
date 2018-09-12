@@ -54,8 +54,7 @@ double Clock::get_clock_speed() const {
 void Clock::set_clock_at(double newPts, int newSerial, double time) {
 	pts = newPts;
 	lastUpdated = time;
-	// TODO(fraudies): Fix me need try setting clock when changing the rate
-	ptsDrift = 0; // pts - time; //here
+	ptsDrift = pts - time;
 	serial = newSerial;
 }
 

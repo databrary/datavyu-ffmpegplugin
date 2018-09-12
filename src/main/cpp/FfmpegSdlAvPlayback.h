@@ -89,8 +89,6 @@ private:
 
 	int last_i_start;
 
-	int frame_drops_late;
-
 	double last_vis_time;
 
 	int screen_width;

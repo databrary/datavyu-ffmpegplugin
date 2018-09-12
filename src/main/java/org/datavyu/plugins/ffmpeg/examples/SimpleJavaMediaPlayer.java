@@ -3,6 +3,7 @@ package org.datavyu.plugins.ffmpeg.examples;
 import org.datavyu.plugins.ffmpeg.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.net.URI;
 

@@ -59,8 +59,7 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume) :
 	vis_texture(nullptr),
 	sub_texture(nullptr),
 	vid_texture(nullptr),
-	last_i_start(0), 
-	frame_drops_late(0), 
+	last_i_start(0),
 	last_vis_time(0), 
 	screen_width(0),
 	screen_height(0),
@@ -764,9 +763,10 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 			else if (pVideoState->get_audio_st())
 				av_diff = pVideoState->get_master_clock() - pVideoState->get_pAudclk()->get_clock();
 			av_log(NULL, AV_LOG_INFO,
-				"%7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+				"%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
 				pVideoState->get_master_clock(),
 				1.0/pVideoState->get_pts_speed(),
+				pVideoState->get_pVidclk()->get_clock(),
 				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
 				av_diff,
 				pVideoState->get_frame_drops_early(),

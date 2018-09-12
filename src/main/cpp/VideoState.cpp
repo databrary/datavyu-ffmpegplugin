@@ -198,13 +198,12 @@ int VideoState::get_video_frame(AVFrame *frame) {
 		double dpts = NAN;
 
 		if (frame->pts != AV_NOPTS_VALUE)
-			dpts = av_q2d(video_st->time_base) * frame->pts * pts_speed; //here
+			dpts = av_q2d(video_st->time_base) * frame->pts; // *pts_speed;
 
 		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(ic, video_st, frame);
 
 		if (framedrop>0 || (framedrop && get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) {
 			if (frame->pts != AV_NOPTS_VALUE) {
-				// TODO(fraudies): Scale dpts
 				double diff = dpts - get_master_clock();
 				if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
 					diff - frame_last_filter_delay < 0 &&
@@ -484,7 +483,7 @@ int VideoState::audio_decode_frame() {
 		af->frame->channel_layout : av_get_default_channel_layout(af->frame->channels);
 	wanted_nb_samples = synchronize_audio(af->frame->nb_samples);
 
-	af->frame->sample_rate /= pts_speed; //here
+	af->frame->sample_rate /= pts_speed;
 
 	if (af->frame->format != this->audio_src.fmt ||
 		dec_channel_layout != this->audio_src.channel_layout ||
@@ -832,8 +831,6 @@ int VideoState::read_thread() {
 			}
 			// TODO(fraudies): Check here what we need to do to reset the clocks so they don't get stuck
 			// When toggeling the pause the external clock is set but that did not work here
-			//pExtclk->set_clock(pExtclk->get_clock(), pExtclk->get_serial());
-			//set_clock(&is->extclk, get_clock(&is->extclk), is->extclk.serial);
 			new_rate_req = 0;
 			queue_attachments_req = 1;
 			eof = 0;
@@ -1174,9 +1171,9 @@ int VideoState::video_thread() {
 			tb = av_buffersink_get_time_base(filt_out);
 #endif
 			// Set clock speed
-			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) * pts_speed : 0; //here
+			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) /** pts_speed*/ : 0;
 #if CONFIG_VIDEO_FILTER
-			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
+			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb); // *pts_speed;
 #else
 			// Set clock speed
 			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb) * pts_speed; //here
@@ -1512,7 +1509,7 @@ void VideoState::toggle_mute() {
 }
 
 void VideoState::update_pts(double pts, int64_t pos, int serial) {
-	get_pVidclk()->set_clock(pts, serial);
+	get_pVidclk()->set_clock(pts / pts_speed, serial);
 	Clock::sync_clock_to_slave(get_pExtclk(), get_pVidclk());
 }
 

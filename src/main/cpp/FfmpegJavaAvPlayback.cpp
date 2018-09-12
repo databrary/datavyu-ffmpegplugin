@@ -181,6 +181,48 @@ bool FfmpegJavaAvPlayback::do_display() {
 			force_refresh = 0;
 	}
 
+	if (show_status) {
+		static int64_t last_time;
+		int64_t cur_time;
+		int aqsize, vqsize, sqsize;
+		double av_diff;
+
+		cur_time = av_gettime_relative();
+		if (!last_time || (cur_time - last_time) >= 30000) {
+			aqsize = 0;
+			vqsize = 0;
+			sqsize = 0;
+			if (pVideoState->get_audio_st())
+				aqsize = pVideoState->get_pAudioq()->get_size();
+			if (pVideoState->get_video_st())
+				vqsize = pVideoState->get_pVideoq()->get_size();
+			if (pVideoState->get_subtitle_st())
+				sqsize = pVideoState->get_pSubtitleq()->get_size();
+			av_diff = 0;
+			if (pVideoState->get_audio_st() && pVideoState->get_video_st())
+				av_diff = pVideoState->get_pAudclk()->get_clock() - pVideoState->get_pVidclk()->get_clock();
+			else if (pVideoState->get_video_st())
+				av_diff = pVideoState->get_master_clock() - pVideoState->get_pVidclk()->get_clock();
+			else if (pVideoState->get_audio_st())
+				av_diff = pVideoState->get_master_clock() - pVideoState->get_pAudclk()->get_clock();
+			av_log(NULL, AV_LOG_INFO,
+				"%7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+				pVideoState->get_master_clock(),
+				1.0 / pVideoState->get_pts_speed(),
+				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
+				av_diff,
+				pVideoState->get_frame_drops_early(),
+				frame_drops_late,
+				aqsize / 1024,
+				vqsize / 1024,
+				sqsize,
+				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
+				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
+			fflush(stdout);
+			last_time = cur_time;
+		}
+	}
+
 	return display;
 }
 

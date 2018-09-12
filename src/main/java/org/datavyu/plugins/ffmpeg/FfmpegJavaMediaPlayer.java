@@ -49,6 +49,13 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         this.colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
     }
 
+    public FfmpegJavaMediaPlayer(URI mediaPath, Container container) {
+        super(mediaPath);
+        this.container = container;
+        this.audioFormat = AudioPlayerThread.getMonoFormat();
+        this.colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+    }
+
     /**
      * Create an ffmpeg media player instance and play through java
      * framework
@@ -236,7 +243,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     @Override
     protected synchronized void playerSetVolume(float volume) throws MediaException {
         if (!muteEnabled) {
-            //TODO(Reda:) remove audioPlayerThread.setVolume when ffmpegSetVolume will be fully implemented
             if (volume == 0 ) {
                 audioPlayerThread.setMute(true);
             } else {

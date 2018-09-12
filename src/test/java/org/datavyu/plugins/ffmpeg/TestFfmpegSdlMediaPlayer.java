@@ -11,7 +11,7 @@ public class TestFfmpegSdlMediaPlayer {
     /**
      * The logger for this class
      */
-    private static Logger logger = LogManager.getFormatterLogger(TestPlaybackRateScale.class);
+    private static Logger logger = LogManager.getFormatterLogger(TestPlaybackRate.class);
 
     @Test(expectedExceptions = MediaException.class, expectedExceptionsMessageRegExp = "No such file or directory")
     public void testUnknownFile() {

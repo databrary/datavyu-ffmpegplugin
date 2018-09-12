@@ -32,7 +32,8 @@ FfmpegAvPlayback::FfmpegAvPlayback() :
 	display_disable(0),
 	width(0),
 	height(0),
-	force_refresh(1) {}
+	force_refresh(1),
+	frame_drops_late(0) {}
 
 int FfmpegAvPlayback::Init(const char *filename, AVInputFormat *iformat, int audio_buffer_size) {
 	pVideoState = VideoState::stream_open(filename, iformat, audio_buffer_size);
