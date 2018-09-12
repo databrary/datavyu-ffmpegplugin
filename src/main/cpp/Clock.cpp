@@ -55,7 +55,7 @@ void Clock::set_clock_at(double newPts, int newSerial, double time) {
 	pts = newPts;
 	lastUpdated = time;
 	// TODO(fraudies): Fix me need try setting clock when changing the rate
-	ptsDrift = 0; // pts - time;
+	ptsDrift = 0; // pts - time; //here
 	serial = newSerial;
 }
 
