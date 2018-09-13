@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
 // Currently this uses swing components to display the buffered image
@@ -26,21 +25,14 @@ public class ImagePlayerThread extends Thread {
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
 
+    private int imgWidth;
+    private int imgHeight;
+    private int x1, y1, x2, y2;
+
     ImagePlayerThread(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
         setName("Ffmpeg image player thread");
         setDaemon(false);
-    }
-
-    private void updateDisplay() {
-        do {
-            do {
-                Graphics graphics = strategy.getDrawGraphics();
-                graphics.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(),  null);
-                graphics.dispose();
-            } while (strategy.contentsRestored());
-            strategy.show();
-        } while (strategy.contentsLost());
     }
 
     public void init(ColorSpace colorSpace, int width, int height, JFrame frame) {
@@ -67,7 +59,8 @@ public class ImagePlayerThread extends Thread {
         // Make sure to make the canvas visible before creating the buffer strategy
         this.frame.createBufferStrategy(NUM_BUFFERS);
         strategy = this.frame.getBufferStrategy();
-        launcher(() -> updateDisplay());
+
+        renderImage();
     }
 
     public void run() {
@@ -81,7 +74,8 @@ public class ImagePlayerThread extends Thread {
             WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
             // Create the original image
             image = new BufferedImage(cm, raster, false, properties);
-            launcher(() -> updateDisplay());
+
+            renderImage();
             // This does not measure the time to update the display
             double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
             // If we need to wait
@@ -99,14 +93,55 @@ public class ImagePlayerThread extends Thread {
         stopped = true;
     }
 
-    private static void launcher(Runnable runnable) {
-        if (EventQueue.isDispatchThread()){
-            runnable.run();
-        } else {
-            try {
-                EventQueue.invokeAndWait(runnable);
-            } catch (InterruptedException | InvocationTargetException e) {
+    private synchronized void renderImage() {
+        Dimension size;
+        do {
+            size = frame.getSize();
+            if (size == null) {
+                return;
             }
+            do {
+                do {
+                    Graphics graphics = strategy.getDrawGraphics();
+                    if (graphics == null) {
+                        return;
+                    }
+
+                    scaleImage();
+
+                    graphics.drawImage(image, x1, y1, x2, y2, 0, 0, imgWidth, imgHeight, null);
+                    graphics.dispose();
+                } while (strategy.contentsRestored());
+                strategy.show();
+            } while (strategy.contentsLost());
+            // Repeat the rendering if the target changed size
+        } while (!size.equals(frame.getSize()));
+    }
+
+    private void scaleImage(){
+        imgWidth = image.getWidth();
+        imgHeight = image.getHeight();
+        double imgRatio = (double) imgHeight / imgWidth;
+        int frameWidth = frame.getWidth();
+        int frameHeight = frame.getHeight();
+        double frameAspect = (double) frameHeight / frameWidth;
+        x1 = 0;
+        y1 = 0;
+        x2 = 0;
+        y2 = 0;
+        if (frameAspect > imgRatio) {
+            y1 = frameHeight;
+            // keep image aspect ratio
+            frameHeight = (int) (frameWidth * imgRatio);
+            y1 = (y1 - frameHeight) / 2;
+        } else {
+            x1 = frameWidth;
+            // keep image aspect ratio
+            frameWidth = (int) (frameHeight / imgRatio);
+            x1 = (x1 - frameWidth) / 2;
         }
+        x2 = frameWidth + x1;
+        y2 = frameHeight + y1;
     }
 }
+
