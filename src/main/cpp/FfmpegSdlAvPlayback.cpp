@@ -972,13 +972,13 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				break;
 			case SDLK_w:
 #if CONFIG_VIDEO_FILTER
-				if (pVideoState->get_show_mode() == SHOW_MODE_VIDEO && pVideoState->vfilter_idx < nb_vfilters - 1) {
-					if (++pVideoState->vfilter_idx >= nb_vfilters)
-						pVideoState->vfilter_idx = 0;
+				if (pVideoState->get_show_mode() == SHOW_MODE_VIDEO && pVideoState->get_vfilter_idx() < pVideoState->get_nb_vfilters() - 1) {
+					if (pVideoState->get_vfilter_idx() + 1 >= pVideoState->get_nb_vfilters())
+						pVideoState->set_vfilter_idx(0);
 				}
 				else {
-					pVideoState->vfilter_idx = 0;
-					pVideoState->toggle_audio_display();
+					pVideoState->set_vfilter_idx(0);
+					toggle_audio_display();
 				}
 #else
 				toggle_audio_display();

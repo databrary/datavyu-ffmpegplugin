@@ -198,7 +198,7 @@ int VideoState::get_video_frame(AVFrame *frame) {
 		double dpts = NAN;
 
 		if (frame->pts != AV_NOPTS_VALUE)
-			dpts = av_q2d(video_st->time_base) * frame->pts * pts_speed;
+			dpts = av_q2d(video_st->time_base) * frame->pts * pts_speed; //here
 
 		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(ic, video_st, frame);
 
@@ -484,7 +484,7 @@ int VideoState::audio_decode_frame() {
 		af->frame->channel_layout : av_get_default_channel_layout(af->frame->channels);
 	wanted_nb_samples = synchronize_audio(af->frame->nb_samples);
 
-	af->frame->sample_rate /= pts_speed;
+	af->frame->sample_rate /= pts_speed; //here
 
 	if (af->frame->format != this->audio_src.fmt ||
 		dec_channel_layout != this->audio_src.channel_layout ||
@@ -567,7 +567,7 @@ VideoState::VideoState(int audio_buffer_size) :
 	stopped(false),
 	queue_attachments_req(0),
 	seek_req(0),
-	seek_flags(AVSEEK_FLAG_ANY), // AV_SEEK_BACKWARD
+	seek_flags(AVSEEK_FLAG_BACKWARD), // AV_SEEK_BACKWARD
 	seek_pos(0),
 	seek_rel(0),
 	read_pause_return(0),
@@ -835,6 +835,8 @@ int VideoState::read_thread() {
 			//pExtclk->set_clock(pExtclk->get_clock(), pExtclk->get_serial());
 			//set_clock(&is->extclk, get_clock(&is->extclk), is->extclk.serial);
 			new_rate_req = 0;
+			queue_attachments_req = 1;
+			eof = 0;
 		}
 
 		if (this->seek_req) {
@@ -1149,30 +1151,6 @@ int VideoState::video_thread() {
 			last_serial = pViddec->get_pkt_serial();
 			last_vfilter_idx = vfilter_idx;
 			frame_rate = av_buffersink_get_frame_rate(filt_out);
-			if (this->new_rate_req) {
-				if (this->audio_stream >= 0) {
-					pAudioq->flush();
-					pAudioq->put_flush_packet();
-				}
-				if (this->subtitle_stream >= 0) {
-					pSubtitleq->flush();
-					pSubtitleq->put_flush_packet();
-				}
-				if (this->video_stream >= 0) {
-					pVideoq->flush();
-					pVideoq->put_flush_packet();
-				}
-				if (this->seek_flags & AVSEEK_FLAG_BYTE) {
-					pExtclk->set_clock(NAN, 0);
-				}
-				else {
-					pExtclk->set_clock(pExtclk->get_clock() / (double)AV_TIME_BASE, 0);
-				}
-
-			this->new_rate_req = 0;
-			this->queue_attachments_req = 1;
-			this->eof = 0;
-			}
 		}
 
 		ret = av_buffersrc_add_frame(filt_in, frame);
@@ -1196,12 +1174,12 @@ int VideoState::video_thread() {
 			tb = av_buffersink_get_time_base(filt_out);
 #endif
 			// Set clock speed
-			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) * pts_speed : 0;
+			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) * pts_speed : 0; //here
 #if CONFIG_VIDEO_FILTER
 			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
 #else
 			// Set clock speed
-			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb) * pts_speed;
+			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb) * pts_speed; //here
 #endif
 			ret = queue_picture(frame, pts, duration, frame->pkt_pos, pViddec->get_pkt_serial());
 			av_frame_unref(frame);
@@ -1879,41 +1857,27 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 }
 
 void VideoState::set_rate(double new_rate) {
-	// TODO(fraudies): Check that the rate is within range
-	rate = new_rate;
-	new_rate_req = 1;
-
-	// TODO(fraudies): Move this into FfmpegAVPlayback
-	/*
-	int i;
-	for (i = 0; i < FF_ARRAY_ELEMS(rate_speed_map); i++) {
-		if (last_speed == rate_speed_map[i].clock_speed) {
-			if (i+step >= 0 && i+step < FF_ARRAY_ELEMS(rate_speed_map)) {
-				if (!get_paused() && rate_speed_map[i + step].clock_speed == 0) {
-					toggle_pause();
-					return; // We can't process the 0 as a new speed for the presentation time
-				}
-				if (!muted && rate_speed_map[i + step].clock_speed != 1) {
-					toggle_mute();
-				}
-				else if (muted && rate_speed_map[i + step].clock_speed == 1) {
-					toggle_mute();
-				}
-#if CONFIG_AVFILTER
-				std::unique_lock<std::mutex> locker(mutex);
-				vfilters = rate_speed_map[i + step].command;
-				locker.unlock();
-#else
-				pts_speed = rate_speed_map[i + step].pts_speed;
-#endif
-				last_speed = rate_speed_map[i + step].clock_speed;
-				newSpeed_req = 1;
-				continue_read_thread.notify_one();
-				return;
-			}
+	bool rate_found = false;
+	char * rate_command = nullptr;
+	for (int i = 0; i < FF_ARRAY_ELEMS(rate_speed_map); i++) {
+		if (new_rate == rate_speed_map[i].clock_speed) {
+			rate_found = true;
+			rate_command = rate_speed_map[i].command;
 		}
 	}
-	*/
+
+	if (!rate_found) {
+		return; // TODO(Reda): We can return and int != 0 as an error
+	}
+#if CONFIG_VIDEO_FILTER
+	std::unique_lock<std::mutex> locker(mutex);
+	vfilters = rate_command;
+	vfilter_idx++;
+	locker.unlock();
+#endif
+	rate = new_rate;
+	new_rate_req = 1;
+	continue_read_thread.notify_one();
 }
 
 double VideoState::get_rate() const {
