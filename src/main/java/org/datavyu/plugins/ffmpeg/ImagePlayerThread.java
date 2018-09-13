@@ -3,12 +3,8 @@ package org.datavyu.plugins.ffmpeg;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.image.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
-import java.util.concurrent.locks.ReentrantLock;
 
 // Currently this uses swing components to display the buffered image
 // TODO(fraudies): Switch this to javafx for new GUI

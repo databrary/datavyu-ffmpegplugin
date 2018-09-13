@@ -2,11 +2,7 @@ package org.datavyu.plugins.ffmpeg;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.image.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
 public class ImageCanvasPlayerThread extends Thread {
@@ -63,7 +59,7 @@ public class ImageCanvasPlayerThread extends Thread {
 
     private void initContainer(){
         this.canvas = new Canvas();
-        this.canvas.setBackground(Color.BLACK); // Set to black to remove flickering issues
+//        this.canvas.setBackground(Color.BLACK); // Set to black to remove flickering issues
         this.container.add(canvas, BorderLayout.CENTER);
 
         this.container.setBounds(0, 0, this.width, this.height);
@@ -119,14 +115,12 @@ public class ImageCanvasPlayerThread extends Thread {
 
                     scaleImage();
 
-                    graphics.drawImage(image, x1, y1, x2, y2, 0, 0, imgWidth, imgHeight, null);
+                    graphics.drawImage(image, x1, y1, x2, y2, 0, 0, image.getWidth(),image.getHeight(), null);
                     graphics.dispose();
                 } while (strategy.contentsRestored());
                 strategy.show();
             } while (strategy.contentsLost());
             // Repeat the rendering if the target changed size
-            System.out.println("Init Size " +size+ " canvas Size " +canvas.getSize()
-                    + "Image W/H "+ imgWidth +","+ imgHeight);
         } while (!size.equals(canvas.getSize()));
     }
 
