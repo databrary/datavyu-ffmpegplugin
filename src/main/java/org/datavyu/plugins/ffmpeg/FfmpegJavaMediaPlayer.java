@@ -1,5 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
+import javafx.stage.Stage;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
@@ -25,8 +26,10 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private AudioPlayerThread audioPlayerThread = null;
     private ImagePlayerThread imagePlayerThread = null;
     private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
+    private ImageJfxPlayerThread imageJfxPlayerThread = null;
     private JFrame frame;
     private Container container;
+    private Stage stage;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
     private AudioFormat audioFormat;
     private ColorSpace colorSpace;
@@ -65,6 +68,13 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         this.colorSpace = colorSpace;
     }
 
+    public FfmpegJavaMediaPlayer(URI mediaPath, Stage stage){
+        super(mediaPath);
+        this.stage = stage;
+        this.audioFormat = AudioPlayerThread.getMonoFormat();
+        this.colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+    }
+
     /**
      * Create an ffmpeg media player instance and play through java
      * Datavyu container
@@ -94,10 +104,14 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
             imagePlayerThread = new ImagePlayerThread(this);
             imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
             imagePlayerThread.start();
-        } else {
+        } else if (this.container != null){
             imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
             imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
             imageCanvasPlayerThread.start();
+        } else {
+            imageJfxPlayerThread = new ImageJfxPlayerThread(this);
+            imageJfxPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), stage);
+            imageJfxPlayerThread.start();
         }
     }
 
