@@ -154,7 +154,7 @@ static const struct TextureFormatEntry {
 };
 
 static SDL_RendererInfo renderer_info = { 0 };
-static ShowMode			show_mode = SHOW_MODE_NONE;
+//static ShowMode			show_mode = SHOW_MODE_NONE;
 static const char		*window_title;
 static const char		*wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
@@ -187,6 +187,7 @@ static int64_t			audio_callback_time;
 //what will be the streamer in the future implementations
 class VideoState {
 private:
+	ShowMode show_mode;
 	int abort_request;
 	bool paused; // TODO(fraudies): Check if this need to be atomic
 	int last_paused;
@@ -414,6 +415,7 @@ public:
 	AVStream *get_subtitle_st() const;
 
 	ShowMode get_show_mode() const;
+	void set_show_mode(ShowMode new_show_mode);
 
 	FrameQueue *get_pPictq() const;
 	FrameQueue *get_pSubpq() const;

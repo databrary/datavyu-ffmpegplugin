@@ -536,7 +536,7 @@ void FfmpegSdlAvPlayback::video_audio_display() {
 		}
 		if (!pVideoState->get_rdft() || !pVideoState->get_rdft_data()) {
 			av_log(NULL, AV_LOG_ERROR, "Failed to allocate buffers for RDFT, switching to waves display\n");
-			show_mode = SHOW_MODE_WAVES;
+			pVideoState->set_show_mode(SHOW_MODE_WAVES);
 		}
 		else {
 			FFTSample *data[2];
@@ -610,6 +610,9 @@ void FfmpegSdlAvPlayback::refresh_loop_wait_event(SDL_Event *event) {
 		remaining_time = REFRESH_RATE;
 		if (pVideoState->get_show_mode() != SHOW_MODE_NONE && (!pVideoState->get_paused() || force_refresh))
 			video_refresh(&remaining_time);
+		// TODO: Remove me
+		//av_log(NULL, AV_LOG_INFO, "Time difference in %3.2f ms\n", (-remaining_time + REFRESH_RATE)*1000);
+		//fflush(stdout);
 		SDL_PumpEvents();
 	}
 }
@@ -630,7 +633,6 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 		}
 		*remaining_time = FFMIN(*remaining_time, last_vis_time + rdftspeed - time);
 	}
-
 	if (pVideoState->get_video_st()) {
 	retry:
 		if (pVideoState->get_pPictq()->nb_remaining() == 0) {
@@ -763,19 +765,19 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 			else if (pVideoState->get_audio_st())
 				av_diff = pVideoState->get_master_clock() - pVideoState->get_pAudclk()->get_clock();
 			av_log(NULL, AV_LOG_INFO,
-				"%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
-				pVideoState->get_master_clock(),
-				1.0/pVideoState->get_pts_speed(),
-				pVideoState->get_pVidclk()->get_clock(),
-				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
-				av_diff,
-				pVideoState->get_frame_drops_early(),
-				frame_drops_late,
-				aqsize / 1024,
-				vqsize / 1024,
-				sqsize,
-				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
-				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
+			"%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+			pVideoState->get_master_clock(),
+			1.0/pVideoState->get_pts_speed(),
+			pVideoState->get_pVidclk()->get_clock(),
+			(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
+			av_diff,
+			pVideoState->get_frame_drops_early(),
+			frame_drops_late,
+			aqsize / 1024,
+			vqsize / 1024,
+			sqsize,
+			pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
+			pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
 			fflush(stdout);
 			last_time = cur_time;
 		}
@@ -1199,14 +1201,18 @@ void FfmpegSdlAvPlayback::stop_display_loop() {
 
 void FfmpegSdlAvPlayback::toggle_audio_display() {
 	// TODO(fraudies): Next fixing, it does not seem to advance the show_mode
-	int next = show_mode;
+	
+	// If the video state is not set then this method does not do anything
+	if (!pVideoState) return;
+
+	int next = pVideoState->get_show_mode();
 	do {
 		next = (next + 1) % SHOW_MODE_NB;
 		
-	} while (next != show_mode && (next == SHOW_MODE_VIDEO 
+	} while (next != pVideoState->get_show_mode() && (next == SHOW_MODE_VIDEO
 			&& !pVideoState->get_video_st() || next != SHOW_MODE_VIDEO && !pVideoState->get_audio_st()));
-	if (show_mode != next) {
+	if (pVideoState->get_show_mode() != next) {
 		set_force_refresh(1);
-		show_mode = static_cast<ShowMode>(next);
+		pVideoState->set_show_mode(static_cast<ShowMode>(next));
 	}
 }

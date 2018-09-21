@@ -14,7 +14,8 @@ public class SimpleJavaMediaPlayer {
         URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
 
         // Create the media player using the constructor with File
-        MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, new JFrame());
+        //MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, new JFrame());
+        MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, new JDialog());
 
         // Initialize the player
         mediaPlayer.init();

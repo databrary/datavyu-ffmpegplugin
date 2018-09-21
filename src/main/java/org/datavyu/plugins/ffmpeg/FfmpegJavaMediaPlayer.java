@@ -7,7 +7,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.io.File;
 import java.net.URI;
 
 import static java.awt.color.ColorSpace.CS_sRGB;
@@ -97,6 +96,17 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
 
     private void initAndStartImagePlayer() {
+        imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
+        imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
+        imageCanvasPlayerThread.start();
+
+/*
+        imagePlayerThread = new ImagePlayerThread(this);
+        imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
+        imagePlayerThread.start();
+*/
+
+/*
         if (this.frame != null) {
             imagePlayerThread = new ImagePlayerThread(this);
             imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
@@ -106,6 +116,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
             imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
             imageCanvasPlayerThread.start();
         }
+*/
     }
 
     @Override
@@ -294,12 +305,14 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     @Override
     protected void playerDispose() {
-        if (imagePlayerThread != null) {
-            imagePlayerThread.terminte();
-        }
         if (imageCanvasPlayerThread != null) {
             imageCanvasPlayerThread.terminte();
         }
+/*
+        if (imagePlayerThread != null) {
+            imagePlayerThread.terminte();
+        }
+*/
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();
         }

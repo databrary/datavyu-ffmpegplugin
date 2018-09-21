@@ -253,11 +253,11 @@ uint32_t FfmpegJavaAvPlaybackPipline::HasImageData(bool* bImageData) const {
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetImageWidth(int* width) const {
+uint32_t FfmpegJavaAvPlaybackPipline::GetImageWidth(int* iWidth) const {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYBACK_NULL;
 
-	*width = pJavaPlayback->get_image_width();
+	*iWidth = pJavaPlayback->get_image_width();
 
 	return ERROR_NONE;
 }

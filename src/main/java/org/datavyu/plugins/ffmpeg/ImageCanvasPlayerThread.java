@@ -33,6 +33,7 @@ public class ImageCanvasPlayerThread extends Thread {
     }
 
     private void updateDisplay() {
+        //long time = System.nanoTime();
         do {
             do {
                 Graphics graphics = strategy.getDrawGraphics();
@@ -41,11 +42,10 @@ public class ImageCanvasPlayerThread extends Thread {
             } while (strategy.contentsRestored());
             strategy.show();
         } while (strategy.contentsLost());
+        //System.out.println("Time to display took: " + (System.nanoTime() - time)/1e6 + " ms");
     }
 
-
     public void init(ColorSpace colorSpace, int width, int height, Container container) {
-
         this.container = container;
         this.width = width;
         this.height = height;
@@ -63,23 +63,13 @@ public class ImageCanvasPlayerThread extends Thread {
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
 
-        initContainer();
-
-        launcher(() -> updateDisplay());
-    }
-
-    private void initContainer(){
         this.canvas = new Canvas();
-
         this.container.add(canvas, BorderLayout.CENTER);
-
         this.container.setBounds(0, 0, this.width, this.height);
         this.container.setVisible(true);
-
         // Make sure to make the canvas visible before creating the buffer strategy
         this.canvas.createBufferStrategy(NUM_BUFFERS);
         strategy = this.canvas.getBufferStrategy();
-
         this.container.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -95,6 +85,8 @@ public class ImageCanvasPlayerThread extends Thread {
             @Override
             public void componentHidden(ComponentEvent e) {  }
         });
+
+        launcher(() -> updateDisplay());
     }
 
     public void run() {

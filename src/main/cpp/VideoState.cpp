@@ -560,6 +560,7 @@ int VideoState::audio_decode_frame() {
 // The initialization order is correct now, but it is not garuanteed that some
 // of these might be null; hence, we initialize this in the create function
 VideoState::VideoState(int audio_buffer_size) : 
+	show_mode(SHOW_MODE_NONE),
 	abort_request(0),
 	paused(true), // TRUE
 	last_paused(0),
@@ -1509,6 +1510,7 @@ void VideoState::toggle_mute() {
 }
 
 void VideoState::update_pts(double pts, int64_t pos, int serial) {
+	// TODO: Revisit this
 	get_pVidclk()->set_clock(pts / pts_speed, serial);
 	Clock::sync_clock_to_slave(get_pExtclk(), get_pVidclk());
 }
@@ -1637,6 +1639,9 @@ AVStream *VideoState::get_video_st() const { return video_st; }
 AVStream *VideoState::get_subtitle_st() const { return subtitle_st; }
 
 ShowMode VideoState::get_show_mode() const { return show_mode; }
+void VideoState::set_show_mode(ShowMode new_show_mode) {
+	show_mode = new_show_mode;
+}
 
 FrameQueue *VideoState::get_pPictq() const { return pPictq; }
 FrameQueue *VideoState::get_pSubpq() const { return pSubpq; }
@@ -1715,8 +1720,7 @@ double VideoState::compute_target_delay(double delay) {
 		}
 	}
 
-	av_log(NULL, AV_LOG_TRACE, "video: delay=%0.3f A-V=%f\n",
-		delay, -diff);
+	av_log(NULL, AV_LOG_TRACE, "video: delay=%0.3f A-V=%f\n", delay, -diff);
 
 	return delay;
 }
@@ -1846,6 +1850,7 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 	audio_write_buf_size = audio_buf_size - audio_buf_index;
 	/* Let's assume the audio driver that is used by SDL has two periods. */
 	if (!isnan(audio_clock) && !muted) {
+		// TODO: Revisit this
 		pAudclk->set_clock_at(audio_clock
 			- (double)(2 * audio_hw_buf_size + audio_write_buf_size)
 			/ audio_tgt.bytes_per_sec * pts_speed, audio_clock_serial, audio_callback_time / 1000000.0);

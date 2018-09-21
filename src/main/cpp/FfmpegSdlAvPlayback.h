@@ -168,7 +168,7 @@ static void sdl_audio_callback_bridge(void* vs, Uint8 *stream, int len) {
 	VideoState* pVideoState = pFfmpegSdlAvPlayback->get_VideoState();
 	pVideoState->audio_callback(stream, len);
 
-	if (show_mode != SHOW_MODE_VIDEO)
+	if (pVideoState->get_show_mode() != SHOW_MODE_VIDEO)
 		FfmpegSdlAvPlayback::update_sample_display((int16_t *)stream, len);
 
 	// Note, the mixer can work inplace using the same stream as src and dest, see source code here

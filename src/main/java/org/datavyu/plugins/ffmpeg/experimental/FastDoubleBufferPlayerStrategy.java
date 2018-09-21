@@ -1,15 +1,19 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins.ffmpeg.experimental;
+
+import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
-// Currently this uses swing components to display the buffered image
-// TODO(fraudies): Switch this to javafx for new GUI
-public class ImagePlayerThread extends Thread {
+/**
+ * Note, that this has the rolling-effect between images,
+ * especially when played back fast
+ */
+public class FastDoubleBufferPlayerStrategy extends Thread {
+
     private MediaPlayerData mediaPlayerData;
     private SampleModel sm;
     private ComponentColorModel cm;
@@ -25,8 +29,9 @@ public class ImagePlayerThread extends Thread {
     private int height;
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
+    private Canvas canvas = null;
 
-    ImagePlayerThread(MediaPlayerData mediaPlayerData) {
+    FastDoubleBufferPlayerStrategy(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
         setName("Ffmpeg image player thread");
         setDaemon(false);
@@ -63,14 +68,25 @@ public class ImagePlayerThread extends Thread {
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
 
+        this.canvas = new Canvas() {
+            private static final long serialVersionUID = 5471924216942753555L;
+            @Override
+            public void paint(Graphics g) {
+                updateDisplay();
+            }
+            @Override
+            public void update(Graphics g){
+                paint(g);
+            }
+        };
+        this.frame.add(canvas, BorderLayout.CENTER);
         this.frame.setBounds(0, 0, this.width, this.height);
         this.frame.setVisible(true);
 
         // Make sure to make the canvas visible before creating the buffer strategy
-        this.frame.createBufferStrategy(NUM_BUFFERS);
-        strategy = this.frame.getBufferStrategy();
-        launcher(() -> updateDisplay());
-        //updateDisplay();
+        this.canvas.createBufferStrategy(NUM_BUFFERS);
+        strategy = this.canvas.getBufferStrategy();
+        this.canvas.repaint();
     }
 
     public void run() {
@@ -84,10 +100,10 @@ public class ImagePlayerThread extends Thread {
             WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
             // Create the original image
             image = new BufferedImage(cm, raster, false, properties);
-            launcher(() -> updateDisplay());
-            //updateDisplay();
+            canvas.repaint();
             // This does not measure the time to update the display
             double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
+            System.out.println("Wait for: " + waitTime + " ms");
             // If we need to wait
             if (waitTime > 0) {
                 try {
@@ -101,16 +117,5 @@ public class ImagePlayerThread extends Thread {
 
     public void terminte() {
         stopped = true;
-    }
-
-    private static void launcher(Runnable runnable) {
-        if (EventQueue.isDispatchThread()){
-            runnable.run();
-        } else {
-            try {
-                EventQueue.invokeAndWait(runnable);
-            } catch (InterruptedException | InvocationTargetException e) {
-            }
-        }
     }
 }

@@ -8,7 +8,10 @@ FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
 		pAudioFormat(pAudioFormat), 
 		pPixelFormat(pPixelFormat),
 		audioBufferSizeInBy(audioBufferSizeInBy),
-		img_convert_ctx(nullptr) 
+		img_convert_ctx(nullptr),
+		rdftspeed(0.02),
+		last_vis_time(0),
+		remaining_time_to_display(0)
 { }
 
 FfmpegJavaAvPlayback::~FfmpegJavaAvPlayback()
@@ -102,7 +105,7 @@ bool FfmpegJavaAvPlayback::has_audio_data() const {
 	return pVideoState->has_audio_data();
 }
 
-bool FfmpegJavaAvPlayback::do_display() {
+bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 	bool display = false;
 	
 	double time;
@@ -111,6 +114,15 @@ bool FfmpegJavaAvPlayback::do_display() {
 
 	if (!pVideoState->get_paused() && pVideoState->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK && pVideoState->get_realtime())
 		pVideoState->check_external_clock_speed();
+
+	if (!display_disable && pVideoState->get_show_mode() != SHOW_MODE_VIDEO && pVideoState->get_audio_st()) {
+		time = av_gettime_relative() / 1000000.0;
+		if (force_refresh || last_vis_time + rdftspeed < time) {
+			display = true;
+			last_vis_time = time;
+		}
+		*remaining_time = FFMIN(*remaining_time, last_vis_time + rdftspeed - time);
+	}
 
 	if (pVideoState->get_video_st()) {
 	retry:
@@ -142,7 +154,7 @@ bool FfmpegJavaAvPlayback::do_display() {
 
 			time = av_gettime_relative() / 1000000.0;
 			if (time < frame_timer + delay) {
-				//*remaining_time = FFMIN(frame_timer + delay - time, *remaining_time);
+				*remaining_time = FFMIN(frame_timer + delay - time, *remaining_time);
 				goto display;
 			}
 
@@ -227,7 +239,7 @@ bool FfmpegJavaAvPlayback::do_display() {
 }
 
 void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long len) {
-	bool doUpdate = do_display();
+	bool doUpdate = do_display(&remaining_time_to_display);
 	if (doUpdate) {
 		Frame *vp = pVideoState->get_pPictq()->peek_last();
 		img_convert_ctx = sws_getCachedContext(
@@ -237,8 +249,6 @@ void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long l
 			SWS_BICUBIC, NULL, NULL, NULL);
 		if (img_convert_ctx != NULL) {
 			// TODO(fraudies): Add switch case statement for the different pixel formats
-
-
 			// Left the pixels allocation/free here to support resizing through sws_scale natively
 			uint8_t* pixels[4];
 			int pitch[4];
