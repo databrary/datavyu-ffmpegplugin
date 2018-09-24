@@ -1,5 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
+import javafx.stage.Stage;
+import org.datavyu.plugins.ffmpeg.experimental.ImageJfxPlayerThread;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
@@ -24,6 +26,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private AudioPlayerThread audioPlayerThread = null;
     private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
     private Container container;
+    private Stage stage;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
     private AudioFormat audioFormat;
     private ColorSpace colorSpace;
@@ -46,6 +49,13 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         this.container = container;
         this.audioFormat = audioFormat;
         this.colorSpace = colorSpace;
+    }
+
+    public FfmpegJavaMediaPlayer(URI mediaPath, Stage stage){
+        super(mediaPath);
+        this.stage = stage;
+        this.audioFormat = AudioPlayerThread.getMonoFormat();
+        this.colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
     }
 
     /**

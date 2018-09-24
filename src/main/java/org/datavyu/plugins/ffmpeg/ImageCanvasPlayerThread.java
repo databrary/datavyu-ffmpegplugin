@@ -28,7 +28,7 @@ public class ImageCanvasPlayerThread extends Thread {
 
     ImageCanvasPlayerThread(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
-        setName("Ffmpeg image player thread");
+        setName("Ffmpeg image canvas player thread");
         setDaemon(false);
     }
 
@@ -63,6 +63,7 @@ public class ImageCanvasPlayerThread extends Thread {
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
 
+        // Create the canvas and add it to the center fo the container
         this.canvas = new Canvas();
         this.container.add(canvas, BorderLayout.CENTER);
         this.container.setBounds(0, 0, this.width, this.height);

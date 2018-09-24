@@ -1,8 +1,12 @@
 package org.datavyu.plugins.ffmpeg.examples;
 
 import org.datavyu.plugins.ffmpeg.*;
+import org.datavyu.plugins.ffmpegplayer.AudioSoundStreamListener;
 
+import javax.sound.sampled.AudioFormat;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.io.File;
 import java.net.URI;
 
