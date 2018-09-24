@@ -8,7 +8,8 @@ FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
 		pAudioFormat(pAudioFormat), 
 		pPixelFormat(pPixelFormat),
 		audioBufferSizeInBy(audioBufferSizeInBy),
-		img_convert_ctx(nullptr) 
+		img_convert_ctx(nullptr),
+		remaining_time_to_display(0)
 { }
 
 FfmpegJavaAvPlayback::~FfmpegJavaAvPlayback()
@@ -60,7 +61,7 @@ void FfmpegJavaAvPlayback::destroy() {
 	if (pVideoState)
 		pVideoState->stream_close();
 
-#if CONFIG_AVFILTER
+#if CONFIG_VIDEO_FILTER
 	//av_freep(&vfilters_list);
 #endif
 	avformat_network_deinit();
@@ -86,11 +87,11 @@ long FfmpegJavaAvPlayback::get_audioSyncDelay() {
 	return 0;
 }
 
-int FfmpegJavaAvPlayback::get_image_width() {
+int FfmpegJavaAvPlayback::get_image_width() const {
 	return pVideoState->get_image_width();
 }
 
-int FfmpegJavaAvPlayback::get_image_height() {
+int FfmpegJavaAvPlayback::get_image_height() const {
 	return pVideoState->get_image_height();
 }
 
@@ -102,7 +103,7 @@ bool FfmpegJavaAvPlayback::has_audio_data() const {
 	return pVideoState->has_audio_data();
 }
 
-bool FfmpegJavaAvPlayback::do_display() {
+bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 	bool display = false;
 	
 	double time;
@@ -111,6 +112,15 @@ bool FfmpegJavaAvPlayback::do_display() {
 
 	if (!pVideoState->get_paused() && pVideoState->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK && pVideoState->get_realtime())
 		pVideoState->check_external_clock_speed();
+
+	if (!display_disable && pVideoState->get_show_mode() != SHOW_MODE_VIDEO && pVideoState->get_audio_st()) {
+		time = av_gettime_relative() / 1000000.0;
+		if (force_refresh || last_vis_time + rdftspeed < time) {
+			display = true;
+			last_vis_time = time;
+		}
+		*remaining_time = FFMIN(*remaining_time, last_vis_time + rdftspeed - time);
+	}
 
 	if (pVideoState->get_video_st()) {
 	retry:
@@ -142,7 +152,7 @@ bool FfmpegJavaAvPlayback::do_display() {
 
 			time = av_gettime_relative() / 1000000.0;
 			if (time < frame_timer + delay) {
-				//*remaining_time = FFMIN(frame_timer + delay - time, *remaining_time);
+				*remaining_time = FFMIN(frame_timer + delay - time, *remaining_time);
 				goto display;
 			}
 
@@ -181,11 +191,53 @@ bool FfmpegJavaAvPlayback::do_display() {
 			force_refresh = 0;
 	}
 
+	if (show_status) {
+		static int64_t last_time;
+		int64_t cur_time;
+		int aqsize, vqsize, sqsize;
+		double av_diff;
+
+		cur_time = av_gettime_relative();
+		if (!last_time || (cur_time - last_time) >= 30000) {
+			aqsize = 0;
+			vqsize = 0;
+			sqsize = 0;
+			if (pVideoState->get_audio_st())
+				aqsize = pVideoState->get_pAudioq()->get_size();
+			if (pVideoState->get_video_st())
+				vqsize = pVideoState->get_pVideoq()->get_size();
+			if (pVideoState->get_subtitle_st())
+				sqsize = pVideoState->get_pSubtitleq()->get_size();
+			av_diff = 0;
+			if (pVideoState->get_audio_st() && pVideoState->get_video_st())
+				av_diff = pVideoState->get_pAudclk()->get_clock() - pVideoState->get_pVidclk()->get_clock();
+			else if (pVideoState->get_video_st())
+				av_diff = pVideoState->get_master_clock() - pVideoState->get_pVidclk()->get_clock();
+			else if (pVideoState->get_audio_st())
+				av_diff = pVideoState->get_master_clock() - pVideoState->get_pAudclk()->get_clock();
+			av_log(NULL, AV_LOG_INFO,
+				"%7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+				pVideoState->get_master_clock(),
+				1.0 / pVideoState->get_pts_speed(),
+				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
+				av_diff,
+				pVideoState->get_frame_drops_early(),
+				frame_drops_late,
+				aqsize / 1024,
+				vqsize / 1024,
+				sqsize,
+				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
+				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
+			fflush(stdout);
+			last_time = cur_time;
+		}
+	}
+
 	return display;
 }
 
 void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long len) {
-	bool doUpdate = do_display();
+	bool doUpdate = do_display(&remaining_time_to_display);
 	if (doUpdate) {
 		Frame *vp = pVideoState->get_pPictq()->peek_last();
 		img_convert_ctx = sws_getCachedContext(
@@ -195,8 +247,6 @@ void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long l
 			SWS_BICUBIC, NULL, NULL, NULL);
 		if (img_convert_ctx != NULL) {
 			// TODO(fraudies): Add switch case statement for the different pixel formats
-
-
 			// Left the pixels allocation/free here to support resizing through sws_scale natively
 			uint8_t* pixels[4];
 			int pitch[4];

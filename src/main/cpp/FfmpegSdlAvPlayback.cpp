@@ -51,7 +51,6 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume) :
 	FfmpegAvPlayback(),
 	ytop(0),
 	xleft(0),
-	rdftspeed(0.02),
 	window(nullptr),
 	renderer(nullptr),
 	img_convert_ctx(nullptr),
@@ -59,9 +58,7 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume) :
 	vis_texture(nullptr),
 	sub_texture(nullptr),
 	vid_texture(nullptr),
-	last_i_start(0), 
-	frame_drops_late(0), 
-	last_vis_time(0), 
+	last_i_start(0),
 	screen_width(0),
 	screen_height(0),
 	is_full_screen(0), 
@@ -537,7 +534,7 @@ void FfmpegSdlAvPlayback::video_audio_display() {
 		}
 		if (!pVideoState->get_rdft() || !pVideoState->get_rdft_data()) {
 			av_log(NULL, AV_LOG_ERROR, "Failed to allocate buffers for RDFT, switching to waves display\n");
-			show_mode = SHOW_MODE_WAVES;
+			pVideoState->set_show_mode(SHOW_MODE_WAVES);
 		}
 		else {
 			FFTSample *data[2];
@@ -611,6 +608,9 @@ void FfmpegSdlAvPlayback::refresh_loop_wait_event(SDL_Event *event) {
 		remaining_time = REFRESH_RATE;
 		if (pVideoState->get_show_mode() != SHOW_MODE_NONE && (!pVideoState->get_paused() || force_refresh))
 			video_refresh(&remaining_time);
+		// TODO: Remove me
+		//av_log(NULL, AV_LOG_INFO, "Time difference in %3.2f ms\n", (-remaining_time + REFRESH_RATE)*1000);
+		//fflush(stdout);
 		SDL_PumpEvents();
 	}
 }
@@ -631,7 +631,6 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 		}
 		*remaining_time = FFMIN(*remaining_time, last_vis_time + rdftspeed - time);
 	}
-
 	if (pVideoState->get_video_st()) {
 	retry:
 		if (pVideoState->get_pPictq()->nb_remaining() == 0) {
@@ -764,17 +763,19 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 			else if (pVideoState->get_audio_st())
 				av_diff = pVideoState->get_master_clock() - pVideoState->get_pAudclk()->get_clock();
 			av_log(NULL, AV_LOG_INFO,
-				"%7.2f at %dX %s:%7.3f fd=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
-				pVideoState->get_master_clock(),
-				pVideoState->get_master_clock_speed(),
-				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
-				av_diff,
-				pVideoState->get_frame_drops_early() + frame_drops_late,
-				aqsize / 1024,
-				vqsize / 1024,
-				sqsize,
-				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
-				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
+			"%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+			pVideoState->get_master_clock(),
+			1.0/pVideoState->get_pts_speed(),
+			pVideoState->get_pVidclk()->get_clock(),
+			(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
+			av_diff,
+			pVideoState->get_frame_drops_early(),
+			frame_drops_late,
+			aqsize / 1024,
+			vqsize / 1024,
+			sqsize,
+			pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
+			pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
 			fflush(stdout);
 			last_time = cur_time;
 		}
@@ -875,7 +876,7 @@ void FfmpegSdlAvPlayback::destroy() {
 	if (window)
 		SDL_DestroyWindow(window);
 
-#if CONFIG_AVFILTER
+#if CONFIG_VIDEO_FILTER
 	//av_freep(&vfilters_list);
 #endif
 	avformat_network_deinit();
@@ -887,10 +888,11 @@ void FfmpegSdlAvPlayback::destroy() {
 
 void FfmpegSdlAvPlayback::init_and_event_loop() {
 	SDL_Event event;
-	double incr, pos, frac;
+	double incr, pos, frac, rate;
 	// Initialize first before starting the stream
 	InitSdl();
 	pVideoState->stream_start();
+	rate = 1;
 
 	if (pVideoState->get_image_width()) {
 		FfmpegSdlAvPlayback::set_default_window_size(
@@ -950,10 +952,12 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
 				break;
 			case SDLK_KP_PLUS:
-				pVideoState->set_rate(1);
+				rate *= 2;
+				pVideoState->set_rate(rate);
 				break;
 			case SDLK_KP_MINUS:
-				pVideoState->set_rate(-1);
+				rate /= 2;
+				pVideoState->set_rate(rate);
 				break;
 			case SDLK_v:
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
@@ -967,14 +971,14 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
 				break;
 			case SDLK_w:
-#if CONFIG_AVFILTER
-				if (pVideoState->get_show_mode() == SHOW_MODE_VIDEO && pVideoState->->vfilter_idx < nb_vfilters - 1) {
-					if (++pVideoState->->vfilter_idx >= nb_vfilters)
-						pVideoState->->vfilter_idx = 0;
+#if CONFIG_VIDEO_FILTER
+				if (pVideoState->get_show_mode() == SHOW_MODE_VIDEO && pVideoState->get_vfilter_idx() < pVideoState->get_nb_vfilters() - 1) {
+					if (pVideoState->get_vfilter_idx() + 1 >= pVideoState->get_nb_vfilters())
+						pVideoState->set_vfilter_idx(0);
 				}
 				else {
-					pVideoState->->vfilter_idx = 0;
-					pVideoState->toggle_audio_display();
+					pVideoState->set_vfilter_idx(0);
+					toggle_audio_display();
 				}
 #else
 				toggle_audio_display();
@@ -1026,14 +1030,14 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 					pos = pVideoState->get_master_clock();
 					if (isnan(pos)) {
 						pos = (double)pVideoState->get_seek_pos() / AV_TIME_BASE;
-#ifdef _DEBUG
+#if _DEBUG
 						printf("Seek Position Requested - Master Clock Return NaN \n");
 #endif // _DEBUG
 					}
 					pos += incr;
 					if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && pos < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
 						pos = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
-#ifdef _DEBUG
+#if _DEBUG
 					printf("Seeking From Time %7.2f sec To %7.2f sec with Incr %7.2f sec \n",
 						(pos-incr),
 						pos,
@@ -1195,14 +1199,18 @@ void FfmpegSdlAvPlayback::stop_display_loop() {
 
 void FfmpegSdlAvPlayback::toggle_audio_display() {
 	// TODO(fraudies): Next fixing, it does not seem to advance the show_mode
-	int next = show_mode;
+	
+	// If the video state is not set then this method does not do anything
+	if (!pVideoState) return;
+
+	int next = pVideoState->get_show_mode();
 	do {
 		next = (next + 1) % SHOW_MODE_NB;
 		
-	} while (next != show_mode && (next == SHOW_MODE_VIDEO 
+	} while (next != pVideoState->get_show_mode() && (next == SHOW_MODE_VIDEO
 			&& !pVideoState->get_video_st() || next != SHOW_MODE_VIDEO && !pVideoState->get_audio_st()));
-	if (show_mode != next) {
+	if (pVideoState->get_show_mode() != next) {
 		set_force_refresh(1);
-		show_mode = static_cast<ShowMode>(next);
+		pVideoState->set_show_mode(static_cast<ShowMode>(next));
 	}
 }

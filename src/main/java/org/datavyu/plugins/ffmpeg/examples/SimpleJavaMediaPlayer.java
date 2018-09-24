@@ -16,17 +16,8 @@ public class SimpleJavaMediaPlayer {
         // Define the media file
         URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
 
-        //Use ImageCanvasPlayerThread class
-        JDialog container = new JDialog();
-        container.setVisible(true);
-        MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath,
-                (Container)container
-                ,AudioSoundStreamListener.getNewMonoFormat()
-                ,ColorSpace.getInstance(ColorSpace.CS_sRGB));
-
-        // Create the media player using the constructor with URI and JFrame
-        // Test imagePlayerThread Class
-//        MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, new JFrame());
+        // Create the media player using the constructor with File
+        MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, new JDialog());
 
         // Initialize the player
         mediaPlayer.init();

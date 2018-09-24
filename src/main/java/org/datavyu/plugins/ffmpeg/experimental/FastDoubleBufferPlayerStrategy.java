@@ -1,50 +1,60 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins.ffmpeg.experimental;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
+import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 
-
+import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.util.Hashtable;
 
-// Currently this uses swing components to display the buffered image
-public class ImageJfxPlayerThread extends Thread {
+/**
+ * Note, that this has the rolling-effect between images,
+ * especially when played back fast
+ */
+public class FastDoubleBufferPlayerStrategy extends Thread {
+
     private MediaPlayerData mediaPlayerData;
     private SampleModel sm;
     private ComponentColorModel cm;
     private Hashtable<String, String> properties = new Hashtable<>();
     private BufferedImage image;
-    private ImageView imageView;
     private byte[] data;
-    private Stage stage;
-    private Scene scene;
+    private JFrame frame;
+    private BufferStrategy strategy;
     private static final int NUM_COLOR_CHANNELS = 3;
+    private static final int NUM_BUFFERS = 3;
     private volatile boolean stopped = false;
     private int width;
     private int height;
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
+    private Canvas canvas = null;
 
-    ImageJfxPlayerThread(MediaPlayerData mediaPlayerData) {
+    FastDoubleBufferPlayerStrategy(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
         setName("Ffmpeg image player thread");
         setDaemon(false);
     }
 
-    public void init(ColorSpace colorSpace, int width, int height, Stage stage) {
+    private void updateDisplay() {
+        //long time = System.nanoTime();
+        do {
+            do {
+                Graphics graphics = strategy.getDrawGraphics();
+                graphics.drawImage(image, 0, 0, frame.getWidth(), frame.getHeight(),  null);
+                graphics.dispose();
+            } while (strategy.contentsRestored());
+            strategy.show();
+        } while (strategy.contentsLost());
+        //System.out.println("Time to display took: " + (System.nanoTime() - time)/1e6 + " ms");
+    }
 
-        this.stage = stage;
+    public void init(ColorSpace colorSpace, int width, int height, JFrame frame) {
+
+        this.frame = frame;
         this.width = width;
         this.height = height;
-
         // Allocate byte buffer
         this.data = new byte[this.width*this.height*NUM_COLOR_CHANNELS];
 
@@ -58,22 +68,25 @@ public class ImageJfxPlayerThread extends Thread {
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
 
-        initStageAndShow();
+        this.canvas = new Canvas() {
+            private static final long serialVersionUID = 5471924216942753555L;
+            @Override
+            public void paint(Graphics g) {
+                updateDisplay();
+            }
+            @Override
+            public void update(Graphics g){
+                paint(g);
+            }
+        };
+        this.frame.add(canvas, BorderLayout.CENTER);
+        this.frame.setBounds(0, 0, this.width, this.height);
+        this.frame.setVisible(true);
 
-        renderImage();
-    }
-
-    private void initStageAndShow(){
-        this.imageView =  new ImageView();
-
-        this.scene =  new Scene(new StackPane(imageView), this.width, this.height);
-
-        imageView.fitWidthProperty().bind(scene.widthProperty());
-        imageView.fitHeightProperty().bind(scene.heightProperty());
-        this.imageView.setPreserveRatio(true);
-
-        this.stage.setScene(scene);
-        this.stage.show();
+        // Make sure to make the canvas visible before creating the buffer strategy
+        this.canvas.createBufferStrategy(NUM_BUFFERS);
+        strategy = this.canvas.getBufferStrategy();
+        this.canvas.repaint();
     }
 
     public void run() {
@@ -87,10 +100,10 @@ public class ImageJfxPlayerThread extends Thread {
             WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
             // Create the original image
             image = new BufferedImage(cm, raster, false, properties);
-
-            renderImage();
+            canvas.repaint();
             // This does not measure the time to update the display
             double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
+            System.out.println("Wait for: " + waitTime + " ms");
             // If we need to wait
             if (waitTime > 0) {
                 try {
@@ -105,20 +118,4 @@ public class ImageJfxPlayerThread extends Thread {
     public void terminte() {
         stopped = true;
     }
-
-    private synchronized void renderImage() {
-        WritableImage wr = null;
-        if (image != null) {
-            wr = new WritableImage(image.getWidth(), image.getHeight());
-            PixelWriter pw = wr.getPixelWriter();
-            for (int x = 0; x < image.getWidth(); x++) {
-                for (int y = 0; y < image.getHeight(); y++) {
-                    pw.setArgb(x, y, image.getRGB(x, y));
-                }
-            }
-        }
-
-        this.imageView.setImage(wr);
-    }
 }
-

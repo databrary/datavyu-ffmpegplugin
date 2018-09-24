@@ -67,7 +67,8 @@ static const struct TextureFormatEntry {
 	{ AV_PIX_FMT_NONE,           SDL_PIXELFORMAT_UNKNOWN },
 };
 
-//class VideoState;
+static SDL_RendererInfo renderer_info = { 0 };
+
 
 class FfmpegSdlAvPlayback : public FfmpegAvPlayback {
 
@@ -75,9 +76,8 @@ private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	SDL_AudioDeviceID audio_dev = 0;
-	SDL_RendererInfo renderer_info = { 0 };
+	//SDL_RendererInfo renderer_info = { 0 };
 	int ytop, xleft;
-	double rdftspeed;
 	int xpos;
 
 	struct SwsContext *img_convert_ctx;
@@ -88,10 +88,6 @@ private:
 	SDL_Texture *vid_texture;
 
 	int last_i_start;
-
-	int frame_drops_late;
-
-	double last_vis_time;
 
 	int screen_width;
 	int screen_height;
@@ -170,7 +166,7 @@ static void sdl_audio_callback_bridge(void* vs, Uint8 *stream, int len) {
 	VideoState* pVideoState = pFfmpegSdlAvPlayback->get_VideoState();
 	pVideoState->audio_callback(stream, len);
 
-	if (show_mode != SHOW_MODE_VIDEO)
+	if (pVideoState->get_show_mode() != SHOW_MODE_VIDEO)
 		FfmpegSdlAvPlayback::update_sample_display((int16_t *)stream, len);
 
 	// Note, the mixer can work inplace using the same stream as src and dest, see source code here

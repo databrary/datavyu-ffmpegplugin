@@ -1,7 +1,8 @@
 #ifndef VIDEOSTATE_H_
 #define VIDEOSTATE_H_
 
-#define CONFIG_AVFILTER 0
+#define CONFIG_AUDIO_FILTER 0
+#define CONFIG_VIDEO_FILTER 1
 
 #include <inttypes.h>
 #include <math.h>
@@ -34,10 +35,10 @@ extern "C" {
 	#include "libavcodec/avfft.h"
 	#include "libswresample/swresample.h"
 
-	#if CONFIG_AVFILTER
-	# include "libavfilter/avfilter.h"
-	# include "libavfilter/buffersink.h"
-	# include "libavfilter/buffersrc.h"
+	#if CONFIG_AUDIO_FILTER || CONFIG_VIDEO_FILTER
+		# include "libavfilter/avfilter.h"
+		# include "libavfilter/buffersink.h"
+		# include "libavfilter/buffersrc.h"
 	#endif
 
 	#include <assert.h>
@@ -106,42 +107,24 @@ enum PlayerStateCallback {
 	NUM_PLAYER_STATE_CALLBACKS
 };
 
-// Note will have to divide by 1000 to get the float value of the rate
-enum Rates {
-	X1D32,
-	X1D16,
-	X1D8,
-	X1D4,
-	X1D2,
-	X1,
-	X2,
-	X4,
-	X8,
-	X16,
-	X32,
-};
 static const struct RatesEntry {
-	enum Rates	rate;
 	float		clock_speed;
 	float		pts_speed;
 	char		*command;
 } rate_speed_map[] = {
-	{ X1D32,	0.03125,	32.0,		(char *) "setpts=32.0*PTS" },
-	{ X1D16,	0.0625,		16.0,		(char *) "setpts=16.0*PTS" },
-	{ X1D8,		0.125,		8.0,		(char *) "setpts=8.0*PTS" },
-	{ X1D4,		0.25,		4.0,		(char *) "setpts=4.0*PTS" },
-	{ X1D2,		0.5,		2.0,		(char *) "setpts=2.0*PTS" },
-	{ X1,		1.0,		1.0,		(char *) "setpts=1.0*PTS" },
-	{ X2,		2.0,		0.5,		(char *) "setpts=0.5*PTS" },
-	{ X4,		4.0,		0.25,		(char *) "setpts=0.25*PTS" },
-	{ X8,		8.0,		0.125,		(char *) "setpts=0.125*PTS" },
-	{ X16,		16.0,		0.0625,		(char *) "setpts=0.0625*PTS" },
-	{ X32,		32.0,		0.03125,	(char *) "setpts=0.03125*PTS" },
+	{ 0.03125,	32.0,		(char *) "setpts=32.0*PTS" },
+	{ 0.0625,	16.0,		(char *) "setpts=16.0*PTS" },
+	{ 0.125,	8.0,		(char *) "setpts=8.0*PTS" },
+	{ 0.25,		4.0,		(char *) "setpts=4.0*PTS" },
+	{ 0.5,		2.0,		(char *) "setpts=2.0*PTS" },
+	{ 1.0,		1.0,		(char *) "setpts=1.0*PTS" },
+	{ 2.0,		0.5,		(char *) "setpts=0.5*PTS" },
+	{ 4.0,		0.25,		(char *) "setpts=0.25*PTS" },
+	{ 8.0,		0.125,		(char *) "setpts=0.125*PTS" },
+	{ 16.0,		0.0625,		(char *) "setpts=0.0625*PTS" },
+	{ 32.0,		0.03125,	(char *) "setpts=0.03125*PTS" },
 };
 
-/* options specified by the user */
-
-static ShowMode			show_mode = SHOW_MODE_NONE;
 static const char		*window_title;
 static const char		*wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
@@ -149,7 +132,7 @@ static int				borderless;
 static int				show_status = 1;
 static int				av_sync_type_input = AV_SYNC_AUDIO_MASTER;
 static int64_t			start_time = AV_NOPTS_VALUE;
-static int64_t			duration = AV_NOPTS_VALUE;
+static int64_t			max_duration = AV_NOPTS_VALUE;
 static int				fast = 0;
 static int				genpts = 0;
 static int				lowres = 0;
@@ -174,10 +157,11 @@ static int64_t			audio_callback_time;
 //what will be the streamer in the future implementations
 class VideoState {
 private:
+	ShowMode show_mode;
 	int abort_request;
 	bool paused; // TODO(fraudies): Check if this need to be atomic
 	int last_paused;
-	bool stopped; // TODO(fraudies): Need atomic here for thread safety
+	bool stopped; // TODO(fraudies): Check if this need to be atomic
 	int queue_attachments_req;
 	int seek_req;
 	int seek_flags;
@@ -192,16 +176,17 @@ private:
 	double frame_last_returned_time;
 	double frame_last_filter_delay;
 	int video_stream;
-	double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
+	double max_frame_duration; // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
 	int eof;
 	int image_width;
 	int image_height;
+	double video_duration;
 	AVRational image_sample_aspect_ratio;
 	bool step; // TODO(fraudies): Check if this need to be atomic
 
-	int newSpeed_req;
-	float last_speed;
-	float pts_speed;
+	double rate;
+	int new_rate_req;
+	double pts_speed;
 
 	int audio_disable;
 	int video_disable;
@@ -255,11 +240,10 @@ private:
 	unsigned int audio_buf1_size;
 	int audio_buf_index; /* in bytes */
 	int	audio_write_buf_size;
-	//int	audio_volume;
 	int muted;
 	struct AudioParams audio_src;
 
-#if CONFIG_AVFILTER
+#if CONFIG_AUDIO_FILTER
 	struct AudioParams audio_filter_src;
 #endif
 
@@ -270,17 +254,21 @@ private:
 	int rdft_bits;
 	FFTSample *rdft_data;
 
-#if CONFIG_AVFILTER
+#if CONFIG_AUDIO_FILTER
+	char *afilters = NULL;	// audio filter Note: audio filter is not working
+	AVFilterContext *in_audio_filter;   // the first filter in the audio chain
+	AVFilterContext *out_audio_filter;  // the last filter in the audio chain
+	AVFilterGraph *agraph;            // audio filter graph
+#endif
+
+#if CONFIG_VIDEO_FILTER
 	int vfilter_idx;
 	const char **vfilters_list = NULL;
 	char *vfilters = NULL;	// video filter
 	int nb_vfilters = 0;
-	char *afilters = NULL;	// audio filter Note: audio filter is not working
+
 	AVFilterContext *in_video_filter;   // the first filter in the video chain
 	AVFilterContext *out_video_filter;  // the last filter in the video chain
-	AVFilterContext *in_audio_filter;   // the first filter in the audio chain
-	AVFilterContext *out_audio_filter;  // the last filter in the audio chain
-	AVFilterGraph *agraph;            // audio filter graph
 	
 	AVDictionary *sws_dict;			// From cmdutils
 	AVDictionary *swr_opts;			// From cmdutils
@@ -370,6 +358,7 @@ public:
 	bool has_audio_data() const;
 	bool has_image_data() const;
 	double get_duration() const; // returns the duration in sec
+	double get_stream_time() const; // returns the current time in stream in sec
 	//int get_audio_volume() const;
 	//void set_audio_volume(int new_audio_volume);
 	void toggle_mute();
@@ -397,6 +386,7 @@ public:
 	AVStream *get_subtitle_st() const;
 
 	ShowMode get_show_mode() const;
+	void set_show_mode(ShowMode new_show_mode);
 
 	FrameQueue *get_pPictq() const;
 	FrameQueue *get_pSubpq() const;
@@ -449,14 +439,15 @@ public:
 	double get_master_clock() const;
 
 	double get_fps() const;
+	double get_pts_speed() const;
 
 	void stream_close();
 
 	/* prepare a new audio buffer */
 	void audio_callback(uint8_t *stream, int len);
 
-	void set_rate(int step);
-	float get_rate() const;
+	void set_rate(double rate);
+	double get_rate() const;
 
 	int get_master_clock_speed();
 
@@ -469,18 +460,22 @@ public:
 	int get_subtitle_disable() const;
 	void set_subtitle_disable(const int disable);
 
-#if CONFIG_AVFILTER
-	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
+#if CONFIG_VIDEO_FILTER
 	int configure_video_filters(AVFilterGraph * graph, const char * vfilters, AVFrame * frame);
-	int configure_audio_filters(const char * afilters, int force_output_format);
-
 	int get_vfilter_idx();
 	void set_vfilter_idx(int idx);
 
 	int get_nb_vfilters() const;
 
 	int opt_add_vfilter(const char *arg);
+#endif
+
+#if CONFIG_AUDIO_FILTER || CONFIG_VIDEO_FILTER
+	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
 	void *grow_array(void *array, int elem_size, int *size, int new_size);
+#endif
+#if CONFIG_AUDIO_FILTER
+	int configure_audio_filters(const char * afilters, int force_output_format);
 #endif
 };
 

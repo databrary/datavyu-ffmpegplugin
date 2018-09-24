@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
 import javafx.stage.Stage;
+import org.datavyu.plugins.ffmpeg.experimental.ImageJfxPlayerThread;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
@@ -8,7 +9,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.io.File;
 import java.net.URI;
 
 import static java.awt.color.ColorSpace.CS_sRGB;
@@ -24,10 +24,7 @@ import static java.awt.color.ColorSpace.CS_sRGB;
  */
 public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements MediaPlayerData {
     private AudioPlayerThread audioPlayerThread = null;
-    private ImagePlayerThread imagePlayerThread = null;
     private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
-    private ImageJfxPlayerThread imageJfxPlayerThread = null;
-    private JFrame frame;
     private Container container;
     private Stage stage;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
@@ -40,30 +37,16 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     /**
      * Create an ffmpeg media player instance and play through java
-     * framework
+     * Datavyu container
      *
-     * @param mediaPath The media path
-     * @param frame The frame to display
-     */
-    public FfmpegJavaMediaPlayer(URI mediaPath, JFrame frame) {
-        super(mediaPath);
-        this.frame = frame;
-        this.audioFormat = AudioPlayerThread.getMonoFormat();
-        this.colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-    }
-
-    /**
-     * Create an ffmpeg media player instance and play through java
-     * framework
-     *
-     * @param mediaPath The media path
-     * @param frame The frame to display
+     * @param mediaPath The File source
+     * @param container The Container to display
      * @param audioFormat The audio format used for playback
      * @param colorSpace The color space used for playback
      */
-    public FfmpegJavaMediaPlayer(URI mediaPath, JFrame frame, AudioFormat audioFormat, ColorSpace colorSpace) {
+    public FfmpegJavaMediaPlayer(URI mediaPath, Container container, AudioFormat audioFormat, ColorSpace colorSpace) {
         super(mediaPath);
-        this.frame = frame;
+        this.container = container;
         this.audioFormat = audioFormat;
         this.colorSpace = colorSpace;
     }
@@ -77,16 +60,14 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     /**
      * Create an ffmpeg media player instance and play through java
-     * Datavyu container
+     * framework
      *
-     * @param mediaPath The File source
-     * @param container The Container to display
-     * @param audioFormat The audio format used for playback
-     * @param colorSpace The color space used for playback
+     * @param mediaPath The media path
+     * @param container The container to display the frame in
      */
-    public FfmpegJavaMediaPlayer(URI mediaPath, Container container, AudioFormat audioFormat, ColorSpace colorSpace) {
-        this(mediaPath, null, audioFormat, colorSpace);
-        this.container = container;
+    public FfmpegJavaMediaPlayer(URI mediaPath, Container container) {
+        this(mediaPath, container, AudioPlayerThread.getMonoFormat(),
+                ColorSpace.getInstance(ColorSpace.CS_sRGB));
     }
 
     private void initAndStartAudioPlayer() {
@@ -100,19 +81,9 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
 
     private void initAndStartImagePlayer() {
-        if (this.frame != null) {
-            imagePlayerThread = new ImagePlayerThread(this);
-            imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
-            imagePlayerThread.start();
-        } else if (this.container != null){
-            imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
-            imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
-            imageCanvasPlayerThread.start();
-        } else {
-            imageJfxPlayerThread = new ImageJfxPlayerThread(this);
-            imageJfxPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), stage);
-            imageJfxPlayerThread.start();
-        }
+        imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
+        imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
+        imageCanvasPlayerThread.start();
     }
 
     @Override
@@ -250,7 +221,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     @Override
     protected synchronized void playerSetVolume(float volume) throws MediaException {
         if (!muteEnabled) {
-            //TODO(Reda:) remove audioPlayerThread.setVolume when ffmpegSetVolume will be fully implemented
             if (volume == 0 ) {
                 audioPlayerThread.setMute(true);
             } else {
@@ -302,9 +272,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     @Override
     protected void playerDispose() {
-        if (imagePlayerThread != null) {
-            imagePlayerThread.terminte();
-        }
         if (imageCanvasPlayerThread != null) {
             imageCanvasPlayerThread.terminte();
         }

@@ -33,6 +33,7 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
     public void keyPressed(KeyEvent e) {
         double currentTime, nextTime;
         float currentVolume, nextVolume;
+        float rate = mediaPlayer.getRate();
         switch (e.getKeyCode()) {
             case KeyEvent.VK_NUMPAD5:
                 System.out.println("Stop");
@@ -47,12 +48,12 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
                 mediaPlayer.stepForward();
                 break;
             case KeyEvent.VK_NUMPAD6:
-                System.out.println("Speed +1");
-                mediaPlayer.setRate(1);
+                System.out.println("Change rate from " + rate + " to " + rate*2);
+                mediaPlayer.setRate(rate*2);
                 break;
             case KeyEvent.VK_NUMPAD4:
-                System.out.println("Speed -1");
-                mediaPlayer.setRate(-1);
+                System.out.println("Change rate from " + rate + " to " + rate/2);
+                mediaPlayer.setRate(rate/2);
                 break;
             case KeyEvent.VK_NUMPAD2:
                 System.out.println("Pause");

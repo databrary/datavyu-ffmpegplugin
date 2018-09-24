@@ -32,7 +32,10 @@ FfmpegAvPlayback::FfmpegAvPlayback() :
 	display_disable(0),
 	width(0),
 	height(0),
-	force_refresh(1) {}
+	force_refresh(1),
+	frame_drops_late(0),
+	rdftspeed(0.02),
+	last_vis_time(0) {}
 
 int FfmpegAvPlayback::Init(const char *filename, AVInputFormat *iformat, int audio_buffer_size) {
 	pVideoState = VideoState::stream_open(filename, iformat, audio_buffer_size);
@@ -87,8 +90,8 @@ double FfmpegAvPlayback::get_duration() const {
 	return pVideoState->get_duration();
 }
 
-double FfmpegAvPlayback::get_master_clock() const {
-	return pVideoState->get_master_clock();
+double FfmpegAvPlayback::get_stream_time() const {
+	return pVideoState->get_stream_time();
 }
 
 double FfmpegAvPlayback::get_fps() const {
@@ -96,7 +99,6 @@ double FfmpegAvPlayback::get_fps() const {
 }
 
 void FfmpegAvPlayback::set_rate(double rate) {
-	// TODO(fraudies): Here is a miss-match between the API's (rate/vs step)
 	pVideoState->set_rate(rate);
 }
 
@@ -126,7 +128,9 @@ void FfmpegAvPlayback::set_force_refresh(int refresh) {
 
 double FfmpegAvPlayback::vp_duration(Frame * vp, Frame * nextvp, double max_frame_duration) {
 	if (vp->serial == nextvp->serial) {
-		double duration = nextvp->pts - vp->pts;
+		// TODO(fraudies): Could set playback rate here
+		//double pts_speed = pVideoState->get_pts_speed();
+		double duration = (nextvp->pts - vp->pts); // *pts_speed;
 		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
 			return vp->duration;
 		else
