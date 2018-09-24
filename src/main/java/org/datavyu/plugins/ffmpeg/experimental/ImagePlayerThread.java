@@ -1,4 +1,6 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins.ffmpeg.experimental;
+
+import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 
 import javax.swing.*;
 import java.awt.*;

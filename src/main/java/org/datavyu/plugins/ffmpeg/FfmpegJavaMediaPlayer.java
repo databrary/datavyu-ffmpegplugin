@@ -22,9 +22,7 @@ import static java.awt.color.ColorSpace.CS_sRGB;
  */
 public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements MediaPlayerData {
     private AudioPlayerThread audioPlayerThread = null;
-    private ImagePlayerThread imagePlayerThread = null;
     private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
-    private JFrame frame;
     private Container container;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
     private AudioFormat audioFormat;
@@ -32,43 +30,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     static {
         System.loadLibrary("FfmpegJavaMediaPlayer");
-    }
-
-    /**
-     * Create an ffmpeg media player instance and play through java
-     * framework
-     *
-     * @param mediaPath The media path
-     * @param frame The frame to display
-     */
-    public FfmpegJavaMediaPlayer(URI mediaPath, JFrame frame) {
-        super(mediaPath);
-        this.frame = frame;
-        this.audioFormat = AudioPlayerThread.getMonoFormat();
-        this.colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-    }
-
-    public FfmpegJavaMediaPlayer(URI mediaPath, Container container) {
-        super(mediaPath);
-        this.container = container;
-        this.audioFormat = AudioPlayerThread.getMonoFormat();
-        this.colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-    }
-
-    /**
-     * Create an ffmpeg media player instance and play through java
-     * framework
-     *
-     * @param mediaPath The media path
-     * @param frame The frame to display
-     * @param audioFormat The audio format used for playback
-     * @param colorSpace The color space used for playback
-     */
-    public FfmpegJavaMediaPlayer(URI mediaPath, JFrame frame, AudioFormat audioFormat, ColorSpace colorSpace) {
-        super(mediaPath);
-        this.frame = frame;
-        this.audioFormat = audioFormat;
-        this.colorSpace = colorSpace;
     }
 
     /**
@@ -81,8 +42,22 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
      * @param colorSpace The color space used for playback
      */
     public FfmpegJavaMediaPlayer(URI mediaPath, Container container, AudioFormat audioFormat, ColorSpace colorSpace) {
-        this(mediaPath, null, audioFormat, colorSpace);
+        super(mediaPath);
         this.container = container;
+        this.audioFormat = audioFormat;
+        this.colorSpace = colorSpace;
+    }
+
+    /**
+     * Create an ffmpeg media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
+     * @param container The container to display the frame in
+     */
+    public FfmpegJavaMediaPlayer(URI mediaPath, Container container) {
+        this(mediaPath, container, AudioPlayerThread.getMonoFormat(),
+                ColorSpace.getInstance(ColorSpace.CS_sRGB));
     }
 
     private void initAndStartAudioPlayer() {
@@ -99,24 +74,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
         imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
         imageCanvasPlayerThread.start();
-
-/*
-        imagePlayerThread = new ImagePlayerThread(this);
-        imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
-        imagePlayerThread.start();
-*/
-
-/*
-        if (this.frame != null) {
-            imagePlayerThread = new ImagePlayerThread(this);
-            imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), frame);
-            imagePlayerThread.start();
-        } else {
-            imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
-            imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
-            imageCanvasPlayerThread.start();
-        }
-*/
     }
 
     @Override
@@ -308,11 +265,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         if (imageCanvasPlayerThread != null) {
             imageCanvasPlayerThread.terminte();
         }
-/*
-        if (imagePlayerThread != null) {
-            imagePlayerThread.terminte();
-        }
-*/
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();
         }

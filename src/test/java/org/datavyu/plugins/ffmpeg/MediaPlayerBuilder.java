@@ -7,7 +7,6 @@ import java.net.URI;
 public class MediaPlayerBuilder {
     public enum PlayerType {
         SDL,
-        JAVA_JFRAME,
         JAVA_JDIALOG
     }
 
@@ -16,8 +15,6 @@ public class MediaPlayerBuilder {
         switch (type) {
             case SDL:
                 return new FfmpegSdlMediaPlayer(movie);
-            case JAVA_JFRAME:
-                return new FfmpegJavaMediaPlayer(movie, new JFrame());
             case JAVA_JDIALOG:
                 return new FfmpegJavaMediaPlayer(movie, new JDialog());
             default:
