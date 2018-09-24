@@ -86,7 +86,7 @@ public class TestPlaybackRate {
     private List<String> movieFiles = new ArrayList<>();
 
     private List<MediaPlayerBuilder.PlayerType> moviePlayerTypes = new ArrayList<MediaPlayerBuilder.PlayerType>(){{
-        //add(MediaPlayerBuilder.PlayerType.SDL);
+        add(MediaPlayerBuilder.PlayerType.SDL);
         add(MediaPlayerBuilder.PlayerType.JAVA_JDIALOG);
     }};
 

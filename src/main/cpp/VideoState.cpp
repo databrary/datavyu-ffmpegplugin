@@ -1947,7 +1947,7 @@ double VideoState::av_display_rotation_get(const int32_t matrix[9]) {
 
 int VideoState::configure_video_filters(AVFilterGraph *graph, const char *vfilters, AVFrame *frame)
 {
-	enum AVPixelFormat pix_fmts[FF_ARRAY_ELEMS(sdl_texture_format_map)];
+	//enum AVPixelFormat pix_fmts[FF_ARRAY_ELEMS(sdl_texture_format_map)];
 	char sws_flags_str[512] = "";
 	char buffersrc_args[256];
 	int ret;
@@ -1956,18 +1956,20 @@ int VideoState::configure_video_filters(AVFilterGraph *graph, const char *vfilte
 	AVRational fr = av_guess_frame_rate(ic, video_st, NULL);
 	AVDictionaryEntry *e = NULL;
 
+	/*
 	int nb_pix_fmts = 0;
 	int i, j;
 
 	for (i = 0; i < renderer_info.num_texture_formats; i++) {
-		for (j = 0; j < FF_ARRAY_ELEMS(sdl_texture_format_map) - 1; j++) {
-			if (renderer_info.texture_formats[i] == sdl_texture_format_map[j].texture_fmt) {
-				pix_fmts[nb_pix_fmts++] = sdl_texture_format_map[j].format;
-				break;
-			}
-		}
+	for (j = 0; j < FF_ARRAY_ELEMS(sdl_texture_format_map) - 1; j++) {
+	if (renderer_info.texture_formats[i] == sdl_texture_format_map[j].texture_fmt) {
+	pix_fmts[nb_pix_fmts++] = sdl_texture_format_map[j].format;
+	break;
+	}
+	}
 	}
 	pix_fmts[nb_pix_fmts] = AV_PIX_FMT_NONE;
+	*/
 
 	while ((e = av_dict_get(sws_dict, "", e, AV_DICT_IGNORE_SUFFIX))) {
 		if (!strcmp(e->key, "sws_flags")) {
@@ -2001,8 +2003,8 @@ int VideoState::configure_video_filters(AVFilterGraph *graph, const char *vfilte
 	if (ret < 0)
 		goto fail;
 
-	if ((ret = av_opt_set_int_list(filt_out, "pix_fmts", pix_fmts, AV_PIX_FMT_NONE, AV_OPT_SEARCH_CHILDREN)) < 0)
-		goto fail;
+	//if ((ret = av_opt_set_int_list(filt_out, "pix_fmts", pix_fmts, AV_PIX_FMT_NONE, AV_OPT_SEARCH_CHILDREN)) < 0)
+	//	goto fail;
 
 	last_filter = filt_out;
 
@@ -2076,7 +2078,7 @@ int VideoState::opt_add_vfilter(const char *arg) {
 #endif
 
 
-#if CONFIG_AUDIO_FILTER
+#if CONFIG_AUDIO_FILTER || CONFIG_VIDEO_FILTER
 int VideoState::configure_filtergraph(AVFilterGraph *graph, const char *filtergraph,
 	AVFilterContext *source_ctx, AVFilterContext *sink_ctx)
 {
@@ -2121,6 +2123,28 @@ fail:
 	return ret;
 }
 
+void *VideoState::grow_array(void *array, int elem_size, int *size, int new_size)
+{
+	if (new_size >= INT_MAX / elem_size) {
+		av_log(NULL, AV_LOG_ERROR, "Array too big.\n");
+		exit(1);
+	}
+	if (*size < new_size) {
+		uint8_t *tmp = (uint8_t*)av_realloc_array(array, new_size, elem_size);
+		if (!tmp) {
+			av_log(NULL, AV_LOG_ERROR, "Could not alloc buffer.\n");
+			exit(1);
+		}
+		memset(tmp + *size*elem_size, 0, (new_size - *size) * elem_size);
+		*size = new_size;
+		return tmp;
+	}
+	return array;
+}
+#endif  /* CONFIG_AUDIO_FILTER || CONFIG_VIDEO_FILTER */
+
+
+#if CONFIG_AUDIO_FILTER
 int VideoState::configure_audio_filters(const char *afilters, int force_output_format){
 	static const enum AVSampleFormat sample_fmts[] = { AV_SAMPLE_FMT_S16, AV_SAMPLE_FMT_NONE };
 	int sample_rates[2] = { 0, -1 };
@@ -2229,24 +2253,5 @@ end:
 
 	return ret;
 }
+#endif  /* CONFIG_AUDIO_FILTER */
 
-
-void *VideoState::grow_array(void *array, int elem_size, int *size, int new_size)
-{
-	if (new_size >= INT_MAX / elem_size) {
-		av_log(NULL, AV_LOG_ERROR, "Array too big.\n");
-		exit(1);
-	}
-	if (*size < new_size) {
-		uint8_t *tmp = (uint8_t*)av_realloc_array(array, new_size,elem_size);
-		if (!tmp) {
-			av_log(NULL, AV_LOG_ERROR, "Could not alloc buffer.\n");
-			exit(1);
-		}
-		memset(tmp + *size*elem_size, 0, (new_size - *size) * elem_size);
-		*size = new_size;
-		return tmp;
-	}
-	return array;
-}
-#endif  /* CONFIG_VIDEO_FILTER */

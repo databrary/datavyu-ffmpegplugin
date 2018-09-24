@@ -1,7 +1,7 @@
 #ifndef VIDEOSTATE_H_
 #define VIDEOSTATE_H_
 
-#define CONFIG_AUDIO_FILTER 1
+#define CONFIG_AUDIO_FILTER 0
 #define CONFIG_VIDEO_FILTER 1
 
 #include <inttypes.h>
@@ -34,8 +34,6 @@ extern "C" {
 	#include "libavutil/opt.h"
 	#include "libavcodec/avfft.h"
 	#include "libswresample/swresample.h"
-
-	#include <SDL2/SDL.h>
 
 	#if CONFIG_AUDIO_FILTER || CONFIG_VIDEO_FILTER
 		# include "libavfilter/avfilter.h"
@@ -127,34 +125,6 @@ static const struct RatesEntry {
 	{ 32.0,		0.03125,	(char *) "setpts=0.03125*PTS" },
 };
 
-static const struct TextureFormatEntry {
-	enum AVPixelFormat format;
-	int texture_fmt;
-} sdl_texture_format_map[] = {
-	{ AV_PIX_FMT_RGB8,           SDL_PIXELFORMAT_RGB332 },
-	{ AV_PIX_FMT_RGB444,         SDL_PIXELFORMAT_RGB444 },
-	{ AV_PIX_FMT_RGB555,         SDL_PIXELFORMAT_RGB555 },
-	{ AV_PIX_FMT_BGR555,         SDL_PIXELFORMAT_BGR555 },
-	{ AV_PIX_FMT_RGB565,         SDL_PIXELFORMAT_RGB565 },
-	{ AV_PIX_FMT_BGR565,         SDL_PIXELFORMAT_BGR565 },
-	{ AV_PIX_FMT_RGB24,          SDL_PIXELFORMAT_RGB24 },
-	{ AV_PIX_FMT_BGR24,          SDL_PIXELFORMAT_BGR24 },
-	{ AV_PIX_FMT_0RGB32,         SDL_PIXELFORMAT_RGB888 },
-	{ AV_PIX_FMT_0BGR32,         SDL_PIXELFORMAT_BGR888 },
-	{ AV_PIX_FMT_NE(RGB0, 0BGR), SDL_PIXELFORMAT_RGBX8888 },
-	{ AV_PIX_FMT_NE(BGR0, 0RGB), SDL_PIXELFORMAT_BGRX8888 },
-	{ AV_PIX_FMT_RGB32,          SDL_PIXELFORMAT_ARGB8888 },
-	{ AV_PIX_FMT_RGB32_1,        SDL_PIXELFORMAT_RGBA8888 },
-	{ AV_PIX_FMT_BGR32,          SDL_PIXELFORMAT_ABGR8888 },
-	{ AV_PIX_FMT_BGR32_1,        SDL_PIXELFORMAT_BGRA8888 },
-	{ AV_PIX_FMT_YUV420P,        SDL_PIXELFORMAT_IYUV },
-	{ AV_PIX_FMT_YUYV422,        SDL_PIXELFORMAT_YUY2 },
-	{ AV_PIX_FMT_UYVY422,        SDL_PIXELFORMAT_UYVY },
-	{ AV_PIX_FMT_NONE,           SDL_PIXELFORMAT_UNKNOWN },
-};
-
-static SDL_RendererInfo renderer_info = { 0 };
-//static ShowMode			show_mode = SHOW_MODE_NONE;
 static const char		*window_title;
 static const char		*wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
@@ -500,10 +470,12 @@ public:
 	int opt_add_vfilter(const char *arg);
 #endif
 
-#if CONFIG_AUDIO_FILTER
+#if CONFIG_AUDIO_FILTER || CONFIG_VIDEO_FILTER
 	int configure_filtergraph(AVFilterGraph * graph, const char * filtergraph, AVFilterContext * source_ctx, AVFilterContext * sink_ctx);
-	int configure_audio_filters(const char * afilters, int force_output_format);
 	void *grow_array(void *array, int elem_size, int *size, int new_size);
+#endif
+#if CONFIG_AUDIO_FILTER
+	int configure_audio_filters(const char * afilters, int force_output_format);
 #endif
 };
 
