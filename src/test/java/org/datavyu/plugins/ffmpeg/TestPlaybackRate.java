@@ -94,7 +94,7 @@ public class TestPlaybackRate {
     private List<Pair<TimeInterval, Float>> parameters = new ArrayList<Pair<TimeInterval, Float>>(){{
         //add(new Pair<>(new TimeInterval(0, 20), 0.5f));
         //add(new Pair<>(new TimeInterval(0, 20), 1f));
-        add(new Pair<>(new TimeInterval(0, 20), 4f));
+        add(new Pair<>(new TimeInterval(0, 20), 2f));
         //add(new Pair<>(new TimeInterval(0, 20), 4f));
     }};
 
@@ -111,6 +111,7 @@ public class TestPlaybackRate {
 
     @Test
     public void testRates() {
+        long startTime;
         for (String movieFile : movieFiles) {
             for (MediaPlayerBuilder.PlayerType playerType: moviePlayerTypes) {
                 for (Pair<TimeInterval, Float> parameter : parameters) {
@@ -119,22 +120,30 @@ public class TestPlaybackRate {
                     double duration = stop - start;
                     float rate = parameter.getValue();
 
-                    System.out.println("Test rate: " + rate + " with start: " + start + " and " + stop);
+                    logger.info("Test rate: " + rate + " with start: " + start + " sec and end " + stop + " sec");
 
                     MediaPlayer mediaPlayer = MediaPlayerBuilder.build(movieFile, playerType);
 
                     // Set time and rate
+                    startTime = System.nanoTime();
                     mediaPlayer.init();
+                    logger.info("The frame rate is: " + mediaPlayer.getFps() + " Hz");
+                    logger.info("Initializing the player took: "
+                            + (System.nanoTime() - startTime)/1e6 + " ms");
+
                     mediaPlayer.setStartTime(start);
+
+                    startTime = System.nanoTime();
                     mediaPlayer.setRate(rate);
                     mediaPlayer.play();
+                    logger.info("Setting the rate and starting the player took: "
+                            + (System.nanoTime() - startTime)/1e6 + " ms");
                     try {
                         Thread.sleep((long) (duration * TO_MILLI));
                     } catch (InterruptedException ie) { }
                     double actualDuration = mediaPlayer.getPresentationTime() - start;
                     double expectedDuration = Math.abs(rate) * duration;
-
-                    logger.info("Finished measurement");
+                    logger.info("Measured: " + actualDuration + " sec; Expected: " + expectedDuration + " sec");
 
                     double diffInPercent = diffInPercent(actualDuration, expectedDuration);
                     mediaPlayer.stop();

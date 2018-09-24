@@ -107,7 +107,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double dSeekTime) {
 	if (pJavaPlayback == nullptr)
 		return ERROR_PLAYBACK_NULL;
 
-	double pos = pJavaPlayback->get_master_clock();
+	double pos = pJavaPlayback->get_stream_time();
 
 	if (isnan(pos))
 		pos = (double)pJavaPlayback->get_seek_pos() / AV_TIME_BASE;
@@ -140,9 +140,8 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double* pdStreamTime) {
 	// performance while seeking. However returning the external clock should 
 	// resolve this issue (Note that the timestamp return by the external is not as
 	// accurate as the audio clock  (Master))
-	//*pdStreamTime = pJavaPlayback->get_master_clock();
 
-	*pdStreamTime = pJavaPlayback->get_VideoState()->get_pExtclk()->get_clock();
+	*pdStreamTime = pJavaPlayback->get_stream_time();
 
 	return ERROR_NONE;
 }

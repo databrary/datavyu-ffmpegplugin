@@ -558,7 +558,7 @@ int VideoState::audio_decode_frame() {
 
 // Note, queues and clocks get initialized in the create_video_state function
 // The initialization order is correct now, but it is not garuanteed that some
-// of these might be null; hence, we initialize this in the create function
+// of these might not be null; hence, we initialize this in the create function
 VideoState::VideoState(int audio_buffer_size) : 
 	show_mode(SHOW_MODE_NONE),
 	abort_request(0),
@@ -580,6 +580,7 @@ VideoState::VideoState(int audio_buffer_size) :
 	video_stream(0),
 	max_frame_duration(0),
 	eof(0),
+	video_duration(0),
 	image_width(0),
 	image_height(0),
 	image_sample_aspect_ratio(av_make_q(0, 0)),
@@ -850,8 +851,7 @@ int VideoState::read_thread() {
 			//      of the seek_pos/seek_rel variables
 			ret = avformat_seek_file(this->ic, -1, seek_min, seek_target, seek_max, this->seek_flags);
 			if (ret < 0) {
-				av_log(NULL, AV_LOG_ERROR,
-					"%s: error while seeking\n", this->ic->url);
+				av_log(NULL, AV_LOG_ERROR, "%s: error while seeking\n", this->ic->url);
 			}
 			else {
 				if (this->audio_stream >= 0) {
@@ -960,11 +960,13 @@ int VideoState::read_thread() {
 		/* check if packet is in play range specified by user, then queue, otherwise discard */
 		stream_start_time = ic->streams[pkt->stream_index]->start_time;
 		pkt_ts = pkt->pts == AV_NOPTS_VALUE ? pkt->dts : pkt->pts;
-		pkt_in_play_range = duration == AV_NOPTS_VALUE ||
+		
+		pkt_in_play_range = max_duration == AV_NOPTS_VALUE ||
 			(pkt_ts - (stream_start_time != AV_NOPTS_VALUE ? stream_start_time : 0)) *
 			av_q2d(ic->streams[pkt->stream_index]->time_base) -
 			(double)(start_time != AV_NOPTS_VALUE ? start_time : 0) / 1000000
-			<= ((double)duration / 1000000);
+			<= ((double)max_duration / 1000000);
+
 		if (pkt->stream_index == this->audio_stream && pkt_in_play_range) {
 			pAudioq->put(pkt);
 		}
@@ -1242,23 +1244,13 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 	is->iformat = iformat;
 
 	is->audio_clock_serial = -1;
-	/*
-	if (startup_volume < 0)
-	av_log(NULL, AV_LOG_WARNING, "-volume=%d < 0, setting to 0\n", startup_volume);
-	if (startup_volume > 100)
-	av_log(NULL, AV_LOG_WARNING, "-volume=%d > 100, setting to 100\n", startup_volume);
-	startup_volume = av_clip(startup_volume, 0, 100);
-	startup_volume = av_clip(SDL_MIX_MAXVOLUME * startup_volume / 100, 0, SDL_MIX_MAXVOLUME);
-	is->audio_volume = startup_volume;
-	*/
-	//is->muted = 0;
+
 	is->av_sync_type = av_sync_type_input;
+
 	return is;
 }
 
 int VideoState::stream_start() {
-
-	// Initialization moved from read thread into main thread
 	int i, ret;
 	int st_index[AVMEDIA_TYPE_NB];
 	AVDictionaryEntry *t;
@@ -1314,7 +1306,6 @@ int VideoState::stream_start() {
 
 		if (ret < 0) {
 			av_log(NULL, AV_LOG_WARNING, "%s: could not find codec parameters\n", filename);
-			//ret = -1;
 			goto fail;
 		}
 	}
@@ -1390,6 +1381,8 @@ int VideoState::stream_start() {
 	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
 		stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
 	}
+	// Set the video duration (return and also clamp the audio clock to this)
+	video_duration = ic->duration / (double)AV_TIME_BASE;
 
 	ret = -1;
 	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
@@ -1502,7 +1495,17 @@ bool VideoState::has_image_data() const {
 }
 
 double VideoState::get_duration() const {
-	return get_ic()->duration / (double)AV_TIME_BASE;
+	return video_duration;
+}
+
+double VideoState::get_stream_time() const {
+	// TODO: Maybe other places need to handle NAN; instead of picking the external clock
+	// Could also use the last time -- NAN happens after a seek
+	double time = get_master_clock();
+	if (isnan(time)) {
+		time = pExtclk->get_clock();
+	}
+	return time;
 }
 
 void VideoState::toggle_mute() {
@@ -1811,8 +1814,6 @@ void VideoState::stream_close() {
 }
 
 /* prepare a new audio buffer */
-// TODO(fraudies): This method requires clean-up since we use it both for SDL and Java playback but most parts are specific to the SDL
-// E.g. we need to push the regulation of balance, volume into the SDL only part
 void VideoState::audio_callback(uint8_t *stream, int len) {
 	int audio_size, len1;
 	audio_callback_time = av_gettime_relative();
@@ -1826,8 +1827,6 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 				audio_buf_size = audio_buffer_size / audio_tgt.frame_size * audio_tgt.frame_size;
 			}
 			else {
-				//if (show_mode != SHOW_MODE_VIDEO)
-				//	FfmpegSdlAvPlayback::update_sample_display((int16_t *)audio_buf, audio_size);
 				audio_buf_size = audio_size;
 			}
 			audio_buf_index = 0;
@@ -1835,13 +1834,10 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 		len1 = audio_buf_size - audio_buf_index;
 		if (len1 > len)
 			len1 = len;
-		// TODO(fraudies): We should move this volume regulation (not mute) to the SDL only part
-		if (!muted && audio_buf /* && audio_volume == SDL_MIX_MAXVOLUME*/)
+		if (!muted && audio_buf)
 			memcpy(stream, (uint8_t *)audio_buf + audio_buf_index, len1);
 		else {
 			memset(stream, 0, len1);
-			//if (!muted && audio_buf)
-			//	SDL_MixAudioFormat(stream, (uint8_t *)audio_buf + audio_buf_index, AUDIO_S16SYS, len1, audio_volume);
 		}
 		len -= len1;
 		stream += len1;
@@ -1850,10 +1846,11 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 	audio_write_buf_size = audio_buf_size - audio_buf_index;
 	/* Let's assume the audio driver that is used by SDL has two periods. */
 	if (!isnan(audio_clock) && !muted) {
-		// TODO: Revisit this
-		pAudclk->set_clock_at(audio_clock
-			- (double)(2 * audio_hw_buf_size + audio_write_buf_size)
-			/ audio_tgt.bytes_per_sec * pts_speed, audio_clock_serial, audio_callback_time / 1000000.0);
+		pAudclk->set_clock_at(
+			audio_clock - (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec * pts_speed, 
+			audio_clock_serial, 
+			audio_callback_time / 1000000.0
+		);
 		Clock::sync_clock_to_slave(pExtclk, pAudclk);
 	}
 }

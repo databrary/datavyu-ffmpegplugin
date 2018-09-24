@@ -77,7 +77,6 @@ private:
 	SDL_AudioDeviceID audio_dev = 0;
 	//SDL_RendererInfo renderer_info = { 0 };
 	int ytop, xleft;
-	double rdftspeed;
 	int xpos;
 
 	struct SwsContext *img_convert_ctx;
@@ -88,8 +87,6 @@ private:
 	SDL_Texture *vid_texture;
 
 	int last_i_start;
-
-	double last_vis_time;
 
 	int screen_width;
 	int screen_height;

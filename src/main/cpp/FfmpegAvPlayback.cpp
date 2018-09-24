@@ -33,7 +33,9 @@ FfmpegAvPlayback::FfmpegAvPlayback() :
 	width(0),
 	height(0),
 	force_refresh(1),
-	frame_drops_late(0) {}
+	frame_drops_late(0),
+	rdftspeed(0.02),
+	last_vis_time(0) {}
 
 int FfmpegAvPlayback::Init(const char *filename, AVInputFormat *iformat, int audio_buffer_size) {
 	pVideoState = VideoState::stream_open(filename, iformat, audio_buffer_size);
@@ -88,8 +90,8 @@ double FfmpegAvPlayback::get_duration() const {
 	return pVideoState->get_duration();
 }
 
-double FfmpegAvPlayback::get_master_clock() const {
-	return pVideoState->get_master_clock();
+double FfmpegAvPlayback::get_stream_time() const {
+	return pVideoState->get_stream_time();
 }
 
 double FfmpegAvPlayback::get_fps() const {

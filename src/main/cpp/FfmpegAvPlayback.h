@@ -14,6 +14,8 @@ protected:
 	int display_disable;
 	
 	int frame_drops_late;
+	double rdftspeed;
+	double last_vis_time;
 
 	void stream_toggle_pause();
 	int get_frame_timer();
@@ -30,7 +32,7 @@ public:
 	virtual void toggle_pause();
 	virtual void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
 	virtual double get_duration() const;
-	virtual double get_master_clock() const;
+	virtual double get_stream_time() const;
 	virtual double get_fps() const;
 	virtual void set_rate(double rate);
 	virtual double get_rate() const;

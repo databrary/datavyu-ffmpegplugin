@@ -10,8 +10,6 @@ private:
 	const PixelFormat* pPixelFormat;
 	const int audioBufferSizeInBy;
 	struct SwsContext* img_convert_ctx;
-	double rdftspeed;
-	double last_vis_time;
 	double remaining_time_to_display;
 public:
 	FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
@@ -37,8 +35,8 @@ public:
 	void set_audioSyncDelay(long lMillis);
 	long get_audioSyncDelay();
 
-	int get_image_width();
-	int get_image_height();
+	int get_image_width() const;
+	int get_image_height() const;
 
 	bool has_image_data() const;
 	bool has_audio_data() const;

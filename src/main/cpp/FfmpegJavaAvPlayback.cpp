@@ -9,8 +9,6 @@ FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
 		pPixelFormat(pPixelFormat),
 		audioBufferSizeInBy(audioBufferSizeInBy),
 		img_convert_ctx(nullptr),
-		rdftspeed(0.02),
-		last_vis_time(0),
 		remaining_time_to_display(0)
 { }
 
@@ -89,11 +87,11 @@ long FfmpegJavaAvPlayback::get_audioSyncDelay() {
 	return 0;
 }
 
-int FfmpegJavaAvPlayback::get_image_width() {
+int FfmpegJavaAvPlayback::get_image_width() const {
 	return pVideoState->get_image_width();
 }
 
-int FfmpegJavaAvPlayback::get_image_height() {
+int FfmpegJavaAvPlayback::get_image_height() const {
 	return pVideoState->get_image_height();
 }
 

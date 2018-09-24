@@ -162,7 +162,7 @@ static int				borderless;
 static int				show_status = 1;
 static int				av_sync_type_input = AV_SYNC_AUDIO_MASTER;
 static int64_t			start_time = AV_NOPTS_VALUE;
-static int64_t			duration = AV_NOPTS_VALUE;
+static int64_t			max_duration = AV_NOPTS_VALUE;
 static int				fast = 0;
 static int				genpts = 0;
 static int				lowres = 0;
@@ -191,7 +191,7 @@ private:
 	int abort_request;
 	bool paused; // TODO(fraudies): Check if this need to be atomic
 	int last_paused;
-	bool stopped; // TODO(fraudies): Need atomic here for thread safety
+	bool stopped; // TODO(fraudies): Check if this need to be atomic
 	int queue_attachments_req;
 	int seek_req;
 	int seek_flags;
@@ -206,10 +206,11 @@ private:
 	double frame_last_returned_time;
 	double frame_last_filter_delay;
 	int video_stream;
-	double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
+	double max_frame_duration; // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
 	int eof;
 	int image_width;
 	int image_height;
+	double video_duration;
 	AVRational image_sample_aspect_ratio;
 	bool step; // TODO(fraudies): Check if this need to be atomic
 
@@ -269,7 +270,6 @@ private:
 	unsigned int audio_buf1_size;
 	int audio_buf_index; /* in bytes */
 	int	audio_write_buf_size;
-	//int	audio_volume;
 	int muted;
 	struct AudioParams audio_src;
 
@@ -388,6 +388,7 @@ public:
 	bool has_audio_data() const;
 	bool has_image_data() const;
 	double get_duration() const; // returns the duration in sec
+	double get_stream_time() const; // returns the current time in stream in sec
 	//int get_audio_volume() const;
 	//void set_audio_volume(int new_audio_volume);
 	void toggle_mute();

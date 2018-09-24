@@ -110,7 +110,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
 	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
-	double pos = pSdlPlayback->get_master_clock();
+	double pos = pSdlPlayback->get_stream_time();
 	if (isnan(pos))
 		pos = (double)pSdlPlayback->get_seek_pos() / AV_TIME_BASE;
 	double incr = dSeekTime - pos;
@@ -153,7 +153,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
 	// accurate as the audio clock  (Master))
 	//*pdStreamTime = pSdlPlayback->get_master_clock();
 
-	*pdStreamTime = pSdlPlayback->get_VideoState()->get_pExtclk()->get_clock();
+	*pdStreamTime = pSdlPlayback->get_stream_time();
 
 	return ERROR_NONE; // no error
 }
