@@ -1864,8 +1864,8 @@ void VideoState::set_rate(double new_rate) {
 			rate_command = rate_speed_map[i].command;
 		}
 	}
-
-	if (!rate_found) {
+	// If we could not find the rate or the rate has not changed
+	if (!rate_found || rate_found == rate) {
 		return; // TODO(Reda): We can return and int != 0 as an error
 	}
 #if CONFIG_VIDEO_FILTER

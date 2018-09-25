@@ -1,5 +1,8 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.ComponentEvent;
@@ -9,13 +12,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
 public class ImageCanvasPlayerThread extends Thread {
+    private final static Logger LOGGER = LogManager.getFormatterLogger(ImageCanvasPlayerThread.class);
     private MediaPlayerData mediaPlayerData;
     private SampleModel sm;
     private ComponentColorModel cm;
     private Hashtable<String, String> properties = new Hashtable<>();
     private BufferedImage image;
     private byte[] data;
-    private Container container;
     private Canvas canvas;
     private BufferStrategy strategy;
     private static final int NUM_COLOR_CHANNELS = 3;
@@ -46,7 +49,6 @@ public class ImageCanvasPlayerThread extends Thread {
     }
 
     public void init(ColorSpace colorSpace, int width, int height, Container container) {
-        this.container = container;
         this.width = width;
         this.height = height;
 
@@ -65,13 +67,13 @@ public class ImageCanvasPlayerThread extends Thread {
 
         // Create the canvas and add it to the center fo the container
         this.canvas = new Canvas();
-        this.container.add(canvas, BorderLayout.CENTER);
-        this.container.setBounds(0, 0, this.width, this.height);
-        this.container.setVisible(true);
+        container.add(canvas, BorderLayout.CENTER);
+        container.setBounds(0, 0, this.width, this.height);
+        container.setVisible(true);
         // Make sure to make the canvas visible before creating the buffer strategy
         this.canvas.createBufferStrategy(NUM_BUFFERS);
         strategy = this.canvas.getBufferStrategy();
-        this.container.addComponentListener(new ComponentListener() {
+        container.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
                 launcher(() -> updateDisplay());
@@ -95,6 +97,7 @@ public class ImageCanvasPlayerThread extends Thread {
             long start = System.currentTimeMillis();
             // Get the data from the native side that matches width & height
             mediaPlayerData.updateImageData(data);
+            //LOGGER.info("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
             // Create data buffer
             DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
             // Create writable raster
@@ -125,8 +128,7 @@ public class ImageCanvasPlayerThread extends Thread {
         } else {
             try {
                 EventQueue.invokeAndWait(runnable);
-            } catch (InterruptedException | InvocationTargetException e) {
-            }
+            } catch (InterruptedException | InvocationTargetException e) { }
         }
     }
 }
