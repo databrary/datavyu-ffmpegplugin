@@ -867,10 +867,10 @@ int VideoState::read_thread() {
 					pVideoq->put_flush_packet();
 				}
 				if (this->seek_flags & AVSEEK_FLAG_BYTE) {
-					pExtclk->set_clock(NAN, 0);
+					pExtclk->set_clock(NAN, 0); // TODO(fraudies): May have to put -1 here
 				}
 				else {
-					pExtclk->set_clock(seek_target / (double)AV_TIME_BASE, 0);
+					pExtclk->set_clock(seek_target / (double)AV_TIME_BASE, 0);  // TODO(fraudies): May have to put -1 here
 				}
 			}
 			this->seek_req = 0;
@@ -884,15 +884,16 @@ int VideoState::read_thread() {
 				abs(get_pExtclk()->get_clock() - get_pAudclk()->get_clock()));
 #endif // _DEBUG
 
-			if (this->paused){
+			//TODO(fraudies): Need to debug stepping, since it also gets the clocks running
+			if (this->paused) {
 				step_to_next_frame_callback(); // Assume that is set--otherwise fail hard here
-			}
-			else {
+			} else {
 				if (player_state_callbacks[TO_PLAYING]) {
 					player_state_callbacks[TO_PLAYING]();
 				}
-				if (was_stalled)
-					was_stalled = false;
+				was_stalled = false;
+				//if (was_stalled) {
+				//}
 			}
 		}
 		if (this->queue_attachments_req) {

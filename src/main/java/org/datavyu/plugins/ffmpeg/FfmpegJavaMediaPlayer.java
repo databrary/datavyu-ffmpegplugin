@@ -26,7 +26,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private AudioPlayerThread audioPlayerThread = null;
     private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
     private Container container;
-    private Stage stage;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
     private AudioFormat audioFormat;
     private ColorSpace colorSpace;
@@ -49,13 +48,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         this.container = container;
         this.audioFormat = audioFormat;
         this.colorSpace = colorSpace;
-    }
-
-    public FfmpegJavaMediaPlayer(URI mediaPath, Stage stage){
-        super(mediaPath);
-        this.stage = stage;
-        this.audioFormat = AudioPlayerThread.getMonoFormat();
-        this.colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
     }
 
     /**
@@ -132,10 +124,12 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+        imageCanvasPlayerThread.playImage();
     }
 
     @Override
     protected void playerStop() throws MediaException {
+        imageCanvasPlayerThread.stopImage();
         int rc = ffmpegStop(getNativeMediaRef());
         if (0 != rc) {
             throwMediaErrorException(rc, null);
@@ -144,6 +138,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     @Override
     protected void playerPause() throws MediaException {
+        imageCanvasPlayerThread.stopImage();
         int rc = ffmpegPause(getNativeMediaRef());
         if (0 != rc) {
             throwMediaErrorException(rc, null);
@@ -153,6 +148,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     @Override
     protected void playerStepForward() throws MediaException {
         int rc = ffmpegStepForward(getNativeMediaRef());
+        imageCanvasPlayerThread.stepImage();
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -265,6 +261,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     @Override
     protected void playerSeek(double streamTime) throws MediaException {
         int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
+        imageCanvasPlayerThread.stepImage();
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }

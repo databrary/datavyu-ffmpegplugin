@@ -38,6 +38,7 @@ int FfmpegJavaAvPlayback::Init(const char * filename, AVInputFormat * iformat) {
 		return this->audio_open(wanted_channel_layout, wanted_nb_channels, wanted_sample_rate, audio_hw_params);
 	});
 
+
 	pVideoState->set_step_to_next_frame_callback([this] {
 		this->step_to_next_frame();
 	});
@@ -178,17 +179,21 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 			pVideoState->get_pPictq()->next();
 			force_refresh = 1;
 
-			if (pVideoState->get_step() && !pVideoState->get_paused())
-				stream_toggle_pause();
+			//if (pVideoState->get_step() && !pVideoState->get_paused())
+		//		stream_toggle_pause();
 		}
 	display:
 		/* display picture */
 		if (!display_disable
 			&& force_refresh
 			&& (pVideoState->get_show_mode() == SHOW_MODE_VIDEO)
-			&& pVideoState->get_pPictq()->get_rindex_shown())
+			&& pVideoState->get_pPictq()->get_rindex_shown()) {
 			display = true;
 			force_refresh = 0;
+			if (pVideoState->get_step() && !pVideoState->get_paused())
+				stream_toggle_pause();
+
+		}
 	}
 
 	if (show_status) {

@@ -17,9 +17,9 @@ public class SimpleJavaFXMediaPlayer extends Application {
 
         // Define the media file
         URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
-        MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, primaryStage);
-        mediaPlayer.init();
-        Platform.runLater(() -> new JMediaPlayerControlFrame(mediaPlayer));
+        //MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, primaryStage);
+        //mediaPlayer.init();
+        //Platform.runLater(() -> new JMediaPlayerControlFrame(mediaPlayer));
 
     }
 
