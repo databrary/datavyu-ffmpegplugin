@@ -1856,18 +1856,23 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 	}
 }
 
-void VideoState::set_rate(double new_rate) {
-	bool rate_found = false;
-	char * rate_command = nullptr;
+int VideoState::set_rate(double new_rate) {
+	// If we request the same rate, we are done here
+	if (rate == new_rate) {
+		return 0;
+	}
+
+	bool is_rate_found = false;
+	char* rate_command = nullptr;
 	for (int i = 0; i < FF_ARRAY_ELEMS(rate_speed_map); i++) {
 		if (new_rate == rate_speed_map[i].clock_speed) {
-			rate_found = true;
+			is_rate_found = true;
 			rate_command = rate_speed_map[i].command;
 		}
 	}
-	// If we could not find the rate or the rate has not changed
-	if (!rate_found || rate_found == rate) {
-		return; // TODO(Reda): We can return and int != 0 as an error
+	// If we can't fine the rate, return error that the filter was not found
+	if (!is_rate_found) {
+		return AVERROR_FILTER_NOT_FOUND;
 	}
 #if CONFIG_VIDEO_FILTER
 	std::unique_lock<std::mutex> locker(mutex);
@@ -1878,6 +1883,8 @@ void VideoState::set_rate(double new_rate) {
 	rate = new_rate;
 	new_rate_req = 1;
 	continue_read_thread.notify_one();
+
+	return 0;
 }
 
 double VideoState::get_rate() const {

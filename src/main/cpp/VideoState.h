@@ -446,7 +446,7 @@ public:
 	/* prepare a new audio buffer */
 	void audio_callback(uint8_t *stream, int len);
 
-	void set_rate(double rate);
+	int set_rate(double rate);
 	double get_rate() const;
 
 	int get_master_clock_speed();

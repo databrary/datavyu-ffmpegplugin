@@ -161,9 +161,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::SetRate(float fRate) {
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	pJavaPlayback->set_rate(fRate);
-
-	return ERROR_NONE;
+	return pJavaPlayback->set_rate(fRate);
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::GetRate(float* pfRate) {

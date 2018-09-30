@@ -98,8 +98,9 @@ double FfmpegAvPlayback::get_fps() const {
 	return pVideoState->get_fps();
 }
 
-void FfmpegAvPlayback::set_rate(double rate) {
-	pVideoState->set_rate(rate);
+int FfmpegAvPlayback::set_rate(double rate) {
+	int err = pVideoState->set_rate(rate);
+	return err ? ERROR_FFMPEG_FILTER_NOT_FOUND : ERROR_NONE;
 }
 
 double FfmpegAvPlayback::get_rate() const {

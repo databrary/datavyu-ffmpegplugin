@@ -173,9 +173,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	pSdlPlayback->set_rate(fRate);
-
-	return ERROR_NONE;
+	return pSdlPlayback->set_rate(fRate);
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetRate(float* pfRate) {
