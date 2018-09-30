@@ -114,8 +114,10 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double dSeekTime) {
 
 	double incr = dSeekTime - pos;
 
-	if (pJavaPlayback->get_start_time() != AV_NOPTS_VALUE && dSeekTime < pJavaPlayback->get_start_time() / (double)AV_TIME_BASE)
+	if (pJavaPlayback->get_start_time() != AV_NOPTS_VALUE
+		&& dSeekTime < pJavaPlayback->get_start_time() / (double)AV_TIME_BASE) {
 		dSeekTime = pJavaPlayback->get_start_time() / (double)AV_TIME_BASE;
+	}
 
 	pJavaPlayback->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
 

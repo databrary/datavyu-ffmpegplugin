@@ -24,7 +24,6 @@ public class ImageCanvasPlayerThread extends Thread {
     private static final int NUM_COLOR_CHANNELS = 3;
     private static final int NUM_BUFFERS = 3;
     private volatile boolean terminate = false;
-    private volatile boolean play = false;
     private int width;
     private int height;
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
@@ -93,40 +92,18 @@ public class ImageCanvasPlayerThread extends Thread {
         launcher(() -> updateDisplay());
     }
 
-    public void playImage() {
-        play = true;
-    }
-
-    public void stopImage() {
-        play = false;
-    }
-
-    public void stepImage() {
-        // If we are not playing, which we should, then load and display one image
-        if (!play) {
-            loadAndDisplayImage();
-        }
-    }
-
-    private void loadAndDisplayImage() {
-        mediaPlayerData.updateImageData(data);
-        //LOGGER.info("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
-        // Create data buffer
-        DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
-        // Create writable raster
-        WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
-        // Create the original image
-        image = new BufferedImage(cm, raster, false, properties);
-        launcher(() -> updateDisplay());
-    }
-
     public void run() {
         while (!terminate) {
             long start = System.currentTimeMillis();
-            if (play) {
-                loadAndDisplayImage();
-                // Get the data from the native side that matches width & height
-            }
+            mediaPlayerData.updateImageData(data);
+            LOGGER.info("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
+            // Create data buffer
+            DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
+            // Create writable raster
+            WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
+            // Create the original image
+            image = new BufferedImage(cm, raster, false, properties);
+            launcher(() -> updateDisplay());
             // This does not measure the time to update the display
             double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
             // If we need to wait

@@ -7,7 +7,7 @@ extern "C" {
 #ifndef CLOCK_H_
 #define CLOCK_H_
 
-#define AV_NOSYNC_THRESHOLD 10.0
+#define AV_NOSYNC_THRESHOLD 0.5 // 1/2 sec
 #define MICRO 1000000.0
 
 // Clock to keep decoding in sync

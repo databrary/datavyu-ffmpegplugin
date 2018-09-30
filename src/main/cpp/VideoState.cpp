@@ -835,7 +835,7 @@ int VideoState::read_thread() {
 			// When toggeling the pause the external clock is set but that did not work here
 			new_rate_req = 0;
 			queue_attachments_req = 1;
-			eof = 0;
+			//eof = 0;
 		}
 
 		if (this->seek_req) {
@@ -867,10 +867,10 @@ int VideoState::read_thread() {
 					pVideoq->put_flush_packet();
 				}
 				if (this->seek_flags & AVSEEK_FLAG_BYTE) {
-					pExtclk->set_clock(NAN, 0); // TODO(fraudies): May have to put -1 here
+					pExtclk->set_clock(NAN, 0); // 0 != -1 which will return NAN for interim time 
 				}
 				else {
-					pExtclk->set_clock(seek_target / (double)AV_TIME_BASE, 0);  // TODO(fraudies): May have to put -1 here
+					pExtclk->set_clock(seek_target / (double)AV_TIME_BASE, 0); // 0 != -1 which will return NAN for interim time 
 				}
 			}
 			this->seek_req = 0;
@@ -1500,13 +1500,9 @@ double VideoState::get_duration() const {
 }
 
 double VideoState::get_stream_time() const {
-	// TODO: Maybe other places need to handle NAN; instead of picking the external clock
-	// Could also use the last time -- NAN happens after a seek
-	double time = get_master_clock();
-	if (isnan(time)) {
-		time = pExtclk->get_clock();
-	}
-	return time;
+
+	// In cases of seek the video clock/audio clock is NAN, use the external clock
+	return pExtclk->get_clock();
 }
 
 void VideoState::toggle_mute() {
