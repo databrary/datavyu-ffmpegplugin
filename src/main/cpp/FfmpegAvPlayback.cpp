@@ -147,5 +147,5 @@ void FfmpegAvPlayback::step_to_next_frame() {
 	if (pVideoState->get_paused())
 		stream_toggle_pause();
 
-	pVideoState->set_step(1);
+	pVideoState->set_step(true);
 }

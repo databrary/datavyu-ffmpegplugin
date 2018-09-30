@@ -724,8 +724,8 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 			pVideoState->get_pPictq()->next();
 			force_refresh = 1;
 
-			if (pVideoState->get_step() && !pVideoState->get_paused())
-				stream_toggle_pause();
+			//if (pVideoState->get_step() && !pVideoState->get_paused())
+			//	stream_toggle_pause();
 		}
 	display:
 		/* display picture */
@@ -735,6 +735,8 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 			&& pVideoState->get_pPictq()->get_rindex_shown()) {
 			video_display();
 			force_refresh = 0; // only reset force refresh when displayed
+			if (pVideoState->get_step() && !pVideoState->get_paused())
+				stream_toggle_pause();
 		}
 	}
 	//force_refresh = 0;
