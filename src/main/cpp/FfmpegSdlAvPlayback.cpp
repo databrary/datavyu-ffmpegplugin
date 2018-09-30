@@ -954,12 +954,18 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
 				break;
 			case SDLK_KP_PLUS:
-				rate *= 2;
-				pVideoState->set_rate(rate);
+				if (pVideoState->set_rate(rate * 2)) {
+					av_log(NULL, AV_LOG_ERROR, "Rate %f unavailable\n", rate * 2);
+				} else {
+					rate *= 2;
+				}
 				break;
 			case SDLK_KP_MINUS:
-				rate /= 2;
-				pVideoState->set_rate(rate);
+				if (pVideoState->set_rate(rate / 2)) {
+					av_log(NULL, AV_LOG_ERROR, "Rate %f unavailable\n", rate / 2);
+				} else {
+					rate /= 2;
+				}
 				break;
 			case SDLK_v:
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);

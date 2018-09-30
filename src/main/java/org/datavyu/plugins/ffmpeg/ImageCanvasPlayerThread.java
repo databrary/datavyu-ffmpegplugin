@@ -110,7 +110,7 @@ public class ImageCanvasPlayerThread extends Thread {
 
     private void loadAndDisplayImage() {
         mediaPlayerData.updateImageData(data);
-        LOGGER.info("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
+        //LOGGER.info("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
         // Create data buffer
         DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
         // Create writable raster
