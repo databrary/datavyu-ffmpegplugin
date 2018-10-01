@@ -1500,7 +1500,6 @@ double VideoState::get_duration() const {
 }
 
 double VideoState::get_stream_time() const {
-
 	// In cases of seek the video clock/audio clock is NAN, use the external clock
 	return pExtclk->get_clock();
 }
