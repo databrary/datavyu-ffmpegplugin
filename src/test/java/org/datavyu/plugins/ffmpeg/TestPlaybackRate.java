@@ -25,11 +25,9 @@ public class TestPlaybackRate {
     // This movie is about 30MB has 640 x 360 pixels @ 29.97 fps with 2.5 min play time
     private static final String TEST_MOVIE_PATH = "http://www.html5videoplayer.net/videos/toystory.mp4";
 
-    private static final float LOWER_PERCENTAGE = -10f; // -10 percent
+    private static final float LOWER_PERCENTAGE = -2f; // -2 percent
 
-    private static final float UPPER_PERCENTAGE = +10f; // +10 percent
-
-    private static final double MEASUREMENT_DURATION_IN_SEC = 10; // 10 seconds
+    private static final float UPPER_PERCENTAGE = +2f; // +2 percent
 
     private static final double TO_MILLI = 1000;
 
@@ -87,10 +85,10 @@ public class TestPlaybackRate {
     }};
 
     private List<Pair<TimeInterval, Float>> parameters = new ArrayList<Pair<TimeInterval, Float>>(){{
-        //add(new Pair<>(new TimeInterval(0, 20), 0.5f));
-        //add(new Pair<>(new TimeInterval(0, 20), 1f));
+        add(new Pair<>(new TimeInterval(0, 20), 0.5f));
+        add(new Pair<>(new TimeInterval(0, 20), 1f));
         add(new Pair<>(new TimeInterval(0, 20), 2f));
-        //add(new Pair<>(new TimeInterval(0, 20), 4f));
+        add(new Pair<>(new TimeInterval(0, 20), 4f));
     }};
 
     private static double diffInPercent(double actual, double expected) {
@@ -100,7 +98,7 @@ public class TestPlaybackRate {
     @BeforeMethod
     public void setup() throws IOException {
         Configurator.setRootLevel(Level.INFO);
-        movieFiles.add(copyToLocalTmp(new URL(TEST_MOVIE_PATH)));
+        //movieFiles.add(copyToLocalTmp(new URL(TEST_MOVIE_PATH)));
         movieFiles.add("C:\\Users\\Florian\\Nature_30fps_1080p.mp4");
     }
 
@@ -127,7 +125,6 @@ public class TestPlaybackRate {
                             + (System.nanoTime() - startTime)/1e6 + " ms");
 
                     mediaPlayer.setStartTime(start);
-
                     startTime = System.nanoTime();
                     mediaPlayer.setRate(rate);
                     mediaPlayer.play();

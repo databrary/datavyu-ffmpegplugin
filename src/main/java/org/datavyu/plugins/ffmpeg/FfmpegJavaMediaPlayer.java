@@ -1,12 +1,9 @@
 package org.datavyu.plugins.ffmpeg;
 
-import javafx.stage.Stage;
-import org.datavyu.plugins.ffmpeg.experimental.ImageJfxPlayerThread;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.net.URI;
@@ -124,12 +121,10 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
-        imageCanvasPlayerThread.playImage();
     }
 
     @Override
     protected void playerStop() throws MediaException {
-        imageCanvasPlayerThread.stopImage();
         int rc = ffmpegStop(getNativeMediaRef());
         if (0 != rc) {
             throwMediaErrorException(rc, null);
@@ -138,7 +133,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     @Override
     protected void playerPause() throws MediaException {
-        imageCanvasPlayerThread.stopImage();
         int rc = ffmpegPause(getNativeMediaRef());
         if (0 != rc) {
             throwMediaErrorException(rc, null);
@@ -148,7 +142,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     @Override
     protected void playerStepForward() throws MediaException {
         int rc = ffmpegStepForward(getNativeMediaRef());
-        imageCanvasPlayerThread.stepImage();
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -261,7 +254,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     @Override
     protected void playerSeek(double streamTime) throws MediaException {
         int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
-        imageCanvasPlayerThread.stepImage();
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }

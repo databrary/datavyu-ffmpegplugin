@@ -180,7 +180,7 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 			force_refresh = 1;
 
 			//if (pVideoState->get_step() && !pVideoState->get_paused())
-		//		stream_toggle_pause();
+			//	stream_toggle_pause();
 		}
 	display:
 		/* display picture */
@@ -192,7 +192,6 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 			force_refresh = 0;
 			if (pVideoState->get_step() && !pVideoState->get_paused())
 				stream_toggle_pause();
-
 		}
 	}
 
