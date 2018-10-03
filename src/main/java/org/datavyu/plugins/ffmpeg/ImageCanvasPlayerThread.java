@@ -29,24 +29,75 @@ public class ImageCanvasPlayerThread extends Thread {
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
 
+    /** x1 and y1 are respectively the x and y coordinates of the first corner of the destination rectangle. */
+    private int x1, y1;
+
+    /** x2 and y2 are respectively the x and y coordinates of the second corner of the destination rectangle. */
+    private int x2, y2;
+
     ImageCanvasPlayerThread(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
         setName("Ffmpeg image canvas player thread");
         setDaemon(false);
     }
 
-    private void updateDisplay() {
-        //long time = System.nanoTime();
+    /**
+     * Draws as much of the specified area of the specified image as is
+     * currently available, scaling it on the fly to fit inside the
+     * specified area of the destination drawable surface
+     * specified by x1, y1, x2, y2 variables.
+     */
+    private synchronized void updateDisplay() {
+        Dimension size;
+        /** This loop is replacing the component listener used
+         * to update the image while resizing the canvas, listener
+         * is causing flickering during resizing
+         */
         do {
+            size = canvas.getSize();
+            if (size == null) { return; }
             do {
-                Graphics graphics = strategy.getDrawGraphics();
-                graphics.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(),  null);
-                graphics.dispose();
-            } while (strategy.contentsRestored());
-            strategy.show();
-        } while (strategy.contentsLost());
-        //System.out.println("Time to display took: " + (System.nanoTime() - time)/1e6 + " ms");
+                do {
+                    Graphics graphics = strategy.getDrawGraphics();
+                    if (graphics == null) { return; }
+                    scaleImage(); // calculate the coordinate of the scaled display rectangle
+                    graphics.drawImage(image, x1, y1, x2, y2, 0, 0, this.width, this.height, null);
+                    graphics.dispose();
+                } while (strategy.contentsRestored());
+                strategy.show();
+            } while (strategy.contentsLost());
+            // Repeat the rendering if the target changed size
+        } while (!size.equals(canvas.getSize()));
     }
+
+    /**
+     * Calculate the coordinates of the destination scaled rectangle
+     * that much the original image aspect ratio
+     */
+    private void scaleImage(){
+        double imgRatio = (double) this.height / this.width;
+
+        int frameWidth = canvas.getWidth();
+        int frameHeight = canvas.getHeight();
+        double frameAspect = (double) frameHeight / frameWidth;
+
+        x1 = y1 = x2 =  y2 = 0;
+
+        if (frameAspect > imgRatio) {
+            y1 = frameHeight;
+            // keep image aspect ratio
+            frameHeight = (int) (frameWidth * imgRatio);
+            y1 = (y1 - frameHeight) / 2;
+        } else {
+            x1 = frameWidth;
+            // keep image aspect ratio
+            frameWidth = (int) (frameHeight / imgRatio);
+            x1 = (x1 - frameWidth) / 2;
+        }
+        x2 = frameWidth + x1;
+        y2 = frameHeight + y1;
+    }
+
 
     public void init(ColorSpace colorSpace, int width, int height, Container container) {
         this.width = width;
@@ -67,29 +118,18 @@ public class ImageCanvasPlayerThread extends Thread {
 
         // Create the canvas and add it to the center fo the container
         this.canvas = new Canvas();
+
+        // Add A black background to the canvas
+        this.canvas.setBackground(Color.BLACK);
+
         container.add(canvas, BorderLayout.CENTER);
         container.setBounds(0, 0, this.width, this.height);
         container.setVisible(true);
         // Make sure to make the canvas visible before creating the buffer strategy
         this.canvas.createBufferStrategy(NUM_BUFFERS);
         strategy = this.canvas.getBufferStrategy();
-        container.addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                launcher(() -> updateDisplay());
-            }
 
-            @Override
-            public void componentMoved(ComponentEvent e) {  }
-
-            @Override
-            public void componentShown(ComponentEvent e) {	}
-
-            @Override
-            public void componentHidden(ComponentEvent e) {  }
-        });
-
-        launcher(() -> updateDisplay());
+        updateDisplay();
     }
 
     public void run() {
@@ -105,7 +145,7 @@ public class ImageCanvasPlayerThread extends Thread {
             WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
             // Create the original image
             image = new BufferedImage(cm, raster, false, properties);
-            launcher(() -> updateDisplay());
+            updateDisplay();
             // This does not measure the time to update the display
             double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
             // If we need to wait
@@ -121,15 +161,5 @@ public class ImageCanvasPlayerThread extends Thread {
 
     public void terminte() {
         terminate = true;
-    }
-
-    private static void launcher(Runnable runnable) {
-        if (EventQueue.isDispatchThread()){
-            runnable.run();
-        } else {
-            try {
-                EventQueue.invokeAndWait(runnable);
-            } catch (InterruptedException | InvocationTargetException e) { }
-        }
     }
 }
