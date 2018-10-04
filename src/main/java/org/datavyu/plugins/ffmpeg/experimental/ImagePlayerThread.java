@@ -85,7 +85,11 @@ public class ImagePlayerThread extends Thread {
             WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
             // Create the original image
             image = new BufferedImage(cm, raster, false, properties);
-            launcher(() -> updateDisplay());
+            launcher(() -> {
+                long startDisplayThread = System.currentTimeMillis();
+                updateDisplay();
+                System.out.println("Display Time: " + (System.currentTimeMillis() - startDisplayThread)/TO_MILLIS);
+            });
             // This does not measure the time to update the display
             double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
             // If we need to wait
@@ -99,7 +103,7 @@ public class ImagePlayerThread extends Thread {
         }
     }
 
-    public void terminte() {
+    public void terminate() {
         stopped = true;
     }
 

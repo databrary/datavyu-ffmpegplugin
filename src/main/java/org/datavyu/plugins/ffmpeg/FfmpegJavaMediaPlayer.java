@@ -262,7 +262,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     @Override
     protected void playerDispose() {
         if (imageCanvasPlayerThread != null) {
-            imageCanvasPlayerThread.terminte();
+            imageCanvasPlayerThread.terminate();
         }
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();

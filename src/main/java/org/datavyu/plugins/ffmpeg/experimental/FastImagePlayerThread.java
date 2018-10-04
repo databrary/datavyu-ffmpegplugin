@@ -143,7 +143,7 @@ public class FastImagePlayerThread extends Thread {
         }
     }
 
-    public void terminte() {
+    public void terminate() {
         stopped = true;
     }
 }

@@ -5,12 +5,15 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.image.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
+/**
+ *  This Class is responsible of displaying an a buffered image
+ *  into a canvas container, note that the resizing of the container/image is performed
+ *  through a while loop and not a component listener, because is causing flickering
+ *  while resizing the canvas
+ */
 public class ImageCanvasPlayerThread extends Thread {
     private final static Logger LOGGER = LogManager.getFormatterLogger(ImageCanvasPlayerThread.class);
     private MediaPlayerData mediaPlayerData;
@@ -24,15 +27,15 @@ public class ImageCanvasPlayerThread extends Thread {
     private static final int NUM_COLOR_CHANNELS = 3;
     private static final int NUM_BUFFERS = 3;
     private volatile boolean terminate = false;
-    private int width;
-    private int height;
+    private int imgWidth;
+    private int imgHeight;
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
 
-    /** x1 and y1 are respectively the x and y coordinates of the first corner of the destination rectangle. */
+    /** x1 and y1 are respectively the x and y coordinates of the left, upper corner of the destination rectangle. */
     private int x1, y1;
 
-    /** x2 and y2 are respectively the x and y coordinates of the second corner of the destination rectangle. */
+    /** x2 and y2 are respectively the x and y coordinates of the lower, right corner of the destination rectangle. */
     private int x2, y2;
 
     ImageCanvasPlayerThread(MediaPlayerData mediaPlayerData) {
@@ -49,10 +52,6 @@ public class ImageCanvasPlayerThread extends Thread {
      */
     private synchronized void updateDisplay() {
         Dimension size;
-        /** This loop is replacing the component listener used
-         * to update the image while resizing the canvas, listener
-         * is causing flickering during resizing
-         */
         do {
             size = canvas.getSize();
             if (size == null) { return; }
@@ -60,8 +59,8 @@ public class ImageCanvasPlayerThread extends Thread {
                 do {
                     Graphics graphics = strategy.getDrawGraphics();
                     if (graphics == null) { return; }
-                    scaleImage(); // calculate the coordinate of the scaled display rectangle
-                    graphics.drawImage(image, x1, y1, x2, y2, 0, 0, this.width, this.height, null);
+                    scaleImage(); // calculate the coordinate of the target image
+                    graphics.drawImage(image, x1, y1, x2, y2, 0, 0, this.imgWidth, this.imgHeight, null);
                     graphics.dispose();
                 } while (strategy.contentsRestored());
                 strategy.show();
@@ -71,47 +70,47 @@ public class ImageCanvasPlayerThread extends Thread {
     }
 
     /**
-     * Calculate the coordinates of the destination scaled rectangle
-     * that much the original image aspect ratio
+     * Scale an image with keeping the aspect ratio of the original image, by calculating the
+     * coordinates (upper left and lower right) of the target image to be rendered in the canvas.
      */
     private void scaleImage(){
-        double imgRatio = (double) this.height / this.width;
+        double imgAspectRatio = (double) this.imgHeight / this.imgWidth;
 
-        int frameWidth = canvas.getWidth();
-        int frameHeight = canvas.getHeight();
-        double frameAspect = (double) frameHeight / frameWidth;
+        int canvasWidth = canvas.getWidth();
+        int canvasHeight = canvas.getHeight();
+        double canvasAspectRatio = (double) canvasHeight / canvasWidth;
 
         x1 = y1 = x2 =  y2 = 0;
 
-        if (frameAspect > imgRatio) {
-            y1 = frameHeight;
+        if (canvasAspectRatio > imgAspectRatio) {
+            y1 = canvasHeight;
             // keep image aspect ratio
-            frameHeight = (int) (frameWidth * imgRatio);
-            y1 = (y1 - frameHeight) / 2;
+            canvasHeight = (int) (canvasWidth * imgAspectRatio);
+            y1 = (y1 - canvasHeight) / 2;
         } else {
-            x1 = frameWidth;
+            x1 = canvasWidth;
             // keep image aspect ratio
-            frameWidth = (int) (frameHeight / imgRatio);
-            x1 = (x1 - frameWidth) / 2;
+            canvasWidth = (int) (canvasHeight / imgAspectRatio);
+            x1 = (x1 - canvasWidth) / 2;
         }
-        x2 = frameWidth + x1;
-        y2 = frameHeight + y1;
+        x2 = canvasWidth + x1;
+        y2 = canvasHeight + y1;
     }
 
 
     public void init(ColorSpace colorSpace, int width, int height, Container container) {
-        this.width = width;
-        this.height = height;
+        this.imgWidth = width;
+        this.imgHeight = height;
 
         // Allocate byte buffer
-        this.data = new byte[this.width*this.height*NUM_COLOR_CHANNELS];
+        this.data = new byte[this.imgWidth *this.imgHeight *NUM_COLOR_CHANNELS];
 
         cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
                 DataBuffer.TYPE_BYTE);
         // Set defaults
-        sm = cm.createCompatibleSampleModel(this.width, this.height);
+        sm = cm.createCompatibleSampleModel(this.imgWidth, this.imgHeight);
         // Initialize an empty image
-        DataBufferByte dataBuffer = new DataBufferByte(this.data, this.width*this.height);
+        DataBufferByte dataBuffer = new DataBufferByte(this.data, this.imgWidth *this.imgHeight);
         WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
@@ -123,7 +122,7 @@ public class ImageCanvasPlayerThread extends Thread {
         this.canvas.setBackground(Color.BLACK);
 
         container.add(canvas, BorderLayout.CENTER);
-        container.setBounds(0, 0, this.width, this.height);
+        container.setBounds(0, 0, this.imgWidth, this.imgHeight);
         container.setVisible(true);
         // Make sure to make the canvas visible before creating the buffer strategy
         this.canvas.createBufferStrategy(NUM_BUFFERS);
@@ -140,7 +139,7 @@ public class ImageCanvasPlayerThread extends Thread {
             System.out.println("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
 
             // Create data buffer
-            DataBufferByte dataBuffer = new DataBufferByte(data, width*height);
+            DataBufferByte dataBuffer = new DataBufferByte(data, imgWidth * imgHeight);
             // Create writable raster
             WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
             // Create the original image
@@ -159,7 +158,7 @@ public class ImageCanvasPlayerThread extends Thread {
         }
     }
 
-    public void terminte() {
+    public void terminate() {
         terminate = true;
     }
 }
