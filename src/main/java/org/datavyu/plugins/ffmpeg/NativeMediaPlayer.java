@@ -243,6 +243,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
     protected abstract void playerStepForward() throws MediaException;
 
+    protected abstract void playerStepBackward() throws MediaException;
+
     protected abstract void playerPause() throws MediaException;
 
     protected abstract void playerFinish() throws MediaException;
@@ -326,6 +328,15 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public void stepForward() {
         try {
             playerStepForward();
+        } catch (MediaException me) {
+            sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+        }
+    }
+
+    @Override
+    public void stepBackward() {
+        try {
+            playerStepBackward();
         } catch (MediaException me) {
             sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
         }

@@ -1,24 +1,25 @@
 package org.datavyu.plugins.ffmpeg;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import sun.awt.windows.WComponentPeer;
 
+import java.awt.*;
 import java.net.URI;
 
-/**
- * Uses the SDL framework to playback the images and sound natively
- *
- * This class only controls the the video playback, e.g. play, stop, pause, ...
- *
- * It also provides volume control through the native SDL audio playback
- */
-public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
+
+//TODO(Reda): add a dedicated event loop for the presentation and player events
+// Note should be in the native side
+public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     static {
-        System.loadLibrary("FfmpegSdlMediaPlayer");
+        System.loadLibrary("MpvMediaPlayer");
     }
 
-    public FfmpegSdlMediaPlayer(URI mediaPath) {
+    private Container container;
+    private long windowID;
+
+    public MpvMediaPlayer(URI mediaPath, Container container) {
         super(mediaPath);
+        this.container = container;
     }
 
     @Override
@@ -26,9 +27,18 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
         initNative(); // start the event queue, make sure to register all state/error listeners before
         long[] newNativeMediaRef = new long[1];
 
-        int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath);
+        int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
+        }
+
+        // Container need to be visible in order to get a valid HWND
+        container.setVisible(true);
+
+        // TODO(Reda):find alternative for deprecated getPeer() method
+        windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
+        if (windowID == 0){
+            throw new IllegalStateException("Need a valid WID for the MPV Player");
         }
 
         nativeMediaRef = newNativeMediaRef[0];
@@ -37,7 +47,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     @Override
     protected long playerGetAudioSyncDelay() throws MediaException {
         long[] audioSyncDelay = new long[1];
-        int rc = ffmpegGetAudioSyncDelay(getNativeMediaRef(), audioSyncDelay);
+        int rc = mpvGetAudioSyncDelay(getNativeMediaRef(), audioSyncDelay);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -46,7 +56,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerSetAudioSyncDelay(long delay) throws MediaException {
-        int rc = ffmpegSetAudioSyncDelay(getNativeMediaRef(), delay);
+        int rc = mpvSetAudioSyncDelay(getNativeMediaRef(), delay);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -54,7 +64,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerPlay() throws MediaException {
-        int rc = ffmpegPlay(getNativeMediaRef());
+        int rc = mpvPlay(getNativeMediaRef());
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -62,7 +72,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerStop() throws MediaException {
-        int rc = ffmpegStop(getNativeMediaRef());
+        int rc = mpvStop(getNativeMediaRef());
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -70,7 +80,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerPause() throws MediaException {
-        int rc = ffmpegPause(getNativeMediaRef());
+        int rc = mpvPause(getNativeMediaRef());
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -78,7 +88,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerStepForward() throws MediaException {
-        int rc = ffmpegStepForward(getNativeMediaRef());
+        int rc = mpvStepForward(getNativeMediaRef());
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -86,12 +96,15 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerStepBackward() throws MediaException {
-        throw new NotImplementedException();
+        int rc = mpvStepBackward(getNativeMediaRef());
+        if (0 != rc) {
+            throwMediaErrorException(rc, null);
+        }
     }
 
     @Override
     protected void playerFinish() throws MediaException {
-        int rc = ffmpegFinish(getNativeMediaRef());
+        int rc = mpvFinish(getNativeMediaRef());
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -100,7 +113,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     @Override
     protected float playerGetRate() throws MediaException {
         float[] rate = new float[1];
-        int rc = ffmpegGetRate(getNativeMediaRef(), rate);
+        int rc = mpvGetRate(getNativeMediaRef(), rate);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -109,7 +122,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerSetRate(float rate) throws MediaException {
-        int rc = ffmpegSetRate(getNativeMediaRef(), rate);
+        int rc = mpvSetRate(getNativeMediaRef(), rate);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -118,7 +131,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     @Override
     protected double playerGetPresentationTime() throws MediaException {
         double[] presentationTime = new double[1];
-        int rc = ffmpegGetPresentationTime(getNativeMediaRef(), presentationTime);
+        int rc = mpvGetPresentationTime(getNativeMediaRef(), presentationTime);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -128,7 +141,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     @Override
     protected double playerGetFps() throws MediaException {
         double[] framePerSecond = new double[1];
-        int rc = ffmpegGetFps(getNativeMediaRef(), framePerSecond);
+        int rc = mpvGetFps(getNativeMediaRef(), framePerSecond);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -143,7 +156,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
                 return mutedVolume;
         }
         float[] volume = new float[1];
-        int rc = ffmpegGetVolume(getNativeMediaRef(), volume);
+        int rc = mpvGetVolume(getNativeMediaRef(), volume);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -153,12 +166,12 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     @Override
     protected synchronized void playerSetVolume(float volume) throws MediaException {
         if (!muteEnabled) {
-            int rc = ffmpegSetVolume(getNativeMediaRef(), volume);
+            int rc = mpvSetVolume(getNativeMediaRef(), volume);
 
             if (0 != rc) {
                 throwMediaErrorException(rc, null);
             } else {
-                 mutedVolume = volume;
+                mutedVolume = volume;
             }
         } else {
             mutedVolume = volume;
@@ -168,7 +181,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     @Override
     protected float playerGetBalance() throws MediaException {
         float[] balance = new float[1];
-        int rc = ffmpegGetBalance(getNativeMediaRef(), balance);
+        int rc = mpvGetBalance(getNativeMediaRef(), balance);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -177,7 +190,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerSetBalance(float balance) throws MediaException {
-        int rc = ffmpegSetBalance(getNativeMediaRef(), balance);
+        int rc = mpvSetBalance(getNativeMediaRef(), balance);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -186,7 +199,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     @Override
     protected double playerGetDuration() throws MediaException {
         double[] duration = new double[1];
-        int rc = ffmpegGetDuration(getNativeMediaRef(), duration);
+        int rc = mpvGetDuration(getNativeMediaRef(), duration);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -199,7 +212,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerSeek(double streamTime) throws MediaException {
-        int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
+        int rc = mpvSeek(getNativeMediaRef(), streamTime);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -207,30 +220,32 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerDispose() {
-        ffmpegDisposePlayer(getNativeMediaRef());
+        mpvDisposePlayer(getNativeMediaRef());
     }
 
-    // Native methods
-    protected native int ffmpegInitPlayer(long[] newNativeMedia,
-                                          String sourcePath);
 
-    protected native int ffmpegDisposePlayer(long refNativeMedia);
+    protected native int mpvInitPlayer(long[] newNativeMedia,
+                                       String sourcePath,
+                                       long windowID);
 
-    protected native int ffmpegGetAudioSyncDelay(long refNativeMedia, long[] syncDelay);
-    protected native int ffmpegSetAudioSyncDelay(long refNativeMedia, long delay);
-    protected native int ffmpegPlay(long refNativeMedia);
-    protected native int ffmpegPause(long refNativeMedia);
-    protected native int ffmpegStop(long refNativeMedia);
-    protected native int ffmpegStepForward(long refNativeMedia);
-    protected native int ffmpegFinish(long refNativeMedia);
-    protected native int ffmpegGetRate(long refNativeMedia, float[] rate);
-    protected native int ffmpegSetRate(long refNativeMedia, float rate);
-    protected native int ffmpegGetPresentationTime(long refNativeMedia, double[] time);
-    protected native int ffmpegGetFps(long refNativeMedia, double[] fps);
-    protected native int ffmpegGetBalance(long refNativeMedia, float[] balance);
-    protected native int ffmpegSetBalance(long refNativeMedia, float balance);
-    protected native int ffmpegGetDuration(long refNativeMedia, double[] duration);
-    protected native int ffmpegSeek(long refNativeMedia, double streamTime);
-    protected native int ffmpegGetVolume(long refNativeMedia, float[] volume);
-    protected native int ffmpegSetVolume(long refNativeMedia, float volume);
+    protected native int mpvDisposePlayer(long refNativeMedia);
+
+    protected native int mpvGetAudioSyncDelay(long refNativeMedia, long[] syncDelay);
+    protected native int mpvSetAudioSyncDelay(long refNativeMedia, long delay);
+    protected native int mpvPlay(long refNativeMedia);
+    protected native int mpvPause(long refNativeMedia);
+    protected native int mpvStop(long refNativeMedia);
+    protected native int mpvStepForward(long refNativeMedia);
+    protected native int mpvStepBackward(long refNativeMedia);
+    protected native int mpvFinish(long refNativeMedia);
+    protected native int mpvGetRate(long refNativeMedia, float[] rate);
+    protected native int mpvSetRate(long refNativeMedia, float rate);
+    protected native int mpvGetPresentationTime(long refNativeMedia, double[] time);
+    protected native int mpvGetFps(long refNativeMedia, double[] fps);
+    protected native int mpvGetBalance(long refNativeMedia, float[] balance);
+    protected native int mpvSetBalance(long refNativeMedia, float balance);
+    protected native int mpvGetDuration(long refNativeMedia, double[] duration);
+    protected native int mpvSeek(long refNativeMedia, double streamTime);
+    protected native int mpvGetVolume(long refNativeMedia, float[] volume);
+    protected native int mpvSetVolume(long refNativeMedia, float volume);
 }

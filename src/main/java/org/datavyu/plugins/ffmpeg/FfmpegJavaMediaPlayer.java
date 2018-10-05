@@ -148,6 +148,11 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
 
     @Override
+    protected void playerStepBackward() throws MediaException {
+        throw new NotImplementedException();
+    }
+
+    @Override
     protected void playerFinish() throws MediaException {
         int rc = ffmpegFinish(getNativeMediaRef());
         if (0 != rc) {
