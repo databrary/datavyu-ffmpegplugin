@@ -198,13 +198,13 @@ int VideoState::get_video_frame(AVFrame *frame) {
 		double dpts = NAN;
 
 		if (frame->pts != AV_NOPTS_VALUE)
-			dpts = av_q2d(video_st->time_base) * frame->pts; // *pts_speed;
+			dpts = av_q2d(video_st->time_base) * frame->pts;
 
 		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(ic, video_st, frame);
 
 		if (framedrop>0 || (framedrop && get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) {
 			if (frame->pts != AV_NOPTS_VALUE) {
-				double diff = dpts - get_master_clock();
+				double diff = dpts - get_master_clock()->get_pts();
 
 				av_log(NULL, AV_LOG_INFO, "diff=%f dpts=%f framedrop=%d, fiter_delay=%f, np=%d\n", 
 					diff, dpts, framedrop, frame_last_filter_delay, pVideoq->get_nb_packets());
@@ -420,7 +420,8 @@ int VideoState::synchronize_audio(int nb_samples) {
 		double diff, avg_diff;
 		int min_nb_samples, max_nb_samples;
 
-		diff = pAudclk->get_clock() - get_master_clock();
+		// Use pts here
+		diff = pAudclk->get_pts() - get_master_clock()->get_pts();
 
 		if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD) {
 			this->audio_diff_cum = diff + this->audio_diff_avg_coef * this->audio_diff_cum;
@@ -440,7 +441,7 @@ int VideoState::synchronize_audio(int nb_samples) {
 				}
 				av_log(NULL, AV_LOG_TRACE, "diff=%f adiff=%f sample_diff=%d apts=%0.3f %f\n",
 					diff, avg_diff, wanted_nb_samples - nb_samples,
-					this->audio_clock, this->audio_diff_threshold);
+					this->audio_pts, this->audio_diff_threshold);
 			}
 		}
 		else {
@@ -456,22 +457,14 @@ int VideoState::synchronize_audio(int nb_samples) {
 int VideoState::audio_decode_frame() {
 	int data_size, resampled_data_size;
 	int64_t dec_channel_layout;
-	av_unused double audio_clock0;
 	int wanted_nb_samples;
 	Frame *af;
+	double original_sample_rate;
 
 	if (this->paused)
 		return -1;
 
 	do {
-#if defined(_WIN32)
-
-		while (pSampq->nb_remaining() == 0) {
-			if ((av_gettime_relative() - audio_callback_time) > 1000000LL * this->audio_hw_buf_size / this->audio_tgt.bytes_per_sec / 2)
-				return -1;
-			av_usleep(1000);
-		}
-#endif
 		if (!(af = pSampq->peek_readable()))
 			return -1;
 		pSampq->next();
@@ -488,7 +481,8 @@ int VideoState::audio_decode_frame() {
 	wanted_nb_samples = synchronize_audio(af->frame->nb_samples);
 
 	// Change the 
-	af->frame->sample_rate /= pts_speed;
+	original_sample_rate = af->frame->sample_rate;
+	af->frame->sample_rate *= rate_value;
 
 	if (af->frame->format != this->audio_src.fmt ||
 		dec_channel_layout != this->audio_src.channel_layout ||
@@ -551,13 +545,10 @@ int VideoState::audio_decode_frame() {
 		resampled_data_size = data_size;
 	}
 
-	audio_clock0 = this->audio_clock;
 	/* update the audio clock with the pts */
-	if (!isnan(af->pts))
-		this->audio_clock = af->pts + (double)af->frame->nb_samples / af->frame->sample_rate;
-	else
-		this->audio_clock = NAN;
-	this->audio_clock_serial = af->serial;
+	audio_pts = isnan(af->pts) ? NAN : af->pts + (double)af->frame->nb_samples / original_sample_rate;
+	audio_serial = af->serial;
+
 	return resampled_data_size;
 }
 
@@ -591,8 +582,8 @@ VideoState::VideoState(int audio_buffer_size) :
 	image_sample_aspect_ratio(av_make_q(0, 0)),
 	step(false),
 	new_rate_req(0),
-	rate(1.0),
-	pts_speed(1.0),
+	new_rate_value(1.0),
+	rate_value(1.0),
 	audio_disable(0),
 	video_disable(0),
 	subtitle_disable(0),
@@ -620,8 +611,8 @@ VideoState::VideoState(int audio_buffer_size) :
 	subtitle_st(nullptr),
 	video_st(nullptr),
 	audio_stream(0),
-	audio_clock(0.0),
-	audio_clock_serial(0),
+	audio_pts(0.0),
+	audio_serial(0),
 	audio_diff_cum(0.0),
 	audio_diff_avg_coef(0.0),
 	audio_diff_threshold(0.0),
@@ -823,7 +814,7 @@ int VideoState::read_thread() {
 		}
 #endif
 		if (new_rate_req) {
-			pts_speed = 1/rate;
+			rate_value = new_rate_value;
 			if (audio_stream >= 0) {
 				pAudioq->flush();
 				pAudioq->put_flush_packet();
@@ -872,33 +863,29 @@ int VideoState::read_thread() {
 					pVideoq->put_flush_packet();
 				}
 				if (this->seek_flags & AVSEEK_FLAG_BYTE) {
-					pExtclk->set_clock(NAN, 0); // 0 != -1 which will return NAN for interim time 
+					pExtclk->set_time(NAN, 0, rate_value); // 0 != -1 which will return NAN for interim time 
 				}
 				else {
-					pExtclk->set_clock(seek_target / (double)AV_TIME_BASE, 0); // 0 != -1 which will return NAN for interim time 
+					pExtclk->set_time(seek_target / (double)AV_TIME_BASE, 0, rate_value); // 0 != -1 which will return NAN for interim time 
 				}
 			}
 			this->seek_req = 0;
 			this->queue_attachments_req = 1;
 			this->eof = 0;
-#if _DEBUG
-			printf("Clocks After Seek: Ext : %7.2f sec - Aud : %7.2f sec - Vid : %7.2f sec - Error : %7.2f sec\n",
-				get_pExtclk()->get_clock(),
-				get_pAudclk()->get_clock(),
-				get_pVidclk()->get_clock(),
-				abs(get_pExtclk()->get_clock() - get_pAudclk()->get_clock()));
-#endif // _DEBUG
+			av_log(NULL, AV_LOG_INFO,
+				"Seek: ext: %7.2f sec - aud : %7.2f sec - vid : %7.2f sec - Error : %7.2f sec\n",
+				get_pExtclk()->get_time(),
+				get_pAudclk()->get_time(),
+				get_pVidclk()->get_time(),
+				fabs(get_pExtclk()->get_time() - get_pAudclk()->get_time()));
 
-			//TODO(fraudies): Need to debug stepping, since it also gets the clocks running
 			if (this->paused) {
-				step_to_next_frame_callback(); // Assume that is set--otherwise fail hard here
+				step_to_next_frame_callback(); // Assume that the step callback is set -- otherwise fail hard here
 			} else {
 				if (player_state_callbacks[TO_PLAYING]) {
 					player_state_callbacks[TO_PLAYING]();
 				}
 				was_stalled = false;
-				//if (was_stalled) {
-				//}
 			}
 		}
 		if (this->queue_attachments_req) {
@@ -1049,7 +1036,7 @@ int VideoState::audio_thread() {
 				last_serial = pAuddec->get_pkt_serial();
 
 				if ((ret = configure_audio_filters(afilters, 1)) < 0) {
-					//av_log(NULL, AV_LOG_INFO, "audio_thread function cannot configure the audio filter");
+					av_log(NULL, AV_LOG_INFO, "audio_thread function cannot configure the audio filter");
 					goto the_end;
 				}
 			}
@@ -1067,8 +1054,6 @@ int VideoState::audio_thread() {
 				af->pos = frame->pkt_pos;
 				af->serial = pAuddec->get_pkt_serial();
 				af->duration = av_q2d(av_make_q(frame->nb_samples, frame->sample_rate));
-				// TODO(fraudies): Check why this does not affect the sample_rate
-				//af->frame->sample_rate = frame->sample_rate / pts_speed;
 
 				av_frame_move_ref(af->frame, frame);
 				pSampq->push();
@@ -1249,7 +1234,7 @@ VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat
 
 	is->iformat = iformat;
 
-	is->audio_clock_serial = -1;
+	is->audio_serial = -1;
 
 	is->av_sync_type = av_sync_type_input;
 
@@ -1322,7 +1307,7 @@ int VideoState::stream_start() {
 	if (seek_by_bytes < 0)
 		seek_by_bytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
 
-	this->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
+	max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
 
 	if (!window_title && (t = av_dict_get(ic->metadata, "title", NULL, 0)))
 		window_title = av_asprintf("%s - %s", t->value, filename);
@@ -1456,7 +1441,7 @@ void VideoState::set_step_to_next_frame_callback(const std::function<void()>& fu
 
 // Function Called from the event loop
 void VideoState::seek_chapter(int incr) {
-	int64_t pos = this->get_master_clock() * AV_TIME_BASE;
+	int64_t pos = get_master_clock()->get_time() * AV_TIME_BASE;
 	int i;
 
 	if (!this->ic->nb_chapters)
@@ -1505,8 +1490,7 @@ double VideoState::get_duration() const {
 }
 
 double VideoState::get_stream_time() const {
-	// In cases of seek the video clock/audio clock is NAN, use the external clock
-	return pExtclk->get_clock();
+	return pExtclk->get_time();
 }
 
 void VideoState::toggle_mute() {
@@ -1514,9 +1498,8 @@ void VideoState::toggle_mute() {
 }
 
 void VideoState::update_pts(double pts, int64_t pos, int serial) {
-	// TODO: Revisit this
-	//get_pVidclk()->set_clock(pts / pts_speed, serial);
-	get_pVidclk()->set_clock(pts, serial);
+	get_pVidclk()->set_time(pts, serial, rate_value);
+	// Sync external clock to video clock
 	Clock::sync_clock_to_slave(get_pExtclk(), get_pVidclk());
 }
 
@@ -1706,16 +1689,16 @@ double VideoState::compute_target_delay(double delay) {
 	double sync_threshold, diff = 0;
 
 	/* update delay to follow master synchronisation source */
-	if (this->get_master_sync_type() != AV_SYNC_VIDEO_MASTER) {
+	if (get_master_sync_type() != AV_SYNC_VIDEO_MASTER) {
 		/* if video is slave, we try to correct big delays by
 		duplicating or deleting a frame */
-		diff = this->pVidclk->get_clock() - this->get_master_clock();
+		diff = pVidclk->get_pts() - get_master_clock()->get_pts();
 
 		/* skip or repeat frame. We take into account the
 		delay to compute the threshold. I still don't know
 		if it is the best guess */
 		sync_threshold = FFMAX(AV_SYNC_THRESHOLD_MIN, FFMIN(AV_SYNC_THRESHOLD_MAX, delay));
-		if (!isnan(diff) && fabs(diff) < this->max_frame_duration) {
+		if (!isnan(diff) && fabs(diff) < max_frame_duration) {
 			if (diff <= -sync_threshold)
 				delay = FFMAX(0, delay + diff);
 			else if (diff >= sync_threshold && delay > AV_SYNC_FRAMEDUP_THRESHOLD)
@@ -1725,7 +1708,7 @@ double VideoState::compute_target_delay(double delay) {
 		}
 	}
 
-	av_log(NULL, AV_LOG_TRACE, "video: delay=%0.3f A-V=%f\n", delay, -diff);
+	av_log(NULL, AV_LOG_INFO, "video: delay=%0.3f A-V=%f\n", delay, -diff);
 
 	return delay;
 }
@@ -1749,29 +1732,19 @@ int VideoState::get_master_sync_type() const {
 	}
 }
 
-/* get the current master clock value */
-double VideoState::get_master_clock() const {
-	double val;
-	switch (get_master_sync_type()) {
-		case AV_SYNC_VIDEO_MASTER:
-			val = pVidclk->get_clock();
-			break;
-		case AV_SYNC_AUDIO_MASTER:
-			val = pAudclk->get_clock();
-			break;
-		default:
-			val = pExtclk->get_clock();
-			break;
+Clock* VideoState::get_master_clock() const {
+	int master = get_master_sync_type();
+	if (master == AV_SYNC_VIDEO_MASTER) {
+		return pVidclk;
 	}
-	return val;
+	if (master == AV_SYNC_AUDIO_MASTER) {
+		return pAudclk;
+	}
+	return pExtclk;
 }
 
 double VideoState::get_fps() const {
 	return video_st ? this->fps : 0;
-}
-
-double VideoState::get_pts_speed() const {
-	return pts_speed;
 }
 
 void VideoState::stream_close() {
@@ -1801,7 +1774,6 @@ void VideoState::stream_close() {
 /* prepare a new audio buffer */
 void VideoState::audio_callback(uint8_t *stream, int len) {
 	int audio_size, len1;
-	audio_callback_time = av_gettime_relative();
 
 	while (len > 0) {
 		if (audio_buf_index >= audio_buf_size) {
@@ -1829,31 +1801,32 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 		audio_buf_index += len1;
 	}
 	audio_write_buf_size = audio_buf_size - audio_buf_index;
-	/* Let's assume the audio driver that is used by SDL has two periods. */
-	if (!isnan(audio_clock) && !muted) {
-		pAudclk->set_clock_at(
-			audio_clock - (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec * pts_speed,
-			audio_clock_serial,
-			audio_callback_time / 1000000.0
+	if (!isnan(audio_pts) && !muted) {
+		/* Let's assume the audio driver that is used by SDL has two periods. */
+		pAudclk->set_time(
+			audio_pts - (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec,
+			audio_serial,
+			rate_value
 		);
+		// Sync external clock to audio clock
 		Clock::sync_clock_to_slave(pExtclk, pAudclk);
 	}
 }
 
 int VideoState::set_rate(double new_rate) {
 	// If we request the same rate, we are done here
-	if (rate == new_rate) {
+	if (rate_value == new_rate) {
 		return 0;
 	}
 
 	bool is_rate_found = false;
 	char* vfilter = nullptr;
 	char* afilter = nullptr;
-	for (int i = 0; i < FF_ARRAY_ELEMS(rate_speed_map); i++) {
-		if (new_rate == rate_speed_map[i].clock_speed) {
+	for (int i = 0; i < FF_ARRAY_ELEMS(rate_map); i++) {
+		if (new_rate == rate_map[i].rate) {
 			is_rate_found = true;
-			vfilter = rate_speed_map[i].vfilter;
-			afilter = rate_speed_map[i].afilter;
+			vfilter = rate_map[i].vfilter;
+			afilter = rate_map[i].afilter;
 		}
 	}
 	// If we can't fine the rate, return error that the filter was not found
@@ -1867,7 +1840,7 @@ int VideoState::set_rate(double new_rate) {
 	vfilter_idx++;
 	locker.unlock();
 #endif
-	rate = new_rate;
+	new_rate_value = new_rate;
 	new_rate_req = 1;
 	continue_read_thread.notify_one();
 
@@ -1875,7 +1848,7 @@ int VideoState::set_rate(double new_rate) {
 }
 
 double VideoState::get_rate() const {
-	return rate;
+	return rate_value;
 }
 
 int VideoState::get_audio_disable() const { return audio_disable; }
@@ -1921,8 +1894,7 @@ double VideoState::av_display_rotation_get(const int32_t matrix[9]) {
 	return -rotation;
 }
 
-int VideoState::configure_video_filters(AVFilterGraph *graph, const char *vfilters, AVFrame *frame)
-{
+int VideoState::configure_video_filters(AVFilterGraph *graph, const char *vfilters, AVFrame *frame) {
 	//enum AVPixelFormat pix_fmts[FF_ARRAY_ELEMS(sdl_texture_format_map)];
 	char sws_flags_str[512] = "";
 	char buffersrc_args[256];
@@ -1931,21 +1903,6 @@ int VideoState::configure_video_filters(AVFilterGraph *graph, const char *vfilte
 	AVCodecParameters *codecpar = video_st->codecpar;
 	AVRational fr = av_guess_frame_rate(ic, video_st, NULL);
 	AVDictionaryEntry *e = NULL;
-
-	/*
-	int nb_pix_fmts = 0;
-	int i, j;
-
-	for (i = 0; i < renderer_info.num_texture_formats; i++) {
-	for (j = 0; j < FF_ARRAY_ELEMS(sdl_texture_format_map) - 1; j++) {
-	if (renderer_info.texture_formats[i] == sdl_texture_format_map[j].texture_fmt) {
-	pix_fmts[nb_pix_fmts++] = sdl_texture_format_map[j].format;
-	break;
-	}
-	}
-	}
-	pix_fmts[nb_pix_fmts] = AV_PIX_FMT_NONE;
-	*/
 
 	while ((e = av_dict_get(sws_dict, "", e, AV_DICT_IGNORE_SUFFIX))) {
 		if (!strcmp(e->key, "sws_flags")) {

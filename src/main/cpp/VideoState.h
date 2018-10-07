@@ -108,22 +108,21 @@ enum PlayerStateCallback {
 };
 
 static const struct RatesEntry {
-	float		clock_speed;
-	float		pts_speed;
+	float		rate;
 	char		*vfilter;
 	char		*afilter;
-} rate_speed_map[] = {
-	{ 0.03125,	32.0,		(char *) "setpts=32.0*PTS",		(char *) "asetpts=32.0*PTS" },
-	{ 0.0625,	16.0,		(char *) "setpts=16.0*PTS",		(char *) "asetpts=16.0*PTS" },
-	{ 0.125,	8.0,		(char *) "setpts=8.0*PTS",		(char *) "asetpts=8.0*PTS" },
-	{ 0.25,		4.0,		(char *) "setpts=4.0*PTS",		(char *) "asetpts=4.0*PTS" },
-	{ 0.5,		2.0,		(char *) "setpts=2.0*PTS",		(char *) "asetpts=2.0*PTS" },
-	{ 1.0,		1.0,		(char *) "setpts=1.0*PTS",		(char *) "asetpts=1.0*PTS" },
-	{ 2.0,		0.5,		(char *) "setpts=0.5*PTS",		(char *) "asetpts=0.5*PTS" },
-	{ 4.0,		0.25,		(char *) "setpts=0.25*PTS",		(char *) "asetpts=0.25*PTS" },
-	{ 8.0,		0.125,		(char *) "setpts=0.125*PTS",	(char *) "asetpts=0.125*PTS" },
-	{ 16.0,		0.0625,		(char *) "setpts=0.0625*PTS",	(char *) "asetpts=0.0625*PTS" },
-	{ 32.0,		0.03125,	(char *) "setpts=0.03125*PTS",	(char *) "asetpts=0.03125*PTS" },
+} rate_map[] = {
+	{ 0.03125,	(char *) "setpts=32.0*PTS",		(char *) "asetpts=32.0*PTS" },
+	{ 0.0625,	(char *) "setpts=16.0*PTS",		(char *) "asetpts=16.0*PTS" },
+	{ 0.125,	(char *) "setpts=8.0*PTS",		(char *) "asetpts=8.0*PTS" },
+	{ 0.25,		(char *) "setpts=4.0*PTS",		(char *) "asetpts=4.0*PTS" },
+	{ 0.5,		(char *) "setpts=2.0*PTS",		(char *) "asetpts=2.0*PTS" },
+	{ 1.0,		(char *) "setpts=1.0*PTS",		(char *) "asetpts=1.0*PTS" },
+	{ 2.0,		(char *) "setpts=0.5*PTS",		(char *) "asetpts=0.5*PTS" },
+	{ 4.0,		(char *) "setpts=0.25*PTS",		(char *) "asetpts=0.25*PTS" },
+	{ 8.0,		(char *) "setpts=0.125*PTS",	(char *) "asetpts=0.125*PTS" },
+	{ 16.0,		(char *) "setpts=0.0625*PTS",	(char *) "asetpts=0.0625*PTS" },
+	{ 32.0,		(char *) "setpts=0.03125*PTS",	(char *) "asetpts=0.03125*PTS" },
 };
 
 static const char		*window_title;
@@ -151,9 +150,6 @@ static int64_t			cursor_last_shown;
 static int				cursor_hidden = 0;
 static int				autorotate = 1;
 static int				find_stream_info = 1;
-
-/* current context */
-static int64_t			audio_callback_time;
 
 //what will be the streamer in the future implementations
 class VideoState {
@@ -185,9 +181,9 @@ private:
 	AVRational image_sample_aspect_ratio;
 	bool step; // TODO(fraudies): Check if this need to be atomic
 
-	double rate;
+	double new_rate_value;
+	double rate_value;
 	int new_rate_req;
-	double pts_speed;
 
 	int audio_disable;
 	int video_disable;
@@ -227,8 +223,8 @@ private:
 	AVStream *video_st;
 
 	int audio_stream;
-	double audio_clock;
-	int audio_clock_serial;
+	double audio_pts;
+	int audio_serial;
 	double audio_diff_cum; /* used for AV difference average computation */
 	double audio_diff_avg_coef;
 	double audio_diff_threshold;
@@ -374,6 +370,8 @@ public:
 
 	bool get_stopped() const;
 	void set_stopped(bool new_stopped);
+	int set_rate(double new_rate);
+	double get_rate() const;
 
 	int get_step() const;
 	void set_step(bool new_step);
@@ -434,18 +432,14 @@ public:
 	int get_master_sync_type() const;
 
 	/* get the current master clock value */
-	double get_master_clock() const;
+	Clock* get_master_clock() const;
 
 	double get_fps() const;
-	double get_pts_speed() const;
 
 	void stream_close();
 
 	/* prepare a new audio buffer */
 	void audio_callback(uint8_t *stream, int len);
-
-	int set_rate(double rate);
-	double get_rate() const;
 
 	int get_audio_disable() const;
 	void set_audio_disable(const int disable);

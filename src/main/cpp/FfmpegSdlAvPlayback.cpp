@@ -327,9 +327,7 @@ void FfmpegSdlAvPlayback::video_display() {
 
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
-	if (pVideoState->get_audio_st() && pVideoState->get_show_mode() != SHOW_MODE_VIDEO)
-		this->video_audio_display();
-	else if (pVideoState->get_video_st())
+	if (pVideoState->get_video_st())
 		video_image_display();
 	SDL_RenderPresent(renderer);
 }
@@ -433,156 +431,6 @@ void FfmpegSdlAvPlayback::update_sample_display(short *samples, int samples_size
 		size -= len;
 	}
 }
-
-void FfmpegSdlAvPlayback::video_audio_display() {
-	int i, i_start, x, y1, y, ys, delay, n, nb_display_channels;
-	int ch, channels, h, h2;
-	int64_t time_diff;
-	int rdft_bits, nb_freq;
-
-	for (rdft_bits = 1; (1 << rdft_bits) < 2 * height; rdft_bits++)
-		;
-	nb_freq = 1 << (rdft_bits - 1);
-
-	/* compute display index : center on currently output samples */
-	channels = pVideoState->get_audio_tgt().channels;
-	nb_display_channels = channels;
-	if (!pVideoState->get_paused()) {
-		int data_used = pVideoState->get_show_mode() == SHOW_MODE_WAVES ? width : (2 * nb_freq);
-		n = 2 * channels;
-		delay = pVideoState->get_audio_write_buf_size();
-		delay /= n;
-
-		/* to be more precise, we take into account the time spent since
-		the last buffer computation */
-		if (audio_callback_time) {
-			time_diff = av_gettime_relative() - audio_callback_time;
-			delay -= (time_diff * pVideoState->get_audio_tgt().freq) / 1000000;
-		}
-
-		delay += 2 * data_used;
-		if (delay < data_used)
-			delay = data_used;
-
-		i_start = x = compute_mod(sample_array_index - delay * channels, SAMPLE_ARRAY_SIZE);
-		if (pVideoState->get_show_mode() == SHOW_MODE_WAVES) {
-			h = INT_MIN;
-			for (i = 0; i < 1000; i += channels) {
-				int idx = (SAMPLE_ARRAY_SIZE + x - i) % SAMPLE_ARRAY_SIZE;
-				int a = sample_array[idx];
-				int b = sample_array[(idx + 4 * channels) % SAMPLE_ARRAY_SIZE];
-				int c = sample_array[(idx + 5 * channels) % SAMPLE_ARRAY_SIZE];
-				int d = sample_array[(idx + 9 * channels) % SAMPLE_ARRAY_SIZE];
-				int score = a - d;
-				if (h < score && (b ^ c) < 0) {
-					h = score;
-					i_start = idx;
-				}
-			}
-		}
-
-		last_i_start = i_start;
-	}
-	else {
-		i_start = last_i_start;
-	}
-
-	if (pVideoState->get_show_mode() == SHOW_MODE_WAVES) {
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-		/* total height for one channel */
-		h = height / nb_display_channels;
-		/* graph height / 2 */
-		h2 = (h * 9) / 20;
-		for (ch = 0; ch < nb_display_channels; ch++) {
-			i = i_start + ch;
-			y1 = this->ytop + ch * h + (h / 2); /* position of center line */
-			for (x = 0; x < width; x++) {
-				y = (sample_array[i] * h2) >> 15;
-				if (y < 0) {
-					y = -y;
-					ys = y1 - y;
-				}
-				else {
-					ys = y1;
-				}
-				fill_rectangle(this->xleft + x, ys, 1, y);
-				i += channels;
-				if (i >= SAMPLE_ARRAY_SIZE)
-					i -= SAMPLE_ARRAY_SIZE;
-			}
-		}
-
-		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-
-		for (ch = 1; ch < nb_display_channels; ch++) {
-			y = this->ytop + ch * h;
-			fill_rectangle(this->xleft, y, width, 1);
-		}
-	}
-	else {
-		if (realloc_texture(&vis_texture, SDL_PIXELFORMAT_ARGB8888, width, height, SDL_BLENDMODE_NONE, 1) < 0)
-			return;
-
-		nb_display_channels = FFMIN(nb_display_channels, 2);
-		if (rdft_bits != pVideoState->get_rdft_bits()) {
-			av_rdft_end(pVideoState->get_rdft());
-			av_free(pVideoState->get_rdft_data());
-			pVideoState->set_rdft(av_rdft_init(rdft_bits, DFT_R2C));
-			pVideoState->set_rdft_bits(rdft_bits);
-			pVideoState->set_rdft_data((FFTSample*)av_malloc_array(nb_freq, 4 * sizeof(*pVideoState->get_rdft_data())));
-		}
-		if (!pVideoState->get_rdft() || !pVideoState->get_rdft_data()) {
-			av_log(NULL, AV_LOG_ERROR, "Failed to allocate buffers for RDFT, switching to waves display\n");
-			pVideoState->set_show_mode(SHOW_MODE_WAVES);
-		}
-		else {
-			FFTSample *data[2];
-			SDL_Rect rect = {}; // {.x = s->xpos, .y = 0, .w = 1, .h = s->height };
-			rect.x = xpos;
-			rect.y = 0;
-			rect.w = 1;
-			rect.h = height;
-			uint32_t *pixels;
-			int pitch;
-			for (ch = 0; ch < nb_display_channels; ch++) {
-				data[ch] = pVideoState->get_rdft_data() + 2 * nb_freq * ch;
-				i = i_start + ch;
-				for (x = 0; x < 2 * nb_freq; x++) {
-					double w = (x - nb_freq) * (1.0 / nb_freq);
-					data[ch][x] = sample_array[i] * (1.0 - w * w);
-					i += channels;
-					if (i >= SAMPLE_ARRAY_SIZE)
-						i -= SAMPLE_ARRAY_SIZE;
-				}
-				av_rdft_calc(pVideoState->get_rdft(), data[ch]);
-			}
-			/* Least efficient way to do this, we should of course
-			* directly access it but it is more than fast enough. */
-			if (!SDL_LockTexture(vis_texture, &rect, (void **)&pixels, &pitch)) {
-				pitch >>= 2;
-				pixels += pitch * height;
-				for (y = 0; y < height; y++) {
-					double w = 1 / sqrt(nb_freq);
-					int a = sqrt(w * sqrt(data[0][2 * y + 0] * data[0][2 * y + 0] + data[0][2 * y + 1] * data[0][2 * y + 1]));
-					int b = (nb_display_channels == 2) ? sqrt(w * hypot(data[1][2 * y + 0], data[1][2 * y + 1]))
-						: a;
-					a = FFMIN(a, 255);
-					b = FFMIN(b, 255);
-					pixels -= pitch;
-					*pixels = (a << 16) + (b << 8) + ((a + b) >> 1);
-				}
-				SDL_UnlockTexture(vis_texture);
-			}
-			SDL_RenderCopy(renderer, vis_texture, NULL, NULL);
-		}
-		if (!pVideoState->get_paused())
-			xpos++;
-		if (xpos >= width)
-			xpos = this->xleft;
-	}
-}
-
 
 int FfmpegSdlAvPlayback::get_audio_volume() const {
 	return audio_volume;
@@ -692,8 +540,8 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 						sp2 = NULL;
 
 					if (sp->serial != pVideoState->get_pSubtitleq()->get_serial()
-						|| (pVideoState->get_pVidclk()->get_pts() > (sp->pts + ((float)sp->sub.end_display_time / 1000)))
-						|| (sp2 && pVideoState->get_pVidclk()->get_pts() > (sp2->pts + ((float)sp2->sub.start_display_time / 1000))))
+						|| (pVideoState->get_pVidclk()->get_last_set_time() > (sp->pts + ((float)sp->sub.end_display_time / 1000)))
+						|| (sp2 && pVideoState->get_pVidclk()->get_last_set_time() > (sp2->pts + ((float)sp2->sub.start_display_time / 1000))))
 					{
 						if (sp->uploaded) {
 							int i;
@@ -756,16 +604,16 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 				sqsize = pVideoState->get_pSubtitleq()->get_size();
 			av_diff = 0;
 			if (pVideoState->get_audio_st() && pVideoState->get_video_st())
-				av_diff = pVideoState->get_pAudclk()->get_clock() - pVideoState->get_pVidclk()->get_clock();
+				av_diff = pVideoState->get_pAudclk()->get_time() - pVideoState->get_pVidclk()->get_time();
 			else if (pVideoState->get_video_st())
-				av_diff = pVideoState->get_master_clock() - pVideoState->get_pVidclk()->get_clock();
+				av_diff = pVideoState->get_master_clock()->get_time() - pVideoState->get_pVidclk()->get_time();
 			else if (pVideoState->get_audio_st())
-				av_diff = pVideoState->get_master_clock() - pVideoState->get_pAudclk()->get_clock();
+				av_diff = pVideoState->get_master_clock()->get_time() - pVideoState->get_pAudclk()->get_time();
 			av_log(NULL, AV_LOG_INFO,
 			"%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
-			pVideoState->get_master_clock(),
-			1.0/pVideoState->get_pts_speed(),
-			pVideoState->get_pVidclk()->get_clock(),
+			pVideoState->get_master_clock()->get_time(),
+			pVideoState->get_rate(),
+			pVideoState->get_pVidclk()->get_time(),
 			(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
 			av_diff,
 			pVideoState->get_frame_drops_early(),
@@ -1032,27 +880,13 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 					pVideoState->stream_seek(pos, incr, 1);
 				}
 				else {
-					pos = pVideoState->get_master_clock();
+					pos = pVideoState->get_master_clock()->get_time();
 					if (isnan(pos)) {
 						pos = (double)pVideoState->get_seek_pos() / AV_TIME_BASE;
-#if _DEBUG
-						printf("Seek Position Requested - Master Clock Return NaN \n");
-#endif // _DEBUG
 					}
 					pos += incr;
 					if (pVideoState->get_ic()->start_time != AV_NOPTS_VALUE && pos < pVideoState->get_ic()->start_time / (double)AV_TIME_BASE)
 						pos = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
-#if _DEBUG
-					printf("Seeking From Time %7.2f sec To %7.2f sec with Incr %7.2f sec \n",
-						(pos-incr),
-						pos,
-						incr);
-					printf("Clocks Before Seek: Ext : %7.2f sec - Aud : %7.2f sec - Vid : %7.2f sec - Error : %7.2f\n",
-						pVideoState->get_pExtclk()->get_clock(),
-						pVideoState->get_pAudclk()->get_clock(),
-						pVideoState->get_pVidclk()->get_clock(),
-						abs(pVideoState->get_pExtclk()->get_clock() - pVideoState->get_pAudclk()->get_clock()));
-#endif // _DEBUG
 					pVideoState->stream_seek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
 				}
 				break;

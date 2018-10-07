@@ -10,14 +10,11 @@ void FfmpegAvPlayback::stream_toggle_pause() {
 
 	// Update the video clock
 	if (pVideoState->get_paused()) {
-		set_frame_timer(get_frame_timer() + av_gettime_relative() / 1000000.0 - pVidclk->get_lastUpdated());
-		if (pVideoState->get_read_pause_return() != AVERROR(ENOSYS)) {
-			pVidclk->setPaused(0);
-		}
-		pVidclk->set_clock(pVidclk->get_clock(), pVidclk->get_serial());
+		set_frame_timer(get_frame_timer() + av_gettime_relative() / 1000000.0 - pVidclk->get_lastSet());
+		pVidclk->set_time(pVidclk->get_time(), pVidclk->get_serial(), pVidclk->get_rate());
 	}
 	// Update the external clock
-	pExtclk->set_clock(pExtclk->get_clock(), pExtclk->get_serial());
+	pExtclk->set_time(pExtclk->get_time(), pExtclk->get_serial(), pExtclk->get_rate());
 
 	// Flip the paused flag on the clocks
 	bool flipped = !pVideoState->get_paused();

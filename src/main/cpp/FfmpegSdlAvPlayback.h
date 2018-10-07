@@ -142,8 +142,6 @@ public:
 	/* display the current picture, if any */
 	void video_display();
 
-	void video_audio_display();
-
 	int get_audio_volume() const;
 
 	void update_volume(int sign, double step);

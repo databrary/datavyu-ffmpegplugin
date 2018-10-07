@@ -21,13 +21,14 @@ extern "C" {
 //
 class Clock {
     private:
-        double lastUpdated;
-        int paused;
-        double pts;					// clock base
-        double ptsDrift;			// clock base minus time at which we updated the clock
+        double lastSet;
+        bool paused;
+		double rate;				// playback speed of the clock
+        double time;				// clock time
+		double pts;					// last pts
         int serial;					// clock is based on a packet with this serial
         const int *queueSerial;	// pointer to the current packet queue serial, used for obsolete clock detection
-
+		inline bool is_seek() const { return *queueSerial != serial; }
     public:
         enum {
             AV_SYNC_AUDIO_MASTER, // default
@@ -39,21 +40,23 @@ class Clock {
 
 		Clock();
     
-		double get_clock() const; // keeps always track of the actual time (independent of the speed)
+		double get_time() const; // for stream time, depends on rate
 
-		double get_pts() const; // keeps always track of the actual time as much as possible
+		inline double get_pts() const { return pts; } // for sync between streams, independent of rate
 
-		double get_lastUpdated() const;
+		inline double get_serial() const { return serial; }
 
-		double get_serial() const;
+		inline double get_rate() const { return rate; }
 
-		bool isPaused() const;
+		inline double get_lastSet() const { return lastSet; }
 
-		void setPaused(bool p);
+		inline double get_last_set_time() const { return time; }
 
-		void set_clock_at(double newPts, int newSerial, double time);
+		inline bool isPaused() const { return paused; }
 
-		void set_clock(double newPts, int newSerial);
+		inline void setPaused(bool newPaused) { paused = newPaused; }
+
+		void set_time(double newPts, int newSerial, double newRate);
 
 		static void sync_clock_to_slave(Clock *c, Clock *slave);
 };

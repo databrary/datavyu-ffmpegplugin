@@ -1,68 +1,56 @@
 #include "Clock.h"
 
 Clock::Clock(const int *queue_serial) :
-	lastUpdated(0),
+	lastSet(0),
 	paused(0),
-	pts(0),
-	ptsDrift(0),
+	rate(1.0),
+	time(0.0),
 	serial(-1),
 	queueSerial(queue_serial) {
-	set_clock(NAN, -1);
+	set_time(NAN, -1, 1.0);
 }
 
-Clock::Clock() : Clock(nullptr) {
-	queueSerial = &serial;
+Clock::Clock() : 
+	lastSet(0),
+	paused(0),
+	rate(1.0),
+	time(0.0),
+	serial(-1),
+	queueSerial(&serial) {
+	set_time(NAN, -1, 1.0);
 }
 
-double Clock::get_clock() const {
-	if (*queueSerial != serial)
+double Clock::get_time() const {
+	if (is_seek()) {
 		return NAN;
+	}
 	if (paused) {
-		return pts;
+		return time;
 	}
-	else {
-		//double time = av_gettime_relative() / MICRO;
-		//return ptsDrift + time - (time - lastUpdated) * (1.0 - speed);
-		return ptsDrift;
+	return time + (av_gettime_relative() / MICRO - lastSet) / rate;
+}
+
+void Clock::set_time(double newPts, int newSerial, double newRate) {
+	lastSet = av_gettime_relative() / MICRO;
+	// TODO(fraudies): Find a better threshold
+	// We had a seek and need to set the new time
+	if (is_seek() || fabs(newPts - pts) > AV_NOSYNC_THRESHOLD/10) {
+		time = newPts;
 	}
-}
-
-double Clock::get_pts() const {
-	return pts;
-}
-
-double Clock::get_lastUpdated() const {
-	return lastUpdated;
-}
-
-double Clock::get_serial() const {
-	return serial;
-}
-
-bool Clock::isPaused() const {
-	return paused;
-}
-
-void Clock::setPaused(bool p) {
-	paused = p;
-}
-
-void Clock::set_clock_at(double newPts, int newSerial, double time) {
+	else if (!isnan(newPts)) {
+		time += (newPts - pts) / rate;
+	}
+	// otherwise don't change the time
 	pts = newPts;
-	lastUpdated = time;
-	//ptsDrift = pts - time;
-	ptsDrift = pts;
 	serial = newSerial;
+	rate = newRate;
 }
 
-void Clock::set_clock(double newPts, int newSerial) {
-	double time = av_gettime_relative() / MICRO;
-	set_clock_at(newPts, newSerial, time);
-}
-
-void Clock::sync_clock_to_slave(Clock *c, Clock *slave) {
-	double clock = c->get_clock();
-	double slave_clock = slave->get_clock();
-	if (!isnan(slave_clock) && (isnan(clock) || fabs(clock - slave_clock) > AV_NOSYNC_THRESHOLD))
-		c->set_clock(slave_clock, slave->serial);
+void Clock::sync_clock_to_slave(Clock *clock, Clock *slave) {
+	double clock_time = clock->get_time();
+	double slave_time = slave->get_time();
+	if (!isnan(slave_time) && (isnan(clock_time) 
+		|| fabs(clock_time - slave_time) > AV_NOSYNC_THRESHOLD)) {
+		clock->set_time(slave_time, slave->serial, slave->rate);
+	}
 }
