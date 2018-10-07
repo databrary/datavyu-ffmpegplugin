@@ -14,11 +14,11 @@ int MpvAvPlayback::Init(const char * filename, const long windowID)
 
 	LoadMpvDynamic();
 	if (!_libMpvDll)
-		return 1;
+		return NULL;
 
 	_mpvHandle = _mpvCreate();
 	if (!_mpvHandle)
-		return 1;
+		return NULL;
 
 	_mpvInitialize(_mpvHandle);
 	_mpvSetOptionString(_mpvHandle, "keep-open", "always");
@@ -29,13 +29,6 @@ int MpvAvPlayback::Init(const char * filename, const long windowID)
 
 	const char *cmd[] = { "loadfile", filename, NULL };
 	DoMpvCommand(cmd);
-
-	//TODO(Reda): find a way to thrutle this in order to get the duration 
-	// Need to wait for the file to load before requesting a duration
-
-	//if (_mpvGetProperty(_mpvHandle, "duration", MPV_FORMAT_DOUBLE, &_streamDuration) < 0) {
-	//	return 1;
-	//}
 	
 	return 0;
 }
@@ -55,20 +48,30 @@ void MpvAvPlayback::LoadMpvDynamic()
 	_mpvFree = (MpvFree)GetProcAddress(_libMpvDll, "mpv_free");
 }
 
-void MpvAvPlayback::Play()
+int MpvAvPlayback::Play()
 {
 	if (!_mpvHandle)
-		return;
+		return MPV_ERROR_GENERIC;
 
 	const char* porpertyValue = "no";
-	_mpvSetProperty(_mpvHandle, "pause", MpvFormatString, &porpertyValue);
+	int err = _mpvSetProperty(_mpvHandle, "pause", MpvFormatString, &porpertyValue);
+	if (err != 0) {
+		return err;
+	}
 
+	return MPV_ERROR_SUCCESS;
 }
 
-void MpvAvPlayback::Stop()
+int MpvAvPlayback::Stop()
 {
-	Pause();
-	SetRate(0);
+	if (Pause() != 0) {
+		return MPV_ERROR_PROPERTY_ERROR;
+	}
+	if (SetRate(0.0) != 0) {
+		return MPV_ERROR_COMMAND;
+	}
+
+	return MPV_ERROR_SUCCESS;
 }
 
 void MpvAvPlayback::toggle_pause()
@@ -81,46 +84,80 @@ void MpvAvPlayback::toggle_pause()
 	}
 }
 
-void MpvAvPlayback::SetRate(double newRate)
+int MpvAvPlayback::SetRate(double newRate)
 {
 	if (!_mpvHandle)
-		return;
+		return MPV_ERROR_GENERIC;
+	int err = _mpvSetOption(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &newRate);
+	if ( err != 0) {
+		return err;
+	}
 
-	_mpvSetOption(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &newRate);
+	return MPV_ERROR_SUCCESS;
 }
 
 double MpvAvPlayback::GetRate()
 {
 	if (!_mpvHandle)
-		return 1;
+		return NULL;
 
 	double currentRate;
-	if (_mpvGetProperty(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &currentRate) > 0) {
-		return 1;
+
+	int err = _mpvGetProperty(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &currentRate);
+	if (err != 0) {
+		return NULL;
 	}
 
 	return currentRate;
 }
 
-void MpvAvPlayback::StepBackward()
+double MpvAvPlayback::GetDuration()
 {
-	if (!_mpvHandle)
-		return;
-	const char *cmd[] = { "frame-back-step"};
-	DoMpvCommand(cmd);
+	if (!_streamDuration || _streamDuration == 0 || _streamDuration == NULL) {
+		int err = _mpvGetProperty(_mpvHandle, "duration", MPV_FORMAT_DOUBLE, &_streamDuration);
+		if ( err != 0) {
+			return NULL;
+		}
+	}
+
+	return _streamDuration;
 }
 
-void MpvAvPlayback::StepForward()
+int MpvAvPlayback::StepBackward()
 {
 	if (!_mpvHandle)
-		return;
-	const char *cmd[] = { "frame-step" };
-	DoMpvCommand(cmd);
+		return MPV_ERROR_GENERIC;
+	const char *cmd[] = { "frame-back-step", NULL, NULL };
+
+	int err = DoMpvCommand(cmd);
+	if (err != 0) {
+		return err;
+	}
+
+	return MPV_ERROR_SUCCESS;
 }
 
-void MpvAvPlayback::DoMpvCommand(const char **cmd)
+int MpvAvPlayback::StepForward()
 {
-	_mpvCommand(_mpvHandle, cmd);
+	if (!_mpvHandle)
+		return MPV_ERROR_GENERIC;
+	const char *cmd[] = { "frame-step", NULL, NULL };
+
+	int err = DoMpvCommand(cmd);
+	if (err != 0) {
+		return err;
+	}
+
+	return MPV_ERROR_SUCCESS;
+}
+
+int MpvAvPlayback::DoMpvCommand(const char **cmd)
+{
+	if (_mpvCommand(_mpvHandle, cmd) != 0) {
+		return MPV_ERROR_COMMAND;
+	}
+
+	return MPV_ERROR_SUCCESS;
 }
 
 void MpvAvPlayback::Destroy()
@@ -128,13 +165,19 @@ void MpvAvPlayback::Destroy()
 	_mpvTerminateDestroy(_mpvHandle);
 }
 
-void MpvAvPlayback::Pause()
+int MpvAvPlayback::Pause()
 {
 	if (!_mpvHandle)
-		return;
+		return MPV_ERROR_GENERIC;
 
 	const char * propertyValue = "yes";
-	_mpvSetProperty(_mpvHandle, "pause", MpvFormatString, &propertyValue);
+
+	int err = _mpvSetProperty(_mpvHandle, "pause", MpvFormatString, &propertyValue);
+	if (err != 0) {
+		return err;
+	}
+
+	return MPV_ERROR_SUCCESS;
 }
 
 bool MpvAvPlayback::IsPaused()
@@ -147,13 +190,33 @@ bool MpvAvPlayback::IsPaused()
 	return isPaused;
 }
 
-void MpvAvPlayback::SetTime(double value)
+int MpvAvPlayback::SetTime(double value)
 {
 	if (!_mpvHandle)
-		return;
+		return MPV_ERROR_GENERIC;
 
 	std::string timeString = std::to_string(value);
 
 	const char * cmd[] = { "seek", timeString.c_str(), "absolute" };
-	DoMpvCommand(cmd);
+
+	int err = DoMpvCommand(cmd);
+	if (err != 0) {
+		return err;
+	}
+
+	return MPV_ERROR_SUCCESS;
+}
+
+double MpvAvPlayback::GetPresentationTime()
+{
+	if (!_mpvHandle)
+		return NULL;
+	double presentationTime;
+	// check difference between playback-time and timr-pod 
+	// https://mpv.io/manual/master/#command-interface-playback-time
+	if(_mpvGetProperty(_mpvHandle, "playback-time", MPV_FORMAT_DOUBLE, &presentationTime) != 0){
+		return NULL;
+	}
+
+	return presentationTime;
 }

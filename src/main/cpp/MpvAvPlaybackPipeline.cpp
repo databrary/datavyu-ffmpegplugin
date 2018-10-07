@@ -77,7 +77,9 @@ uint32_t MpvAvPlaybackPipeline::StepBackward()
 	if (pMpvPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
+
 	pMpvPlayback->StepBackward();
+
 	return ERROR_NONE;
 }
 
@@ -99,12 +101,23 @@ uint32_t MpvAvPlaybackPipeline::Seek(double dSeekTime)
 
 uint32_t MpvAvPlaybackPipeline::GetDuration(double * pdDuration)
 {
-	return ERROR_NONE;
+	if (pMpvPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+	*pdDuration = pMpvPlayback->GetDuration();
+
+	return ERROR_NONE; // no error
 }
 
 uint32_t MpvAvPlaybackPipeline::GetStreamTime(double * pdStreamTime)
 {
-	return ERROR_NONE;
+	if (pMpvPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	*pdStreamTime = pMpvPlayback->GetPresentationTime();
+
+	return ERROR_NONE; // no error
 }
 
 uint32_t MpvAvPlaybackPipeline::GetFps(double * pdFps)

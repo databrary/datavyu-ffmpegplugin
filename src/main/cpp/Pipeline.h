@@ -68,6 +68,7 @@ public:
     virtual uint32_t        Stop() = 0;
     virtual uint32_t        Pause() = 0;
     virtual uint32_t        StepForward() = 0;
+    virtual uint32_t        StepBackward() = 0;
     virtual uint32_t        Finish() = 0;
 
     virtual uint32_t        Seek(double dSeekTime) = 0;

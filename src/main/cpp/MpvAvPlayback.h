@@ -53,8 +53,8 @@ private:
 	
 	void LoadMpvDynamic();
 
-	void DoMpvCommand(const char **cmd);
-	void Pause();
+	int DoMpvCommand(const char **cmd);
+	int Pause();
 
 public:
 	MpvAvPlayback();
@@ -65,14 +65,16 @@ public:
 	void Destroy();
 
 	bool IsPaused();
-	void Play();
-	void Stop();
+	int Play();
+	int Stop();
 	void toggle_pause();
-	void SetRate(const double newRate);
+	int SetRate(const double newRate);
 	double GetRate();
-	void StepBackward();
-	void StepForward();
-	void SetTime(double value);
+	double GetDuration();
+	int StepBackward();
+	int StepForward();
+	int SetTime(double value);
+	double GetPresentationTime();
 };
 
 #endif MPVAVPLAYBACK_H_

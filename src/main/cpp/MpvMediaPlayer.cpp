@@ -215,7 +215,27 @@ extern "C" {
 		if (NULL == pPipeline)
 			return ERROR_PIPELINE_NULL;
 
-		jint iRet = (jint)pPipeline->StepForward();
+		jint iRet = (jint)pPipeline->StepBackward();
+
+		return iRet;
+	}
+
+	/*
+	* Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+	* Method:    mpvStepBackward
+	* Signature: (J)I
+	*/
+	JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvStepBackward
+	(JNIEnv *env, jobject obj, jlong ref_media) {
+		CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
+		if (NULL == pMedia)
+			return ERROR_MEDIA_NULL;
+
+		CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
+		if (NULL == pPipeline)
+			return ERROR_PIPELINE_NULL;
+
+		jint iRet = (jint)pPipeline->StepBackward();
 
 		return iRet;
 	}

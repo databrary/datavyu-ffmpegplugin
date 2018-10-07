@@ -3,10 +3,8 @@ package org.datavyu.plugins.ffmpeg.examples;
 
 import org.datavyu.plugins.ffmpeg.MediaPlayer;
 import org.datavyu.plugins.ffmpeg.MpvMediaPlayer;
-import sun.awt.windows.WComponentPeer;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.net.URI;
 
@@ -14,7 +12,7 @@ public class SimpleMpvMediaPlayer {
 
     public static void main(String[] args) {
         // Define the media file
-        URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
+        URI mediaPath = new File("counter.mp4").toURI();
 
         // Create the media player using the constructor with File
         MediaPlayer mediaPlayer = new MpvMediaPlayer(mediaPath, new JDialog());
