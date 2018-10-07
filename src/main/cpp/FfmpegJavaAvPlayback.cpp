@@ -219,8 +219,10 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 			else if (pVideoState->get_audio_st())
 				av_diff = pVideoState->get_master_clock()->get_time() - pVideoState->get_pAudclk()->get_time();
 			av_log(NULL, AV_LOG_INFO,
-				"%7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d re=%7.2f aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r\n",
+				"m %7.2f, a %7.2f, v %7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d re=%7.2f aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
 				pVideoState->get_master_clock()->get_time(),
+				pVideoState->get_pAudclk() != nullptr ? pVideoState->get_pAudclk()->get_time() : 0,
+				pVideoState->get_pVidclk() != nullptr ? pVideoState->get_pVidclk()->get_time() : 0,
 				pVideoState->get_rate(),
 				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
 				av_diff,

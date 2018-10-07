@@ -206,7 +206,7 @@ int VideoState::get_video_frame(AVFrame *frame) {
 			if (frame->pts != AV_NOPTS_VALUE) {
 				double diff = dpts - get_master_clock()->get_pts();
 
-				av_log(NULL, AV_LOG_INFO, "diff=%f dpts=%f framedrop=%d, fiter_delay=%f, np=%d\n", 
+				av_log(NULL, AV_LOG_TRACE, "diff=%f dpts=%f framedrop=%d, fiter_delay=%f, np=%d\n", 
 					diff, dpts, framedrop, frame_last_filter_delay, pVideoq->get_nb_packets());
 
 				if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
@@ -480,8 +480,8 @@ int VideoState::audio_decode_frame() {
 		af->frame->channel_layout : av_get_default_channel_layout(af->frame->channels);
 	wanted_nb_samples = synchronize_audio(af->frame->nb_samples);
 
-	// Change the 
 	original_sample_rate = af->frame->sample_rate;
+	// Change the sample_rate by the playback rate
 	af->frame->sample_rate *= rate_value;
 
 	if (af->frame->format != this->audio_src.fmt ||
@@ -546,7 +546,7 @@ int VideoState::audio_decode_frame() {
 	}
 
 	/* update the audio clock with the pts */
-	audio_pts = isnan(af->pts) ? NAN : af->pts + (double)af->frame->nb_samples / original_sample_rate;
+	audio_pts = isnan(af->pts) ? NAN : af->pts; // +(double)af->frame->nb_samples / original_sample_rate;
 	audio_serial = af->serial;
 
 	return resampled_data_size;
@@ -1050,6 +1050,8 @@ int VideoState::audio_thread() {
 				if (!(af = pSampq->peek_writable()))
 					goto the_end;
 
+				//av_log(NULL, AV_LOG_INFO, "Audio frame pts = %I64d, tb = %2.7f\n", frame->pts, av_q2d(tb));
+
 				af->pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
 				af->pos = frame->pkt_pos;
 				af->serial = pAuddec->get_pkt_serial();
@@ -1164,14 +1166,11 @@ int VideoState::video_thread() {
 				frame_last_filter_delay = 0;
 			tb = av_buffersink_get_time_base(filt_out);
 #endif
-			// Set clock speed
-			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) /** pts_speed*/ : 0;
-#if CONFIG_VIDEO_FILTER
-			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb); // *pts_speed;
-#else
-			// Set clock speed
-			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb) * pts_speed; //here
-#endif
+
+			//av_log(NULL, AV_LOG_INFO, " Video frame pts = %I64d, tb = %2.7f\n", frame->pts, av_q2d(tb));
+
+			duration = (frame_rate.num && frame_rate.den) ? av_q2d(av_make_q(frame_rate.den, frame_rate.num)) : 0;
+			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
 			ret = queue_picture(frame, pts, duration, frame->pkt_pos, pViddec->get_pkt_serial());
 			av_frame_unref(frame);
 #if CONFIG_VIDEO_FILTER
@@ -1500,7 +1499,7 @@ void VideoState::toggle_mute() {
 void VideoState::update_pts(double pts, int64_t pos, int serial) {
 	get_pVidclk()->set_time(pts, serial, rate_value);
 	// Sync external clock to video clock
-	Clock::sync_clock_to_slave(get_pExtclk(), get_pVidclk());
+	Clock::sync_slave_to_master(get_pExtclk(), get_pVidclk());
 }
 
 /* seek in the stream */
@@ -1804,12 +1803,12 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 	if (!isnan(audio_pts) && !muted) {
 		/* Let's assume the audio driver that is used by SDL has two periods. */
 		pAudclk->set_time(
-			audio_pts - (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec,
+			audio_pts /*- (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec*/,
 			audio_serial,
 			rate_value
 		);
 		// Sync external clock to audio clock
-		Clock::sync_clock_to_slave(pExtclk, pAudclk);
+		Clock::sync_slave_to_master(pExtclk, pAudclk);
 	}
 }
 

@@ -58,7 +58,7 @@ class Clock {
 
 		void set_time(double newPts, int newSerial, double newRate);
 
-		static void sync_clock_to_slave(Clock *c, Clock *slave);
+		static void sync_slave_to_master(Clock *c, Clock *slave);
 };
 
 #endif CLOCK_H_

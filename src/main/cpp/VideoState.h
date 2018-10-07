@@ -1,8 +1,8 @@
 #ifndef VIDEOSTATE_H_
 #define VIDEOSTATE_H_
 
-#define CONFIG_AUDIO_FILTER 1
-#define CONFIG_VIDEO_FILTER 1
+#define CONFIG_AUDIO_FILTER 0
+#define CONFIG_VIDEO_FILTER 0
 
 #include <inttypes.h>
 #include <math.h>

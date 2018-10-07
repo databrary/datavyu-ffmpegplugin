@@ -16,6 +16,7 @@ public class SimpleJavaMediaPlayer {
         // Define the media file
         URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
         //URI mediaPath = new File("counter.mp4").toURI();
+        //URI mediaPath = new File("DatavyuSampleVideo.mp4").toURI();
 
         // Create the media player using the constructor with File
         MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, new JDialog());
@@ -25,7 +26,11 @@ public class SimpleJavaMediaPlayer {
 
         // Set initial time and rate (which in the past triggered a flush on the queue and thus inaccurate timing)
         mediaPlayer.setStartTime(0);
+<<<<<<< HEAD
         mediaPlayer.setRate(2f);
+=======
+        mediaPlayer.setRate(0.25f);
+>>>>>>> Removed audio disaply, changed clocks
 
         // Open a JFrame to control the media player through key commands
         new JMediaPlayerControlFrame(mediaPlayer);
