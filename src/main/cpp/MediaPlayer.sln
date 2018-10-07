@@ -13,11 +13,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VideoState", "VideoState.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MediaPlayerTest", "MediaPlayerTest.vcxproj", "{7209427C-2CB3-4110-B3DF-D932BBFEECDB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MpvMediaPlayer", "MpvMediaPlayer.vcxproj", "{B3E19888-AB0D-486F-BD96-6096CC2C9626}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		VideoState.vcxitems*{6ea34670-b97c-440e-860d-3b5af0be87d8}*SharedItemsImports = 4
 		VideoState.vcxitems*{7209427c-2cb3-4110-b3df-d932bbfeecdb}*SharedItemsImports = 4
 		VideoState.vcxitems*{90f330aa-8e8c-4625-87cd-a321c52cb6e9}*SharedItemsImports = 9
+		VideoState.vcxitems*{b3e19888-ab0d-486f-bd96-6096cc2c9626}*SharedItemsImports = 4
 		VideoState.vcxitems*{c691a93f-cd1e-4fc6-a79c-22b2bd38bb0c}*SharedItemsImports = 4
 		VideoState.vcxitems*{c841902e-8956-4e65-9524-e5063afbd1c2}*SharedItemsImports = 4
 	EndGlobalSection
@@ -60,6 +63,14 @@ Global
 		{7209427C-2CB3-4110-B3DF-D932BBFEECDB}.Release|x64.Build.0 = Release|x64
 		{7209427C-2CB3-4110-B3DF-D932BBFEECDB}.Release|x86.ActiveCfg = Release|Win32
 		{7209427C-2CB3-4110-B3DF-D932BBFEECDB}.Release|x86.Build.0 = Release|Win32
+		{B3E19888-AB0D-486F-BD96-6096CC2C9626}.Debug|x64.ActiveCfg = Debug|x64
+		{B3E19888-AB0D-486F-BD96-6096CC2C9626}.Debug|x64.Build.0 = Debug|x64
+		{B3E19888-AB0D-486F-BD96-6096CC2C9626}.Debug|x86.ActiveCfg = Debug|Win32
+		{B3E19888-AB0D-486F-BD96-6096CC2C9626}.Debug|x86.Build.0 = Debug|Win32
+		{B3E19888-AB0D-486F-BD96-6096CC2C9626}.Release|x64.ActiveCfg = Release|x64
+		{B3E19888-AB0D-486F-BD96-6096CC2C9626}.Release|x64.Build.0 = Release|x64
+		{B3E19888-AB0D-486F-BD96-6096CC2C9626}.Release|x86.ActiveCfg = Release|Win32
+		{B3E19888-AB0D-486F-BD96-6096CC2C9626}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

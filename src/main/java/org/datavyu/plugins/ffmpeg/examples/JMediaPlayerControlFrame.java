@@ -16,10 +16,11 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
 
     JMediaPlayerControlFrame(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
-        jSlider = new JSlider(0, (int) mediaPlayer.getDuration(),0);
-        jSlider.setFocusable(false);
-        jSlider.addChangeListener(this);
-        add(jSlider, BorderLayout.SOUTH);
+        //Todo(Reda): Fix the slider for the MPV Player
+//        jSlider = new JSlider(0, (int) mediaPlayer.getDuration(),0);
+//        jSlider.setFocusable(false);
+//        jSlider.addChangeListener(this);
+//        add(jSlider, BorderLayout.SOUTH);
         addKeyListener(this);
         pack();
         setSize(640, 480);
@@ -35,11 +36,11 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
         float currentVolume, nextVolume;
         float rate = mediaPlayer.getRate();
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_NUMPAD5:
+            case KeyEvent.VK_5:
                 System.out.println("Stop");
                 mediaPlayer.stop();
                 break;
-            case KeyEvent.VK_NUMPAD8:
+            case KeyEvent.VK_8:
                 System.out.println("Play");
                 mediaPlayer.play();
                 break;
@@ -47,15 +48,19 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
                 System.out.println("Step Forward");
                 mediaPlayer.stepForward();
                 break;
-            case KeyEvent.VK_NUMPAD6:
+                case KeyEvent.VK_D:
+                System.out.println("Step Forward");
+                mediaPlayer.stepForward();
+                break;
+            case KeyEvent.VK_6:
                 System.out.println("Change rate from " + rate + " to " + rate*2);
                 mediaPlayer.setRate(rate*2);
                 break;
-            case KeyEvent.VK_NUMPAD4:
+            case KeyEvent.VK_4:
                 System.out.println("Change rate from " + rate + " to " + rate/2);
                 mediaPlayer.setRate(rate/2);
                 break;
-            case KeyEvent.VK_NUMPAD2:
+            case KeyEvent.VK_SPACE:
                 System.out.println("Pause");
                 mediaPlayer.pause();
                 break;

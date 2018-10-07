@@ -27,11 +27,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         initNative(); // start the event queue, make sure to register all state/error listeners before
         long[] newNativeMediaRef = new long[1];
 
-        int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
-        if (0 != rc) {
-            throwMediaErrorException(rc, null);
-        }
-
         // Container need to be visible in order to get a valid HWND
         container.setVisible(true);
 
@@ -39,6 +34,11 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
         if (windowID == 0){
             throw new IllegalStateException("Need a valid WID for the MPV Player");
+        }
+
+        int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
+        if (0 != rc) {
+            throwMediaErrorException(rc, null);
         }
 
         nativeMediaRef = newNativeMediaRef[0];
