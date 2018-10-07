@@ -1,7 +1,7 @@
 #ifndef VIDEOSTATE_H_
 #define VIDEOSTATE_H_
 
-#define CONFIG_AUDIO_FILTER 0
+#define CONFIG_AUDIO_FILTER 1
 #define CONFIG_VIDEO_FILTER 1
 
 #include <inttypes.h>
@@ -110,19 +110,20 @@ enum PlayerStateCallback {
 static const struct RatesEntry {
 	float		clock_speed;
 	float		pts_speed;
-	char		*command;
+	char		*vfilter;
+	char		*afilter;
 } rate_speed_map[] = {
-	{ 0.03125,	32.0,		(char *) "setpts=32.0*PTS" },
-	{ 0.0625,	16.0,		(char *) "setpts=16.0*PTS" },
-	{ 0.125,	8.0,		(char *) "setpts=8.0*PTS" },
-	{ 0.25,		4.0,		(char *) "setpts=4.0*PTS" },
-	{ 0.5,		2.0,		(char *) "setpts=2.0*PTS" },
-	{ 1.0,		1.0,		(char *) "setpts=1.0*PTS" },
-	{ 2.0,		0.5,		(char *) "setpts=0.5*PTS" },
-	{ 4.0,		0.25,		(char *) "setpts=0.25*PTS" },
-	{ 8.0,		0.125,		(char *) "setpts=0.125*PTS" },
-	{ 16.0,		0.0625,		(char *) "setpts=0.0625*PTS" },
-	{ 32.0,		0.03125,	(char *) "setpts=0.03125*PTS" },
+	{ 0.03125,	32.0,		(char *) "setpts=32.0*PTS",		(char *) "asetpts=32.0*PTS" },
+	{ 0.0625,	16.0,		(char *) "setpts=16.0*PTS",		(char *) "asetpts=16.0*PTS" },
+	{ 0.125,	8.0,		(char *) "setpts=8.0*PTS",		(char *) "asetpts=8.0*PTS" },
+	{ 0.25,		4.0,		(char *) "setpts=4.0*PTS",		(char *) "asetpts=4.0*PTS" },
+	{ 0.5,		2.0,		(char *) "setpts=2.0*PTS",		(char *) "asetpts=2.0*PTS" },
+	{ 1.0,		1.0,		(char *) "setpts=1.0*PTS",		(char *) "asetpts=1.0*PTS" },
+	{ 2.0,		0.5,		(char *) "setpts=0.5*PTS",		(char *) "asetpts=0.5*PTS" },
+	{ 4.0,		0.25,		(char *) "setpts=0.25*PTS",		(char *) "asetpts=0.25*PTS" },
+	{ 8.0,		0.125,		(char *) "setpts=0.125*PTS",	(char *) "asetpts=0.125*PTS" },
+	{ 16.0,		0.0625,		(char *) "setpts=0.0625*PTS",	(char *) "asetpts=0.0625*PTS" },
+	{ 32.0,		0.03125,	(char *) "setpts=0.03125*PTS",	(char *) "asetpts=0.03125*PTS" },
 };
 
 static const char		*window_title;
@@ -429,9 +430,6 @@ public:
 
 	double compute_target_delay(double delay);
 
-	/* check the speed of the external clock */
-	void check_external_clock_speed();
-
 	/* get the current synchronization type */
 	int get_master_sync_type() const;
 
@@ -448,8 +446,6 @@ public:
 
 	int set_rate(double rate);
 	double get_rate() const;
-
-	int get_master_clock_speed();
 
 	int get_audio_disable() const;
 	void set_audio_disable(const int disable);

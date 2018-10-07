@@ -205,6 +205,10 @@ int VideoState::get_video_frame(AVFrame *frame) {
 		if (framedrop>0 || (framedrop && get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) {
 			if (frame->pts != AV_NOPTS_VALUE) {
 				double diff = dpts - get_master_clock();
+
+				av_log(NULL, AV_LOG_INFO, "diff=%f dpts=%f framedrop=%d, fiter_delay=%f, np=%d\n", 
+					diff, dpts, framedrop, frame_last_filter_delay, pVideoq->get_nb_packets());
+
 				if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
 					diff - frame_last_filter_delay < 0 &&
 					pViddec->get_pkt_serial() == pVidclk->get_serial() &&
@@ -483,6 +487,7 @@ int VideoState::audio_decode_frame() {
 		af->frame->channel_layout : av_get_default_channel_layout(af->frame->channels);
 	wanted_nb_samples = synchronize_audio(af->frame->nb_samples);
 
+	// Change the 
 	af->frame->sample_rate /= pts_speed;
 
 	if (af->frame->format != this->audio_src.fmt ||
@@ -1510,7 +1515,8 @@ void VideoState::toggle_mute() {
 
 void VideoState::update_pts(double pts, int64_t pos, int serial) {
 	// TODO: Revisit this
-	get_pVidclk()->set_clock(pts / pts_speed, serial);
+	//get_pVidclk()->set_clock(pts / pts_speed, serial);
+	get_pVidclk()->set_clock(pts, serial);
 	Clock::sync_clock_to_slave(get_pExtclk(), get_pVidclk());
 }
 
@@ -1724,23 +1730,6 @@ double VideoState::compute_target_delay(double delay) {
 	return delay;
 }
 
-/* check the speed of the external clock */
-void VideoState::check_external_clock_speed() {
-	if (this->video_stream >= 0 && pVideoq->get_nb_packets() <= EXTERNAL_CLOCK_MIN_FRAMES ||
-		this->audio_stream >= 0 && pAudioq->get_nb_packets() <= EXTERNAL_CLOCK_MIN_FRAMES) {
-		pExtclk->set_clock_speed(FFMAX(EXTERNAL_CLOCK_SPEED_MIN, pExtclk->get_clock_speed() - EXTERNAL_CLOCK_SPEED_STEP));
-	}
-	else if ((this->video_stream < 0 || pVideoq->get_nb_packets() > EXTERNAL_CLOCK_MAX_FRAMES) &&
-		(this->audio_stream < 0 || pAudioq->get_nb_packets() > EXTERNAL_CLOCK_MAX_FRAMES)) {
-		pExtclk->set_clock_speed(FFMIN(EXTERNAL_CLOCK_SPEED_MAX, pExtclk->get_clock_speed() + EXTERNAL_CLOCK_SPEED_STEP));
-	}
-	else {
-		double speed = pExtclk->get_clock_speed();
-		if (speed != 1.0)
-			pExtclk->set_clock_speed(speed + EXTERNAL_CLOCK_SPEED_STEP * (1.0 - speed) / fabs(1.0 - speed));
-	}
-}
-
 /* get the current synchronization type */
 int VideoState::get_master_sync_type() const {
 	if (av_sync_type == AV_SYNC_VIDEO_MASTER) {
@@ -1843,8 +1832,8 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 	/* Let's assume the audio driver that is used by SDL has two periods. */
 	if (!isnan(audio_clock) && !muted) {
 		pAudclk->set_clock_at(
-			audio_clock - (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec * pts_speed, 
-			audio_clock_serial, 
+			audio_clock - (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec * pts_speed,
+			audio_clock_serial,
 			audio_callback_time / 1000000.0
 		);
 		Clock::sync_clock_to_slave(pExtclk, pAudclk);
@@ -1858,11 +1847,13 @@ int VideoState::set_rate(double new_rate) {
 	}
 
 	bool is_rate_found = false;
-	char* rate_command = nullptr;
+	char* vfilter = nullptr;
+	char* afilter = nullptr;
 	for (int i = 0; i < FF_ARRAY_ELEMS(rate_speed_map); i++) {
 		if (new_rate == rate_speed_map[i].clock_speed) {
 			is_rate_found = true;
-			rate_command = rate_speed_map[i].command;
+			vfilter = rate_speed_map[i].vfilter;
+			afilter = rate_speed_map[i].afilter;
 		}
 	}
 	// If we can't fine the rate, return error that the filter was not found
@@ -1871,7 +1862,8 @@ int VideoState::set_rate(double new_rate) {
 	}
 #if CONFIG_VIDEO_FILTER
 	std::unique_lock<std::mutex> locker(mutex);
-	vfilters = rate_command;
+	vfilters = vfilter;
+	afilters = afilter;
 	vfilter_idx++;
 	locker.unlock();
 #endif
@@ -1884,25 +1876,6 @@ int VideoState::set_rate(double new_rate) {
 
 double VideoState::get_rate() const {
 	return rate;
-}
-
-int VideoState::get_master_clock_speed() {
-	int speed = 0;
-	if (this->video_stream >= 0
-		&& this->audio_stream >= 0) {
-		switch (this->get_master_sync_type()) {
-		case AV_SYNC_VIDEO_MASTER:
-			speed = pVidclk->get_clock_speed();
-			break;
-		case AV_SYNC_AUDIO_MASTER:
-			speed = pAudclk->get_clock_speed();
-			break;
-		default:
-			speed = pExtclk->get_clock_speed();
-			break;
-		}
-	}
-	return speed;
 }
 
 int VideoState::get_audio_disable() const { return audio_disable; }

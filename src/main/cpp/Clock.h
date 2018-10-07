@@ -7,7 +7,7 @@ extern "C" {
 #ifndef CLOCK_H_
 #define CLOCK_H_
 
-#define AV_NOSYNC_THRESHOLD 0.5 // 1/2 sec
+#define AV_NOSYNC_THRESHOLD 10 // 10 sec
 #define MICRO 1000000.0
 
 // Clock to keep decoding in sync
@@ -25,7 +25,6 @@ class Clock {
         int paused;
         double pts;					// clock base
         double ptsDrift;			// clock base minus time at which we updated the clock
-        double speed;
         int serial;					// clock is based on a packet with this serial
         const int *queueSerial;	// pointer to the current packet queue serial, used for obsolete clock detection
 
@@ -52,13 +51,9 @@ class Clock {
 
 		void setPaused(bool p);
 
-		double get_clock_speed() const;
-
 		void set_clock_at(double newPts, int newSerial, double time);
 
 		void set_clock(double newPts, int newSerial);
-
-		void set_clock_speed(double newSpeed);
 
 		static void sync_clock_to_slave(Clock *c, Clock *slave);
 };

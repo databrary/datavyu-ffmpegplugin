@@ -5,7 +5,6 @@ Clock::Clock(const int *queue_serial) :
 	paused(0),
 	pts(0),
 	ptsDrift(0),
-	speed(1.0),
 	serial(-1),
 	queueSerial(queue_serial) {
 	set_clock(NAN, -1);
@@ -22,8 +21,9 @@ double Clock::get_clock() const {
 		return pts;
 	}
 	else {
-		double time = av_gettime_relative() / MICRO;
-		return ptsDrift + time - (time - lastUpdated) * (1.0 - speed);
+		//double time = av_gettime_relative() / MICRO;
+		//return ptsDrift + time - (time - lastUpdated) * (1.0 - speed);
+		return ptsDrift;
 	}
 }
 
@@ -47,25 +47,17 @@ void Clock::setPaused(bool p) {
 	paused = p;
 }
 
-double Clock::get_clock_speed() const {
-	return speed;
-}
-
 void Clock::set_clock_at(double newPts, int newSerial, double time) {
 	pts = newPts;
 	lastUpdated = time;
-	ptsDrift = pts - time;
+	//ptsDrift = pts - time;
+	ptsDrift = pts;
 	serial = newSerial;
 }
 
 void Clock::set_clock(double newPts, int newSerial) {
 	double time = av_gettime_relative() / MICRO;
 	set_clock_at(newPts, newSerial, time);
-}
-
-void Clock::set_clock_speed(double newSpeed) {
-	set_clock(get_clock(), serial);
-	speed = newSpeed;
 }
 
 void Clock::sync_clock_to_slave(Clock *c, Clock *slave) {

@@ -85,8 +85,8 @@ public class TestPlaybackRate {
     }};
 
     private List<Pair<TimeInterval, Float>> parameters = new ArrayList<Pair<TimeInterval, Float>>(){{
-        add(new Pair<>(new TimeInterval(0, 20), 0.5f));
-        add(new Pair<>(new TimeInterval(0, 20), 1f));
+        //add(new Pair<>(new TimeInterval(0, 20), 0.25f));
+        //add(new Pair<>(new TimeInterval(0, 20), 1f));
         add(new Pair<>(new TimeInterval(0, 20), 2f));
         add(new Pair<>(new TimeInterval(0, 20), 4f));
     }};
