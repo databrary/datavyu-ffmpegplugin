@@ -1,8 +1,7 @@
-package org.datavyu.plugins.ffmpeg.experimental;
+package org.datavyu.plugins.ffmpeg;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,8 +9,19 @@ import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.util.Hashtable;
 
-public class ImageCustomPlayerThread extends Thread{
-    private final static Logger LOGGER = LogManager.getFormatterLogger(org.datavyu.plugins.ffmpeg.ImageCanvasPlayerThread.class);
+/**
+ * ImagePlayerThread  is based a custom JPanel that will act as a canvas, this will allow us
+ * to use swing component;  double buffered by default and also remove the while loop
+ * used in to dsiplay in ImageCanvasPlayerThread since the JPanel will auto paint (using the custom
+ * paint method that will keep aspect ratio and display )
+ * Performance while resizing
+ * Display Avg Time ~55ms
+ * Display Max Time: 97 ms
+ * Display Min Time: 45 ms
+ * The JPanel performs better than the canvas while resizing
+ */
+public class ImagePlayerThread extends Thread{
+    private final static Logger LOGGER = LogManager.getFormatterLogger(ImagePlayerThread.class);
     private MediaPlayerData mediaPlayerData;
     private SampleModel sm;
     private ComponentColorModel cm;
@@ -26,21 +36,15 @@ public class ImageCustomPlayerThread extends Thread{
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
 
-    /** x1 and y1 are respectively the x and y coordinates of the left, upper corner of the destination rectangle. */
-    private int x1, y1;
-
-    /** x2 and y2 are respectively the x and y coordinates of the lower, right corner of the destination rectangle. */
-    private int x2, y2;
-
-    public ImageCustomPlayerThread(MediaPlayerData mediaPlayerData) {
+    public ImagePlayerThread(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
         setName("Ffmpeg image displayPanel player thread");
         setDaemon(false);
     }
 
     public void init(ColorSpace colorSpace, int width, int height, Container container) {
-        this.imgWidth = width;
-        this.imgHeight = height;
+        imgWidth = width;
+        imgHeight = height;
 
         // Allocate byte buffer
         this.data = new byte[this.imgWidth *this.imgHeight *NUM_COLOR_CHANNELS];
@@ -50,27 +54,25 @@ public class ImageCustomPlayerThread extends Thread{
         // Set defaults
         sm = cm.createCompatibleSampleModel(this.imgWidth, this.imgHeight);
         // Initialize an empty image
-        DataBufferByte dataBuffer = new DataBufferByte(this.data, this.imgWidth *this.imgHeight);
+        DataBufferByte dataBuffer = new DataBufferByte(data, imgWidth * imgHeight);
         WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
 
         // Create the displayPanel and add it to the center fo the container
-        this.displayPanel = new DisplayPanel();
+        displayPanel = new DisplayPanel();
 
         container.add(displayPanel, BorderLayout.CENTER);
-        container.setBounds(0, 0, this.imgWidth, this.imgHeight);
+        container.setBounds(0, 0, imgWidth, imgHeight);
         container.setVisible(true);
 
-        this.displayPanel.repaint();
+        displayPanel.repaint();
     }
 
     public void run() {
         while (!terminate) {
             long start = System.currentTimeMillis();
             mediaPlayerData.updateImageData(data);
-            //LOGGER.info("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
-//            System.out.println("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
 
             // Create data buffer
             DataBufferByte dataBuffer = new DataBufferByte(data, imgWidth * imgHeight);
@@ -79,7 +81,7 @@ public class ImageCustomPlayerThread extends Thread{
             // Create the original image
             image = new BufferedImage(cm, raster, false, properties);
 
-            this.displayPanel.repaint();
+            displayPanel.repaint();
             // This does not measure the time to update the display
             double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
             // If we need to wait
@@ -99,9 +101,15 @@ public class ImageCustomPlayerThread extends Thread{
 
     class DisplayPanel extends JPanel {
 
+        /** x1 and y1 are respectively the x and y coordinates of the left, upper corner of the destination rectangle. */
+        private int x1, y1;
+
+        /** x2 and y2 are respectively the x and y coordinates of the lower, right corner of the destination rectangle. */
+        private int x2, y2;
+
         public DisplayPanel() {
-            this.setBackground(Color.BLACK);
-            this.setDoubleBuffered(true);
+            setBackground(Color.BLACK);
+            setDoubleBuffered(true);
         }
 
         @Override
@@ -119,8 +127,8 @@ public class ImageCustomPlayerThread extends Thread{
         private void scaleImage(){
             double imgAspectRatio = (double) imgHeight / imgWidth;
 
-            int canvasWidth = this.getWidth();
-            int canvasHeight = this.getHeight();
+            int canvasWidth = getWidth();
+            int canvasHeight = getHeight();
             double canvasAspectRatio = (double) canvasHeight / canvasWidth;
 
             x1 = y1 = x2 =  y2 = 0;

@@ -1,7 +1,8 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins.ffmpeg.experimental;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -13,6 +14,16 @@ import java.util.Hashtable;
  *  into a canvas container, note that the resizing of the container/image is performed
  *  through a while loop and not a component listener, because is causing flickering
  *  while resizing the canvas
+ *
+ * Performance:
+ * Video Resolution 1080p and no resizing during playback, the experiments was conducted for the entire video duration:
+ * Display Avg Time: ~52 ms
+ * Display Max Time: 72 ms
+ * Display Min Time: 50 ms
+ * Same Video with resizing (tried to resize the JFrame during the entire stream)
+ * Display Avg Time: ~64 ms
+ * Display Max Time: 2 s (Noticed that the thread is not updating the image while resizing)
+ * Display Min Time: 44 ms (displaying the frame is faster; small aea to draw)
  */
 public class ImageCanvasPlayerThread extends Thread {
     private final static Logger LOGGER = LogManager.getFormatterLogger(ImageCanvasPlayerThread.class);
