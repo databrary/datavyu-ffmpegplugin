@@ -25,6 +25,7 @@ private:
 	virtual uint32_t        Stop();
 	virtual uint32_t        Pause();
 	virtual uint32_t        StepForward();
+	virtual uint32_t        StepBackward();
 	virtual uint32_t        Finish();
 
 	virtual uint32_t        Seek(double dSeekTime);

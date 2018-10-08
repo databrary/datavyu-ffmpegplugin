@@ -19,6 +19,7 @@ class MpvAvPlaybackPipeline : public CPipeline
 public:
 	virtual uint32_t    Init(const char * input_file);
 	virtual void        Dispose();
+
 	MpvAvPlaybackPipeline(CPipelineOptions* pOptions, const long windowID);
 	virtual ~MpvAvPlaybackPipeline();
 

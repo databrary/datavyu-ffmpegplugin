@@ -3,6 +3,7 @@
 #define _FFMPEG_MEDIA_ERRORS_H_
 
 #define 	ERROR_NONE 	0
+
 #define 	ERROR_MEDIA_BASE 	256
 #define 	ERROR_MEDIA_NULL 	257
 #define 	ERROR_MEDIA_CREATION 	258

@@ -4,14 +4,22 @@
 #include <Windows.h>
 #include <atomic>
 #include <cstdint>
+#include <clocale>
 #include <string.h>  
 #include <MPV/client.h> // This include is just for the MPV_FORMAT usage
 #include "FfmpegAVPlayback.h"
+
+extern "C" {
+	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_thread.h>
+	#include <SDL2/SDL_syswm.h>
+}
 
 // MPV functtions signature
 typedef intptr_t(*MpvCreate)();
 typedef int(*MpvInitialize)(intptr_t);
 typedef int(*MpvCommand)(intptr_t, const char**);
+typedef int(*MpvCommandString)(intptr_t, const char*);
 typedef int(*MpvTerminateDestroy)(intptr_t);
 typedef int(*MpvSetOption)(intptr_t, const char *, int,void *);
 typedef int(*MpvSetOptionString)(intptr_t, const char *, const char *);
@@ -27,54 +35,52 @@ typedef void(*MpvFree)(intptr_t);
 * we are relying on the function poiter extracted for the dll 
 * and the include of the client.h is just to use the type defined
 * in the API; mpv_format for instance
+* NOTE: THe mpv error codes schema:  >= 0 Succes, < 0 error
 */
 // TODO(Reda) Much naming convention of the ffmpeg plugin and error returned
 class MpvAvPlayback : public FfmpegAvPlayback {
 
 private:
-	const int MpvFormatString = 1;
-
-	HINSTANCE _libMpvDll;
-	intptr_t _mpvHandle;
+	HINSTANCE				_libMpvDll;
+	intptr_t				_mpvHandle;
 
 	//Function pointers to mpv api functions
-	MpvCreate _mpvCreate;
-	MpvInitialize _mpvInitialize;
-	MpvCommand _mpvCommand;
-	MpvTerminateDestroy _mpvTerminateDestroy;
-	MpvSetOption _mpvSetOption;
-	MpvSetOptionString _mpvSetOptionString;
-	MpvGetPropertystring _mpvGetPropertyString;
-	MpvGetProperty _mpvGetProperty;
-	MpvSetProperty _mpvSetProperty;
-	MpvFree _mpvFree;
+	MpvCreate				_mpvCreate;
+	MpvInitialize			_mpvInitialize;
+	MpvCommand				_mpvCommand;
+	MpvCommandString		_mpvCommandString;
+	MpvTerminateDestroy		_mpvTerminateDestroy;
+	MpvSetOption			_mpvSetOption;
+	MpvSetOptionString		_mpvSetOptionString;
+	MpvGetPropertystring	_mpvGetPropertyString;
+	MpvGetProperty			_mpvGetProperty;
+	MpvSetProperty			_mpvSetProperty;
+	MpvFree					_mpvFree;
+		
+	void					LoadMpvDynamic();
 
-	double _streamDuration;
-	
-	void LoadMpvDynamic();
+	int						DoMpvCommand(const char **cmd);
+	int						Pause();
 
-	int DoMpvCommand(const char **cmd);
-	int Pause();
-
+	double					_streamDuration;
 public:
 	MpvAvPlayback();
 	~MpvAvPlayback();
 
-	int Init(const char *filename, const long windowID);
-
-	void Destroy();
-
-	bool IsPaused();
-	int Play();
-	int Stop();
-	void toggle_pause();
-	int SetRate(const double newRate);
-	double GetRate();
-	double GetDuration();
-	int StepBackward();
-	int StepForward();
-	int SetTime(double value);
-	double GetPresentationTime();
+	int						Init(const char *filename, const long windowID);
+	void					Destroy();
+	void					init_and_event_loop(const char *filename);
+	bool					IsPaused();
+	int						Play();
+	int						Stop();
+	void					toggle_pause();
+	int						SetRate(const double newRate);
+	double					GetRate();
+	double					GetDuration();
+	int						StepBackward();
+	int						StepForward();
+	int						SetTime(double value);
+	double					GetPresentationTime();
 };
 
 #endif MPVAVPLAYBACK_H_

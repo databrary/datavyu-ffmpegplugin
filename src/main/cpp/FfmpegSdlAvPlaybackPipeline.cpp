@@ -101,6 +101,11 @@ uint32_t FfmpegSdlAvPlaybackPipeline::StepForward()
 	return ERROR_NONE;
 }
 
+uint32_t FfmpegSdlAvPlaybackPipeline::StepBackward()
+{
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
 	// TODO(fraudies): Stalling and finish need to be set from the video player
 	return ERROR_NONE;

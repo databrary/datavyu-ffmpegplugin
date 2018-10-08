@@ -215,7 +215,7 @@ extern "C" {
 		if (NULL == pPipeline)
 			return ERROR_PIPELINE_NULL;
 
-		jint iRet = (jint)pPipeline->StepBackward();
+		jint iRet = (jint)pPipeline->StepForward();
 
 		return iRet;
 	}

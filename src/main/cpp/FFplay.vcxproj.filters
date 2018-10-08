@@ -21,9 +21,15 @@
     <ClCompile Include="FfmpegSdlAvPlayback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MpvAvPlayback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FfmpegSdlAvPlayback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MpvAvPlayback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

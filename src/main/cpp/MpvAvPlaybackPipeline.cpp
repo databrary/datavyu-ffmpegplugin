@@ -15,6 +15,7 @@ uint32_t MpvAvPlaybackPipeline::Init(const char * input_file)
 		return err;
 	}
 
+	return ERROR_NONE;
 }
 
 void MpvAvPlaybackPipeline::Dispose()

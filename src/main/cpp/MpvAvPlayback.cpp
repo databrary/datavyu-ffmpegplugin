@@ -9,16 +9,13 @@ MpvAvPlayback::~MpvAvPlayback()
 
 int MpvAvPlayback::Init(const char * filename, const long windowID)
 {
-	if (!_mpvHandle)
-		_mpvTerminateDestroy(_mpvHandle);
-
 	LoadMpvDynamic();
 	if (!_libMpvDll)
-		return NULL;
+		return MPV_ERROR_GENERIC;
 
 	_mpvHandle = _mpvCreate();
 	if (!_mpvHandle)
-		return NULL;
+		_mpvTerminateDestroy(_mpvHandle);
 
 	_mpvInitialize(_mpvHandle);
 	_mpvSetOptionString(_mpvHandle, "keep-open", "always");
@@ -40,6 +37,7 @@ void MpvAvPlayback::LoadMpvDynamic()
 	_mpvInitialize = (MpvInitialize)GetProcAddress(_libMpvDll, "mpv_initialize");
 	_mpvTerminateDestroy = (MpvTerminateDestroy)GetProcAddress(_libMpvDll, "mpv_terminate_destroy");
 	_mpvCommand = (MpvCommand)GetProcAddress(_libMpvDll, "mpv_command");
+	_mpvCommandString = (MpvCommandString)GetProcAddress(_libMpvDll, "mpv_command_string");
 	_mpvSetOption = (MpvSetOption)GetProcAddress(_libMpvDll, "mpv_set_option");
 	_mpvSetOptionString = (MpvSetOptionString)GetProcAddress(_libMpvDll, "mpv_set_option_string");
 	_mpvGetPropertyString = (MpvGetPropertystring)GetProcAddress(_libMpvDll, "mpv_get_property");
@@ -54,8 +52,8 @@ int MpvAvPlayback::Play()
 		return MPV_ERROR_GENERIC;
 
 	const char* porpertyValue = "no";
-	int err = _mpvSetProperty(_mpvHandle, "pause", MpvFormatString, &porpertyValue);
-	if (err != 0) {
+	int err = _mpvSetProperty(_mpvHandle, "pause", MPV_FORMAT_STRING, &porpertyValue);
+	if (err < 0) {
 		return err;
 	}
 
@@ -64,10 +62,10 @@ int MpvAvPlayback::Play()
 
 int MpvAvPlayback::Stop()
 {
-	if (Pause() != 0) {
+	if (Pause() < 0) {
 		return MPV_ERROR_PROPERTY_ERROR;
 	}
-	if (SetRate(0.0) != 0) {
+	if (SetRate(0.0) < 0) {
 		return MPV_ERROR_COMMAND;
 	}
 
@@ -89,7 +87,7 @@ int MpvAvPlayback::SetRate(double newRate)
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
 	int err = _mpvSetOption(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &newRate);
-	if ( err != 0) {
+	if ( err < 0) {
 		return err;
 	}
 
@@ -104,7 +102,7 @@ double MpvAvPlayback::GetRate()
 	double currentRate;
 
 	int err = _mpvGetProperty(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &currentRate);
-	if (err != 0) {
+	if (err < 0) {
 		return NULL;
 	}
 
@@ -115,7 +113,7 @@ double MpvAvPlayback::GetDuration()
 {
 	if (!_streamDuration || _streamDuration == 0 || _streamDuration == NULL) {
 		int err = _mpvGetProperty(_mpvHandle, "duration", MPV_FORMAT_DOUBLE, &_streamDuration);
-		if ( err != 0) {
+		if ( err < 0) {
 			return NULL;
 		}
 	}
@@ -127,10 +125,11 @@ int MpvAvPlayback::StepBackward()
 {
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
+
 	const char *cmd[] = { "frame-back-step", NULL, NULL };
 
 	int err = DoMpvCommand(cmd);
-	if (err != 0) {
+	if (err < 0) {
 		return err;
 	}
 
@@ -144,8 +143,18 @@ int MpvAvPlayback::StepForward()
 	const char *cmd[] = { "frame-step", NULL, NULL };
 
 	int err = DoMpvCommand(cmd);
-	if (err != 0) {
+	if (err < 0) {
 		return err;
+	}
+
+	double _presentationTime = GetPresentationTime();
+	double _incr = 10.0; //10sec
+	printf("MPV Seeking from %0.4f sec to %0.4f sec \n", _presentationTime, (_presentationTime + _incr));
+	const char *cmd2[] = { "seek", "10.0", "absolute" };
+	int err2 = _mpvCommand(_mpvHandle, cmd2);
+	if ( err2 < 0) {
+		printf("MPV Cannot Seek, error %d \n", err2);
+		return MPV_ERROR_GENERIC;
 	}
 
 	return MPV_ERROR_SUCCESS;
@@ -153,7 +162,9 @@ int MpvAvPlayback::StepForward()
 
 int MpvAvPlayback::DoMpvCommand(const char **cmd)
 {
-	if (_mpvCommand(_mpvHandle, cmd) != 0) {
+	int err = _mpvCommand(_mpvHandle, cmd);
+	if (err < 0) {
+		printf("Cannot execute the command");
 		return MPV_ERROR_COMMAND;
 	}
 
@@ -165,6 +176,137 @@ void MpvAvPlayback::Destroy()
 	_mpvTerminateDestroy(_mpvHandle);
 }
 
+void MpvAvPlayback::init_and_event_loop(const char *filename)
+{
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		printf("SDL init failed");
+		exit(1);
+	}
+
+	SDL_Window *window =
+		SDL_CreateWindow("hi", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+			1000, 500, SDL_WINDOW_SHOWN |
+			SDL_WINDOW_RESIZABLE);
+
+	if (!window) {
+		printf("failed to create SDL window");
+		exit(1);
+	}
+
+	SDL_SysWMinfo wmInfo;
+	SDL_VERSION(&wmInfo.version);
+	SDL_GetWindowWMInfo(window, &wmInfo);
+	HWND hwnd = wmInfo.info.win.window;
+
+	MpvAvPlayback* pPlayer = new MpvAvPlayback();
+	int err = pPlayer->Init(filename, (long)hwnd);
+	if (err) {
+		fprintf(stderr, "Error %d when opening input file %s", err, filename);
+	}
+
+	double incr, pos, frac, rate;
+
+	while (1) {
+		SDL_Event event;
+		if (SDL_WaitEvent(&event) != 1)
+			printf("event loop error");
+		int redraw = 0;
+		switch (event.type) {
+		case SDL_KEYDOWN:
+			if (exit_on_keydown) {
+				pPlayer->Destroy();
+				exit(0); // need to exit here to avoid joinable exception
+				break;
+			}
+			switch (event.key.keysym.sym) {
+			case SDLK_ESCAPE:
+			case SDLK_q:
+				pPlayer->Destroy();
+				exit(0); // need to exit here to avoid joinable exception
+				break;
+			case SDLK_KP_8:
+				pPlayer->Play();
+				break;
+			case SDLK_KP_5:
+				pPlayer->Stop();
+				break;
+			case SDLK_KP_2:
+				pPlayer->toggle_pause();
+				break;
+			case SDLK_p:
+			case SDLK_SPACE:
+				pPlayer->toggle_pause();
+				break;
+			case SDLK_m:
+				//pVideoState->toggle_mute();
+				break;
+			case SDLK_KP_MULTIPLY:
+			case SDLK_0:
+				//update_volume(1, SDL_VOLUME_STEP);
+				break;
+			case SDLK_KP_DIVIDE:
+			case SDLK_9:
+				//update_volume(-1, SDL_VOLUME_STEP);
+				break;
+			case SDLK_s: // S: Step to next frame
+				pPlayer->StepForward();
+				break;
+			case SDLK_a:
+				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
+				break;
+			case SDLK_KP_PLUS:
+				if (pPlayer->SetRate(rate * 2)) {
+					av_log(NULL, AV_LOG_ERROR, "Rate %f unavailable\n", rate * 2);
+				}
+				else {
+					rate *= 2;
+				}
+				break;
+			case SDLK_KP_MINUS:
+				if (pPlayer->set_rate(rate / 2)) {
+					av_log(NULL, AV_LOG_ERROR, "Rate %f unavailable\n", rate / 2);
+				}
+				else {
+					rate /= 2;
+				}
+				break;
+			case SDLK_v:
+				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
+				break;
+			case SDLK_c:
+				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
+				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
+				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
+				break;
+			case SDLK_t:
+				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
+				break;
+			case SDLK_LEFT:
+				incr = -1.0;
+				goto do_seek;
+			case SDLK_RIGHT:
+				incr = 1.0;
+				goto do_seek;
+			case SDLK_UP:
+				incr = 5.0;
+				goto do_seek;
+			case SDLK_DOWN:
+				incr = -5.0;
+			do_seek:
+				pos = pPlayer->GetPresentationTime();
+				pos += incr;
+				pPlayer->SetTime(pos);
+				break;
+			default:
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+	}
+}
+
 int MpvAvPlayback::Pause()
 {
 	if (!_mpvHandle)
@@ -172,8 +314,8 @@ int MpvAvPlayback::Pause()
 
 	const char * propertyValue = "yes";
 
-	int err = _mpvSetProperty(_mpvHandle, "pause", MpvFormatString, &propertyValue);
-	if (err != 0) {
+	int err = _mpvSetProperty(_mpvHandle, "pause", MPV_FORMAT_STRING, &propertyValue);
+	if (err < 0) {
 		return err;
 	}
 
@@ -187,6 +329,7 @@ bool MpvAvPlayback::IsPaused()
 
 	const char* isPausedProperty = _mpvGetPropertyString(_mpvHandle, "pause");
 	bool isPaused = isPausedProperty == "yes";
+
 	return isPaused;
 }
 
@@ -194,13 +337,18 @@ int MpvAvPlayback::SetTime(double value)
 {
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
-
+	printf("MPV SetTime before converting double to string\n");
 	std::string timeString = std::to_string(value);
+	printf("MPV SetTime after converting double to string\n");
 
-	const char * cmd[] = { "seek", timeString.c_str(), "absolute" };
-
+	printf("MPV SetTime double %0.4f sec converted to string %s sec\n");
+	//const char * cmd[] = { "seek", timeString.c_str(), "absolute" };
+	const char * cmd[] = { "seek", "20", "absolute" };
+	printf("MPV SetTime before DoMpvCommand\n");
 	int err = DoMpvCommand(cmd);
-	if (err != 0) {
+	printf("MPV SetTime after DoMpvCommand\n");
+	if (err < 0) {
+		printf("MPV SetTime DoMpvCommand err %d \n", err);
 		return err;
 	}
 
@@ -214,7 +362,7 @@ double MpvAvPlayback::GetPresentationTime()
 	double presentationTime;
 	// check difference between playback-time and timr-pod 
 	// https://mpv.io/manual/master/#command-interface-playback-time
-	if(_mpvGetProperty(_mpvHandle, "playback-time", MPV_FORMAT_DOUBLE, &presentationTime) != 0){
+	if(_mpvGetProperty(_mpvHandle, "playback-time", MPV_FORMAT_DOUBLE, &presentationTime) < 0){
 		return NULL;
 	}
 
