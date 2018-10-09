@@ -160,13 +160,16 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
-        return volume[0];
+        // MPV Volume range is from 0 to 100 and in order to much
+        // the java native plugin range we divide by 100
+        return volume[0] / 100;
     }
 
     @Override
     protected synchronized void playerSetVolume(float volume) throws MediaException {
         if (!muteEnabled) {
-            int rc = mpvSetVolume(getNativeMediaRef(), volume);
+            // MPV Volume range is from 0 to 100
+            int rc = mpvSetVolume(getNativeMediaRef(), volume * 100);
 
             if (0 != rc) {
                 throwMediaErrorException(rc, null);

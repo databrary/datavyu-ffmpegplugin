@@ -1,8 +1,8 @@
 #include "MpvAvPlayback.h"
 
 MpvAvPlayback::MpvAvPlayback() :
-	_streamDuration(0),
-	_streamFps(0),
+	_streamDuration(0.0),
+	_streamFps(0.0),
 	_imageHeight(0),
 	_imageWidth(0)
 {}
@@ -12,6 +12,8 @@ MpvAvPlayback::~MpvAvPlayback()
 
 int MpvAvPlayback::Init(const char * filename, const long windowID)
 {
+	int err;
+
 	LoadMpvDynamic();
 	if (!_libMpvDll)
 		return MPV_ERROR_GENERIC;
@@ -21,16 +23,31 @@ int MpvAvPlayback::Init(const char * filename, const long windowID)
 		_mpvTerminateDestroy(_mpvHandle);
 
 	_mpvInitialize(_mpvHandle);
+
+	
 	_mpvSetOptionString(_mpvHandle, "keep-open", "always");
 	// prevent the player from playing at start-up
 	_mpvSetOptionString(_mpvHandle, "pause", "yes");
+
+	double _startUpVolume = 100;
+	err = _mpvSetProperty(_mpvHandle, "volume", MPV_FORMAT_DOUBLE, &_startUpVolume);
+	if (err < 0) {
+		return err;
+	}
+
 	int windowId = windowID;
-	_mpvSetOption(_mpvHandle, "wid", MPV_FORMAT_INT64, &windowId);
+	err = _mpvSetOption(_mpvHandle, "wid", MPV_FORMAT_INT64, &windowId);
+	if (err < 0) {
+		return err;
+	}
 
 	const char *cmd[] = { "loadfile", filename, NULL };
-	DoMpvCommand(cmd);
+	err = DoMpvCommand(cmd);
+	if (err < 0) {
+		return err;
+	}
 	
-	return 0;
+	return MPV_ERROR_SUCCESS;
 }
 
 void MpvAvPlayback::LoadMpvDynamic()
@@ -68,7 +85,7 @@ int MpvAvPlayback::Stop()
 	if (Pause() < 0) {
 		return MPV_ERROR_PROPERTY_ERROR;
 	}
-	if (SetRate(0.0) < 0) {
+	if (SetRate(1) < 0) {
 		return MPV_ERROR_COMMAND;
 	}
 
@@ -164,7 +181,7 @@ double MpvAvPlayback::GetDuration()
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
 
-	if (!_streamDuration || _streamDuration == 0 || _streamDuration == NULL) {
+	if (!_streamDuration || _streamDuration <= 0 || _streamDuration == NULL) {
 		int err = _mpvGetProperty(_mpvHandle, "duration", MPV_FORMAT_DOUBLE, &_streamDuration);
 		if ( err < 0) {
 			return err;
@@ -258,13 +275,15 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 		fprintf(stderr, "Error %d when opening input file %s", err, filename);
 	}
 
-	double incr, pos, frac, rate;
+	double incr, pos, frac, rate, currentVolume;
 
 	while (1) {
 		SDL_Event event;
 		if (SDL_WaitEvent(&event) != 1)
 			printf("event loop error");
 		int redraw = 0;
+		rate = pPlayer->GetRate();
+		currentVolume = pPlayer->GetVolume();
 		switch (event.type) {
 		case SDL_KEYDOWN:
 			if (exit_on_keydown) {
@@ -274,6 +293,9 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 			}
 			switch (event.key.keysym.sym) {
 			case SDLK_ESCAPE:
+				pPlayer->Destroy();
+				exit(0); // need to exit here to avoid joinable exception
+				break;
 			case SDLK_q:
 				pPlayer->Destroy();
 				exit(0); // need to exit here to avoid joinable exception
@@ -296,11 +318,13 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 				break;
 			case SDLK_KP_MULTIPLY:
 			case SDLK_0:
-				//update_volume(1, SDL_VOLUME_STEP);
+				// MPV Audio Range is from 0 - 100
+				pPlayer->SetVolume(currentVolume - 10.0);
 				break;
 			case SDLK_KP_DIVIDE:
 			case SDLK_9:
-				//update_volume(-1, SDL_VOLUME_STEP);
+				// MPV Audio Range is from 0 - 100
+				pPlayer->SetVolume(currentVolume + 10.0);
 				break;
 			case SDLK_s: // S: Step to next frame
 				pPlayer->StepForward();
@@ -317,7 +341,7 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 				}
 				break;
 			case SDLK_KP_MINUS:
-				if (pPlayer->set_rate(rate / 2)) {
+				if (pPlayer->SetRate(rate / 2)) {
 					av_log(NULL, AV_LOG_ERROR, "Rate %f unavailable\n", rate / 2);
 				}
 				else {
@@ -381,8 +405,11 @@ bool MpvAvPlayback::IsPaused()
 	if (!_mpvHandle)
 		return true;
 
-	const char* isPausedProperty = _mpvGetPropertyString(_mpvHandle, "pause");
-	bool isPaused = isPausedProperty == "yes";
+	char* isPausedProperty;
+	_mpvGetProperty(_mpvHandle, "pause", MPV_FORMAT_STRING, &isPausedProperty);
+	std::string isPausedString(isPausedProperty);
+	_mpvFree(isPausedProperty);
+	bool isPaused = isPausedString == "yes";
 
 	return isPaused;
 }
@@ -421,4 +448,34 @@ double MpvAvPlayback::GetPresentationTime()
 	}
 
 	return presentationTime;
+}
+
+int MpvAvPlayback::SetVolume(float fVolume)
+{
+	if (!_mpvHandle)
+		return MPV_ERROR_GENERIC;
+
+	double propertyValue = fVolume;
+
+	int err = _mpvSetProperty(_mpvHandle, "ao-volume", MPV_FORMAT_DOUBLE, &propertyValue);
+	if (err < 0) {
+		return err;
+	}
+
+	return MPV_ERROR_SUCCESS;
+}
+
+double MpvAvPlayback::GetVolume()
+{
+	if (!_mpvHandle)
+		return MPV_ERROR_GENERIC;
+
+	double currentVolume;
+
+	int err = _mpvGetProperty(_mpvHandle, "ao-volume", MPV_FORMAT_DOUBLE, &currentVolume);
+	if (err < 0) {
+		return err;
+	}
+
+	return currentVolume;
 }

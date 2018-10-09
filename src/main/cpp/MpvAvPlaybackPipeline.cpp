@@ -171,7 +171,6 @@ uint32_t MpvAvPlaybackPipeline::GetRate(float * pfRate)
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	// TODO(Reda): implement this
 	*pfRate = pMpvPlayback->GetRate();
 
 	return ERROR_NONE;
@@ -179,11 +178,26 @@ uint32_t MpvAvPlaybackPipeline::GetRate(float * pfRate)
 
 uint32_t MpvAvPlaybackPipeline::SetVolume(float fVolume)
 {
+	if (pMpvPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	int err = pMpvPlayback->SetVolume(fVolume);
+	if (err < 0) {
+		return err;
+	}
+
 	return ERROR_NONE;
 }
 
 uint32_t MpvAvPlaybackPipeline::GetVolume(float * pfVolume)
 {
+	if (pMpvPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	*pfVolume = pMpvPlayback->GetVolume();
+
 	return ERROR_NONE;
 }
 

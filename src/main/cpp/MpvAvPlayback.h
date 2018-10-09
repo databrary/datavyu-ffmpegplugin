@@ -26,7 +26,7 @@ typedef int(*MpvSetOptionString)(intptr_t, const char *, const char *);
 typedef char*(*MpvGetPropertystring)(intptr_t, const char *);
 typedef int(*MpvGetProperty)(intptr_t, const char *,int,void *);
 typedef int(*MpvSetProperty)(intptr_t, const char *,int,void *);
-typedef void(*MpvFree)(intptr_t);
+typedef void(*MpvFree)(void *);
 
 /* The MpvAvPlayback class will the mpv-1.dll (must be copied 
 * in the working directory) and will extract needed functions
@@ -62,7 +62,7 @@ private:
 	int						DoMpvCommand(const char **cmd);
 	int						Pause();
 
-	double					_streamDuration;
+	float					_streamDuration;
 	double					_streamFps;
 	int64_t					_imageHeight;
 	int64_t					_imageWidth;
@@ -86,7 +86,9 @@ public:
 	int						StepBackward();
 	int						StepForward();
 	int						SetTime(double value);
-	double					GetPresentationTime();
+	double			 		GetPresentationTime();
+	int						SetVolume(float pfVolume);
+	double					GetVolume();
 };
 
 #endif MPVAVPLAYBACK_H_

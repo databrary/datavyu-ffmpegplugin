@@ -17,6 +17,7 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
     JMediaPlayerControlFrame(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
         //Todo(Reda): Fix the slider for the MPV Player
+        System.out.println("Media Duration " + mediaPlayer.getDuration());
 //        jSlider = new JSlider(0, (int) mediaPlayer.getDuration(),0);
 //        jSlider.setFocusable(false);
 //        jSlider.addChangeListener(this);
