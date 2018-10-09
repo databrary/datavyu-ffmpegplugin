@@ -62,7 +62,7 @@ private:
 	int						DoMpvCommand(const char **cmd);
 	int						Pause();
 
-	float					_streamDuration;
+	double					_streamDuration;
 	double					_streamFps;
 	int64_t					_imageHeight;
 	int64_t					_imageWidth;

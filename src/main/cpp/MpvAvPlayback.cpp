@@ -135,8 +135,7 @@ float MpvAvPlayback::GetFps()
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
 
-	if (!_streamFps || _streamFps == 0 || _streamFps == NULL) {
-		// Property: container-fps, estimated-vf-fps 
+	if (!_streamFps || _streamFps <= 0 || _streamFps == NULL) {
 		int err = _mpvGetProperty(_mpvHandle, "container-fps", MPV_FORMAT_DOUBLE, &_streamFps);
 		if (err < 0) {
 			return err;
@@ -151,7 +150,7 @@ int MpvAvPlayback::GetImageWidth()
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
 
-	if (!_imageWidth || _imageWidth == 0 || _imageWidth == NULL) {
+	if (!_imageWidth || _imageWidth <= 0 || _imageWidth == NULL) {
 		int err = _mpvGetProperty(_mpvHandle, "width", MPV_FORMAT_INT64, &_imageWidth);
 		if (err < 0) {
 			return err;
@@ -166,7 +165,7 @@ int MpvAvPlayback::GetImageHeight()
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
 
-	if (!_imageHeight|| _imageHeight == 0 || _imageHeight == NULL) {
+	if (!_imageHeight|| _imageHeight <= 0 || _imageHeight == NULL) {
 		int err = _mpvGetProperty(_mpvHandle, "height", MPV_FORMAT_INT64, &_imageHeight);
 		if (err < 0) {
 			return err;
@@ -182,9 +181,13 @@ double MpvAvPlayback::GetDuration()
 		return MPV_ERROR_GENERIC;
 
 	if (!_streamDuration || _streamDuration <= 0 || _streamDuration == NULL) {
-		int err = _mpvGetProperty(_mpvHandle, "duration", MPV_FORMAT_DOUBLE, &_streamDuration);
-		if ( err < 0) {
-			return err;
+		// TODO(Reda) Remove this, it is just for testing, need to go through async calls
+
+		while (_streamDuration <= 0) {
+			int err = _mpvGetProperty(_mpvHandle, "duration", MPV_FORMAT_DOUBLE, &_streamDuration);
+			if (err < 0) {
+				return err;
+			}
 		}
 	}
 

@@ -42,6 +42,16 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         }
 
         nativeMediaRef = newNativeMediaRef[0];
+
+        // 5 ms is the time needed for the MPV player to report
+        // a correct stream duration at start-up
+        //TODO(Reda) Remove this by using the API event loop and the async calls
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
