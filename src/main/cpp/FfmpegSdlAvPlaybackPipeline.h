@@ -46,6 +46,9 @@ private:
 	virtual uint32_t        SetAudioSyncDelay(long lMillis);
 	virtual uint32_t        GetAudioSyncDelay(long* plMillis);
 
+	virtual uint32_t		GetImageWidth(int* iWidth) const;
+	virtual uint32_t		GetImageHeight(int* iHeight) const;
+
 	FfmpegSdlAvPlayback* pSdlPlayback;
 };
 

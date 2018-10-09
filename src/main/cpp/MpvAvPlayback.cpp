@@ -29,11 +29,11 @@ int MpvAvPlayback::Init(const char * filename, const long windowID)
 	// prevent the player from playing at start-up
 	_mpvSetOptionString(_mpvHandle, "pause", "yes");
 
-	double _startUpVolume = 100;
-	err = _mpvSetProperty(_mpvHandle, "volume", MPV_FORMAT_DOUBLE, &_startUpVolume);
-	if (err < 0) {
-		return err;
-	}
+	//double _startUpVolume = 100;
+	//err = _mpvSetOption(_mpvHandle, "volume", MPV_FORMAT_DOUBLE, &_startUpVolume);
+	//if (err < 0) {
+	//	return err;
+	//}	
 
 	int windowId = windowID;
 	err = _mpvSetOption(_mpvHandle, "wid", MPV_FORMAT_INT64, &windowId);
@@ -46,7 +46,7 @@ int MpvAvPlayback::Init(const char * filename, const long windowID)
 	if (err < 0) {
 		return err;
 	}
-	
+
 	return MPV_ERROR_SUCCESS;
 }
 
@@ -216,16 +216,6 @@ int MpvAvPlayback::StepForward()
 	int err = DoMpvCommand(cmd);
 	if (err < 0) {
 		return err;
-	}
-
-	double _presentationTime = GetPresentationTime();
-	double _incr = 10.0; //10sec
-	printf("MPV Seeking from %0.4f sec to %0.4f sec \n", _presentationTime, (_presentationTime + _incr));
-	const char *cmd2[] = { "seek", "10.0", "absolute" };
-	int err2 = _mpvCommand(_mpvHandle, cmd2);
-	if ( err2 < 0) {
-		printf("MPV Cannot Seek, error %d \n", err2);
-		return MPV_ERROR_GENERIC;
 	}
 
 	return MPV_ERROR_SUCCESS;
@@ -418,18 +408,14 @@ int MpvAvPlayback::SetTime(double value)
 {
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
-	printf("MPV SetTime before converting double to string\n");
-	std::string timeString = std::to_string(value);
-	printf("MPV SetTime after converting double to string\n");
 
-	printf("MPV SetTime double %0.4f sec converted to string %s sec\n");
-	//const char * cmd[] = { "seek", timeString.c_str(), "absolute" };
-	const char * cmd[] = { "seek", "20", "absolute" };
-	printf("MPV SetTime before DoMpvCommand\n");
+	std::string timeString = std::to_string(value);
+
+
+	const char * cmd[] = { "seek", timeString.c_str(), "absolute", NULL };
+
 	int err = DoMpvCommand(cmd);
-	printf("MPV SetTime after DoMpvCommand\n");
 	if (err < 0) {
-		printf("MPV SetTime DoMpvCommand err %d \n", err);
 		return err;
 	}
 

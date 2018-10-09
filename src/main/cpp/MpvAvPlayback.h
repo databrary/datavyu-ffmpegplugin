@@ -47,7 +47,7 @@ private:
 	//Function pointers to mpv api functions
 	MpvCreate				_mpvCreate;
 	MpvInitialize			_mpvInitialize;
-	MpvCommand				_mpvCommand;
+	MpvCommand				_mpvCommand; // Always terminate a command with NULL like so const char * cmd = {"seek", "10", "absolute", NULL}
 	MpvCommandString		_mpvCommandString;
 	MpvTerminateDestroy		_mpvTerminateDestroy;
 	MpvSetOption			_mpvSetOption;

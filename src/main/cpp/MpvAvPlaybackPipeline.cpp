@@ -132,7 +132,7 @@ uint32_t MpvAvPlaybackPipeline::GetFps(double * pdFps)
 	return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::GetImageWidth(int * iWidth)
+uint32_t MpvAvPlaybackPipeline::GetImageWidth(int * iWidth) const
 {
 	if (pMpvPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
@@ -143,7 +143,7 @@ uint32_t MpvAvPlaybackPipeline::GetImageWidth(int * iWidth)
 	return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::GetImageHeight(int * iHeight)
+uint32_t MpvAvPlaybackPipeline::GetImageHeight(int * iHeight) const
 {
 	if (pMpvPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
