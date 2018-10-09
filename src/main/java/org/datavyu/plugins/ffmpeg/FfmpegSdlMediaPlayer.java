@@ -206,6 +206,16 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     }
 
     @Override
+    public int getImageWidth() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getImageHeight() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     protected void playerDispose() {
         ffmpegDisposePlayer(getNativeMediaRef());
     }

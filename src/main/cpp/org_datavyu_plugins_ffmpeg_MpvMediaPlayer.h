@@ -169,6 +169,22 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSeek
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Method:    mpvGetImageWidth
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetImageWidth
+(JNIEnv *, jobject, jlong, jintArray);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Method:    mpvGetImageHeight
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetImageHeight
+(JNIEnv *, jobject, jlong, jintArray);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
  * Method:    mpvGetVolume
  * Signature: (J[F)I
  */

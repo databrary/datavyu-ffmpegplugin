@@ -123,6 +123,34 @@ uint32_t MpvAvPlaybackPipeline::GetStreamTime(double * pdStreamTime)
 
 uint32_t MpvAvPlaybackPipeline::GetFps(double * pdFps)
 {
+	if (pMpvPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	*pdFps = pMpvPlayback->GetFps();
+
+	return ERROR_NONE;
+}
+
+uint32_t MpvAvPlaybackPipeline::GetImageWidth(int * iWidth)
+{
+	if (pMpvPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	*iWidth = pMpvPlayback->GetImageWidth();
+
+	return ERROR_NONE;
+}
+
+uint32_t MpvAvPlaybackPipeline::GetImageHeight(int * iHeight)
+{
+	if (pMpvPlayback == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	*iHeight = pMpvPlayback->GetImageHeight();
+
 	return ERROR_NONE;
 }
 

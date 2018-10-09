@@ -219,6 +219,26 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     }
 
     @Override
+    public int getImageWidth() {
+        int[] width = new int[1];
+        int rc = mpvGetImageWidth(getNativeMediaRef(), width);
+        if (rc != 0) {
+            throwMediaErrorException(rc, null);
+        }
+        return width[0];
+    }
+
+    @Override
+    public int getImageHeight() {
+        int[] height = new int[1];
+        int rc = mpvGetImageHeight(getNativeMediaRef(), height);
+        if (rc != 0) {
+            throwMediaErrorException(rc, null);
+        }
+        return height[0];
+    }
+
+    @Override
     protected void playerDispose() {
         mpvDisposePlayer(getNativeMediaRef());
     }
@@ -246,6 +266,8 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     protected native int mpvSetBalance(long refNativeMedia, float balance);
     protected native int mpvGetDuration(long refNativeMedia, double[] duration);
     protected native int mpvSeek(long refNativeMedia, double streamTime);
+    protected native int mpvGetImageWidth(long refNativeMedia, int[] width);
+    protected native int mpvGetImageHeight(long refNativeMedia, int[] height);
     protected native int mpvGetVolume(long refNativeMedia, float[] volume);
     protected native int mpvSetVolume(long refNativeMedia, float volume);
 }

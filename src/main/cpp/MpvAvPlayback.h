@@ -63,6 +63,9 @@ private:
 	int						Pause();
 
 	double					_streamDuration;
+	double					_streamFps;
+	int64_t					_imageHeight;
+	int64_t					_imageWidth;
 public:
 	MpvAvPlayback();
 	~MpvAvPlayback();
@@ -76,6 +79,9 @@ public:
 	void					toggle_pause();
 	int						SetRate(const double newRate);
 	double					GetRate();
+	float					GetFps();
+	int						GetImageWidth();
+	int						GetImageHeight();
 	double					GetDuration();
 	int						StepBackward();
 	int						StepForward();

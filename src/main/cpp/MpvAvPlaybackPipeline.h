@@ -37,6 +37,8 @@ private:
 	virtual uint32_t        GetDuration(double* pdDuration);
 	virtual uint32_t        GetStreamTime(double* pdStreamTime);
 	virtual uint32_t        GetFps(double* pdFps);
+	virtual uint32_t        GetImageWidth(int* iWidth);
+	virtual uint32_t        GetImageHeight(int* iHeight);
 
 	virtual uint32_t        SetRate(float fRate);
 	virtual uint32_t        GetRate(float* pfRate);

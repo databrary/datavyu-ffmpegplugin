@@ -1,7 +1,10 @@
 #include "MpvAvPlayback.h"
 
-MpvAvPlayback::MpvAvPlayback():
-_streamDuration(0)
+MpvAvPlayback::MpvAvPlayback() :
+	_streamDuration(0),
+	_streamFps(0),
+	_imageHeight(0),
+	_imageWidth(0)
 {}
 
 MpvAvPlayback::~MpvAvPlayback()
@@ -86,6 +89,7 @@ int MpvAvPlayback::SetRate(double newRate)
 {
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
+
 	int err = _mpvSetOption(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &newRate);
 	if ( err < 0) {
 		return err;
@@ -97,24 +101,73 @@ int MpvAvPlayback::SetRate(double newRate)
 double MpvAvPlayback::GetRate()
 {
 	if (!_mpvHandle)
-		return NULL;
+		return MPV_ERROR_GENERIC;
 
 	double currentRate;
 
 	int err = _mpvGetProperty(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &currentRate);
 	if (err < 0) {
-		return NULL;
+		return err;
 	}
 
 	return currentRate;
 }
 
+float MpvAvPlayback::GetFps()
+{
+	if (!_mpvHandle)
+		return MPV_ERROR_GENERIC;
+
+	if (!_streamFps || _streamFps == 0 || _streamFps == NULL) {
+		// Property: container-fps, estimated-vf-fps 
+		int err = _mpvGetProperty(_mpvHandle, "container-fps", MPV_FORMAT_DOUBLE, &_streamFps);
+		if (err < 0) {
+			return err;
+		}
+	}
+
+	return _streamFps;
+}
+
+int MpvAvPlayback::GetImageWidth()
+{
+	if (!_mpvHandle)
+		return MPV_ERROR_GENERIC;
+
+	if (!_imageWidth || _imageWidth == 0 || _imageWidth == NULL) {
+		int err = _mpvGetProperty(_mpvHandle, "width", MPV_FORMAT_INT64, &_imageWidth);
+		if (err < 0) {
+			return err;
+		}
+	}
+
+	return _imageWidth;
+}
+
+int MpvAvPlayback::GetImageHeight()
+{
+	if (!_mpvHandle)
+		return MPV_ERROR_GENERIC;
+
+	if (!_imageHeight|| _imageHeight == 0 || _imageHeight == NULL) {
+		int err = _mpvGetProperty(_mpvHandle, "height", MPV_FORMAT_INT64, &_imageHeight);
+		if (err < 0) {
+			return err;
+		}
+	}
+
+	return _imageHeight;
+}
+
 double MpvAvPlayback::GetDuration()
 {
+	if (!_mpvHandle)
+		return MPV_ERROR_GENERIC;
+
 	if (!_streamDuration || _streamDuration == 0 || _streamDuration == NULL) {
 		int err = _mpvGetProperty(_mpvHandle, "duration", MPV_FORMAT_DOUBLE, &_streamDuration);
 		if ( err < 0) {
-			return NULL;
+			return err;
 		}
 	}
 
@@ -140,6 +193,7 @@ int MpvAvPlayback::StepForward()
 {
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
+
 	const char *cmd[] = { "frame-step", NULL, NULL };
 
 	int err = DoMpvCommand(cmd);

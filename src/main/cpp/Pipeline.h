@@ -76,6 +76,8 @@ public:
     virtual uint32_t        GetDuration(double* pdDuration) = 0;
     virtual uint32_t        GetStreamTime(double* pdStreamTime) = 0;
 	virtual uint32_t		GetFps(double* pdFps) = 0;
+	virtual uint32_t		GetImageWidth(int* iWidth) = 0;
+	virtual uint32_t		GetImageHeight(int* iheight) = 0;
 
     virtual uint32_t        SetRate(float fRate) = 0;
     virtual uint32_t        GetRate(float* pfRate) = 0;

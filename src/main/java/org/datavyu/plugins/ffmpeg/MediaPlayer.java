@@ -209,6 +209,10 @@ public interface MediaPlayer {
      */
     void seek(double streamTime);
 
+    int getImageWidth();
+
+    int getImageHeight();
+
     /**
      * Retrieves the current {@link PlayerStateEvent.PlayerState state} of the player.
      * @return the current player state.

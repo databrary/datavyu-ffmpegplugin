@@ -17,10 +17,10 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
     JMediaPlayerControlFrame(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
         //Todo(Reda): Fix the slider for the MPV Player
-        jSlider = new JSlider(0, (int) mediaPlayer.getDuration(),0);
-        jSlider.setFocusable(false);
-        jSlider.addChangeListener(this);
-        add(jSlider, BorderLayout.SOUTH);
+//        jSlider = new JSlider(0, (int) mediaPlayer.getDuration(),0);
+//        jSlider.setFocusable(false);
+//        jSlider.addChangeListener(this);
+//        add(jSlider, BorderLayout.SOUTH);
         addKeyListener(this);
         pack();
         setSize(640, 480);
@@ -51,6 +51,11 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
             case KeyEvent.VK_D:
                 System.out.println("Step Forward");
                 mediaPlayer.stepBackward();
+                break;
+            case KeyEvent.VK_I:
+                System.out.println("Stream Information : Fps = " + mediaPlayer.getFps() +
+                                    " Image Width = " + mediaPlayer.getImageWidth() +
+                                    " Image Height = " + mediaPlayer.getImageHeight());
                 break;
             case KeyEvent.VK_NUMPAD6:
                 System.out.println("Change rate from " + rate + " to " + rate*2);
