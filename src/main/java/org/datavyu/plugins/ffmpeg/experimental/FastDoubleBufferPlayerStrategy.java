@@ -115,7 +115,7 @@ public class FastDoubleBufferPlayerStrategy extends Thread {
         }
     }
 
-    public void terminte() {
+    public void terminate() {
         stopped = true;
     }
 }
