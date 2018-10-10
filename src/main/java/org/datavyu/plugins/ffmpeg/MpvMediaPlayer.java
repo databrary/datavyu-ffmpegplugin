@@ -2,14 +2,16 @@ package org.datavyu.plugins.ffmpeg;
 
 import sun.awt.windows.WComponentPeer;
 
+
 import java.awt.*;
+import java.awt.image.BufferStrategy;
 import java.net.URI;
+
 
 
 //TODO(Reda): add a dedicated event loop for the presentation and player events
 // Note should be in the native side
 public class MpvMediaPlayer extends FfmpegMediaPlayer{
-
     static {
         System.loadLibrary("MpvMediaPlayer");
     }
@@ -27,14 +29,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         initNative(); // start the event queue, make sure to register all state/error listeners before
         long[] newNativeMediaRef = new long[1];
 
-        // Container need to be visible in order to get a valid HWND
-        container.setVisible(true);
-
-        // TODO(Reda):find alternative for deprecated getPeer() method
-        windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
-        if (windowID == 0){
-            throw new IllegalStateException("Need a valid WID for the MPV Player");
-        }
+        initContainer();
 
         int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
         if (0 != rc) {
@@ -44,14 +39,27 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         nativeMediaRef = newNativeMediaRef[0];
 
         // 5 ms is the time needed for the MPV player to report
-        // a correct stream duration at start-up
+        // a correct stream duration at start-up and image size
         //TODO(Reda) Remove this by using the API event loop and the async calls
         try {
-            Thread.sleep(5);
+            Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        System.out.println("Image Width " + getImageWidth() + " Image height " + getImageHeight());
+        container.setSize(getImageWidth(), getImageHeight());
+    }
+
+    private void initContainer(){
+        container.setVisible(true);
+        // Container need to be visible in order to get a valid HWND
+
+        // TODO(Reda):find alternative for deprecated getPeer() method
+        windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
+        if (windowID == 0){
+            throw new IllegalStateException("Need a valid WID for the MPV Player");
+        }
     }
 
     @Override
@@ -260,6 +268,10 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     protected native int mpvInitPlayer(long[] newNativeMedia,
                                        String sourcePath,
                                        long windowID);
+
+//    protected native int mpvInitPlayer(long[] newNativeMedia,
+//                                       String sourcePath,
+//                                       Canvas canvas);
 
     protected native int mpvDisposePlayer(long refNativeMedia);
 

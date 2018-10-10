@@ -26,7 +26,7 @@ void MpvAvPlaybackPipeline::Dispose()
 }
 
 MpvAvPlaybackPipeline::MpvAvPlaybackPipeline(CPipelineOptions * pOptions, 
-												long windowID)
+												intptr_t windowID)
 	: CPipeline(pOptions), windowID(windowID),pMpvPlayback(nullptr) {
 }
 

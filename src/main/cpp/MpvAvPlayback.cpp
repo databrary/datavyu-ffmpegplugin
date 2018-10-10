@@ -10,7 +10,7 @@ MpvAvPlayback::MpvAvPlayback() :
 MpvAvPlayback::~MpvAvPlayback()
 {}
 
-int MpvAvPlayback::Init(const char * filename, const long windowID)
+int MpvAvPlayback::Init(const char * filename, const intptr_t windowID)
 {
 	int err;
 
@@ -35,7 +35,7 @@ int MpvAvPlayback::Init(const char * filename, const long windowID)
 	//	return err;
 	//}	
 
-	int windowId = windowID;
+	intptr_t windowId = windowID;
 	err = _mpvSetOption(_mpvHandle, "wid", MPV_FORMAT_INT64, &windowId);
 	if (err < 0) {
 		return err;

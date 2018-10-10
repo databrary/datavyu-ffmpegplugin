@@ -5,6 +5,7 @@
 #include "FfmpegMediaErrors.h"
 #include "FfmpegJniUtils.h"
 #include "MpvAvPlaybackPipeline.h"
+#include "jawt_md.h"
 
 using namespace std;
 
@@ -25,7 +26,7 @@ extern "C" {
 			return ERROR_SYSTEM_ENOMEM;
 		}
 
-		CPipeline* pPipeline = new (std::nothrow) MpvAvPlaybackPipeline(pOptions, windowID);
+		CPipeline* pPipeline = new (std::nothrow) MpvAvPlaybackPipeline(pOptions, (intptr_t)windowID);
 
 		if (NULL == pPipeline) {
 			return ERROR_PIPELINE_NULL;

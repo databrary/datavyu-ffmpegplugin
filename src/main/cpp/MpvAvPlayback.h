@@ -70,7 +70,7 @@ public:
 	MpvAvPlayback();
 	~MpvAvPlayback();
 
-	int						Init(const char *filename, const long windowID);
+	int						Init(const char *filename, const intptr_t windowID);
 	void					Destroy();
 	void					init_and_event_loop(const char *filename);
 	bool					IsPaused();

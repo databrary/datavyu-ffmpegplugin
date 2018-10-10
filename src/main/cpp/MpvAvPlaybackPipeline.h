@@ -20,10 +20,10 @@ public:
 	virtual uint32_t    Init(const char * input_file);
 	virtual void        Dispose();
 
-	MpvAvPlaybackPipeline(CPipelineOptions* pOptions, const long windowID);
+	MpvAvPlaybackPipeline(CPipelineOptions* pOptions, const intptr_t windowID);
 	virtual ~MpvAvPlaybackPipeline();
 
-	long windowID;
+	intptr_t windowID;
 private:
 	virtual uint32_t        Play();
 	virtual uint32_t        Stop();
