@@ -26,6 +26,7 @@ typedef int(*MpvSetOptionString)(intptr_t, const char *, const char *);
 typedef char*(*MpvGetPropertystring)(intptr_t, const char *);
 typedef int(*MpvGetProperty)(intptr_t, const char *,int,void *);
 typedef int(*MpvSetProperty)(intptr_t, const char *,int,void *);
+typedef int(*MpvSetPropertyAsync)(intptr_t, uint64_t,const char *, int, void *);
 typedef void(*MpvFree)(void *);
 
 /* The MpvAvPlayback class will the mpv-1.dll (must be copied 
@@ -55,6 +56,7 @@ private:
 	MpvGetPropertystring	_mpvGetPropertyString;
 	MpvGetProperty			_mpvGetProperty;
 	MpvSetProperty			_mpvSetProperty;
+	MpvSetPropertyAsync		_mpvSetPropertyAsync;
 	MpvFree					_mpvFree;
 		
 	void					LoadMpvDynamic();
@@ -66,6 +68,8 @@ private:
 	double					_streamFps;
 	int64_t					_imageHeight;
 	int64_t					_imageWidth;
+
+	bool					_initialPlay;
 public:
 	MpvAvPlayback();
 	~MpvAvPlayback();

@@ -47,7 +47,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
             e.printStackTrace();
         }
 
-        System.out.println("Image Width " + getImageWidth() + " Image height " + getImageHeight());
         container.setSize(getImageWidth(), getImageHeight());
     }
 

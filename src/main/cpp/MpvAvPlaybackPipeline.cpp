@@ -197,6 +197,9 @@ uint32_t MpvAvPlaybackPipeline::GetVolume(float * pfVolume)
 	}
 
 	*pfVolume = pMpvPlayback->GetVolume();
+	if (pfVolume < 0) {
+		ERROR_FFMPEG_AUDIO_LINE_UNAVAILABLE;
+	}
 
 	return ERROR_NONE;
 }

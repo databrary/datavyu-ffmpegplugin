@@ -4,14 +4,18 @@ MpvAvPlayback::MpvAvPlayback() :
 	_streamDuration(0.0),
 	_streamFps(0.0),
 	_imageHeight(0),
-	_imageWidth(0)
+	_imageWidth(0),
+	_initialPlay(true)
 {}
 
 MpvAvPlayback::~MpvAvPlayback()
-{}
+{
+	_mpvTerminateDestroy(_mpvHandle);
+}
 
 int MpvAvPlayback::Init(const char * filename, const intptr_t windowID)
 {
+	std::setlocale(LC_NUMERIC, "C");
 	int err;
 
 	LoadMpvDynamic();
@@ -21,22 +25,30 @@ int MpvAvPlayback::Init(const char * filename, const intptr_t windowID)
 	_mpvHandle = _mpvCreate();
 	if (!_mpvHandle)
 		_mpvTerminateDestroy(_mpvHandle);
-
-	_mpvInitialize(_mpvHandle);
-
 	
-	_mpvSetOptionString(_mpvHandle, "keep-open", "always");
-	// prevent the player from playing at start-up
-	_mpvSetOptionString(_mpvHandle, "pause", "yes");
-
-	//double _startUpVolume = 100;
-	//err = _mpvSetOption(_mpvHandle, "volume", MPV_FORMAT_DOUBLE, &_startUpVolume);
-	//if (err < 0) {
-	//	return err;
-	//}	
+	err = _mpvSetOptionString(_mpvHandle, "keep-open", "always");
+	if (err < 0) {
+		return err;
+	}
 
 	intptr_t windowId = windowID;
 	err = _mpvSetOption(_mpvHandle, "wid", MPV_FORMAT_INT64, &windowId);
+	if (err < 0) {
+		return err;
+	}
+
+	double _startUpVolume = 100;
+	err = _mpvSetOption(_mpvHandle, "volume", MPV_FORMAT_DOUBLE, &_startUpVolume);
+	if (err < 0) {
+		return err;
+	}
+
+	err = Pause();
+	if (err < 0) {
+		return err;
+	}
+
+	err = _mpvInitialize(_mpvHandle);
 	if (err < 0) {
 		return err;
 	}
@@ -63,6 +75,7 @@ void MpvAvPlayback::LoadMpvDynamic()
 	_mpvGetPropertyString = (MpvGetPropertystring)GetProcAddress(_libMpvDll, "mpv_get_property");
 	_mpvGetProperty = (MpvGetProperty)GetProcAddress(_libMpvDll, "mpv_get_property");
 	_mpvSetProperty = (MpvSetProperty)GetProcAddress(_libMpvDll, "mpv_set_property");
+	_mpvSetPropertyAsync = (MpvSetPropertyAsync)GetProcAddress(_libMpvDll, "mpv_set_property_async");
 	_mpvFree = (MpvFree)GetProcAddress(_libMpvDll, "mpv_free");
 }
 
@@ -70,6 +83,13 @@ int MpvAvPlayback::Play()
 {
 	if (!_mpvHandle)
 		return MPV_ERROR_GENERIC;
+
+	// Workaround to set the volume at start up none of the volume option
+	// or ao-volume property seem to affect the player volume during initialization
+	if (_initialPlay) {
+		SetVolume(100);
+		_initialPlay = false;
+	}
 
 	const char* porpertyValue = "no";
 	int err = _mpvSetProperty(_mpvHandle, "pause", MPV_FORMAT_STRING, &porpertyValue);
@@ -121,7 +141,6 @@ double MpvAvPlayback::GetRate()
 		return MPV_ERROR_GENERIC;
 
 	double currentRate;
-
 	int err = _mpvGetProperty(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &currentRate);
 	if (err < 0) {
 		return err;
@@ -182,12 +201,9 @@ double MpvAvPlayback::GetDuration()
 
 	if (!_streamDuration || _streamDuration <= 0 || _streamDuration == NULL) {
 		// TODO(Reda) Remove this, it is just for testing, need to go through async calls
-
-		while (_streamDuration <= 0) {
-			int err = _mpvGetProperty(_mpvHandle, "duration", MPV_FORMAT_DOUBLE, &_streamDuration);
-			if (err < 0) {
-				return err;
-			}
+		int err = _mpvGetProperty(_mpvHandle, "duration", MPV_FORMAT_DOUBLE, &_streamDuration);
+		if (err < 0) {
+			return err;
 		}
 	}
 
@@ -248,7 +264,7 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 	}
 
 	SDL_Window *window =
-		SDL_CreateWindow("hi", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		SDL_CreateWindow(filename, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			1000, 500, SDL_WINDOW_SHOWN |
 			SDL_WINDOW_RESIZABLE);
 
@@ -263,7 +279,7 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 	HWND hwnd = wmInfo.info.win.window;
 
 	MpvAvPlayback* pPlayer = new MpvAvPlayback();
-	int err = pPlayer->Init(filename, (long)hwnd);
+	int err = pPlayer->Init(filename, (intptr_t)hwnd);
 	if (err) {
 		fprintf(stderr, "Error %d when opening input file %s", err, filename);
 	}
@@ -276,7 +292,6 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 			printf("event loop error");
 		int redraw = 0;
 		rate = pPlayer->GetRate();
-		currentVolume = pPlayer->GetVolume();
 		switch (event.type) {
 		case SDL_KEYDOWN:
 			if (exit_on_keydown) {
@@ -311,11 +326,13 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 				break;
 			case SDLK_KP_MULTIPLY:
 			case SDLK_0:
+				currentVolume = pPlayer->GetVolume();
 				// MPV Audio Range is from 0 - 100
 				pPlayer->SetVolume(currentVolume - 10.0);
 				break;
 			case SDLK_KP_DIVIDE:
 			case SDLK_9:
+				currentVolume = pPlayer->GetVolume();
 				// MPV Audio Range is from 0 - 100
 				pPlayer->SetVolume(currentVolume + 10.0);
 				break;
@@ -340,17 +357,6 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 				else {
 					rate /= 2;
 				}
-				break;
-			case SDLK_v:
-				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
-				break;
-			case SDLK_c:
-				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
-				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
-				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
-				break;
-			case SDLK_t:
-				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
 				break;
 			case SDLK_LEFT:
 				incr = -1.0;
