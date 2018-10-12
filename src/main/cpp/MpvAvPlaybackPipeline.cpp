@@ -91,8 +91,13 @@ uint32_t MpvAvPlaybackPipeline::StepForward()
 	if (pMpvPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
+	int err;
+	err = pMpvPlayback->StepForward();
+	if (err < 0) {
+		return err;
+	}
 
-	pMpvPlayback->StepForward();
+	UpdatePlayerState(Paused);
 	return ERROR_NONE;
 }
 
@@ -102,13 +107,21 @@ uint32_t MpvAvPlaybackPipeline::StepBackward()
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	pMpvPlayback->StepBackward();
+	int err;
+	err = pMpvPlayback->StepBackward();
+	if (err < 0) {
+		return err;
+	}
+
+	UpdatePlayerState(Paused);
 
 	return ERROR_NONE;
 }
 
 uint32_t MpvAvPlaybackPipeline::Finish()
 {
+	UpdatePlayerState(Finished);
+
 	return ERROR_NONE;
 }
 
@@ -117,10 +130,14 @@ uint32_t MpvAvPlaybackPipeline::Seek(double dSeekTime)
 	if (pMpvPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
-	//TODO(Reda): return error codes
-	 pMpvPlayback->SetTime(dSeekTime);
+	
+	int err;
+	err = pMpvPlayback->SetTime(dSeekTime);
+	if (err < 0) {
+		return err;
+	}
 
-	 return ERROR_NONE;
+	return ERROR_NONE;
 }
 
 uint32_t MpvAvPlaybackPipeline::GetDuration(double * pdDuration)
@@ -183,7 +200,11 @@ uint32_t MpvAvPlaybackPipeline::SetRate(float fRate)
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	pMpvPlayback->SetRate(fRate);
+	int err;
+	err = pMpvPlayback->SetRate(fRate);
+	if (err < 0) {
+		return err;
+	}
 
 	return ERROR_NONE;
 }
@@ -220,9 +241,6 @@ uint32_t MpvAvPlaybackPipeline::GetVolume(float * pfVolume)
 	}
 
 	*pfVolume = pMpvPlayback->GetVolume();
-	if (pfVolume < 0) {
-		ERROR_FFMPEG_AUDIO_LINE_UNAVAILABLE;
-	}
 
 	return ERROR_NONE;
 }

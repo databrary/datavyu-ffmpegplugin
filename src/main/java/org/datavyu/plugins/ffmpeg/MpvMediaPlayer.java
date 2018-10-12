@@ -4,7 +4,6 @@ import sun.awt.windows.WComponentPeer;
 
 
 import java.awt.*;
-import java.awt.image.BufferStrategy;
 import java.net.URI;
 
 
@@ -19,6 +18,9 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     private Container container;
     private long windowID;
 
+    private PlayerStateListener stateListener;
+    private final Object disposeLock = new Object();
+
     public MpvMediaPlayer(URI mediaPath, Container container) {
         super(mediaPath);
         this.container = container;
@@ -27,6 +29,10 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     @Override
     public void init() {
         initNative(); // start the event queue, make sure to register all state/error listeners before
+
+        stateListener = new _PlayerStateListener();
+        this.addMediaPlayerStateListener(stateListener);
+
         long[] newNativeMediaRef = new long[1];
 
         initContainer();
@@ -37,17 +43,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         }
 
         nativeMediaRef = newNativeMediaRef[0];
-
-        // 5 ms is the time needed for the MPV player to report
-        // a correct stream duration at start-up and image size
-        //TODO(Reda) Remove this by using the API event loop and the async calls
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        container.setSize(getImageWidth(), getImageHeight());
     }
 
     private void initContainer(){
@@ -256,6 +251,46 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
             throwMediaErrorException(rc, null);
         }
         return height[0];
+    }
+
+    class _PlayerStateListener implements PlayerStateListener {
+
+        @Override
+        public void onReady(PlayerStateEvent evt) {
+            synchronized (disposeLock) {
+                container.setSize(getImageWidth(), getImageHeight());
+            }
+        }
+
+        @Override
+        public void onPlaying(PlayerStateEvent evt) {
+
+        }
+
+        @Override
+        public void onPause(PlayerStateEvent evt) {
+
+        }
+
+        @Override
+        public void onStop(PlayerStateEvent evt) {
+
+        }
+
+        @Override
+        public void onStall(PlayerStateEvent evt) {
+
+        }
+
+        @Override
+        public void onFinish(PlayerStateEvent evt) {
+
+        }
+
+        @Override
+        public void onHalt(PlayerStateEvent evt) {
+
+        }
     }
 
     @Override

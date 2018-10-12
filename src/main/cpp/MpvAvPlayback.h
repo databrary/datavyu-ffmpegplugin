@@ -19,6 +19,7 @@ extern "C" {
 typedef intptr_t(*MpvCreate)();
 typedef int(*MpvInitialize)(intptr_t);
 typedef int(*MpvCommand)(intptr_t, const char**);
+typedef int(*MpvCommandAsync)(intptr_t, uint64_t, const char **);
 typedef int(*MpvCommandString)(intptr_t, const char*);
 typedef int(*MpvTerminateDestroy)(intptr_t);
 typedef int(*MpvSetOption)(intptr_t, const char *, int,void *);
@@ -28,6 +29,7 @@ typedef int(*MpvGetProperty)(intptr_t, const char *,int,void *);
 typedef int(*MpvSetProperty)(intptr_t, const char *,int,void *);
 typedef int(*MpvSetPropertyAsync)(intptr_t, uint64_t,const char *, int, void *);
 typedef void(*MpvFree)(void *);
+typedef mpv_event*(*MpvWaitEvent)(intptr_t, double);
 
 /* The MpvAvPlayback class will the mpv-1.dll (must be copied 
 * in the working directory) and will extract needed functions
@@ -49,6 +51,7 @@ private:
 	MpvCreate				_mpvCreate;
 	MpvInitialize			_mpvInitialize;
 	MpvCommand				_mpvCommand; // Always terminate a command with NULL like so const char * cmd = {"seek", "10", "absolute", NULL}
+	MpvCommandAsync			_mpvCommandAsync; // Always terminate a command with NULL like so const char * cmd = {"seek", "10", "absolute", NULL}
 	MpvCommandString		_mpvCommandString;
 	MpvTerminateDestroy		_mpvTerminateDestroy;
 	MpvSetOption			_mpvSetOption;
@@ -58,6 +61,7 @@ private:
 	MpvSetProperty			_mpvSetProperty;
 	MpvSetPropertyAsync		_mpvSetPropertyAsync;
 	MpvFree					_mpvFree;
+	MpvWaitEvent			_mpvWaitEvent;
 		
 	void					LoadMpvDynamic();
 
@@ -80,7 +84,7 @@ public:
 	bool					IsPaused();
 	int						Play();
 	int						Stop();
-	void					toggle_pause();
+	int						TogglePause();
 	int						SetRate(const double newRate);
 	double					GetRate();
 	float					GetFps();

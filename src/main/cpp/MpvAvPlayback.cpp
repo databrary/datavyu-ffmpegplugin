@@ -54,9 +54,18 @@ int MpvAvPlayback::Init(const char * filename, const intptr_t windowID)
 	}
 
 	const char *cmd[] = { "loadfile", filename, NULL };
-	err = DoMpvCommand(cmd);
+	err = _mpvCommandAsync(_mpvHandle, 1, cmd);
 	if (err < 0) {
 		return err;
+	}
+
+	// Wait for the mpv file loaded event
+	while (1)
+	{
+		mpv_event *event = _mpvWaitEvent(_mpvHandle, 10000);
+		if (event->event_id == MPV_EVENT_FILE_LOADED) {
+			break;
+		}
 	}
 
 	return MPV_ERROR_SUCCESS;
@@ -69,6 +78,7 @@ void MpvAvPlayback::LoadMpvDynamic()
 	_mpvInitialize = (MpvInitialize)GetProcAddress(_libMpvDll, "mpv_initialize");
 	_mpvTerminateDestroy = (MpvTerminateDestroy)GetProcAddress(_libMpvDll, "mpv_terminate_destroy");
 	_mpvCommand = (MpvCommand)GetProcAddress(_libMpvDll, "mpv_command");
+	_mpvCommandAsync = (MpvCommandAsync)GetProcAddress(_libMpvDll, "mpv_command_async");
 	_mpvCommandString = (MpvCommandString)GetProcAddress(_libMpvDll, "mpv_command_string");
 	_mpvSetOption = (MpvSetOption)GetProcAddress(_libMpvDll, "mpv_set_option");
 	_mpvSetOptionString = (MpvSetOptionString)GetProcAddress(_libMpvDll, "mpv_set_option_string");
@@ -77,6 +87,7 @@ void MpvAvPlayback::LoadMpvDynamic()
 	_mpvSetProperty = (MpvSetProperty)GetProcAddress(_libMpvDll, "mpv_set_property");
 	_mpvSetPropertyAsync = (MpvSetPropertyAsync)GetProcAddress(_libMpvDll, "mpv_set_property_async");
 	_mpvFree = (MpvFree)GetProcAddress(_libMpvDll, "mpv_free");
+	_mpvWaitEvent = (MpvWaitEvent)GetProcAddress(_libMpvDll, "mpv_wait_event");
 }
 
 int MpvAvPlayback::Play()
@@ -112,14 +123,23 @@ int MpvAvPlayback::Stop()
 	return MPV_ERROR_SUCCESS;
 }
 
-void MpvAvPlayback::toggle_pause()
+int MpvAvPlayback::TogglePause()
 {
+	int err;
 	if (IsPaused()) {
-		Play();
+		err = Play();
+		if (err < 0) {
+			return err;
+		}
 	}
 	else {
-		Pause();
+		err = Pause();
+		if (err < 0) {
+			return err;
+		}
 	}
+
+	return MPV_ERROR_SUCCESS;
 }
 
 int MpvAvPlayback::SetRate(double newRate)
@@ -291,7 +311,6 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 		if (SDL_WaitEvent(&event) != 1)
 			printf("event loop error");
 		int redraw = 0;
-		rate = pPlayer->GetRate();
 		switch (event.type) {
 		case SDL_KEYDOWN:
 			if (exit_on_keydown) {
@@ -315,11 +334,11 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 				pPlayer->Stop();
 				break;
 			case SDLK_KP_2:
-				pPlayer->toggle_pause();
+				pPlayer->TogglePause();
 				break;
 			case SDLK_p:
 			case SDLK_SPACE:
-				pPlayer->toggle_pause();
+				pPlayer->TogglePause();
 				break;
 			case SDLK_m:
 				//pVideoState->toggle_mute();
@@ -343,6 +362,7 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 				//pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
 				break;
 			case SDLK_KP_PLUS:
+				rate = pPlayer->GetRate();
 				if (pPlayer->SetRate(rate * 2)) {
 					av_log(NULL, AV_LOG_ERROR, "Rate %f unavailable\n", rate * 2);
 				}
@@ -351,6 +371,7 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 				}
 				break;
 			case SDLK_KP_MINUS:
+				rate = pPlayer->GetRate();
 				if (pPlayer->SetRate(rate / 2)) {
 					av_log(NULL, AV_LOG_ERROR, "Rate %f unavailable\n", rate / 2);
 				}
