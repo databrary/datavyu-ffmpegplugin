@@ -61,11 +61,6 @@ void FfmpegAvPlayback::stop() {
 		toggle_pause();
 		pVideoState->set_stopped(true);
 	}
-	// Stop playback and seek to the start of the stream 
-	/*double pos = get_master_clock();
-	double start = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
-	double incr = start - pos;
-	stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);*/
 }
 
 // pause and keep the playback speed.

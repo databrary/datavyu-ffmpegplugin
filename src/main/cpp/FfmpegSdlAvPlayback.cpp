@@ -517,7 +517,7 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 
 			std::unique_lock<std::mutex> locker(pVideoState->get_pPictq()->get_mutex());
 			if (!isnan(vp->pts))
-				pVideoState->update_pts(vp->pts, vp->pos, vp->serial);
+				pVideoState->update_pts(vp->pts, vp->serial);
 			locker.unlock();
 
 			if (pVideoState->get_pPictq()->nb_remaining() > 1) {
@@ -540,8 +540,8 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 						sp2 = NULL;
 
 					if (sp->serial != pVideoState->get_pSubtitleq()->get_serial()
-						|| (pVideoState->get_pVidclk()->get_last_set_time() > (sp->pts + ((float)sp->sub.end_display_time / 1000)))
-						|| (sp2 && pVideoState->get_pVidclk()->get_last_set_time() > (sp2->pts + ((float)sp2->sub.start_display_time / 1000))))
+						|| (pVideoState->get_vidclk_last_set_time() > (sp->pts + ((float)sp->sub.end_display_time / 1000)))
+						|| (sp2 && pVideoState->get_vidclk_last_set_time() > (sp2->pts + ((float)sp2->sub.start_display_time / 1000))))
 					{
 						if (sp->uploaded) {
 							int i;
