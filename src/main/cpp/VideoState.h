@@ -170,6 +170,7 @@ private:
 	int fps;
 	int subtitle_stream;
 
+	double vidclk_last_set_time;
 	double frame_last_returned_time;
 	double frame_last_filter_delay;
 	int video_stream;
@@ -359,7 +360,7 @@ public:
 	//int get_audio_volume() const;
 	//void set_audio_volume(int new_audio_volume);
 	void toggle_mute();
-	void update_pts(double pts, int64_t pos, int serial);
+	void update_pts(double pts, int serial);
 	void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
 	void stream_cycle_channel(int codec_type);
 	int get_read_pause_return() const;
@@ -398,6 +399,8 @@ public:
 	Clock *get_pVidclk() const;
 	Clock *get_pAudclk() const;
 	Clock *get_pExtclk() const;
+
+	inline double get_vidclk_last_set_time() const { return vidclk_last_set_time; }
 
 	//AudioFormat get_audio_format() const;
 	AudioParams get_audio_tgt() const;

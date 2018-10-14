@@ -21,11 +21,7 @@ extern "C" {
 //
 class Clock {
     private:
-        double lastSet;
-        bool paused;
-		double rate;				// playback speed of the clock
         double time;				// clock time
-		double pts;					// last pts
         int serial;					// clock is based on a packet with this serial
         const int *queueSerial;	// pointer to the current packet queue serial, used for obsolete clock detection
 		inline bool is_seek() const { return *queueSerial != serial; }
@@ -42,21 +38,9 @@ class Clock {
     
 		double get_time() const; // for stream time, depends on rate
 
-		inline double get_pts() const { return pts; } // for sync between streams, independent of rate
-
 		inline double get_serial() const { return serial; }
 
-		inline double get_rate() const { return rate; }
-
-		inline double get_lastSet() const { return lastSet; }
-
-		inline double get_last_set_time() const { return time; }
-
-		inline bool isPaused() const { return paused; }
-
-		inline void setPaused(bool newPaused) { paused = newPaused; }
-
-		void set_time(double newPts, int newSerial, double newRate);
+		void set_time(double newTime, int newSerial);
 
 		static void sync_slave_to_master(Clock *c, Clock *slave);
 };

@@ -195,19 +195,19 @@ int VideoState::get_video_frame(AVFrame *frame) {
 		return -1;
 
 	if (got_picture) {
-		double dpts = NAN;
+		double time = NAN;
 
 		if (frame->pts != AV_NOPTS_VALUE)
-			dpts = av_q2d(video_st->time_base) * frame->pts;
+			time = av_q2d(video_st->time_base) * frame->pts;
 
 		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(ic, video_st, frame);
 
 		if (framedrop>0 || (framedrop && get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) {
 			if (frame->pts != AV_NOPTS_VALUE) {
-				double diff = dpts - get_master_clock()->get_pts();
+				double diff = time - get_master_clock()->get_time();
 
-				av_log(NULL, AV_LOG_TRACE, "diff=%f dpts=%f framedrop=%d, fiter_delay=%f, np=%d\n", 
-					diff, dpts, framedrop, frame_last_filter_delay, pVideoq->get_nb_packets());
+				av_log(NULL, AV_LOG_INFO, "diff=%f time=%f framedrop=%d, fiter_delay=%f, np=%d\n", 
+					diff, time, framedrop, frame_last_filter_delay, pVideoq->get_nb_packets());
 
 				if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
 					diff - frame_last_filter_delay < 0 &&
@@ -421,7 +421,7 @@ int VideoState::synchronize_audio(int nb_samples) {
 		int min_nb_samples, max_nb_samples;
 
 		// Use pts here
-		diff = pAudclk->get_pts() - get_master_clock()->get_pts();
+		diff = pAudclk->get_time() - get_master_clock()->get_time();
 
 		if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD) {
 			this->audio_diff_cum = diff + this->audio_diff_avg_coef * this->audio_diff_cum;
@@ -571,6 +571,7 @@ VideoState::VideoState(int audio_buffer_size) :
 	av_sync_type(0),
 	fps(0),
 	subtitle_stream(0),
+	vidclk_last_set_time(0),
 	frame_last_returned_time(0),
 	frame_last_filter_delay(0),
 	video_stream(0),
@@ -863,10 +864,10 @@ int VideoState::read_thread() {
 					pVideoq->put_flush_packet();
 				}
 				if (this->seek_flags & AVSEEK_FLAG_BYTE) {
-					pExtclk->set_time(NAN, 0, rate_value); // 0 != -1 which will return NAN for interim time 
+					pExtclk->set_time(NAN, 0); // 0 != -1 which will return NAN for interim time 
 				}
 				else {
-					pExtclk->set_time(seek_target / (double)AV_TIME_BASE, 0, rate_value); // 0 != -1 which will return NAN for interim time 
+					pExtclk->set_time(seek_target / (double)AV_TIME_BASE, 0); // 0 != -1 which will return NAN for interim time 
 				}
 			}
 			this->seek_req = 0;
@@ -1496,8 +1497,9 @@ void VideoState::toggle_mute() {
 	this->muted = !this->muted;
 }
 
-void VideoState::update_pts(double pts, int64_t pos, int serial) {
-	get_pVidclk()->set_time(pts, serial, rate_value);
+void VideoState::update_pts(double pts, int serial) {
+	get_pVidclk()->set_time(pts, serial);
+	vidclk_last_set_time = av_gettime_relative() / 1000000.0;
 	// Sync external clock to video clock
 	Clock::sync_slave_to_master(get_pExtclk(), get_pVidclk());
 }
@@ -1691,7 +1693,7 @@ double VideoState::compute_target_delay(double delay) {
 	if (get_master_sync_type() != AV_SYNC_VIDEO_MASTER) {
 		/* if video is slave, we try to correct big delays by
 		duplicating or deleting a frame */
-		diff = pVidclk->get_pts() - get_master_clock()->get_pts();
+		diff = pVidclk->get_time() - get_master_clock()->get_time();
 
 		/* skip or repeat frame. We take into account the
 		delay to compute the threshold. I still don't know
@@ -1803,10 +1805,8 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 	if (!isnan(audio_pts) && !muted) {
 		/* Let's assume the audio driver that is used by SDL has two periods. */
 		pAudclk->set_time(
-			audio_pts /*- (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec*/,
-			audio_serial,
-			rate_value
-		);
+			audio_pts - (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec,
+			audio_serial);
 		// Sync external clock to audio clock
 		Clock::sync_slave_to_master(pExtclk, pAudclk);
 	}
