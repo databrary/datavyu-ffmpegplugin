@@ -78,14 +78,6 @@ enum {
 	AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
 };
 
-enum ShowMode {
-	SHOW_MODE_NONE = -1,
-	SHOW_MODE_VIDEO = 0,
-	SHOW_MODE_WAVES,
-	SHOW_MODE_RDFT,
-	SHOW_MODE_NB
-};
-
 enum PlayerStateCallback {
 	TO_UNKNOWN = 0,		// 1
 	TO_READY,			// 2
@@ -125,7 +117,6 @@ static int				find_stream_info = 1;
 //what will be the streamer in the future implementations
 class VideoState {
 private:
-	ShowMode show_mode;
 	int abort_request;
 	bool paused; // TODO(fraudies): Check if this need to be atomic
 	int last_paused;
@@ -211,10 +202,6 @@ private:
 	struct AudioParams audio_src;
 	struct AudioParams audio_tgt;
 	int frame_drops_early;
-
-	RDFTContext *rdft;
-	int rdft_bits;
-	FFTSample *rdft_data;
 
 	inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
 			enum AVSampleFormat fmt2, int64_t channel_count2) {
@@ -320,9 +307,6 @@ public:
 	AVStream *get_video_st() const;
 	AVStream *get_subtitle_st() const;
 
-	ShowMode get_show_mode() const;
-	void set_show_mode(ShowMode new_show_mode);
-
 	FrameQueue *get_pPictq() const;
 	FrameQueue *get_pSubpq() const;
 	FrameQueue *get_pSampq() const;
@@ -351,15 +335,6 @@ public:
 
 	double get_max_frame_duration();
 	int get_audio_write_buf_size() const;
-
-	RDFTContext *get_rdft();
-	void set_rdft(RDFTContext *newRDFT);
-
-	int get_rdft_bits();
-	void set_rdft_bits(int newRDF_bits);
-
-	FFTSample *get_rdft_data();
-	void set_rdft_data(FFTSample *newRDFT_data);
 
 	int get_realtime() const;
 	inline int decode_interrupt_cb() const { return abort_request; }

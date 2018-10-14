@@ -415,23 +415,6 @@ void FfmpegSdlAvPlayback::video_image_display() {
 	}
 }
 
-void FfmpegSdlAvPlayback::update_sample_display(short *samples, int samples_size) {
-	int size, len;
-
-	size = samples_size / sizeof(short);
-	while (size > 0) {
-		len = SAMPLE_ARRAY_SIZE - sample_array_index;
-		if (len > size)
-			len = size;
-		memcpy(sample_array + sample_array_index, samples, len * sizeof(short));
-		samples += len;
-		sample_array_index += len;
-		if (sample_array_index >= SAMPLE_ARRAY_SIZE)
-			sample_array_index = 0;
-		size -= len;
-	}
-}
-
 int FfmpegSdlAvPlayback::get_audio_volume() const {
 	return audio_volume;
 }
@@ -454,7 +437,7 @@ void FfmpegSdlAvPlayback::refresh_loop_wait_event(SDL_Event *event) {
 		if (remaining_time > 0.0)
 			av_usleep((int64_t)(remaining_time * 1000000.0));
 		remaining_time = REFRESH_RATE;
-		if (pVideoState->get_show_mode() != SHOW_MODE_NONE && (!pVideoState->get_paused() || force_refresh))
+		if (!pVideoState->get_paused() || force_refresh)
 			video_refresh(&remaining_time);
 		// TODO: Remove me
 		//av_log(NULL, AV_LOG_INFO, "Time difference in %3.2f ms\n", (-remaining_time + REFRESH_RATE)*1000);
@@ -468,14 +451,6 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 
 	Frame *sp, *sp2;
 
-	if (!display_disable && pVideoState->get_show_mode() != SHOW_MODE_VIDEO && pVideoState->get_audio_st()) {
-		time = av_gettime_relative() / 1000000.0;
-		if (force_refresh || last_vis_time + rdftspeed < time) {
-			video_display();
-			last_vis_time = time;
-		}
-		*remaining_time = FFMIN(*remaining_time, last_vis_time + rdftspeed - time);
-	}
 	if (pVideoState->get_video_st()) {
 	retry:
 		if (pVideoState->get_pPictq()->nb_remaining() == 0) {
@@ -576,7 +551,6 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 		/* display picture */
 		if (!display_disable
 			&& force_refresh
-			&& (pVideoState->get_show_mode() == SHOW_MODE_VIDEO)
 			&& pVideoState->get_pPictq()->get_rindex_shown()) {
 			video_display();
 			force_refresh = 0; // only reset force refresh when displayed
@@ -723,9 +697,6 @@ void FfmpegSdlAvPlayback::destroy() {
 	if (window)
 		SDL_DestroyWindow(window);
 
-#if CONFIG_VIDEO_FILTER
-	//av_freep(&vfilters_list);
-#endif
 	avformat_network_deinit();
 
 	SDL_Quit();
@@ -822,20 +793,6 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				break;
 			case SDLK_t:
 				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
-				break;
-			case SDLK_w:
-#if CONFIG_VIDEO_FILTER
-				if (pVideoState->get_show_mode() == SHOW_MODE_VIDEO && pVideoState->get_vfilter_idx() < pVideoState->get_nb_vfilters() - 1) {
-					if (pVideoState->get_vfilter_idx() + 1 >= pVideoState->get_nb_vfilters())
-						pVideoState->set_vfilter_idx(0);
-				}
-				else {
-					pVideoState->set_vfilter_idx(0);
-					toggle_audio_display();
-				}
-#else
-				toggle_audio_display();
-#endif
 				break;
 			case SDLK_PAGEUP:
 				if (pVideoState->get_ic()->nb_chapters <= 1) {
@@ -1034,22 +991,4 @@ int FfmpegSdlAvPlayback::init_and_start_display_loop() {
 
 void FfmpegSdlAvPlayback::stop_display_loop() {
 	stopped = true;
-}
-
-void FfmpegSdlAvPlayback::toggle_audio_display() {
-	// TODO(fraudies): Next fixing, it does not seem to advance the show_mode
-	
-	// If the video state is not set then this method does not do anything
-	if (!pVideoState) return;
-
-	int next = pVideoState->get_show_mode();
-	do {
-		next = (next + 1) % SHOW_MODE_NB;
-		
-	} while (next != pVideoState->get_show_mode() && (next == SHOW_MODE_VIDEO
-			&& !pVideoState->get_video_st() || next != SHOW_MODE_VIDEO && !pVideoState->get_audio_st()));
-	if (pVideoState->get_show_mode() != next) {
-		set_force_refresh(1);
-		pVideoState->set_show_mode(static_cast<ShowMode>(next));
-	}
 }

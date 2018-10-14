@@ -252,13 +252,6 @@ void VideoState::stream_component_close(int stream_index) {
 		av_freep(&audio_buf1);
 		audio_buf1_size = 0;
 		audio_buf = NULL;
-
-		if (rdft) {
-			av_rdft_end(rdft);
-			av_freep(&rdft_data);
-			rdft = NULL;
-			rdft_bits = 0;
-		}
 		break;
 	case AVMEDIA_TYPE_VIDEO:
 		pViddec->abort(pPictq);
@@ -538,7 +531,6 @@ int VideoState::audio_decode_frame() {
 // The initialization order is correct now, but it is not garuanteed that some
 // of these might not be null; hence, we initialize this in the create function
 VideoState::VideoState(int audio_buffer_size) : 
-	show_mode(SHOW_MODE_NONE),
 	abort_request(0),
 	paused(true), // TRUE
 	last_paused(0),
@@ -607,10 +599,7 @@ VideoState::VideoState(int audio_buffer_size) :
 	audio_buf_index(0), /* in bytes */
 	audio_write_buf_size(0),
 	muted(0),
-	frame_drops_early(0),
-	rdft(nullptr),
-	rdft_bits(0),
-	rdft_data(nullptr)
+	frame_drops_early(0)
 {}
 
 VideoState* VideoState::create_video_state(int audio_buffer_size) {
@@ -1210,8 +1199,6 @@ int VideoState::stream_start() {
 	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
 		ret = stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
 	}
-	if (show_mode == SHOW_MODE_NONE)
-		show_mode = ret >= 0 ? SHOW_MODE_VIDEO : SHOW_MODE_RDFT;
 
 	if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
 		stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
@@ -1454,11 +1441,6 @@ AVStream *VideoState::get_audio_st() const { return audio_st; }
 AVStream *VideoState::get_video_st() const { return video_st; }
 AVStream *VideoState::get_subtitle_st() const { return subtitle_st; }
 
-ShowMode VideoState::get_show_mode() const { return show_mode; }
-void VideoState::set_show_mode(ShowMode new_show_mode) {
-	show_mode = new_show_mode;
-}
-
 FrameQueue *VideoState::get_pPictq() const { return pPictq; }
 FrameQueue *VideoState::get_pSubpq() const { return pSubpq; }
 FrameQueue *VideoState::get_pSampq() const { return pSampq; }
@@ -1497,15 +1479,6 @@ int VideoState::get_audio_stream() const { return audio_stream; }
 double VideoState::get_max_frame_duration() { return max_frame_duration; }
 
 int VideoState::get_audio_write_buf_size() const { return audio_write_buf_size; }
-
-RDFTContext *VideoState::get_rdft() { return rdft; }
-void VideoState::set_rdft(RDFTContext *newRDFT) { rdft = newRDFT; }
-
-int VideoState::get_rdft_bits() { return rdft_bits; }
-void VideoState::set_rdft_bits(int newRDF_bits) { rdft_bits = newRDF_bits; }
-
-FFTSample *VideoState::get_rdft_data() { return rdft_data; }
-void VideoState::set_rdft_data(FFTSample *newRDFT_data) { rdft_data = newRDFT_data; }
 
 int VideoState::get_realtime() const { return realtime; }
 

@@ -111,15 +111,6 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 
 	Frame *sp, *sp2;
 
-	if (!display_disable && pVideoState->get_show_mode() != SHOW_MODE_VIDEO && pVideoState->get_audio_st()) {
-		time = av_gettime_relative() / 1000000.0;
-		if (force_refresh || last_vis_time + rdftspeed < time) {
-			display = true;
-			last_vis_time = time;
-		}
-		*remaining_time = FFMIN(*remaining_time, last_vis_time + rdftspeed - time);
-	}
-
 	if (pVideoState->get_video_st()) {
 	retry:
 		if (pVideoState->get_pPictq()->nb_remaining() == 0) {
@@ -183,7 +174,6 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 		/* display picture */
 		if (!display_disable
 			&& force_refresh
-			&& (pVideoState->get_show_mode() == SHOW_MODE_VIDEO)
 			&& pVideoState->get_pPictq()->get_rindex_shown()) {
 			display = true;
 			force_refresh = 0;
