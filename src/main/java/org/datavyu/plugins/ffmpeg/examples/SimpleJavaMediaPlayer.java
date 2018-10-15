@@ -26,7 +26,7 @@ public class SimpleJavaMediaPlayer {
 
         // Set initial time and rate (which in the past triggered a flush on the queue and thus inaccurate timing)
         mediaPlayer.setStartTime(0);
-        mediaPlayer.setRate(2f);
+        mediaPlayer.setRate(1f);
 
         // Open a JFrame to control the media player through key commands
         new JMediaPlayerControlFrame(mediaPlayer);

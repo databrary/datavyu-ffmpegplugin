@@ -157,7 +157,7 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 			if (pVideoState->get_pPictq()->nb_remaining() > 1) {
 				Frame *nextvp = pVideoState->get_pPictq()->peek_next();
 				duration = vp_duration(vp, nextvp, pVideoState->get_max_frame_duration());
-				if (!pVideoState->get_step() && (framedrop>0 || (framedrop && pVideoState->get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) && time > frame_timer + duration) {
+				if (!pVideoState->get_step() && time > frame_timer + duration) {
 					frame_drops_late++;
 					pVideoState->get_pPictq()->next();
 					goto retry;
@@ -166,9 +166,6 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 
 			pVideoState->get_pPictq()->next();
 			force_refresh = 1;
-
-			//if (pVideoState->get_step() && !pVideoState->get_paused())
-			//	stream_toggle_pause();
 		}
 	display:
 		/* display picture */

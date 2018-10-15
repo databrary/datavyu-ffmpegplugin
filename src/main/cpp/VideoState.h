@@ -101,7 +101,6 @@ static int				lowres = 0;
 static int				decoder_reorder_pts = -1;
 static int				autoexit = 0; // No auto exit
 static int				loop = 1; // loop through the video
-static int				framedrop = -1;
 static int				infinite_buffer = -1;
 static const char		*audio_codec_name;
 static const char		*subtitle_codec_name;
@@ -289,7 +288,7 @@ public:
 	inline bool has_audio_data() const { return last_audio_stream >= 0; }
 	inline bool has_image_data() const { return last_video_stream >= 0; }
 	inline double get_duration() const { return video_duration; }; // duration in sec
-	inline double get_stream_time() const { return pExtclk->get_time(); } // current time in sec
+	inline double get_stream_time() const { return pVidclk->get_time(); } // current time in sec
 	inline void toggle_mute() { muted = !muted; }
 	void update_pts(double pts, int serial);
 	void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);

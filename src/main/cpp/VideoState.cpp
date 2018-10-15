@@ -175,19 +175,15 @@ int VideoState::get_video_frame(AVFrame *frame) {
 		return -1;
 
 	if (got_picture) {
-		double time = NAN;
-
-		if (frame->pts != AV_NOPTS_VALUE)
-			time = av_q2d(video_st->time_base) * frame->pts;
+		double time = frame->pts != AV_NOPTS_VALUE ? av_q2d(video_st->time_base) * frame->pts : NAN;
 
 		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(ic, video_st, frame);
 
-		if (framedrop>0 || (framedrop && get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) {
+		if (get_master_sync_type() != AV_SYNC_VIDEO_MASTER) {
 			if (frame->pts != AV_NOPTS_VALUE) {
 				double diff = time - get_master_clock()->get_time();
 
-				av_log(NULL, AV_LOG_INFO, "diff=%f time=%f framedrop=%d, np=%d\n", 
-					diff, time, framedrop, pVideoq->get_nb_packets());
+				av_log(NULL, AV_LOG_TRACE, "diff=%f time=%f np=%d\n", diff, time, pVideoq->get_nb_packets());
 
 				if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
 					diff < 0 &&
@@ -295,7 +291,6 @@ int VideoState::check_stream_specifier(AVFormatContext *s, AVStream *st, const c
 	if (ret < 0)
 		av_log(s, AV_LOG_ERROR, "Invalid stream specifier: %s.\n", spec);
 	return ret;
-	return ret;
 }
 
 /* Ported from cmdutils*/
@@ -393,7 +388,6 @@ int VideoState::synchronize_audio(int nb_samples) {
 		double diff, avg_diff;
 		int min_nb_samples, max_nb_samples;
 
-		// Use pts here
 		diff = pAudclk->get_time() - get_master_clock()->get_time();
 
 		if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD) {
@@ -418,8 +412,7 @@ int VideoState::synchronize_audio(int nb_samples) {
 			}
 		}
 		else {
-			/* too big difference : may be initial PTS errors, so
-			reset A-V filter */
+			/* too big difference : may be initial PTS errors, so reset A-V filter */
 			audio_diff_avg_count = 0;
 			audio_diff_cum = 0;
 		}
@@ -518,7 +511,7 @@ int VideoState::audio_decode_frame() {
 	}
 
 	/* update the audio clock with the pts */
-	audio_pts = isnan(af->pts) ? NAN : af->pts; // +(double)af->frame->nb_samples / original_sample_rate;
+	audio_pts = isnan(af->pts) ? NAN : af->pts + (double)af->frame->nb_samples / original_sample_rate;
 	audio_serial = af->serial;
 
 	return resampled_data_size;
@@ -1391,7 +1384,7 @@ double VideoState::compute_target_delay(double delay) {
 		}
 	}
 
-	av_log(NULL, AV_LOG_INFO, "video: delay=%0.3f A-V=%f\n", delay, -diff);
+	av_log(NULL, AV_LOG_TRACE, "video: delay=%0.3f A-V=%f\n", delay, -diff);
 
 	return delay;
 }
@@ -1491,12 +1484,11 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 }
 
 int VideoState::set_rate(double new_rate) {
-	// If we request the same rate, we are done here
-	if (rate_value == new_rate) {
-		return 0;
+	// If we request a different rates
+	if (rate_value != new_rate) {
+		new_rate_value = new_rate;
+		new_rate_req = 1;
+		continue_read_thread.notify_one();
 	}
-	new_rate_value = new_rate;
-	new_rate_req = 1;
-	continue_read_thread.notify_one();
 	return 0;
 }

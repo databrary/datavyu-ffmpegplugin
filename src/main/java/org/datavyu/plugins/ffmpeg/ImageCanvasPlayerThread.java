@@ -96,7 +96,7 @@ public class ImageCanvasPlayerThread extends Thread {
         while (!terminate) {
             long start = System.currentTimeMillis();
             mediaPlayerData.updateImageData(data);
-            LOGGER.info("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
+            //LOGGER.info("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
             //System.out.println("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
 
             // Create data buffer
