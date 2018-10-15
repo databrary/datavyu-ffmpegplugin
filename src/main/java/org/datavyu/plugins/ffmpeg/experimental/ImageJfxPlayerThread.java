@@ -101,7 +101,7 @@ public class ImageJfxPlayerThread extends Thread {
         }
     }
 
-    public void terminte() {
+    public void terminate() {
         stopped = true;
     }
 
