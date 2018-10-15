@@ -7,10 +7,8 @@ import java.awt.*;
 import java.net.URI;
 
 
-
-//TODO(Reda): add a dedicated event loop for the presentation and player events
-// Note should be in the native side
 public class MpvMediaPlayer extends FfmpegMediaPlayer{
+
     static {
         System.loadLibrary("MpvMediaPlayer");
     }
@@ -19,7 +17,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     private long windowID;
 
     private PlayerStateListener stateListener;
-    private final Object disposeLock = new Object();
 
     public MpvMediaPlayer(URI mediaPath, Container container) {
         super(mediaPath);
@@ -257,40 +254,26 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
         @Override
         public void onReady(PlayerStateEvent evt) {
-            synchronized (disposeLock) {
-                container.setSize(getImageWidth(), getImageHeight());
-            }
+            container.setSize(getImageWidth(), getImageHeight());
         }
 
         @Override
-        public void onPlaying(PlayerStateEvent evt) {
-
-        }
+        public void onPlaying(PlayerStateEvent evt) { }
 
         @Override
-        public void onPause(PlayerStateEvent evt) {
-
-        }
+        public void onPause(PlayerStateEvent evt) { }
 
         @Override
-        public void onStop(PlayerStateEvent evt) {
-
-        }
+        public void onStop(PlayerStateEvent evt) { }
 
         @Override
-        public void onStall(PlayerStateEvent evt) {
-
-        }
+        public void onStall(PlayerStateEvent evt) { }
 
         @Override
-        public void onFinish(PlayerStateEvent evt) {
-
-        }
+        public void onFinish(PlayerStateEvent evt) { }
 
         @Override
-        public void onHalt(PlayerStateEvent evt) {
-
-        }
+        public void onHalt(PlayerStateEvent evt) { }
     }
 
     @Override
