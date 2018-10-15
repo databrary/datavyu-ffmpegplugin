@@ -753,23 +753,8 @@ int VideoState::read_thread() {
 #endif
 		if (new_rate_req) {
 			rate_value = new_rate_value;
-			if (audio_stream >= 0) {
-				pAudioq->flush();
-				pAudioq->put_flush_packet();
-			}
-			if (subtitle_stream >= 0) {
-				pSubtitleq->flush();
-				pSubtitleq->put_flush_packet();
-			}
-			if (video_stream >= 0) {
-				pVideoq->flush();
-				pVideoq->put_flush_packet();
-			}
-			// TODO(fraudies): Check here what we need to do to reset the clocks so they don't get stuck
-			// When toggeling the pause the external clock is set but that did not work here
 			new_rate_req = 0;
 			queue_attachments_req = 1;
-			//eof = 0;
 		}
 
 		if (seek_req) {
