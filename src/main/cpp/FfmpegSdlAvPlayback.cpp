@@ -84,6 +84,9 @@ int FfmpegSdlAvPlayback::Init(const char *filename, AVInputFormat *iformat) {
 		return err;
 	}
 
+	if (!window_title)
+		window_title = av_asprintf("%s", filename);
+
 	// Set callback functions
 	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels,
 		int wanted_sample_rate, struct AudioParams *audio_hw_params) {

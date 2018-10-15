@@ -34,6 +34,13 @@ extern "C" {
 
 const char program_name[] = "Datavyu-ffmpeg-plugin";
 
+static const char *window_title;
+static int borderless;
+static int64_t cursor_last_shown;
+static int cursor_hidden = 0;
+static int exit_on_keydown;
+static int exit_on_mousedown;
+
 static int default_width = 640;
 static int default_height = 480;
 static unsigned sws_flags = SWS_BICUBIC;
