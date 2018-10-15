@@ -9,9 +9,7 @@ MpvAvPlayback::MpvAvPlayback() :
 {}
 
 MpvAvPlayback::~MpvAvPlayback()
-{
-	_mpvTerminateDestroy(_mpvHandle);
-}
+{}
 
 int MpvAvPlayback::Init(const char * filename, const intptr_t windowID)
 {
@@ -19,12 +17,14 @@ int MpvAvPlayback::Init(const char * filename, const intptr_t windowID)
 	int err;
 
 	LoadMpvDynamic();
-	if (!_libMpvDll)
+	if (!_libMpvDll) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	_mpvHandle = _mpvCreate();
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		_mpvTerminateDestroy(_mpvHandle);
+	}
 	
 	err = _mpvSetOptionString(_mpvHandle, "keep-open", "always");
 	if (err < 0) {
@@ -271,9 +271,15 @@ int MpvAvPlayback::DoMpvCommand(const char **cmd)
 	return MPV_ERROR_SUCCESS;
 }
 
-void MpvAvPlayback::Destroy()
+int MpvAvPlayback::Destroy()
 {
-	_mpvTerminateDestroy(_mpvHandle);
+	int err = 0;
+	err = _mpvTerminateDestroy(_mpvHandle);
+	if (err < 0) {
+		return err;
+	}
+
+	return MPV_ERROR_SUCCESS;
 }
 
 void MpvAvPlayback::init_and_event_loop(const char *filename)

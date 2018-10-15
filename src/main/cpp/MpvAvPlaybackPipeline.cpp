@@ -22,7 +22,8 @@ uint32_t MpvAvPlaybackPipeline::Init(const char * input_file)
 
 void MpvAvPlaybackPipeline::Dispose()
 {
-	pMpvPlayback->Destroy();
+	int err;
+	err = pMpvPlayback->Destroy();
 	delete pMpvPlayback;
 	pMpvPlayback = nullptr;
 }

@@ -303,10 +303,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
                                        String sourcePath,
                                        long windowID);
 
-//    protected native int mpvInitPlayer(long[] newNativeMedia,
-//                                       String sourcePath,
-//                                       Canvas canvas);
-
     protected native int mpvDisposePlayer(long refNativeMedia);
 
     protected native int mpvGetAudioSyncDelay(long refNativeMedia, long[] syncDelay);
