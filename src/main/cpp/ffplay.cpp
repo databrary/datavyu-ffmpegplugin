@@ -2,17 +2,26 @@
 #include "MpvAvPlayback.h"
 
 int main(int argc, char **argv) {
-	//av_log_set_flags(AV_LOG_SKIP_REPEATED);
-	//av_log(NULL, AV_LOG_WARNING, "Init Network\n");
-	static const char* input_filename = "Nature_30fps_1080p.mp4"; //"Nature_30fps_1080p.mp4" // "DatavyuSampleVideo.mp4" // "counter.mp4";
+	static const char* input_filename = "http://www.html5videoplayer.net/videos/toystory.mp4"; //"Nature_30fps_1080p.mp4" // "DatavyuSampleVideo.mp4" // "counter.mp4";
 	AVInputFormat *file_iformat = nullptr;
 
+	/******************************************************
+	* Uncomment this part to test the ffmpeg player
+	******************************************************/
+
+	//av_log_set_flags(AV_LOG_SKIP_REPEATED);
+	//av_log(NULL, AV_LOG_WARNING, "Init Network\n");
 	//FfmpegSdlAvPlayback* pPlayer = new FfmpegSdlAvPlayback();
 	//int err = pPlayer->Init(input_filename, file_iformat);
 	//if (err) {
 	//	fprintf(stderr, "Error %d when opening input file %s", err, input_filename);
 	//	return err;
 	//}
+	//pPlayer->init_and_event_loop();
+
+	/******************************************************
+	* Uncomment this part to test the mpv player
+	******************************************************/
 
 	MpvAvPlayback* pPlayer = new MpvAvPlayback();
 	pPlayer->init_and_event_loop(input_filename);

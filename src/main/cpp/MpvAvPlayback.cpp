@@ -92,8 +92,9 @@ void MpvAvPlayback::LoadMpvDynamic()
 
 int MpvAvPlayback::Play()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	// Workaround to set the volume at start up none of the volume option
 	// or ao-volume property seem to affect the player volume during initialization
@@ -144,8 +145,13 @@ int MpvAvPlayback::TogglePause()
 
 int MpvAvPlayback::SetRate(double newRate)
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
+
+	if (newRate < 0) {
+		return MPV_ERROR_PROPERTY_FORMAT;
+	}
 
 	int err = _mpvSetOption(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &newRate);
 	if ( err < 0) {
@@ -157,8 +163,9 @@ int MpvAvPlayback::SetRate(double newRate)
 
 double MpvAvPlayback::GetRate()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	double currentRate;
 	int err = _mpvGetProperty(_mpvHandle, "speed", MPV_FORMAT_DOUBLE, &currentRate);
@@ -171,8 +178,9 @@ double MpvAvPlayback::GetRate()
 
 float MpvAvPlayback::GetFps()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	if (!_streamFps || _streamFps <= 0 || _streamFps == NULL) {
 		int err = _mpvGetProperty(_mpvHandle, "container-fps", MPV_FORMAT_DOUBLE, &_streamFps);
@@ -186,8 +194,9 @@ float MpvAvPlayback::GetFps()
 
 int MpvAvPlayback::GetImageWidth()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	if (!_imageWidth || _imageWidth <= 0 || _imageWidth == NULL) {
 		int err = _mpvGetProperty(_mpvHandle, "width", MPV_FORMAT_INT64, &_imageWidth);
@@ -201,8 +210,9 @@ int MpvAvPlayback::GetImageWidth()
 
 int MpvAvPlayback::GetImageHeight()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	if (!_imageHeight|| _imageHeight <= 0 || _imageHeight == NULL) {
 		int err = _mpvGetProperty(_mpvHandle, "height", MPV_FORMAT_INT64, &_imageHeight);
@@ -216,8 +226,9 @@ int MpvAvPlayback::GetImageHeight()
 
 double MpvAvPlayback::GetDuration()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	if (!_streamDuration || _streamDuration <= 0 || _streamDuration == NULL) {
 		// TODO(Reda) Remove this, it is just for testing, need to go through async calls
@@ -232,8 +243,9 @@ double MpvAvPlayback::GetDuration()
 
 int MpvAvPlayback::StepBackward()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	const char *cmd[] = { "frame-back-step", NULL, NULL };
 
@@ -247,8 +259,9 @@ int MpvAvPlayback::StepBackward()
 
 int MpvAvPlayback::StepForward()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	const char *cmd[] = { "frame-step", NULL, NULL };
 
@@ -262,6 +275,10 @@ int MpvAvPlayback::StepForward()
 
 int MpvAvPlayback::DoMpvCommand(const char **cmd)
 {
+	if (!_mpvHandle) {
+		return MPV_ERROR_GENERIC;
+	}
+
 	int err = _mpvCommand(_mpvHandle, cmd);
 	if (err < 0) {
 		printf("Cannot execute the command");
@@ -413,8 +430,9 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 
 int MpvAvPlayback::Pause()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	const char * propertyValue = "yes";
 
@@ -428,8 +446,9 @@ int MpvAvPlayback::Pause()
 
 bool MpvAvPlayback::IsPaused()
 {
-	if (!_mpvHandle)
-		return true;
+	if (!_mpvHandle) {
+		return MPV_ERROR_GENERIC;
+	}
 
 	char* isPausedProperty;
 	_mpvGetProperty(_mpvHandle, "pause", MPV_FORMAT_STRING, &isPausedProperty);
@@ -442,8 +461,9 @@ bool MpvAvPlayback::IsPaused()
 
 int MpvAvPlayback::SetTime(double value)
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	std::string timeString = std::to_string(value);
 
@@ -460,8 +480,10 @@ int MpvAvPlayback::SetTime(double value)
 
 double MpvAvPlayback::GetPresentationTime()
 {
-	if (!_mpvHandle)
-		return NULL;
+	if (!_mpvHandle) {
+		return MPV_ERROR_GENERIC;
+	}
+
 	double presentationTime;
 	// check difference between playback-time and timr-pod 
 	// https://mpv.io/manual/master/#command-interface-playback-time
@@ -474,8 +496,9 @@ double MpvAvPlayback::GetPresentationTime()
 
 int MpvAvPlayback::SetVolume(float fVolume)
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	double propertyValue = fVolume;
 
@@ -489,8 +512,9 @@ int MpvAvPlayback::SetVolume(float fVolume)
 
 double MpvAvPlayback::GetVolume()
 {
-	if (!_mpvHandle)
+	if (!_mpvHandle) {
 		return MPV_ERROR_GENERIC;
+	}
 
 	double currentVolume;
 
