@@ -1,5 +1,5 @@
 #include "MpvAvPlayback.h"
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 
 MpvAvPlayback::MpvAvPlayback() :
 	_initialPlay(true)

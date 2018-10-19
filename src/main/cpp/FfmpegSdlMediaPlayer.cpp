@@ -2,7 +2,7 @@
 #include "JavaPlayerEventDispatcher.h"
 #include "Media.h"
 #include "Pipeline.h"
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 #include "FfmpegJniUtils.h"
 #include "FfmpegSdlAvPlaybackPipeline.h"
 

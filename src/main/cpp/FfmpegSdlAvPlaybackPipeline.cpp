@@ -1,5 +1,5 @@
 #include "FfmpegSdlAvPlaybackPipeline.h"
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 
 FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(CPipelineOptions* pOptions) 
 	: CPipeline(pOptions), pSdlPlayback(nullptr) 

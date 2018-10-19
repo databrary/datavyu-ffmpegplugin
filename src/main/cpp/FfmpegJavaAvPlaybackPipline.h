@@ -3,7 +3,7 @@
 
 #include "PipelineData.h"
 #include "FfmpegJavaAvPlayback.h"
-#include "FfmpegMediaErrors.h";
+#include "MediaPlayerErrors.h";
 
 
 // TODO(Reda): Implement this interface

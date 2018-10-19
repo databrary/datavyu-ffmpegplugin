@@ -1,5 +1,5 @@
 #include "FfmpegJavaAvPlayback.h"
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 #include "FfmpegErrorUtils.h"
 
 FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,

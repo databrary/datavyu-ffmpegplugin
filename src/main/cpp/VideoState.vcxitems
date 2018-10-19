@@ -36,7 +36,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegAvPlayback.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegErrorUtils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegJniUtils.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)FfmpegMediaErrors.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MediaPlayerErrors.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)FrameQueue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)JavaPlayerEventDispatcher.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)JniUtils.h" />

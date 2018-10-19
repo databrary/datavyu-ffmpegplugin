@@ -1,4 +1,4 @@
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 #include "MpvErrorUtils.h"
 
 #define __STDC_CONSTANT_MACROS
