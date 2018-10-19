@@ -6,7 +6,7 @@
 
     <groupId>datavyu</groupId>
     <artifactId>ffmpeg-plugin</artifactId>
-    <version>0.18-SNAPSHOT</version>
+    <version>0.18</version>
     <packaging>jar</packaging>
 
     <distributionManagement>
@@ -120,7 +120,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- FFmpeg-libs and sdl-libs are not used -->
+        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
         <!-- FFmpeg 4.0 Version -->
         <dependency>
             <groupId>datavyu</groupId>
@@ -128,13 +128,14 @@
             <version>0.5</version>
         </dependency>
 
-        <!-- SDl 2.0.8 -->
+        <!-- SDL 2.0.8 -->
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>sdl-libs</artifactId>
             <version>0.1</version>
         </dependency>
 
+        <!-- MPV 0.29.1 -->
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>mpv-libs</artifactId>
