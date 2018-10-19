@@ -41,22 +41,6 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvDispose
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
- * Method:    mpvGetAudioSyncDelay
- * Signature: (J[J)I
- */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetAudioSyncDelay
-  (JNIEnv *, jobject, jlong, jlongArray);
-
-/*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
- * Method:    mpvSetAudioSyncDelay
- * Signature: (JJ)I
- */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSetAudioSyncDelay
-  (JNIEnv *, jobject, jlong, jlong);
-
-/*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
  * Method:    mpvPlay
  * Signature: (J)I
  */
@@ -134,22 +118,6 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetPres
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetFps
   (JNIEnv *, jobject, jlong, jdoubleArray);
-
-/*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
- * Method:    mpvGetBalance
- * Signature: (J[F)I
- */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetBalance
-  (JNIEnv *, jobject, jlong, jfloatArray);
-
-/*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
- * Method:    mpvSetBalance
- * Signature: (JF)I
- */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSetBalance
-  (JNIEnv *, jobject, jlong, jfloat);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer

@@ -93,53 +93,6 @@ extern "C" {
 
 	/*
 	* Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
-	* Method:    mpvGetAudioSyncDelay
-	* Signature: (J[J)I
-	*/
-	JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetAudioSyncDelay
-	(JNIEnv *env, jobject obj, jlong ref_media, jlongArray jrglAudioSyncDelay) {
-
-		CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-		if (NULL == pMedia)
-			return ERROR_MEDIA_NULL;
-
-		CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-		if (NULL == pPipeline)
-			return ERROR_PIPELINE_NULL;
-
-		long lAudioSyncDelay;
-		uint32_t uErrCode = pPipeline->GetAudioSyncDelay(&lAudioSyncDelay);
-		if (ERROR_NONE != uErrCode)
-			return (jint)uErrCode;
-		jlong jlAudioSyncDelay = (jlong)lAudioSyncDelay;
-		env->SetLongArrayRegion(jrglAudioSyncDelay, 0, 1, &jlAudioSyncDelay);
-
-		return ERROR_NONE;
-	}
-
-	/*
-	* Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
-	* Method:    mpvSetAudioSyncDelay
-	* Signature: (JJ)I
-	*/
-	JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSetAudioSyncDelay
-	(JNIEnv *env, jobject obj, jlong ref_media, jlong audio_sync_delay) {
-
-		CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-		if (NULL == pMedia)
-			return ERROR_MEDIA_NULL;
-
-		CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-		if (NULL == pPipeline)
-			return ERROR_PIPELINE_NULL;
-
-		jint iRet = (jint)pPipeline->SetAudioSyncDelay((long)audio_sync_delay);
-
-		return iRet;
-	}
-
-	/*
-	* Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
 	* Method:    mpvPlay
 	* Signature: (J)I
 	*/
@@ -362,53 +315,6 @@ extern "C" {
 
 	/*
 	* Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
-	* Method:    mpvGetBalance
-	* Signature: (J[F)I
-	*/
-	JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetBalance
-	(JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfBalance) {
-
-		CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-		if (NULL == pMedia)
-			return ERROR_MEDIA_NULL;
-
-		CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-		if (NULL == pPipeline)
-			return ERROR_PIPELINE_NULL;
-
-		float fBalance;
-		uint32_t uErrCode = pPipeline->GetBalance(&fBalance);
-		if (ERROR_NONE != uErrCode)
-			return uErrCode;
-		jfloat jfBalance = (jfloat)fBalance;
-		env->SetFloatArrayRegion(jrgfBalance, 0, 1, &jfBalance);
-
-		return ERROR_NONE;
-	}
-
-	/*
-	* Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
-	* Method:    mpvSetBalance
-	* Signature: (JF)I
-	*/
-	JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSetBalance
-	(JNIEnv *env, jobject obj, jlong ref_media, jfloat balance) {
-
-		CMedia* pMedia = (CMedia*)jlong_to_ptr(ref_media);
-		if (NULL == pMedia)
-			return ERROR_MEDIA_NULL;
-
-		CPipeline* pPipeline = (CPipeline*)pMedia->GetPipeline();
-		if (NULL == pPipeline)
-			return ERROR_PIPELINE_NULL;
-
-		jint iRet = (jint)pPipeline->SetBalance((float)balance);
-
-		return iRet;
-	}
-
-	/*
-	* Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
 	* Method:    mpvGetDuration
 	* Signature: (J[D)I
 	*/
@@ -495,12 +401,12 @@ extern "C" {
 		if (NULL == pPipeline)
 			return ERROR_PIPELINE_NULL;
 
-		int iImageWidth;
-		uint32_t uErrCode = pPipeline->GetImageHeight(&iImageWidth);
+		int iImageHeight;
+		uint32_t uErrCode = pPipeline->GetImageHeight(&iImageHeight);
 		if (ERROR_NONE != uErrCode)
 			return uErrCode;
-		jint jiImageWidth = (jint)iImageWidth;
-		env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageWidth);
+		jint jiImageHeight = (jint)iImageHeight;
+		env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageHeight);
 
 		return ERROR_NONE;
 	}

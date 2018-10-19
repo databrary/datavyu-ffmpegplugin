@@ -22,8 +22,7 @@ uint32_t MpvAvPlaybackPipeline::Init(const char * input_file)
 
 void MpvAvPlaybackPipeline::Dispose()
 {
-	int err;
-	err = pMpvPlayback->Destroy();
+	pMpvPlayback->Destroy();
 	delete pMpvPlayback;
 	pMpvPlayback = nullptr;
 }
@@ -77,7 +76,8 @@ uint32_t MpvAvPlaybackPipeline::Pause()
 		return ERROR_FFMPEG_UNKNOWN;
 	}
 
-	if (pMpvPlayback->IsPaused()) {
+	bool isPaused;
+	if (pMpvPlayback->IsPaused(&isPaused)) {
 		UpdatePlayerState(Paused);
 	}
 	else {
@@ -92,8 +92,8 @@ uint32_t MpvAvPlaybackPipeline::StepForward()
 	if (pMpvPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
-	int err;
-	err = pMpvPlayback->StepForward();
+
+	int err = pMpvPlayback->StepForward();
 	if (err < 0) {
 		return err;
 	}
@@ -108,8 +108,7 @@ uint32_t MpvAvPlaybackPipeline::StepBackward()
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	int err;
-	err = pMpvPlayback->StepBackward();
+	int err = pMpvPlayback->StepBackward();
 	if (err < 0) {
 		return err;
 	}
@@ -132,8 +131,7 @@ uint32_t MpvAvPlaybackPipeline::Seek(double dSeekTime)
 		return ERROR_PLAYBACK_NULL;
 	}
 	
-	int err;
-	err = pMpvPlayback->SetTime(dSeekTime);
+	int err = pMpvPlayback->SetTime(dSeekTime);
 	if (err < 0) {
 		return err;
 	}
@@ -146,7 +144,14 @@ uint32_t MpvAvPlaybackPipeline::GetDuration(double * pdDuration)
 	if (pMpvPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
-	*pdDuration = pMpvPlayback->GetDuration();
+
+	double duration;
+	int err = pMpvPlayback->GetDuration(&duration);
+	if (err != 0) {
+		return err;
+	}
+
+	*pdDuration = duration;
 
 	return ERROR_NONE; // no error
 }
@@ -157,7 +162,13 @@ uint32_t MpvAvPlaybackPipeline::GetStreamTime(double * pdStreamTime)
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	*pdStreamTime = pMpvPlayback->GetPresentationTime();
+	double presentationTime;
+	int err = pMpvPlayback->GetPresentationTime(&presentationTime);
+	if (err != 0) {
+		return err;
+	}
+
+	*pdStreamTime = presentationTime;
 
 	return ERROR_NONE; // no error
 }
@@ -168,7 +179,13 @@ uint32_t MpvAvPlaybackPipeline::GetFps(double * pdFps)
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	*pdFps = pMpvPlayback->GetFps();
+	double fps;
+	int err = pMpvPlayback->GetFps(&fps);
+	if (err != 0) {
+		return err;
+	}
+
+	*pdFps = fps;
 
 	return ERROR_NONE;
 }
@@ -179,7 +196,13 @@ uint32_t MpvAvPlaybackPipeline::GetImageWidth(int * iWidth) const
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	*iWidth = pMpvPlayback->GetImageWidth();
+	int64_t imageWidth;
+	int err = pMpvPlayback->GetImageWidth(&imageWidth);
+	if (err != 0) {
+		return err;
+	}
+
+	*iWidth = imageWidth;
 
 	return ERROR_NONE;
 }
@@ -190,7 +213,13 @@ uint32_t MpvAvPlaybackPipeline::GetImageHeight(int * iHeight) const
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	*iHeight = pMpvPlayback->GetImageHeight();
+	int64_t imageHeight;
+	int err = pMpvPlayback->GetImageHeight(&imageHeight);
+	if (err != 0) {
+		return err;
+	}
+
+	*iHeight = imageHeight;
 
 	return ERROR_NONE;
 }
@@ -201,9 +230,8 @@ uint32_t MpvAvPlaybackPipeline::SetRate(float fRate)
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	int err;
-	err = pMpvPlayback->SetRate(fRate);
-	if (err < 0) {
+	int err = pMpvPlayback->SetRate((double)fRate);
+	if (err != 0) {
 		return err;
 	}
 
@@ -216,7 +244,13 @@ uint32_t MpvAvPlaybackPipeline::GetRate(float * pfRate)
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	*pfRate = pMpvPlayback->GetRate();
+	double rate;
+	int err  = pMpvPlayback->GetRate(&rate);
+	if (err != 0) {
+		return err;
+	}
+
+	*pfRate = rate;
 
 	return ERROR_NONE;
 }
@@ -227,7 +261,7 @@ uint32_t MpvAvPlaybackPipeline::SetVolume(float fVolume)
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	int err = pMpvPlayback->SetVolume(fVolume);
+	int err = pMpvPlayback->SetVolume((double)fVolume);
 	if (err < 0) {
 		return err;
 	}
@@ -241,7 +275,13 @@ uint32_t MpvAvPlaybackPipeline::GetVolume(float * pfVolume)
 		return ERROR_PLAYBACK_NULL;
 	}
 
-	*pfVolume = pMpvPlayback->GetVolume();
+	double volume;
+	int err = pMpvPlayback->GetVolume(&volume);
+	if (err < 0) {
+		return err;
+	}
+
+	*pfVolume = volume;
 
 	return ERROR_NONE;
 }

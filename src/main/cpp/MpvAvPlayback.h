@@ -8,6 +8,7 @@
 #include <string.h>  
 #include <MPV/client.h> // This include is just for the MPV_FORMAT usage
 #include "FfmpegAVPlayback.h"
+#include "MpvErrorUtils.h"
 
 extern "C" {
 	#include <SDL2/SDL.h>
@@ -68,12 +69,18 @@ private:
 	int						DoMpvCommand(const char **cmd);
 	int						Pause();
 
-	double					_streamDuration;
-	double					_streamFps;
-	int64_t					_imageHeight;
-	int64_t					_imageWidth;
-
 	bool					_initialPlay;
+	const char*				_containerFpsProperty = "container-fps";
+	const char*				_widthProperty = "width";
+	const char*				_heightProperty = "height";
+	const char*				_durationProperty = "duration";
+	const char*				_speedProperty = "speed";
+	const char*				_pauseProperty = "pause";
+	const char*				_playbackTimeProperty = "playback-time";
+	const char*				_aoVolumeProperty = "ao-volume";
+	const char*				_frameBackStepCommand = "frame-back-step";
+	const char*				_frameStepCommand = "frame-step";
+	const char*				_seekCommand = "seek";
 public:
 	MpvAvPlayback();
 	~MpvAvPlayback();
@@ -81,22 +88,22 @@ public:
 	int						Init(const char *filename, const intptr_t windowID);
 	int						Destroy();
 	void					init_and_event_loop(const char *filename);
-	bool					IsPaused();
+	int						IsPaused(bool *isPaused);
 	int						Play();
 	int						Stop();
 	int						TogglePause();
-	int						SetRate(const double newRate);
-	double					GetRate();
-	float					GetFps();
-	int						GetImageWidth();
-	int						GetImageHeight();
-	double					GetDuration();
+	int						SetRate(double newRate);
+	int						GetRate(double *currentRate);
+	int						GetFps(double *steamFps);
+	int						GetImageWidth(int64_t *imageWidth);
+	int						GetImageHeight(int64_t *imageHeight);
+	int						GetDuration(double *streamDuration);
 	int						StepBackward();
 	int						StepForward();
 	int						SetTime(double value);
-	double			 		GetPresentationTime();
-	int						SetVolume(float pfVolume);
-	double					GetVolume();
+	int				 		GetPresentationTime(double *presentationTime);
+	int						SetVolume(double pfVolume);
+	int						GetVolume(double *pfVolume);
 };
 
 #endif MPVAVPLAYBACK_H_

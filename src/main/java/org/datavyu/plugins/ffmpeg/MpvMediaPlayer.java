@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
 import sun.awt.windows.WComponentPeer;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 import java.awt.*;
@@ -55,20 +56,12 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     @Override
     protected long playerGetAudioSyncDelay() throws MediaException {
-        long[] audioSyncDelay = new long[1];
-        int rc = mpvGetAudioSyncDelay(getNativeMediaRef(), audioSyncDelay);
-        if (0 != rc) {
-            throwMediaErrorException(rc, null);
-        }
-        return audioSyncDelay[0];
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected void playerSetAudioSyncDelay(long delay) throws MediaException {
-        int rc = mpvSetAudioSyncDelay(getNativeMediaRef(), delay);
-        if (0 != rc) {
-            throwMediaErrorException(rc, null);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -175,7 +168,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     }
 
     @Override
-    protected synchronized void playerSetVolume(float volume) throws MediaException {
+    protected void playerSetVolume(float volume) throws MediaException {
         if (!muteEnabled) {
             // MPV Volume range is from 0 to 100
             int rc = mpvSetVolume(getNativeMediaRef(), volume * 100);
@@ -192,20 +185,12 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     @Override
     protected float playerGetBalance() throws MediaException {
-        float[] balance = new float[1];
-        int rc = mpvGetBalance(getNativeMediaRef(), balance);
-        if (0 != rc) {
-            throwMediaErrorException(rc, null);
-        }
-        return balance[0];
+        throw new UnsupportedOperationException();
     }
 
     @Override
     protected void playerSetBalance(float balance) throws MediaException {
-        int rc = mpvSetBalance(getNativeMediaRef(), balance);
-        if (0 != rc) {
-            throwMediaErrorException(rc, null);
-        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -288,8 +273,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     protected native int mpvDisposePlayer(long refNativeMedia);
 
-    protected native int mpvGetAudioSyncDelay(long refNativeMedia, long[] syncDelay);
-    protected native int mpvSetAudioSyncDelay(long refNativeMedia, long delay);
     protected native int mpvPlay(long refNativeMedia);
     protected native int mpvPause(long refNativeMedia);
     protected native int mpvStop(long refNativeMedia);
@@ -300,8 +283,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     protected native int mpvSetRate(long refNativeMedia, float rate);
     protected native int mpvGetPresentationTime(long refNativeMedia, double[] time);
     protected native int mpvGetFps(long refNativeMedia, double[] fps);
-    protected native int mpvGetBalance(long refNativeMedia, float[] balance);
-    protected native int mpvSetBalance(long refNativeMedia, float balance);
     protected native int mpvGetDuration(long refNativeMedia, double[] duration);
     protected native int mpvSeek(long refNativeMedia, double streamTime);
     protected native int mpvGetImageWidth(long refNativeMedia, int[] width);
