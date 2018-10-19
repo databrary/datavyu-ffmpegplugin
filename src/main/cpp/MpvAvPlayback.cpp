@@ -63,6 +63,9 @@ int MpvAvPlayback::Init(const char * filename, const intptr_t windowID)
 		if (event->event_id == MPV_EVENT_FILE_LOADED) {
 			break;
 		}
+		if (event->event_id == MPV_EVENT_IDLE) {
+			return ERROR_MPV_LOADING_FAILED;
+		}
 	}
 
 	return ERROR_NONE;
