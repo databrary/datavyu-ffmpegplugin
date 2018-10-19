@@ -10,21 +10,15 @@ void FfmpegAvPlayback::stream_toggle_pause() {
 
 	// Update the video clock
 	if (pVideoState->get_paused()) {
-		set_frame_timer(get_frame_timer() + av_gettime_relative() / 1000000.0 - pVidclk->get_lastUpdated());
-		if (pVideoState->get_read_pause_return() != AVERROR(ENOSYS)) {
-			pVidclk->setPaused(0);
-		}
-		pVidclk->set_clock(pVidclk->get_clock(), pVidclk->get_serial());
+		set_frame_timer(get_frame_timer() + av_gettime_relative() / 1000000.0 - pVideoState->get_vidclk_last_set_time());
+		pVidclk->set_time(pVidclk->get_time(), pVidclk->get_serial());
 	}
 	// Update the external clock
-	pExtclk->set_clock(pExtclk->get_clock(), pExtclk->get_serial());
+	pExtclk->set_time(pExtclk->get_time(), pExtclk->get_serial());
 
 	// Flip the paused flag on the clocks
 	bool flipped = !pVideoState->get_paused();
 	pVideoState->set_paused(flipped);
-	pAudclk->setPaused(flipped);
-	pVidclk->setPaused(flipped);
-	pExtclk->setPaused(flipped);
 }
 
 FfmpegAvPlayback::FfmpegAvPlayback() :
@@ -67,11 +61,6 @@ void FfmpegAvPlayback::stop() {
 		toggle_pause();
 		pVideoState->set_stopped(true);
 	}
-	// Stop playback and seek to the start of the stream 
-	/*double pos = get_master_clock();
-	double start = pVideoState->get_ic()->start_time / (double)AV_TIME_BASE;
-	double incr = start - pos;
-	stream_seek((int64_t)(start * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);*/
 }
 
 // pause and keep the playback speed.
@@ -129,9 +118,7 @@ void FfmpegAvPlayback::set_force_refresh(int refresh) {
 
 double FfmpegAvPlayback::vp_duration(Frame * vp, Frame * nextvp, double max_frame_duration) {
 	if (vp->serial == nextvp->serial) {
-		// TODO(fraudies): Could set playback rate here
-		//double pts_speed = pVideoState->get_pts_speed();
-		double duration = (nextvp->pts - vp->pts); // *pts_speed;
+		double duration = (nextvp->pts - vp->pts) / pVideoState->get_rate();
 		if (isnan(duration) || duration <= 0 || duration > max_frame_duration)
 			return vp->duration;
 		else
@@ -139,7 +126,6 @@ double FfmpegAvPlayback::vp_duration(Frame * vp, Frame * nextvp, double max_fram
 	}
 	else {
 		return 0.0;
-
 	}
 }
 

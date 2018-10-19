@@ -1,76 +1,43 @@
 #include "Clock.h"
 
+extern "C" {
+	#include "libavutil/log.h"
+}
+
 Clock::Clock(const int *queue_serial) :
-	lastUpdated(0),
-	paused(0),
-	pts(0),
-	ptsDrift(0),
-	speed(1.0),
+	time(0.0),
 	serial(-1),
 	queueSerial(queue_serial) {
-	set_clock(NAN, -1);
+	set_time(NAN, -1);
 }
 
-Clock::Clock() : Clock(nullptr) {
-	queueSerial = &serial;
+Clock::Clock() : 
+	time(0.0),
+	serial(-1),
+	queueSerial(&serial) {
+	set_time(NAN, -1);
 }
 
-double Clock::get_clock() const {
-	if (*queueSerial != serial)
+double Clock::get_time() const {
+	if (is_seek()) {
 		return NAN;
-	if (paused) {
-		return pts;
 	}
-	else {
-		double time = av_gettime_relative() / MICRO;
-		return ptsDrift + time - (time - lastUpdated) * (1.0 - speed);
+	return time;
+}
+
+void Clock::set_time(double newTime, int newSerial) {
+	if (!isnan(newTime)) {
+		time = newTime;
 	}
-}
-
-double Clock::get_pts() const {
-	return pts;
-}
-
-double Clock::get_lastUpdated() const {
-	return lastUpdated;
-}
-
-double Clock::get_serial() const {
-	return serial;
-}
-
-bool Clock::isPaused() const {
-	return paused;
-}
-
-void Clock::setPaused(bool p) {
-	paused = p;
-}
-
-double Clock::get_clock_speed() const {
-	return speed;
-}
-
-void Clock::set_clock_at(double newPts, int newSerial, double time) {
-	pts = newPts;
-	lastUpdated = time;
-	ptsDrift = pts - time;
 	serial = newSerial;
 }
 
-void Clock::set_clock(double newPts, int newSerial) {
-	double time = av_gettime_relative() / MICRO;
-	set_clock_at(newPts, newSerial, time);
-}
-
-void Clock::set_clock_speed(double newSpeed) {
-	set_clock(get_clock(), serial);
-	speed = newSpeed;
-}
-
-void Clock::sync_clock_to_slave(Clock *c, Clock *slave) {
-	double clock = c->get_clock();
-	double slave_clock = slave->get_clock();
-	if (!isnan(slave_clock) && (isnan(clock) || fabs(clock - slave_clock) > AV_NOSYNC_THRESHOLD))
-		c->set_clock(slave_clock, slave->serial);
+void Clock::sync_slave_to_master(Clock *slave, Clock *master) {
+	double master_time = master->get_time();
+	double slave_time = slave->get_time();
+	if (!isnan(slave_time) && (isnan(master_time) 
+		|| fabs(master_time - slave_time) > AV_NOSYNC_THRESHOLD)) {
+		av_log(NULL, AV_LOG_TRACE, "Sync %7.2f to %7.2f\n", slave_time, master_time);
+		slave->set_time(slave_time, master->serial);
+	}
 }

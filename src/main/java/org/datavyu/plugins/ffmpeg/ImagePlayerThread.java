@@ -12,7 +12,7 @@ import java.util.Hashtable;
 /**
  * ImagePlayerThread  is based a custom JPanel that will act as a canvas, this will allow us
  * to use swing component;  double buffered by default and also remove the while loop
- * used in to dsiplay in ImageCanvasPlayerThread since the JPanel will auto paint (using the custom
+ * used in to display in ImageCanvasPlayerThread since the JPanel will auto paint (using the custom
  * paint method that will keep aspect ratio and display )
  * Performance while resizing
  * Display Avg Time ~55ms
@@ -36,7 +36,7 @@ public class ImagePlayerThread extends Thread{
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
 
-    public ImagePlayerThread(MediaPlayerData mediaPlayerData) {
+    ImagePlayerThread(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
         setName("Ffmpeg image displayPanel player thread");
         setDaemon(false);
@@ -107,7 +107,7 @@ public class ImagePlayerThread extends Thread{
         /** x2 and y2 are respectively the x and y coordinates of the lower, right corner of the destination rectangle. */
         private int x2, y2;
 
-        public DisplayPanel() {
+        DisplayPanel() {
             setBackground(Color.BLACK);
             setDoubleBuffered(true);
         }

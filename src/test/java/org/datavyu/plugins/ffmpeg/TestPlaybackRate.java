@@ -25,9 +25,9 @@ public class TestPlaybackRate {
     // This movie is about 30MB has 640 x 360 pixels @ 29.97 fps with 2.5 min play time
     private static final String TEST_MOVIE_PATH = "http://www.html5videoplayer.net/videos/toystory.mp4";
 
-    private static final float LOWER_PERCENTAGE = -2f; // -2 percent
+    private static final float LOWER_PERCENTAGE = -5f; // -5 percent
 
-    private static final float UPPER_PERCENTAGE = +2f; // +2 percent
+    private static final float UPPER_PERCENTAGE = +5f; // +5 percent
 
     private static final double TO_MILLI = 1000;
 
@@ -85,7 +85,7 @@ public class TestPlaybackRate {
     }};
 
     private List<Pair<TimeInterval, Float>> parameters = new ArrayList<Pair<TimeInterval, Float>>(){{
-        add(new Pair<>(new TimeInterval(0, 20), 0.5f));
+        add(new Pair<>(new TimeInterval(0, 20), 0.25f));
         add(new Pair<>(new TimeInterval(0, 20), 1f));
         add(new Pair<>(new TimeInterval(0, 20), 2f));
         add(new Pair<>(new TimeInterval(0, 20), 4f));

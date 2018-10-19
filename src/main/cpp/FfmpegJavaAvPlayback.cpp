@@ -111,18 +111,6 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 
 	Frame *sp, *sp2;
 
-	if (!pVideoState->get_paused() && pVideoState->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK && pVideoState->get_realtime())
-		pVideoState->check_external_clock_speed();
-
-	if (!display_disable && pVideoState->get_show_mode() != SHOW_MODE_VIDEO && pVideoState->get_audio_st()) {
-		time = av_gettime_relative() / 1000000.0;
-		if (force_refresh || last_vis_time + rdftspeed < time) {
-			display = true;
-			last_vis_time = time;
-		}
-		*remaining_time = FFMIN(*remaining_time, last_vis_time + rdftspeed - time);
-	}
-
 	if (pVideoState->get_video_st()) {
 	retry:
 		if (pVideoState->get_pPictq()->nb_remaining() == 0) {
@@ -163,13 +151,13 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 
 			std::unique_lock<std::mutex> locker(pVideoState->get_pPictq()->get_mutex());
 			if (!isnan(vp->pts))
-				pVideoState->update_pts(vp->pts, vp->pos, vp->serial);
+				pVideoState->update_pts(vp->pts, vp->serial);
 			locker.unlock();
 
 			if (pVideoState->get_pPictq()->nb_remaining() > 1) {
 				Frame *nextvp = pVideoState->get_pPictq()->peek_next();
 				duration = vp_duration(vp, nextvp, pVideoState->get_max_frame_duration());
-				if (!pVideoState->get_step() && (framedrop>0 || (framedrop && pVideoState->get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) && time > frame_timer + duration) {
+				if (!pVideoState->get_step() && time > frame_timer + duration) {
 					frame_drops_late++;
 					pVideoState->get_pPictq()->next();
 					goto retry;
@@ -178,15 +166,11 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 
 			pVideoState->get_pPictq()->next();
 			force_refresh = 1;
-
-			//if (pVideoState->get_step() && !pVideoState->get_paused())
-			//	stream_toggle_pause();
 		}
 	display:
 		/* display picture */
 		if (!display_disable
 			&& force_refresh
-			&& (pVideoState->get_show_mode() == SHOW_MODE_VIDEO)
 			&& pVideoState->get_pPictq()->get_rindex_shown()) {
 			display = true;
 			force_refresh = 0;
@@ -214,19 +198,22 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 				sqsize = pVideoState->get_pSubtitleq()->get_size();
 			av_diff = 0;
 			if (pVideoState->get_audio_st() && pVideoState->get_video_st())
-				av_diff = pVideoState->get_pAudclk()->get_clock() - pVideoState->get_pVidclk()->get_clock();
+				av_diff = pVideoState->get_pAudclk()->get_time() - pVideoState->get_pVidclk()->get_time();
 			else if (pVideoState->get_video_st())
-				av_diff = pVideoState->get_master_clock() - pVideoState->get_pVidclk()->get_clock();
+				av_diff = pVideoState->get_master_clock()->get_time() - pVideoState->get_pVidclk()->get_time();
 			else if (pVideoState->get_audio_st())
-				av_diff = pVideoState->get_master_clock() - pVideoState->get_pAudclk()->get_clock();
+				av_diff = pVideoState->get_master_clock()->get_time() - pVideoState->get_pAudclk()->get_time();
 			av_log(NULL, AV_LOG_INFO,
-				"%7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
-				pVideoState->get_master_clock(),
-				1.0 / pVideoState->get_pts_speed(),
+				"m %7.2f, a %7.2f, v %7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d re=%7.2f aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+				pVideoState->get_master_clock()->get_time(),
+				pVideoState->get_pAudclk() != nullptr ? pVideoState->get_pAudclk()->get_time() : 0,
+				pVideoState->get_pVidclk() != nullptr ? pVideoState->get_pVidclk()->get_time() : 0,
+				pVideoState->get_rate(),
 				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
 				av_diff,
 				pVideoState->get_frame_drops_early(),
 				frame_drops_late,
+				*remaining_time,
 				aqsize / 1024,
 				vqsize / 1024,
 				sqsize,

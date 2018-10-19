@@ -34,6 +34,13 @@ extern "C" {
 
 const char program_name[] = "Datavyu-ffmpeg-plugin";
 
+static const char *window_title;
+static int borderless;
+static int64_t cursor_last_shown;
+static int cursor_hidden = 0;
+static int exit_on_keydown;
+static int exit_on_mousedown;
+
 static int default_width = 640;
 static int default_height = 480;
 static unsigned sws_flags = SWS_BICUBIC;
@@ -76,7 +83,6 @@ private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	SDL_AudioDeviceID audio_dev = 0;
-	//SDL_RendererInfo renderer_info = { 0 };
 	int ytop, xleft;
 	int xpos;
 
@@ -111,7 +117,6 @@ private:
 	void closeAudioDevice();
 	void video_image_display();
 	void stop_display_loop();
-	void toggle_audio_display();
 public:
 	FfmpegSdlAvPlayback(int startup_volume = SDL_MIX_MAXVOLUME);
 	~FfmpegSdlAvPlayback();
@@ -142,8 +147,6 @@ public:
 	/* display the current picture, if any */
 	void video_display();
 
-	void video_audio_display();
-
 	int get_audio_volume() const;
 
 	void update_volume(int sign, double step);
@@ -165,9 +168,6 @@ static void sdl_audio_callback_bridge(void* vs, Uint8 *stream, int len) {
 	FfmpegSdlAvPlayback* pFfmpegSdlAvPlayback = static_cast<FfmpegSdlAvPlayback*>(vs);
 	VideoState* pVideoState = pFfmpegSdlAvPlayback->get_VideoState();
 	pVideoState->audio_callback(stream, len);
-
-	if (pVideoState->get_show_mode() != SHOW_MODE_VIDEO)
-		FfmpegSdlAvPlayback::update_sample_display((int16_t *)stream, len);
 
 	// Note, the mixer can work inplace using the same stream as src and dest, see source code here
 	// https://github.com/davidsiaw/SDL2/blob/c315c99d46f89ef8dbb1b4eeab0fe38ea8a8b6c5/src/audio/SDL_mixer.c
