@@ -47,6 +47,16 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
                 System.out.println("Step Forward");
                 mediaPlayer.stepForward();
                 break;
+            case KeyEvent.VK_D:
+                System.out.println("Step Backward");
+                mediaPlayer.stepBackward();
+                break;
+            case KeyEvent.VK_I:
+                System.out.println("Stream Information : Fps = " + mediaPlayer.getFps() +
+                                    " Image Width = " + mediaPlayer.getImageWidth() +
+                                    " Image Height = " + mediaPlayer.getImageHeight() +
+                                    " Stream Duration = " + mediaPlayer.getDuration());
+                break;
             case KeyEvent.VK_NUMPAD6:
                 System.out.println("Change rate from " + rate + " to " + rate*2);
                 mediaPlayer.setRate(rate*2);
@@ -55,7 +65,7 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
                 System.out.println("Change rate from " + rate + " to " + rate/2);
                 mediaPlayer.setRate(rate/2);
                 break;
-            case KeyEvent.VK_NUMPAD2:
+            case KeyEvent.VK_SPACE:
                 System.out.println("Pause");
                 mediaPlayer.pause();
                 break;

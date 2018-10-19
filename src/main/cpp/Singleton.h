@@ -27,7 +27,7 @@
 #define _SINGLETON_H_
 
 #include <stdint.h>
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 
 template <class T> class Singleton
 {

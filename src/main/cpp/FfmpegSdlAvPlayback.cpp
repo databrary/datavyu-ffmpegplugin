@@ -1,5 +1,5 @@
 #include "FfmpegSdlAvPlayback.h"
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 #include "FfmpegErrorUtils.h"
 
 /* Private Members */

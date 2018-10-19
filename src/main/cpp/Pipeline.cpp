@@ -25,7 +25,7 @@
 
 #include "Pipeline.h"
 #include "JavaPlayerEventDispatcher.h"
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 
 //*************************************************************************************************
 //********** class CPipeline

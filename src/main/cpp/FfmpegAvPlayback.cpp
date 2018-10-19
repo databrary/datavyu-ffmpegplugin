@@ -1,5 +1,5 @@
 #include "FfmpegAvPlayback.h"
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 
 void FfmpegAvPlayback::stream_toggle_pause() {
 	

@@ -39,6 +39,7 @@
                 <includes>
                     <include>FfmpegJavaMediaPlayer.dll</include>
                     <include>FfmpegSdlMediaPlayer.dll</include>
+                    <include>MpvMediaPlayer.dll</include>
                 </includes>
             </resource>
         </resources>
@@ -131,6 +132,12 @@
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>sdl-libs</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>datavyu</groupId>
+            <artifactId>mpv-libs</artifactId>
             <version>0.1</version>
         </dependency>
 

@@ -1,5 +1,5 @@
 #include "FfmpegSdlAvPlaybackPipeline.h"
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 
 FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(CPipelineOptions* pOptions) 
 	: CPipeline(pOptions), pSdlPlayback(nullptr) 
@@ -98,6 +98,11 @@ uint32_t FfmpegSdlAvPlaybackPipeline::StepForward()
 
 	pSdlPlayback->step_to_next_frame();
 
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegSdlAvPlaybackPipeline::StepBackward()
+{
 	return ERROR_NONE;
 }
 
@@ -220,4 +225,14 @@ uint32_t FfmpegSdlAvPlaybackPipeline::SetAudioSyncDelay(long lMillis) {
 uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioSyncDelay(long* plMillis) {
 	// TODO(fraudies): Implement this
 	return ERROR_NONE; // no error
+}
+
+uint32_t FfmpegSdlAvPlaybackPipeline::GetImageWidth(int * iWidth) const
+{
+	return ERROR_NONE;
+}
+
+uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int * iHeight) const
+{
+	return ERROR_NONE;
 }

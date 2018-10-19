@@ -98,6 +98,11 @@ uint32_t FfmpegJavaAvPlaybackPipline::StepForward() {
 	return ERROR_NONE;
 }
 
+uint32_t FfmpegJavaAvPlaybackPipline::StepBackward()
+{
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
 	// TODO(fraudies): Stalling and finish need to be set from the video player
 	return ERROR_NONE;

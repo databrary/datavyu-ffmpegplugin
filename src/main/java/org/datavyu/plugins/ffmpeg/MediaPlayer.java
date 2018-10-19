@@ -96,6 +96,11 @@ public interface MediaPlayer {
     void stepForward();
 
     /**
+     * Step back to one frame and pause the media.
+     */
+    void stepBackward();
+
+    /**
      * Get the rate of playback.
      */
     float getRate();
@@ -203,6 +208,10 @@ public interface MediaPlayer {
      * @param streamTime The time in seconds to which to seek.
      */
     void seek(double streamTime);
+
+    int getImageWidth();
+
+    int getImageHeight();
 
     /**
      * Retrieves the current {@link PlayerStateEvent.PlayerState state} of the player.

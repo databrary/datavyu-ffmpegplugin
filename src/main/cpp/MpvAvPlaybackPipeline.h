@@ -1,25 +1,29 @@
-#ifndef _FFMPEG_AV_PLAYBACK_PIPELINE_H_
-#define _FFMPEG_AV_PLAYBACK_PIPELINE_H_
+#ifndef _MPV_AV_PLAYBACK_PIPELINE_H_
+#define _MPV_AV_PLAYBACK_PIPELINE_H_
 
 #include "PipelineOptions.h"
 #include "Pipeline.h"
-#include "FfmpegSdlAvPlayback.h"
+#include "MpvAvPlayback.h"
 
 /**
-* class FfmpegAVPlaybackPipeline
+* class MpvAvPlaybackPipeline
 *
-* Class representing a Ffmpeg audio-video pipeline.
+* Class representing a MPV audio-video pipeline.
 *
-* Note, currently this pipeline uses SDL to play audio/image
+* This pipeline is using MPV API "client.api" to render the 
+* and audio video stream in a any window that is referenced by 
+* a window ID, Note that we are using a Java Frame.
 */
-class FfmpegSdlAvPlaybackPipeline : public CPipeline
+class MpvAvPlaybackPipeline : public CPipeline
 {
 public:
 	virtual uint32_t    Init(const char * input_file);
 	virtual void        Dispose();
-	FfmpegSdlAvPlaybackPipeline(CPipelineOptions* pOptions);
-	virtual ~FfmpegSdlAvPlaybackPipeline();
 
+	MpvAvPlaybackPipeline(CPipelineOptions* pOptions, const intptr_t windowID);
+	virtual ~MpvAvPlaybackPipeline();
+
+	intptr_t windowID;
 private:
 	virtual uint32_t        Play();
 	virtual uint32_t        Stop();
@@ -33,6 +37,8 @@ private:
 	virtual uint32_t        GetDuration(double* pdDuration);
 	virtual uint32_t        GetStreamTime(double* pdStreamTime);
 	virtual uint32_t        GetFps(double* pdFps);
+	virtual uint32_t        GetImageWidth(int* iWidth) const;
+	virtual uint32_t        GetImageHeight(int* iHeight) const;
 
 	virtual uint32_t        SetRate(float fRate);
 	virtual uint32_t        GetRate(float* pfRate);
@@ -46,10 +52,7 @@ private:
 	virtual uint32_t        SetAudioSyncDelay(long lMillis);
 	virtual uint32_t        GetAudioSyncDelay(long* plMillis);
 
-	virtual uint32_t		GetImageWidth(int* iWidth) const;
-	virtual uint32_t		GetImageHeight(int* iHeight) const;
-
-	FfmpegSdlAvPlayback* pSdlPlayback;
+	MpvAvPlayback* pMpvPlayback;
 };
 
-#endif  //_FFMPEG_AV_PLAYBACK_PIPELINE_H_
+#endif  //_MPV_AV_PLAYBACK_PIPELINE_H_

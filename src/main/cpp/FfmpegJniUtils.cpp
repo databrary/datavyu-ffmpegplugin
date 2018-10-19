@@ -1,5 +1,5 @@
 #include "FfmpegJniUtils.h"
-#include "FfmpegMediaErrors.h"
+#include "MediaPlayerErrors.h"
 
 uint32_t SetJAudioFormat(JNIEnv *env, jobject jAudioFormat, const AudioFormat& audioFormat) {
 

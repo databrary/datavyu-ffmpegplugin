@@ -3,7 +3,7 @@
 
 #include "PipelineData.h"
 #include "FfmpegJavaAvPlayback.h"
-#include "FfmpegMediaErrors.h";
+#include "MediaPlayerErrors.h";
 
 
 // TODO(Reda): Implement this interface
@@ -19,6 +19,7 @@ private:
 	virtual uint32_t        Stop();
 	virtual uint32_t        Pause();
 	virtual uint32_t        StepForward();
+	virtual uint32_t        StepBackward();
 	virtual uint32_t        Finish();
 
 	virtual uint32_t        Seek(double dSeekTime);

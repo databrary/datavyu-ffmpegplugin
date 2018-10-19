@@ -1,5 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.net.URI;
 
 /**
@@ -80,6 +82,11 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+    }
+
+    @Override
+    protected void playerStepBackward() throws MediaException {
+        throw new NotImplementedException();
     }
 
     @Override
@@ -196,6 +203,16 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+    }
+
+    @Override
+    public int getImageWidth() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getImageHeight() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

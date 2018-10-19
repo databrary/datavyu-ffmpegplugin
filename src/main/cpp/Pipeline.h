@@ -68,6 +68,7 @@ public:
     virtual uint32_t        Stop() = 0;
     virtual uint32_t        Pause() = 0;
     virtual uint32_t        StepForward() = 0;
+    virtual uint32_t        StepBackward() = 0;
     virtual uint32_t        Finish() = 0;
 
     virtual uint32_t        Seek(double dSeekTime) = 0;
@@ -75,6 +76,8 @@ public:
     virtual uint32_t        GetDuration(double* pdDuration) = 0;
     virtual uint32_t        GetStreamTime(double* pdStreamTime) = 0;
 	virtual uint32_t		GetFps(double* pdFps) = 0;
+	virtual uint32_t		GetImageWidth(int* iWidth) const = 0;
+	virtual uint32_t		GetImageHeight(int* iheight) const = 0;
 
     virtual uint32_t        SetRate(float fRate) = 0;
     virtual uint32_t        GetRate(float* pfRate) = 0;
