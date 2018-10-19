@@ -70,17 +70,17 @@ private:
 	int						Pause();
 
 	bool					_initialPlay;
-	const char*				_containerFpsProperty = "container-fps";
-	const char*				_widthProperty = "width";
-	const char*				_heightProperty = "height";
-	const char*				_durationProperty = "duration";
-	const char*				_speedProperty = "speed";
-	const char*				_pauseProperty = "pause";
-	const char*				_playbackTimeProperty = "playback-time";
-	const char*				_aoVolumeProperty = "ao-volume";
-	const char*				_frameBackStepCommand = "frame-back-step";
-	const char*				_frameStepCommand = "frame-step";
-	const char*				_seekCommand = "seek";
+	const char*				_kContainerFpsProperty = "container-fps";
+	const char*				_kWidthProperty = "width";
+	const char*				_kHeightProperty = "height";
+	const char*				_kDurationProperty = "duration";
+	const char*				_kSpeedProperty = "speed";
+	const char*				_kPauseProperty = "pause";
+	const char*				_kPlaybackTimeProperty = "playback-time";
+	const char*				_kAoVolumeProperty = "ao-volume";
+	const char*				_kFrameBackStepCommand = "frame-back-step";
+	const char*				_kFrameStepCommand = "frame-step";
+	const char*				_kSeekCommand = "seek";
 public:
 	MpvAvPlayback();
 	~MpvAvPlayback();
