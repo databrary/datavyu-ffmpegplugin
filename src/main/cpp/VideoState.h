@@ -72,6 +72,11 @@ extern "C" {
 // fixed point to double
 #define CONV_FP(x) ((double) (x)) / (1 << 16)
 
+#define ENABLE_SHOW_STATUS 1
+#define ENABLE_FAST_DECODE 0
+// generate missing pts for audio if it means parsing future frames
+#define ENABLE_GENERATE_PTS 0
+
 enum {
 	AV_SYNC_AUDIO_MASTER, /* default choice */
 	AV_SYNC_VIDEO_MASTER,
@@ -89,23 +94,10 @@ enum PlayerStateCallback {
 	NUM_PLAYER_STATE_CALLBACKS
 };
 
-static const char		*wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
-static int				show_status = 1;
-static int				av_sync_type_input = AV_SYNC_AUDIO_MASTER;
 static int64_t			start_time = AV_NOPTS_VALUE; // initial start time
 static int64_t			max_duration = AV_NOPTS_VALUE; // initial play time
-static int				fast = 0;
-static int				genpts = 0; // generate missing pts for audio if it means parsing future frames
-static int				lowres = 0;
-static int				decoder_reorder_pts = -1;
-static int				autoexit = 0; // No auto exit
 static int				loop = 1; // loop through the video
-static int				infinite_buffer = -1;
-static const char		*audio_codec_name;
-static const char		*subtitle_codec_name;
-static const char		*video_codec_name;
-static int				find_stream_info = 1;
 
 //what will be the streamer in the future implementations
 class VideoState {
@@ -292,7 +284,6 @@ public:
 	inline void toggle_mute() { muted = !muted; }
 	void update_pts(double pts, int serial);
 	void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
-	void stream_cycle_channel(int codec_type);
 
 	/* Setter and Getters */
 	inline bool get_paused() const { return paused; }
@@ -329,7 +320,6 @@ public:
 
 	inline double get_vidclk_last_set_time() const { return vidclk_last_set_time; }
 
-	//AudioFormat get_audio_format() const;
 	inline AudioParams get_audio_tgt() const { return audio_tgt; }
 	inline int get_muted() const { return muted; }
 
@@ -354,8 +344,6 @@ public:
 	Clock* get_master_clock() const;
 
 	inline double get_fps() const { return video_st ? this->fps : 0; }
-
-	void stream_close();
 
 	/* prepare a new audio buffer */
 	void audio_callback(uint8_t *stream, int len);

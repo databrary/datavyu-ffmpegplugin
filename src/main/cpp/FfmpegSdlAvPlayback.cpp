@@ -555,8 +555,7 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 				stream_toggle_pause();
 		}
 	}
-	//force_refresh = 0;
-	if (show_status) {
+	if (ENABLE_SHOW_STATUS) {
 		static int64_t last_time;
 		int64_t cur_time;
 		int aqsize, vqsize, sqsize;
@@ -663,36 +662,39 @@ void FfmpegSdlAvPlayback::InitSdl() {
 
 void FfmpegSdlAvPlayback::destroy() {
 
-	// only necessary when using as library -- has no effect otherwise
 	stop_display_loop();
 
-	// close the VideoState Stream
-	if (pVideoState)
-		pVideoState->stream_close();
-
-	if (audio_dev)
+	if (audio_dev) {
 		closeAudioDevice();
-	
-	// Cleanup textures
-	if (vis_texture)
-		SDL_DestroyTexture(vis_texture);
+	}
 
-	if (vid_texture)
+	delete pVideoState;
+
+	// Cleanup textures
+	if (vis_texture) {
+		SDL_DestroyTexture(vis_texture);
+	}
+
+	if (vid_texture) {
 		SDL_DestroyTexture(vid_texture);
+	}
 	
-	if (sub_texture)
+	if (sub_texture) {
 		SDL_DestroyTexture(sub_texture);
+	}
 
 	// Cleanup resampling
 	sws_freeContext(img_convert_ctx);
 	sws_freeContext(sub_convert_ctx);
 
 	// Cleanup SDL components
-	if (renderer)
+	if (renderer) {
 		SDL_DestroyRenderer(renderer);
+	}
 
-	if (window)
+	if (window) {
 		SDL_DestroyWindow(window);
+	}
 
 	avformat_network_deinit();
 
@@ -763,9 +765,6 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 			case SDLK_s: // S: Step to next frame
 				step_to_next_frame();
 				break;
-			case SDLK_a:
-				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
-				break;
 			case SDLK_KP_PLUS:
 				if (pVideoState->set_rate(rate * 2)) {
 					av_log(NULL, AV_LOG_ERROR, "Rate %f unavailable\n", rate * 2);
@@ -779,17 +778,6 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				} else {
 					rate /= 2;
 				}
-				break;
-			case SDLK_v:
-				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
-				break;
-			case SDLK_c:
-				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_VIDEO);
-				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
-				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
-				break;
-			case SDLK_t:
-				pVideoState->stream_cycle_channel(AVMEDIA_TYPE_SUBTITLE);
 				break;
 			case SDLK_PAGEUP:
 				if (pVideoState->get_ic()->nb_chapters <= 1) {

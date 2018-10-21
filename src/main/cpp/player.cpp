@@ -28,12 +28,12 @@ int main(int argc, char **argv) {
 	/******************************************************
 	* Uncomment this part to test the ffmpeg player
 	******************************************************/
-	//runFFmpegPlayer(input_filename, file_iformat);
+	runFFmpegPlayer(input_filename, file_iformat);
 
 	/******************************************************
 	* Uncomment this part to test the mpv player
 	******************************************************/
-	runMpvPlayer(input_filename);
+	//runMpvPlayer(input_filename);
 
 	return 0;
 }

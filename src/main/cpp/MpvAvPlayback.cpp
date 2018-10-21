@@ -329,11 +329,6 @@ void MpvAvPlayback::init_and_event_loop(const char *filename)
 		int redraw = 0;
 		switch (event.type) {
 		case SDL_KEYDOWN:
-			if (exit_on_keydown) {
-				pPlayer->Destroy();
-				exit(0); // need to exit here to avoid joinable exception
-				break;
-			}
 			switch (event.key.keysym.sym) {
 			case SDLK_ESCAPE:
 				pPlayer->Destroy();
