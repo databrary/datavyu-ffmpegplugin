@@ -34,9 +34,6 @@ extern "C" {
 	#include <assert.h>
 }
 
-/* Minimum SDL audio buffer size, in samples. */
-#define SDL_AUDIO_MIN_BUFFER_SIZE 512
-
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
 #define MIN_FRAMES 25
 #define EXTERNAL_CLOCK_MIN_FRAMES 2
@@ -54,11 +51,6 @@ extern "C" {
 /* maximum audio speed change to get correct sync */
 #define SAMPLE_CORRECTION_PERCENT_MAX 10
 
-/* external clock speed adjustment constants for realtime sources based on buffer fullness */
-#define EXTERNAL_CLOCK_SPEED_MIN  0.900
-#define EXTERNAL_CLOCK_SPEED_MAX  1.010
-#define EXTERNAL_CLOCK_SPEED_STEP 0.001
-
 /* we use about AUDIO_DIFF_AVG_NB A-V differences to make the average */
 #define AUDIO_DIFF_AVG_NB   20
 
@@ -68,14 +60,6 @@ extern "C" {
 #define FRAME_QUEUE_SIZE FFMAX(SAMPLE_QUEUE_SIZE, FFMAX(VIDEO_PICTURE_QUEUE_SIZE, SUBPICTURE_QUEUE_SIZE))
 
 #define MY_AV_TIME_BASE_Q av_make_q(1, AV_TIME_BASE)
-
-// fixed point to double
-#define CONV_FP(x) ((double) (x)) / (1 << 16)
-
-#define ENABLE_SHOW_STATUS 1
-#define ENABLE_FAST_DECODE 0
-// generate missing pts for audio if it means parsing future frames
-#define ENABLE_GENERATE_PTS 0
 
 enum {
 	AV_SYNC_AUDIO_MASTER, /* default choice */
@@ -112,7 +96,6 @@ private:
 	int64_t	seek_pos;
 	int64_t seek_rel;
 	int	read_pause_return;
-	int realtime;
 	int	av_sync_type;
 	int fps;
 	int subtitle_stream;
@@ -219,8 +202,6 @@ private:
 	/* From cmd utils*/
 	AVDictionary **setup_find_stream_info_opts(AVFormatContext *s, AVDictionary *codec_opts);
 
-	int is_realtime(AVFormatContext *s);
-
 	/* return the wanted number of samples to get better sync if sync_type is video
 	* or external master clock */
 	int synchronize_audio(int nb_samples);
@@ -240,6 +221,10 @@ private:
 	std::function<void()> destroy_callback; // TODO(fraudies): Possibly clean-up through destructor
 	std::function<void()> step_to_next_frame_callback;
 	VideoState(int audio_buffer_size);
+
+	static bool kEnableShowFormat;
+	static bool kEnableFastDecode;
+	static bool kEnableGeneratePts;
 public:
 	static VideoState* create_video_state(int audio_buffer_size);
 

@@ -178,7 +178,7 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 		}
 	}
 
-	if (ENABLE_SHOW_STATUS) {
+	if (kEnableShowStatus) {
 		static int64_t last_time;
 		int64_t cur_time;
 		int aqsize, vqsize, sqsize;

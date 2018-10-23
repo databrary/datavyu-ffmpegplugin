@@ -555,7 +555,7 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 				stream_toggle_pause();
 		}
 	}
-	if (ENABLE_SHOW_STATUS) {
+	if (kEnableShowStatus) {
 		static int64_t last_time;
 		int64_t cur_time;
 		int aqsize, vqsize, sqsize;

@@ -1,6 +1,9 @@
 #include "VideoState.h"
 
-/* Private Members */
+bool VideoState::kEnableShowFormat = true; // Show the format information
+bool VideoState::kEnableFastDecode = false;
+bool VideoState::kEnableGeneratePts = false; // generate missing pts for audio if it means parsing future frames
+
 int VideoState::stream_component_open(int stream_index) {
 	AVCodecContext *avctx;
 	AVCodec *codec;
@@ -41,8 +44,9 @@ int VideoState::stream_component_open(int stream_index) {
 
 	avctx->codec_id = codec->id;
 
-	if (ENABLE_FAST_DECODE)
+	if (kEnableFastDecode) {
 		avctx->flags2 |= AV_CODEC_FLAG2_FAST;
+	}
 
 	opts = filter_codec_opts(codec_opts, avctx->codec_id, ic, ic->streams[stream_index], codec);
 	if (!av_dict_get(opts, "threads", NULL, 0))
@@ -342,13 +346,6 @@ AVDictionary **VideoState::setup_find_stream_info_opts(AVFormatContext *s, AVDic
 	return opts;
 }
 
-int VideoState::is_realtime(AVFormatContext *s) {
-	return !strcmp(s->iformat->name, "rtp")
-		|| !strcmp(s->iformat->name, "rtsp")
-		|| !strcmp(s->iformat->name, "sdp")
-		|| (s->pb && (!strncmp(s->url, "rtp:", 4) || !strncmp(s->url, "udp:", 4)));
-}
-
 int VideoState::synchronize_audio(int nb_samples) {
 	int wanted_nb_samples = nb_samples;
 
@@ -500,7 +497,6 @@ VideoState::VideoState(int audio_buffer_size) :
 	seek_pos(0),
 	seek_rel(0),
 	read_pause_return(0),
-	realtime(0),
 	av_sync_type(0),
 	fps(0),
 	subtitle_stream(0),
@@ -814,11 +810,10 @@ int VideoState::read_thread() {
 		}
 
 		/* if the queues are full, no need to read more */
-		if (!realtime &&
-			(pAudioq->get_size() + pVideoq->get_size() + pSubtitleq->get_size() > MAX_QUEUE_SIZE
+		if (pAudioq->get_size() + pVideoq->get_size() + pSubtitleq->get_size() > MAX_QUEUE_SIZE
 				|| (stream_has_enough_packets(audio_st, audio_stream, pAudioq) &&
 					stream_has_enough_packets(video_st, video_stream, pVideoq) &&
-					stream_has_enough_packets(subtitle_st, subtitle_stream, pSubtitleq)))) {
+					stream_has_enough_packets(subtitle_st, subtitle_stream, pSubtitleq))) {
 			/* wait 10 ms */
 			std::unique_lock<std::mutex> locker(wait_mutex);
 			continue_read_thread.wait_for(locker, std::chrono::milliseconds(10));
@@ -1065,7 +1060,7 @@ int VideoState::stream_start() {
 		goto fail;
 	}
 
-	if (ENABLE_GENERATE_PTS) {
+	if (kEnableGeneratePts) {
 		ic->flags |= AVFMT_FLAG_GENPTS;
 	}
 
@@ -1107,9 +1102,7 @@ int VideoState::stream_start() {
 		}
 	}
 
-	realtime = is_realtime(ic);
-
-	if (ENABLE_SHOW_STATUS) {
+	if (kEnableShowFormat) {
 		av_dump_format(ic, 0, filename, 0);
 	}
 
