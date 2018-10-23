@@ -1,6 +1,4 @@
 #include "gtest/gtest.h"
-
-#include "gtest/gtest.h";
 #include "Clock.h"
 
 #include <limits>
@@ -8,13 +6,13 @@
 #include <thread>
 
 
-TEST (ClockTest, CreateDeleteClockTest) {
+TEST (ClockTest, CreateAndDeleteClockTest) {
     int serial = 0;
     Clock clock(&serial);
 	ASSERT_EQ(clock.get_serial(), -1.0);
 }
 
-TEST (ClockTest, SetGetClockTest) {
+TEST (ClockTest, SetGetTimeTest) {
 	// Create a clock
 	int serial = 0;
 	Clock clock(&serial);
@@ -34,7 +32,7 @@ TEST (ClockTest, SetGetClockTest) {
 	double speed = 1.0;
 	double newTime = av_gettime_relative() / MICRO;
 
-	// Note, that in this setup ptsDrift ~= 0
-	// ASSERT LESS THAN
-	ASSERT_LT(fabs(clock.get_time() - (newTime - (newTime - time) * (1.0 - speed))), std::numeric_limits<float>::epsilon());
+	// ASSERT LESS THAN, the expired time does not matter, only the setTime changes 
+	// the clock's time
+	ASSERT_LT(fabs(clock.get_time() - time), std::numeric_limits<float>::epsilon());
 }

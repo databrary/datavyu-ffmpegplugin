@@ -1,6 +1,8 @@
 #include "FfmpegAvPlayback.h"
 #include "MediaPlayerErrors.h"
 
+bool FfmpegAvPlayback::kEnableShowStatus = true;
+
 void FfmpegAvPlayback::stream_toggle_pause() {
 	
 	// Get all the clocks

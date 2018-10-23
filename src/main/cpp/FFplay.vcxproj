@@ -143,7 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="FfmpegSdlAvPlayback.cpp" />
-    <ClCompile Include="ffplay.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="MpvAvPlayback.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -15,13 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ffplay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FfmpegSdlAvPlayback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MpvAvPlayback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

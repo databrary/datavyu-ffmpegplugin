@@ -34,9 +34,6 @@ extern "C" {
 	#include <assert.h>
 }
 
-/* Minimum SDL audio buffer size, in samples. */
-#define SDL_AUDIO_MIN_BUFFER_SIZE 512
-
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
 #define MIN_FRAMES 25
 #define EXTERNAL_CLOCK_MIN_FRAMES 2
@@ -54,11 +51,6 @@ extern "C" {
 /* maximum audio speed change to get correct sync */
 #define SAMPLE_CORRECTION_PERCENT_MAX 10
 
-/* external clock speed adjustment constants for realtime sources based on buffer fullness */
-#define EXTERNAL_CLOCK_SPEED_MIN  0.900
-#define EXTERNAL_CLOCK_SPEED_MAX  1.010
-#define EXTERNAL_CLOCK_SPEED_STEP 0.001
-
 /* we use about AUDIO_DIFF_AVG_NB A-V differences to make the average */
 #define AUDIO_DIFF_AVG_NB   20
 
@@ -68,9 +60,6 @@ extern "C" {
 #define FRAME_QUEUE_SIZE FFMAX(SAMPLE_QUEUE_SIZE, FFMAX(VIDEO_PICTURE_QUEUE_SIZE, SUBPICTURE_QUEUE_SIZE))
 
 #define MY_AV_TIME_BASE_Q av_make_q(1, AV_TIME_BASE)
-
-// fixed point to double
-#define CONV_FP(x) ((double) (x)) / (1 << 16)
 
 enum {
 	AV_SYNC_AUDIO_MASTER, /* default choice */
@@ -89,23 +78,10 @@ enum PlayerStateCallback {
 	NUM_PLAYER_STATE_CALLBACKS
 };
 
-static const char		*wanted_stream_spec[AVMEDIA_TYPE_NB] = { 0 };
 static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
-static int				show_status = 1;
-static int				av_sync_type_input = AV_SYNC_AUDIO_MASTER;
 static int64_t			start_time = AV_NOPTS_VALUE; // initial start time
 static int64_t			max_duration = AV_NOPTS_VALUE; // initial play time
-static int				fast = 0;
-static int				genpts = 0; // generate missing pts for audio if it means parsing future frames
-static int				lowres = 0;
-static int				decoder_reorder_pts = -1;
-static int				autoexit = 0; // No auto exit
 static int				loop = 1; // loop through the video
-static int				infinite_buffer = -1;
-static const char		*audio_codec_name;
-static const char		*subtitle_codec_name;
-static const char		*video_codec_name;
-static int				find_stream_info = 1;
 
 //what will be the streamer in the future implementations
 class VideoState {
@@ -120,7 +96,6 @@ private:
 	int64_t	seek_pos;
 	int64_t seek_rel;
 	int	read_pause_return;
-	int realtime;
 	int	av_sync_type;
 	int fps;
 	int subtitle_stream;
@@ -227,8 +202,6 @@ private:
 	/* From cmd utils*/
 	AVDictionary **setup_find_stream_info_opts(AVFormatContext *s, AVDictionary *codec_opts);
 
-	int is_realtime(AVFormatContext *s);
-
 	/* return the wanted number of samples to get better sync if sync_type is video
 	* or external master clock */
 	int synchronize_audio(int nb_samples);
@@ -248,6 +221,10 @@ private:
 	std::function<void()> destroy_callback; // TODO(fraudies): Possibly clean-up through destructor
 	std::function<void()> step_to_next_frame_callback;
 	VideoState(int audio_buffer_size);
+
+	static bool kEnableShowFormat;
+	static bool kEnableFastDecode;
+	static bool kEnableGeneratePts;
 public:
 	static VideoState* create_video_state(int audio_buffer_size);
 
@@ -292,7 +269,6 @@ public:
 	inline void toggle_mute() { muted = !muted; }
 	void update_pts(double pts, int serial);
 	void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
-	void stream_cycle_channel(int codec_type);
 
 	/* Setter and Getters */
 	inline bool get_paused() const { return paused; }
@@ -329,7 +305,6 @@ public:
 
 	inline double get_vidclk_last_set_time() const { return vidclk_last_set_time; }
 
-	//AudioFormat get_audio_format() const;
 	inline AudioParams get_audio_tgt() const { return audio_tgt; }
 	inline int get_muted() const { return muted; }
 
@@ -354,8 +329,6 @@ public:
 	Clock* get_master_clock() const;
 
 	inline double get_fps() const { return video_st ? this->fps : 0; }
-
-	void stream_close();
 
 	/* prepare a new audio buffer */
 	void audio_callback(uint8_t *stream, int len);

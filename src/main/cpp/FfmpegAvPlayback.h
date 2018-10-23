@@ -22,6 +22,7 @@ protected:
 	void set_frame_timer(int newFrame_timer);
 	void set_force_refresh(int refresh);
 	double vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration);
+	static bool kEnableShowStatus;
 public:
 	FfmpegAvPlayback();
 	int Init(const char *filename, AVInputFormat *iformat, int audio_buffer_size);

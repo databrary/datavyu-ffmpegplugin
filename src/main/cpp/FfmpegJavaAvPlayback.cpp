@@ -29,13 +29,13 @@ int FfmpegJavaAvPlayback::Init(const char * filename, AVInputFormat * iformat) {
 	}
 
 	pVideoState->set_destroy_callback([this] {
-		this->destroy();
+		destroy();
 	});
 
 	// TODO: Clean-up this callback as the first three parameters are not used here
 	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels,
 		int wanted_sample_rate, struct AudioParams *audio_hw_params) {
-		return this->audio_open(wanted_channel_layout, wanted_nb_channels, wanted_sample_rate, audio_hw_params);
+		return audio_open(wanted_channel_layout, wanted_nb_channels, wanted_sample_rate, audio_hw_params);
 	});
 
 
@@ -56,11 +56,10 @@ int FfmpegJavaAvPlayback::audio_open(int64_t wanted_channel_layout, int wanted_n
 }
 
 void FfmpegJavaAvPlayback::destroy() {
-	// stop_display_loop(); // only necessary when using as library -- has no effect otherwise
+
 	sws_freeContext(img_convert_ctx);
 
-	if (pVideoState)
-		pVideoState->stream_close();
+	delete pVideoState;
 
 #if CONFIG_VIDEO_FILTER
 	//av_freep(&vfilters_list);
@@ -179,7 +178,7 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 		}
 	}
 
-	if (show_status) {
+	if (kEnableShowStatus) {
 		static int64_t last_time;
 		int64_t cur_time;
 		int aqsize, vqsize, sqsize;
