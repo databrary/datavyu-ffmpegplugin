@@ -34,9 +34,6 @@ int VideoState::stream_component_open(int stream_index) {
 		case AVMEDIA_TYPE_AUDIO:
 			last_audio_stream = stream_index;
 			break;
-		case AVMEDIA_TYPE_SUBTITLE:
-			last_subtitle_stream = stream_index;
-			break;
 		case AVMEDIA_TYPE_VIDEO:
 			last_video_stream = stream_index;
 			break;
@@ -127,13 +124,6 @@ int VideoState::stream_component_open(int stream_index) {
 			goto out;
 		queue_attachments_req = 1;
 		break;
-	case AVMEDIA_TYPE_SUBTITLE:
-		subtitle_stream = stream_index;
-		subtitle_st = ic->streams[stream_index];
-		pSubdec = new Decoder(avctx, pSubtitleq, &continue_read_thread);
-		if ((ret = pSubdec->start([this] { subtitle_thread(); })) < 0)
-			goto out;
-		break;
 	default:
 		break;
 	}
@@ -182,11 +172,6 @@ int VideoState::get_video_frame(AVFrame *frame) {
 int VideoState::queue_picture(AVFrame *src_frame, double pts, double duration, int64_t pos, int serial) {
 	Frame *vp;
 
-#if defined(DEBUG_SYNC)
-	printf("frame_type=%c pts=%0.3f\n",
-		av_get_picture_type_char(src_frame->pict_type), pts);
-#endif
-
 	if (!(vp = pPictq->peek_writable()))
 		return -1;
 
@@ -227,10 +212,6 @@ void VideoState::stream_component_close(int stream_index) {
 		pViddec->abort(pPictq);
 		delete pViddec;
 		break;
-	case AVMEDIA_TYPE_SUBTITLE:
-		pSubdec->abort(pSubpq);
-		delete pSubdec;
-		break;
 	default:
 		break;
 	}
@@ -244,10 +225,6 @@ void VideoState::stream_component_close(int stream_index) {
 	case AVMEDIA_TYPE_VIDEO:
 		video_st = NULL;
 		video_stream = -1;
-		break;
-	case AVMEDIA_TYPE_SUBTITLE:
-		subtitle_st = NULL;
-		subtitle_stream = -1;
 		break;
 	default:
 		break;
@@ -290,10 +267,6 @@ AVDictionary *VideoState::filter_codec_opts(AVDictionary *opts, enum AVCodecID c
 	case AVMEDIA_TYPE_AUDIO:
 		prefix = 'a';
 		flags |= AV_OPT_FLAG_AUDIO_PARAM;
-		break;
-	case AVMEDIA_TYPE_SUBTITLE:
-		prefix = 's';
-		flags |= AV_OPT_FLAG_SUBTITLE_PARAM;
 		break;
 	}
 
@@ -499,7 +472,6 @@ VideoState::VideoState(int audio_buffer_size) :
 	read_pause_return(0),
 	av_sync_type(0),
 	fps(0),
-	subtitle_stream(0),
 	vidclk_last_set_time(0),
 	video_stream(0),
 	max_frame_duration(0),
@@ -514,29 +486,23 @@ VideoState::VideoState(int audio_buffer_size) :
 	rate_value(1.0),
 	audio_disable(0),
 	video_disable(0),
-	subtitle_disable(0),
 	last_video_stream(0),
 	last_audio_stream(0),
-	last_subtitle_stream(0),
 	filename(nullptr),
 	pAudioq(nullptr),
 	pVideoq(nullptr),
-	pSubtitleq(nullptr),
 	pSampq(nullptr),
 	pPictq(nullptr),
-	pSubpq(nullptr),
 	pAudclk(nullptr),
 	pVidclk(nullptr),
 	pExtclk(nullptr),
 	pAuddec(nullptr),
 	pViddec(nullptr),
-	pSubdec(nullptr),
 	read_tid(nullptr),
 	iformat(nullptr),
 	ic(nullptr),
 	swr_ctx(nullptr),
 	audio_st(nullptr),
-	subtitle_st(nullptr),
 	video_st(nullptr),
 	audio_stream(0),
 	audio_pts(0.0),
@@ -554,8 +520,7 @@ VideoState::VideoState(int audio_buffer_size) :
 	audio_buf_index(0), /* in bytes */
 	audio_write_buf_size(0),
 	muted(0),
-	frame_drops_early(0)
-{}
+	frame_drops_early(0) {}
 
 VideoState* VideoState::create_video_state(int audio_buffer_size) {
 	// Create the video state
@@ -578,12 +543,6 @@ VideoState* VideoState::create_video_state(int audio_buffer_size) {
 		delete vs;
 		return nullptr;
 	}
-	vs->pSubtitleq = new (std::nothrow) PacketQueue();
-	if (!vs->pSubtitleq) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create packet queue for subtitles");
-		delete vs;
-		return nullptr;
-	}
 
 	// Handle frame queues
 	vs->pSampq = FrameQueue::create_frame_queue(vs->pAudioq, SAMPLE_QUEUE_SIZE, 1);
@@ -595,12 +554,6 @@ VideoState* VideoState::create_video_state(int audio_buffer_size) {
 	vs->pPictq = FrameQueue::create_frame_queue(vs->pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
 	if (!vs->pPictq) {
 		av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue for video");
-		delete vs;
-		return nullptr;
-	}
-	vs->pSubpq = FrameQueue::create_frame_queue(vs->pSubtitleq, SUBPICTURE_QUEUE_SIZE, 0);
-	if (!vs->pSubpq) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue for subtitle");
 		delete vs;
 		return nullptr;
 	}
@@ -644,9 +597,6 @@ VideoState::~VideoState() {
 	if (video_stream >= 0) {
 		stream_component_close(video_stream);
 	}
-	if (subtitle_stream >= 0) {
-		stream_component_close(subtitle_stream);
-	}
 
 	if (ic) {
 		avformat_close_input(&ic);
@@ -654,13 +604,11 @@ VideoState::~VideoState() {
 	av_free(filename);
 	// End stream close
 
-	// From close
+	// From close method
 	if (pVideoq) delete(pVideoq);
 	if (pAudioq) delete(pAudioq);
-	if (pSubtitleq) delete(pSubtitleq);
 
 	if (pPictq) delete(pPictq);
-	if (pSubpq) delete(pSubpq);
 	if (pSampq) delete(pSampq);
 	
 	if (pVidclk) delete(pVidclk);
@@ -764,10 +712,6 @@ int VideoState::read_thread() {
 					pAudioq->flush();
 					pAudioq->put_flush_packet();
 				}
-				if (subtitle_stream >= 0) {
-					pSubtitleq->flush();
-					pSubtitleq->put_flush_packet();
-				}
 				if (video_stream >= 0) {
 					pVideoq->flush();
 					pVideoq->put_flush_packet();
@@ -810,10 +754,9 @@ int VideoState::read_thread() {
 		}
 
 		/* if the queues are full, no need to read more */
-		if (pAudioq->get_size() + pVideoq->get_size() + pSubtitleq->get_size() > MAX_QUEUE_SIZE
+		if (pAudioq->get_size() + pVideoq->get_size() > MAX_QUEUE_SIZE
 				|| (stream_has_enough_packets(audio_st, audio_stream, pAudioq) &&
-					stream_has_enough_packets(video_st, video_stream, pVideoq) &&
-					stream_has_enough_packets(subtitle_st, subtitle_stream, pSubtitleq))) {
+					stream_has_enough_packets(video_st, video_stream, pVideoq))) {
 			/* wait 10 ms */
 			std::unique_lock<std::mutex> locker(wait_mutex);
 			continue_read_thread.wait_for(locker, std::chrono::milliseconds(10));
@@ -830,12 +773,12 @@ int VideoState::read_thread() {
 		ret = av_read_frame(ic, pkt);
 		if (ret < 0) {
 			if ((ret == AVERROR_EOF || avio_feof(ic->pb)) && !eof) {
-				if (video_stream >= 0)
+				if (video_stream >= 0) {
 					pVideoq->put_null_packet(video_stream);
-				if (audio_stream >= 0)
+				}
+				if (audio_stream >= 0) {
 					pAudioq->put_null_packet(audio_stream);
-				if (subtitle_stream >= 0)
-					pSubtitleq->put_null_packet(subtitle_stream);
+				}
 				eof = 1;
 
 				// Set the player state to finished
@@ -871,9 +814,6 @@ int VideoState::read_thread() {
 		else if (pkt->stream_index == video_stream && pkt_in_play_range
 			&& !(video_st->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
 			pVideoq->put(pkt);
-		}
-		else if (pkt->stream_index == subtitle_stream && pkt_in_play_range) {
-			pSubtitleq->put(pkt);
 		}
 		else {
 			av_packet_unref(pkt);
@@ -965,40 +905,6 @@ the_end:
 	return 0;
 }
 
-/* Called when the stream is opened */
-int VideoState::subtitle_thread() {
-	Frame *sp;
-	int got_subtitle;
-	double pts;
-
-	for (;;) {
-		if (!(sp = pSubpq->peek_writable()))
-			return 0;
-
-		if ((got_subtitle = pSubdec->decode_frame(NULL, &sp->sub)) < 0)
-			break;
-
-		pts = 0;
-
-		if (got_subtitle && sp->sub.format == 0) {
-			if (sp->sub.pts != AV_NOPTS_VALUE)
-				pts = sp->sub.pts / (double)AV_TIME_BASE;
-			sp->pts = pts;
-			sp->serial = pSubdec->get_pkt_serial();
-			sp->width = pSubdec->get_avctx()->width;
-			sp->height = pSubdec->get_avctx()->height;
-			sp->uploaded = 0;
-
-			/* now we can update the picture count */
-			pSubpq->push();
-		}
-		else if (got_subtitle) {
-			avsubtitle_free(&sp->sub);
-		}
-	}
-	return 0;
-}
-
 /* Public Members*/
 VideoState *VideoState::stream_open(const char *filename, AVInputFormat *iformat, int audio_buffer_size) {
 	VideoState *is = VideoState::create_video_state(audio_buffer_size);
@@ -1032,7 +938,6 @@ int VideoState::stream_start() {
 	memset(st_index, -1, sizeof(st_index));
 	last_video_stream = video_stream = -1;
 	last_audio_stream = audio_stream = -1;
-	last_subtitle_stream = subtitle_stream = -1;
 	eof = 0;
 
 	ic = avformat_alloc_context();
@@ -1122,14 +1027,6 @@ int VideoState::stream_start() {
 			st_index[AVMEDIA_TYPE_AUDIO],
 			st_index[AVMEDIA_TYPE_VIDEO],
 			NULL, 0);
-	if (!video_disable && !subtitle_disable)
-		st_index[AVMEDIA_TYPE_SUBTITLE] =
-		av_find_best_stream(ic, AVMEDIA_TYPE_SUBTITLE,
-			st_index[AVMEDIA_TYPE_SUBTITLE],
-			(st_index[AVMEDIA_TYPE_AUDIO] >= 0 ?
-				st_index[AVMEDIA_TYPE_AUDIO] :
-				st_index[AVMEDIA_TYPE_VIDEO]),
-			NULL, 0);
 
 	/* open the streams */
 	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
@@ -1141,10 +1038,6 @@ int VideoState::stream_start() {
 	ret = -1;
 	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
 		ret = stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
-	}
-
-	if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
-		stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
 	}
 
 	if (video_stream < 0 && audio_stream < 0) {
@@ -1175,32 +1068,6 @@ fail:
 	}
 
 	return ret;
-}
-
-// Function Called from the event loop
-void VideoState::seek_chapter(int incr) {
-	int64_t pos = get_master_clock()->get_time() * AV_TIME_BASE;
-	int i;
-
-	if (!ic->nb_chapters)
-		return;
-
-	/* find the current chapter */
-	for (i = 0; i < ic->nb_chapters; i++) {
-		AVChapter *ch = ic->chapters[i];
-		if (av_compare_ts(pos, MY_AV_TIME_BASE_Q, ch->start, ch->time_base) < 0) {
-			i--;
-			break;
-		}
-	}
-
-	i += incr;
-	i = FFMAX(i, 0);
-	if (i >= ic->nb_chapters)
-		return;
-
-	av_log(NULL, AV_LOG_VERBOSE, "Seeking to chapter %d.\n", i);
-	stream_seek(av_rescale_q(ic->chapters[i]->start, ic->chapters[i]->time_base, MY_AV_TIME_BASE_Q), 0, 0);
 }
 
 void VideoState::update_pts(double pts, int serial) {

@@ -193,8 +193,6 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 				aqsize = pVideoState->get_pAudioq()->get_size();
 			if (pVideoState->get_video_st())
 				vqsize = pVideoState->get_pVideoq()->get_size();
-			if (pVideoState->get_subtitle_st())
-				sqsize = pVideoState->get_pSubtitleq()->get_size();
 			av_diff = 0;
 			if (pVideoState->get_audio_st() && pVideoState->get_video_st())
 				av_diff = pVideoState->get_pAudclk()->get_time() - pVideoState->get_pVidclk()->get_time();

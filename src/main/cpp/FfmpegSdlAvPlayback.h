@@ -9,78 +9,10 @@ extern "C" {
 	#include <SDL2/SDL.h>
 	#include <SDL2/SDL_thread.h>
 }
-/* Minimum SDL audio buffer size, in samples. */
-#define SDL_AUDIO_MIN_BUFFER_SIZE 512
 
-/* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
-#define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
-
-/* AV sync correction is done if above the maximum AV sync threshold */
-#define AV_SYNC_THRESHOLD_MAX 0.1
-
-/* Step size for volume control in dB */
-#define SDL_VOLUME_STEP (0.75)
-
-/* polls for possible required screen refresh at least this often, should be less than 1/fps */
-#define REFRESH_RATE 0.01
-
-#define USE_ONEPASS_SUBTITLE_RENDER 1
-
-#define CURSOR_HIDE_DELAY 1000000
-
-/* NOTE: the size must be big enough to compensate the hardware audio buffersize size */
-/* TODO: We assume that a decoded and resampled frame fits into this buffer */
-#define SAMPLE_ARRAY_SIZE (8 * 65536)
-
-#define FF_QUIT_EVENT    (SDL_USEREVENT + 2)
-
-const char program_name[] = "Datavyu-ffmpeg-plugin";
-
-static const char *window_title;
-static int borderless;
-static int64_t cursor_last_shown;
-static int cursor_hidden = 0;
-static int exit_on_keydown;
-static int exit_on_mousedown;
-
-static int default_width = 640;
-static int default_height = 480;
-static unsigned sws_flags = SWS_BICUBIC;
-
-static int16_t sample_array[SAMPLE_ARRAY_SIZE];
-static int sample_array_index;
-
-static const struct TextureFormatEntry {
-	enum AVPixelFormat format;
-	int texture_fmt;
-} sdl_texture_format_map[] = {
-	{ AV_PIX_FMT_RGB8,           SDL_PIXELFORMAT_RGB332 },
-	{ AV_PIX_FMT_RGB444,         SDL_PIXELFORMAT_RGB444 },
-	{ AV_PIX_FMT_RGB555,         SDL_PIXELFORMAT_RGB555 },
-	{ AV_PIX_FMT_BGR555,         SDL_PIXELFORMAT_BGR555 },
-	{ AV_PIX_FMT_RGB565,         SDL_PIXELFORMAT_RGB565 },
-	{ AV_PIX_FMT_BGR565,         SDL_PIXELFORMAT_BGR565 },
-	{ AV_PIX_FMT_RGB24,          SDL_PIXELFORMAT_RGB24 },
-	{ AV_PIX_FMT_BGR24,          SDL_PIXELFORMAT_BGR24 },
-	{ AV_PIX_FMT_0RGB32,         SDL_PIXELFORMAT_RGB888 },
-	{ AV_PIX_FMT_0BGR32,         SDL_PIXELFORMAT_BGR888 },
-	{ AV_PIX_FMT_NE(RGB0, 0BGR), SDL_PIXELFORMAT_RGBX8888 },
-	{ AV_PIX_FMT_NE(BGR0, 0RGB), SDL_PIXELFORMAT_BGRX8888 },
-	{ AV_PIX_FMT_RGB32,          SDL_PIXELFORMAT_ARGB8888 },
-	{ AV_PIX_FMT_RGB32_1,        SDL_PIXELFORMAT_RGBA8888 },
-	{ AV_PIX_FMT_BGR32,          SDL_PIXELFORMAT_ABGR8888 },
-	{ AV_PIX_FMT_BGR32_1,        SDL_PIXELFORMAT_BGRA8888 },
-	{ AV_PIX_FMT_YUV420P,        SDL_PIXELFORMAT_IYUV },
-	{ AV_PIX_FMT_YUYV422,        SDL_PIXELFORMAT_YUY2 },
-	{ AV_PIX_FMT_UYVY422,        SDL_PIXELFORMAT_UYVY },
-	{ AV_PIX_FMT_NONE,           SDL_PIXELFORMAT_UNKNOWN },
-};
-
-static SDL_RendererInfo renderer_info = { 0 };
-
+#define FF_QUIT_EVENT (SDL_USEREVENT + 2)
 
 class FfmpegSdlAvPlayback : public FfmpegAvPlayback {
-
 private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -103,6 +35,11 @@ private:
 
 	int audio_volume;
 
+	int64_t cursor_last_shown;
+	int cursor_hidden;
+	char *window_title;
+	SDL_RendererInfo renderer_info;
+
 	inline int compute_mod(int a, int b);
 
 	inline void fill_rectangle(int x, int y, int w, int h);
@@ -119,6 +56,25 @@ private:
 	void closeAudioDevice();
 	void video_image_display();
 	void stop_display_loop();
+
+	static int kDefaultWidth;
+	static int kDefaultHeight;
+	static unsigned kSwsFlags;
+	static const char* kDefaultWindowTitle; // assumed if the file can't be opened
+	static int kWindowResizable;
+	static int kAudioMinBufferSize;
+	static int kAudioMaxCallbackPerSec;
+	static double kVolumeStepInDecibel;
+	static double kRefreshRate;
+	static int kCursorHideDelayInMillis;
+
+	struct TextureFormatEntry {
+		enum AVPixelFormat format;
+		int texture_fmt;
+	};
+	
+	static const TextureFormatEntry kTextureFormatMap[];
+
 public:
 	FfmpegSdlAvPlayback(int startup_volume = SDL_MIX_MAXVOLUME);
 	~FfmpegSdlAvPlayback();

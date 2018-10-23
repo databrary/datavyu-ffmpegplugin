@@ -98,7 +98,6 @@ private:
 	int	read_pause_return;
 	int	av_sync_type;
 	int fps;
-	int subtitle_stream;
 
 	double vidclk_last_set_time;
 	int video_stream;
@@ -116,11 +115,9 @@ private:
 
 	int audio_disable;
 	int video_disable;
-	int subtitle_disable;
 
 	int last_video_stream;
 	int last_audio_stream;
-	int last_subtitle_stream;
 
 	std::condition_variable continue_read_thread;
 
@@ -128,11 +125,9 @@ private:
 
 	PacketQueue *pAudioq;
 	PacketQueue	*pVideoq;
-	PacketQueue *pSubtitleq;
 
 	FrameQueue *pSampq;
 	FrameQueue *pPictq;
-	FrameQueue *pSubpq;
 
 	Clock *pAudclk;
 	Clock *pVidclk;
@@ -140,7 +135,6 @@ private:
 
 	Decoder *pAuddec;
 	Decoder *pViddec;
-	Decoder *pSubdec;
 
 	std::thread *read_tid;
 	AVInputFormat *iformat;
@@ -148,7 +142,6 @@ private:
 	struct SwrContext *swr_ctx;
 
 	AVStream *audio_st;
-	AVStream *subtitle_st;
 	AVStream *video_st;
 
 	int audio_stream;
@@ -233,7 +226,6 @@ public:
 	int read_thread();
 	int audio_thread();
 	int video_thread();
-	int subtitle_thread();
 	int stream_start();
 	static VideoState *stream_open(const char *filename, AVInputFormat *iformat, int audio_buffer_size);
 
@@ -258,7 +250,6 @@ public:
 	}
 
 	/* Controls */
-	void seek_chapter(int incr);
 	inline int get_image_width() const { return image_width; }
 	inline int get_image_height() const { return image_height; }
 	inline AVRational get_image_sample_aspect_ratio() const { return image_sample_aspect_ratio; }
@@ -289,14 +280,11 @@ public:
 
 	inline AVStream *get_audio_st() const { return audio_st; }
 	inline AVStream *get_video_st() const { return video_st; }
-	inline AVStream *get_subtitle_st() const { return subtitle_st; }
 
 	inline FrameQueue *get_pPictq() const { return pPictq; }
-	inline FrameQueue *get_pSubpq() const { return pSubpq; }
 	inline FrameQueue *get_pSampq() const { return pSampq; }
 
 	inline PacketQueue *get_pVideoq() const { return pVideoq; }
-	inline PacketQueue *get_pSubtitleq() const { return pSubtitleq; }
 	inline PacketQueue *get_pAudioq() const { return pAudioq; }
 
 	inline Clock *get_pVidclk() const { return pVidclk; }
@@ -339,8 +327,6 @@ public:
 	inline int get_video_disable() const { return video_disable; }
 	inline void set_video_disable(const int disable) { video_disable = disable; }
 
-	inline int get_subtitle_disable() const { return subtitle_disable; }
-	inline void set_subtitle_disable(const int disable) { subtitle_disable = disable; }
 };
 
 // Note, this bridge is necessary to interface with ffmpeg's call decode interrupt handle

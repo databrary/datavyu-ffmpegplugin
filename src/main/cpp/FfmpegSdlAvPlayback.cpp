@@ -2,7 +2,47 @@
 #include "MediaPlayerErrors.h"
 #include "FfmpegErrorUtils.h"
 
-/* Private Members */
+
+int FfmpegSdlAvPlayback::kDefaultWidth = 640;
+int FfmpegSdlAvPlayback::kDefaultHeight = 480;
+unsigned FfmpegSdlAvPlayback::kSwsFlags = SWS_BICUBIC;
+const char* FfmpegSdlAvPlayback::kDefaultWindowTitle = "Ffmpeg SDL player";
+int FfmpegSdlAvPlayback::kWindowResizable = 1;
+
+/* Minimum SDL audio buffer size, in samples. */
+int FfmpegSdlAvPlayback::kAudioMinBufferSize = 512;
+/* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
+int FfmpegSdlAvPlayback::kAudioMaxCallbackPerSec = 30;
+/* Step size for volume control in dB */
+double FfmpegSdlAvPlayback::kVolumeStepInDecibel = 0.75;
+/* polls for possible required screen refresh at least this often, should be less than 1/fps */
+double FfmpegSdlAvPlayback::kRefreshRate = 0.01;
+int FfmpegSdlAvPlayback::kCursorHideDelayInMillis = 1000000;
+/* initialize the texture format map */
+const FfmpegSdlAvPlayback::TextureFormatEntry FfmpegSdlAvPlayback::kTextureFormatMap[] = {
+	{ AV_PIX_FMT_RGB8,           SDL_PIXELFORMAT_RGB332 },
+	{ AV_PIX_FMT_RGB444,         SDL_PIXELFORMAT_RGB444 },
+	{ AV_PIX_FMT_RGB555,         SDL_PIXELFORMAT_RGB555 },
+	{ AV_PIX_FMT_BGR555,         SDL_PIXELFORMAT_BGR555 },
+	{ AV_PIX_FMT_RGB565,         SDL_PIXELFORMAT_RGB565 },
+	{ AV_PIX_FMT_BGR565,         SDL_PIXELFORMAT_BGR565 },
+	{ AV_PIX_FMT_RGB24,          SDL_PIXELFORMAT_RGB24 },
+	{ AV_PIX_FMT_BGR24,          SDL_PIXELFORMAT_BGR24 },
+	{ AV_PIX_FMT_0RGB32,         SDL_PIXELFORMAT_RGB888 },
+	{ AV_PIX_FMT_0BGR32,         SDL_PIXELFORMAT_BGR888 },
+	{ AV_PIX_FMT_NE(RGB0, 0BGR), SDL_PIXELFORMAT_RGBX8888 },
+	{ AV_PIX_FMT_NE(BGR0, 0RGB), SDL_PIXELFORMAT_BGRX8888 },
+	{ AV_PIX_FMT_RGB32,          SDL_PIXELFORMAT_ARGB8888 },
+	{ AV_PIX_FMT_RGB32_1,        SDL_PIXELFORMAT_RGBA8888 },
+	{ AV_PIX_FMT_BGR32,          SDL_PIXELFORMAT_ABGR8888 },
+	{ AV_PIX_FMT_BGR32_1,        SDL_PIXELFORMAT_BGRA8888 },
+	{ AV_PIX_FMT_YUV420P,        SDL_PIXELFORMAT_IYUV },
+	{ AV_PIX_FMT_YUYV422,        SDL_PIXELFORMAT_YUY2 },
+	{ AV_PIX_FMT_UYVY422,        SDL_PIXELFORMAT_UYVY },
+	{ AV_PIX_FMT_NONE,           SDL_PIXELFORMAT_UNKNOWN },
+};
+
+
 inline int FfmpegSdlAvPlayback::compute_mod(int a, int b) {
 	return a < 0 ? a % b + b : a % b;
 }
@@ -62,15 +102,23 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume) :
 	screen_width(0),
 	screen_height(0),
 	is_full_screen(0), 
-	audio_volume(0) {
-	if (startup_volume < 0)
+	audio_volume(0),
+	cursor_last_shown(0),
+	cursor_hidden(0),
+	renderer_info({ 0 }) {
+
+	if (startup_volume < 0) {
 		av_log(NULL, AV_LOG_WARNING, "-volume=%d < 0, setting to 0\n", startup_volume);
-	if (startup_volume > 100)
+	}
+	if (startup_volume > 100) {
 		av_log(NULL, AV_LOG_WARNING, "-volume=%d > 100, setting to 100\n", startup_volume);
+	}
 	audio_volume = av_clip(SDL_MIX_MAXVOLUME * av_clip(startup_volume, 0, 100) / 100, 0, SDL_MIX_MAXVOLUME);
 }
 
-FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {}
+FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
+	av_free(window_title);
+}
 
 int FfmpegSdlAvPlayback::Init(const char *filename, AVInputFormat *iformat) {
 	/* register all codecs, demux and protocols */
@@ -79,7 +127,7 @@ int FfmpegSdlAvPlayback::Init(const char *filename, AVInputFormat *iformat) {
 #endif
 	avformat_network_init();
 
-	int err = FfmpegAvPlayback::Init(filename, iformat, SDL_AUDIO_MIN_BUFFER_SIZE);
+	int err = FfmpegAvPlayback::Init(filename, iformat, kAudioMinBufferSize);
 	if (err) {
 		return err;
 	}
@@ -135,7 +183,7 @@ int FfmpegSdlAvPlayback::audio_open(int64_t wanted_channel_layout, int wanted_nb
 		next_sample_rate_idx--;
 	wanted_spec.format = AUDIO_S16SYS;
 	wanted_spec.silence = 0;
-	wanted_spec.samples = FFMAX(SDL_AUDIO_MIN_BUFFER_SIZE, 2 << av_log2(wanted_spec.freq / SDL_AUDIO_MAX_CALLBACKS_PER_SEC));
+	wanted_spec.samples = FFMAX(kAudioMinBufferSize, 2 << av_log2(wanted_spec.freq / kAudioMaxCallbackPerSec));
 	wanted_spec.callback = sdl_audio_callback_bridge;
 	wanted_spec.userdata = this;
 	while (!(audio_dev = SDL_OpenAudioDevice(NULL, 0, &wanted_spec, &spec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE))) {
@@ -188,12 +236,12 @@ int FfmpegSdlAvPlayback::video_open(const char* filename) {
 		h = screen_height;
 	}
 	else {
-		w = default_width;
-		h = default_height;
+		w = kDefaultWidth;
+		h = kDefaultHeight;
 	}
 
-	if (!window_title)
-		window_title = filename;
+	window_title = av_strdup(filename);
+
 	SDL_SetWindowTitle(window, window_title);
 	SDL_SetWindowSize(window, w, h);
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -210,8 +258,8 @@ int FfmpegSdlAvPlayback::video_open(const char* filename) {
 void FfmpegSdlAvPlayback::set_default_window_size(int width, int height, AVRational sar) {
 	SDL_Rect rect;
 	calculate_display_rect(&rect, 0, 0, INT_MAX, height, width, height, sar);
-	default_width = rect.w;
-	default_height = rect.h;
+	kDefaultWidth = rect.w;
+	kDefaultHeight = rect.h;
 }
 
 void FfmpegSdlAvPlayback::closeAudioDevice() {
@@ -241,7 +289,7 @@ int FfmpegSdlAvPlayback::upload_texture(SDL_Texture **tex, AVFrame *frame, struc
 		/* This should only happen if we are not using avfilter... */
 		*img_convert_ctx = sws_getCachedContext(*img_convert_ctx,
 			frame->width, frame->height, static_cast<AVPixelFormat>(frame->format), frame->width, frame->height,
-			AV_PIX_FMT_BGRA, sws_flags, NULL, NULL, NULL);
+			AV_PIX_FMT_BGRA, kSwsFlags, NULL, NULL, NULL);
 		if (*img_convert_ctx != NULL) {
 			uint8_t *pixels[4];
 			int pitch[4];
@@ -293,9 +341,9 @@ void FfmpegSdlAvPlayback::get_sdl_pix_fmt_and_blendmode(int format, Uint32 *sdl_
 		format == AV_PIX_FMT_BGR32 ||
 		format == AV_PIX_FMT_BGR32_1)
 		*sdl_blendmode = SDL_BLENDMODE_BLEND;
-	for (i = 0; i < FF_ARRAY_ELEMS(sdl_texture_format_map) - 1; i++) {
-		if (format == sdl_texture_format_map[i].format) {
-			*sdl_pix_fmt = sdl_texture_format_map[i].texture_fmt;
+	for (i = 0; i < FF_ARRAY_ELEMS(kTextureFormatMap) - 1; i++) {
+		if (format == kTextureFormatMap[i].format) {
+			*sdl_pix_fmt = kTextureFormatMap[i].texture_fmt;
 			return;
 		}
 	}
@@ -337,55 +385,9 @@ void FfmpegSdlAvPlayback::video_display() {
 
 void FfmpegSdlAvPlayback::video_image_display() {
 	Frame *vp;
-	Frame *sp = NULL;
 	SDL_Rect rect;
 
 	vp = pVideoState->get_pPictq()->peek_last();
-	if (pVideoState->get_subtitle_st()) {
-		if (pVideoState->get_pSubpq()->nb_remaining() > 0) {
-			sp = pVideoState->get_pSubpq()->peek();
-
-			if (vp->pts >= sp->pts + ((float)sp->sub.start_display_time / 1000)) {
-				if (!sp->uploaded) {
-					uint8_t* pixels[4];
-					int pitch[4];
-					int i;
-					if (!sp->width || !sp->height) {
-						sp->width = vp->width;
-						sp->height = vp->height;
-					}
-					if (realloc_texture(&sub_texture, SDL_PIXELFORMAT_ARGB8888, sp->width, sp->height, SDL_BLENDMODE_BLEND, 1) < 0)
-						return;
-
-					for (i = 0; i < sp->sub.num_rects; i++) {
-						AVSubtitleRect *sub_rect = sp->sub.rects[i];
-
-						sub_rect->x = av_clip(sub_rect->x, 0, sp->width);
-						sub_rect->y = av_clip(sub_rect->y, 0, sp->height);
-						sub_rect->w = av_clip(sub_rect->w, 0, sp->width - sub_rect->x);
-						sub_rect->h = av_clip(sub_rect->h, 0, sp->height - sub_rect->y);
-
-						sub_convert_ctx = sws_getCachedContext(sub_convert_ctx,
-							sub_rect->w, sub_rect->h, AV_PIX_FMT_PAL8,
-							sub_rect->w, sub_rect->h, AV_PIX_FMT_BGRA,
-							0, NULL, NULL, NULL);
-						if (!sub_convert_ctx) {
-							av_log(NULL, AV_LOG_FATAL, "Cannot initialize the conversion context\n");
-							return;
-						}
-						if (!SDL_LockTexture(sub_texture, (SDL_Rect *)sub_rect, (void **)pixels, pitch)) {
-							sws_scale(sub_convert_ctx, (const uint8_t * const *)sub_rect->data, sub_rect->linesize,
-								0, sub_rect->h, pixels, pitch);
-							SDL_UnlockTexture(sub_texture);
-						}
-					}
-					sp->uploaded = 1;
-				}
-			}
-			else
-				sp = NULL;
-		}
-	}
 
 	calculate_display_rect(&rect, this->xleft, this->ytop, this->width, this->height, vp->width, vp->height, vp->sar);
 
@@ -397,25 +399,6 @@ void FfmpegSdlAvPlayback::video_image_display() {
 	}
 
 	SDL_RenderCopyEx(renderer, vid_texture, NULL, &rect, 0, NULL, vp->flip_v ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE);
-	if (sp) {
-#if USE_ONEPASS_SUBTITLE_RENDER
-		SDL_RenderCopy(renderer, sub_texture, NULL, &rect);
-#else
-		int i;
-		double xratio = (double)rect.w / (double)sp->width;
-		double yratio = (double)rect.h / (double)sp->height;
-		for (i = 0; i < sp->sub.num_rects; i++) {
-			SDL_Rect *sub_rect = (SDL_Rect*)sp->sub.rects[i];
-			SDL_Rect target = {}
-				target.x = rect.x + sub_rect->x * xratio,
-				.y = rect.y + sub_rect->y * yratio,
-				.w = sub_rect->w * xratio,
-				.h = sub_rect->h * yratio
-		};
-		SDL_RenderCopy(renderer, sub_texture, sub_rect, &target);
-		}
-#endif
-	}
 }
 
 int FfmpegSdlAvPlayback::get_audio_volume() const {
@@ -433,13 +416,13 @@ void FfmpegSdlAvPlayback::refresh_loop_wait_event(SDL_Event *event) {
 	double remaining_time = 0.0;
 	SDL_PumpEvents();
 	while (!SDL_PeepEvents(event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT)) {
-		if (!cursor_hidden && av_gettime_relative() - cursor_last_shown > CURSOR_HIDE_DELAY) {
+		if (!cursor_hidden && av_gettime_relative() - cursor_last_shown > kCursorHideDelayInMillis) {
 			SDL_ShowCursor(0);
 			cursor_hidden = 1;
 		}
 		if (remaining_time > 0.0)
 			av_usleep((int64_t)(remaining_time * 1000000.0));
-		remaining_time = REFRESH_RATE;
+		remaining_time = kRefreshRate;
 		if (!pVideoState->get_paused() || force_refresh)
 			video_refresh(&remaining_time);
 		SDL_PumpEvents();
@@ -505,42 +488,6 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 				}
 			}
 
-			if (pVideoState->get_subtitle_st()) {
-				while (pVideoState->get_pSubpq()->nb_remaining() > 0) {
-					sp = pVideoState->get_pSubpq()->peek();
-
-					if (pVideoState->get_pSubpq()->nb_remaining() > 1)
-						sp2 = pVideoState->get_pSubpq()->peek_next();
-					else
-						sp2 = NULL;
-
-					if (sp->serial != pVideoState->get_pSubtitleq()->get_serial()
-						|| (pVideoState->get_vidclk_last_set_time() > (sp->pts + ((float)sp->sub.end_display_time / 1000)))
-						|| (sp2 && pVideoState->get_vidclk_last_set_time() > (sp2->pts + ((float)sp2->sub.start_display_time / 1000))))
-					{
-						if (sp->uploaded) {
-							int i;
-							for (i = 0; i < sp->sub.num_rects; i++) {
-								AVSubtitleRect *sub_rect = sp->sub.rects[i];
-								uint8_t *pixels;
-								int pitch, j;
-
-								//TODO: Review this
-								if (!SDL_LockTexture(sub_texture, (SDL_Rect *)sub_rect, (void **)&pixels, &pitch)) {
-									for (j = 0; j < sub_rect->h; j++, pixels += pitch)
-										memset(pixels, 0, sub_rect->w << 2);
-									SDL_UnlockTexture(sub_texture);
-								}
-							}
-						}
-						pVideoState->get_pSubpq()->next();
-					}
-					else {
-						break;
-					}
-				}
-			}
-
 			pVideoState->get_pPictq()->next();
 			force_refresh = 1;
 		}
@@ -566,33 +513,37 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 			aqsize = 0;
 			vqsize = 0;
 			sqsize = 0;
-			if (pVideoState->get_audio_st())
+			if (pVideoState->get_audio_st()) {
 				aqsize = pVideoState->get_pAudioq()->get_size();
-			if (pVideoState->get_video_st())
+			}
+			if (pVideoState->get_video_st()) {
 				vqsize = pVideoState->get_pVideoq()->get_size();
-			if (pVideoState->get_subtitle_st())
-				sqsize = pVideoState->get_pSubtitleq()->get_size();
+			}
 			av_diff = 0;
-			if (pVideoState->get_audio_st() && pVideoState->get_video_st())
+			if (pVideoState->get_audio_st() && pVideoState->get_video_st()) {
 				av_diff = pVideoState->get_pAudclk()->get_time() - pVideoState->get_pVidclk()->get_time();
-			else if (pVideoState->get_video_st())
+			}
+			else if (pVideoState->get_video_st()) {
 				av_diff = pVideoState->get_master_clock()->get_time() - pVideoState->get_pVidclk()->get_time();
-			else if (pVideoState->get_audio_st())
+			}
+			else if (pVideoState->get_audio_st()) {
 				av_diff = pVideoState->get_master_clock()->get_time() - pVideoState->get_pAudclk()->get_time();
+			}
 			av_log(NULL, AV_LOG_INFO,
-			"%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
-			pVideoState->get_master_clock()->get_time(),
-			pVideoState->get_rate(),
-			pVideoState->get_pVidclk()->get_time(),
-			(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
-			av_diff,
-			pVideoState->get_frame_drops_early(),
-			frame_drops_late,
-			aqsize / 1024,
-			vqsize / 1024,
-			sqsize,
-			pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
-			pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
+				"%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+				pVideoState->get_master_clock()->get_time(),
+				pVideoState->get_rate(),
+				pVideoState->get_pVidclk()->get_time(),
+				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
+				av_diff,
+				pVideoState->get_frame_drops_early(),
+				frame_drops_late,
+				aqsize / 1024,
+				vqsize / 1024,
+				sqsize,
+				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
+				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0
+			);
 			fflush(stdout);
 			last_time = cur_time;
 		}
@@ -633,11 +584,13 @@ void FfmpegSdlAvPlayback::InitSdl() {
 
 	if (!display_disable) {
 		int flags = SDL_WINDOW_HIDDEN;
-		if (borderless)
-			flags |= SDL_WINDOW_BORDERLESS;
-		else
+		if (kWindowResizable) {
 			flags |= SDL_WINDOW_RESIZABLE;
-		window = SDL_CreateWindow(program_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
+		}
+		else {
+			flags |= SDL_WINDOW_BORDERLESS;
+		}
+		window = SDL_CreateWindow(kDefaultWindowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, kDefaultWidth, kDefaultHeight, flags);
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 		if (window) {
 			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -723,11 +676,6 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 		refresh_loop_wait_event(&event);
 		switch (event.type) {
 		case SDL_KEYDOWN:
-			if (exit_on_keydown) {
-				destroy();
-				exit(0); // need to exit here to avoid joinable exception
-				break;
-			}
 			switch (event.key.keysym.sym) {
 			case SDLK_ESCAPE:
 			case SDLK_q:
@@ -756,11 +704,11 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				break;
 			case SDLK_KP_MULTIPLY:
 			case SDLK_0:
-				update_volume(1, SDL_VOLUME_STEP);
+				update_volume(1, kVolumeStepInDecibel);
 				break;
 			case SDLK_KP_DIVIDE:
 			case SDLK_9:
-				update_volume(-1, SDL_VOLUME_STEP);
+				update_volume(-1, kVolumeStepInDecibel);
 				break;
 			case SDLK_s: // S: Step to next frame
 				step_to_next_frame();
@@ -778,20 +726,6 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				} else {
 					rate /= 2;
 				}
-				break;
-			case SDLK_PAGEUP:
-				if (pVideoState->get_ic()->nb_chapters <= 1) {
-					incr = 600.0;
-					goto do_seek;
-				}
-				pVideoState->seek_chapter(1);
-				break;
-			case SDLK_PAGEDOWN:
-				if (pVideoState->get_ic()->nb_chapters <= 1) {
-					incr = -600.0;
-					goto do_seek;
-				}
-				pVideoState->seek_chapter(-1);
 				break;
 			case SDLK_LEFT:
 				incr = -1.0;
@@ -837,10 +771,6 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			if (exit_on_mousedown) {
-				destroy();
-				break;
-			}
 			if (event.button.button == SDL_BUTTON_LEFT) {
 				static int64_t last_mouse_left_click = 0;
 				if (av_gettime_relative() - last_mouse_left_click <= 500000) {
