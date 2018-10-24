@@ -34,56 +34,24 @@ extern "C" {
 	#include <assert.h>
 }
 
-#define MAX_QUEUE_SIZE (15 * 1024 * 1024)
-#define MIN_FRAMES 25
-#define EXTERNAL_CLOCK_MIN_FRAMES 2
-#define EXTERNAL_CLOCK_MAX_FRAMES 10
-
-/* no AV sync correction is done if below the minimum AV sync threshold */
-#define AV_SYNC_THRESHOLD_MIN 0.04
-/* AV sync correction is done if above the maximum AV sync threshold */
-#define AV_SYNC_THRESHOLD_MAX 0.1
-/* If a frame duration is longer than this, it will not be duplicated to compensate AV sync */
-#define AV_SYNC_FRAMEDUP_THRESHOLD 0.1
-/* no AV correction is done if too big error */
-#define AV_NOSYNC_THRESHOLD 10.0
-
-/* maximum audio speed change to get correct sync */
-#define SAMPLE_CORRECTION_PERCENT_MAX 10
-
-/* we use about AUDIO_DIFF_AVG_NB A-V differences to make the average */
-#define AUDIO_DIFF_AVG_NB   20
-
-#define VIDEO_PICTURE_QUEUE_SIZE 3
-#define SAMPLE_QUEUE_SIZE 9
-#define FRAME_QUEUE_SIZE FFMAX(SAMPLE_QUEUE_SIZE, VIDEO_PICTURE_QUEUE_SIZE)
-
-#define MY_AV_TIME_BASE_Q av_make_q(1, AV_TIME_BASE)
-
-enum {
-	AV_SYNC_AUDIO_MASTER, /* default choice */
-	AV_SYNC_VIDEO_MASTER,
-	AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
-};
-
-enum PlayerStateCallback {
-	TO_UNKNOWN = 0,		// 1
-	TO_READY,			// 2
-	TO_PLAYING,			// 3
-	TO_PAUSED,			// 4
-	TO_STOPPED,			// 5
-	TO_STALLED,			// 6
-	TO_FINISHED,		// 7
-	NUM_PLAYER_STATE_CALLBACKS
-};
-
-static int				seek_by_bytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
-static int64_t			start_time = AV_NOPTS_VALUE; // initial start time
-static int64_t			max_duration = AV_NOPTS_VALUE; // initial play time
-static int				loop = 1; // loop through the video
-
 //what will be the streamer in the future implementations
 class VideoState {
+public:
+	enum AvSyncType {
+		AV_SYNC_AUDIO_MASTER, /* default choice */
+		AV_SYNC_VIDEO_MASTER,
+		AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
+	};
+	enum PlayerStateCallback {
+		TO_UNKNOWN = 0,		// 1
+		TO_READY,			// 2
+		TO_PLAYING,			// 3
+		TO_PAUSED,			// 4
+		TO_STOPPED,			// 5
+		TO_STALLED,			// 6
+		TO_FINISHED,		// 7
+		NUM_PLAYER_STATE_CALLBACKS
+	};
 private:
 	int abort_request;
 	bool paused; // TODO(fraudies): Check if this need to be atomic
@@ -162,6 +130,9 @@ private:
 	struct AudioParams audio_src;
 	struct AudioParams audio_tgt;
 	int frame_drops_early;
+	int64_t	start_time; // initial start time
+	int64_t	max_duration; // initial play time
+	int	loop; // loop through the video
 
 	inline int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
 		enum AVSampleFormat fmt2, int64_t channel_count2) {
@@ -207,17 +178,31 @@ private:
 	*/
 	int audio_decode_frame();
 
-	std::function<void()> player_state_callbacks[NUM_PLAYER_STATE_CALLBACKS];
+	std::function<void()> player_state_callbacks[VideoState::NUM_PLAYER_STATE_CALLBACKS];
 	std::function<int(int64_t, int, int, struct AudioParams*)> audio_open_callback;
 	std::function<void()> pause_audio_device_callback;
 	std::function<void()> destroy_callback; // TODO(fraudies): Possibly clean-up through destructor
 	std::function<void()> step_to_next_frame_callback;
 	VideoState(int audio_buffer_size);
+	
+	/* get the current synchronization type */
+	AvSyncType get_master_sync_type() const;
 
 	static bool kEnableShowFormat;
 	static bool kEnableFastDecode;
 	static bool kEnableGeneratePts;
+	static int kMaxQueueSize;
+	static int kMinFrames;
+	static double kAvSyncThresholdMin;
+	static double kAvSyncFrameDupThreshold;
+	static double kAvNoSyncThreshold;
+	static int kSampleCorrectionMaxPercent;
+	static int kAudioDiffAvgNum;
+	static int kVideoPictureQueueSize;
+	static int kSampleQueueSize;
 public:
+	static double kAvSyncThresholdMax;
+	static int kEnableSeekByBytes;
 	static VideoState* create_video_state(int audio_buffer_size);
 
 	~VideoState();
@@ -309,8 +294,7 @@ public:
 
 	double compute_target_delay(double delay);
 
-	/* get the current synchronization type */
-	int get_master_sync_type() const;
+
 
 	/* get the current master clock */
 	Clock* get_master_clock() const;

@@ -5,6 +5,9 @@
 
 #include <thread>
 
+#define SAMPLE_QUEUE_SIZE 9
+#define VIDEO_PICTURE_QUEUE_SIZE 3
+
 TEST(FrameQueueTest, CreateDeleteFrameQueueTest ) {
 	PacketQueue packetQueue;
     FrameQueue* frameQueue = FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);

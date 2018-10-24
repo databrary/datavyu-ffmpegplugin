@@ -7,7 +7,6 @@ extern "C" {
 #ifndef CLOCK_H_
 #define CLOCK_H_
 
-#define AV_NOSYNC_THRESHOLD 10 // 10 sec
 #define MICRO 1000000.0
 
 // Clock to keep decoding in sync
@@ -24,14 +23,10 @@ class Clock {
         double time;				// clock time
         int serial;					// clock is based on a packet with this serial
         const int *queueSerial;	// pointer to the current packet queue serial, used for obsolete clock detection
+		double noSyncThreshold;
+
 		inline bool is_seek() const { return *queueSerial != serial; }
     public:
-        enum {
-            AV_SYNC_AUDIO_MASTER, // default
-            AV_SYNC_VIDEO_MASTER,
-            AV_SYNC_EXTERNAL_CLOCK, // synchronize to an external clock
-        };
-
 		Clock(const int *queue_serial);
 
 		Clock();
@@ -42,7 +37,7 @@ class Clock {
 
 		void set_time(double newTime, int newSerial);
 
-		static void sync_slave_to_master(Clock *c, Clock *slave);
+		static void sync_slave_to_master(Clock *c, Clock *slave, double noSyncThreshold);
 };
 
 #endif CLOCK_H_

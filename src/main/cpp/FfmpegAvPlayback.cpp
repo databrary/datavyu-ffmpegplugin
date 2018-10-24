@@ -45,7 +45,7 @@ int FfmpegAvPlayback::Init(const char *filename, AVInputFormat *iformat, int aud
 
 FfmpegAvPlayback::~FfmpegAvPlayback() {}
 
-void FfmpegAvPlayback::set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func) {
+void FfmpegAvPlayback::set_player_state_callback_func(VideoState::PlayerStateCallback callback, const std::function<void()>& func) {
 	pVideoState->set_player_state_callback_func(callback, func);
 }
 
