@@ -25,7 +25,7 @@ Decoder::~Decoder() {
 }
 
 
-int Decoder::decode_frame(AVFrame *frame, AVSubtitle *sub) {
+int Decoder::decode_frame(AVFrame *frame) {
 	int ret = AVERROR(EAGAIN);
 
 	for (;;) {
@@ -93,26 +93,12 @@ int Decoder::decode_frame(AVFrame *frame, AVSubtitle *sub) {
 			next_pts_tb = start_pts_tb;
 		}
 		else {
-			if (avctx->codec_type == AVMEDIA_TYPE_SUBTITLE) {
-				int got_frame = 0;
-				ret = avcodec_decode_subtitle2(avctx, sub, &got_frame, &pkt);
-				if (ret < 0) {
-					ret = AVERROR(EAGAIN);
-				}
-				else {
-					if (got_frame && !pkt.data) {
-						packet_pending = 1;
-						av_packet_move_ref(&this->pkt, &pkt);
-					}
-					ret = got_frame ? 0 : (pkt.data ? AVERROR(EAGAIN) : AVERROR_EOF);
-				}
-			}
-			else {
-				if (avcodec_send_packet(avctx, &pkt) == AVERROR(EAGAIN)) {
-					av_log(avctx, AV_LOG_ERROR, "Receive_frame and send_packet both returned EAGAIN, which is an API violation.\n");
-					packet_pending = 1;
-					av_packet_move_ref(&this->pkt, &pkt);
-				}
+			if (avctx->codec_type != AVMEDIA_TYPE_SUBTITLE 
+				&& avcodec_send_packet(avctx, &pkt) == AVERROR(EAGAIN)) {
+				av_log(avctx, AV_LOG_ERROR, 
+					"Receive_frame and send_packet both returned EAGAIN, which is an API violation.\n");
+				packet_pending = 1;
+				av_packet_move_ref(&this->pkt, &pkt);
 			}
 			av_packet_unref(&pkt);
 		}

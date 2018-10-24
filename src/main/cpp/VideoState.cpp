@@ -140,7 +140,7 @@ out:
 int VideoState::get_video_frame(AVFrame *frame) {
 	int got_picture;
 
-	if ((got_picture = pViddec->decode_frame(frame, NULL)) < 0)
+	if ((got_picture = pViddec->decode_frame(frame)) < 0)
 		return -1;
 
 	if (got_picture) {
@@ -675,17 +675,6 @@ int VideoState::read_thread() {
 			}
 			was_stalled = false;
 		}
-
-#if CONFIG_RTSP_DEMUXER || CONFIG_MMSH_PROTOCOL
-		if (paused &&
-			(!strcmp(ic->iformat->name, "rtsp") ||
-			(ic->pb && !strncmp(input_filename, "mmsh:", 5)))) {
-			/* wait 10 ms to avoid trying to get another packet */
-			/* XXX: horrible */
-			SDL_Delay(10);
-			continue;
-		}
-#endif
 		if (new_rate_req) {
 			rate_value = new_rate_value;
 			new_rate_req = 0;
@@ -845,7 +834,7 @@ int VideoState::audio_thread() {
 		return AVERROR(ENOMEM);
 
 	do {
-		if ((got_frame = pAuddec->decode_frame(frame, NULL)) < 0)
+		if ((got_frame = pAuddec->decode_frame(frame)) < 0)
 			goto the_end;
 
 		if (got_frame) {

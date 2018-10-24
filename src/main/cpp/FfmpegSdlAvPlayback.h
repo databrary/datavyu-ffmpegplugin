@@ -21,10 +21,8 @@ private:
 	int xpos;
 
 	struct SwsContext *img_convert_ctx;
-	struct SwsContext *sub_convert_ctx;
 
 	SDL_Texture *vis_texture;
-	SDL_Texture *sub_texture;
 	SDL_Texture *vid_texture;
 
 	int last_i_start;

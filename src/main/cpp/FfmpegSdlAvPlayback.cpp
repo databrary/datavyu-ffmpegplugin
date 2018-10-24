@@ -94,9 +94,7 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume) :
 	window(nullptr),
 	renderer(nullptr),
 	img_convert_ctx(nullptr),
-	sub_convert_ctx(nullptr),
 	vis_texture(nullptr),
-	sub_texture(nullptr),
 	vid_texture(nullptr),
 	last_i_start(0),
 	screen_width(0),
@@ -631,14 +629,9 @@ void FfmpegSdlAvPlayback::destroy() {
 	if (vid_texture) {
 		SDL_DestroyTexture(vid_texture);
 	}
-	
-	if (sub_texture) {
-		SDL_DestroyTexture(sub_texture);
-	}
 
 	// Cleanup resampling
 	sws_freeContext(img_convert_ctx);
-	sws_freeContext(sub_convert_ctx);
 
 	// Cleanup SDL components
 	if (renderer) {
