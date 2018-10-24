@@ -33,7 +33,7 @@ class Decoder {
 			std::condition_variable *empty_queue_cond);
 		virtual ~Decoder();
 
-		int	decode_frame(AVFrame *frame, AVSubtitle *sub);
+		int	decode_frame(AVFrame *frame);
 
 		void set_start_pts(int64_t start_pts);
 		void set_start_pts_tb(AVRational start_pts_tb);
