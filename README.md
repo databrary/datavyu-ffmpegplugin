@@ -57,6 +57,19 @@ supported at 1x. Whenever, the caller plays video back at a different rate at 1x
 		1. Add a directory to `Library Directories` that points to `C:\SDL2\lib\x64`.
 1. Right click on the `FfmpegMediaPlayer` project and hit build. The build should be a success and create `src\main\cpp\x64\Debug\FfmpegMediaPlayer.dll`.
 
+### Code formatting
+We follow google's style guide. You can use the following command line to format the code
+```
+    clang-format -style=Google -i *.cc *.h
+```
+from the path that the files are.
+
+On windows you can install the clang compiler from here
+https://llvm.org/builds/
+or the extension for Visual Studio from here
+https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat
+If you plan to use the extension use CTRL + R & D to all code in one file.
+
 ### Testing Native Code
 To test the native code we use catch 2.0.1 that can be downloaded from here
 

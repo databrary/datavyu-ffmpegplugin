@@ -26,11 +26,10 @@
 #ifndef _PIPELINE_H_
 #define _PIPELINE_H_
 
+#include "AudioVideoFormats.h"
+#include "PipelineOptions.h"
 #include <stdint.h>
 #include <sys/stat.h>
-#include "PipelineOptions.h"
-#include "AudioVideoFormats.h"
-
 
 class CMedia;
 class CJavaPlayerEventDispatcher;
@@ -40,65 +39,64 @@ class CJavaPlayerEventDispatcher;
  *
  * Underlying object that interfaces the JNI layer to the actual media engine
  */
-class CPipeline
-{
+class CPipeline {
 public:
-    enum PlayerState
-    {
-        Unknown = 0,
-        Ready = 1,
-        Playing = 2,
-        Paused = 3,
-        Stopped = 4,
-        Stalled = 5,
-        Finished = 6,
-        Error = 7
-    };
+  enum PlayerState {
+    Unknown = 0,
+    Ready = 1,
+    Playing = 2,
+    Paused = 3,
+    Stopped = 4,
+    Stalled = 5,
+    Finished = 6,
+    Error = 7
+  };
 
 public:
-    CPipeline(CPipelineOptions* pOptions=NULL);
-    virtual ~CPipeline();
+  CPipeline(CPipelineOptions *pOptions = NULL);
+  virtual ~CPipeline();
 
-    void                    SetEventDispatcher(CJavaPlayerEventDispatcher* pEventDispatcher);
+  void SetEventDispatcher(CJavaPlayerEventDispatcher *pEventDispatcher);
 
-    virtual uint32_t        Init(const char * filename) = 0;
-    virtual void            Dispose();
+  virtual uint32_t Init(const char *filename) = 0;
+  virtual void Dispose();
 
-    virtual uint32_t        Play() = 0;
-    virtual uint32_t        Stop() = 0;
-    virtual uint32_t        Pause() = 0;
-    virtual uint32_t        StepForward() = 0;
-    virtual uint32_t        StepBackward() = 0;
-    virtual uint32_t        Finish() = 0;
+  virtual uint32_t Play() = 0;
+  virtual uint32_t Stop() = 0;
+  virtual uint32_t Pause() = 0;
+  virtual uint32_t StepForward() = 0;
+  virtual uint32_t StepBackward() = 0;
+  virtual uint32_t Finish() = 0;
 
-    virtual uint32_t        Seek(double dSeekTime) = 0;
+  virtual uint32_t Seek(double dSeekTime) = 0;
 
-    virtual uint32_t        GetDuration(double* pdDuration) = 0;
-    virtual uint32_t        GetStreamTime(double* pdStreamTime) = 0;
-	virtual uint32_t		GetFps(double* pdFps) = 0;
-	virtual uint32_t		GetImageWidth(int* iWidth) const = 0;
-	virtual uint32_t		GetImageHeight(int* iheight) const = 0;
+  virtual uint32_t GetDuration(double *pdDuration) = 0;
+  virtual uint32_t GetStreamTime(double *pdStreamTime) = 0;
+  virtual uint32_t GetFps(double *pdFps) = 0;
+  virtual uint32_t GetImageWidth(int *iWidth) const = 0;
+  virtual uint32_t GetImageHeight(int *iheight) const = 0;
 
-    virtual uint32_t        SetRate(float fRate) = 0;
-    virtual uint32_t        GetRate(float* pfRate) = 0;
+  virtual uint32_t SetRate(float fRate) = 0;
+  virtual uint32_t GetRate(float *pfRate) = 0;
 
-    virtual uint32_t        SetVolume(float fVolume) = 0;
-    virtual uint32_t        GetVolume(float* pfVolume) = 0;
+  virtual uint32_t SetVolume(float fVolume) = 0;
+  virtual uint32_t GetVolume(float *pfVolume) = 0;
 
-    virtual uint32_t        SetBalance(float fBalance) = 0;
-    virtual uint32_t        GetBalance(float* pfBalance) = 0;
+  virtual uint32_t SetBalance(float fBalance) = 0;
+  virtual uint32_t GetBalance(float *pfBalance) = 0;
 
-    virtual uint32_t        SetAudioSyncDelay(long lMillis) = 0;
-    virtual uint32_t        GetAudioSyncDelay(long* plMillis) = 0;
+  virtual uint32_t SetAudioSyncDelay(long lMillis) = 0;
+  virtual uint32_t GetAudioSyncDelay(long *plMillis) = 0;
 
 protected:
-	CJavaPlayerEventDispatcher* m_pEventDispatcher;
-	CPipelineOptions*			m_pOptions;
-    PlayerState					m_PlayerState;
-	PlayerState					m_PlayerPendingState; // This is necessary to get from stalled into the next correct state
+  CJavaPlayerEventDispatcher *m_pEventDispatcher;
+  CPipelineOptions *m_pOptions;
+  PlayerState m_PlayerState;
+  PlayerState m_PlayerPendingState; // This is necessary to get from stalled
+                                    // into the next correct state
 
-	void UpdatePlayerState(PlayerState newState);
-	void SetPlayerState(PlayerState newPlayerState, bool bSilent);
+  void UpdatePlayerState(PlayerState newState);
+  void SetPlayerState(PlayerState newPlayerState, bool bSilent);
 };
 
-#endif  //_PIPELINE_H_
+#endif //_PIPELINE_H_
