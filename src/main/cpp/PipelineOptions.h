@@ -26,8 +26,8 @@
 #ifndef _PIPELINE_OPTIONS_H_
 #define _PIPELINE_OPTIONS_H_
 
-#include <string.h>
 #include <list>
+#include <string.h>
 #include <string>
 
 #include "FfmpegJniUtils.h"
@@ -35,28 +35,27 @@
 using namespace std;
 typedef list<string> ContentTypesList;
 
-class CPipelineOptions
-{
+class CPipelineOptions {
 public:
 public:
-	// TODO(fraudies): Add the audio and video format here
-    CPipelineOptions(
-		AudioFormat audioFormat = AudioFormat(),
-		PixelFormat pixelFormat = PixelFormat(),
-		int audioBufferSizeInBy = 0)
-		: m_audioFormat(audioFormat),
-		m_pixelFormat(pixelFormat),
-		m_audioBufferSizeInBy(audioBufferSizeInBy)
-    {}
+  // TODO(fraudies): Add the audio and video format here
+  CPipelineOptions(AudioFormat audioFormat = AudioFormat(),
+                   PixelFormat pixelFormat = PixelFormat(),
+                   int audioBufferSizeInBy = 0)
+      : m_audioFormat(audioFormat), m_pixelFormat(pixelFormat),
+        m_audioBufferSizeInBy(audioBufferSizeInBy) {}
 
-    virtual ~CPipelineOptions() {}
-	inline const AudioFormat* GetAudioFormat() const { return &m_audioFormat; }
-	inline const PixelFormat* GetPixelFormat() const { return &m_pixelFormat; }
-	inline const int GetAudioBufferSizeInBy() const { return m_audioBufferSizeInBy;  }
+  virtual ~CPipelineOptions() {}
+  inline const AudioFormat *GetAudioFormat() const { return &m_audioFormat; }
+  inline const PixelFormat *GetPixelFormat() const { return &m_pixelFormat; }
+  inline const int GetAudioBufferSizeInBy() const {
+    return m_audioBufferSizeInBy;
+  }
+
 private:
-	AudioFormat m_audioFormat;
-	PixelFormat m_pixelFormat;
-	int			m_audioBufferSizeInBy;
+  AudioFormat m_audioFormat;
+  PixelFormat m_pixelFormat;
+  int m_audioBufferSizeInBy;
 };
 
-#endif  //_PIPELINE_OPTIONS_H_
+#endif //_PIPELINE_OPTIONS_H_

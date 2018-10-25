@@ -4,4 +4,3 @@
 int mpvToJavaErrNo(int mpvErrNo);
 
 #endif // _MPV_ERROR_UTILS_H_
-

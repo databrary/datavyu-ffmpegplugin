@@ -1,7 +1,7 @@
 #include <mutex>
 
 extern "C" {
-	#include <libavutil/time.h> // timer
+#include <libavutil/time.h> // timer
 }
 
 #ifndef CLOCK_H_
@@ -19,25 +19,28 @@ extern "C" {
 // code design at the cost of performance).
 //
 class Clock {
-    private:
-        double time;				// clock time
-        int serial;					// clock is based on a packet with this serial
-        const int *queueSerial;	// pointer to the current packet queue serial, used for obsolete clock detection
-		double noSyncThreshold;
+private:
+  double time;            // clock time
+  int serial;             // clock is based on a packet with this serial
+  const int *queueSerial; // pointer to the current packet queue serial, used
+                          // for obsolete clock detection
+  double noSyncThreshold;
 
-		inline bool is_seek() const { return *queueSerial != serial; }
-    public:
-		Clock(const int *queue_serial);
+  inline bool is_seek() const { return *queueSerial != serial; }
 
-		Clock();
-    
-		double get_time() const; // for stream time, depends on rate
+public:
+  Clock(const int *queue_serial);
 
-		inline double get_serial() const { return serial; }
+  Clock();
 
-		void set_time(double newTime, int newSerial);
+  double get_time() const; // for stream time, depends on rate
 
-		static void sync_slave_to_master(Clock *c, Clock *slave, double noSyncThreshold);
+  inline double get_serial() const { return serial; }
+
+  void set_time(double newTime, int newSerial);
+
+  static void sync_slave_to_master(Clock *c, Clock *slave,
+                                   double noSyncThreshold);
 };
 
 #endif CLOCK_H_

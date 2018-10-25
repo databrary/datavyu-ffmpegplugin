@@ -28,41 +28,40 @@
 
 #include <jni.h>
 
-#include "Pipeline.h"
 #include "Media.h"
+#include "Pipeline.h"
 
 using namespace std;
 
-class CJavaPlayerEventDispatcher
-{
+class CJavaPlayerEventDispatcher {
 public:
-    CJavaPlayerEventDispatcher();
-    ~CJavaPlayerEventDispatcher();
+  CJavaPlayerEventDispatcher();
+  ~CJavaPlayerEventDispatcher();
 
-    void Init(JNIEnv *env, jobject PlayerInstance, CMedia* pMedia);
-    void Dispose();
+  void Init(JNIEnv *env, jobject PlayerInstance, CMedia *pMedia);
+  void Dispose();
 
-    virtual bool SendPlayerMediaErrorEvent(int errorCode);
-    virtual bool SendPlayerStateEvent(int newState, double presentTime);
+  virtual bool SendPlayerMediaErrorEvent(int errorCode);
+  virtual bool SendPlayerStateEvent(int newState, double presentTime);
 
 private:
-    JavaVM *m_PlayerVM;
-    jobject m_PlayerInstance;
-    jlong   m_MediaReference; // FIXME: Nuke this field, it's completely unused
+  JavaVM *m_PlayerVM;
+  jobject m_PlayerInstance;
+  jlong m_MediaReference; // FIXME: Nuke this field, it's completely unused
 
-    static jmethodID m_SendWarningMethod;
+  static jmethodID m_SendWarningMethod;
 
-    static jmethodID m_SendPlayerMediaErrorEventMethod;
-    static jmethodID m_SendPlayerStateEventMethod;
+  static jmethodID m_SendPlayerMediaErrorEventMethod;
+  static jmethodID m_SendPlayerStateEventMethod;
 
-    static jobject CreateObject(JNIEnv *env, jmethodID *cid,
-                                const char* class_name, const char* signature,
-                                jvalue* value);
-    static jobject CreateBoolean(JNIEnv *env, jboolean boolean_value);
-    static jobject CreateInteger(JNIEnv *env, jint int_value);
-    static jobject CreateLong(JNIEnv *env, jlong long_value);
-    static jobject CreateDouble(JNIEnv *env, jdouble double_value);
-    static jobject CreateDuration(JNIEnv *env, jlong duration);
+  static jobject CreateObject(JNIEnv *env, jmethodID *cid,
+                              const char *class_name, const char *signature,
+                              jvalue *value);
+  static jobject CreateBoolean(JNIEnv *env, jboolean boolean_value);
+  static jobject CreateInteger(JNIEnv *env, jint int_value);
+  static jobject CreateLong(JNIEnv *env, jlong long_value);
+  static jobject CreateDouble(JNIEnv *env, jdouble double_value);
+  static jobject CreateDuration(JNIEnv *env, jlong duration);
 };
 
 #endif // _JAVA_PLAYER_EVENT_DISPATCHER_H_

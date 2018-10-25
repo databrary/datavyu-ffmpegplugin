@@ -7,10 +7,9 @@
 
 #include <iostream>
 
-TEST (DecoderTest, CreateDeleteTest) {
-	std::condition_variable empty_queue_cond;
-	PacketQueue packetQueue;
-	AVCodecContext* pAvctx = avcodec_alloc_context3(NULL);
-	Decoder decoder(pAvctx, &packetQueue, &empty_queue_cond);
+TEST(DecoderTest, CreateDeleteTest) {
+  std::condition_variable empty_queue_cond;
+  PacketQueue packetQueue;
+  AVCodecContext *pAvctx = avcodec_alloc_context3(NULL);
+  Decoder decoder(pAvctx, &packetQueue, &empty_queue_cond);
 }
-

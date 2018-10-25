@@ -29,23 +29,22 @@
 #include <jni.h>
 #include <string>
 
-#if defined (_LP64) || defined(_WIN64)
-#define jlong_to_ptr(a) ((void*)(a))
+#if defined(_LP64) || defined(_WIN64)
+#define jlong_to_ptr(a) ((void *)(a))
 #define ptr_to_jlong(a) ((jlong)(a))
 #else
-#define jlong_to_ptr(a) ((void*)(int)(a))
+#define jlong_to_ptr(a) ((void *)(int)(a))
 #define ptr_to_jlong(a) ((jlong)(int)(a))
 #endif
 
 // Throws an exception of the given type (class name)
 // if type is NULL, then will throw a generic Exception
-void ThrowJavaException(JNIEnv *env, const char* type, const char* message);
+void ThrowJavaException(JNIEnv *env, const char *type, const char *message);
 
 // Gets a valid, usable JNIEnv for the current thread
 // if didAttach is true on return then you should call
 // jvm->DetachCurrentThread() when done
 JNIEnv *GetJavaEnvironment(JavaVM *jvm, jboolean &didAttach);
-
 
 /*
  * Example usage of this class:
@@ -59,19 +58,21 @@ JNIEnv *GetJavaEnvironment(JavaVM *jvm, jboolean &didAttach);
  */
 class CJavaEnvironment {
 public:
-    CJavaEnvironment(JavaVM *);
-    CJavaEnvironment(JNIEnv *); // create with an existing JNIEnv
-    ~CJavaEnvironment();
+  CJavaEnvironment(JavaVM *);
+  CJavaEnvironment(JNIEnv *); // create with an existing JNIEnv
+  ~CJavaEnvironment();
 
-    JNIEnv *getEnvironment();
-    bool hasException();    // return true if an exception is raised (but do nothing with it)
-    bool clearException();  // if an exception is raised, clear it and return true
-    bool reportException(); // as above but log the exception to Logger
-    void throwException(std::string message); // Throw an exception with the given message
+  JNIEnv *getEnvironment();
+  bool hasException(); // return true if an exception is raised (but do nothing
+                       // with it)
+  bool clearException();  // if an exception is raised, clear it and return true
+  bool reportException(); // as above but log the exception to Logger
+  void throwException(
+      std::string message); // Throw an exception with the given message
 
 private:
-    JNIEnv *environment;
-    jboolean attached;
+  JNIEnv *environment;
+  jboolean attached;
 };
 
-#endif  //_JNI_UTILS_H_
+#endif //_JNI_UTILS_H_
