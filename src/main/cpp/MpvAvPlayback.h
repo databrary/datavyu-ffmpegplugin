@@ -43,7 +43,7 @@ typedef mpv_event *(*MpvWaitEvent)(intptr_t, double);
  * NOTE: THe mpv error codes schema:  >= 0 Succes, < 0 error
  */
 // TODO(Reda) Much naming convention of the ffmpeg plugin and error returned
-class MpvAvPlayback : public FfmpegAvPlayback {
+class MpvAvPlayback {
 
 private:
   HINSTANCE _libMpvDll;

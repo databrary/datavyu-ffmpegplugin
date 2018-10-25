@@ -19,7 +19,7 @@ typedef struct Frame {
   int width;
   int height;
   int format;
-  AVRational sar;
+  AVRational aspect_ration;
   int uploaded;
   int flip_v;
 } Frame;

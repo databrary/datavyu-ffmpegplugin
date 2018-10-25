@@ -22,36 +22,36 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char *input_file) {
     return ERROR_PIPELINE_NULL;
   }
 
-  int err = pSdlPlayback->Init(input_file, file_iformat);
+  int err = pSdlPlayback->OpenVideo(input_file, file_iformat);
   if (err) {
     delete pSdlPlayback;
     return err;
   }
 
   // Assign the callback functions
-  pSdlPlayback->set_player_state_callback_func(
+  pSdlPlayback->SetPlayerStateCallbackFunction(
       VideoState::PlayerStateCallback::TO_UNKNOWN,
       [this] { this->UpdatePlayerState(Unknown); });
-  pSdlPlayback->set_player_state_callback_func(
+  pSdlPlayback->SetPlayerStateCallbackFunction(
       VideoState::PlayerStateCallback::TO_READY,
       [this] { this->UpdatePlayerState(Ready); });
-  pSdlPlayback->set_player_state_callback_func(
+  pSdlPlayback->SetPlayerStateCallbackFunction(
       VideoState::PlayerStateCallback::TO_PLAYING,
       [this] { this->UpdatePlayerState(Playing); });
-  pSdlPlayback->set_player_state_callback_func(
+  pSdlPlayback->SetPlayerStateCallbackFunction(
       VideoState::PlayerStateCallback::TO_PAUSED,
       [this] { this->UpdatePlayerState(Paused); });
-  pSdlPlayback->set_player_state_callback_func(
+  pSdlPlayback->SetPlayerStateCallbackFunction(
       VideoState::PlayerStateCallback::TO_STOPPED,
       [this] { this->UpdatePlayerState(Stopped); });
-  pSdlPlayback->set_player_state_callback_func(
+  pSdlPlayback->SetPlayerStateCallbackFunction(
       VideoState::PlayerStateCallback::TO_STALLED,
       [this] { this->UpdatePlayerState(Stalled); });
-  pSdlPlayback->set_player_state_callback_func(
+  pSdlPlayback->SetPlayerStateCallbackFunction(
       VideoState::PlayerStateCallback::TO_FINISHED,
       [this] { this->UpdatePlayerState(Finished); });
 
-  err = pSdlPlayback->init_and_start_display_loop();
+  err = pSdlPlayback->InitializeAndStartDisplayLoop();
   if (err) {
     return err;
   }
@@ -60,7 +60,6 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char *input_file) {
 }
 
 void FfmpegSdlAvPlaybackPipeline::Dispose() {
-  pSdlPlayback->destroy();
   delete pSdlPlayback;
   pSdlPlayback = nullptr;
 }
@@ -69,7 +68,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Play() {
   if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  pSdlPlayback->play();
+  pSdlPlayback->Play();
 
   return ERROR_NONE; // no error
 }
@@ -78,7 +77,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Stop() {
   if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  pSdlPlayback->stop();
+  pSdlPlayback->Stop();
 
   return ERROR_NONE; // no error
 }
@@ -87,7 +86,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
   if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  pSdlPlayback->toggle_pause();
+  pSdlPlayback->TogglePauseAndStopStep();
 
   return ERROR_NONE; // no error
 }
@@ -96,7 +95,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::StepForward() {
   if (pSdlPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
 
-  pSdlPlayback->step_to_next_frame();
+  pSdlPlayback->StepToNextFrame();
 
   return ERROR_NONE;
 }
@@ -112,15 +111,15 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
   if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  double pos = pSdlPlayback->get_stream_time();
+  double pos = pSdlPlayback->GetTime();
   if (isnan(pos))
-    pos = (double)pSdlPlayback->get_seek_pos() / AV_TIME_BASE;
+    pos = (double)pSdlPlayback->GetSeekTime() / AV_TIME_BASE;
   double incr = dSeekTime - pos;
-  if (pSdlPlayback->get_start_time() != AV_NOPTS_VALUE &&
-      dSeekTime < pSdlPlayback->get_start_time() / (double)AV_TIME_BASE)
-    dSeekTime = pSdlPlayback->get_start_time() / (double)AV_TIME_BASE;
+  if (pSdlPlayback->GetStartTime() != AV_NOPTS_VALUE &&
+      dSeekTime < pSdlPlayback->GetStartTime() / (double)AV_TIME_BASE)
+    dSeekTime = pSdlPlayback->GetStartTime() / (double)AV_TIME_BASE;
 
-  pSdlPlayback->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE),
+  pSdlPlayback->Seek((int64_t)(dSeekTime * AV_TIME_BASE),
                             (int64_t)(incr * AV_TIME_BASE), 0);
 
   return ERROR_NONE; // no error
@@ -130,7 +129,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetDuration(double *pdDuration) {
   if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  *pdDuration = pSdlPlayback->get_duration();
+  *pdDuration = pSdlPlayback->GetDuration();
 
   return ERROR_NONE; // no error
 }
@@ -146,7 +145,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double *pdStreamTime) {
   // as accurate as the audio clock  (Master))
   //*pdStreamTime = pSdlPlayback->get_master_clock();
 
-  *pdStreamTime = pSdlPlayback->get_stream_time();
+  *pdStreamTime = pSdlPlayback->GetTime();
 
   return ERROR_NONE; // no error
 }
@@ -156,7 +155,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double *pdFps) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  *pdFps = pSdlPlayback->get_fps();
+  *pdFps = pSdlPlayback->GetFrameRate();
 
   return ERROR_NONE;
 }
@@ -166,7 +165,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  return pSdlPlayback->set_rate(fRate);
+  return pSdlPlayback->SetSpeed(fRate);
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetRate(float *pfRate) {
@@ -174,7 +173,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetRate(float *pfRate) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  *pfRate = pSdlPlayback->get_rate();
+  *pfRate = pSdlPlayback->GetSpeed();
 
   return ERROR_NONE;
 }
@@ -183,7 +182,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::SetVolume(float fVolume) {
   if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
+  pSdlPlayback->SetVolume(fVolume * SDL_MIX_MAXVOLUME);
   return ERROR_NONE;
 }
 
@@ -191,7 +190,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetVolume(float *pfVolume) {
   if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  *pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
+  *pfVolume = pSdlPlayback->GetVolume() / (double)SDL_MIX_MAXVOLUME;
   return ERROR_NONE;
 }
 
