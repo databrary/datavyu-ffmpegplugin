@@ -32,11 +32,11 @@ void Clock::set_time(double newTime, int newSerial) {
 	serial = newSerial;
 }
 
-void Clock::sync_slave_to_master(Clock *slave, Clock *master) {
+void Clock::sync_slave_to_master(Clock *slave, Clock *master, double noSyncThreshold) {
 	double master_time = master->get_time();
 	double slave_time = slave->get_time();
 	if (!isnan(slave_time) && (isnan(master_time) 
-		|| fabs(master_time - slave_time) > AV_NOSYNC_THRESHOLD)) {
+		|| fabs(master_time - slave_time) > noSyncThreshold)) {
 		av_log(NULL, AV_LOG_TRACE, "Sync %7.2f to %7.2f\n", slave_time, master_time);
 		slave->set_time(slave_time, master->serial);
 	}

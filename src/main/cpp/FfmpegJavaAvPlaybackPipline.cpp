@@ -23,25 +23,25 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
 	}
 
 	// Assign the callback functions
-	pJavaPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {
+	pJavaPlayback->set_player_state_callback_func(VideoState::PlayerStateCallback::TO_UNKNOWN, [this] {
 		this->UpdatePlayerState(Unknown);
 	});
-	pJavaPlayback->set_player_state_callback_func(TO_READY, [this] {
+	pJavaPlayback->set_player_state_callback_func(VideoState::PlayerStateCallback::TO_READY, [this] {
 		this->UpdatePlayerState(Ready);
 	});
-	pJavaPlayback->set_player_state_callback_func(TO_PLAYING, [this] {
+	pJavaPlayback->set_player_state_callback_func(VideoState::PlayerStateCallback::TO_PLAYING, [this] {
 		this->UpdatePlayerState(Playing);
 	});
-	pJavaPlayback->set_player_state_callback_func(TO_PAUSED, [this] {
+	pJavaPlayback->set_player_state_callback_func(VideoState::PlayerStateCallback::TO_PAUSED, [this] {
 		this->UpdatePlayerState(Paused);
 	});
-	pJavaPlayback->set_player_state_callback_func(TO_STOPPED, [this] {
+	pJavaPlayback->set_player_state_callback_func(VideoState::PlayerStateCallback::TO_STOPPED, [this] {
 		this->UpdatePlayerState(Stopped);
 	});
-	pJavaPlayback->set_player_state_callback_func(TO_STALLED, [this] {
+	pJavaPlayback->set_player_state_callback_func(VideoState::PlayerStateCallback::TO_STALLED, [this] {
 		this->UpdatePlayerState(Stalled);
 	});
-	pJavaPlayback->set_player_state_callback_func(TO_FINISHED, [this] {
+	pJavaPlayback->set_player_state_callback_func(VideoState::PlayerStateCallback::TO_FINISHED, [this] {
 		this->UpdatePlayerState(Finished);
 	});
 

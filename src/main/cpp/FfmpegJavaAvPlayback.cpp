@@ -145,7 +145,7 @@ bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
 			}
 
 			frame_timer += delay;
-			if (delay > 0 && time - frame_timer > AV_SYNC_THRESHOLD_MAX)
+			if (delay > 0 && time - frame_timer > VideoState::kAvSyncThresholdMax)
 				frame_timer = time;
 
 			std::unique_lock<std::mutex> locker(pVideoState->get_pPictq()->get_mutex());

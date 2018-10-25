@@ -468,7 +468,7 @@ void FfmpegSdlAvPlayback::video_refresh(double *remaining_time) {
 			}
 
 			frame_timer += delay;
-			if (delay > 0 && time - frame_timer > AV_SYNC_THRESHOLD_MAX)
+			if (delay > 0 && time - frame_timer > VideoState::kAvSyncThresholdMax)
 				frame_timer = time;
 
 			std::unique_lock<std::mutex> locker(pVideoState->get_pPictq()->get_mutex());
@@ -733,7 +733,7 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 				incr = -5.0;
 			do_seek:
 				//TODO FIX SEEK BY BYTES BUG
-				if (seek_by_bytes) {
+				if (VideoState::kEnableSeekByBytes) {
 					pos = -1;
 					if (pos < 0 && pVideoState->get_video_stream() >= 0)
 						pos = pVideoState->get_pPictq()->last_pos();
@@ -791,7 +791,7 @@ void FfmpegSdlAvPlayback::init_and_event_loop() {
 					break;
 				x = event.motion.x;
 			}
-			if (seek_by_bytes || pVideoState->get_ic()->duration <= 0) {
+			if (VideoState::kEnableSeekByBytes || pVideoState->get_ic()->duration <= 0) {
 				uint64_t size = avio_size(pVideoState->get_ic()->pb);
 				pVideoState->stream_seek(size*x / width, 0, 1);
 			}

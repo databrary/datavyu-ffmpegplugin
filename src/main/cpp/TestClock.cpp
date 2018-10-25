@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 
+// TODO(fraudies): Add test for sync method
 
 TEST (ClockTest, CreateAndDeleteClockTest) {
     int serial = 0;

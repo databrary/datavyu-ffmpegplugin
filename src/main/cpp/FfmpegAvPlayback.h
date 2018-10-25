@@ -27,7 +27,7 @@ public:
 	FfmpegAvPlayback();
 	int Init(const char *filename, AVInputFormat *iformat, int audio_buffer_size);
 	virtual ~FfmpegAvPlayback();
-	virtual void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);
+	virtual void set_player_state_callback_func(VideoState::PlayerStateCallback callback, const std::function<void()>& func);
 	virtual void play();
 	virtual void stop();
 	virtual void toggle_pause();

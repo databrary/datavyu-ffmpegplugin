@@ -9,9 +9,6 @@ extern "C" {
 #ifndef FRAME_QUEUE_H_
 #define FRAME_QUEUE_H_
 
-#define VIDEO_PICTURE_QUEUE_SIZE 3
-#define SAMPLE_QUEUE_SIZE 9
-
 // Common struct for handling decoded data and allocated buffers
 typedef struct Frame {
     AVFrame *frame;

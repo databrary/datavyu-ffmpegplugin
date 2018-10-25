@@ -3,6 +3,26 @@
 bool VideoState::kEnableShowFormat = true; // Show the format information
 bool VideoState::kEnableFastDecode = false;
 bool VideoState::kEnableGeneratePts = false; // generate missing pts for audio if it means parsing future frames
+int VideoState::kEnableSeekByBytes = 0; // seek by bytes 0=off 1=on -1=auto (Note: we disable seek_by_byte because it raises errors while seeking)
+int VideoState::kMaxQueueSize = (15 * 1024 * 1024);
+int VideoState::kMinFrames = 25;
+
+/* no AV sync correction is done if below the minimum AV sync threshold */
+double VideoState::kAvSyncThresholdMin = 0.04;
+/* AV sync correction is done if above the maximum AV sync threshold */
+double VideoState::kAvSyncThresholdMax = 0.1;
+/* If a frame duration is longer than this, it will not be duplicated to compensate AV sync */
+double VideoState::kAvSyncFrameDupThreshold = 0.1;
+/* no AV correction is done if too big error */
+double VideoState::kAvNoSyncThreshold = 10.0;
+/* maximum audio speed change to get correct sync */
+int VideoState::kSampleCorrectionMaxPercent = 10; // int
+/* we use about AUDIO_DIFF_AVG_NB A-V differences to make the average */
+int VideoState::kAudioDiffAvgNum = 20; // int
+
+int VideoState::kVideoPictureQueueSize = 3; // int
+int VideoState::kSampleQueueSize = 9; // int
+
 
 int VideoState::stream_component_open(int stream_index) {
 	AVCodecContext *avctx;
@@ -80,7 +100,7 @@ int VideoState::stream_component_open(int stream_index) {
 		audio_buf_index = 0;
 
 		/* init averaging filter */
-		audio_diff_avg_coef = exp(log(0.01) / AUDIO_DIFF_AVG_NB);
+		audio_diff_avg_coef = exp(log(0.01) / kAudioDiffAvgNum);
 		audio_diff_avg_count = 0;
 		/* since we do not have a precise anough audio FIFO fullness,
 		we correct audio sync only if larger than this threshold */
@@ -154,7 +174,7 @@ int VideoState::get_video_frame(AVFrame *frame) {
 
 				av_log(NULL, AV_LOG_TRACE, "diff=%f time=%f np=%d\n", diff, time, pVideoq->get_nb_packets());
 
-				if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
+				if (!isnan(diff) && fabs(diff) < kAvNoSyncThreshold &&
 					diff < 0 &&
 					pViddec->get_pkt_serial() == pVidclk->get_serial() &&
 					pVideoq->get_nb_packets()) {
@@ -235,7 +255,7 @@ int VideoState::stream_has_enough_packets(AVStream *st, int stream_id, PacketQue
 	return stream_id < 0 ||
 		queue->is_abort_request() ||
 		(st->disposition & AV_DISPOSITION_ATTACHED_PIC) ||
-		queue->get_nb_packets() > MIN_FRAMES && (!queue->get_duration() || av_q2d(st->time_base) * queue->get_duration() > 1.0);
+		queue->get_nb_packets() > kMinFrames && (!queue->get_duration() || av_q2d(st->time_base) * queue->get_duration() > 1.0);
 }
 
 /* Ported from cmdutils */
@@ -329,9 +349,9 @@ int VideoState::synchronize_audio(int nb_samples) {
 
 		diff = pAudclk->get_time() - get_master_clock()->get_time();
 
-		if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD) {
+		if (!isnan(diff) && fabs(diff) < kAvNoSyncThreshold) {
 			audio_diff_cum = diff + audio_diff_avg_coef * audio_diff_cum;
-			if (audio_diff_avg_count < AUDIO_DIFF_AVG_NB) {
+			if (audio_diff_avg_count < kAudioDiffAvgNum) {
 				/* not enough measures to have a correct estimate */
 				audio_diff_avg_count++;
 			}
@@ -341,8 +361,8 @@ int VideoState::synchronize_audio(int nb_samples) {
 
 				if (fabs(avg_diff) >= audio_diff_threshold) {
 					wanted_nb_samples = nb_samples + (int)(diff * audio_src.freq);
-					min_nb_samples = ((nb_samples * (100 - SAMPLE_CORRECTION_PERCENT_MAX) / 100));
-					max_nb_samples = ((nb_samples * (100 + SAMPLE_CORRECTION_PERCENT_MAX) / 100));
+					min_nb_samples = ((nb_samples * (100 - kSampleCorrectionMaxPercent) / 100));
+					max_nb_samples = ((nb_samples * (100 + kSampleCorrectionMaxPercent) / 100));
 					wanted_nb_samples = av_clip(wanted_nb_samples, min_nb_samples, max_nb_samples);
 				}
 				av_log(NULL, AV_LOG_TRACE, "diff=%f adiff=%f sample_diff=%d apts=%0.3f %f\n",
@@ -520,7 +540,10 @@ VideoState::VideoState(int audio_buffer_size) :
 	audio_buf_index(0), /* in bytes */
 	audio_write_buf_size(0),
 	muted(0),
-	frame_drops_early(0) {}
+	frame_drops_early(0), 
+	start_time(AV_NOPTS_VALUE), 
+	max_duration(AV_NOPTS_VALUE), 
+	loop(1) {}
 
 VideoState* VideoState::create_video_state(int audio_buffer_size) {
 	// Create the video state
@@ -545,13 +568,13 @@ VideoState* VideoState::create_video_state(int audio_buffer_size) {
 	}
 
 	// Handle frame queues
-	vs->pSampq = FrameQueue::create_frame_queue(vs->pAudioq, SAMPLE_QUEUE_SIZE, 1);
+	vs->pSampq = FrameQueue::create_frame_queue(vs->pAudioq, kSampleQueueSize, 1);
 	if (!vs->pSampq) {
 		av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue for audio");
 		delete vs;
 		return nullptr;
 	}
-	vs->pPictq = FrameQueue::create_frame_queue(vs->pVideoq, VIDEO_PICTURE_QUEUE_SIZE, 1);
+	vs->pPictq = FrameQueue::create_frame_queue(vs->pVideoq, kVideoPictureQueueSize, 1);
 	if (!vs->pPictq) {
 		av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue for video");
 		delete vs;
@@ -743,7 +766,7 @@ int VideoState::read_thread() {
 		}
 
 		/* if the queues are full, no need to read more */
-		if (pAudioq->get_size() + pVideoq->get_size() > MAX_QUEUE_SIZE
+		if (pAudioq->get_size() + pVideoq->get_size() > kMaxQueueSize
 				|| (stream_has_enough_packets(audio_st, audio_stream, pAudioq) &&
 					stream_has_enough_packets(video_st, video_stream, pVideoq))) {
 			/* wait 10 ms */
@@ -976,8 +999,8 @@ int VideoState::stream_start() {
 	if (ic->pb)
 		ic->pb->eof_reached = 0; // FIXME hack, ffplay maybe should not use avio_feof() to test for the end
 
-	if (seek_by_bytes < 0)
-		seek_by_bytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
+	if (kEnableSeekByBytes < 0)
+		kEnableSeekByBytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
 
 	max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
 
@@ -1063,7 +1086,7 @@ void VideoState::update_pts(double pts, int serial) {
 	get_pVidclk()->set_time(pts, serial);
 	vidclk_last_set_time = av_gettime_relative() / 1000000.0;
 	// Sync external clock to video clock
-	Clock::sync_slave_to_master(get_pExtclk(), get_pVidclk());
+	Clock::sync_slave_to_master(get_pExtclk(), get_pVidclk(), kAvNoSyncThreshold);
 }
 
 /* seek in the stream */
@@ -1103,11 +1126,11 @@ double VideoState::compute_target_delay(double delay) {
 		/* skip or repeat frame. We take into account the
 		delay to compute the threshold. I still don't know
 		if it is the best guess */
-		sync_threshold = FFMAX(AV_SYNC_THRESHOLD_MIN, FFMIN(AV_SYNC_THRESHOLD_MAX, delay));
+		sync_threshold = FFMAX(kAvSyncThresholdMin, FFMIN(kAvSyncThresholdMax, delay));
 		if (!isnan(diff) && fabs(diff) < max_frame_duration) {
 			if (diff <= -sync_threshold)
 				delay = FFMAX(0, delay + diff);
-			else if (diff >= sync_threshold && delay > AV_SYNC_FRAMEDUP_THRESHOLD)
+			else if (diff >= sync_threshold && delay > kAvSyncFrameDupThreshold)
 				delay = delay + diff;
 			else if (diff >= sync_threshold)
 				delay = 2 * delay;
@@ -1120,7 +1143,7 @@ double VideoState::compute_target_delay(double delay) {
 }
 
 /* get the current synchronization type */
-int VideoState::get_master_sync_type() const {
+VideoState::AvSyncType VideoState::get_master_sync_type() const {
 	if (av_sync_type == AV_SYNC_VIDEO_MASTER) {
 		if (video_st != nullptr)
 			return AV_SYNC_VIDEO_MASTER;
@@ -1139,7 +1162,7 @@ int VideoState::get_master_sync_type() const {
 }
 
 Clock* VideoState::get_master_clock() const {
-	int master = get_master_sync_type();
+	AvSyncType master = get_master_sync_type();
 	if (master == AV_SYNC_VIDEO_MASTER) {
 		return pVidclk;
 	}
@@ -1185,7 +1208,7 @@ void VideoState::audio_callback(uint8_t *stream, int len) {
 			audio_pts - (double)(2 * audio_hw_buf_size + audio_write_buf_size) / audio_tgt.bytes_per_sec,
 			audio_serial);
 		// Sync external clock to audio clock
-		Clock::sync_slave_to_master(pExtclk, pAudclk);
+		Clock::sync_slave_to_master(pExtclk, pAudclk, kAvNoSyncThreshold);
 	}
 }
 
