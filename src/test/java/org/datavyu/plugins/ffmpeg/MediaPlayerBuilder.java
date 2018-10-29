@@ -7,7 +7,8 @@ import java.net.URI;
 public class MediaPlayerBuilder {
     public enum PlayerType {
         SDL,
-        JAVA_JDIALOG
+        JAVA_JDIALOG,
+        MPV
     }
 
     static MediaPlayer build(String movieFile, PlayerType type) {
@@ -17,6 +18,8 @@ public class MediaPlayerBuilder {
                 return new FfmpegSdlMediaPlayer(movie);
             case JAVA_JDIALOG:
                 return new FfmpegJavaMediaPlayer(movie, new JDialog());
+            case MPV:
+                return new MpvMediaPlayer(movie, new JDialog());
             default:
                 throw new IllegalArgumentException("Could not build player for type " + type);
         }
