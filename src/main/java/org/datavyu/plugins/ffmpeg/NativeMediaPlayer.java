@@ -313,6 +313,9 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         try {
             if(!isDisposed) {
                 playerStop();
+                if(playerGetRate() != 1.0F){
+                    playerSetRate(1.0F);
+                }
             }
         } catch (MediaException me) {
             sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
