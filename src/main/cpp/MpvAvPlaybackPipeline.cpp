@@ -66,7 +66,7 @@ uint32_t MpvAvPlaybackPipeline::Pause() {
   }
   int err = p_mpv_playback_->TogglePause();
   if (err < 0) {
-    return ERROR_FFMPEG_UNKNOWN;
+    return err;
   }
 
   bool isPaused;

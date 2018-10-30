@@ -158,7 +158,6 @@ public class TestMediaPlayerData {
         // Creating two instance of the SDL player crashes the JVM when trying to
         // Dispose the second player
         //TODO(Reda): Fix SDL Dispose
-        //TODO(Reda) Add safeguard to avoid any action after a dispose
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//                   Init Dispose Test                    //");
         System.out.println("////////////////////////////////////////////////////////////");
@@ -240,15 +239,11 @@ public class TestMediaPlayerData {
      */
     @Test
     public void testTogglePause(){
-        // TODO(Reda): MPV Player fail the test moving from PLAYING to PAUSED
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//                   Toggle Pause Test                    //");
         System.out.println("////////////////////////////////////////////////////////////");
         for (Movie movieFile : movieFiles) {
             for (MediaPlayerBuilder.PlayerType playerType : moviePlayerTypes) {
-                // Temporary
-                if(playerType == MediaPlayerBuilder.PlayerType.MPV)
-                    continue;
 
                 MediaPlayer mediaPlayer = MediaPlayerBuilder.build(movieFile.path, playerType);
 
@@ -296,7 +291,6 @@ public class TestMediaPlayerData {
      */
     @Test
     public void testSetGetRate(){
-        // TODO(Reda): Change SDL/JAVA player to 1x after a stop (MPV is fine coded in the native side)
         // TODO(Reda): Test for negative values
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//                   Set Get Rate Test                    //");
