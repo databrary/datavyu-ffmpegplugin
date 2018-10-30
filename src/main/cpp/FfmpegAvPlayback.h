@@ -6,7 +6,7 @@
 class FfmpegAvPlayback {
 public:
   FfmpegAvPlayback();
-  int OpenVideo(const char *filename, AVInputFormat *iformat,
+  int OpenVideo(const char *filename, AVInputFormat *p_input_format,
                 int audio_buffer_size);
   virtual void
   SetPlayerStateCallbackFunction(VideoState::PlayerStateCallback callback,
@@ -15,15 +15,14 @@ public:
   virtual void Stop();
   virtual void TogglePauseAndStopStep();
 
-  inline virtual void Seek(int64_t pos, int64_t rel, int seek_by_bytes) {
-    p_video_state_->stream_seek(pos, rel, seek_by_bytes);
+  inline virtual void Seek(int64_t time, int64_t difference,
+                           bool seek_by_bytes) {
+    p_video_state_->Seek(time, difference, seek_by_bytes);
   }
   inline virtual double GetDuration() const {
-    return p_video_state_->get_duration();
+    return p_video_state_->GetDuration();
   }
-  inline virtual double GetTime() const {
-    return p_video_state_->get_stream_time();
-  }
+  inline virtual double GetTime() const { return p_video_state_->GetTime(); }
   inline virtual double GetFrameRate() const {
     return p_video_state_->GetFrameRate();
   }
@@ -34,12 +33,19 @@ public:
   // Get the playback speed
   inline virtual double GetSpeed() const { return p_video_state_->GetSpeed(); }
 
-  inline int64_t GetStartTime() const { return p_video_state_->get_ic()->start_time; }
-  inline int64_t GetSeekTime() const { return p_video_state_->get_seek_pos(); }
+  inline int64_t GetStartTime() const {
+    AVFormatContext *p_format_context = nullptr;
+    p_video_state_->GetFormatContext(&p_format_context);
+    return p_format_context->start_time;
+  }
+
+  inline int64_t GetSeekTime() const { return p_video_state_->GetSeekTime(); }
+
   inline void StepToNextFrame() {
-    /* if the stream is paused unpause it, then step */
-    if (p_video_state_->get_paused())
+    // if the stream is paused unpause it, then step
+    if (p_video_state_->IsPaused()) {
       TogglePause();
+    }
 
     p_video_state_->SetStepping(true);
   }
@@ -47,6 +53,7 @@ public:
 protected:
   // The video state used for this playback
   VideoState *p_video_state_;
+
   // Time when the last frame was shown
   double frame_last_shown_time_;
 
@@ -70,7 +77,7 @@ protected:
   inline void SetFrameLastShownTime(double time) {
     frame_last_shown_time_ = time;
   }
-  inline void set_force_refresh(bool refresh) { force_refresh_ = refresh; }
+  inline void SetForceReferesh(bool refresh) { force_refresh_ = refresh; }
   double ComputeFrameDuration(Frame *vp, Frame *nextvp,
                               double max_frame_duration);
 };

@@ -37,10 +37,6 @@
 #define ptr_to_jlong(a) ((jlong)(int)(a))
 #endif
 
-// Throws an exception of the given type (class name)
-// if type is NULL, then will throw a generic Exception
-void ThrowJavaException(JNIEnv *env, const char *type, const char *message);
-
 // Gets a valid, usable JNIEnv for the current thread
 // if didAttach is true on return then you should call
 // jvm->DetachCurrentThread() when done
@@ -62,16 +58,14 @@ public:
   CJavaEnvironment(JNIEnv *); // create with an existing JNIEnv
   ~CJavaEnvironment();
 
-  JNIEnv *getEnvironment();
-  bool hasException(); // return true if an exception is raised (but do nothing
+  JNIEnv *GetEnvironment();
+  bool HasException(); // return true if an exception is raised (but do nothing
                        // with it)
-  bool clearException();  // if an exception is raised, clear it and return true
-  bool reportException(); // as above but log the exception to Logger
-  void throwException(
-      std::string message); // Throw an exception with the given message
+  bool ClearException();  // if an exception is raised, clear it and return true
+  bool ReportException(); // as above but log the exception to Logger
 
 private:
-  JNIEnv *environment;
+  JNIEnv *p_environment;
   jboolean attached;
 };
 

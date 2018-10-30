@@ -33,9 +33,6 @@
     <ClInclude Include="PipelineData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FfmpegErrorUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FfmpegJavaAvPlayback.cpp">
@@ -48,9 +45,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PipelineData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FfmpegErrorUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

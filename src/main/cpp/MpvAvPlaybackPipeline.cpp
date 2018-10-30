@@ -2,15 +2,15 @@
 #include "MediaPlayerErrors.h"
 
 uint32_t MpvAvPlaybackPipeline::Init(const char *input_file) {
-  pMpvPlayback = new (std::nothrow) MpvAvPlayback();
+  p_mpv_playback_ = new (std::nothrow) MpvAvPlayback();
 
-  if (!pMpvPlayback) {
+  if (!p_mpv_playback_) {
     return ERROR_PIPELINE_NULL;
   }
 
-  int err = pMpvPlayback->Init(input_file, windowID);
+  int err = p_mpv_playback_->Init(input_file, window_id_);
   if (err) {
-    delete pMpvPlayback;
+    delete p_mpv_playback_;
     return err;
   }
 
@@ -20,23 +20,23 @@ uint32_t MpvAvPlaybackPipeline::Init(const char *input_file) {
 }
 
 void MpvAvPlaybackPipeline::Dispose() {
-  pMpvPlayback->Destroy();
-  delete pMpvPlayback;
-  pMpvPlayback = nullptr;
+  p_mpv_playback_->Destroy();
+  delete p_mpv_playback_;
+  p_mpv_playback_ = nullptr;
 }
 
-MpvAvPlaybackPipeline::MpvAvPlaybackPipeline(CPipelineOptions *pOptions,
-                                             intptr_t windowID)
-    : CPipeline(pOptions), windowID(windowID), pMpvPlayback(nullptr) {}
+MpvAvPlaybackPipeline::MpvAvPlaybackPipeline(CPipelineOptions *p_options,
+                                             intptr_t window_id)
+    : CPipeline(p_options), window_id_(window_id), p_mpv_playback_(nullptr) {}
 
 MpvAvPlaybackPipeline::~MpvAvPlaybackPipeline() {}
 
 uint32_t MpvAvPlaybackPipeline::Play() {
-  if (pMpvPlayback == nullptr) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int err = pMpvPlayback->Play();
+  int err = p_mpv_playback_->Play();
   if (err < 0) {
     return ERROR_FFMPEG_UNKNOWN;
   }
@@ -47,11 +47,11 @@ uint32_t MpvAvPlaybackPipeline::Play() {
 }
 
 uint32_t MpvAvPlaybackPipeline::Stop() {
-  if (pMpvPlayback == nullptr) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int err = pMpvPlayback->Stop();
+  int err = p_mpv_playback_->Stop();
   if (err < 0) {
     return ERROR_FFMPEG_UNKNOWN;
   }
@@ -61,16 +61,16 @@ uint32_t MpvAvPlaybackPipeline::Stop() {
 }
 
 uint32_t MpvAvPlaybackPipeline::Pause() {
-  if (pMpvPlayback == nullptr) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  int err = pMpvPlayback->TogglePause();
+  int err = p_mpv_playback_->TogglePause();
   if (err < 0) {
     return ERROR_FFMPEG_UNKNOWN;
   }
 
   bool isPaused;
-  if (pMpvPlayback->IsPaused(&isPaused)) {
+  if (p_mpv_playback_->IsPaused(&isPaused)) {
     UpdatePlayerState(Paused);
   } else {
     UpdatePlayerState(Playing);
@@ -80,11 +80,11 @@ uint32_t MpvAvPlaybackPipeline::Pause() {
 }
 
 uint32_t MpvAvPlaybackPipeline::StepForward() {
-  if (pMpvPlayback == nullptr) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int err = pMpvPlayback->StepForward();
+  int err = p_mpv_playback_->StepForward();
   if (err < 0) {
     return err;
   }
@@ -94,11 +94,11 @@ uint32_t MpvAvPlaybackPipeline::StepForward() {
 }
 
 uint32_t MpvAvPlaybackPipeline::StepBackward() {
-  if (pMpvPlayback == nullptr) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int err = pMpvPlayback->StepBackward();
+  int err = p_mpv_playback_->StepBackward();
   if (err < 0) {
     return err;
   }
@@ -115,11 +115,11 @@ uint32_t MpvAvPlaybackPipeline::Finish() {
 }
 
 uint32_t MpvAvPlaybackPipeline::Seek(double dSeekTime) {
-  if (pMpvPlayback == nullptr) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int err = pMpvPlayback->SetTime(dSeekTime);
+  int err = p_mpv_playback_->SetTime(dSeekTime);
   if (err < 0) {
     return err;
   }
@@ -127,92 +127,92 @@ uint32_t MpvAvPlaybackPipeline::Seek(double dSeekTime) {
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::GetDuration(double *pdDuration) {
-  if (pMpvPlayback == nullptr) {
+uint32_t MpvAvPlaybackPipeline::GetDuration(double *p_duration) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
   double duration;
-  int err = pMpvPlayback->GetDuration(&duration);
+  int err = p_mpv_playback_->GetDuration(&duration);
   if (err != 0) {
     return err;
   }
 
-  *pdDuration = duration;
+  *p_duration = duration;
 
   return ERROR_NONE; // no error
 }
 
-uint32_t MpvAvPlaybackPipeline::GetStreamTime(double *pdStreamTime) {
-  if (pMpvPlayback == nullptr) {
+uint32_t MpvAvPlaybackPipeline::GetStreamTime(double *p_time) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  double presentationTime;
-  int err = pMpvPlayback->GetPresentationTime(&presentationTime);
+  double time;
+  int err = p_mpv_playback_->GetPresentationTime(&time);
   if (err != 0) {
     return err;
   }
 
-  *pdStreamTime = presentationTime;
+  *p_time = time;
 
   return ERROR_NONE; // no error
 }
 
-uint32_t MpvAvPlaybackPipeline::GetFps(double *pdFps) {
-  if (pMpvPlayback == nullptr) {
+uint32_t MpvAvPlaybackPipeline::GetFps(double *p_fps) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
   double fps;
-  int err = pMpvPlayback->GetFps(&fps);
+  int err = p_mpv_playback_->GetFps(&fps);
   if (err != 0) {
     return err;
   }
 
-  *pdFps = fps;
+  *p_fps = fps;
 
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::GetImageWidth(int *iWidth) const {
-  if (pMpvPlayback == nullptr) {
+uint32_t MpvAvPlaybackPipeline::GetImageWidth(int *p_width) const {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int64_t imageWidth;
-  int err = pMpvPlayback->GetImageWidth(&imageWidth);
+  int64_t width;
+  int err = p_mpv_playback_->GetImageWidth(&width);
   if (err != 0) {
     return err;
   }
 
-  *iWidth = imageWidth;
+  *p_width = width;
 
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::GetImageHeight(int *iHeight) const {
-  if (pMpvPlayback == nullptr) {
+uint32_t MpvAvPlaybackPipeline::GetImageHeight(int *p_height) const {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int64_t imageHeight;
-  int err = pMpvPlayback->GetImageHeight(&imageHeight);
+  int64_t height;
+  int err = p_mpv_playback_->GetImageHeight(&height);
   if (err != 0) {
     return err;
   }
 
-  *iHeight = imageHeight;
+  *p_height = height;
 
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::SetRate(float fRate) {
-  if (pMpvPlayback == nullptr) {
+uint32_t MpvAvPlaybackPipeline::SetRate(float rate) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int err = pMpvPlayback->SetRate((double)fRate);
+  int err = p_mpv_playback_->SetRate((double)rate);
   if (err != 0) {
     return err;
   }
@@ -220,28 +220,28 @@ uint32_t MpvAvPlaybackPipeline::SetRate(float fRate) {
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::GetRate(float *pfRate) {
-  if (pMpvPlayback == nullptr) {
+uint32_t MpvAvPlaybackPipeline::GetRate(float *p_rate) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
   double rate;
-  int err = pMpvPlayback->GetRate(&rate);
+  int err = p_mpv_playback_->GetRate(&rate);
   if (err != 0) {
     return err;
   }
 
-  *pfRate = rate;
+  *p_rate = rate;
 
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::SetVolume(float fVolume) {
-  if (pMpvPlayback == nullptr) {
+uint32_t MpvAvPlaybackPipeline::SetVolume(float volume) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int err = pMpvPlayback->SetVolume((double)fVolume);
+  int err = p_mpv_playback_->SetVolume((double)volume);
   if (err < 0) {
     return err;
   }
@@ -249,34 +249,34 @@ uint32_t MpvAvPlaybackPipeline::SetVolume(float fVolume) {
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::GetVolume(float *pfVolume) {
-  if (pMpvPlayback == nullptr) {
+uint32_t MpvAvPlaybackPipeline::GetVolume(float *p_volume) {
+  if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
   double volume;
-  int err = pMpvPlayback->GetVolume(&volume);
+  int err = p_mpv_playback_->GetVolume(&volume);
   if (err < 0) {
     return err;
   }
 
-  *pfVolume = volume;
+  *p_volume = volume;
 
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::SetBalance(float fBalance) {
+uint32_t MpvAvPlaybackPipeline::SetBalance(float balance) {
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::GetBalance(float *pfBalance) {
+uint32_t MpvAvPlaybackPipeline::GetBalance(float *p_balance) {
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::SetAudioSyncDelay(long lMillis) {
+uint32_t MpvAvPlaybackPipeline::SetAudioSyncDelay(long millis) {
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::GetAudioSyncDelay(long *plMillis) {
+uint32_t MpvAvPlaybackPipeline::GetAudioSyncDelay(long *p_millis) {
   return ERROR_NONE;
 }

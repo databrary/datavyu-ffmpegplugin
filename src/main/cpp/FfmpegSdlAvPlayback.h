@@ -160,7 +160,7 @@ private:
 
   int ReallocateTexture(SDL_Texture **texture, Uint32 new_format, int new_width,
                         int new_height, SDL_BlendMode blendmode,
-                        int init_texture);
+                        bool init_texture);
 
   // called to display each frame
   void UpdateFrame(double *remaining_time);
@@ -174,12 +174,12 @@ static void sdl_audio_callback_bridge(void *vs, Uint8 *stream, int len) {
       static_cast<FfmpegSdlAvPlayback *>(vs);
   VideoState *p_video_state = nullptr;
   pFfmpegSdlAvPlayback->GetVideoState(&p_video_state);
-  p_video_state->audio_callback(stream, len);
+  p_video_state->GetAudioCallback(stream, len);
 
   // Note, the mixer can work inplace using the same stream as src and dest, see
   // source code here
   // https://github.com/davidsiaw/SDL2/blob/c315c99d46f89ef8dbb1b4eeab0fe38ea8a8b6c5/src/audio/SDL_mixer.c
-  if (!p_video_state->get_muted() && stream)
+  if (!p_video_state->IsMuted() && stream)
     SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len,
                        pFfmpegSdlAvPlayback->GetVolumeStep());
 }

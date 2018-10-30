@@ -10,7 +10,7 @@ private:
   const PixelFormat *kPtrPixelFormat;
   const int kAudioBufferSizeInBy;
 
-  struct SwsContext *img_convert_ctx_;
+  struct SwsContext *p_img_convert_ctx_;
   double remaining_time_to_display_;
 
 public:
@@ -19,7 +19,7 @@ public:
                        const int kAudioBufferSizeInBy);
   virtual ~FfmpegJavaAvPlayback();
 
-  int Init(const char *filename, AVInputFormat *iformat);
+  int Init(const char *p_filename, AVInputFormat *p_input_format);
 
   int AudioOpen(int64_t wanted_channel_layout, int wanted_nb_channels,
                 int wanted_sample_rate, struct AudioParams *audio_hw_params);
@@ -30,10 +30,10 @@ public:
 
   int StartStream();
 
-  void SetBalance(float fBalance);
+  void SetBalance(float balance);
   float GetBalance();
 
-  void SetAudioSyncDelay(long lMillis);
+  void SetAudioSyncDelay(long millis);
   long getAudioSyncDelay();
 
   int GetImageWidth() const;
@@ -42,13 +42,13 @@ public:
   bool HasImageData() const;
   bool HasAudioData() const;
 
-  bool DoDisplay(double *remaining_time);
+  bool DoDisplay(double *p_remaining_time);
 
-  void UpdateImageBuffer(uint8_t *pImageData, const long len);
-  void UpdateAudioBuffer(uint8_t *pAudioData, const long len);
+  void UpdateImageBuffer(uint8_t *p_image_data, const long len);
+  void UpdateAudioBuffer(uint8_t *p_audio_data, const long len);
 
-  void GetAudioFormat(AudioFormat *pAudioFormat);
-  void GetPixelFormat(PixelFormat *pPixelFormat);
+  void GetAudioFormat(AudioFormat *p_audio_format);
+  void GetPixelFormat(PixelFormat *p_pixel_format);
 };
 
 #endif // end of FFMPEGJAVAAVPLAYBACK_H_

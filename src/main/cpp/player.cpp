@@ -16,7 +16,7 @@ int runFFmpegPlayer(const char *input_filename, AVInputFormat *file_iformat) {
 
 int runMpvPlayer(const char *input_filename) {
   MpvAvPlayback *pPlayer = new MpvAvPlayback();
-  pPlayer->init_and_event_loop(input_filename);
+  pPlayer->InitAndEventLoop(input_filename);
   return 0;
 }
 

@@ -58,6 +58,136 @@ public:
     NUM_PLAYER_STATE_CALLBACKS
   };
 
+	  static double kAvSyncThresholdMax;
+  static int kEnableSeekByBytes;
+  virtual ~VideoState();
+
+  int ReadPacketsToQueues();
+  int DecodeAudioPacketsToFrames();
+  int DecodeImagePacketsToFrames();
+  int StartStream();
+  static int OpenStream(VideoState **pp_video_state, const char *filename,
+                        AVInputFormat *iformat, int audio_buffer_size);
+
+  inline void SetPlayerStateCallbackFunction(
+      PlayerStateCallback callback, const std::function<void()> &func) {
+    player_state_callbacks[callback] = func;
+  }
+
+  inline void SetAudioOpenCallback(
+      const std::function<int(int64_t, int, int, struct AudioParams *)> &func) {
+    audio_open_callback = func;
+  }
+
+  inline void SetPauseAudioDeviceCallback(const std::function<void()> &func) {
+    pause_audio_device_callback = func;
+  }
+
+  inline void SetDestroyCallback(const std::function<void()> &func) {
+    destroy_callback = func;
+  }
+
+  inline void SetStepToNextFrameCallback(const std::function<void()> &func) {
+    step_to_next_frame_callback = func;
+  }
+
+  /* Controls */
+  inline int GetFrameWidth() const { return frame_width_; }
+  inline int GetFrameHeight() const { return frame_height_; }
+  inline AVRational GetFrameAspectRatio() const { return frame_aspect_ratio_; }
+  inline bool HasAudioStream() const { return p_audio_stream_ != nullptr; }
+  inline bool HasImageStream() const { return p_image_stream_ != nullptr; }
+  inline double GetDuration() const { return duration_; };  // duration in sec
+  inline double GetTime() const {
+    return p_image_clock_->GetTime();
+  }  // current time in sec
+  inline void ToggleMute() { is_muted_ = !is_muted_; }
+  void SetPts(double pts, int serial);
+  void Seek(int64_t time, int64_t distance, bool seek_by_bytes);
+
+  /* Setter and Getters */
+  inline bool IsPaused() const { return is_paused_; }
+  inline void SetPaused(bool is_paused) { is_paused_ = is_paused; }
+
+  inline bool IsStopped() const { return is_stopped_; }
+  inline void SetStopped(bool is_stopped) { is_stopped_ = is_stopped; }
+
+  inline int IsStepping() const { return is_stepping_; }
+  inline void SetStepping(bool is_stepping) { is_stepping_ = is_stepping; }
+
+  int SetSpeed(double requested_speed);
+  inline double GetSpeed() const { return current_speed_; }
+
+  inline int GetNumFrameDropsEarly() const { return num_frame_drops_early_; }
+
+  inline const void GetFilename(char **pp_filename) const {
+    *pp_filename = filename_;
+  }
+
+  inline void GetImageFrameQueue(FrameQueue **pp_frame_queue) const {
+    *pp_frame_queue = p_image_frame_queue_;
+  }
+  inline void GetAudioFrameQueue(FrameQueue **pp_frame_queue) const {
+    *pp_frame_queue = p_audio_frame_queue_;
+  }
+
+  inline void GetImagePacketQueue(PacketQueue **pp_packet_queue) const {
+    *pp_packet_queue = p_image_packet_queue_;
+  }
+  inline void GetAudioPacketQueue(PacketQueue **pp_packet_queue) const {
+    *pp_packet_queue = p_audio_packet_queue_;
+  }
+
+  inline void GetImageClock(Clock **pp_clock) const {
+    *pp_clock = p_image_clock_;
+  }
+  inline void GetAudioClock(Clock **pp_clock) const {
+    *pp_clock = p_audio_clock_;
+  }
+  inline void GetExternalClock(Clock **pp_clock) const {
+    *pp_clock = p_external_clock_;
+  }
+
+  inline double GetImageClockLastSetTime() const {
+    return image_clock_last_set_time_;
+  }
+
+  inline AudioParams GetAudioParamsTarget() const {
+    return audio_params_target_;
+  }
+  inline int IsMuted() const { return is_muted_; }
+
+  inline void GetImageDecoder(Decoder **pp_decoder) const {
+    *pp_decoder = p_image_decoder_;
+  }
+  inline void GetFormatContext(AVFormatContext **pp_format_context) const {
+    *pp_format_context = p_format_context;
+  }
+
+  inline int64_t GetSeekTime() const { return seek_time_; }
+
+  inline double GetMaxFrameDuration() const { return max_frame_duration_; }
+
+  inline int InterruptDecode() const { return abort_request_; }
+
+  double ComputeTargetDelay(double delay);
+
+  /* get the current master clock */
+  void GetMasterClock(Clock **pp_clock) const;
+
+  inline double GetFrameRate() const {
+    return p_image_stream_ ? this->frame_rate_ : 0;
+  }
+
+  /* prepare a new audio buffer */
+  void GetAudioCallback(uint8_t *stream, int len);
+
+  inline bool GetAudioDisabled() const { return audio_disabled_; }
+  inline void SetAudioDisabled(bool disabled) { audio_disabled_ = disabled; }
+
+  inline bool GetVideoDisabled() const { return video_disabled_; }
+  inline void SetVideoDisabled(bool disabled) { video_disabled_ = disabled; }
+
 private:
   bool abort_request_;
   bool is_paused_; // TODO(fraudies): Check if this need to be atomic
@@ -73,7 +203,7 @@ private:
   AvSyncType sync_type_;  // default is AV_SYNC_AUDIO_MASTER
   int frame_rate_;        // Frame rate in Hz (frames per second)
 
-  double video_clock_last_set_time_;
+  double image_clock_last_set_time_;
   int image_stream_index_;
   double max_frame_duration_; // maximum duration of a frame - above this, we
                               // consider the jump a timestamp discontinuity
@@ -110,7 +240,7 @@ private:
   Clock *p_external_clock_;
 
   Decoder *p_audio_decoder_;
-  Decoder *p_frame_decoder_;
+  Decoder *p_image_decoder_;
 
   std::thread *p_reader_thread_;
   AVInputFormat *p_input_format_;
@@ -223,128 +353,12 @@ private:
 
   static int CreateVideoState(VideoState **pp_video_state,
                               int audio_buffer_size);
-
-public:
-  static double kAvSyncThresholdMax;
-  static int kEnableSeekByBytes;
-  virtual ~VideoState();
-
-  int ReadPacketsToQueues();
-  int DecodeAudioPacketsToFrames();
-  int DecodeImagePacketsToFrames();
-  int StartStream();
-  static int OpenStream(VideoState **pp_video_state, const char *filename,
-                        AVInputFormat *iformat, int audio_buffer_size);
-
-  inline void
-  SetPlayerStateCallbackFunction(PlayerStateCallback callback,
-                                 const std::function<void()> &func) {
-    player_state_callbacks[callback] = func;
-  }
-
-  inline void SetAudioOpenCallback(
-      const std::function<int(int64_t, int, int, struct AudioParams *)> &func) {
-    audio_open_callback = func;
-  }
-
-  inline void SetPauseAudioDeviceCallback(const std::function<void()> &func) {
-    pause_audio_device_callback = func;
-  }
-
-  inline void SetDestroyCallback(const std::function<void()> &func) {
-    destroy_callback = func;
-  }
-
-  inline void SetStepToNextFrameCallback(const std::function<void()> &func) {
-    step_to_next_frame_callback = func;
-  }
-
-  /* Controls */
-  inline int GetFrameWidth() const { return frame_width_; }
-  inline int GetFrameHeight() const { return frame_height_; }
-  inline AVRational GetFrameAspectRatio() const { return frame_aspect_ratio_; }
-  inline bool has_audio_data() const { return last_audio_stream_ >= 0; }
-  inline bool has_image_data() const { return last_video_stream_ >= 0; }
-  inline double get_duration() const { return duration_; }; // duration in sec
-  inline double get_stream_time() const {
-    return p_image_clock_->get_time();
-  } // current time in sec
-  inline void toggle_mute() { is_muted_ = !is_muted_; }
-  void update_pts(double pts, int serial);
-  void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
-
-  /* Setter and Getters */
-  inline bool get_paused() const { return is_paused_; }
-  inline void set_paused(bool new_paused) { is_paused_ = new_paused; }
-
-  inline bool get_stopped() const { return is_stopped_; }
-  inline void set_stopped(bool new_stopped) { is_stopped_ = new_stopped; }
-
-  inline int IsStepping() const { return is_stepping_; }
-  inline void SetStepping(bool stepping) { is_stepping_ = stepping; }
-
-  int SetSpeed(double requested_speed);
-  inline double GetSpeed() const { return current_speed_; }
-
-  inline int get_frame_drops_early() const { return num_frame_drops_early_; }
-
-  inline const char *get_filename() const { return filename_; }
-
-  inline AVStream *get_audio_st() const { return p_audio_stream_; }
-  inline AVStream *get_video_st() const { return p_image_stream_; }
-
-  inline FrameQueue *get_pPictq() const { return p_image_frame_queue_; }
-  inline FrameQueue *get_pSampq() const { return p_audio_frame_queue_; }
-
-  inline PacketQueue *get_pVideoq() const { return p_image_packet_queue_; }
-  inline PacketQueue *get_pAudioq() const { return p_audio_packet_queue_; }
-
-  inline Clock *get_pVidclk() const { return p_image_clock_; }
-  inline Clock *get_pAudclk() const { return p_audio_clock_; }
-  inline Clock *get_pExtclk() const { return p_external_clock_; }
-
-  inline double get_vidclk_last_set_time() const {
-    return video_clock_last_set_time_;
-  }
-
-  inline AudioParams get_audio_tgt() const { return audio_params_target_; }
-  inline int get_muted() const { return is_muted_; }
-
-  inline Decoder *get_pViddec() const { return p_frame_decoder_; }
-  inline AVFormatContext *get_ic() const { return p_format_context; }
-
-  inline int64_t get_seek_pos() const { return seek_time_; }
-
-  inline int get_video_stream() const { return image_stream_index_; }
-  inline int get_audio_stream() const { return audio_stream_index_; }
-
-  inline double get_max_frame_duration() const { return max_frame_duration_; }
-
-  inline int decode_interrupt_cb() const { return abort_request_; }
-
-  double compute_target_delay(double delay);
-
-  /* get the current master clock */
-  Clock *get_master_clock() const;
-
-  inline double GetFrameRate() const {
-    return p_image_stream_ ? this->frame_rate_ : 0;
-  }
-
-  /* prepare a new audio buffer */
-  void audio_callback(uint8_t *stream, int len);
-
-  inline bool GetAudioDisabled() const { return audio_disabled_; }
-  inline void SetAudioDisabled(bool disabled) { audio_disabled_ = disabled; }
-
-  inline bool GetVideoDisabled() const { return video_disabled_; }
-  inline void SetVideoDisabled(bool disabled) { video_disabled_ = disabled; }
 };
 
 // Note, this bridge is necessary to interface with ffmpeg's call decode
 // interrupt handle
-static int decode_interrupt_cb_bridge(void *vs) {
-  return static_cast<VideoState *>(vs)->decode_interrupt_cb();
+static int DecodeInterruptBridge(void *vs) {
+  return static_cast<VideoState *>(vs)->InterruptDecode();
 }
 
 #endif VIDEOSTATE_H_

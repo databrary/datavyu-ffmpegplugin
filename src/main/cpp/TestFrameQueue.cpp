@@ -10,31 +10,32 @@
 
 TEST(FrameQueueTest, CreateDeleteFrameQueueTest) {
   PacketQueue packetQueue;
-  FrameQueue *frameQueue =
-      FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+  FrameQueue *frameQueue = nullptr;
+  FrameQueue::CreateFrameQueue(&frameQueue, &packetQueue, SAMPLE_QUEUE_SIZE, true);
   delete frameQueue;
 }
 
 TEST(FrameQueueTest, SingleReadWRite) {
-
   // Initialize and start the packet queue
   PacketQueue packetQueue;
-  packetQueue.start();
+  packetQueue.Start();
 
   // Initialize the frame queue
-  FrameQueue *frameQueue =
-      FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+  FrameQueue *frameQueue = nullptr;
+  FrameQueue::CreateFrameQueue(&frameQueue, &packetQueue, SAMPLE_QUEUE_SIZE, true);
 
   // Write
-  Frame *pWriteable = frameQueue->peek_writable();
+  Frame *pWriteable = nullptr;
+  frameQueue->PeekWritable(&pWriteable);
   ASSERT_NE(pWriteable, nullptr);
-  pWriteable->pos = 123;
-  frameQueue->push();
+  pWriteable->byte_pos_ = 123;
+  frameQueue->Push();
 
   // Read
-  Frame *pReadable = frameQueue->peek_readable();
+  Frame *pReadable = nullptr;
+  frameQueue->PeekReadable(&pReadable);
   ASSERT_NE(pReadable, nullptr);
-  ASSERT_EQ(pReadable->pos, pWriteable->pos);
+  ASSERT_EQ(pReadable->byte_pos_, pWriteable->byte_pos_);
 
   delete frameQueue;
 }
@@ -44,60 +45,65 @@ TEST(FrameQueueTest, StatusFrameTest) {
 
   // Initialize and start the packet queue
   PacketQueue packetQueue;
-  packetQueue.start();
+  packetQueue.Start();
 
   // Initialize the frame queue
-  FrameQueue *frameQueue =
-      FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+  FrameQueue *frameQueue = nullptr;
+  FrameQueue::CreateFrameQueue(&frameQueue, &packetQueue, SAMPLE_QUEUE_SIZE,
+                               true);
 
   // Test the intial status of the frame queue
-  ASSERT_EQ(frameQueue->nb_remaining(), 0);
-  ASSERT_EQ(frameQueue->last_pos(), -1); // nothing was shown yet => -1
+  ASSERT_EQ(frameQueue->GetNumToDisplay(), 0);
+  ASSERT_EQ(frameQueue->GetBytePosOfLastFrame(),
+            -1); // nothing was shown yet => -1
 
   // Push two frames
-  frameQueue->push();
-  frameQueue->push();
+  frameQueue->Push();
+  frameQueue->Push();
 
   // Test the status of the frame queue
-  ASSERT_EQ(frameQueue->nb_remaining(), 2);
-  ASSERT_EQ(frameQueue->last_pos(), -1); // nothing was shown yet => -1
+  ASSERT_EQ(frameQueue->GetNumToDisplay(), 2);
+  ASSERT_EQ(frameQueue->GetBytePosOfLastFrame(),
+            -1); // nothing was shown yet => -1
 
   // Read one frame
-  frameQueue->next();
-  ASSERT_EQ(frameQueue->nb_remaining(), 1);
-  ASSERT_EQ(frameQueue->last_pos(), -1); // serials don't match
+  frameQueue->Next();
+  ASSERT_EQ(frameQueue->GetNumToDisplay(), 1);
+  ASSERT_EQ(frameQueue->GetBytePosOfLastFrame(), -1); // serials don't match
 
   delete frameQueue;
 }
 
 TEST(FrameQueueTest, MultiThreadReadWriteTest) {
-
   // Initialize and start the packet queue
   PacketQueue packetQueue;
-  packetQueue.start();
+  packetQueue.Start();
 
   // Initialize the frame queue with smaller size to test for
   // blocking/unblocking
-  FrameQueue *frameQueue =
-      FrameQueue::create_frame_queue(&packetQueue, VIDEO_PICTURE_QUEUE_SIZE, 1);
+  FrameQueue *frameQueue = nullptr;
+  FrameQueue::CreateFrameQueue(&frameQueue, &packetQueue,
+                               VIDEO_PICTURE_QUEUE_SIZE, true);
 
   // Write some frames
   std::thread writer([&frameQueue] {
     for (int writes = 0; writes < 10; writes++) {
-      Frame *pWritable = frameQueue->peek_writable();
+      Frame *pWritable = nullptr;
+      frameQueue->PeekWritable(&pWritable);
       ASSERT_NE(pWritable, nullptr);
-      pWritable->pos = writes;
-      frameQueue->push();
+      pWritable->byte_pos_ = writes;
+      frameQueue->Push();
     }
   });
 
   // Read some frames (blocking) and check the pos field
   std::thread reader([&frameQueue] {
     for (int reads = 0; reads < 10; reads++) {
-      Frame *pReadable = frameQueue->peek_readable();
+      Frame *pReadable = nullptr;
+      frameQueue->PeekReadable(&pReadable);
       ASSERT_NE(pReadable, nullptr);
-      frameQueue->next();
-      ASSERT_EQ(pReadable->pos, reads);
+      frameQueue->Next();
+      ASSERT_EQ(pReadable->byte_pos_, reads);
     }
   });
 
@@ -108,74 +114,78 @@ TEST(FrameQueueTest, MultiThreadReadWriteTest) {
 }
 
 TEST(FrameQueueTest, SignalFrameQueueTest) {
-
   // Intialize and start the packet queue
   PacketQueue packetQueue;
-  packetQueue.start();
+  packetQueue.Start();
 
   // Initialize the frame queue
-  FrameQueue *frameQueue =
-      FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+  FrameQueue *frameQueue = nullptr;
+  FrameQueue::CreateFrameQueue(&frameQueue, &packetQueue, SAMPLE_QUEUE_SIZE,
+                               true);
 
   // Read packet but blocked
-  std::thread reader(
-      [&frameQueue] { ASSERT_EQ(nullptr, frameQueue->peek_readable()); });
+  std::thread reader([&frameQueue] {
+    Frame *p_frame = nullptr;
+    frameQueue->PeekReadable(&p_frame);
+    ASSERT_EQ(nullptr, p_frame);
+  });
 
-  packetQueue.abort(); // sets abort in the packet queue
+  packetQueue.Abort(); // sets abort in the packet queue
   frameQueue
-      ->signal(); // picks up abort from the packet queue and returns nullptr
+      ->Signal(); // picks up abort from the packet queue and returns nullptr
   reader.join();
 
   delete frameQueue;
 }
 
 TEST(FrameQueueTest, PeekLastNextFrameTest) {
-
   // Initialize and start the packet queue
   PacketQueue packetQueue;
-  packetQueue.start();
+  packetQueue.Start();
 
   // Initialize the frame queue
-  FrameQueue *frameQueue =
-      FrameQueue::create_frame_queue(&packetQueue, SAMPLE_QUEUE_SIZE, 1);
+  FrameQueue *frameQueue = nullptr;
+  FrameQueue::CreateFrameQueue(&frameQueue, &packetQueue, SAMPLE_QUEUE_SIZE,
+                               true);
 
   // Write frames with pos 1, 2, 3, 4
   for (int writes = 1; writes <= 4; ++writes) {
-    Frame *pWritable = frameQueue->peek_writable();
+    Frame *pWritable = nullptr;
+    frameQueue->PeekWritable(&pWritable);
     ASSERT_NE(pWritable, nullptr);
-    pWritable->pos = writes;
-    frameQueue->push();
+    pWritable->byte_pos_ = writes;
+    frameQueue->Push();
   }
 
   // Peek first, second, and last
   Frame *pReadable = nullptr;
-  pReadable = frameQueue->peek();
+  frameQueue->Peek(&pReadable);
   ASSERT_NE(pReadable, nullptr);
-  ASSERT_EQ(pReadable->pos, 1);
-  pReadable = frameQueue->peek_next();
+  ASSERT_EQ(pReadable->byte_pos_, 1);
+  frameQueue->PeekNext(&pReadable);
   ASSERT_NE(pReadable, nullptr);
-  ASSERT_EQ(pReadable->pos, 2);
-  pReadable = frameQueue->peek_last();
+  ASSERT_EQ(pReadable->byte_pos_, 2);
+  frameQueue->PeekLast(&pReadable);
   ASSERT_NE(pReadable, nullptr);
-  ASSERT_EQ(pReadable->pos, 1);
+  ASSERT_EQ(pReadable->byte_pos_, 1);
 
   // Consume one frames
-  frameQueue->next();
-  pReadable = frameQueue->peek();
+  frameQueue->Next();
+  frameQueue->Peek(&pReadable);
   ASSERT_NE(pReadable, nullptr);
-  ASSERT_EQ(pReadable->pos, 2);
-  pReadable = frameQueue->peek_last();
+  ASSERT_EQ(pReadable->byte_pos_, 2);
+  frameQueue->PeekLast(&pReadable);
   ASSERT_NE(pReadable, nullptr);
-  ASSERT_EQ(pReadable->pos, 1);
+  ASSERT_EQ(pReadable->byte_pos_, 1);
 
   // Consume two frames
-  frameQueue->next();
-  pReadable = frameQueue->peek();
+  frameQueue->Next();
+  frameQueue->Peek(&pReadable);
   ASSERT_NE(pReadable, nullptr);
-  ASSERT_EQ(pReadable->pos, 3);
-  pReadable = frameQueue->peek_last();
+  ASSERT_EQ(pReadable->byte_pos_, 3);
+  frameQueue->PeekLast(&pReadable);
   ASSERT_NE(pReadable, nullptr);
-  ASSERT_EQ(pReadable->pos, 2);
+  ASSERT_EQ(pReadable->byte_pos_, 2);
 
   delete frameQueue;
 }

@@ -141,21 +141,22 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   av_log(NULL, AV_LOG_QUIET, "%s", "");
 }
 
-int FfmpegSdlAvPlayback::OpenVideo(const char *filename,
-                                   AVInputFormat *iformat) {
+int FfmpegSdlAvPlayback::OpenVideo(const char *p_filename,
+                                   AVInputFormat *p_input_format) {
   /* register all codecs, demux and protocols */
 #if CONFIG_AVDEVICE
   avdevice_register_all();
 #endif
   avformat_network_init();
 
-  int err = FfmpegAvPlayback::OpenVideo(filename, iformat, kAudioMinBufferSize);
+  int err = FfmpegAvPlayback::OpenVideo(p_filename, p_input_format,
+                                        kAudioMinBufferSize);
   if (err) {
     return err;
   }
 
   if (!p_window_title_) {
-    p_window_title_ = av_asprintf("%s", filename);
+    p_window_title_ = av_asprintf("%s", p_filename);
   }
 
   // Set callback functions
@@ -165,8 +166,7 @@ int FfmpegSdlAvPlayback::OpenVideo(const char *filename,
         return this->OpenAudio(wanted_channel_layout, wanted_nb_channels,
                                wanted_sample_rate, audio_hw_params);
       });
-  p_video_state_->SetPauseAudioDeviceCallback(
-      [this] { this->PauseAudio(); });
+  p_video_state_->SetPauseAudioDeviceCallback([this] { this->PauseAudio(); });
   p_video_state_->SetDestroyCallback([this] { delete this; });
   p_video_state_->SetStepToNextFrameCallback(
       [this] { this->StepToNextFrame(); });
@@ -245,23 +245,25 @@ int FfmpegSdlAvPlayback::OpenAudio(int64_t wanted_channel_layout,
     }
   }
 
-  audio_hw_params->fmt = AV_SAMPLE_FMT_S16;
-  audio_hw_params->freq = spec.freq;
-  audio_hw_params->channel_layout = wanted_channel_layout;
-  audio_hw_params->channels = spec.channels;
-  audio_hw_params->frame_size = av_samples_get_buffer_size(
-      NULL, audio_hw_params->channels, 1, audio_hw_params->fmt, 1);
-  audio_hw_params->bytes_per_sec = av_samples_get_buffer_size(
-      NULL, audio_hw_params->channels, audio_hw_params->freq,
-      audio_hw_params->fmt, 1);
-  if (audio_hw_params->bytes_per_sec <= 0 || audio_hw_params->frame_size <= 0) {
+  audio_hw_params->sample_format_ = AV_SAMPLE_FMT_S16;
+  audio_hw_params->frequency_ = spec.freq;
+  audio_hw_params->channel_layout_ = wanted_channel_layout;
+  audio_hw_params->num_channels_ = spec.channels;
+  audio_hw_params->frame_size_ =
+      av_samples_get_buffer_size(NULL, audio_hw_params->num_channels_, 1,
+                                 audio_hw_params->sample_format_, 1);
+  audio_hw_params->bytes_per_sec_ = av_samples_get_buffer_size(
+      NULL, audio_hw_params->num_channels_, audio_hw_params->frequency_,
+      audio_hw_params->sample_format_, 1);
+  if (audio_hw_params->bytes_per_sec_ <= 0 ||
+      audio_hw_params->frame_size_ <= 0) {
     av_log(NULL, AV_LOG_ERROR, "av_samples_get_buffer_size failed\n");
     return -1;
   }
   return spec.size;
 }
 
-int FfmpegSdlAvPlayback::OpenWindow(const char *window_name) {
+int FfmpegSdlAvPlayback::OpenWindow(const char *p_window_name) {
 
   if (IsScreenSizeSet()) {
     frame_width_ = screen_width_;
@@ -270,7 +272,7 @@ int FfmpegSdlAvPlayback::OpenWindow(const char *window_name) {
     frame_width_ = kDefaultWidth;
     frame_height_ = kDefaultHeight;
   }
-  p_window_title_ = av_strdup(window_name);
+  p_window_title_ = av_strdup(p_window_name);
 
   SDL_SetWindowTitle(p_window_, p_window_title_);
   SDL_SetWindowSize(p_window_, frame_width_, frame_height_);
@@ -285,40 +287,41 @@ int FfmpegSdlAvPlayback::OpenWindow(const char *window_name) {
 }
 
 void FfmpegSdlAvPlayback::SetDefaultWindowSize(int width, int height,
-                                               AVRational sar) {
+                                               AVRational aspect_ratio) {
   SDL_Rect rect;
   CalculateRectangleForDisplay(&rect, 0, 0, INT_MAX, height, width, height,
-                               sar);
+                               aspect_ratio);
   kDefaultWidth = rect.w;
   kDefaultHeight = rect.h;
 }
 
-int FfmpegSdlAvPlayback::UploadTexture(SDL_Texture **tex, AVFrame *frame,
-                                       struct SwsContext **img_convert_ctx) {
+int FfmpegSdlAvPlayback::UploadTexture(SDL_Texture **pp_texture,
+                                       AVFrame *p_frame,
+                                       struct SwsContext **pp_img_convert_ctx) {
   int ret = 0;
   Uint32 sdl_pix_fmt;
   SDL_BlendMode sdl_blendmode;
-  GetPixelFormatAndBlendmode(frame->format, &sdl_pix_fmt, &sdl_blendmode);
-  if (ReallocateTexture(tex,
-                        sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN
-                            ? SDL_PIXELFORMAT_ARGB8888
-                            : sdl_pix_fmt,
-                        frame->width, frame->height, sdl_blendmode, 0) < 0)
+  GetPixelFormatAndBlendmode(p_frame->format, &sdl_pix_fmt, &sdl_blendmode);
+  if (ReallocateTexture(
+          pp_texture,
+          sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888
+                                                 : sdl_pix_fmt,
+          p_frame->width, p_frame->height, sdl_blendmode, false) < 0)
     return -1;
   switch (sdl_pix_fmt) {
   case SDL_PIXELFORMAT_UNKNOWN:
     /* This should only happen if we are not using avfilter... */
-    *img_convert_ctx = sws_getCachedContext(
-        *img_convert_ctx, frame->width, frame->height,
-        static_cast<AVPixelFormat>(frame->format), frame->width, frame->height,
-        AV_PIX_FMT_BGRA, kSwsFlags, NULL, NULL, NULL);
-    if (*img_convert_ctx != NULL) {
+    *pp_img_convert_ctx = sws_getCachedContext(
+        *pp_img_convert_ctx, p_frame->width, p_frame->height,
+        static_cast<AVPixelFormat>(p_frame->format), p_frame->width,
+        p_frame->height, AV_PIX_FMT_BGRA, kSwsFlags, NULL, NULL, NULL);
+    if (*pp_img_convert_ctx != NULL) {
       uint8_t *pixels[4];
       int pitch[4];
-      if (!SDL_LockTexture(*tex, NULL, (void **)pixels, pitch)) {
-        sws_scale(*img_convert_ctx, (const uint8_t *const *)frame->data,
-                  frame->linesize, 0, frame->height, pixels, pitch);
-        SDL_UnlockTexture(*tex);
+      if (!SDL_LockTexture(*pp_texture, NULL, (void **)pixels, pitch)) {
+        sws_scale(*pp_img_convert_ctx, (const uint8_t *const *)p_frame->data,
+                  p_frame->linesize, 0, p_frame->height, pixels, pitch);
+        SDL_UnlockTexture(*pp_texture);
       }
     } else {
       av_log(NULL, AV_LOG_FATAL, "Cannot initialize the conversion context\n");
@@ -326,22 +329,24 @@ int FfmpegSdlAvPlayback::UploadTexture(SDL_Texture **tex, AVFrame *frame,
     }
     break;
   case SDL_PIXELFORMAT_IYUV:
-    if (frame->linesize[0] > 0 && frame->linesize[1] > 0 &&
-        frame->linesize[2] > 0) {
-      ret = SDL_UpdateYUVTexture(*tex, NULL, frame->data[0], frame->linesize[0],
-                                 frame->data[1], frame->linesize[1],
-                                 frame->data[2], frame->linesize[2]);
-    } else if (frame->linesize[0] < 0 && frame->linesize[1] < 0 &&
-               frame->linesize[2] < 0) {
+    if (p_frame->linesize[0] > 0 && p_frame->linesize[1] > 0 &&
+        p_frame->linesize[2] > 0) {
+      ret = SDL_UpdateYUVTexture(*pp_texture, NULL, p_frame->data[0],
+                                 p_frame->linesize[0], p_frame->data[1],
+                                 p_frame->linesize[1], p_frame->data[2],
+                                 p_frame->linesize[2]);
+    } else if (p_frame->linesize[0] < 0 && p_frame->linesize[1] < 0 &&
+               p_frame->linesize[2] < 0) {
       ret = SDL_UpdateYUVTexture(
-          *tex, NULL, frame->data[0] + frame->linesize[0] * (frame->height - 1),
-          -frame->linesize[0],
-          frame->data[1] +
-              frame->linesize[1] * (AV_CEIL_RSHIFT(frame->height, 1) - 1),
-          -frame->linesize[1],
-          frame->data[2] +
-              frame->linesize[2] * (AV_CEIL_RSHIFT(frame->height, 1) - 1),
-          -frame->linesize[2]);
+          *pp_texture, NULL,
+          p_frame->data[0] + p_frame->linesize[0] * (p_frame->height - 1),
+          -p_frame->linesize[0],
+          p_frame->data[1] +
+              p_frame->linesize[1] * (AV_CEIL_RSHIFT(p_frame->height, 1) - 1),
+          -p_frame->linesize[1],
+          p_frame->data[2] +
+              p_frame->linesize[2] * (AV_CEIL_RSHIFT(p_frame->height, 1) - 1),
+          -p_frame->linesize[2]);
     } else {
       av_log(NULL, AV_LOG_ERROR,
              "Mixed negative and positive linesizes are not supported.\n");
@@ -349,12 +354,14 @@ int FfmpegSdlAvPlayback::UploadTexture(SDL_Texture **tex, AVFrame *frame,
     }
     break;
   default:
-    if (frame->linesize[0] < 0) {
-      ret = SDL_UpdateTexture(
-          *tex, NULL, frame->data[0] + frame->linesize[0] * (frame->height - 1),
-          -frame->linesize[0]);
+    if (p_frame->linesize[0] < 0) {
+      ret = SDL_UpdateTexture(*pp_texture, NULL,
+                              p_frame->data[0] +
+                                  p_frame->linesize[0] * (p_frame->height - 1),
+                              -p_frame->linesize[0]);
     } else {
-      ret = SDL_UpdateTexture(*tex, NULL, frame->data[0], frame->linesize[0]);
+      ret = SDL_UpdateTexture(*pp_texture, NULL, p_frame->data[0],
+                              p_frame->linesize[0]);
     }
     break;
   }
@@ -362,45 +369,46 @@ int FfmpegSdlAvPlayback::UploadTexture(SDL_Texture **tex, AVFrame *frame,
 }
 
 void FfmpegSdlAvPlayback::GetPixelFormatAndBlendmode(
-    int format, Uint32 *sdl_pix_fmt, SDL_BlendMode *sdl_blendmode) {
+    int format, Uint32 *p_pixel_format, SDL_BlendMode *p_blendmode) {
   int i;
-  *sdl_blendmode = SDL_BLENDMODE_NONE;
-  *sdl_pix_fmt = SDL_PIXELFORMAT_UNKNOWN;
+  *p_blendmode = SDL_BLENDMODE_NONE;
+  *p_pixel_format = SDL_PIXELFORMAT_UNKNOWN;
   if (format == AV_PIX_FMT_RGB32 || format == AV_PIX_FMT_RGB32_1 ||
       format == AV_PIX_FMT_BGR32 || format == AV_PIX_FMT_BGR32_1)
-    *sdl_blendmode = SDL_BLENDMODE_BLEND;
+    *p_blendmode = SDL_BLENDMODE_BLEND;
   for (i = 0; i < FF_ARRAY_ELEMS(kTextureFormatMap) - 1; i++) {
     if (format == kTextureFormatMap[i].format) {
-      *sdl_pix_fmt = kTextureFormatMap[i].texture_fmt;
+      *p_pixel_format = kTextureFormatMap[i].texture_fmt;
       return;
     }
   }
 }
 
-int FfmpegSdlAvPlayback::ReallocateTexture(SDL_Texture **texture,
+int FfmpegSdlAvPlayback::ReallocateTexture(SDL_Texture **pp_texture,
                                            Uint32 new_format, int new_width,
                                            int new_height,
                                            SDL_BlendMode blendmode,
-                                           int init_texture) {
+                                           bool init_texture) {
   Uint32 format;
   int access, w, h;
-  if (!*texture || SDL_QueryTexture(*texture, &format, &access, &w, &h) < 0 ||
+  if (!*pp_texture ||
+      SDL_QueryTexture(*pp_texture, &format, &access, &w, &h) < 0 ||
       new_width != w || new_height != h || new_format != format) {
     void *pixels;
     int pitch;
-    if (*texture)
-      SDL_DestroyTexture(*texture);
-    if (!(*texture = SDL_CreateTexture(p_renderer_, new_format,
-                                       SDL_TEXTUREACCESS_STREAMING, new_width,
-                                       new_height)))
+    if (*pp_texture)
+      SDL_DestroyTexture(*pp_texture);
+    if (!(*pp_texture = SDL_CreateTexture(p_renderer_, new_format,
+                                          SDL_TEXTUREACCESS_STREAMING,
+                                          new_width, new_height)))
       return -1;
-    if (SDL_SetTextureBlendMode(*texture, blendmode) < 0)
+    if (SDL_SetTextureBlendMode(*pp_texture, blendmode) < 0)
       return -1;
     if (init_texture) {
-      if (SDL_LockTexture(*texture, NULL, &pixels, &pitch) < 0)
+      if (SDL_LockTexture(*pp_texture, NULL, &pixels, &pitch) < 0)
         return -1;
       memset(pixels, 0, pitch * new_height);
-      SDL_UnlockTexture(*texture);
+      SDL_UnlockTexture(*pp_texture);
     }
     av_log(NULL, AV_LOG_VERBOSE, "Created %dx%d texture with %s.\n", new_width,
            new_height, SDL_GetPixelFormatName(new_format));
@@ -410,36 +418,40 @@ int FfmpegSdlAvPlayback::ReallocateTexture(SDL_Texture **texture,
 
 void FfmpegSdlAvPlayback::DisplayVideoFrame() {
   if (!frame_width_) {
-    OpenWindow(p_video_state_->get_filename());
+    char *p_filename = nullptr;
+    p_video_state_->GetFilename(&p_filename);
+    OpenWindow(p_filename);
   }
 
   SDL_SetRenderDrawColor(p_renderer_, 0, 0, 0, 255);
   SDL_RenderClear(p_renderer_);
-  if (p_video_state_->get_video_st()) {
+  if (p_video_state_->HasImageStream()) {
     GetAndDisplayVideoFrame();
   }
   SDL_RenderPresent(p_renderer_);
 }
 
 void FfmpegSdlAvPlayback::GetAndDisplayVideoFrame() {
-  Frame *p_frame;
+  Frame *p_frame = nullptr;
   SDL_Rect rect;
+  FrameQueue *queue = nullptr;
+  p_video_state_->GetImageFrameQueue(&queue);
+  queue->PeekLast(&p_frame);
 
-  p_frame = p_video_state_->get_pPictq()->peek_last();
+  CalculateRectangleForDisplay(&rect, this->x_left_, this->y_top_,
+                               this->frame_width_, this->frame_height_,
+                               p_frame->width_, p_frame->height_,
+                               p_frame->aspect_ratio_);
 
-  CalculateRectangleForDisplay(&rect, this->x_left_, this->y_top_, this->frame_width_,
-                               this->frame_height_, p_frame->width, p_frame->height,
-                               p_frame->aspect_ration);
-
-  if (!p_frame->uploaded) {
-    if (UploadTexture(&p_vid_texture_, p_frame->frame, &p_img_convert_ctx_) < 0)
+  if (!p_frame->is_uploaded_) {
+    if (UploadTexture(&p_vid_texture_, p_frame->p_frame_, &p_img_convert_ctx_) <
+        0)
       return;
-    p_frame->uploaded = 1;
-    p_frame->flip_v = p_frame->frame->linesize[0] < 0;
+    p_frame->is_uploaded_ = true;
   }
 
   SDL_RenderCopyEx(p_renderer_, p_vid_texture_, NULL, &rect, 0, NULL,
-                   p_frame->flip_v ? SDL_FLIP_VERTICAL : SDL_FLIP_NONE);
+                   SDL_FLIP_NONE);
 }
 
 int FfmpegSdlAvPlayback::GetVolumeStep() const {
@@ -457,7 +469,9 @@ void FfmpegSdlAvPlayback::StepVolume(double stepInDecibel) {
               SDL_MIX_MAXVOLUME);
 }
 
-void FfmpegSdlAvPlayback::SetVolume(double volume) { audio_volume_ = FFMAX(0, volume); }
+void FfmpegSdlAvPlayback::SetVolume(double volume) {
+  audio_volume_ = FFMAX(0, volume);
+}
 
 void FfmpegSdlAvPlayback::DisplayAndProcessEvent(SDL_Event *event) {
   double remaining_time = 0.0;
@@ -472,7 +486,7 @@ void FfmpegSdlAvPlayback::DisplayAndProcessEvent(SDL_Event *event) {
     if (remaining_time > 0.0)
       av_usleep((int64_t)(remaining_time * 1000000.0));
     remaining_time = kRefreshRate;
-    if (!p_video_state_->get_paused() || force_refresh_)
+    if (!p_video_state_->IsPaused() || force_refresh_)
       UpdateFrame(&remaining_time);
     SDL_PumpEvents();
   }
@@ -482,73 +496,80 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
   double time;
 
   Frame *sp, *sp2;
+  FrameQueue *queue = nullptr;
+  p_video_state_->GetImageFrameQueue(&queue);
 
-  if (p_video_state_->get_video_st()) {
+  if (p_video_state_->HasImageStream()) {
   retry:
-    if (p_video_state_->get_pPictq()->nb_remaining() == 0) {
+    if (queue->GetNumToDisplay() == 0) {
       // nothing to do, no picture to display in the queue
     } else {
       double last_duration, duration, delay;
-      Frame *vp, *lastvp;
+      Frame *vp = nullptr;
+      Frame *lastvp = nullptr;
+      PacketQueue *packet_queue = nullptr;
+      p_video_state_->GetImagePacketQueue(&packet_queue);
 
       /* dequeue the picture */
-      lastvp = p_video_state_->get_pPictq()->peek_last();
-      vp = p_video_state_->get_pPictq()->peek();
+      queue->PeekLast(&lastvp);
+      queue->Peek(&vp);
 
-      if (vp->serial != p_video_state_->get_pVideoq()->get_serial()) {
-        p_video_state_->get_pPictq()->next();
+      if (vp->serial_ != packet_queue->GetSerial()) {
+        queue->Next();
         goto retry;
       }
 
-      if (lastvp->serial != vp->serial)
+      if (lastvp->serial_ != vp->serial_)
         frame_last_shown_time_ = av_gettime_relative() / 1000000.0;
 
       // Force refresh overrides paused
-      if (p_video_state_->get_paused() && !force_refresh_)
+      if (p_video_state_->IsPaused() && !force_refresh_)
         goto display;
 
       /* compute nominal last_duration */
-      last_duration =
-          ComputeFrameDuration(lastvp, vp, p_video_state_->get_max_frame_duration());
-      delay = p_video_state_->compute_target_delay(last_duration);
+      last_duration = ComputeFrameDuration(
+          lastvp, vp, p_video_state_->GetMaxFrameDuration());
+      delay = p_video_state_->ComputeTargetDelay(last_duration);
 
       time = av_gettime_relative() / 1000000.0;
       if (time < frame_last_shown_time_ + delay) {
-        *remaining_time = FFMIN(frame_last_shown_time_ + delay - time, *remaining_time);
+        *remaining_time =
+            FFMIN(frame_last_shown_time_ + delay - time, *remaining_time);
         goto display;
       }
 
       frame_last_shown_time_ += delay;
-      if (delay > 0 && time - frame_last_shown_time_ > VideoState::kAvSyncThresholdMax)
+      if (delay > 0 &&
+          time - frame_last_shown_time_ > VideoState::kAvSyncThresholdMax)
         frame_last_shown_time_ = time;
 
-      std::unique_lock<std::mutex> locker(
-          p_video_state_->get_pPictq()->get_mutex());
-      if (!isnan(vp->pts))
-        p_video_state_->update_pts(vp->pts, vp->serial);
+      std::unique_lock<std::mutex> locker(queue->GetMutex());
+      if (!isnan(vp->pts_))
+        p_video_state_->SetPts(vp->pts_, vp->serial_);
       locker.unlock();
 
-      if (p_video_state_->get_pPictq()->nb_remaining() > 1) {
-        Frame *nextvp = p_video_state_->get_pPictq()->peek_next();
-        duration =
-            ComputeFrameDuration(vp, nextvp, p_video_state_->get_max_frame_duration());
-        if (!p_video_state_->IsStepping() && time > frame_last_shown_time_ + duration) {
+      if (queue->GetNumToDisplay() > 1) {
+        Frame *nextvp = nullptr;
+        queue->PeekNext(&nextvp);
+        duration = ComputeFrameDuration(vp, nextvp,
+                                        p_video_state_->GetMaxFrameDuration());
+        if (!p_video_state_->IsStepping() &&
+            time > frame_last_shown_time_ + duration) {
           num_frame_drops_late_++;
-          p_video_state_->get_pPictq()->next();
+          queue->Next();
           goto retry;
         }
       }
 
-      p_video_state_->get_pPictq()->next();
+      queue->Next();
       force_refresh_ = 1;
     }
   display:
     /* display picture */
-    if (!display_disabled_ && force_refresh_ &&
-        p_video_state_->get_pPictq()->get_rindex_shown()) {
+    if (!display_disabled_ && force_refresh_ && queue->HasShownFrame()) {
       DisplayVideoFrame();
       force_refresh_ = 0; // only reset force refresh when displayed
-      if (p_video_state_->IsStepping() && !p_video_state_->get_paused())
+      if (p_video_state_->IsStepping() && !p_video_state_->IsPaused())
         TogglePause();
     }
   }
@@ -557,50 +578,58 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
     int64_t cur_time;
     int aqsize, vqsize, sqsize;
     double av_diff;
+    PacketQueue *image_packet_queue = nullptr;
+    PacketQueue *audio_packet_queue = nullptr;
+    p_video_state_->GetImagePacketQueue(&image_packet_queue);
+    p_video_state_->GetAudioPacketQueue(&audio_packet_queue);
+    Clock *p_master_clock = nullptr;
+    Clock *p_image_clock = nullptr;
+    Clock *p_audio_clock = nullptr;
+    p_video_state_->GetMasterClock(&p_master_clock);
+    p_video_state_->GetImageClock(&p_image_clock);
+    p_video_state_->GetAudioClock(&p_audio_clock);
+    Decoder *p_decoder = nullptr;
+    p_video_state_->GetImageDecoder(&p_decoder);
 
     cur_time = av_gettime_relative();
     if (!last_time || (cur_time - last_time) >= 30000) {
       aqsize = 0;
       vqsize = 0;
       sqsize = 0;
-      if (p_video_state_->get_audio_st()) {
-        aqsize = p_video_state_->get_pAudioq()->get_size();
+      if (p_video_state_->HasAudioStream()) {
+        aqsize = audio_packet_queue->GetSize();
       }
-      if (p_video_state_->get_video_st()) {
-        vqsize = p_video_state_->get_pVideoq()->get_size();
+      if (p_video_state_->HasImageStream()) {
+        vqsize = image_packet_queue->GetSize();
       }
       av_diff = 0;
-      if (p_video_state_->get_audio_st() && p_video_state_->get_video_st()) {
-        av_diff = p_video_state_->get_pAudclk()->get_time() -
-                  p_video_state_->get_pVidclk()->get_time();
-      } else if (p_video_state_->get_video_st()) {
-        av_diff = p_video_state_->get_master_clock()->get_time() -
-                  p_video_state_->get_pVidclk()->get_time();
-      } else if (p_video_state_->get_audio_st()) {
-        av_diff = p_video_state_->get_master_clock()->get_time() -
-                  p_video_state_->get_pAudclk()->get_time();
+      if (p_video_state_->HasAudioStream() &&
+          p_video_state_->HasImageStream()) {
+        av_diff = p_audio_clock->GetTime() - p_image_clock->GetTime();
+      } else if (p_video_state_->HasImageStream()) {
+        av_diff = p_master_clock->GetTime() - p_image_clock->GetTime();
+      } else if (p_video_state_->HasAudioStream()) {
+        av_diff = p_master_clock->GetTime() - p_audio_clock->GetTime();
       }
       av_log(
           NULL, AV_LOG_INFO,
           "%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB "
           "vq=%5dKB sq=%5dB f=%f /%f   \r",
-          p_video_state_->get_master_clock()->get_time(),
-          p_video_state_->GetSpeed(), p_video_state_->get_pVidclk()->get_time(),
-          (p_video_state_->get_audio_st() && p_video_state_->get_video_st())
+          p_master_clock->GetTime(), p_video_state_->GetSpeed(),
+          p_image_clock->GetTime(),
+          (p_video_state_->HasAudioStream() && p_video_state_->HasImageStream())
               ? "A-V"
-              : (p_video_state_->get_video_st()
+              : (p_video_state_->HasImageStream()
                      ? "M-V"
-                     : (p_video_state_->get_audio_st() ? "M-A" : "   ")),
-          av_diff, p_video_state_->get_frame_drops_early(), num_frame_drops_late_,
-          aqsize / 1024, vqsize / 1024, sqsize,
-          p_video_state_->get_video_st() ? p_video_state_->get_pViddec()
-                                               ->get_avctx()
-                                               ->pts_correction_num_faulty_dts
-                                         : 0,
-          p_video_state_->get_video_st() ? p_video_state_->get_pViddec()
-                                               ->get_avctx()
-                                               ->pts_correction_num_faulty_pts
-                                         : 0);
+                     : (p_video_state_->HasAudioStream() ? "M-A" : "   ")),
+          av_diff, p_video_state_->GetNumFrameDropsEarly(),
+          num_frame_drops_late_, aqsize / 1024, vqsize / 1024, sqsize,
+          p_video_state_->HasImageStream()
+              ? p_decoder->GetNumberOfIncorrectDtsValues()
+              : 0,
+          p_video_state_->HasImageStream()
+              ? p_decoder->GetNumberOfIncorrectPtsValues()
+              : 0);
       fflush(stdout);
       last_time = cur_time;
     }
@@ -682,6 +711,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
     FfmpegSdlAvPlayback *p_player) {
   SDL_Event event;
   double incr, pos, frac, rate;
+  Clock *p_master_clock = nullptr;
 
   // Initialize before starting the stream
   p_player->Initialize();
@@ -689,6 +719,9 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
   p_player->GetVideoState(&p_video_state);
   p_video_state->StartStream();
   rate = 1;
+  p_video_state->GetMasterClock(&p_master_clock);
+  AVFormatContext *p_format_context = nullptr;
+  p_video_state->GetFormatContext(&p_format_context);
 
   if (p_video_state->GetFrameWidth()) {
     FfmpegSdlAvPlayback::SetDefaultWindowSize(
@@ -709,7 +742,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         break;
       case SDLK_f:
         p_player->ToggleFullscreen();
-        p_player->set_force_refresh(true);
+        p_player->SetForceReferesh(true);
         break;
       case SDLK_KP_8:
         p_player->Play();
@@ -725,7 +758,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         p_player->TogglePauseAndStopStep();
         break;
       case SDLK_m:
-        p_video_state->toggle_mute();
+        p_video_state->ToggleMute();
         break;
       case SDLK_KP_MULTIPLY:
       case SDLK_0:
@@ -764,32 +797,41 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
       case SDLK_DOWN:
         incr = -5.0;
       do_seek:
+
         // TODO FIX SEEK BY BYTES BUG
         if (VideoState::kEnableSeekByBytes) {
           pos = -1;
-          if (pos < 0 && p_video_state->get_video_stream() >= 0)
-            pos = p_video_state->get_pPictq()->last_pos();
-          if (pos < 0 && p_video_state->get_audio_stream() >= 0)
-            pos = p_video_state->get_pSampq()->last_pos();
-          if (pos < 0)
-            pos = avio_tell(p_video_state->get_ic()->pb);
-          if (p_video_state->get_ic()->bit_rate)
-            incr *= p_video_state->get_ic()->bit_rate / 8.0;
-          else
+          if (pos < 0 && p_video_state->HasImageStream()) {
+            FrameQueue *queue = nullptr;
+            p_video_state->GetImageFrameQueue(&queue);
+            pos = queue->GetBytePosOfLastFrame();
+          }
+          if (pos < 0 && p_video_state->HasAudioStream()) {
+            FrameQueue *queue = nullptr;
+            p_video_state->GetAudioFrameQueue(&queue);
+            pos = queue->GetBytePosOfLastFrame();
+          }
+          if (pos < 0) {
+            pos = avio_tell(p_format_context->pb);
+          }
+          if (p_format_context->bit_rate) {
+            incr *= p_format_context->bit_rate / 8.0;
+          } else {
             incr *= 180000.0;
-          pos += incr;
-          p_video_state->stream_seek(pos, incr, 1);
-        } else {
-          pos = p_video_state->get_master_clock()->get_time();
-          if (isnan(pos)) {
-            pos = (double)p_video_state->get_seek_pos() / AV_TIME_BASE;
           }
           pos += incr;
-          if (p_video_state->get_ic()->start_time != AV_NOPTS_VALUE &&
-              pos < p_video_state->get_ic()->start_time / (double)AV_TIME_BASE)
-            pos = p_video_state->get_ic()->start_time / (double)AV_TIME_BASE;
-          p_video_state->stream_seek((int64_t)(pos * AV_TIME_BASE),
-                                     (int64_t)(incr * AV_TIME_BASE), 0);
+          p_video_state->Seek(pos, incr, 1);
+        } else {
+          pos = p_master_clock->GetTime();
+          if (isnan(pos)) {
+            pos = (double)p_video_state->GetSeekTime() / AV_TIME_BASE;
+          }
+          pos += incr;
+          if (p_format_context->start_time != AV_NOPTS_VALUE &&
+              pos < p_format_context->start_time / (double)AV_TIME_BASE)
+            pos = p_format_context->start_time / (double)AV_TIME_BASE;
+          p_video_state->Seek((int64_t)(pos * AV_TIME_BASE),
+                              (int64_t)(incr * AV_TIME_BASE), 0);
         }
         break;
       default:
@@ -801,7 +843,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         static int64_t last_mouse_left_click = 0;
         if (av_gettime_relative() - last_mouse_left_click <= 500000) {
           p_player->ToggleFullscreen();
-          p_player->set_force_refresh(true);
+          p_player->SetForceReferesh(true);
           last_mouse_left_click = 0;
         } else {
           last_mouse_left_click = av_gettime_relative();
@@ -825,15 +867,14 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
           break;
         x = event.motion.x;
       }
-      if (VideoState::kEnableSeekByBytes ||
-          p_video_state->get_ic()->duration <= 0) {
-        uint64_t size = avio_size(p_video_state->get_ic()->pb);
-        p_video_state->stream_seek(size * x / width, 0, 1);
+      if (VideoState::kEnableSeekByBytes || p_format_context->duration <= 0) {
+        uint64_t size = avio_size(p_format_context->pb);
+        p_video_state->Seek(size * x / width, 0, 1);
       } else {
         int64_t ts;
         int ns, hh, mm, ss;
         int tns, thh, tmm, tss;
-        tns = p_video_state->get_ic()->duration / 1000000LL;
+        tns = p_format_context->duration / 1000000LL;
         thh = tns / 3600;
         tmm = (tns % 3600) / 60;
         tss = (tns % 60);
@@ -846,10 +887,11 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
                "Seek to %2.0f%% (%2d:%02d:%02d) of total duration "
                "(%2d:%02d:%02d)       \n",
                frac * 100, hh, mm, ss, thh, tmm, tss);
-        ts = frac * p_video_state->get_ic()->duration;
-        if (p_video_state->get_ic()->start_time != AV_NOPTS_VALUE)
-          ts += p_video_state->get_ic()->start_time;
-        p_video_state->stream_seek(ts, 0, 0);
+        ts = frac * p_format_context->duration;
+        if (p_format_context->start_time != AV_NOPTS_VALUE) {
+          ts += p_format_context->start_time;
+        }
+        p_video_state->Seek(ts, 0, 0);
       }
       break;
     case SDL_WINDOWEVENT:
@@ -857,7 +899,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
       case SDL_WINDOWEVENT_RESIZED:
         p_player->SetSize(event.window.data1, event.window.data2);
       case SDL_WINDOWEVENT_EXPOSED:
-        p_player->set_force_refresh(true);
+        p_player->SetForceReferesh(true);
       }
       break;
     case SDL_QUIT:
@@ -913,7 +955,7 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
 
   std::unique_lock<std::mutex> lck(mtx);
   cv.wait(lck, [&is_initialized] { return is_initialized; });
-  int err = ffmpegToJavaErrNo(p_video_state_->StartStream());
+  int err = FfmpegToJavaErrNo(p_video_state_->StartStream());
   if (err)
     return err;
 

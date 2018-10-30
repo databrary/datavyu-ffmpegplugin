@@ -2,62 +2,64 @@
 
 Decoder::Decoder(AVCodecContext *avctx, PacketQueue *queue,
                  std::condition_variable *empty_queue_cond)
-    : avctx(avctx), queue(queue), empty_queue_cond(empty_queue_cond),
-      pkt_serial(-1), finished(0), packet_pending(0), decoder_reorder_pts(0),
-      start_pts(AV_NOPTS_VALUE), start_pts_tb(av_make_q(0, 0)), next_pts(0),
-      next_pts_tb(av_make_q(0, 0)), decoder_tid(nullptr) {
+    : p_codec_context_(avctx), p_packet_queue_(queue),
+      p_is_empty_condition_(empty_queue_cond), serial_(-1), is_finished_(false),
+      is_packet_pending_(false), do_reorder_(false),
+      start_pts_(AV_NOPTS_VALUE), start_pts_timebase_(av_make_q(0, 0)),
+      next_pts_(0), next_pts_timebase_(av_make_q(0, 0)),
+      p_decoder_thread_(nullptr) {
   // Note, that pkt will need to be initialized for the case when decode_frame
   // is never run Sidenote: the move ref code will clean this initialization
-  av_init_packet(&pkt);
+  av_init_packet(&packet_);
 }
 
 Decoder::~Decoder() {
-  av_packet_unref(&pkt);
-  // TODO(fraudies): Clean-up design, move this de-allocation to the VideoState
-  // (where it is initialized)
-  avcodec_free_context(&avctx);
+  av_packet_unref(&packet_);
+  // TODO(fraudies): Move initialization of codec context into Decoder from VideoState
+	avcodec_free_context(&p_codec_context_);
 }
 
-int Decoder::decode_frame(AVFrame *frame) {
+int Decoder::Decode(AVFrame *frame) {
   int ret = AVERROR(EAGAIN);
 
   for (;;) {
-    AVPacket pkt;
+    AVPacket packet;
 
-    if (queue->get_serial() == pkt_serial) {
+    if (p_packet_queue_->GetSerial() == serial_) {
       do {
-        if (queue->is_abort_request())
+        if (p_packet_queue_->IsAbortRequested())
           return -1;
 
-        switch (avctx->codec_type) {
+        switch (p_codec_context_->codec_type) {
         case AVMEDIA_TYPE_VIDEO:
-          ret = avcodec_receive_frame(avctx, frame);
+          ret = avcodec_receive_frame(p_codec_context_, frame);
           if (ret >= 0) {
-            if (decoder_reorder_pts == -1) {
+            if (do_reorder_ == -1) {
               frame->pts = frame->best_effort_timestamp;
-            } else if (!decoder_reorder_pts) {
+            } else if (!do_reorder_) {
               frame->pts = frame->pkt_dts;
             }
           }
           break;
         case AVMEDIA_TYPE_AUDIO:
-          ret = avcodec_receive_frame(avctx, frame);
+          ret = avcodec_receive_frame(p_codec_context_, frame);
           if (ret >= 0) {
             AVRational tb = av_make_q(1, frame->sample_rate);
             if (frame->pts != AV_NOPTS_VALUE)
-              frame->pts = av_rescale_q(frame->pts, avctx->pkt_timebase, tb);
-            else if (next_pts != AV_NOPTS_VALUE)
-              frame->pts = av_rescale_q(next_pts, next_pts_tb, tb);
+              frame->pts =
+                  av_rescale_q(frame->pts, p_codec_context_->pkt_timebase, tb);
+            else if (next_pts_ != AV_NOPTS_VALUE)
+              frame->pts = av_rescale_q(next_pts_, next_pts_timebase_, tb);
             if (frame->pts != AV_NOPTS_VALUE) {
-              next_pts = frame->pts + frame->nb_samples;
-              next_pts_tb = tb;
+              next_pts_ = frame->pts + frame->nb_samples;
+              next_pts_timebase_ = tb;
             }
           }
           break;
         }
         if (ret == AVERROR_EOF) {
-          finished = pkt_serial;
-          avcodec_flush_buffers(avctx);
+          is_finished_ = serial_;
+          avcodec_flush_buffers(p_codec_context_);
           return 0;
         }
         if (ret >= 0)
@@ -66,62 +68,56 @@ int Decoder::decode_frame(AVFrame *frame) {
     }
 
     do {
-      if (queue->get_nb_packets() == 0)
-        empty_queue_cond->notify_one();
-      if (packet_pending) {
-        av_packet_move_ref(&pkt, &this->pkt);
-        packet_pending = 0;
+      if (p_packet_queue_->getNumberOfPackets() == 0)
+        p_is_empty_condition_->notify_one();
+      if (is_packet_pending_) {
+        av_packet_move_ref(&packet, &packet_);
+        is_packet_pending_ = false;
       } else {
-        if (queue->get(&pkt, 1, &pkt_serial) < 0)
+        if (p_packet_queue_->Get(&packet, 1, &serial_) < 0)
           return -1;
       }
-    } while (queue->get_serial() != pkt_serial);
+    } while (p_packet_queue_->GetSerial() != serial_);
 
-    if (queue->is_flush_packet(pkt)) {
-      avcodec_flush_buffers(avctx);
-      finished = 0;
-      next_pts = start_pts;
-      next_pts_tb = start_pts_tb;
+    if (p_packet_queue_->IsFlushPacket(packet)) {
+      avcodec_flush_buffers(p_codec_context_);
+      is_finished_ = 0;
+      next_pts_ = start_pts_;
+      next_pts_timebase_ = start_pts_timebase_;
     } else {
-      if (avctx->codec_type != AVMEDIA_TYPE_SUBTITLE &&
-          avcodec_send_packet(avctx, &pkt) == AVERROR(EAGAIN)) {
-        av_log(avctx, AV_LOG_ERROR,
+      if (p_codec_context_->codec_type != AVMEDIA_TYPE_SUBTITLE &&
+          avcodec_send_packet(p_codec_context_, &packet) == AVERROR(EAGAIN)) {
+        av_log(p_codec_context_, AV_LOG_ERROR,
                "Receive_frame and send_packet both returned EAGAIN, which is "
                "an API violation.\n");
-        packet_pending = 1;
-        av_packet_move_ref(&this->pkt, &pkt);
+        is_packet_pending_ = true;
+        av_packet_move_ref(&packet_, &packet);
       }
-      av_packet_unref(&pkt);
+      av_packet_unref(&packet);
     }
   }
 }
 
-void Decoder::set_start_pts(int64_t start_pts) { this->start_pts = start_pts; }
-
-void Decoder::set_start_pts_tb(AVRational start_pts_tb) {
-  this->start_pts_tb = start_pts_tb;
-}
-
-int Decoder::start(const std::function<void()> &decoding) {
-  queue->start();
-  decoder_tid = new std::thread([decoding] { decoding(); });
-  if (!decoder_tid) {
+int Decoder::Start(const std::function<void()> &decoding) {
+  p_packet_queue_->Start();
+  p_decoder_thread_ = new std::thread([decoding] { decoding(); });
+  if (!p_decoder_thread_) {
     av_log(NULL, AV_LOG_ERROR, "Can't create thread");
     return AVERROR(ENOMEM);
   }
   return 0;
 }
 
-void Decoder::abort(FrameQueue *fq) {
+void Decoder::Stop(FrameQueue *frame_queue) {
   // TODO(fraudies): Cleanup this design by keeping frame queue and packet queue
   // together
-  queue->abort();
-  fq->signal();
+  p_packet_queue_->Abort();
+  frame_queue->Signal();
   // Take care of the case when we never called start
-  if (decoder_tid) {
-    decoder_tid->join();
-    delete decoder_tid;
-    decoder_tid = nullptr;
+  if (p_decoder_thread_) {
+    p_decoder_thread_->join();
+    delete p_decoder_thread_;
+    p_decoder_thread_ = nullptr;
   }
-  queue->flush();
+  p_packet_queue_->Flush();
 }
