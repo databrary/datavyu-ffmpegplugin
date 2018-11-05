@@ -110,7 +110,7 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
               SDL_MIX_MAXVOLUME);
 }
 
-FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() { av_free(window_title); }
+FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {}
 
 int FfmpegSdlAvPlayback::Init(const char *filename, AVInputFormat *iformat) {
   /* register all codecs, demux and protocols */
