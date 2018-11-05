@@ -19,27 +19,28 @@ extern "C" {
 // code design at the cost of performance).
 //
 class Clock {
+private:
+  double time;            // clock time
+  int serial;             // clock is based on a packet with this serial
+  const int *queueSerial; // pointer to the current packet queue serial, used
+                          // for obsolete clock detection
+  double noSyncThreshold;
+
+  inline bool is_seek() const { return *queueSerial != serial; }
+
 public:
   Clock(const int *queue_serial);
 
   Clock();
 
-  double GetTime() const; // for stream time, depends on rate
+  double get_time() const; // for stream time, depends on rate
 
-  inline double GetSerial() const { return serial; }
+  inline double get_serial() const { return serial; }
 
-  void SetTime(double newTime, int newSerial);
+  void set_time(double newTime, int newSerial);
 
-  static void SyncSlaveToMaster(Clock *master, Clock *slave,
-                                double noSyncThreshold);
-
-private:
-  double time;          // clock time
-  int serial;           // clock is based on a packet with this serial
-  const int *p_serial_; // pointer to the current packet queue serial,
-                        // used for obsolete clock detection
-
-  inline bool SerialNoMatch() const { return *p_serial_ != serial; }
+  static void sync_slave_to_master(Clock *c, Clock *slave,
+                                   double noSyncThreshold);
 };
 
 #endif CLOCK_H_

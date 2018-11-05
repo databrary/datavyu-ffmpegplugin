@@ -6,49 +6,48 @@
 
 class FfmpegJavaAvPlayback : public FfmpegAvPlayback {
 private:
-  const AudioFormat *kPtrAudioFormat;
-  const PixelFormat *kPtrPixelFormat;
-  const int kAudioBufferSizeInBy;
-
-  struct SwsContext *p_img_convert_ctx_;
-  double remaining_time_to_display_;
+  const AudioFormat *pAudioFormat;
+  const PixelFormat *pPixelFormat;
+  const int audioBufferSizeInBy;
+  struct SwsContext *img_convert_ctx;
+  double remaining_time_to_display;
 
 public:
-  FfmpegJavaAvPlayback(const AudioFormat *kPtrAudioFormat,
-                       const PixelFormat *kPtrPixelFormat,
-                       const int kAudioBufferSizeInBy);
+  FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
+                       const PixelFormat *pPixelFormat,
+                       const int audioBufferSizeInBy);
   virtual ~FfmpegJavaAvPlayback();
 
-  int Init(const char *p_filename, AVInputFormat *p_input_format);
+  int Init(const char *filename, AVInputFormat *iformat);
 
-  int AudioOpen(int64_t wanted_channel_layout, int wanted_nb_channels,
-                int wanted_sample_rate, struct AudioParams *audio_hw_params);
+  int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
+                 int wanted_sample_rate, struct AudioParams *audio_hw_params);
 
-  VideoState *GetVideoState();
+  VideoState *get_VideoState();
 
-  void Destroy();
+  void destroy();
 
-  int StartStream();
+  int start_stream();
 
-  void SetBalance(float balance);
-  float GetBalance();
+  void set_balance(float fBalance);
+  float get_balance();
 
-  void SetAudioSyncDelay(long millis);
-  long getAudioSyncDelay();
+  void set_audioSyncDelay(long lMillis);
+  long get_audioSyncDelay();
 
-  int GetImageWidth() const;
-  int GetImageHeight() const;
+  int get_image_width() const;
+  int get_image_height() const;
 
-  bool HasImageData() const;
-  bool HasAudioData() const;
+  bool has_image_data() const;
+  bool has_audio_data() const;
 
-  bool DoDisplay(double *p_remaining_time);
+  bool do_display(double *remaining_time);
 
-  void UpdateImageBuffer(uint8_t *p_image_data, const long len);
-  void UpdateAudioBuffer(uint8_t *p_audio_data, const long len);
+  void update_image_buffer(uint8_t *pImageData, const long len);
+  void update_audio_buffer(uint8_t *pAudioData, const long len);
 
-  void GetAudioFormat(AudioFormat *p_audio_format);
-  void GetPixelFormat(PixelFormat *p_pixel_format);
+  void get_audio_format(AudioFormat *pAudioFormat);
+  void get_pixel_format(PixelFormat *pPixelFormat);
 };
 
 #endif // end of FFMPEGJAVAAVPLAYBACK_H_
