@@ -57,6 +57,8 @@ public class TestMediaPlayerData {
     /** Rate Speed 4X**/
     private static final float RATE_4X = 4.0F;
 
+    private static final int TO_MILLIS = 1000;
+
 
     // A list of all movie files to test
     private List<Movie> movieFiles = new ArrayList<>();
@@ -133,6 +135,17 @@ public class TestMediaPlayerData {
             LOGGER.info("Found existing resource " + outPath);
         }
         return outPath.getAbsolutePath();
+    }
+
+    /**
+     *  Round a number to n decimal place
+     * @param value to be rounded in double
+     * @param places decimal places
+     * @return a rounded number
+     */
+    private double round(double value, int places) {
+        double scale = Math.pow(10, places);
+        return Math.round(value * scale) / scale;
     }
 
     @BeforeTest
@@ -425,6 +438,15 @@ public class TestMediaPlayerData {
         }
     }
 
+    /**
+     * Tests the players seek feature {@link MediaPlayer#seek(double)}, the test will perform a number
+     * of seeks {@link #NUMBER_OF_SEEK} to a random timestamp and check
+     * if the the player accuracy is within a threshold {@link #SEEK_TOLERANCE_IN_SECONDS}
+     *
+     * The FFmpeg Players don't perform well while seeking, testing are showing a tolerance
+     * of 6 sec in order to pass all the Asserts, we will keep it as a soft assert for now,
+     * However we won't tolerate more than 30% failed seek with 100 ms as threshold.
+     */
     @Test
     public void testSeek() {
         System.out.println("////////////////////////////////////////////////////////////");
@@ -454,9 +476,6 @@ public class TestMediaPlayerData {
                     now = mediaPlayer.getPresentationTime();
                     if(playerType ==  MediaPlayerBuilder.PlayerType.JAVA_JDIALOG
                             || playerType == MediaPlayerBuilder.PlayerType.SDL){
-                        // The FFmpeg Players don't perform well while seeking, testing are showing a tolerance
-                        // of 6 sec in order to pass all the Asserts, we will keep it as a soft assert for now,
-                        // However we won't tolerate more than 30% failed seek with 100 ms as threshold.
                         softAssert.assertTrue( Math.abs( now - randomTime) <= SEEK_TOLERANCE_IN_SECONDS);
                         if (Math.abs(now - randomTime) >= SEEK_TOLERANCE_IN_SECONDS){
                             failedSeek++;
@@ -476,23 +495,28 @@ public class TestMediaPlayerData {
     }
 
     /**
-     * Not implemented yet
+     * Tests Step Forward feature {@link MediaPlayer#stepForward()}
+     *
+     * IMPORTANT: Only available for the MPV player, the ffmpeg SDL and Java players can
+     * step forward. however, the reported time after a seek is NaN which make the test fails
      */
     @Test
-    public void testStepForwardBackward(){
+    public void testStepForward(){
         System.out.println("////////////////////////////////////////////////////////////");
-        System.out.println("//              Step Forward Backward Test                //");
+        System.out.println("//              Step Forward Test                        //");
         System.out.println("////////////////////////////////////////////////////////////");
         for (Movie movieFile : movieFiles) {
             for (MediaPlayerBuilder.PlayerType playerType : moviePlayerTypes) {
                 if(playerType == MediaPlayerBuilder.PlayerType.MPV){
+                    double minDuration = 0.0;
+
                     MediaPlayer mediaPlayer = MediaPlayerBuilder.build(movieFile.path, playerType);
 
                     LOGGER.info("Initializing the " + playerType + " player with the " + movieFile.path + " stream");
                     mediaPlayer.init();
 
                     sleep(SLEEP_DURATION_IN_MILLIS, true);
-                    double randomTime =  (0 + (Math.random() * (mediaPlayer.getDuration() - 0)));
+                    double randomTime =  (minDuration + (Math.random() * (mediaPlayer.getDuration() - minDuration)));
                     mediaPlayer.seek(randomTime);
 
                     sleep(SLEEP_DURATION_IN_MILLIS, true);
@@ -502,19 +526,55 @@ public class TestMediaPlayerData {
                     mediaPlayer.stepForward();
 
                     sleep(SLEEP_DURATION_IN_MILLIS, true);
-                    Assert.assertEquals(Math.abs(mediaPlayer.getPresentationTime()-now), (1000/mediaPlayer.getFps())/1000);
+                    double currentTime = round(Math.abs(mediaPlayer.getPresentationTime()-now), 2);
+                    double expectedTime = (TO_MILLIS /mediaPlayer.getFps())/ TO_MILLIS;
+                    LOGGER.info("Step Forward current time " + currentTime + " sec, expected time " + expectedTime + " sec");
 
-                    randomTime =  (0 + (Math.random() * (mediaPlayer.getDuration() - 0)));
+                    Assert.assertEquals(currentTime, expectedTime);
+
+                    LOGGER.info("Dispose the " + playerType + " player");
+                    mediaPlayer.dispose();
+                }
+            }
+        }
+    }
+
+    /**
+     * Tests Step Backward feature {@link MediaPlayer#stepForward()}
+     *
+     * IMPORTANT: Only available for the MPV player, the ffmpeg SDL and Java players cannot
+     * step backward. however, the reported time after a seek is NaN which make the test fails
+     */
+    @Test
+    public void testStepBackward(){
+        System.out.println("////////////////////////////////////////////////////////////");
+        System.out.println("//              Step Backward Test                        //");
+        System.out.println("////////////////////////////////////////////////////////////");
+        for (Movie movieFile : movieFiles) {
+            for (MediaPlayerBuilder.PlayerType playerType : moviePlayerTypes) {
+                if(playerType == MediaPlayerBuilder.PlayerType.MPV){
+                    double minDuration = 0.0;
+
+                    MediaPlayer mediaPlayer = MediaPlayerBuilder.build(movieFile.path, playerType);
+
+                    LOGGER.info("Initializing the " + playerType + " player with the " + movieFile.path + " stream");
+                    mediaPlayer.init();
+
+                    sleep(SLEEP_DURATION_IN_MILLIS, true);
+                    double randomTime =  (minDuration + (Math.random() * (mediaPlayer.getDuration() - minDuration)));
                     mediaPlayer.seek(randomTime);
 
                     sleep(SLEEP_DURATION_IN_MILLIS, true);
                     Assert.assertTrue(Math.abs(mediaPlayer.getPresentationTime() - randomTime) < SEEK_TOLERANCE_IN_SECONDS );
 
-                    now =  randomTime;
+                    double now = mediaPlayer.getPresentationTime();
                     mediaPlayer.stepBackward();
-                    sleep(SLEEP_DURATION_IN_MILLIS, true);
 
-                    Assert.assertEquals(Math.abs(mediaPlayer.getPresentationTime()-now), (1000/mediaPlayer.getFps())/1000);
+                    sleep(SLEEP_DURATION_IN_MILLIS, true);
+                    double currentTime = round(Math.abs(mediaPlayer.getPresentationTime()-now), 2);
+                    double expectedTime = (TO_MILLIS /mediaPlayer.getFps())/ TO_MILLIS;
+                    LOGGER.info("Step Backward current time " + currentTime + " sec, expected time " + expectedTime + " sec");
+                    Assert.assertEquals(currentTime, expectedTime);
 
                     LOGGER.info("Dispose the " + playerType + " player");
                     mediaPlayer.dispose();
