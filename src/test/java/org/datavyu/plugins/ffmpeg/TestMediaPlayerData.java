@@ -64,8 +64,8 @@ public class TestMediaPlayerData {
     private List<Movie> movieFiles = new ArrayList<>();
 
     private List<MediaPlayerBuilder.PlayerType> moviePlayerTypes = new ArrayList<MediaPlayerBuilder.PlayerType>(){{
-//        add(MediaPlayerBuilder.PlayerType.JAVA_JDIALOG);
-//        add(MediaPlayerBuilder.PlayerType.MPV);
+        add(MediaPlayerBuilder.PlayerType.JAVA_JDIALOG);
+        add(MediaPlayerBuilder.PlayerType.MPV);
         add(MediaPlayerBuilder.PlayerType.SDL);
     }};
 
