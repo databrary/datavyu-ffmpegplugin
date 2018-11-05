@@ -46,10 +46,10 @@ public:
   static bool IsValid(CMedia *pMedia);
 
 protected:
-  CMedia() : m_pPipeline(NULL) {}
+  CMedia() : p_pipeline(NULL) {}
 
 protected:
-  CPipeline *m_pPipeline;
+  CPipeline *p_pipeline;
 };
 
 #endif //_MEDIA_H_

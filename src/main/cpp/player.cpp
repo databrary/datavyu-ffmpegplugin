@@ -5,18 +5,18 @@ int runFFmpegPlayer(const char *input_filename, AVInputFormat *file_iformat) {
 
   av_log_set_flags(AV_LOG_SKIP_REPEATED);
   av_log(NULL, AV_LOG_WARNING, "Init Network\n");
-  FfmpegSdlAvPlayback *pPlayer = new FfmpegSdlAvPlayback();
-  int err = pPlayer->Init(input_filename, file_iformat);
+  FfmpegSdlAvPlayback *p_player = new FfmpegSdlAvPlayback();
+  int err = p_player->OpenVideo(input_filename, file_iformat);
   if (err) {
     fprintf(stderr, "Error %d when opening input file %s", err, input_filename);
     return err;
   }
-  pPlayer->init_and_event_loop();
+  FfmpegSdlAvPlayback::InitializeAndListenForEvents(p_player);
 }
 
 int runMpvPlayer(const char *input_filename) {
   MpvAvPlayback *pPlayer = new MpvAvPlayback();
-  pPlayer->init_and_event_loop(input_filename);
+  pPlayer->InitAndEventLoop(input_filename);
   return 0;
 }
 

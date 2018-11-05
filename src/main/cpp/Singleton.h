@@ -31,27 +31,27 @@
 
 template <class T> class Singleton {
 public:
-  Singleton() { _instance = NULL; }
+  Singleton() { p_instance_ = NULL; }
 
   ~Singleton() {
-    if (_instance)
-      delete _instance;
+    if (p_instance_)
+      delete p_instance_;
   }
 
   uint32_t GetInstance(T **pInstance) {
     uint32_t uErrorCode = ERROR_NONE;
 
-    if (NULL == _instance)
-      uErrorCode = T::CreateInstance(&_instance);
+    if (NULL == p_instance_)
+      uErrorCode = T::CreateInstance(&p_instance_);
 
     if (ERROR_NONE == uErrorCode)
-      *pInstance = _instance;
+      *pInstance = p_instance_;
 
     return uErrorCode;
   }
 
 private:
-  T *_instance;
+  T *p_instance_;
 };
 
 #endif // _SINGLETON_H_

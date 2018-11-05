@@ -48,7 +48,7 @@ private:
   virtual uint32_t GetImageWidth(int *iWidth) const;
   virtual uint32_t GetImageHeight(int *iHeight) const;
 
-  FfmpegSdlAvPlayback *pSdlPlayback;
+  FfmpegSdlAvPlayback *p_sdl_playback_;
 };
 
 #endif //_FFMPEG_AV_PLAYBACK_PIPELINE_H_

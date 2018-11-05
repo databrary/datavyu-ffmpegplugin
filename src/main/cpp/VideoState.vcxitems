@@ -45,7 +45,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketQueue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pipeline.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PipelineOptions.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Singleton.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)VideoState.h" />
   </ItemGroup>
 </Project>

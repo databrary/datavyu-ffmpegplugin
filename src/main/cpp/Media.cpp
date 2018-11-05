@@ -38,7 +38,7 @@
  *
  * @param   pPipe   CPipeline object to associate with the CMedia
  */
-CMedia::CMedia(CPipeline *pPipe) { m_pPipeline = pPipe; }
+CMedia::CMedia(CPipeline *pPipe) { p_pipeline = pPipe; }
 
 /**
  * CMedia::~CMedia()
@@ -46,10 +46,10 @@ CMedia::CMedia(CPipeline *pPipe) { m_pPipeline = pPipe; }
  * Destructor
  */
 CMedia::~CMedia() {
-  if (m_pPipeline != NULL) {
-    m_pPipeline->Dispose();
-    delete m_pPipeline;
-    m_pPipeline = NULL;
+  if (p_pipeline != NULL) {
+    p_pipeline->Dispose();
+    delete p_pipeline;
+    p_pipeline = NULL;
   }
 }
 
@@ -66,7 +66,7 @@ bool CMedia::IsValid(CMedia *pMedia) {
   bool bValid = false;
 
   //***** CMedia is valid if there is a pipeline associated with the media
-  bValid = (NULL != pMedia) && (NULL != pMedia->m_pPipeline);
+  bValid = (NULL != pMedia) && (NULL != pMedia->p_pipeline);
 
   return bValid;
 }
@@ -76,4 +76,4 @@ bool CMedia::IsValid(CMedia *pMedia) {
  *
  * Returns a pPointer to the associated CPipeline object.
  */
-CPipeline *CMedia::GetPipeline() { return m_pPipeline; }
+CPipeline *CMedia::GetPipeline() { return p_pipeline; }
