@@ -83,12 +83,7 @@ public:
 
   VideoState *get_VideoState();
 
-  int GetImageWidth() const;
-
-  int GetImageHeight() const;
-
-  int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
-                 int wanted_sample_rate, struct AudioParams *audio_hw_params);
+  inline bool IsCursorHidden() const { return is_cursor_hidden_; }
 
   static void set_default_window_size(int width, int height, AVRational sar);
 
