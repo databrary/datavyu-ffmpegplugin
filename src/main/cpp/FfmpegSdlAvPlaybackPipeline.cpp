@@ -3,7 +3,7 @@
 
 FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(
     CPipelineOptions *pOptions)
-    : CPipeline(pOptions), p_sdl_playback_(nullptr) {}
+    : CPipeline(pOptions), pSdlPlayback(nullptr) {}
 
 FfmpegSdlAvPlaybackPipeline::~FfmpegSdlAvPlaybackPipeline() {
   // Clean-up done in dispose that is called from the destructor of the
@@ -16,42 +16,42 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char *input_file) {
   av_log(NULL, AV_LOG_WARNING, "Init Network\n");
   AVInputFormat *file_iformat = nullptr;
 
-  p_sdl_playback_ = new (std::nothrow) FfmpegSdlAvPlayback();
+  pSdlPlayback = new (std::nothrow) FfmpegSdlAvPlayback();
 
-  if (!p_sdl_playback_) {
+  if (!pSdlPlayback) {
     return ERROR_PIPELINE_NULL;
   }
 
-  int err = p_sdl_playback_->OpenVideo(input_file, file_iformat);
+  int err = pSdlPlayback->Init(input_file, file_iformat);
   if (err) {
-    delete p_sdl_playback_;
+    delete pSdlPlayback;
     return err;
   }
 
   // Assign the callback functions
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
+  pSdlPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_UNKNOWN,
       [this] { this->UpdatePlayerState(Unknown); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
+  pSdlPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_READY,
       [this] { this->UpdatePlayerState(Ready); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
+  pSdlPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_PLAYING,
       [this] { this->UpdatePlayerState(Playing); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
+  pSdlPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_PAUSED,
       [this] { this->UpdatePlayerState(Paused); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
+  pSdlPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_STOPPED,
       [this] { this->UpdatePlayerState(Stopped); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
+  pSdlPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_STALLED,
       [this] { this->UpdatePlayerState(Stalled); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
+  pSdlPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_FINISHED,
       [this] { this->UpdatePlayerState(Finished); });
 
-  err = p_sdl_playback_->InitializeAndStartDisplayLoop();
+  err = pSdlPlayback->init_and_start_display_loop();
   if (err) {
     return err;
   }
@@ -60,42 +60,43 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char *input_file) {
 }
 
 void FfmpegSdlAvPlaybackPipeline::Dispose() {
-  delete p_sdl_playback_;
-  p_sdl_playback_ = nullptr;
+  pSdlPlayback->destroy();
+  delete pSdlPlayback;
+  pSdlPlayback = nullptr;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Play() {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  p_sdl_playback_->Play();
+  pSdlPlayback->play();
 
   return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Stop() {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  p_sdl_playback_->Stop();
+  pSdlPlayback->stop();
 
   return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  p_sdl_playback_->TogglePauseAndStopStep();
+  pSdlPlayback->toggle_pause();
 
   return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::StepForward() {
-  if (p_sdl_playback_ == nullptr)
+  if (pSdlPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
 
-  p_sdl_playback_->StepToNextFrame();
+  pSdlPlayback->step_to_next_frame();
 
   return ERROR_NONE;
 }
@@ -108,34 +109,34 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  double pos = p_sdl_playback_->GetTime();
+  double pos = pSdlPlayback->get_stream_time();
   if (isnan(pos))
-    pos = (double)p_sdl_playback_->GetSeekTime() / AV_TIME_BASE;
+    pos = (double)pSdlPlayback->get_seek_pos() / AV_TIME_BASE;
   double incr = dSeekTime - pos;
-  if (p_sdl_playback_->GetStartTime() != AV_NOPTS_VALUE &&
-      dSeekTime < p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE)
-    dSeekTime = p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE;
+  if (pSdlPlayback->get_start_time() != AV_NOPTS_VALUE &&
+      dSeekTime < pSdlPlayback->get_start_time() / (double)AV_TIME_BASE)
+    dSeekTime = pSdlPlayback->get_start_time() / (double)AV_TIME_BASE;
 
-  p_sdl_playback_->Seek((int64_t)(dSeekTime * AV_TIME_BASE),
-                     (int64_t)(incr * AV_TIME_BASE), false);
+  pSdlPlayback->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE),
+                            (int64_t)(incr * AV_TIME_BASE), 0);
 
   return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetDuration(double *pdDuration) {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  *pdDuration = p_sdl_playback_->GetDuration();
+  *pdDuration = pSdlPlayback->get_duration();
 
   return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double *pdStreamTime) {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
@@ -145,52 +146,52 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double *pdStreamTime) {
   // as accurate as the audio clock  (Master))
   //*pdStreamTime = pSdlPlayback->get_master_clock();
 
-  *pdStreamTime = p_sdl_playback_->GetTime();
+  *pdStreamTime = pSdlPlayback->get_stream_time();
 
   return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double *pdFps) {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  *pdFps = p_sdl_playback_->GetFrameRate();
+  *pdFps = pSdlPlayback->get_fps();
 
   return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  return p_sdl_playback_->SetSpeed(fRate);
+  return pSdlPlayback->set_rate(fRate);
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetRate(float *pfRate) {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  *pfRate = p_sdl_playback_->GetSpeed();
+  *pfRate = pSdlPlayback->get_rate();
 
   return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetVolume(float fVolume) {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  p_sdl_playback_->SetVolume(fVolume * SDL_MIX_MAXVOLUME);
+  pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
   return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetVolume(float *pfVolume) {
-  if (p_sdl_playback_ == nullptr) {
+  if (pSdlPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  *pfVolume = p_sdl_playback_->GetVolume() / (double)SDL_MIX_MAXVOLUME;
+  *pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
   return ERROR_NONE;
 }
 
@@ -215,17 +216,17 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioSyncDelay(long *plMillis) {
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageWidth(int *iWidth) const {
-	if (p_sdl_playback_ == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
-	*iWidth = p_sdl_playback_->GetImageWidth();
+	*iWidth = pSdlPlayback->GetImageWidth();
 	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int *iHeight) const {
-	if (p_sdl_playback_ == nullptr) {
+	if (pSdlPlayback == nullptr) {
 		return ERROR_PLAYBACK_NULL;
 	}
-	*iHeight = p_sdl_playback_->GetImageHeight();
+	*iHeight = pSdlPlayback->GetImageHeight();
 	return ERROR_NONE;
 }

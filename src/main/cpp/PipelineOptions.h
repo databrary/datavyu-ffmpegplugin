@@ -33,26 +33,29 @@
 #include "FfmpegJniUtils.h"
 
 using namespace std;
+typedef list<string> ContentTypesList;
 
 class CPipelineOptions {
 public:
+public:
+  // TODO(fraudies): Add the audio and video format here
   CPipelineOptions(AudioFormat audioFormat = AudioFormat(),
                    PixelFormat pixelFormat = PixelFormat(),
                    int audioBufferSizeInBy = 0)
-      : audio_format_(audioFormat), pixel_format_(pixelFormat),
-        audio_buffer_size_in_by_(audioBufferSizeInBy) {}
+      : m_audioFormat(audioFormat), m_pixelFormat(pixelFormat),
+        m_audioBufferSizeInBy(audioBufferSizeInBy) {}
 
   virtual ~CPipelineOptions() {}
-  inline const AudioFormat *GetAudioFormat() const { return &audio_format_; }
-  inline const PixelFormat *GetPixelFormat() const { return &pixel_format_; }
+  inline const AudioFormat *GetAudioFormat() const { return &m_audioFormat; }
+  inline const PixelFormat *GetPixelFormat() const { return &m_pixelFormat; }
   inline const int GetAudioBufferSizeInBy() const {
-    return audio_buffer_size_in_by_;
+    return m_audioBufferSizeInBy;
   }
 
 private:
-  AudioFormat audio_format_;
-  PixelFormat pixel_format_;
-  int audio_buffer_size_in_by_;
+  AudioFormat m_audioFormat;
+  PixelFormat m_pixelFormat;
+  int m_audioBufferSizeInBy;
 };
 
 #endif //_PIPELINE_OPTIONS_H_

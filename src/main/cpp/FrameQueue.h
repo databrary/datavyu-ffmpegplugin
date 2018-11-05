@@ -11,16 +11,17 @@ extern "C" {
 
 // Common struct for handling decoded data and allocated buffers
 typedef struct Frame {
-  AVFrame *p_frame_;
-  int serial_;
-  double pts_;       // presentation timestamp for the frame
-  double duration_;  // estimated duration of the frame
-  int64_t byte_pos_; // byte position of the frame in the input file
-  int width_;
-  int height_;
-  int format_;
-  AVRational aspect_ratio_;
-  bool is_uploaded_;
+  AVFrame *frame;
+  int serial;
+  double pts;      // presentation timestamp for the frame
+  double duration; // estimated duration of the frame
+  int64_t pos;     // byte position of the frame in the input file
+  int width;
+  int height;
+  int format;
+  AVRational sar;
+  int uploaded;
+  int flip_v;
 } Frame;
 
 // Frame queue provides a container for frames that hold audio and image data
@@ -44,70 +45,67 @@ typedef struct Frame {
 // of the logic)
 //
 class FrameQueue {
- public:
-  // Use this method to create a new frame queue to ensure cases where memory
-  // allocation fails are handled properly
-  static int CreateFrameQueue(FrameQueue **pp_frame_queue,
-                              const PacketQueue *p_packet_queue, int max_size,
-                              bool keep_last);
+private:
+  Frame *queue; // TOOD: This might be a bit slower than the original code;
+                // check whether it matters
+  int rindex;   // read index
+  int windex;   // write index
+  int size;
+  int max_size;
+  int keep_last;
+  int rindex_shown; // read index shown
+  std::mutex mutex;
+  std::condition_variable cond;
+  const PacketQueue *pktq; // packet queue
 
-  virtual ~FrameQueue();
-
-  void Signal();
-
-  // Last shown frame
-  inline void Peek(Frame **pp_frame) {
-    *pp_frame = &p_frames_[(read_index_ + read_index_shown_) % max_size_];
-  }
-
-  // Next to show frame
-  inline void PeekNext(Frame **pp_frame) {
-    *pp_frame = &p_frames_[(read_index_ + read_index_shown_ + 1) % max_size_];
-  }
-
-  // Last read index
-  inline void PeekLast(Frame **pp_frame) {
-    *pp_frame = &p_frames_[read_index_];
-  }
-
-  // Need to pass out a reference for the lock to work
-  inline std::mutex &GetMutex() { return mutex_; }
-
-  // True if this frame queue has shown a frame
-  inline bool HasShownFrame() const { return read_index_shown_; }
-
-  // Peek frame pointer to write to (Push will write)
-  void PeekWritable(Frame **pp_frame);
-
-  // Peek frame pointer to read from (Next will advance the pointer)
-  void PeekReadable(Frame **pp_frame);
-
-  void Push();
-
-  void Next();
-
-  // return the number of undisplayed frames in the queue
-  inline int GetNumToDisplay() const { return size_ - read_index_shown_; }
-
-  // return the byte position of the frame last shown
-  int64_t GetBytePosOfLastFrame();
-
- private:
-  Frame *p_frames_; // container for the frames
-  int read_index_;  // read index
-  int write_index_; // write index
-  int size_;        // size in bytes
-  int max_size_;
-  bool keep_last_;
-  int read_index_shown_; // read index shown
-  std::mutex mutex_;
-  std::condition_variable condition_;
-  const PacketQueue *p_packet_queue_; // packet queue
-
-  static void unref_item(Frame *vp) { av_frame_unref(vp->p_frame_); }
+  static void unref_item(Frame *vp) { av_frame_unref(vp->frame); }
 
   FrameQueue(const PacketQueue *pktq, int max_size,
-             bool keep_last); // private because of memory management
+             int keep_last); // private because of memory management
+public:
+  // Use this method to create a new frame queue to ensure cases where memory
+  // allocation fails are handled properly
+  static FrameQueue *create_frame_queue(const PacketQueue *pktq, int max_size,
+                                        int keep_last);
+
+  virtual ~FrameQueue() {
+    for (int i = 0; i < max_size; i++) {
+      Frame *vp = &queue[i];
+      if (vp) {
+        unref_item(vp);
+        av_frame_free(&vp->frame);
+      }
+    }
+    delete[] queue;
+  }
+
+  void signal();
+
+  inline Frame *peek() { return &queue[(rindex + rindex_shown) % max_size]; }
+
+  inline Frame *peek_next() {
+    return &queue[(rindex + rindex_shown + 1) % max_size];
+  }
+
+  inline Frame *peek_last() { return &queue[rindex]; }
+
+  inline std::mutex &get_mutex() { return mutex; }
+
+  inline int get_rindex_shown() const { return rindex_shown; }
+
+  Frame *peek_writable();
+
+  Frame *peek_readable();
+
+  void push();
+
+  void next();
+
+  // return the number of undisplayed frames in the queue
+  inline int nb_remaining() const { return size - rindex_shown; }
+
+  // return last shown position
+  int64_t last_pos();
 };
 
 #endif FRAME_QUEUE_H_

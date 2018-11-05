@@ -6,57 +6,57 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char *input_file) {
   av_log(NULL, AV_LOG_WARNING, "Init Network\n");
   AVInputFormat *file_iformat = nullptr;
 
-  p_java_playback_ = new (std::nothrow) FfmpegJavaAvPlayback(
-      p_options_->GetAudioFormat(), p_options_->GetPixelFormat(),
-      p_options_->GetAudioBufferSizeInBy());
+  pJavaPlayback = new (std::nothrow) FfmpegJavaAvPlayback(
+      m_pOptions->GetAudioFormat(), m_pOptions->GetPixelFormat(),
+      m_pOptions->GetAudioBufferSizeInBy());
 
-  if (!p_java_playback_) {
+  if (!pJavaPlayback) {
     av_log(NULL, AV_LOG_ERROR,
            "Unable to initialize the java playback pipeline");
     return ERROR_PIPELINE_NULL;
   }
 
-  int err = p_java_playback_->Init(input_file, file_iformat);
+  int err = pJavaPlayback->Init(input_file, file_iformat);
   if (err) {
-    delete p_java_playback_;
+    delete pJavaPlayback;
     return err;
   }
 
   // Assign the callback functions
-  p_java_playback_->SetPlayerStateCallbackFunction(
+  pJavaPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_UNKNOWN,
       [this] { this->UpdatePlayerState(Unknown); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
+  pJavaPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_READY,
       [this] { this->UpdatePlayerState(Ready); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
+  pJavaPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_PLAYING,
       [this] { this->UpdatePlayerState(Playing); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
+  pJavaPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_PAUSED,
       [this] { this->UpdatePlayerState(Paused); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
+  pJavaPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_STOPPED,
       [this] { this->UpdatePlayerState(Stopped); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
+  pJavaPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_STALLED,
       [this] { this->UpdatePlayerState(Stalled); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
+  pJavaPlayback->set_player_state_callback_func(
       VideoState::PlayerStateCallback::TO_FINISHED,
       [this] { this->UpdatePlayerState(Finished); });
 
-  return p_java_playback_->StartStream();
+  return pJavaPlayback->start_stream();
 }
 
 void FfmpegJavaAvPlaybackPipline::Dispose() {
-  p_java_playback_->Destroy();
-  delete p_java_playback_;
-  p_java_playback_ = nullptr;
+  pJavaPlayback->destroy();
+  delete pJavaPlayback;
+  pJavaPlayback = nullptr;
 }
 
 FfmpegJavaAvPlaybackPipline::FfmpegJavaAvPlaybackPipline(
-    CPipelineOptions *p_options)
-    : CPipelineData(p_options), p_java_playback_(nullptr) {}
+    CPipelineOptions *pOptions)
+    : CPipelineData(pOptions), pJavaPlayback(nullptr) {}
 
 FfmpegJavaAvPlaybackPipline::~FfmpegJavaAvPlaybackPipline() {
   // Clean-up done in dispose that is called from the destructor of the
@@ -64,41 +64,37 @@ FfmpegJavaAvPlaybackPipline::~FfmpegJavaAvPlaybackPipline() {
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Play() {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
 
-  p_java_playback_->Play();
+  pJavaPlayback->play();
 
   return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Stop() {
-  if (p_java_playback_ == nullptr) {
+  if (pJavaPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
-  }
 
-  p_java_playback_->Stop();
+  pJavaPlayback->stop();
 
   return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Pause() {
-  if (p_java_playback_ == nullptr) {
+  if (pJavaPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
-  }
 
-  p_java_playback_->TogglePauseAndStopStep();
+  pJavaPlayback->toggle_pause();
 
   return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::StepForward() {
-  if (p_java_playback_ == nullptr) {
+  if (pJavaPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
-  }
 
-  p_java_playback_->StepToNextFrame();
+  pJavaPlayback->step_to_next_frame();
 
   return ERROR_NONE;
 }
@@ -110,41 +106,39 @@ uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time) {
-  if (p_java_playback_ == nullptr) {
+uint32_t FfmpegJavaAvPlaybackPipline::Seek(double dSeekTime) {
+  if (pJavaPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
-  }
 
-  double pos = p_java_playback_->GetTime();
+  double pos = pJavaPlayback->get_stream_time();
 
   if (isnan(pos))
-    pos = (double)p_java_playback_->GetSeekTime() / AV_TIME_BASE;
+    pos = (double)pJavaPlayback->get_seek_pos() / AV_TIME_BASE;
 
-  double difference = time - pos;
+  double incr = dSeekTime - pos;
 
-  if (p_java_playback_->GetStartTime() != AV_NOPTS_VALUE &&
-      time < p_java_playback_->GetStartTime() / (double)AV_TIME_BASE) {
-    time = p_java_playback_->GetStartTime() / (double)AV_TIME_BASE;
+  if (pJavaPlayback->get_start_time() != AV_NOPTS_VALUE &&
+      dSeekTime < pJavaPlayback->get_start_time() / (double)AV_TIME_BASE) {
+    dSeekTime = pJavaPlayback->get_start_time() / (double)AV_TIME_BASE;
   }
 
-  p_java_playback_->Seek((int64_t)(time * AV_TIME_BASE),
-                         (int64_t)(difference * AV_TIME_BASE), false);
+  pJavaPlayback->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE),
+                             (int64_t)(incr * AV_TIME_BASE), 0);
 
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetDuration(double *p_duration) {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
+uint32_t FfmpegJavaAvPlaybackPipline::GetDuration(double *pdDuration) {
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
 
-  *p_duration = p_java_playback_->GetDuration();
+  *pdDuration = pJavaPlayback->get_duration();
 
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double *p_stream_time) {
-  if (p_java_playback_ == nullptr) {
+uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double *pdStreamTime) {
+  if (pJavaPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
@@ -153,54 +147,52 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double *p_stream_time) {
   // resolve this issue (Note that the timestamp return by the external is not
   // as accurate as the audio clock  (Master))
 
-  *p_stream_time = p_java_playback_->GetTime();
+  *pdStreamTime = pJavaPlayback->get_stream_time();
 
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetFps(double *p_fps) {
-  if (p_java_playback_ == nullptr) {
+uint32_t FfmpegJavaAvPlaybackPipline::GetFps(double *pdFps) {
+  if (pJavaPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  *p_fps = p_java_playback_->GetFrameRate();
+  *pdFps = pJavaPlayback->get_fps();
 
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::SetRate(float rate) {
-  if (p_java_playback_ == nullptr) {
+uint32_t FfmpegJavaAvPlaybackPipline::SetRate(float fRate) {
+  if (pJavaPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  return p_java_playback_->SetSpeed(rate);
+  return pJavaPlayback->set_rate(fRate);
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetRate(float *p_rate) {
-  if (p_java_playback_ == nullptr) {
+uint32_t FfmpegJavaAvPlaybackPipline::GetRate(float *pfRate) {
+  if (pJavaPlayback == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  *p_rate = (float)p_java_playback_->GetSpeed();
+  *pfRate = (float)pJavaPlayback->get_rate();
 
   return ERROR_NONE;
 }
 
 // Note this function is available only when streaming through SDL pipline
-uint32_t FfmpegJavaAvPlaybackPipline::SetVolume(float volume) {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
+uint32_t FfmpegJavaAvPlaybackPipline::SetVolume(float fVolume) {
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
 
   // TODO(fraudies): Implement this once ready
   // pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
 }
 
 // Note this function is available only when streaming through SDL pipline
-uint32_t FfmpegJavaAvPlaybackPipline::GetVolume(float *p_volume) {
-  if (p_java_playback_ == nullptr) {
+uint32_t FfmpegJavaAvPlaybackPipline::GetVolume(float *pfVolume) {
+  if (pJavaPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
-  }
 
   // TODO(fraudies): Implement this once ready
   //*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
@@ -208,128 +200,116 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetVolume(float *p_volume) {
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::SetBalance(float balance) {
+uint32_t FfmpegJavaAvPlaybackPipline::SetBalance(float fBalance) {
   // TODO(fraudies): Not sure how to wire this
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
 
-  p_java_playback_->SetBalance(balance);
+  pJavaPlayback->set_balance(fBalance);
 
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetBalance(float *p_balance) {
+uint32_t FfmpegJavaAvPlaybackPipline::GetBalance(float *pfBalance) {
   // TODO(fraudies): Not sure how to wire this
-  if (p_java_playback_ == nullptr) {
+  if (pJavaPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
-  }
 
-  *p_balance = p_java_playback_->GetBalance();
-
-  return ERROR_NONE;
-}
-
-uint32_t FfmpegJavaAvPlaybackPipline::SetAudioSyncDelay(long millis) {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
-
-  p_java_playback_->SetAudioSyncDelay(millis);
+  *pfBalance = pJavaPlayback->get_balance();
 
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetAudioSyncDelay(long *p_millis) {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
-
-  *p_millis = p_java_playback_->getAudioSyncDelay();
-
-  return ERROR_NONE;
-}
-
-uint32_t FfmpegJavaAvPlaybackPipline::HasAudioData(bool *p_has_audio_data) const {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
-
-  *p_has_audio_data = p_java_playback_->HasAudioData();
-
-  return ERROR_NONE;
-}
-
-uint32_t FfmpegJavaAvPlaybackPipline::HasImageData(bool *p_has_image_data) const {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
-
-  *p_has_image_data = p_java_playback_->HasImageData();
-
-  return ERROR_NONE;
-}
-
-uint32_t FfmpegJavaAvPlaybackPipline::GetImageWidth(int *p_width) const {
-  if (p_java_playback_ == nullptr) {
+uint32_t FfmpegJavaAvPlaybackPipline::SetAudioSyncDelay(long lMillis) {
+  if (pJavaPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
-  }
 
-  *p_width = p_java_playback_->GetImageWidth();
+  pJavaPlayback->set_audioSyncDelay(lMillis);
 
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetImageHeight(int *p_height) const {
-  if (p_java_playback_ == nullptr) {
+uint32_t FfmpegJavaAvPlaybackPipline::GetAudioSyncDelay(long *plMillis) {
+  if (pJavaPlayback == nullptr)
     return ERROR_PLAYBACK_NULL;
-  }
 
-  *p_height = p_java_playback_->GetImageHeight();
+  *plMillis = pJavaPlayback->get_audioSyncDelay();
+
+  return ERROR_NONE;
+}
+
+uint32_t FfmpegJavaAvPlaybackPipline::HasAudioData(bool *bAudioData) const {
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
+
+  *bAudioData = pJavaPlayback->has_audio_data();
+
+  return ERROR_NONE;
+}
+
+uint32_t FfmpegJavaAvPlaybackPipline::HasImageData(bool *bImageData) const {
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
+
+  *bImageData = pJavaPlayback->has_image_data();
+
+  return ERROR_NONE;
+}
+
+uint32_t FfmpegJavaAvPlaybackPipline::GetImageWidth(int *iWidth) const {
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
+
+  *iWidth = pJavaPlayback->get_image_width();
+
+  return ERROR_NONE;
+}
+
+uint32_t FfmpegJavaAvPlaybackPipline::GetImageHeight(int *iHeight) const {
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
+
+  *iHeight = pJavaPlayback->get_image_height();
 
   return ERROR_NONE;
 }
 
 uint32_t
-FfmpegJavaAvPlaybackPipline::GetAudioFormat(AudioFormat *p_audio_format) const {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
+FfmpegJavaAvPlaybackPipline::GetAudioFormat(AudioFormat *pAudioFormat) const {
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
 
-  p_java_playback_->GetAudioFormat(p_audio_format);
+  pJavaPlayback->get_audio_format(pAudioFormat);
 
   return ERROR_NONE;
 }
 
 uint32_t
-FfmpegJavaAvPlaybackPipline::GetPixelFormat(PixelFormat *p_pixel_format) const {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
+FfmpegJavaAvPlaybackPipline::GetPixelFormat(PixelFormat *pPixelFormat) const {
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
 
-  p_java_playback_->GetPixelFormat(p_pixel_format);
-
-  return ERROR_NONE;
-}
-
-uint32_t FfmpegJavaAvPlaybackPipline::UpdateImageBuffer(uint8_t *p_image_data,
-                                                        const long len) {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
-
-  p_java_playback_->UpdateImageBuffer(p_image_data, len);
+  pJavaPlayback->get_pixel_format(pPixelFormat);
 
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::UpdateAudioBuffer(uint8_t *p_audio_data,
+uint32_t FfmpegJavaAvPlaybackPipline::UpdateImageBuffer(uint8_t *pImageData,
                                                         const long len) {
-  if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
-	}
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
 
-  p_java_playback_->UpdateAudioBuffer(p_audio_data, len);
+  pJavaPlayback->update_image_buffer(pImageData, len);
+
+  return ERROR_NONE;
+}
+
+uint32_t FfmpegJavaAvPlaybackPipline::UpdateAudioBuffer(uint8_t *pAudioData,
+                                                        const long len) {
+  if (pJavaPlayback == nullptr)
+    return ERROR_PLAYBACK_NULL;
+
+  pJavaPlayback->update_audio_buffer(pAudioData, len);
 
   return ERROR_NONE;
 }

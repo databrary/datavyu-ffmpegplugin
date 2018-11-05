@@ -10,17 +10,17 @@ extern "C" {
 
 TEST(PacketQueueTest, CreateDeletePacketTest) {
   PacketQueue packetQueue;
-  packetQueue.Start();
-  packetQueue.Flush();
+  packetQueue.start();
+  packetQueue.flush();
 }
 
 TEST(PacketQueueTest, FlushPacketQueueTest) {
   // Prepare the queue
   PacketQueue packetQueue;
-  packetQueue.Start();
-  packetQueue.Flush(); // flushes all packets
+  packetQueue.start();
+  packetQueue.flush(); // flushes all packets
   AVPacket getPkt;
-  ASSERT_EQ(0, packetQueue.Get(&getPkt, 0,
+  ASSERT_EQ(0, packetQueue.get(&getPkt, 0,
                                nullptr)); // non-blocking get of empty queue
 }
 
@@ -34,10 +34,10 @@ TEST(PacketQueueTest, PutGetPacketTest) {
   putPkt.data = &dummy;
   // Create, start the packet queue and put/get
   PacketQueue packetQueue;
-  packetQueue.Start();
-  packetQueue.Flush();
-  ASSERT_EQ(0, packetQueue.Put(&putPkt));
-  ASSERT_LT(0, packetQueue.Get(&getPkt, 1, nullptr));
+  packetQueue.start();
+  packetQueue.flush();
+  ASSERT_EQ(0, packetQueue.put(&putPkt));
+  ASSERT_LT(0, packetQueue.get(&getPkt, 1, nullptr));
   ASSERT_EQ(getPkt.pos, putPkt.pos);
   ASSERT_EQ(*getPkt.data, *putPkt.data);
   // Note, I don't free the packets here to simplify the code
@@ -46,34 +46,34 @@ TEST(PacketQueueTest, PutGetPacketTest) {
 TEST(PacketQueueTest, PutGetFlushPacketTest) {
   AVPacket getPkt;
   PacketQueue packetQueue;
-  packetQueue.Start();
-  packetQueue.Flush();
-  packetQueue.PutFlushPacket();
-  ASSERT_LT(0, packetQueue.Get(&getPkt, 1, nullptr));
-  ASSERT_TRUE(packetQueue.IsFlushPacket(getPkt));
+  packetQueue.start();
+  packetQueue.flush();
+  packetQueue.put_flush_packet();
+  ASSERT_LT(0, packetQueue.get(&getPkt, 1, nullptr));
+  ASSERT_TRUE(packetQueue.is_flush_packet(getPkt));
 }
 
 TEST(PacketQueueTest, AbortBlockReadPacketTest) {
   // Prepare the queue
   PacketQueue packetQueue;
-  packetQueue.Start();
-  packetQueue.Flush();
+  packetQueue.start();
+  packetQueue.flush();
 
   // Read packet but blocked
   std::thread reader([&packetQueue] {
     AVPacket getPkt;
-    ASSERT_EQ(-1, packetQueue.Get(&getPkt, 1, nullptr)); // abort returns -1
+    ASSERT_EQ(-1, packetQueue.get(&getPkt, 1, nullptr)); // abort returns -1
   });
 
-  packetQueue.Abort();
+  packetQueue.abort();
   reader.join();
 }
 
 TEST(PacketQueueTest, MultiThreadPutGetPacketTest) {
   // Prepare the queue
   PacketQueue packetQueue;
-  packetQueue.Start();
-  packetQueue.Flush();
+  packetQueue.start();
+  packetQueue.flush();
 
   // Write some packets
   std::thread writer([&packetQueue] {
@@ -81,7 +81,7 @@ TEST(PacketQueueTest, MultiThreadPutGetPacketTest) {
       AVPacket putPkt;
       av_init_packet(&putPkt);
       putPkt.pos = writes;
-      packetQueue.Put(&putPkt);
+      packetQueue.put(&putPkt);
     }
   });
 
@@ -89,7 +89,7 @@ TEST(PacketQueueTest, MultiThreadPutGetPacketTest) {
   std::thread reader([&packetQueue] {
     AVPacket getPkt;
     for (int reads = 0; reads < 10; reads++) {
-      ASSERT_LT(0, packetQueue.Get(&getPkt, 1, nullptr));
+      ASSERT_LT(0, packetQueue.get(&getPkt, 1, nullptr));
       ASSERT_EQ(getPkt.pos, reads);
     }
   });

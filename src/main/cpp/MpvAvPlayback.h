@@ -43,48 +43,48 @@ typedef mpv_event *(*MpvWaitEvent)(intptr_t, double);
  * NOTE: THe mpv error codes schema:  >= 0 Succes, < 0 error
  */
 // TODO(Reda) Much naming convention of the ffmpeg plugin and error returned
-class MpvAvPlayback {
+class MpvAvPlayback : public FfmpegAvPlayback {
 
 private:
-  HINSTANCE lib_mpv_dll_;
-  intptr_t mpv_handle_;
+  HINSTANCE _libMpvDll;
+  intptr_t _mpvHandle;
 
   // Function pointers to mpv api functions
-  MpvCreate mpv_create_;
-  MpvInitialize mpv_initialize_;
-  MpvCommand mpv_command_; // Always terminate a command with NULL like so const
+  MpvCreate _mpvCreate;
+  MpvInitialize _mpvInitialize;
+  MpvCommand _mpvCommand; // Always terminate a command with NULL like so const
                           // char * cmd = {"seek", "10", "absolute", NULL}
   MpvCommandAsync
-      mpv_command_async_; // Always terminate a command with NULL like so const
+      _mpvCommandAsync; // Always terminate a command with NULL like so const
                         // char * cmd = {"seek", "10", "absolute", NULL}
-  MpvCommandString mpv_command_string_;
-  MpvTerminateDestroy mpv_terminate_destroy_;
-  MpvSetOption mpv_set_option_;
-  MpvSetOptionString mpv_set_option_string_;
-  MpvGetPropertystring mpv_get_property_string_;
-  MpvGetProperty mpv_get_property_;
-  MpvSetProperty mpv_set_property_;
-  MpvSetPropertyAsync mpv_set_property_async_;
-  MpvFree mpv_free_;
-  MpvWaitEvent mpv_wait_event_;
+  MpvCommandString _mpvCommandString;
+  MpvTerminateDestroy _mpvTerminateDestroy;
+  MpvSetOption _mpvSetOption;
+  MpvSetOptionString _mpvSetOptionString;
+  MpvGetPropertystring _mpvGetPropertyString;
+  MpvGetProperty _mpvGetProperty;
+  MpvSetProperty _mpvSetProperty;
+  MpvSetPropertyAsync _mpvSetPropertyAsync;
+  MpvFree _mpvFree;
+  MpvWaitEvent _mpvWaitEvent;
 
   void LoadMpvDynamic();
 
   int DoMpvCommand(const char **cmd);
   int Pause();
 
-  bool initial_play_;
-  const char *kContainerFpsProperty = "container-fps";
-  const char *kWidthProperty = "width";
-  const char *kHeightProperty = "height";
-  const char *kDurationProperty = "duration";
-  const char *kSpeedProperty = "speed";
-  const char *kPauseProperty = "pause";
-  const char *kPlaybackTimeProperty = "playback-time";
-  const char *kAoVolumeProperty = "ao-volume";
-  const char *kFrameBackStepCommand = "frame-back-step";
-  const char *kFrameStepCommand = "frame-step";
-  const char *kSeekCommand = "seek";
+  bool _initialPlay;
+  const char *_kContainerFpsProperty = "container-fps";
+  const char *_kWidthProperty = "width";
+  const char *_kHeightProperty = "height";
+  const char *_kDurationProperty = "duration";
+  const char *_kSpeedProperty = "speed";
+  const char *_kPauseProperty = "pause";
+  const char *_kPlaybackTimeProperty = "playback-time";
+  const char *_kAoVolumeProperty = "ao-volume";
+  const char *_kFrameBackStepCommand = "frame-back-step";
+  const char *_kFrameStepCommand = "frame-step";
+  const char *_kSeekCommand = "seek";
 
 public:
   MpvAvPlayback();
@@ -92,23 +92,23 @@ public:
 
   int Init(const char *filename, const intptr_t windowID);
   int Destroy();
-  void InitAndEventLoop(const char *filename);
+  void init_and_event_loop(const char *filename);
   int IsPaused(bool *isPaused);
   int Play();
   int Stop();
   int TogglePause();
   int SetRate(double newRate);
-  int GetRate(double *p_rate);
-  int GetFps(double *p_fps);
-  int GetImageWidth(int64_t *p_width);
-  int GetImageHeight(int64_t *p_height);
-  int GetDuration(double *p_duration);
+  int GetRate(double *currentRate);
+  int GetFps(double *steamFps);
+  int GetImageWidth(int64_t *imageWidth);
+  int GetImageHeight(int64_t *imageHeight);
+  int GetDuration(double *streamDuration);
   int StepBackward();
   int StepForward();
-  int SetTime(double time);
-  int GetPresentationTime(double *p_time);
-  int SetVolume(double volume);
-  int GetVolume(double *p_volume);
+  int SetTime(double value);
+  int GetPresentationTime(double *presentationTime);
+  int SetVolume(double pfVolume);
+  int GetVolume(double *pfVolume);
 };
 
 #endif MPVAVPLAYBACK_H_
