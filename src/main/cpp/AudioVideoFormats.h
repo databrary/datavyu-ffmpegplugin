@@ -9,31 +9,31 @@ extern "C" {
 
 // TODO(fraudies): Consolidate AudioParams and AudioFormat
 typedef struct AudioParams {
-  int frequency_;
-  int num_channels_;
-  int64_t channel_layout_;
-  enum AVSampleFormat sample_format_;
-  int frame_size_;
-  int bytes_per_sec_;
+  int freq;
+  int channels;
+  int64_t channel_layout;
+  enum AVSampleFormat fmt;
+  int frame_size;
+  int bytes_per_sec;
 } AudioParams;
 
 class AudioFormat {
 public:
-  std::string encoding_name_;
-  float sample_rate_;
-  int sample_size_in_bits_;
-  int num_channels_;
-  int frame_size_;
-  float frame_rate_;
-  bool is_big_endian_;
+  std::string encoding;
+  float sampleRate;
+  int sampleSizeInBits;
+  int channels;
+  int frameSize;
+  float frameRate;
+  bool bigEndian;
   AudioFormat();
-  void ToAudioParams(AudioParams *pAudioParams) const;
+  void toAudioParams(AudioParams *pAudioParams) const;
 };
 
 class PixelFormat {
 public:
-  AVPixelFormat pixel_format_;
-  int num_components_;
+  AVPixelFormat type;
+  int numComponents;
   PixelFormat();
 };
 

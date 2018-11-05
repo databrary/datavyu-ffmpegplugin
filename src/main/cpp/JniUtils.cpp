@@ -25,6 +25,36 @@
 
 #include "JniUtils.h"
 
+void ThrowJavaException(JNIEnv *env, const char *type, const char *message) {
+  // First check if there's already a pending exception, if there is then do
+  // nothing also abort if we're passed a NULL env
+  if (env ? env->ExceptionCheck() : true) {
+    return;
+  }
+
+  jclass klass = NULL;
+  if (type) {
+    klass = env->FindClass(type);
+    if (!klass) {
+      // might have caused an exception
+      if (env->ExceptionOccurred()) {
+        env->ExceptionClear();
+      }
+    }
+  }
+  if (!klass) {
+    klass = env->FindClass("java/lang/Exception");
+    if (!klass) {
+      if (env->ExceptionOccurred()) {
+        env->ExceptionClear();
+      }
+      // This shouldn't happen...
+      return;
+    }
+  }
+  env->ThrowNew(klass, message);
+}
+
 JNIEnv *GetJavaEnvironment(JavaVM *jvm, jboolean &didAttach) {
   JNIEnv *env = NULL;
   didAttach = false;
@@ -37,13 +67,13 @@ JNIEnv *GetJavaEnvironment(JavaVM *jvm, jboolean &didAttach) {
   return env;
 }
 
-bool CJavaEnvironment::HasException() {
-  return (p_environment ? (bool)p_environment->ExceptionCheck() : false);
+bool CJavaEnvironment::hasException() {
+  return (environment ? (bool)environment->ExceptionCheck() : false);
 }
 
-bool CJavaEnvironment::ClearException() {
-  if (p_environment ? p_environment->ExceptionCheck() : false) {
-    p_environment->ExceptionClear();
+bool CJavaEnvironment::clearException() {
+  if (environment ? environment->ExceptionCheck() : false) {
+    environment->ExceptionClear();
     return true;
   }
   return false;
@@ -53,25 +83,25 @@ bool CJavaEnvironment::ClearException() {
  * Check whether there is a pending exception and if so, log its string version
  * and return true, otherwise, i.e., if there is no exception, return false.
  */
-bool CJavaEnvironment::ReportException() {
-  if (p_environment) {
-    jthrowable exc = p_environment->ExceptionOccurred();
+bool CJavaEnvironment::reportException() {
+  if (environment) {
+    jthrowable exc = environment->ExceptionOccurred();
     if (exc) {
-      p_environment->ExceptionClear(); // Clear current exception
-      jclass cid = p_environment->FindClass("java/lang/Throwable");
-      if (!ClearException()) {
+      environment->ExceptionClear(); // Clear current exception
+      jclass cid = environment->FindClass("java/lang/Throwable");
+      if (!clearException()) {
         jmethodID mid =
-            p_environment->GetMethodID(cid, "toString", "()Ljava/lang/String;");
-        if (!ClearException()) {
-          jstring jmsg = (jstring)p_environment->CallObjectMethod(exc, mid);
-          if (!ClearException()) {
-            char *pmsg = (char *)p_environment->GetStringUTFChars(jmsg, NULL);
-            p_environment->ReleaseStringUTFChars(jmsg, pmsg);
+            environment->GetMethodID(cid, "toString", "()Ljava/lang/String;");
+        if (!clearException()) {
+          jstring jmsg = (jstring)environment->CallObjectMethod(exc, mid);
+          if (!clearException()) {
+            char *pmsg = (char *)environment->GetStringUTFChars(jmsg, NULL);
+            environment->ReleaseStringUTFChars(jmsg, pmsg);
           }
         }
-        p_environment->DeleteLocalRef(cid);
+        environment->DeleteLocalRef(cid);
       }
-      p_environment->DeleteLocalRef(exc);
+      environment->DeleteLocalRef(exc);
       return true;
     }
   }
@@ -79,23 +109,23 @@ bool CJavaEnvironment::ReportException() {
 }
 
 CJavaEnvironment::CJavaEnvironment(JavaVM *jvm)
-    : attached(false), p_environment(NULL) {
+    : attached(false), environment(NULL) {
   if (jvm) {
-    p_environment = GetJavaEnvironment(jvm, attached);
+    environment = GetJavaEnvironment(jvm, attached);
   }
 }
 
 CJavaEnvironment::CJavaEnvironment(JNIEnv *env) : attached(false) {
-  p_environment = env;
+  environment = env;
 }
 
 CJavaEnvironment::~CJavaEnvironment() {
-  if (attached && p_environment) {
+  if (attached && environment) {
     JavaVM *jvm;
-    if (p_environment->GetJavaVM(&jvm) == JNI_OK) {
+    if (environment->GetJavaVM(&jvm) == JNI_OK) {
       jvm->DetachCurrentThread();
     }
   }
 }
 
-JNIEnv *CJavaEnvironment::GetEnvironment() { return p_environment; }
+JNIEnv *CJavaEnvironment::getEnvironment() { return environment; }

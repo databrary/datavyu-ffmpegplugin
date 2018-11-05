@@ -45,14 +45,14 @@ public:
   virtual bool SendPlayerStateEvent(int newState, double presentTime);
 
 private:
-  JavaVM *p_player_vm_;
-  jobject player_instance_;
-  jlong media_reference_; // FIXME: Nuke this field, it's completely unused
+  JavaVM *m_PlayerVM;
+  jobject m_PlayerInstance;
+  jlong m_MediaReference; // FIXME: Nuke this field, it's completely unused
 
-  static jmethodID send_warning_method_;
+  static jmethodID m_SendWarningMethod;
 
-  static jmethodID send_player_media_error_event_method_;
-  static jmethodID send_player_state_event_method_;
+  static jmethodID m_SendPlayerMediaErrorEventMethod;
+  static jmethodID m_SendPlayerStateEventMethod;
 
   static jobject CreateObject(JNIEnv *env, jmethodID *cid,
                               const char *class_name, const char *signature,

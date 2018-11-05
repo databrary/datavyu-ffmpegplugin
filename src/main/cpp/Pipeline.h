@@ -34,9 +34,11 @@
 class CMedia;
 class CJavaPlayerEventDispatcher;
 
-// class CPipeline
-//
-// Underlying object that interfaces the JNI layer to the actual media engine
+/**
+ * class CPipeline
+ *
+ * Underlying object that interfaces the JNI layer to the actual media engine
+ */
 class CPipeline {
 public:
   enum PlayerState {
@@ -50,10 +52,11 @@ public:
     Error = 7
   };
 
-  CPipeline(CPipelineOptions *p_options = NULL);
+public:
+  CPipeline(CPipelineOptions *pOptions = NULL);
   virtual ~CPipeline();
 
-  void SetEventDispatcher(CJavaPlayerEventDispatcher *p_event_dispatcher);
+  void SetEventDispatcher(CJavaPlayerEventDispatcher *pEventDispatcher);
 
   virtual uint32_t Init(const char *filename) = 0;
   virtual void Dispose();
@@ -86,14 +89,14 @@ public:
   virtual uint32_t GetAudioSyncDelay(long *plMillis) = 0;
 
 protected:
-  CJavaPlayerEventDispatcher *p_event_dispatcher_;
-  CPipelineOptions *p_options_;
-  PlayerState player_state_;
-  PlayerState player_pending_state_; // This is necessary to get from stalled
-                                     // into the next correct state
+  CJavaPlayerEventDispatcher *m_pEventDispatcher;
+  CPipelineOptions *m_pOptions;
+  PlayerState m_PlayerState;
+  PlayerState m_PlayerPendingState; // This is necessary to get from stalled
+                                    // into the next correct state
 
-  void UpdatePlayerState(PlayerState new_state);
-  void SetPlayerState(PlayerState new_state, bool silent);
+  void UpdatePlayerState(PlayerState newState);
+  void SetPlayerState(PlayerState newPlayerState, bool bSilent);
 };
 
 #endif //_PIPELINE_H_

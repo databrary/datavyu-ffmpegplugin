@@ -11,7 +11,7 @@
 
 #include "MPV/client.h"
 
-int MpvToJavaErrNo(int mpvErrNo) {
+int mpvToJavaErrNo(int mpvErrNo) {
   switch (mpvErrNo) {
   case MPV_ERROR_SUCCESS:
     return ERROR_NONE;

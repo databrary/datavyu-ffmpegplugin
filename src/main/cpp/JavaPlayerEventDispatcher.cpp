@@ -29,24 +29,24 @@
 
 static bool areJMethodIDsInitialized = false;
 
-jmethodID CJavaPlayerEventDispatcher::send_player_media_error_event_method_ = 0;
-jmethodID CJavaPlayerEventDispatcher::send_player_state_event_method_ = 0;
+jmethodID CJavaPlayerEventDispatcher::m_SendPlayerMediaErrorEventMethod = 0;
+jmethodID CJavaPlayerEventDispatcher::m_SendPlayerStateEventMethod = 0;
 
 CJavaPlayerEventDispatcher::CJavaPlayerEventDispatcher()
-    : p_player_vm_(NULL), player_instance_(NULL), media_reference_(0L) {}
+    : m_PlayerVM(NULL), m_PlayerInstance(NULL), m_MediaReference(0L) {}
 
 CJavaPlayerEventDispatcher::~CJavaPlayerEventDispatcher() { Dispose(); }
 
 void CJavaPlayerEventDispatcher::Init(JNIEnv *env, jobject PlayerInstance,
                                       CMedia *pMedia) {
-  if (env->GetJavaVM(&p_player_vm_) != JNI_OK) {
+  if (env->GetJavaVM(&m_PlayerVM) != JNI_OK) {
     if (env->ExceptionCheck()) {
       env->ExceptionClear();
     }
     return;
   }
-  player_instance_ = env->NewGlobalRef(PlayerInstance);
-  media_reference_ = (jlong)ptr_to_jlong(pMedia);
+  m_PlayerInstance = env->NewGlobalRef(PlayerInstance);
+  m_MediaReference = (jlong)ptr_to_jlong(pMedia);
 
   // Initialize jmethodID data members. These are derived from the class of
   // the object and not its instance. No, this particular implementation is
@@ -55,16 +55,16 @@ void CJavaPlayerEventDispatcher::Init(JNIEnv *env, jobject PlayerInstance,
   if (false == areJMethodIDsInitialized) {
     CJavaEnvironment javaEnv(env);
     bool hasException = false;
-    jclass klass = env->GetObjectClass(player_instance_);
+    jclass klass = env->GetObjectClass(m_PlayerInstance);
 
-    send_player_media_error_event_method_ =
+    m_SendPlayerMediaErrorEventMethod =
         env->GetMethodID(klass, "sendPlayerMediaErrorEvent", "(I)V");
-    hasException = javaEnv.ReportException();
+    hasException = javaEnv.reportException();
 
     if (!hasException) {
-      send_player_state_event_method_ =
+      m_SendPlayerStateEventMethod =
           env->GetMethodID(klass, "sendPlayerStateEvent", "(ID)V");
-      hasException = javaEnv.ReportException();
+      hasException = javaEnv.reportException();
     }
 
     env->DeleteLocalRef(klass);
@@ -74,26 +74,26 @@ void CJavaPlayerEventDispatcher::Init(JNIEnv *env, jobject PlayerInstance,
 }
 
 void CJavaPlayerEventDispatcher::Dispose() {
-  CJavaEnvironment jenv(p_player_vm_);
-  JNIEnv *pEnv = jenv.GetEnvironment();
+  CJavaEnvironment jenv(m_PlayerVM);
+  JNIEnv *pEnv = jenv.getEnvironment();
   if (pEnv) {
-    pEnv->DeleteGlobalRef(player_instance_);
-    player_instance_ = nullptr; // prevent further calls to this object
+    pEnv->DeleteGlobalRef(m_PlayerInstance);
+    m_PlayerInstance = NULL; // prevent further calls to this object
   }
 }
 
 bool CJavaPlayerEventDispatcher::SendPlayerMediaErrorEvent(int errorCode) {
   bool bSucceeded = false;
-  CJavaEnvironment jenv(p_player_vm_);
-  JNIEnv *pEnv = jenv.GetEnvironment();
+  CJavaEnvironment jenv(m_PlayerVM);
+  JNIEnv *pEnv = jenv.getEnvironment();
   if (pEnv) {
-    jobject localPlayer = pEnv->NewLocalRef(player_instance_);
+    jobject localPlayer = pEnv->NewLocalRef(m_PlayerInstance);
     if (localPlayer) {
-      pEnv->CallVoidMethod(localPlayer, send_player_media_error_event_method_,
+      pEnv->CallVoidMethod(localPlayer, m_SendPlayerMediaErrorEventMethod,
                            errorCode);
       pEnv->DeleteLocalRef(localPlayer);
 
-      bSucceeded = !jenv.ReportException();
+      bSucceeded = !jenv.reportException();
     }
   }
 
@@ -142,16 +142,16 @@ bool CJavaPlayerEventDispatcher::SendPlayerStateEvent(int newState,
   }
 
   bool bSucceeded = false;
-  CJavaEnvironment jenv(p_player_vm_);
-  JNIEnv *pEnv = jenv.GetEnvironment();
+  CJavaEnvironment jenv(m_PlayerVM);
+  JNIEnv *pEnv = jenv.getEnvironment();
   if (pEnv) {
-    jobject localPlayer = pEnv->NewLocalRef(player_instance_);
+    jobject localPlayer = pEnv->NewLocalRef(m_PlayerInstance);
     if (localPlayer) {
-      pEnv->CallVoidMethod(localPlayer, send_player_state_event_method_,
+      pEnv->CallVoidMethod(localPlayer, m_SendPlayerStateEventMethod,
                            newJavaState, presentTime);
       pEnv->DeleteLocalRef(localPlayer);
 
-      bSucceeded = !jenv.ReportException();
+      bSucceeded = !jenv.reportException();
     }
   }
 
