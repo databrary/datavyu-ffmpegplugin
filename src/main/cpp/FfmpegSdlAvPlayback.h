@@ -83,6 +83,10 @@ public:
 
   VideoState *get_VideoState();
 
+  int GetImageWidth() const;
+
+  int GetImageHeight() const;
+
   int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
                  int wanted_sample_rate, struct AudioParams *audio_hw_params);
 

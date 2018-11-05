@@ -274,6 +274,14 @@ void FfmpegSdlAvPlayback::pauseAudioDevice() {
 
 VideoState *FfmpegSdlAvPlayback::get_VideoState() { return pVideoState; }
 
+int FfmpegSdlAvPlayback::GetImageWidth() const {
+	return pVideoState->get_image_width();
+}
+
+int FfmpegSdlAvPlayback::GetImageHeight() const {
+	return pVideoState->get_image_height();
+}
+
 void FfmpegSdlAvPlayback::toggle_full_screen() {
   is_full_screen = !is_full_screen;
   SDL_SetWindowFullscreen(window,
