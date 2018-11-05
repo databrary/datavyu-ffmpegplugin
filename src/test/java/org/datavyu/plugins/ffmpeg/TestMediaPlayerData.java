@@ -64,9 +64,9 @@ public class TestMediaPlayerData {
     private List<Movie> movieFiles = new ArrayList<>();
 
     private List<MediaPlayerBuilder.PlayerType> moviePlayerTypes = new ArrayList<MediaPlayerBuilder.PlayerType>(){{
-        add(MediaPlayerBuilder.PlayerType.JAVA_JDIALOG);
-        add(MediaPlayerBuilder.PlayerType.MPV);
-//        add(MediaPlayerBuilder.PlayerType.SDL);
+//        add(MediaPlayerBuilder.PlayerType.JAVA_JDIALOG);
+//        add(MediaPlayerBuilder.PlayerType.MPV);
+        add(MediaPlayerBuilder.PlayerType.SDL);
     }};
 
     private class Movie {
@@ -399,13 +399,8 @@ public class TestMediaPlayerData {
                 mediaPlayer.init();
 
                 sleep(SLEEP_DURATION_IN_MILLIS, true);
-                //Temporary catch exception for unsupported feature of the SDL player
-                try {
-                    Assert.assertEquals(mediaPlayer.getImageWidth(), movieFile.width);
-                    Assert.assertEquals(mediaPlayer.getImageHeight(), movieFile.height);
-                } catch (UnsupportedOperationException e){
-                    LOGGER.info("SDL Player doesn't support this functionality yet");
-                }
+                Assert.assertEquals(mediaPlayer.getImageWidth(), movieFile.width);
+                Assert.assertEquals(mediaPlayer.getImageHeight(), movieFile.height);
 
                 LOGGER.info("Dispose the " + playerType + " player");
                 mediaPlayer.dispose();
