@@ -13,39 +13,46 @@ extern "C" {
 #define DECODER_H_
 
 class Decoder {
-private:
-  AVPacket pkt;
-  AVCodecContext *avctx;                     //  TODO: Change this to ref
-  PacketQueue *queue;                        // TODO: Change this to ref
-  std::condition_variable *empty_queue_cond; // TODO: Change this to ref
-  int pkt_serial;
-  int finished;
-  int packet_pending;
-  int decoder_reorder_pts;
-  int64_t start_pts;
-  AVRational start_pts_tb;
-  int64_t next_pts;
-  AVRational next_pts_tb;
-  std::thread *decoder_tid;
-
 public:
   Decoder(AVCodecContext *avctx, PacketQueue *queue,
           std::condition_variable *empty_queue_cond);
   virtual ~Decoder();
 
-  int decode_frame(AVFrame *frame);
+  int Decode(AVFrame *frame);
 
-  void set_start_pts(int64_t start_pts);
-  void set_start_pts_tb(AVRational start_pts_tb);
+  inline void SetStartPts(int64_t start_pts) { start_pts_ = start_pts; }
+  void SetStartPtsTimebase(AVRational start_pts_timebase) {
+    start_pts_timebase_ = start_pts_timebase;
+  }
 
-  inline int get_pkt_serial() const { return pkt_serial; }
-  inline const AVCodecContext *get_avctx() const { return avctx; }
+  inline int GetSerial() const { return serial_; }
+  inline int64_t GetNumberOfIncorrectDtsValues() const {
+    return p_codec_context_->pts_correction_num_faulty_dts;
+  }
+  inline int64_t GetNumberOfIncorrectPtsValues() const {
+    return p_codec_context_->pts_correction_num_faulty_pts;
+  }
 
-  inline int is_finished() const { return finished; }
-  inline void setFinished(int f) { finished = f; }
+  inline bool IsFinished() const { return is_finished_; }
+  inline void setFinished(bool finished) { is_finished_ = finished; }
 
-  int start(const std::function<void()> &decoding);
-  void abort(FrameQueue *fq);
+  int Start(const std::function<void()> &decoding);
+  void Stop(FrameQueue *frame_queue);
+
+private:
+  AVPacket packet_;
+  AVCodecContext *p_codec_context_;
+  PacketQueue *p_packet_queue_;
+  std::condition_variable *p_is_empty_condition_;
+  int serial_;
+  bool is_finished_;
+  bool is_packet_pending_;
+  bool do_reorder_;
+  int64_t start_pts_;
+  AVRational start_pts_timebase_;
+  int64_t next_pts_;
+  AVRational next_pts_timebase_;
+  std::thread *p_decoder_thread_;
 };
 
 #endif DECODER_H_

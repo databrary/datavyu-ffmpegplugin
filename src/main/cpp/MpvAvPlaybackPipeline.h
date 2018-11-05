@@ -22,7 +22,7 @@ public:
   MpvAvPlaybackPipeline(CPipelineOptions *pOptions, const intptr_t windowID);
   virtual ~MpvAvPlaybackPipeline();
 
-  intptr_t windowID;
+  intptr_t window_id_;
 
 private:
   virtual uint32_t Play();
@@ -52,7 +52,7 @@ private:
   virtual uint32_t SetAudioSyncDelay(long lMillis);
   virtual uint32_t GetAudioSyncDelay(long *plMillis);
 
-  MpvAvPlayback *pMpvPlayback;
+  MpvAvPlayback *p_mpv_playback_;
 };
 
 #endif //_MPV_AV_PLAYBACK_PIPELINE_H_
