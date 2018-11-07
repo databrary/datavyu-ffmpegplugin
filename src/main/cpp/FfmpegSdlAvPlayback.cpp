@@ -86,7 +86,7 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
       p_vis_texture_(nullptr), p_vid_texture_(nullptr), screen_width_(0),
       screen_height_(0), enabled_full_screen_(0), audio_volume_(0),
       cursor_last_shown_time_(0), is_cursor_hidden_(false),
-      renderer_info_({0}) {
+      p_window_title_(nullptr), renderer_info_({0}) {
 
   if (startup_volume < 0) {
     av_log(NULL, AV_LOG_WARNING, "-volume=%d < 0, setting to 0\n",
@@ -134,7 +134,9 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
 
   avformat_network_deinit();
 
-  av_free(p_window_title_);
+  if (p_window_title_ != nullptr) {
+	av_free(p_window_title_);
+  }
 
   SDL_Quit();
 
