@@ -70,7 +70,9 @@ uint32_t MpvAvPlaybackPipeline::Pause() {
   }
 
   bool isPaused;
-  if (p_mpv_playback_->IsPaused(&isPaused)) {
+  err = p_mpv_playback_->IsPaused(&isPaused);
+
+  if (isPaused) {
     UpdatePlayerState(Paused);
   } else {
     UpdatePlayerState(Playing);
