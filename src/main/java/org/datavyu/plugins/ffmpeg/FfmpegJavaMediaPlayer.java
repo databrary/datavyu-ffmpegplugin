@@ -21,7 +21,7 @@ import static java.awt.color.ColorSpace.CS_sRGB;
  */
 public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements MediaPlayerData {
     private AudioPlayerThread audioPlayerThread = null;
-    private ImagePlayerThread imagePlayerThread = null;
+    private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
     private Container container;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
     private AudioFormat audioFormat;
@@ -70,9 +70,9 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
 
     private void initAndStartImagePlayer() {
-        imagePlayerThread = new ImagePlayerThread(this);
-        imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
-        imagePlayerThread.start();
+        imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
+        imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
+        imageCanvasPlayerThread.start();
     }
 
     @Override
@@ -266,8 +266,8 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     @Override
     protected void playerDispose() {
-        if (imagePlayerThread != null) {
-            imagePlayerThread.terminate();
+        if (imageCanvasPlayerThread != null) {
+            imageCanvasPlayerThread.terminate();
         }
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();

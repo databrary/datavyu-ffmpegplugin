@@ -1,8 +1,7 @@
-package org.datavyu.plugins.ffmpeg.experimental;
+package org.datavyu.plugins.ffmpeg;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -146,8 +145,6 @@ public class ImageCanvasPlayerThread extends Thread {
         while (!terminate) {
             long start = System.currentTimeMillis();
             mediaPlayerData.updateImageData(data);
-            //LOGGER.info("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
-            System.out.println("Presentation time is: " + mediaPlayerData.getPresentationTime() + " sec");
 
             // Create data buffer
             DataBufferByte dataBuffer = new DataBufferByte(data, imgWidth * imgHeight);
