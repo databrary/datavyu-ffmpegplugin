@@ -1,5 +1,6 @@
 #include "VideoState.h"
-
+int VideoState::kSeekPreciseFlag = 0x01;
+int VideoState::kSeekFastFlag = 0x10;
 bool VideoState::kEnableShowFormat = true; // Show the format information
 bool VideoState::kEnableFastDecode = false;
 bool VideoState::kEnableGeneratePts =
@@ -585,9 +586,9 @@ VideoState::VideoState(int audio_buffer_size)
     : abort_request_(false), is_paused_(true), // TRUE
       last_is_paused_(false), is_stopped_(false),
       queue_attachments_request_(false), seek_request_(false),
-      seek_flags_(AVSEEK_FLAG_BACKWARD), // AV_SEEK_BACKWARD
-      seek_time_(0), seek_distance_(0), sync_type_(AV_SYNC_AUDIO_MASTER),
-      frame_rate_(0), image_clock_last_set_time_(0), image_stream_index_(0),
+      seek_flags_(kSeekFastFlag), seek_time_(0), seek_distance_(0),
+      sync_type_(AV_SYNC_AUDIO_MASTER), frame_rate_(0),
+      image_clock_last_set_time_(0), image_stream_index_(0),
       max_frame_duration_(0), end_of_file_(false), duration_(0),
       frame_width_(0), frame_height_(0), frame_aspect_ratio_(av_make_q(0, 0)),
       is_stepping_(false), speed_request_(false), requested_speed_(1.0),
@@ -729,8 +730,12 @@ int VideoState::ReadPacketsToQueues() {
   bool was_stalled = false;
   std::mutex wait_mutex;
   int64_t stream_start_time;
-  int pkt_in_play_range = 0;
+  bool pkt_in_play_range = false;
+  bool fast_seek = true;
   int64_t pkt_ts;
+  double image_time_base = av_q2d(p_image_stream_->time_base);
+  double audio_time_base = av_q2d(p_audio_stream_->time_base);
+
   // TODO: Need to work in TO_STOPPED state
   // Reda: added bool stopped when we trigger stop; when stopped both is stopped
   // and paused are set to 1 So each time we check for pause we need to check
@@ -796,11 +801,14 @@ int VideoState::ReadPacketsToQueues() {
           seek_distance_ > 0 ? seek_target - seek_distance_ + 2 : INT64_MIN;
       int64_t seek_max =
           seek_distance_ < 0 ? seek_target - seek_distance_ - 2 : INT64_MAX;
+      fast_seek = seek_flags_ == kSeekFastFlag;
+
       // FIXME the +-2 is due to rounding being not done in the correct
       // direction in generation
       //      of the seek_pos/seek_rel variables
-      ret = avformat_seek_file(p_format_context, -1, seek_min, seek_target,
-                               seek_max, seek_flags_);
+      ret = avformat_seek_file(
+          p_format_context, -1, seek_min, seek_target, seek_max,
+          fast_seek ? AVSEEK_FLAG_ANY : AVSEEK_FLAG_BACKWARD);
       if (ret < 0) {
         av_log(NULL, AV_LOG_ERROR, "%s: error while seeking\n",
                p_format_context->url);
@@ -813,14 +821,9 @@ int VideoState::ReadPacketsToQueues() {
           p_image_packet_queue_->Flush();
           p_image_packet_queue_->PutFlushPacket();
         }
-        if (seek_flags_ & AVSEEK_FLAG_BYTE) {
-          p_external_clock_->SetTime(
-              NAN, 0); // 0 != -1 which will return NAN for interim time
-        } else {
-          p_external_clock_->SetTime(
-              seek_target / (double)AV_TIME_BASE,
-              0); // 0 != -1 which will return NAN for interim time
-        }
+        p_external_clock_->SetTime(
+            seek_target / (double)AV_TIME_BASE,
+            0); // 0 != -1 which will return NAN for interim time
       }
       seek_request_ = false;
       queue_attachments_request_ = true;
@@ -882,7 +885,7 @@ int VideoState::ReadPacketsToQueues() {
                                   p_image_packet_queue_->GetSerial() &&
                               p_image_frame_queue_->GetNumToDisplay() == 0))) {
       if (num_loop_ != 1 && (!num_loop_ || --num_loop_)) {
-        Seek(start_time_ != AV_NOPTS_VALUE ? start_time_ : 0, 0, 0);
+        Seek(start_time_ != AV_NOPTS_VALUE ? start_time_ : 0, 0, false);
       }
     }
     ret = av_read_frame(p_format_context, pkt);
@@ -930,10 +933,12 @@ int VideoState::ReadPacketsToQueues() {
                     1000000 <=
             ((double)max_duration_ / 1000000);
 
-    if (pkt->stream_index == audio_stream_index_ && pkt_in_play_range) {
+    if (pkt->stream_index == audio_stream_index_ && pkt_in_play_range &&
+        (fast_seek || pkt_ts >= seek_time_ * audio_time_base)) {
       p_audio_packet_queue_->Put(pkt);
     } else if (pkt->stream_index == image_stream_index_ && pkt_in_play_range &&
-               !(p_image_stream_->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
+               !(p_image_stream_->disposition & AV_DISPOSITION_ATTACHED_PIC) &&
+               (fast_seek || pkt_ts >= seek_time_ * image_time_base)) {
       p_image_packet_queue_->Put(pkt);
     } else {
       av_packet_unref(pkt);
@@ -1217,24 +1222,21 @@ fail:
 }
 
 void VideoState::SetPts(double pts, int serial) {
-  p_external_clock_->SetTime(pts, serial);
+  p_image_clock_->SetTime(pts, serial);
 
   // GetImageClock()->set_time(pts, serial);
   image_clock_last_set_time_ = av_gettime_relative() / 1000000.0;
   // Sync external clock to video clock
-  Clock::SyncSlaveToMaster(p_external_clock_, p_image_clock_,
+  Clock::SyncMasterToSlave(p_external_clock_, p_image_clock_,
                            kAvNoSyncThreshold);
 }
 
 /* seek in the stream */
-void VideoState::Seek(int64_t time, int64_t distance, bool seek_by_bytes) {
+void VideoState::Seek(int64_t time, int64_t distance, int seek_flags) {
   if (!seek_request_) {
     seek_time_ = time;
     seek_distance_ = distance;
-    seek_flags_ &= ~AVSEEK_FLAG_BYTE;
-    if (seek_by_bytes) {
-      seek_flags_ |= AVSEEK_FLAG_BYTE;
-    }
+    seek_flags_ = seek_flags;
     seek_request_ = true;
     continue_read_thread_.notify_one();
   }
@@ -1352,7 +1354,7 @@ void VideoState::GetAudioCallback(uint8_t *stream, int len) {
                 audio_params_target_.bytes_per_sec_,
         audio_serial_);
     // Sync external clock to audio clock
-    Clock::SyncSlaveToMaster(p_external_clock_, p_audio_clock_,
+    Clock::SyncMasterToSlave(p_external_clock_, p_audio_clock_,
                              kAvNoSyncThreshold);
   }
 }

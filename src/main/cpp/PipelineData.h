@@ -21,7 +21,7 @@ public:
   virtual uint32_t StepForward() = 0;
   virtual uint32_t Finish() = 0;
 
-  virtual uint32_t Seek(double seek_time) = 0;
+  virtual uint32_t Seek(double seek_time, int seek_flags) = 0;
 
   virtual uint32_t GetDuration(double *p_duration) = 0;
   virtual uint32_t GetStreamTime(double *p_stream_time) = 0;

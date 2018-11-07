@@ -16,8 +16,8 @@ public:
   virtual void TogglePauseAndStopStep();
 
   inline virtual void Seek(int64_t time, int64_t difference,
-                           bool seek_by_bytes) {
-    p_video_state_->Seek(time, difference, seek_by_bytes);
+                           int seek_flags) {
+    p_video_state_->Seek(time, difference, seek_flags);
   }
   inline virtual double GetDuration() const {
     return p_video_state_->GetDuration();

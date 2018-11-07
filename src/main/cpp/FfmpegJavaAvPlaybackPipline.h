@@ -20,7 +20,7 @@ private:
   virtual uint32_t StepBackward();
   virtual uint32_t Finish();
 
-  virtual uint32_t Seek(double seek_time);
+  virtual uint32_t Seek(double seek_time, int seek_flags);
 
   virtual uint32_t GetDuration(double *p_duration);
   virtual uint32_t GetStreamTime(double *p_stream_time);
@@ -38,7 +38,7 @@ private:
   virtual uint32_t SetAudioSyncDelay(long millis);
   virtual uint32_t GetAudioSyncDelay(long *p_millis);
 
-  // Fullfill the data interface
+  // Full fill the data interface
   virtual uint32_t HasAudioData(bool *p_audio_data) const;
   virtual uint32_t HasImageData(bool *p_image_data) const;
   virtual uint32_t GetImageWidth(int *p_width) const;

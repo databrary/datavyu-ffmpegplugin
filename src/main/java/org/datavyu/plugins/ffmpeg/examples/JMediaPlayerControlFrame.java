@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg.examples;
 
 import org.datavyu.plugins.ffmpeg.MediaPlayer;
+import org.datavyu.plugins.ffmpeg.NativeMediaPlayer;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -73,25 +74,25 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
                 currentTime = mediaPlayer.getPresentationTime();
                 nextTime = currentTime - 1;
                 System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
-                mediaPlayer.seek(nextTime);
+                mediaPlayer.seek(nextTime, NativeMediaPlayer.SEEK_ACCURATE_FLAG);
                 break;
             case KeyEvent.VK_RIGHT:
                 currentTime = mediaPlayer.getPresentationTime();
                 nextTime = currentTime + 1;
                 System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
-                mediaPlayer.seek(nextTime);
+                mediaPlayer.seek(nextTime, NativeMediaPlayer.SEEK_ACCURATE_FLAG);
                 break;
             case KeyEvent.VK_UP:
                 currentTime = mediaPlayer.getPresentationTime();
                 nextTime = currentTime + 5;
                 System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
-                mediaPlayer.seek(nextTime);
+                mediaPlayer.seek(nextTime, NativeMediaPlayer.SEEK_ACCURATE_FLAG);
                 break;
             case KeyEvent.VK_DOWN:
                 currentTime = mediaPlayer.getPresentationTime();
                 nextTime = currentTime - 5;
                 System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
-                mediaPlayer.seek(nextTime);
+                mediaPlayer.seek(nextTime, NativeMediaPlayer.SEEK_ACCURATE_FLAG);
                 break;
             case KeyEvent.VK_0:
                 currentVolume = mediaPlayer.getVolume();
@@ -128,6 +129,6 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
     @Override
     public void stateChanged(ChangeEvent e) {
         int newTime = jSlider.getValue();
-        mediaPlayer.seek(newTime);
+        mediaPlayer.seek(newTime, NativeMediaPlayer.SEEK_FAST_FLAG);
     }
 }
