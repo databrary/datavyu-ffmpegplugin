@@ -198,8 +198,8 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     }
 
     @Override
-    protected void playerSeek(double streamTime) throws MediaException {
-        int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
+    protected void playerSeek(double streamTime, int flags) throws MediaException {
+        int rc = ffmpegSeek(getNativeMediaRef(), streamTime, flags);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -240,7 +240,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     protected native int ffmpegGetBalance(long refNativeMedia, float[] balance);
     protected native int ffmpegSetBalance(long refNativeMedia, float balance);
     protected native int ffmpegGetDuration(long refNativeMedia, double[] duration);
-    protected native int ffmpegSeek(long refNativeMedia, double streamTime);
+    protected native int ffmpegSeek(long refNativeMedia, double streamTime, int flags);
     protected native int ffmpegGetVolume(long refNativeMedia, float[] volume);
     protected native int ffmpegSetVolume(long refNativeMedia, float volume);
 }

@@ -107,7 +107,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
   return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
+uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
@@ -120,7 +120,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
     dSeekTime = p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE;
 
   p_sdl_playback_->Seek((int64_t)(dSeekTime * AV_TIME_BASE),
-                     (int64_t)(incr * AV_TIME_BASE), false);
+                     (int64_t)(incr * AV_TIME_BASE), seek_flags);
 
   return ERROR_NONE; // no error
 }

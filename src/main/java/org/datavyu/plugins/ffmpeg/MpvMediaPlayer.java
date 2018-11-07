@@ -208,7 +208,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     }
 
     @Override
-    protected void playerSeek(double streamTime) throws MediaException {
+    protected void playerSeek(double streamTime, int seekFlags) throws MediaException {
         int rc = mpvSeek(getNativeMediaRef(), streamTime);
         if (0 != rc) {
             throwMediaErrorException(rc, null);

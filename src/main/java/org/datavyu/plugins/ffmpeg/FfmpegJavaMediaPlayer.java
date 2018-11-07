@@ -257,8 +257,8 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
 
     @Override
-    protected void playerSeek(double streamTime) throws MediaException {
-        int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
+    protected void playerSeek(double streamTime, int flags) throws MediaException {
+        int rc = ffmpegSeek(getNativeMediaRef(), streamTime, flags);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -385,7 +385,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private native int ffmpegGetPresentationTime(long refNativeMedia, double[] time);
     private native int ffmpegGetFps(long refNativeMedia, double[] fps);
     private native int ffmpegGetDuration(long refNativeMedia, double[] duration);
-    private native int ffmpegSeek(long refNativeMedia, double streamTime);
+    private native int ffmpegSeek(long refNativeMedia, double streamTime, int flags);
 
     private native int ffmpegHasAudioData(long refNativeMedia, boolean[] hasData);
     private native int ffmpegHasImageData(long refNativeMedia, boolean[] hasData);

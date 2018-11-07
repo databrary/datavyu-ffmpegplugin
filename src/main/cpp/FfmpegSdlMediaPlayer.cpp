@@ -438,17 +438,16 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetDuration(
  */
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSeek(
-    JNIEnv *env, jobject obj, jlong ref_media, jdouble stream_time) {
+	JNIEnv *env, jobject obj, jlong ref_media, jdouble stream_time,
+	jint seek_flags) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-  if (NULL == pMedia)
-    return ERROR_MEDIA_NULL;
+  if (NULL == pMedia) return ERROR_MEDIA_NULL;
 
   CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-  if (NULL == pPipeline)
-    return ERROR_PIPELINE_NULL;
+  if (NULL == pPipeline) return ERROR_PIPELINE_NULL;
 
-  jint iRet = (jint)pPipeline->Seek(stream_time);
+  jint iRet = (jint)pPipeline->Seek(stream_time, seek_flags);
 
   return iRet;
 }

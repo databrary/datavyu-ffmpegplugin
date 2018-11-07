@@ -65,7 +65,7 @@ public:
   virtual uint32_t StepBackward() = 0;
   virtual uint32_t Finish() = 0;
 
-  virtual uint32_t Seek(double dSeekTime) = 0;
+  virtual uint32_t Seek(double dSeekTime, int seek_flags) = 0;
 
   virtual uint32_t GetDuration(double *pdDuration) = 0;
   virtual uint32_t GetStreamTime(double *pdStreamTime) = 0;

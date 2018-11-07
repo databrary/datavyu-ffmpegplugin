@@ -23,6 +23,10 @@ extern "C" {
 #define org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_eventPlayerFinished 106L
 #undef org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_eventPlayerError
 #define org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_eventPlayerError 107L
+#undef org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_SEEK_ACCURATE_FLAG
+#define org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_SEEK_ACCURATE_FLAG 1L
+#undef org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_SEEK_FAST_FLAG
+#define org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_SEEK_FAST_FLAG 16L
 #undef org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_AUDIO_BUFFER_SIZE
 #define org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_AUDIO_BUFFER_SIZE 4096L
 /*
@@ -140,10 +144,10 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffm
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegSeek
- * Signature: (JD)I
+ * Signature: (JDI)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSeek
-  (JNIEnv *, jobject, jlong, jdouble);
+  (JNIEnv *, jobject, jlong, jdouble, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
