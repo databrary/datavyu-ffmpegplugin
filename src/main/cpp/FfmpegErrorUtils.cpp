@@ -15,7 +15,7 @@ extern "C" {
 #include "libavutil/error.h"
 }
 
-int ffmpegToJavaErrNo(int ffmpegErrNo) {
+int FfmpegToJavaErrNo(int ffmpegErrNo) {
   int err = AVERROR(EINVAL);
   if (ffmpegErrNo == err) {
     std::cout << "EINVAL error" << std::endl;

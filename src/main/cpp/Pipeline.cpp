@@ -27,82 +27,81 @@
 #include "JavaPlayerEventDispatcher.h"
 #include "MediaPlayerErrors.h"
 
-//*************************************************************************************************
-//********** class CPipeline
-//*************************************************************************************************
-CPipeline::CPipeline(CPipelineOptions *pOptions)
-    : m_pEventDispatcher(NULL), m_pOptions(pOptions), m_PlayerState(Unknown),
-      m_PlayerPendingState(Unknown) {}
+CPipeline::CPipeline(CPipelineOptions *p_options)
+    : p_event_dispatcher_(nullptr), p_options_(p_options), player_state_(Unknown),
+      player_pending_state_(Unknown) {}
 
 CPipeline::~CPipeline() {
-  if (NULL != m_pOptions)
-    delete m_pOptions;
+  if (nullptr != p_options_) {
+    delete p_options_;
+  }
 
   Dispose();
 
-  if (NULL != m_pEventDispatcher)
-    delete m_pEventDispatcher;
+  if (nullptr != p_event_dispatcher_) {
+    delete p_event_dispatcher_;  
+	}
 }
 
 void CPipeline::SetEventDispatcher(
     CJavaPlayerEventDispatcher *pEventDispatcher) {
-  m_pEventDispatcher = pEventDispatcher;
+  p_event_dispatcher_ = pEventDispatcher;
 }
 
 void CPipeline::Dispose() {}
 
-void CPipeline::UpdatePlayerState(PlayerState newState) {
+void CPipeline::UpdatePlayerState(PlayerState new_state) {
   PlayerState newPlayerState =
-      m_PlayerState; // If we assign the same state again
+      player_state_; // If we assign the same state again
   bool bSilent = false;
 
-  switch (m_PlayerState) {
+  switch (player_state_) {
   case Unknown:
-    if (Ready == newState) {
+    if (Ready == new_state) {
       newPlayerState = Ready;
     }
     break;
 
   case Ready:
-    if (Playing == newState) {
+    if (Playing == new_state) {
       newPlayerState = Playing;
     }
     break;
 
   case Playing:
-    if (Stalled == newState || Paused == newState || Stopped == newState ||
-        Finished == newState) {
-      newPlayerState = newState;
+    if (Stalled == new_state || Paused == new_state || Stopped == new_state ||
+        Finished == new_state) {
+      newPlayerState = new_state;
     }
     break;
 
   case Paused:
-    if (Stopped == newState || Playing == newState) {
-      newPlayerState = newState;
+    if (Stopped == new_state || Playing == new_state) {
+      newPlayerState = new_state;
     }
     break;
 
   case Stopped:
-    if (Playing == newState || Paused == newState) {
-      newPlayerState = newState;
+    if (Playing == new_state || Paused == new_state) {
+      newPlayerState = new_state;
     }
     break;
 
   case Stalled: {
-    if (Stopped == newState || Paused == newState || Playing == newState) {
-      newPlayerState = newState;
+    if (Stopped == new_state || Paused == new_state || Playing == new_state) {
+      newPlayerState = new_state;
     }
     break;
   }
 
   case Finished:
-    if (Playing == newState) {
+    if (Playing == new_state) {
       // We can go from Finished to Playing only when seek happens (or repeat)
       // This state change should be silent.
       newPlayerState = Playing;
       bSilent = true;
     }
-    if (Stopped == newState) {
+    if (Stopped == new_state) {
       newPlayerState = Stopped;
     }
 
@@ -116,20 +115,20 @@ void CPipeline::UpdatePlayerState(PlayerState newState) {
   SetPlayerState(newPlayerState, bSilent);
 }
 
-void CPipeline::SetPlayerState(PlayerState newPlayerState, bool bSilent) {
+void CPipeline::SetPlayerState(PlayerState new_state, bool silent) {
 
   // Determine if we need to send an event out
-  bool updateState = newPlayerState != m_PlayerState;
+  bool updateState = new_state != player_state_;
   if (updateState) {
-    if (NULL != m_pEventDispatcher && !bSilent) {
-      m_PlayerState = newPlayerState;
+    if (nullptr != p_event_dispatcher_ && !silent) {
+      player_state_ = new_state;
 
-      if (!m_pEventDispatcher->SendPlayerStateEvent(newPlayerState, 0)) {
-        m_pEventDispatcher->SendPlayerMediaErrorEvent(
+      if (!p_event_dispatcher_->SendPlayerStateEvent(new_state, 0)) {
+        p_event_dispatcher_->SendPlayerMediaErrorEvent(
             ERROR_JNI_SEND_PLAYER_STATE_EVENT);
       }
     } else {
-      m_PlayerState = newPlayerState;
+      player_state_ = new_state;
     }
   }
 }
