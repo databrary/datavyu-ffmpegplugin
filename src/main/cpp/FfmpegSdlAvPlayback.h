@@ -114,13 +114,6 @@ private:
 
   inline bool IsCursorHidden() const { return is_cursor_hidden_; }
 
-  int GetImageWidth() const;
-
-  int GetImageHeight() const;
-
-  int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
-                 int wanted_sample_rate, struct AudioParams *audio_hw_params);
-
   inline bool IsScreenSizeSet() const {
     return screen_width_ != 0 && screen_height_ != 0;
   }
