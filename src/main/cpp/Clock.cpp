@@ -27,7 +27,7 @@ void Clock::SetTime(double newTime, int newSerial) {
   serial = newSerial;
 }
 
-void Clock::SyncSlaveToMaster(Clock *slave, Clock *master,
+void Clock::SyncMasterToSlave(Clock *master, Clock *slave,
                                  double noSyncThreshold) {
   double master_time = master->GetTime();
   double slave_time = slave->GetTime();
@@ -36,6 +36,6 @@ void Clock::SyncSlaveToMaster(Clock *slave, Clock *master,
        fabs(master_time - slave_time) > noSyncThreshold)) {
     av_log(NULL, AV_LOG_TRACE, "Sync %7.2f to %7.2f\n", slave_time,
            master_time);
-    slave->SetTime(slave_time, master->serial);
+    master->SetTime(slave_time, slave->serial);
   }
 }

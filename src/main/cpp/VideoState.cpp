@@ -1222,12 +1222,12 @@ fail:
 }
 
 void VideoState::SetPts(double pts, int serial) {
-  p_external_clock_->SetTime(pts, serial);
+  p_image_clock_->SetTime(pts, serial);
 
   // GetImageClock()->set_time(pts, serial);
   image_clock_last_set_time_ = av_gettime_relative() / 1000000.0;
   // Sync external clock to video clock
-  Clock::SyncSlaveToMaster(p_external_clock_, p_image_clock_,
+  Clock::SyncMasterToSlave(p_external_clock_, p_image_clock_,
                            kAvNoSyncThreshold);
 }
 
@@ -1354,7 +1354,7 @@ void VideoState::GetAudioCallback(uint8_t *stream, int len) {
                 audio_params_target_.bytes_per_sec_,
         audio_serial_);
     // Sync external clock to audio clock
-    Clock::SyncSlaveToMaster(p_external_clock_, p_audio_clock_,
+    Clock::SyncMasterToSlave(p_external_clock_, p_audio_clock_,
                              kAvNoSyncThreshold);
   }
 }

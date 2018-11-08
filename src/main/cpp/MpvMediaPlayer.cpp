@@ -370,7 +370,7 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSeek(
   if (NULL == pPipeline)
     return ERROR_PIPELINE_NULL;
 
-  jint iRet = (jint)pPipeline->Seek(stream_time);
+  jint iRet = (jint)pPipeline->Seek(stream_time, 0);
 
   return iRet;
 }
