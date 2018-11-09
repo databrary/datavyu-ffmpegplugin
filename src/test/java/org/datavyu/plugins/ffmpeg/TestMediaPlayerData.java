@@ -7,12 +7,15 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import static org.datavyu.plugins.ffmpeg.MediaPlayerBuilder.*;
 import static org.datavyu.plugins.ffmpeg.MediaPlayerBuilder.Rate.*;
@@ -74,9 +77,21 @@ public class TestMediaPlayerData {
         return Math.round(value * scale) / scale;
     }
 
-    @BeforeTest
-    public void setup() throws IOException {
+    @BeforeClass
+    public void setup() {
         Configurator.setRootLevel(Level.INFO);
+    }
+
+    @Test(dataProvider = "wrongFile",
+            dataProviderClass = MediaPlayerBuilder.class,
+            expectedExceptions = MediaException.class,
+            groups = {"ALL", "mediaPlayerGroup"})
+    public void testUnknownFile(Movie movie, PlayerType playerType) {
+        System.out.println("////////////////////////////////////////////////////////////");
+        System.out.println("//                   Unknown File Test                    //");
+        System.out.println("////////////////////////////////////////////////////////////");
+        MediaPlayer mediaPlayer = MediaPlayerBuilder.build(movie.path, playerType);
+        mediaPlayer.init();
     }
 
     /**
@@ -85,7 +100,9 @@ public class TestMediaPlayerData {
      * All commands after a dispose call must be ignored and {@link MediaPlayer#getState()} should return
      * null if the player is disposed
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testInitDispose(Movie movie, PlayerType playerType){
         // Creating two instance of the SDL player crashes the JVM when trying to
         // Dispose the second player
@@ -116,7 +133,9 @@ public class TestMediaPlayerData {
      * Tests {@link MediaPlayer#play()}  and {@link MediaPlayer#stop()} methods that will start and stop, respectively
      * the media player.
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testPlayStop(Movie movie, PlayerType playerType){
         //TODO(Reda): find a better way to be notified when an event occurs
         // Need to fix SDL player bug
@@ -162,7 +181,9 @@ public class TestMediaPlayerData {
      * The player state {@link org.datavyu.plugins.ffmpeg.PlayerStateEvent.PlayerState} must be
      * set to PAUSED when the player is paused.
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testTogglePause(Movie movie, PlayerType playerType){
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//                   Toggle Pause Test                    //");
@@ -178,9 +199,9 @@ public class TestMediaPlayerData {
 
         sleep(SLEEP_DURATION_IN_MILLIS, true);
 
-        double pauseTime = mediaPlayer.getPresentationTime();
         LOGGER.info("Pause the " + playerType + " player");
         mediaPlayer.pause();
+        double pauseTime = mediaPlayer.getPresentationTime();
 
         sleep(SLEEP_DURATION_IN_MILLIS, true);
         double now = mediaPlayer.getPresentationTime();
@@ -210,7 +231,9 @@ public class TestMediaPlayerData {
      * for this matter.
      * @see TestPlaybackRate
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testSetGetRate(Movie movie, PlayerType playerType){
         // TODO(Reda): Test for negative values
         System.out.println("////////////////////////////////////////////////////////////");
@@ -266,7 +289,9 @@ public class TestMediaPlayerData {
      * Tests if {@link MediaPlayer#getFps()} method matches the pre-defined fps value
      * in {@link MediaPlayerBuilder.Movie#fps }.
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testGetFps(Movie movie, PlayerType playerType){
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//                        Get Fps Test                    //");
@@ -278,7 +303,7 @@ public class TestMediaPlayerData {
         mediaPlayer.init();
 
         sleep(SLEEP_DURATION_IN_MILLIS, true);
-        Assert.assertEquals(mediaPlayer.getFps(), movie.fps);
+        Assert.assertEquals(round(mediaPlayer.getFps(),2), movie.fps);
 
         LOGGER.info("Dispose the " + playerType + " player");
         mediaPlayer.dispose();
@@ -289,7 +314,9 @@ public class TestMediaPlayerData {
      * methods match the pre-defined {@link MediaPlayerBuilder.Movie#width }
      * and {@link MediaPlayerBuilder.Movie#height}, respectively.
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testGetWidthHeight(Movie movie, PlayerType playerType){
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//                   Get Width Height Test                //");
@@ -313,7 +340,9 @@ public class TestMediaPlayerData {
      * methods match the pre-defined {@link MediaPlayerBuilder.Movie#width }
      * and {@link MediaPlayerBuilder.Movie#height}, respectively.
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testGetDuration(Movie movie, PlayerType playerType){
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//                   Get Duration Test                    //");
@@ -339,7 +368,9 @@ public class TestMediaPlayerData {
      * of 6 sec in order to pass all the Asserts, we will keep it as a soft assert for now,
      * However we won't tolerate more than 30% failed seek with 100 ms as threshold.
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testSeek(Movie movie, PlayerType playerType) {
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//                        Seek Test                       //");
@@ -389,7 +420,9 @@ public class TestMediaPlayerData {
      * IMPORTANT: Only available for the MPV player, the ffmpeg SDL and Java players can
      * step forward. however, the reported time after a seek is NaN which make the test fails
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testStepForward(Movie movie, PlayerType playerType){
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//              Step Forward Test                        //");
@@ -413,11 +446,11 @@ public class TestMediaPlayerData {
         mediaPlayer.stepForward();
 
         sleep(SLEEP_DURATION_IN_MILLIS, true);
-        double currentTime = round(Math.abs(mediaPlayer.getPresentationTime() - now), 2);
+        double currentTime = Math.abs(mediaPlayer.getPresentationTime() - now);
         double expectedTime = (TO_MILLIS / mediaPlayer.getFps()) / TO_MILLIS;
         LOGGER.info("Step Forward current time " + currentTime + " sec, expected time " + expectedTime + " sec");
 
-        Assert.assertEquals(currentTime, expectedTime);
+        Assert.assertEquals(round(currentTime,2), round(expectedTime,2));
 
         LOGGER.info("Dispose the " + playerType + " player");
         mediaPlayer.dispose();
@@ -429,7 +462,9 @@ public class TestMediaPlayerData {
      * IMPORTANT: Only available for the MPV player, the ffmpeg SDL and Java players cannot
      * step backward. however, the reported time after a seek is NaN which make the test fails
      */
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "mediaPlayerGroup"})
     public void testStepBackward(Movie movie, PlayerType playerType){
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//              Step Backward Test                        //");
@@ -453,7 +488,7 @@ public class TestMediaPlayerData {
 
         sleep(SLEEP_DURATION_IN_MILLIS, true);
         double currentTime = round(Math.abs(mediaPlayer.getPresentationTime() - now), 2);
-        double expectedTime = (TO_MILLIS / mediaPlayer.getFps()) / TO_MILLIS;
+        double expectedTime = round((TO_MILLIS / mediaPlayer.getFps()) / TO_MILLIS,2);
         LOGGER.info("Step Backward current time " + currentTime + " sec, expected time " + expectedTime + " sec");
         Assert.assertEquals(currentTime, expectedTime);
 

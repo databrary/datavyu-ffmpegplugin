@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -46,7 +47,9 @@ public class TestPlaybackRate {
         }
     }
 
-    @Test (dataProvider = "players", dataProviderClass = MediaPlayerBuilder.class)
+    @Test (dataProvider = "players",
+            dataProviderClass = MediaPlayerBuilder.class,
+            groups = {"ALL", "playbackRateGroup"})
     public void testRates(Movie movie, PlayerType playerType) {
         long startTime;
         for (Pair<TimeInterval, Float> parameter : parameters) {
@@ -87,7 +90,7 @@ public class TestPlaybackRate {
             System.out.println("Measured difference " + diffInPercent + " percent");
 
             // Check that the difference is within bounds
-            assert (diffInPercent > LOWER_PERCENTAGE && diffInPercent < UPPER_PERCENTAGE);
+            Assert.assertTrue(diffInPercent > LOWER_PERCENTAGE && diffInPercent < UPPER_PERCENTAGE);
         }
     }
 }

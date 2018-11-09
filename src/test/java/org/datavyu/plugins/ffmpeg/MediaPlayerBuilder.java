@@ -18,11 +18,15 @@ import java.util.List;
 
 public class MediaPlayerBuilder {
 
-    /** The LOGGER for this class */
+    /**
+     * The LOGGER for this class
+     */
     private final static Logger LOGGER = LogManager.getFormatterLogger(MediaPlayerBuilder.class);
 
-    /** Resource folder for video files used during testing */
-    private static final String TEST_RESOURCE_PATH = "test/resources";
+    /**
+     * Resource folder for video files used during testing
+     */
+    private static final String TEST_RESOURCE_PATH = "src/test/resources";
 
     private static List<Movie> movieFiles = new ArrayList<>();
 
@@ -34,13 +38,16 @@ public class MediaPlayerBuilder {
     // This movie is about 30MB has 640 x 360 pixels @ 29.97 fps with 2.5 min play time
     static final String TEST_MOVIE_PATH = "http://www.html5videoplayer.net/videos/toystory.mp4";
 
+    // This movie is 140MB, I use this movie for the PlayBackRate Tests
+    static final String TEST_MOVIE_PATH2 = "http://www.html5videoplayer.net/videos/big_buck_bunny.mp4";
+
     public enum PlayerType {
         SDL,
         JAVA_JDIALOG,
         MPV
     }
 
-    public enum  Rate{
+    public enum Rate {
         X1D32(0.03125f),
         X1D16(0.0625f),
         X1D8(0.125f),
@@ -55,38 +62,64 @@ public class MediaPlayerBuilder {
 
         final float value;
 
-        Rate(float value){
+        Rate(float value) {
             this.value = value;
         }
     }
 
     static {
         // Add all your movies here
-        movieFiles.add(new Movie("C:\\Users\\DatavyuTests\\Documents\\Resources\\Videos\\Test1080p.mp4",
-                142.107, // Duration in Seconds
-                1920, // Width
-                1080, // Height
-                25 ));// Frame Per Second
-        //build the list of parameters (Movie, PlayerType)  for the data provider
-        playersProvider =  new Object[movieFiles.size() * PlayerType.values().length][2];
-        mpvProvider =  new Object[movieFiles.size()][2];
-        ffmpegProvider =  new Object[movieFiles.size() * 2][2];
+        try {
+            movieFiles.add(new Movie(copyToLocal(new URL(TEST_MOVIE_PATH)),
+                    149.95, // Duration in Seconds
+                    640, // Width
+                    360, // Height
+                    29.97));// Frame Per Second
+//            movieFiles.add(new Movie(copyToLocal(new URL(TEST_MOVIE_PATH2)),
+//                    596.5, // Duration in Seconds
+//                    640, // Width
+//                    360, // Height
+//                    24));// Frame Per Second
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //build the list of parameters (Movie, PlayerType)  for the data providers
+        playersProvider = new Object[movieFiles.size() * PlayerType.values().length][2];
+        mpvProvider = new Object[movieFiles.size()][2];
+        ffmpegProvider = new Object[movieFiles.size() * 2][2];
         int j = 0;
-        for (int i = 1; i <= movieFiles.size(); i++){
-            for (PlayerType type : PlayerType.values()){
-                if(type == PlayerType.MPV){
-                    mpvProvider[i-1][0] = movieFiles.get(i-1);
-                    mpvProvider[i-1][1] = type;
+        for (int i = 1; i <= movieFiles.size(); i++) {
+            for (PlayerType type : PlayerType.values()) {
+                if (type == PlayerType.MPV) {
+                    mpvProvider[i - 1][0] = movieFiles.get(i - 1);
+                    mpvProvider[i - 1][1] = type;
                 } else {
                     //we have only two players
-                    ffmpegProvider[(i-1)*2][0] = movieFiles.get(i-1);
-                    ffmpegProvider[(i-1)*2][1] = type;
+                    ffmpegProvider[(i - 1) * 2][0] = movieFiles.get(i - 1);
+                    ffmpegProvider[(i - 1) * 2][1] = type;
                 }
-                playersProvider[i*j][0] = movieFiles.get(i-1);
-                playersProvider[i*j][1] = type;
+                playersProvider[i * j][0] = movieFiles.get(i - 1);
+                playersProvider[i * j][1] = type;
                 j++;
             }
         }
+    }
+
+    @DataProvider(name = "wrongFile")
+    public static Object[][] getWrongFileProvider(Method method, ITestContext context) {
+        List<ITestNGMethod> testMethods = context.getSuite().getAllMethods();
+        String testName = testMethods.get(0).getTestClass().getName();
+        String methodName = method.getName();
+        if(testName.contains("TestMediaPlayerData")
+                && methodName.equals("testUnknownFile")){
+//            return new Object[][]{{new Movie("wrongFileName.mp4"), PlayerType.MPV},
+//                    {new Movie("wrongFileName.mp4"), PlayerType.JAVA_JDIALOG},
+//                    {new Movie("wrongFileName.mp4"), PlayerType.SDL}};
+            // Temporary SDL is crashing the JVM
+            return new Object[][]{{new Movie("wrongFileName.mp4"), PlayerType.MPV},
+                    {new Movie("wrongFileName.mp4"), PlayerType.JAVA_JDIALOG}};
+        }
+        return null;
     }
 
     @DataProvider(name="players")
@@ -135,6 +168,10 @@ public class MediaPlayerBuilder {
             this.height = height;
             this.fps = fps;
         }
+
+        Movie(final String path){
+            this(path,0,0,0,0);
+        }
     }
 
     static class TimeInterval {
@@ -149,8 +186,8 @@ public class MediaPlayerBuilder {
     }
 
     /**
-     * Copies the resource from the URL url to a local temporary resource directory and returns while preserving the
-     * original file name
+     * Copies the resource from the URL url to a local resource directory and returns while
+     * preserving the original file name
      *
      * @param url The URL to the resource
      *
@@ -158,10 +195,10 @@ public class MediaPlayerBuilder {
      *
      * @throws IOException if the directory can't be created or the resource can't be downloaded
      */
-    private static String copyToLocalTmp(URL url) throws IOException {
+    private static String copyToLocal(URL url) throws IOException {
 
         // Construct the resource directory in the temporary files
-        File resourceDir = new File(System.getProperty("java.io.tmpdir"), TEST_RESOURCE_PATH);
+        File resourceDir = new File(TEST_RESOURCE_PATH);
         FileUtils.forceMkdir(resourceDir);
 
         // Get the file name
