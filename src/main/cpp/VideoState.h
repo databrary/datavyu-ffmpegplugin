@@ -58,7 +58,7 @@ public:
     NUM_PLAYER_STATE_CALLBACKS
   };
 
-	  static double kAvSyncThresholdMax;
+	static double kAvSyncThresholdMax;
   static int kEnableSeekByBytes;
   virtual ~VideoState();
 
@@ -103,7 +103,7 @@ public:
   }  // current time in sec
   inline void ToggleMute() { is_muted_ = !is_muted_; }
   void SetPts(double pts, int serial);
-  void Seek(int64_t time, int64_t distance, bool seek_by_bytes);
+  void Seek(int64_t time, int64_t distance, int seek_flags);
 
   /* Setter and Getters */
   inline bool IsPaused() const { return is_paused_; }
@@ -337,7 +337,8 @@ private:
 
   // get the current synchronization type
   AvSyncType GetMasterSyncType() const;
-
+  static int kSeekPreciseFlag;
+  static int kSeekFastFlag;
   static bool kEnableShowFormat;
   static bool kEnableFastDecode;
   static bool kEnableGeneratePts;

@@ -116,12 +116,12 @@ uint32_t MpvAvPlaybackPipeline::Finish() {
   return ERROR_NONE;
 }
 
-uint32_t MpvAvPlaybackPipeline::Seek(double dSeekTime) {
+uint32_t MpvAvPlaybackPipeline::Seek(double seek_time, int seek_flags) {
   if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  int err = p_mpv_playback_->SetTime(dSeekTime);
+  int err = p_mpv_playback_->SetTime(seek_time);
   if (err < 0) {
     return err;
   }

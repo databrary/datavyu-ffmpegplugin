@@ -30,7 +30,7 @@ public:
 
   void SetTime(double newTime, int newSerial);
 
-  static void SyncSlaveToMaster(Clock *master, Clock *slave,
+  static void SyncMasterToSlave(Clock *master, Clock *slave,
                                 double noSyncThreshold);
 
 private:

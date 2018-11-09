@@ -66,7 +66,7 @@ void PacketQueue::Flush() {
 void PacketQueue::Abort() {
   std::unique_lock<std::mutex> locker(mutex_);
 
-  is_abort_requested_ = 1;
+  is_abort_requested_ = true;
 
   put_condition_ = true;
   condition_.notify_one();
@@ -76,7 +76,7 @@ void PacketQueue::Abort() {
 
 void PacketQueue::Start() {
   std::unique_lock<std::mutex> locker(mutex_);
-  is_abort_requested_ = 0;
+  is_abort_requested_ = false;
   _Put(&flush_packet_);
   locker.unlock();
 }

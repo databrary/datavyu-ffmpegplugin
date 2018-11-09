@@ -110,7 +110,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time) {
+uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time, int seek_flags) {
   if (p_java_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
@@ -128,7 +128,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time) {
   }
 
   p_java_playback_->Seek((int64_t)(time * AV_TIME_BASE),
-                         (int64_t)(difference * AV_TIME_BASE), false);
+                         (int64_t)(difference * AV_TIME_BASE), seek_flags);
 
   return ERROR_NONE;
 }
