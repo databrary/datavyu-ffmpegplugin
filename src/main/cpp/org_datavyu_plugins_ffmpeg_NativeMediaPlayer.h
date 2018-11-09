@@ -23,6 +23,10 @@ extern "C" {
 #define org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerFinished 106L
 #undef org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerError
 #define org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerError 107L
+#undef org_datavyu_plugins_ffmpeg_NativeMediaPlayer_SEEK_ACCURATE_FLAG
+#define org_datavyu_plugins_ffmpeg_NativeMediaPlayer_SEEK_ACCURATE_FLAG 1L
+#undef org_datavyu_plugins_ffmpeg_NativeMediaPlayer_SEEK_FAST_FLAG
+#define org_datavyu_plugins_ffmpeg_NativeMediaPlayer_SEEK_FAST_FLAG 16L
 #ifdef __cplusplus
 }
 #endif

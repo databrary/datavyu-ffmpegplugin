@@ -20,6 +20,9 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public final static int eventPlayerFinished = 106;
     public final static int eventPlayerError = 107;
 
+    public static final int SEEK_ACCURATE_FLAG = 0x01;
+    public static final int SEEK_FAST_FLAG = 0x10;
+
     private final List<WeakReference<MediaErrorListener>> errorListeners = new ArrayList<>();
     private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
 
@@ -271,7 +274,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
     protected abstract double playerGetDuration() throws MediaException;
 
-    protected abstract void playerSeek(double streamTime) throws MediaException;
+    protected abstract void playerSeek(double streamTime, int flags) throws MediaException;
 
     protected abstract void playerDispose();
 
@@ -299,7 +302,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         try {
             if(!isDisposed) {
                 if (isStartTimeUpdated) {
-                    playerSeek(startTime);
+                    playerSeek(startTime, SEEK_ACCURATE_FLAG);
                 }
                 playerPlay();
             }
@@ -507,7 +510,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
             if (playerState != PlayerStateEvent.PlayerState.PLAYING
                     && playerState != PlayerStateEvent.PlayerState.FINISHED
                     && playerState != PlayerStateEvent.PlayerState.STOPPED) {
-                playerSeek(startTime);
+                playerSeek(startTime, SEEK_ACCURATE_FLAG);
             } else if (playerState == PlayerStateEvent.PlayerState.STOPPED) {
                 isStartTimeUpdated = true;
             }
@@ -554,7 +557,11 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         try {
             markerLock.lock();
             if (!isDisposed) {
-                playerSeek(streamTime);
+              // If we are not playing or if the rate is within -1x to 0x, then seek accurately; otherwise seek fast
+              float rate = getRate();
+              boolean isNotPlaying = getState() != PlayerStateEvent.PlayerState.PLAYING;
+              int seek_flag = -1 <= rate && rate <= 0 || isNotPlaying ? SEEK_ACCURATE_FLAG : SEEK_FAST_FLAG;
+              playerSeek(streamTime, seek_flag);
             }
         } catch (MediaException me) {
             sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
