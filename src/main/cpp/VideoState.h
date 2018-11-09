@@ -201,7 +201,7 @@ private:
   int64_t seek_distance_; // Signed distance between the current time and the
                           // seek time
   AvSyncType sync_type_;  // default is AV_SYNC_AUDIO_MASTER
-  int frame_rate_;        // Frame rate in Hz (frames per second)
+  double frame_rate_;        // Frame rate in Hz (frames per second)
 
   double image_clock_last_set_time_;
   int image_stream_index_;

@@ -303,6 +303,7 @@ public class TestMediaPlayerData {
         mediaPlayer.init();
 
         sleep(SLEEP_DURATION_IN_MILLIS, true);
+        LOGGER.info(playerType + " player FPS " + mediaPlayer.getFps() + " Movie FPS " + movie.fps);
         Assert.assertEquals(round(mediaPlayer.getFps(),2), movie.fps);
 
         LOGGER.info("Dispose the " + playerType + " player");
@@ -383,12 +384,11 @@ public class TestMediaPlayerData {
         mediaPlayer.init();
 
         sleep(SLEEP_DURATION_IN_MILLIS, false);
-        int failedSeek = 0;
         double minDuration = 0.0;
         double maxDuration = mediaPlayer.getDuration();
         double now = 0, randomTime = 0;
         LOGGER.info("Total duration " + mediaPlayer.getDuration() + " sec");
-        for (int i = 0; i < NUMBER_OF_SEEK; i++) {
+        for (int i = 0; i < NUMBER_OF_SEEK ; i++) {
             randomTime = (minDuration + (Math.random() * (maxDuration - minDuration)));
             Assert.assertTrue(minDuration <= randomTime && randomTime <= maxDuration);
 
@@ -398,17 +398,14 @@ public class TestMediaPlayerData {
             now = mediaPlayer.getPresentationTime();
             if (playerType == PlayerType.JAVA_JDIALOG
                     || playerType == PlayerType.SDL) {
+                LOGGER.info(" Requested Time " + randomTime + " sec, current time " + now +" sec");
                 softAssert.assertTrue(Math.abs(now - randomTime) <= SEEK_TOLERANCE_IN_SECONDS);
-                if (Math.abs(now - randomTime) >= SEEK_TOLERANCE_IN_SECONDS) {
-                    failedSeek++;
-                }
             } else {
-                // MPV Players offers accurate seeks within a 100 ms tolerance
+//                 MPV Players offers accurate seeks within a 100 ms tolerance
+                LOGGER.info(" Requested Time " + randomTime + " sec, current time " + now +" sec");
                 Assert.assertTrue(Math.abs(now - randomTime) <= SEEK_TOLERANCE_IN_SECONDS);
             }
         }
-        // Temporary 30% failed seek tolerance for the JAVA/SDL Players
-        Assert.assertTrue((failedSeek / NUMBER_OF_SEEK) * 100 < 30.0);
 
         LOGGER.info("Dispose the " + playerType + " player");
         mediaPlayer.dispose();
@@ -427,7 +424,7 @@ public class TestMediaPlayerData {
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//              Step Forward Test                        //");
         System.out.println("////////////////////////////////////////////////////////////");
-
+        SoftAssert softAssert = new SoftAssert();
         double minDuration = 0.0;
 
         MediaPlayer mediaPlayer = MediaPlayerBuilder.build(movie.path, playerType);
@@ -440,8 +437,11 @@ public class TestMediaPlayerData {
         mediaPlayer.seek(randomTime);
 
         sleep(SLEEP_DURATION_IN_MILLIS, true);
-        Assert.assertTrue(Math.abs(mediaPlayer.getPresentationTime() - randomTime) < SEEK_TOLERANCE_IN_SECONDS);
-
+        if(playerType == PlayerType.MPV) {
+            Assert.assertTrue(Math.abs(mediaPlayer.getPresentationTime() - randomTime) < SEEK_TOLERANCE_IN_SECONDS);
+        } else {
+            softAssert.assertTrue(Math.abs(mediaPlayer.getPresentationTime() - randomTime) < SEEK_TOLERANCE_IN_SECONDS);
+        }
         double now = mediaPlayer.getPresentationTime();
         mediaPlayer.stepForward();
 
@@ -449,9 +449,11 @@ public class TestMediaPlayerData {
         double currentTime = Math.abs(mediaPlayer.getPresentationTime() - now);
         double expectedTime = (TO_MILLIS / mediaPlayer.getFps()) / TO_MILLIS;
         LOGGER.info("Step Forward current time " + currentTime + " sec, expected time " + expectedTime + " sec");
-
-        Assert.assertEquals(round(currentTime,2), round(expectedTime,2));
-
+        if(playerType == PlayerType.MPV) {
+            Assert.assertEquals(round(currentTime,2), round(expectedTime,2));
+        } else {
+            softAssert.assertEquals(round(currentTime,2), round(expectedTime,2));
+        }
         LOGGER.info("Dispose the " + playerType + " player");
         mediaPlayer.dispose();
     }
@@ -469,8 +471,8 @@ public class TestMediaPlayerData {
         System.out.println("////////////////////////////////////////////////////////////");
         System.out.println("//              Step Backward Test                        //");
         System.out.println("////////////////////////////////////////////////////////////");
+        SoftAssert softAssert = new SoftAssert();
         double minDuration = 0.0;
-
         MediaPlayer mediaPlayer = MediaPlayerBuilder.build(movie.path, playerType);
 
         LOGGER.info("Initializing the " + playerType + " player with the " + movie.path + " stream");
@@ -481,16 +483,24 @@ public class TestMediaPlayerData {
         mediaPlayer.seek(randomTime);
 
         sleep(SLEEP_DURATION_IN_MILLIS, true);
-        Assert.assertTrue(Math.abs(mediaPlayer.getPresentationTime() - randomTime) < SEEK_TOLERANCE_IN_SECONDS);
+        if(playerType == PlayerType.MPV) {
+            Assert.assertTrue(Math.abs(mediaPlayer.getPresentationTime() - randomTime) < SEEK_TOLERANCE_IN_SECONDS);
+        } else {
+            softAssert.assertTrue(Math.abs(mediaPlayer.getPresentationTime() - randomTime) < SEEK_TOLERANCE_IN_SECONDS);
+        }
 
         double now = mediaPlayer.getPresentationTime();
         mediaPlayer.stepBackward();
 
         sleep(SLEEP_DURATION_IN_MILLIS, true);
-        double currentTime = round(Math.abs(mediaPlayer.getPresentationTime() - now), 2);
-        double expectedTime = round((TO_MILLIS / mediaPlayer.getFps()) / TO_MILLIS,2);
+        double currentTime = Math.abs(mediaPlayer.getPresentationTime() - now);
+        double expectedTime = (TO_MILLIS / mediaPlayer.getFps()) / TO_MILLIS;
         LOGGER.info("Step Backward current time " + currentTime + " sec, expected time " + expectedTime + " sec");
-        Assert.assertEquals(currentTime, expectedTime);
+        if(playerType == PlayerType.MPV) {
+            Assert.assertEquals(round(currentTime,2), round(expectedTime,2));
+        } else {
+            softAssert.assertEquals(round(currentTime,2), round(expectedTime,2));
+        }
 
         LOGGER.info("Dispose the " + playerType + " player");
         mediaPlayer.dispose();
