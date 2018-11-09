@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MediaPlayerBuilder {
@@ -30,10 +31,21 @@ public class MediaPlayerBuilder {
 
     private static List<Movie> movieFiles = new ArrayList<>();
 
-    // Data Providers
+    // Data Provider Lists
+    private static List<Object[]> playersProviderList = new LinkedList<>();
+    private static List<Object[]> mpvProviderList = new LinkedList<>();
+    private static List<Object[]> javaProviderList = new LinkedList<>();
+    private static List<Object[]> sdlProviderList = new LinkedList<>();
+    private static List<Object[]> ffmpegProviderList = new LinkedList<>();
+    private static List<Object[]> mpvJavaProviderList = new LinkedList<>();
+
+    // Data Provider Arrays
     private static Object[][] playersProvider;
     private static Object[][] mpvProvider;
+    private static Object[][] javaProvider;
+    private static Object[][] sdlProvider;
     private static Object[][] ffmpegProvider;
+    private static Object[][] mpvJavaProvider;
 
     // This movie is about 30MB has 640 x 360 pixels @ 29.97 fps with 2.5 min play time
     static final String TEST_MOVIE_PATH = "http://www.html5videoplayer.net/videos/toystory.mp4";
@@ -84,25 +96,31 @@ public class MediaPlayerBuilder {
             e.printStackTrace();
         }
         //build the list of parameters (Movie, PlayerType)  for the data providers
-        playersProvider = new Object[movieFiles.size() * PlayerType.values().length][2];
-        mpvProvider = new Object[movieFiles.size()][2];
-        ffmpegProvider = new Object[movieFiles.size() * 2][2];
-        int j = 0;
-        for (int i = 1; i <= movieFiles.size(); i++) {
+        for (Movie movie : movieFiles) {
             for (PlayerType type : PlayerType.values()) {
-                if (type == PlayerType.MPV) {
-                    mpvProvider[i - 1][0] = movieFiles.get(i - 1);
-                    mpvProvider[i - 1][1] = type;
-                } else {
-                    //we have only two players
-                    ffmpegProvider[(i - 1) * 2][0] = movieFiles.get(i - 1);
-                    ffmpegProvider[(i - 1) * 2][1] = type;
+                Object[] player = new Object[] {movie, type};
+                if(type == PlayerType.SDL){
+                    sdlProviderList.add(player);
+                    ffmpegProviderList.add(player);
                 }
-                playersProvider[i * j][0] = movieFiles.get(i - 1);
-                playersProvider[i * j][1] = type;
-                j++;
+                if(type == PlayerType.JAVA_JDIALOG) {
+                    javaProviderList.add(player);
+                    ffmpegProviderList.add(player);
+                    mpvJavaProviderList.add(player);
+                }
+                if(type == PlayerType.MPV) {
+                    mpvProviderList.add(player);
+                    mpvJavaProviderList.add(player);
+                }
+                playersProviderList.add(player);
             }
         }
+        playersProvider = playersProviderList.stream().toArray(Object[][]:: new);
+        ffmpegProvider = ffmpegProviderList.stream().toArray(Object[][]:: new);
+        mpvJavaProvider = mpvJavaProviderList.stream().toArray(Object[][]:: new);
+        mpvProvider = mpvProviderList.stream().toArray(Object[][]:: new);
+        sdlProvider = sdlProviderList.stream().toArray(Object[][]:: new);
+        javaProvider = javaProviderList.stream().toArray(Object[][]:: new);
     }
 
     @DataProvider(name = "wrongFile")
@@ -126,14 +144,13 @@ public class MediaPlayerBuilder {
     public static Object[][] getPlayers(Method method, ITestContext context){
         List<ITestNGMethod> testMethods = context.getSuite().getAllMethods();
         String testName = testMethods.get(0).getTestClass().getName();
-        if("testInitDispose".equals(method.getName())){
+
+        if(testName.contains("TestPlaybackRate")){
+            return mpvProvider;
+        } else if(testName.contains("TestMediaPlayerData")){
             return playersProvider;
         }
-        //  Only MPV player need to be returned for now
-        if(testName.contains("TestPlaybackRate")
-                || testName.contains("TestMediaPlayerData")){
-            return mpvProvider;
-        }
+
         return playersProvider;
     }
 

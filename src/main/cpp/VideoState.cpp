@@ -165,7 +165,7 @@ int VideoState::OpenStreamComponent(int stream_index) {
       if (rational.den == rational.num == 0)
         rational = p_image_stream_->r_frame_rate;
 
-      frame_rate_ = rational.num / rational.den;
+      frame_rate_ = (float) rational.num / rational.den;
     }
 
     p_image_decoder_ = new Decoder(p_codec_context, p_image_packet_queue_,
@@ -587,7 +587,7 @@ VideoState::VideoState(int audio_buffer_size)
       last_is_paused_(false), is_stopped_(false),
       queue_attachments_request_(false), seek_request_(false),
       seek_flags_(kSeekFastFlag), seek_time_(0), seek_distance_(0),
-      sync_type_(AV_SYNC_AUDIO_MASTER), frame_rate_(0),
+      sync_type_(AV_SYNC_AUDIO_MASTER), frame_rate_(0.0),
       image_clock_last_set_time_(0), image_stream_index_(0),
       max_frame_duration_(0), end_of_file_(false), duration_(0),
       frame_width_(0), frame_height_(0), frame_aspect_ratio_(av_make_q(0, 0)),
