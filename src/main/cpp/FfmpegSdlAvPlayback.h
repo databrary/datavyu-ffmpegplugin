@@ -35,6 +35,12 @@ public:
   // Get the volume
   inline double GetVolume() const { return audio_volume_; }
 
+  // Get Image Width
+  int GetImageWidth() const;
+
+  // Get image Height
+  int GetImageHeight() const;
+
   // Get the volume step in Decibel
   int GetVolumeStep() const;
 
