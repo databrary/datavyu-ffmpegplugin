@@ -1223,8 +1223,6 @@ fail:
 
 void VideoState::SetPts(double pts, int serial) {
   p_image_clock_->SetTime(pts, serial);
-
-  // GetImageClock()->set_time(pts, serial);
   image_clock_last_set_time_ = av_gettime_relative() / 1000000.0;
   // Sync external clock to video clock
   Clock::SyncMasterToSlave(p_external_clock_, p_image_clock_,
@@ -1258,11 +1256,12 @@ int isBigEndian() {
 
 double VideoState::ComputeTargetDelay(double delay) {
   double sync_threshold, diff = 0;
-  Clock *p_master_clock = nullptr;
-  GetMasterClock(&p_master_clock);
 
   /* update delay to follow master synchronisation source */
   if (GetMasterSyncType() != AV_SYNC_VIDEO_MASTER) {
+    Clock *p_master_clock = nullptr;
+    GetMasterClock(&p_master_clock);
+
     /* if video is slave, we try to correct big delays by
     duplicating or deleting a frame */
     diff = p_image_clock_->GetTime() - p_master_clock->GetTime();
@@ -1308,11 +1307,11 @@ void VideoState::GetMasterClock(Clock **pp_clock) const {
   AvSyncType master = GetMasterSyncType();
   if (master == AV_SYNC_VIDEO_MASTER) {
     *pp_clock = p_image_clock_;
-  }
-  if (master == AV_SYNC_AUDIO_MASTER) {
+  } else  if (master == AV_SYNC_AUDIO_MASTER) {
     *pp_clock = p_audio_clock_;
+  } else {
+    *pp_clock = p_external_clock_;
   }
-  *pp_clock = p_external_clock_;
 }
 
 /* prepare a new audio buffer */
