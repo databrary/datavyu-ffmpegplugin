@@ -173,6 +173,22 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmp
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegGetImageWidth
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetImageWidth
+(JNIEnv *, jobject, jlong, jintArray);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegGetImageHeight
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetImageHeight
+(JNIEnv *, jobject, jlong, jintArray);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
  * Method:    ffmpegGetVolume
  * Signature: (J[F)I
  */

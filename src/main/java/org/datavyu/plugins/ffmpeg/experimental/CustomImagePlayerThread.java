@@ -1,7 +1,8 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins.ffmpeg.experimental;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.plugins.ffmpeg.MediaPlayerData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,7 +11,7 @@ import java.awt.image.*;
 import java.util.Hashtable;
 
 /**
- * ImagePlayerThread  is based a custom JPanel that will act as a canvas, this will allow us
+ * CustomImagePlayerThread  is based a custom JPanel that will act as a canvas, this will allow us
  * to use swing component;  double buffered by default and also remove the while loop
  * used in to display in ImageCanvasPlayerThread since the JPanel will auto paint (using the custom
  * paint method that will keep aspect ratio and display )
@@ -20,8 +21,8 @@ import java.util.Hashtable;
  * Display Min Time: 45 ms
  * The JPanel performs better than the canvas while resizing
  */
-public class ImagePlayerThread extends Thread{
-    private final static Logger LOGGER = LogManager.getFormatterLogger(ImagePlayerThread.class);
+public class CustomImagePlayerThread extends Thread{
+    private final static Logger LOGGER = LogManager.getFormatterLogger(CustomImagePlayerThread.class);
     private MediaPlayerData mediaPlayerData;
     private SampleModel sm;
     private ComponentColorModel cm;
@@ -36,7 +37,7 @@ public class ImagePlayerThread extends Thread{
     private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
     private static final double TO_MILLIS = 1000.0;
 
-    ImagePlayerThread(MediaPlayerData mediaPlayerData) {
+    CustomImagePlayerThread(MediaPlayerData mediaPlayerData) {
         this.mediaPlayerData = mediaPlayerData;
         setName("Ffmpeg image displayPanel player thread");
         setDaemon(false);

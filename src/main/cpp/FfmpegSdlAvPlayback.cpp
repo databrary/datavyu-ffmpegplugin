@@ -454,6 +454,14 @@ void FfmpegSdlAvPlayback::GetAndDisplayVideoFrame() {
                    SDL_FLIP_NONE);
 }
 
+int FfmpegSdlAvPlayback::GetImageWidth() const {
+	return p_video_state_->GetFrameWidth();
+}
+
+int FfmpegSdlAvPlayback::GetImageHeight() const {
+	return p_video_state_->GetFrameHeight();
+}
+
 int FfmpegSdlAvPlayback::GetVolumeStep() const {
   return audio_volume_
              ? (20 * log(audio_volume_ / (double)SDL_MIX_MAXVOLUME) / log(10))

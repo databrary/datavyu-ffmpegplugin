@@ -467,6 +467,58 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSeek(
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegGetImageWidth
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetImageWidth(
+	JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
+	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	int iImageWidth;
+	uint32_t uErrCode = pPipeline->GetImageWidth(&iImageWidth);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+	jint jiImageWidth = (jint)iImageWidth;
+	env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageWidth);
+
+	return ERROR_NONE;
+}
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegGetImageHeight
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetImageHeight(
+	JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
+	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+
+	int iImageHeight;
+	uint32_t uErrCode = pPipeline->GetImageHeight(&iImageHeight);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+	jint jiImageHeight = (jint)iImageHeight;
+	env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageHeight);
+
+	return ERROR_NONE;
+}
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
  * Method:    ffmpegGetVolume
  * Signature: (J[F)I
  */

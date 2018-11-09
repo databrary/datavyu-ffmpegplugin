@@ -215,9 +215,17 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioSyncDelay(long *plMillis) {
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageWidth(int *iWidth) const {
-  return ERROR_NONE;
+	if (p_sdl_playback_ == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+	*iWidth = p_sdl_playback_->GetImageWidth();
+	return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int *iHeight) const {
-  return ERROR_NONE;
+	if (p_sdl_playback_ == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+	*iHeight = p_sdl_playback_->GetImageHeight();
+	return ERROR_NONE;
 }

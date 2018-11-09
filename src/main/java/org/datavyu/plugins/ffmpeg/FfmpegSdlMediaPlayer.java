@@ -210,12 +210,22 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     public int getImageWidth() {
-        throw new UnsupportedOperationException();
+        int[] width = new int[1];
+        int rc = ffmpegGetImageWidth(getNativeMediaRef(), width);
+        if (rc != 0) {
+            throwMediaErrorException(rc, null);
+        }
+        return width[0];
     }
 
     @Override
     public int getImageHeight() {
-        throw new UnsupportedOperationException();
+        int[] height = new int[1];
+        int rc = ffmpegGetImageHeight(getNativeMediaRef(), height);
+        if (rc != 0) {
+            throwMediaErrorException(rc, null);
+        }
+        return height[0];
     }
 
     @Override
@@ -245,6 +255,8 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     protected native int ffmpegSetBalance(long refNativeMedia, float balance);
     protected native int ffmpegGetDuration(long refNativeMedia, double[] duration);
     protected native int ffmpegSeek(long refNativeMedia, double streamTime, int flags);
+    protected native int ffmpegGetImageWidth(long refNativeMedia, int[] width);
+    protected native int ffmpegGetImageHeight(long refNativeMedia, int[] height);
     protected native int ffmpegGetVolume(long refNativeMedia, float[] volume);
     protected native int ffmpegSetVolume(long refNativeMedia, float volume);
 }
