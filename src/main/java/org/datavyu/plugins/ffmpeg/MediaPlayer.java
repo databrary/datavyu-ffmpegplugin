@@ -206,9 +206,8 @@ public interface MediaPlayer {
      * value to the duration, if known.
      *
      * @param streamTime The time in seconds to which to seek.
-     * @param flags Flags that determine the type of seek, e.g. accurate or fast.
      */
-    void seek(double streamTime, int flags);
+    void seek(double streamTime);
 
     int getImageWidth();
 

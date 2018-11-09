@@ -149,7 +149,10 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     @Override
     protected void playerStepBackward() throws MediaException {
-        throw new NotImplementedException();
+        int rc = ffmpegStepBackward(getNativeMediaRef());
+        if (0 != rc) {
+            throwMediaErrorException(rc, null);
+        }
     }
 
     @Override
@@ -379,6 +382,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private native int ffmpegPause(long refNativeMedia);
     private native int ffmpegStop(long refNativeMedia);
     private native int ffmpegStepForward(long refNativeMedia);
+    private native int ffmpegStepBackward(long refNativeMedia);
     private native int ffmpegFinish(long refNativeMedia);
     private native int ffmpegGetRate(long refNativeMedia, float[] rate);
     private native int ffmpegSetRate(long refNativeMedia, float rate);

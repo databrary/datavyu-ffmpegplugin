@@ -86,7 +86,10 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerStepBackward() throws MediaException {
-        throw new NotImplementedException();
+        int rc = ffmpegStepBackward(getNativeMediaRef());
+        if (0 != rc) {
+            throwMediaErrorException(rc, null);
+        }
     }
 
     @Override
@@ -232,6 +235,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     protected native int ffmpegPause(long refNativeMedia);
     protected native int ffmpegStop(long refNativeMedia);
     protected native int ffmpegStepForward(long refNativeMedia);
+    protected native int ffmpegStepBackward(long refNativeMedia);
     protected native int ffmpegFinish(long refNativeMedia);
     protected native int ffmpegGetRate(long refNativeMedia, float[] rate);
     protected native int ffmpegSetRate(long refNativeMedia, float rate);

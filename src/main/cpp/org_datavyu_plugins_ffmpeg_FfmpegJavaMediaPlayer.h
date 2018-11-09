@@ -95,6 +95,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffm
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
+ * Method:    ffmpegStepBackward
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegStepBackward
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegFinish
  * Signature: (J)I
  */

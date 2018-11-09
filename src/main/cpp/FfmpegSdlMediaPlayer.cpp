@@ -232,6 +232,19 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegStepForward(
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegStepBackward
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegStepBackward(
+	JNIEnv *env, jobject obj, jlong ref_media) {
+
+	//TODO(fraudies): Implement me
+	return ERROR_NONE;
+}
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
  * Method:    ffmpegFinish
  * Signature: (J)I
  */

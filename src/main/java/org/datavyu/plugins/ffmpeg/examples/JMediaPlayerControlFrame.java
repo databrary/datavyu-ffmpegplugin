@@ -74,25 +74,25 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
                 currentTime = mediaPlayer.getPresentationTime();
                 nextTime = currentTime - 1;
                 System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
-                mediaPlayer.seek(nextTime, NativeMediaPlayer.SEEK_ACCURATE_FLAG);
+                mediaPlayer.seek(nextTime);
                 break;
             case KeyEvent.VK_RIGHT:
                 currentTime = mediaPlayer.getPresentationTime();
                 nextTime = currentTime + 1;
                 System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
-                mediaPlayer.seek(nextTime, NativeMediaPlayer.SEEK_ACCURATE_FLAG);
+                mediaPlayer.seek(nextTime);
                 break;
             case KeyEvent.VK_UP:
                 currentTime = mediaPlayer.getPresentationTime();
                 nextTime = currentTime + 5;
                 System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
-                mediaPlayer.seek(nextTime, NativeMediaPlayer.SEEK_ACCURATE_FLAG);
+                mediaPlayer.seek(nextTime);
                 break;
             case KeyEvent.VK_DOWN:
                 currentTime = mediaPlayer.getPresentationTime();
                 nextTime = currentTime - 5;
                 System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
-                mediaPlayer.seek(nextTime, NativeMediaPlayer.SEEK_ACCURATE_FLAG);
+                mediaPlayer.seek(nextTime);
                 break;
             case KeyEvent.VK_0:
                 currentVolume = mediaPlayer.getVolume();
@@ -129,6 +129,6 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
     @Override
     public void stateChanged(ChangeEvent e) {
         int newTime = jSlider.getValue();
-        mediaPlayer.seek(newTime, NativeMediaPlayer.SEEK_FAST_FLAG);
+        mediaPlayer.seek(newTime);
     }
 }

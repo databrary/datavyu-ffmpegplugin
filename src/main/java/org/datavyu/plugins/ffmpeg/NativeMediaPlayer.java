@@ -508,7 +508,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
 
     @Override
-    public void seek(double streamTime, int flags) {
+    public void seek(double streamTime) {
 
         if (streamTime < 0.0) {
             streamTime = 0.0;
@@ -521,7 +521,11 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
         try {
             markerLock.lock();
-            playerSeek(streamTime, flags);
+            // If we are not playing or if the rate is within -1x to 0x, then seek accurately; otherwise seek fast
+            float rate = getRate();
+            boolean isNotPlaying = getState() != PlayerStateEvent.PlayerState.PLAYING;
+            int seek_flag = -1 <= rate && rate <= 0 || isNotPlaying ? SEEK_ACCURATE_FLAG : SEEK_FAST_FLAG;
+            playerSeek(streamTime, seek_flag);
         } catch (MediaException me) {
             sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
         } finally {
