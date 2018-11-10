@@ -14,7 +14,6 @@ import java.net.URI;
 public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     static {
-        System.loadLibrary("mpv.1");
         System.loadLibrary("MpvMediaPlayer");
     }
 

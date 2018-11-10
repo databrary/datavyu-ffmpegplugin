@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B1DD7C32196B17B001685D8 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D23BF21965B73007A6758 /* SDL2.framework */; };
 		E95D23C921965B9E007A6758 /* libpostproc.55.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D23C121965B9E007A6758 /* libpostproc.55.dylib */; };
 		E95D23CA21965B9E007A6758 /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D23C221965B9E007A6758 /* libavformat.58.dylib */; };
 		E95D23CB21965B9E007A6758 /* libavutil.56.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D23C321965B9E007A6758 /* libavutil.56.dylib */; };
@@ -119,6 +120,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2B1DD7C32196B17B001685D8 /* SDL2.framework in Frameworks */,
 				E95D242721966644007A6758 /* libmpv.1.dylib in Frameworks */,
 				E95D23C921965B9E007A6758 /* libpostproc.55.dylib in Frameworks */,
 				E95D23CA21965B9E007A6758 /* libavformat.58.dylib in Frameworks */,
@@ -252,6 +254,7 @@
 				E95D23A121965A5F007A6758 /* Sources */,
 				E95D23A221965A5F007A6758 /* Frameworks */,
 				E95D23A321965A5F007A6758 /* Headers */,
+				2B1DD7C22196AE6B001685D8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -292,6 +295,22 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2B1DD7C22196AE6B001685D8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp ${TARGET_BUILD_DIR}/libMpvMediaPlayer.dylib ${PROJECT_DIR}/../../../";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E95D23A121965A5F007A6758 /* Sources */ = {
@@ -437,9 +456,12 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/dependencies";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/dependencies",
+					"$(PROJECT_DIR)/dependencies",
+				);
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/**",
+					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
 					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
 					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
 					"${PROJECT_DIR}/dependencies/mpv/include",
@@ -462,9 +484,12 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/dependencies";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/dependencies",
+					"$(PROJECT_DIR)/dependencies",
+				);
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/**",
+					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
 					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
 					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
 					"${PROJECT_DIR}/dependencies/mpv/include",

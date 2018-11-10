@@ -246,6 +246,7 @@
 				E95564D121963D3800A2AD8D /* Sources */,
 				E95564D221963D3800A2AD8D /* Frameworks */,
 				E95564D321963D3800A2AD8D /* Headers */,
+				2B1DD7C02196AB9F001685D8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -286,6 +287,22 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2B1DD7C02196AB9F001685D8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cp ${TARGET_BUILD_DIR}/libFfmpegJavaMediaPlayer.dylib ${PROJECT_DIR}/../../../";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		E95564D121963D3800A2AD8D /* Sources */ = {
@@ -433,7 +450,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/**",
+					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
 					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
 					"${PROJECT_DIR}/dependencies/mpv/include",
 					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
@@ -456,7 +473,7 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/**",
+					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
 					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
 					"${PROJECT_DIR}/dependencies/mpv/include",
 					"${PROJECT_DIR}/dependencies/googletest/googletest/include",

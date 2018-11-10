@@ -137,21 +137,21 @@
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>ffmpeg-libs</artifactId>
-            <version>0.5</version>
+            <version>0.6</version>
         </dependency>
 
         <!-- SDL 2.0.8 -->
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>sdl-libs</artifactId>
-            <version>0.1</version>
+            <version>0.2</version>
         </dependency>
 
         <!-- MPV 0.29.1 -->
         <dependency>
             <groupId>datavyu</groupId>
             <artifactId>mpv-libs</artifactId>
-            <version>0.1</version>
+            <version>0.2</version>
         </dependency>
 
     </dependencies>

@@ -12,7 +12,7 @@ public class SimpleMpvMediaPlayer {
 
     public static void main(String[] args) {
         // Define the media file
-        URI mediaPath = new File("/Users/RedaNezzar/Documents/source/datavyu-ffmpegplugin/src/test/resources/toystory.mp4").toURI();
+        URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
 
         // Create the media player using the constructor with File
         MediaPlayer mediaPlayer = new MpvMediaPlayer(mediaPath, new JDialog());
