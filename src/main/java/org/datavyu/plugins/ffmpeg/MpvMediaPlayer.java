@@ -1,18 +1,24 @@
 package org.datavyu.plugins.ffmpeg;
 
-import sun.awt.windows.WComponentPeer;
+//import sun.awt.windows.WComponentPeer;
+import com.sun.javafx.tk.TKStage;
+import javafx.stage.Stage;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 import java.awt.*;
+import java.lang.reflect.Method;
 import java.net.URI;
 
 
 public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     static {
+        System.loadLibrary("mpv.1");
         System.loadLibrary("MpvMediaPlayer");
     }
+
+    private Stage stage;
 
     private Container container;
     private long windowID;
@@ -24,6 +30,11 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         this.container = container;
     }
 
+    public MpvMediaPlayer(URI mediaPath, Stage stage) {
+        super(mediaPath);
+        this.stage = stage;
+    }
+
     @Override
     public void init() {
         initNative(); // start the event queue, make sure to register all state/error listeners before
@@ -33,7 +44,10 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
         long[] newNativeMediaRef = new long[1];
 
-        initContainer();
+        if(container != null)
+            initContainer();
+        else
+            initStage();
 
         int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
         if (0 != rc) {
@@ -43,17 +57,52 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         nativeMediaRef = newNativeMediaRef[0];
     }
 
+    private void initStage() {
+        stage.show();
+
+        windowID = getWindowId(stage);
+        if (windowID == 0){
+            throw new IllegalStateException("Need a valid WID for the MPV Player");
+        }
+
+    }
+
     private void initContainer(){
         container.setVisible(true);
         // Container need to be visible in order to get a valid HWND
 
         // TODO(Reda):find alternative for deprecated getPeer() method
-        windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
-        if (windowID == 0){
-            throw new IllegalStateException("Need a valid WID for the MPV Player");
-        }
+//        windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
+//        if (windowID == 0){
+//            throw new IllegalStateException("Need a valid WID for the MPV Player");
+//        }
     }
 
+    private static long getWindowId(Stage stage) {
+        try {
+            Method tkStageGetter;
+            try {
+                // java 9
+                tkStageGetter = stage.getClass().getSuperclass().getDeclaredMethod("getPeer");
+            } catch (NoSuchMethodException ex) {
+                // java 8
+                tkStageGetter = stage.getClass().getMethod("impl_getPeer");
+            }
+            tkStageGetter.setAccessible(true);
+            TKStage tkStage = (TKStage) tkStageGetter.invoke(stage);
+            Method getPlatformWindow = tkStage.getClass().getDeclaredMethod("getPlatformWindow");
+            getPlatformWindow.setAccessible(true);
+            Object platformWindow = getPlatformWindow.invoke(tkStage);
+            Method getNativeHandle = platformWindow.getClass().getMethod("getNativeHandle");
+            getNativeHandle.setAccessible(true);
+            Object nativeHandle = getNativeHandle.invoke(platformWindow);
+            return (long) nativeHandle;
+        } catch (Throwable e) {
+            System.err.println("Error getting Window Pointer");
+            e.printStackTrace();
+            return 0;
+        }
+    }
     @Override
     protected long playerGetAudioSyncDelay() throws MediaException {
         throw new UnsupportedOperationException();

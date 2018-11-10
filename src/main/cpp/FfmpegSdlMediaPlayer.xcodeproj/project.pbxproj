@@ -1,0 +1,489 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E95D22DE219646AA007A6758 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22DD219646AA007A6758 /* SDL2.framework */; };
+		E95D22E7219646BB007A6758 /* libpostproc.55.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22DF219646BB007A6758 /* libpostproc.55.dylib */; };
+		E95D22E8219646BB007A6758 /* libswresample.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E0219646BB007A6758 /* libswresample.3.dylib */; };
+		E95D22E9219646BB007A6758 /* libavutil.56.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E1219646BB007A6758 /* libavutil.56.dylib */; };
+		E95D22EA219646BB007A6758 /* libavdevice.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E2219646BB007A6758 /* libavdevice.58.dylib */; };
+		E95D22EB219646BB007A6758 /* libavfilter.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E3219646BB007A6758 /* libavfilter.7.dylib */; };
+		E95D22EC219646BB007A6758 /* libavcodec.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E4219646BB007A6758 /* libavcodec.58.dylib */; };
+		E95D22ED219646BB007A6758 /* libswscale.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E5219646BB007A6758 /* libswscale.5.dylib */; };
+		E95D22EE219646BB007A6758 /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E6219646BB007A6758 /* libavformat.58.dylib */; };
+		E95D2314219647A6007A6758 /* FrameQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22EF219647A2007A6758 /* FrameQueue.cpp */; };
+		E95D2315219647A6007A6758 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22F0219647A2007A6758 /* Pipeline.cpp */; };
+		E95D2316219647A6007A6758 /* PipelineOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22F1219647A2007A6758 /* PipelineOptions.h */; };
+		E95D2317219647A6007A6758 /* FfmpegAvPlayback.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22F2219647A2007A6758 /* FfmpegAvPlayback.h */; };
+		E95D2318219647A6007A6758 /* VideoState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22F3219647A2007A6758 /* VideoState.cpp */; };
+		E95D2319219647A6007A6758 /* FfmpegSdlAvPlayback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22F4219647A2007A6758 /* FfmpegSdlAvPlayback.cpp */; };
+		E95D231A219647A6007A6758 /* MediaPlayerErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22F5219647A2007A6758 /* MediaPlayerErrors.h */; };
+		E95D231B219647A6007A6758 /* JavaPlayerEventDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22F6219647A2007A6758 /* JavaPlayerEventDispatcher.cpp */; };
+		E95D231C219647A6007A6758 /* FfmpegSdlAvPlaybackPipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22F7219647A2007A6758 /* FfmpegSdlAvPlaybackPipeline.h */; };
+		E95D231D219647A6007A6758 /* Clock.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22F8219647A2007A6758 /* Clock.h */; };
+		E95D231E219647A6007A6758 /* AudioVideoFormats.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22F9219647A2007A6758 /* AudioVideoFormats.h */; };
+		E95D231F219647A6007A6758 /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22FA219647A2007A6758 /* Clock.cpp */; };
+		E95D2320219647A6007A6758 /* Media.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22FB219647A2007A6758 /* Media.h */; };
+		E95D2321219647A6007A6758 /* PacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22FC219647A3007A6758 /* PacketQueue.cpp */; };
+		E95D2322219647A6007A6758 /* FfmpegSdlAvPlaybackPipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22FD219647A3007A6758 /* FfmpegSdlAvPlaybackPipeline.cpp */; };
+		E95D2323219647A6007A6758 /* Decoder.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22FE219647A3007A6758 /* Decoder.h */; };
+		E95D2324219647A6007A6758 /* FfmpegJniUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22FF219647A3007A6758 /* FfmpegJniUtils.cpp */; };
+		E95D2325219647A6007A6758 /* VideoState.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2300219647A3007A6758 /* VideoState.h */; };
+		E95D2326219647A6007A6758 /* JniUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D2301219647A3007A6758 /* JniUtils.cpp */; };
+		E95D2327219647A6007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2302219647A3007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h */; };
+		E95D2328219647A6007A6758 /* FfmpegJniUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2303219647A3007A6758 /* FfmpegJniUtils.h */; };
+		E95D2329219647A6007A6758 /* Pipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2304219647A3007A6758 /* Pipeline.h */; };
+		E95D232A219647A6007A6758 /* FrameQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2305219647A3007A6758 /* FrameQueue.h */; };
+		E95D232B219647A6007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer_MediaErrorEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2306219647A4007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer_MediaErrorEvent.h */; };
+		E95D232C219647A6007A6758 /* JniUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2307219647A4007A6758 /* JniUtils.h */; };
+		E95D232D219647A6007A6758 /* PacketQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2308219647A4007A6758 /* PacketQueue.h */; };
+		E95D232E219647A6007A6758 /* org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2309219647A4007A6758 /* org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer.h */; };
+		E95D232F219647A6007A6758 /* Singleton.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D230A219647A4007A6758 /* Singleton.h */; };
+		E95D2330219647A6007A6758 /* FfmpegSdlMediaPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D230B219647A4007A6758 /* FfmpegSdlMediaPlayer.cpp */; };
+		E95D2331219647A6007A6758 /* JavaPlayerEventDispatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D230C219647A4007A6758 /* JavaPlayerEventDispatcher.h */; };
+		E95D2332219647A6007A6758 /* AudioVideoFormats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D230D219647A4007A6758 /* AudioVideoFormats.cpp */; };
+		E95D2333219647A6007A6758 /* FfmpegAvPlayback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D230E219647A5007A6758 /* FfmpegAvPlayback.cpp */; };
+		E95D2334219647A6007A6758 /* Decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D230F219647A5007A6758 /* Decoder.cpp */; };
+		E95D2335219647A6007A6758 /* FfmpegErrorUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2310219647A5007A6758 /* FfmpegErrorUtils.h */; };
+		E95D2336219647A6007A6758 /* FfmpegErrorUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D2311219647A5007A6758 /* FfmpegErrorUtils.cpp */; };
+		E95D2337219647A6007A6758 /* Media.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D2312219647A5007A6758 /* Media.cpp */; };
+		E95D2338219647A6007A6758 /* FfmpegSdlAvPlayback.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D2313219647A5007A6758 /* FfmpegSdlAvPlayback.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		E95D22D5219644C2007A6758 /* libFfmpegSdlMediaPlayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libFfmpegSdlMediaPlayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		E95D22DD219646AA007A6758 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = dependencies/SDL2.framework; sourceTree = "<group>"; };
+		E95D22DF219646BB007A6758 /* libpostproc.55.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpostproc.55.dylib; path = "dependencies/ffmpeg-shared/bin/libpostproc.55.dylib"; sourceTree = "<group>"; };
+		E95D22E0219646BB007A6758 /* libswresample.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswresample.3.dylib; path = "dependencies/ffmpeg-shared/bin/libswresample.3.dylib"; sourceTree = "<group>"; };
+		E95D22E1219646BB007A6758 /* libavutil.56.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavutil.56.dylib; path = "dependencies/ffmpeg-shared/bin/libavutil.56.dylib"; sourceTree = "<group>"; };
+		E95D22E2219646BB007A6758 /* libavdevice.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavdevice.58.dylib; path = "dependencies/ffmpeg-shared/bin/libavdevice.58.dylib"; sourceTree = "<group>"; };
+		E95D22E3219646BB007A6758 /* libavfilter.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavfilter.7.dylib; path = "dependencies/ffmpeg-shared/bin/libavfilter.7.dylib"; sourceTree = "<group>"; };
+		E95D22E4219646BB007A6758 /* libavcodec.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavcodec.58.dylib; path = "dependencies/ffmpeg-shared/bin/libavcodec.58.dylib"; sourceTree = "<group>"; };
+		E95D22E5219646BB007A6758 /* libswscale.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswscale.5.dylib; path = "dependencies/ffmpeg-shared/bin/libswscale.5.dylib"; sourceTree = "<group>"; };
+		E95D22E6219646BB007A6758 /* libavformat.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavformat.58.dylib; path = "dependencies/ffmpeg-shared/bin/libavformat.58.dylib"; sourceTree = "<group>"; };
+		E95D22EF219647A2007A6758 /* FrameQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FrameQueue.cpp; sourceTree = "<group>"; };
+		E95D22F0219647A2007A6758 /* Pipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Pipeline.cpp; sourceTree = "<group>"; };
+		E95D22F1219647A2007A6758 /* PipelineOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PipelineOptions.h; sourceTree = "<group>"; };
+		E95D22F2219647A2007A6758 /* FfmpegAvPlayback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfmpegAvPlayback.h; sourceTree = "<group>"; };
+		E95D22F3219647A2007A6758 /* VideoState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VideoState.cpp; sourceTree = "<group>"; };
+		E95D22F4219647A2007A6758 /* FfmpegSdlAvPlayback.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegSdlAvPlayback.cpp; sourceTree = "<group>"; };
+		E95D22F5219647A2007A6758 /* MediaPlayerErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediaPlayerErrors.h; sourceTree = "<group>"; };
+		E95D22F6219647A2007A6758 /* JavaPlayerEventDispatcher.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JavaPlayerEventDispatcher.cpp; sourceTree = "<group>"; };
+		E95D22F7219647A2007A6758 /* FfmpegSdlAvPlaybackPipeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfmpegSdlAvPlaybackPipeline.h; sourceTree = "<group>"; };
+		E95D22F8219647A2007A6758 /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
+		E95D22F9219647A2007A6758 /* AudioVideoFormats.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioVideoFormats.h; sourceTree = "<group>"; };
+		E95D22FA219647A2007A6758 /* Clock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Clock.cpp; sourceTree = "<group>"; };
+		E95D22FB219647A2007A6758 /* Media.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Media.h; sourceTree = "<group>"; };
+		E95D22FC219647A3007A6758 /* PacketQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PacketQueue.cpp; sourceTree = "<group>"; };
+		E95D22FD219647A3007A6758 /* FfmpegSdlAvPlaybackPipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegSdlAvPlaybackPipeline.cpp; sourceTree = "<group>"; };
+		E95D22FE219647A3007A6758 /* Decoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
+		E95D22FF219647A3007A6758 /* FfmpegJniUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegJniUtils.cpp; sourceTree = "<group>"; };
+		E95D2300219647A3007A6758 /* VideoState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoState.h; sourceTree = "<group>"; };
+		E95D2301219647A3007A6758 /* JniUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JniUtils.cpp; sourceTree = "<group>"; };
+		E95D2302219647A3007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h; sourceTree = "<group>"; };
+		E95D2303219647A3007A6758 /* FfmpegJniUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfmpegJniUtils.h; sourceTree = "<group>"; };
+		E95D2304219647A3007A6758 /* Pipeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pipeline.h; sourceTree = "<group>"; };
+		E95D2305219647A3007A6758 /* FrameQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FrameQueue.h; sourceTree = "<group>"; };
+		E95D2306219647A4007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer_MediaErrorEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = org_datavyu_plugins_ffmpeg_NativeMediaPlayer_MediaErrorEvent.h; sourceTree = "<group>"; };
+		E95D2307219647A4007A6758 /* JniUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JniUtils.h; sourceTree = "<group>"; };
+		E95D2308219647A4007A6758 /* PacketQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PacketQueue.h; sourceTree = "<group>"; };
+		E95D2309219647A4007A6758 /* org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer.h; sourceTree = "<group>"; };
+		E95D230A219647A4007A6758 /* Singleton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Singleton.h; sourceTree = "<group>"; };
+		E95D230B219647A4007A6758 /* FfmpegSdlMediaPlayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegSdlMediaPlayer.cpp; sourceTree = "<group>"; };
+		E95D230C219647A4007A6758 /* JavaPlayerEventDispatcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JavaPlayerEventDispatcher.h; sourceTree = "<group>"; };
+		E95D230D219647A4007A6758 /* AudioVideoFormats.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioVideoFormats.cpp; sourceTree = "<group>"; };
+		E95D230E219647A5007A6758 /* FfmpegAvPlayback.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegAvPlayback.cpp; sourceTree = "<group>"; };
+		E95D230F219647A5007A6758 /* Decoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Decoder.cpp; sourceTree = "<group>"; };
+		E95D2310219647A5007A6758 /* FfmpegErrorUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfmpegErrorUtils.h; sourceTree = "<group>"; };
+		E95D2311219647A5007A6758 /* FfmpegErrorUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegErrorUtils.cpp; sourceTree = "<group>"; };
+		E95D2312219647A5007A6758 /* Media.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Media.cpp; sourceTree = "<group>"; };
+		E95D2313219647A5007A6758 /* FfmpegSdlAvPlayback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfmpegSdlAvPlayback.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E95D22D2219644C2007A6758 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E95D22E7219646BB007A6758 /* libpostproc.55.dylib in Frameworks */,
+				E95D22E8219646BB007A6758 /* libswresample.3.dylib in Frameworks */,
+				E95D22E9219646BB007A6758 /* libavutil.56.dylib in Frameworks */,
+				E95D22EA219646BB007A6758 /* libavdevice.58.dylib in Frameworks */,
+				E95D22EB219646BB007A6758 /* libavfilter.7.dylib in Frameworks */,
+				E95D22EC219646BB007A6758 /* libavcodec.58.dylib in Frameworks */,
+				E95D22ED219646BB007A6758 /* libswscale.5.dylib in Frameworks */,
+				E95D22EE219646BB007A6758 /* libavformat.58.dylib in Frameworks */,
+				E95D22DE219646AA007A6758 /* SDL2.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E95D22CC219644C2007A6758 = {
+			isa = PBXGroup;
+			children = (
+				E95D230D219647A4007A6758 /* AudioVideoFormats.cpp */,
+				E95D22F9219647A2007A6758 /* AudioVideoFormats.h */,
+				E95D22FA219647A2007A6758 /* Clock.cpp */,
+				E95D22F8219647A2007A6758 /* Clock.h */,
+				E95D230F219647A5007A6758 /* Decoder.cpp */,
+				E95D22FE219647A3007A6758 /* Decoder.h */,
+				E95D230E219647A5007A6758 /* FfmpegAvPlayback.cpp */,
+				E95D22F2219647A2007A6758 /* FfmpegAvPlayback.h */,
+				E95D2311219647A5007A6758 /* FfmpegErrorUtils.cpp */,
+				E95D2310219647A5007A6758 /* FfmpegErrorUtils.h */,
+				E95D22FF219647A3007A6758 /* FfmpegJniUtils.cpp */,
+				E95D2303219647A3007A6758 /* FfmpegJniUtils.h */,
+				E95D22F4219647A2007A6758 /* FfmpegSdlAvPlayback.cpp */,
+				E95D2313219647A5007A6758 /* FfmpegSdlAvPlayback.h */,
+				E95D22FD219647A3007A6758 /* FfmpegSdlAvPlaybackPipeline.cpp */,
+				E95D22F7219647A2007A6758 /* FfmpegSdlAvPlaybackPipeline.h */,
+				E95D230B219647A4007A6758 /* FfmpegSdlMediaPlayer.cpp */,
+				E95D22EF219647A2007A6758 /* FrameQueue.cpp */,
+				E95D2305219647A3007A6758 /* FrameQueue.h */,
+				E95D22F6219647A2007A6758 /* JavaPlayerEventDispatcher.cpp */,
+				E95D230C219647A4007A6758 /* JavaPlayerEventDispatcher.h */,
+				E95D2301219647A3007A6758 /* JniUtils.cpp */,
+				E95D2307219647A4007A6758 /* JniUtils.h */,
+				E95D2312219647A5007A6758 /* Media.cpp */,
+				E95D22FB219647A2007A6758 /* Media.h */,
+				E95D22F5219647A2007A6758 /* MediaPlayerErrors.h */,
+				E95D2309219647A4007A6758 /* org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer.h */,
+				E95D2306219647A4007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer_MediaErrorEvent.h */,
+				E95D2302219647A3007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h */,
+				E95D22FC219647A3007A6758 /* PacketQueue.cpp */,
+				E95D2308219647A4007A6758 /* PacketQueue.h */,
+				E95D22F0219647A2007A6758 /* Pipeline.cpp */,
+				E95D2304219647A3007A6758 /* Pipeline.h */,
+				E95D22F1219647A2007A6758 /* PipelineOptions.h */,
+				E95D230A219647A4007A6758 /* Singleton.h */,
+				E95D22F3219647A2007A6758 /* VideoState.cpp */,
+				E95D2300219647A3007A6758 /* VideoState.h */,
+				E95D22D6219644C2007A6758 /* Products */,
+				E95D22DC219646AA007A6758 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		E95D22D6219644C2007A6758 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E95D22D5219644C2007A6758 /* libFfmpegSdlMediaPlayer.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E95D22DC219646AA007A6758 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E95D22E4219646BB007A6758 /* libavcodec.58.dylib */,
+				E95D22E2219646BB007A6758 /* libavdevice.58.dylib */,
+				E95D22E3219646BB007A6758 /* libavfilter.7.dylib */,
+				E95D22E6219646BB007A6758 /* libavformat.58.dylib */,
+				E95D22E1219646BB007A6758 /* libavutil.56.dylib */,
+				E95D22DF219646BB007A6758 /* libpostproc.55.dylib */,
+				E95D22E0219646BB007A6758 /* libswresample.3.dylib */,
+				E95D22E5219646BB007A6758 /* libswscale.5.dylib */,
+				E95D22DD219646AA007A6758 /* SDL2.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		E95D22D3219644C2007A6758 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E95D2316219647A6007A6758 /* PipelineOptions.h in Headers */,
+				E95D2317219647A6007A6758 /* FfmpegAvPlayback.h in Headers */,
+				E95D231A219647A6007A6758 /* MediaPlayerErrors.h in Headers */,
+				E95D231C219647A6007A6758 /* FfmpegSdlAvPlaybackPipeline.h in Headers */,
+				E95D231D219647A6007A6758 /* Clock.h in Headers */,
+				E95D231E219647A6007A6758 /* AudioVideoFormats.h in Headers */,
+				E95D2320219647A6007A6758 /* Media.h in Headers */,
+				E95D2323219647A6007A6758 /* Decoder.h in Headers */,
+				E95D2325219647A6007A6758 /* VideoState.h in Headers */,
+				E95D2327219647A6007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h in Headers */,
+				E95D2328219647A6007A6758 /* FfmpegJniUtils.h in Headers */,
+				E95D2329219647A6007A6758 /* Pipeline.h in Headers */,
+				E95D232A219647A6007A6758 /* FrameQueue.h in Headers */,
+				E95D232B219647A6007A6758 /* org_datavyu_plugins_ffmpeg_NativeMediaPlayer_MediaErrorEvent.h in Headers */,
+				E95D232C219647A6007A6758 /* JniUtils.h in Headers */,
+				E95D232D219647A6007A6758 /* PacketQueue.h in Headers */,
+				E95D232E219647A6007A6758 /* org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer.h in Headers */,
+				E95D232F219647A6007A6758 /* Singleton.h in Headers */,
+				E95D2331219647A6007A6758 /* JavaPlayerEventDispatcher.h in Headers */,
+				E95D2335219647A6007A6758 /* FfmpegErrorUtils.h in Headers */,
+				E95D2338219647A6007A6758 /* FfmpegSdlAvPlayback.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		E95D22D4219644C2007A6758 /* FfmpegSdlMediaPlayer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E95D22D9219644C2007A6758 /* Build configuration list for PBXNativeTarget "FfmpegSdlMediaPlayer" */;
+			buildPhases = (
+				E95D22D1219644C2007A6758 /* Sources */,
+				E95D22D2219644C2007A6758 /* Frameworks */,
+				E95D22D3219644C2007A6758 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FfmpegSdlMediaPlayer;
+			productName = FfmpegSdlMediaPlayer;
+			productReference = E95D22D5219644C2007A6758 /* libFfmpegSdlMediaPlayer.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E95D22CD219644C2007A6758 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0940;
+				ORGANIZATIONNAME = Databrary;
+				TargetAttributes = {
+					E95D22D4219644C2007A6758 = {
+						CreatedOnToolsVersion = 9.4.1;
+					};
+				};
+			};
+			buildConfigurationList = E95D22D0219644C2007A6758 /* Build configuration list for PBXProject "FfmpegSdlMediaPlayer" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = E95D22CC219644C2007A6758;
+			productRefGroup = E95D22D6219644C2007A6758 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E95D22D4219644C2007A6758 /* FfmpegSdlMediaPlayer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E95D22D1219644C2007A6758 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E95D2314219647A6007A6758 /* FrameQueue.cpp in Sources */,
+				E95D2315219647A6007A6758 /* Pipeline.cpp in Sources */,
+				E95D2318219647A6007A6758 /* VideoState.cpp in Sources */,
+				E95D2319219647A6007A6758 /* FfmpegSdlAvPlayback.cpp in Sources */,
+				E95D231B219647A6007A6758 /* JavaPlayerEventDispatcher.cpp in Sources */,
+				E95D231F219647A6007A6758 /* Clock.cpp in Sources */,
+				E95D2321219647A6007A6758 /* PacketQueue.cpp in Sources */,
+				E95D2322219647A6007A6758 /* FfmpegSdlAvPlaybackPipeline.cpp in Sources */,
+				E95D2324219647A6007A6758 /* FfmpegJniUtils.cpp in Sources */,
+				E95D2326219647A6007A6758 /* JniUtils.cpp in Sources */,
+				E95D2330219647A6007A6758 /* FfmpegSdlMediaPlayer.cpp in Sources */,
+				E95D2332219647A6007A6758 /* AudioVideoFormats.cpp in Sources */,
+				E95D2333219647A6007A6758 /* FfmpegAvPlayback.cpp in Sources */,
+				E95D2334219647A6007A6758 /* Decoder.cpp in Sources */,
+				E95D2336219647A6007A6758 /* FfmpegErrorUtils.cpp in Sources */,
+				E95D2337219647A6007A6758 /* Media.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E95D22D7219644C2007A6758 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		E95D22D8219644C2007A6758 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		E95D22DA219644C2007A6758 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
+				HEADER_SEARCH_PATHS = (
+					"/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/**",
+					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
+					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
+					"${PROJECT_DIR}/dependencies/mpv/include",
+				);
+				INSTALL_PATH = "$(PROJECT_DIR)/build";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/dependencies/ffmpeg-shared/bin",
+					"$(PROJECT_DIR)/dependencies/SDL2.framwork",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		E95D22DB219644C2007A6758 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
+				HEADER_SEARCH_PATHS = (
+					"/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/**",
+					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
+					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
+					"${PROJECT_DIR}/dependencies/mpv/include",
+				);
+				INSTALL_PATH = "$(PROJECT_DIR)/build";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/dependencies/ffmpeg-shared/bin",
+					"$(PROJECT_DIR)/dependencies/SDL2.framwork",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E95D22D0219644C2007A6758 /* Build configuration list for PBXProject "FfmpegSdlMediaPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E95D22D7219644C2007A6758 /* Debug */,
+				E95D22D8219644C2007A6758 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E95D22D9219644C2007A6758 /* Build configuration list for PBXNativeTarget "FfmpegSdlMediaPlayer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E95D22DA219644C2007A6758 /* Debug */,
+				E95D22DB219644C2007A6758 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E95D22CD219644C2007A6758 /* Project object */;
+}

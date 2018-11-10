@@ -10,7 +10,7 @@ public class SimpleJavaMediaPlayer {
 
     public static void main(String[] args) {
         // Define the media file
-        URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
+        URI mediaPath = new File("/Users/RedaNezzar/Documents/source/datavyu-ffmpegplugin/src/test/resources/toystory.mp4").toURI();
         //URI mediaPath = new File("counter.mp4").toURI();
         //URI mediaPath = new File("DatavyuSampleVideo.mp4").toURI();
 
