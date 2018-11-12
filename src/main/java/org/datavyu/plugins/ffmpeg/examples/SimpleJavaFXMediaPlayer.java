@@ -18,7 +18,7 @@ public class SimpleJavaFXMediaPlayer extends Application {
         this.primaryStage = primaryStage;
 
         // Define the media file
-        URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
+        URI mediaPath = new File("/Users/RedaNezzar/Documents/source/datavyu-ffmpegplugin/src/test/resources/toystory.mp4").toURI();
         //MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, primaryStage);
         MediaPlayer mediaPlayer = new MpvMediaPlayer(mediaPath, primaryStage);
         mediaPlayer.init();
