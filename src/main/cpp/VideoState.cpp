@@ -165,7 +165,7 @@ int VideoState::OpenStreamComponent(int stream_index) {
       if (rational.den == rational.num == 0)
         rational = p_image_stream_->r_frame_rate;
 
-      frame_rate_ = (float) rational.num / rational.den;
+      frame_rate_ = (float)rational.num / rational.den;
     }
 
     p_image_decoder_ = new Decoder(p_codec_context, p_image_packet_queue_,
@@ -796,19 +796,23 @@ int VideoState::ReadPacketsToQueues() {
         was_stalled = true;
       }
 
-      int64_t seek_target = seek_time_;
-      int64_t seek_min =
-          seek_distance_ > 0 ? seek_target - seek_distance_ + 2 : INT64_MIN;
-      int64_t seek_max =
-          seek_distance_ < 0 ? seek_target - seek_distance_ - 2 : INT64_MAX;
       fast_seek = seek_flags_ == kSeekFastFlag;
+      if (fast_seek) {
+        int64_t seek_min =
+            seek_distance_ > 0 ? seek_time_ - seek_distance_ + 2 : INT64_MIN;
+        int64_t seek_max =
+            seek_distance_ < 0 ? seek_time_ - seek_distance_ - 2 : INT64_MAX;
 
-      // FIXME the +-2 is due to rounding being not done in the correct
-      // direction in generation
-      //      of the seek_pos/seek_rel variables
-      ret = avformat_seek_file(
-          p_format_context, -1, seek_min, seek_target, seek_max,
-          fast_seek ? AVSEEK_FLAG_ANY : AVSEEK_FLAG_BACKWARD);
+        // FIXME the +-2 is due to rounding being not done in the correct
+        // direction in generation
+        //      of the seek_pos/seek_rel variables
+        ret = avformat_seek_file(p_format_context, -1, seek_min, seek_time_,
+                                 seek_max, AVSEEK_FLAG_ANY);
+      } else {
+        ret = av_seek_frame(p_format_context, -1, seek_time_,
+                            AVSEEK_FLAG_BACKWARD);
+      }
+
       if (ret < 0) {
         av_log(NULL, AV_LOG_ERROR, "%s: error while seeking\n",
                p_format_context->url);
@@ -822,25 +826,12 @@ int VideoState::ReadPacketsToQueues() {
           p_image_packet_queue_->PutFlushPacket();
         }
         p_external_clock_->SetTime(
-            seek_target / (double)AV_TIME_BASE,
+            seek_time_ / (double)AV_TIME_BASE,
             0); // 0 != -1 which will return NAN for interim time
       }
       seek_request_ = false;
       queue_attachments_request_ = true;
       end_of_file_ = false;
-      Clock *p_external_clock = nullptr;
-      Clock *p_image_clock = nullptr;
-      Clock *p_audio_clock = nullptr;
-      GetExternalClock(&p_external_clock);
-      GetImageClock(&p_image_clock);
-      GetAudioClock(&p_audio_clock);
-
-      av_log(NULL, AV_LOG_INFO,
-             "Seek: ext: %7.2f sec - aud : %7.2f sec - vid : %7.2f sec - Error "
-             ": %7.2f sec\n",
-             p_external_clock->GetTime(), p_audio_clock->GetTime(),
-             p_image_clock->GetTime(),
-             fabs(p_external_clock->GetTime() - p_audio_clock->GetTime()));
 
       if (is_paused_) {
         step_to_next_frame_callback(); // Assume that the step callback is set
@@ -934,11 +925,11 @@ int VideoState::ReadPacketsToQueues() {
             ((double)max_duration_ / 1000000);
 
     if (pkt->stream_index == audio_stream_index_ && pkt_in_play_range &&
-        (fast_seek || pkt_ts >= seek_time_ * audio_time_base)) {
+        (fast_seek || pkt_ts >= seek_time_)) {
       p_audio_packet_queue_->Put(pkt);
     } else if (pkt->stream_index == image_stream_index_ && pkt_in_play_range &&
                !(p_image_stream_->disposition & AV_DISPOSITION_ATTACHED_PIC) &&
-               (fast_seek || pkt_ts >= seek_time_ * image_time_base)) {
+               (fast_seek || pkt_ts >= seek_time_)) {
       p_image_packet_queue_->Put(pkt);
     } else {
       av_packet_unref(pkt);
@@ -1307,7 +1298,7 @@ void VideoState::GetMasterClock(Clock **pp_clock) const {
   AvSyncType master = GetMasterSyncType();
   if (master == AV_SYNC_VIDEO_MASTER) {
     *pp_clock = p_image_clock_;
-  } else  if (master == AV_SYNC_AUDIO_MASTER) {
+  } else if (master == AV_SYNC_AUDIO_MASTER) {
     *pp_clock = p_audio_clock_;
   } else {
     *pp_clock = p_external_clock_;

@@ -23,7 +23,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private AudioPlayerThread audioPlayerThread = null;
     private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
     private Container container;
-    private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
+    private static final int AUDIO_BUFFER_SIZE = 4*1024; // 4 kB
     private AudioFormat audioFormat;
     private ColorSpace colorSpace;
 
