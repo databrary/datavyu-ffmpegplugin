@@ -1,110 +1,165 @@
-# Datavyu ffmpegplugin
+# Datavyu ffmpegplugin [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ## Overview
 The Datavyu ffmpegplugin is a Java Media Player interfacing with ffmpeg [FFmpeg](https://github.com/FFmpeg/FFmpeg) 
 engine and [MPV Player](https://github.com/mpv-player/mpv) through Java Native Interface (JNI). It supports a 
 wide variety of video file formats, audio and video codecs for Windows Platform. Datavyu ffmpegplugin is primarily 
-used with [Datavyu](http://www.datavyu.org/) coding tool.
+used with [Datavyu](http://www.datavyu.org/) coding tool but could be embedded in any Java application.
 
-This repository holds the native c++/java code that composes the Datavyu ffmpegplugin plugin. It is structured like this:
-    
-   1. Java Code: Provides a Java wrapper for the native media players, this part relies on JNI
-    to control the players compiled using Visual Studio projects.
-   1. Cpp code: The Visual Studio Solution has five projects; these are:
-        1. FFmpegJavaMediaPlayer: Used to compile the dll for the FFmpeg Java media player that uses Java to display images 
-            and play sound from native buffers passed through JNI calls.
-        1. FFmpegSdlMediaPlayer: Used to compile the dll for the FFmpeg media player in java that uses the SDL 
-            framework to display images and play sound natively.
-        1. MpvMediaPlayer: Used to compile the dll for the MPV media player.
-        1. MediaPlayer: A Basic SDL and MPV player used for debugging and testing purposes.
-        1. MediaPlayerTest: Unit Test for the VS Solution.
-        1. VideoState: A shared project referenced in the projects listed above. 
-            
-To compile the dll's for these projects follow the directions under "Compiling Native Code".
+To learn how to use the plugin, please refer to the [Examples](##Examples) section below as well as the [Java](src/main/java/org/datavyu/plugins/ffmpeg/examples) programs. You may also find it useful to refer to the wiki pages to set up a development environment and contribute to the project.
 
-Note: Tee Java Media Player is the only one that provides access to video and audio buffers
-to be consumed in the Java Side. 
+## System Requirements
 
-## JNI bridge
-The design and development of this bridge follows the JavaFx project 
-closely. The javafx for project is [here](http://hg.openjdk.java.net/openjfx/jfx/rt):
+- An implementation of Java SE 8 or newer; [OpenJDK](http://openjdk.java.net/install/) or
+[Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/).
+- Windows 7 or later.
+- A somewhat capable CPU.
+- Only for the MPV player: A not too crappy GPU. mpv is not intended to be used with bad GPUs. 
 
-To compile the wrapper classes for the JNI bridge, use the following commands from the 
-root directory of the Datavyu ffmpegplugin project:
+## Downloads
+The latest version of the datavyu-ffmpegplugin could be downloaded using the following Maven dependency (inside the pom.xml file):
 
-    javah -d src/main/cpp -classpath src/main/java org.datavyu.plugins.ffmpeg.NativeMediaPlayer
-    javah -d src/main/cpp -classpath src/main/java org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer
-    javah -d src/main/cpp -classpath src/main/java org.datavyu.plugins.ffmpeg.FfmpegJavaMediaPlayer
-    javah -d src/main/cpp -classpath src/main/java org.datavyu.plugins.ffmpeg.MpvMediaPlayer
-      
-Note, from `NativeMediaPlayer.class` we only use the produced stub `org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h` to
-get the state codes.
+``` xml  
+    <dependency>
+        <groupId>datavyu</groupId>
+        <artifactId>ffmpeg-plugin</artifactId>
+        <version>0.18</version>
+    </dependency>
+```
 
+## Examples
+With the Datavyu-ffmpegplugin you can lunch and control multiple instance of one the provided media player from your java application. Creating an instantiating a Media Player is a matter of passing a file path and an AWT Container to the MediaPlayer interface.
 
-## Native Code
-The native code interfaces to the c API from ffmpeg using JNI.
+### JAVA Player
+The Java Player is using FFmpeg API's to decode and read the stream, the player will pull both Image and Audio Buffers from the native side and display the video in a Java container.
 
-### Compiling the Native Code for Windows using the Visual Studio
-1. Download and install Microsoft Visual Studio Community Edition [link](https://visualstudio.microsoft.com/vs/community/)
-1. Download the "Dev" 64-bit version of FFmpeg [link](https://ffmpeg.zeranoe.com/builds/)
-1. Download and install the Java 8 JDK from [Oracle Website](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
-1. Download the SDL2 development libraries for Visual C++ 32/64-bit [link](https://www.libsdl.org/download-2.0.php) and 
-    unzip them to a directory (we'll use `C:\SDL2`)
-1. Download the "Dev" version of MPV from [link](https://mpv.srsfckn.biz/) 
-1. Create a directory named `FFplay64` under `C:\` to hold the headers and libraries that will be used.
-1. Create `include` and `lib` directory into `C:\FFplay64`  
-1. Create a new directory called `SDL2` inside of the `C:\FFplay64\include` folder and then 
-    move all of the files in the `include` folder of the downloaded SDL2 library into the `C:\FFplay64\include\SDL2` 
-    folder and the files in the `lib\x64\` into `C:\FFplay64\lib`.
-1. Unzip the Dev MPV version to a directory (we will use `C:\MPV` as an example) and copy
-    the `include` folder from the downloaded zip into `C:\FFplay64\include\MPV`
-1. Unzip the Dev version of ffmpeg to a directory (we will use `C:\FFmpeg-dev` as an example) and move headers files 
-    from `C:\FFmpeg-dev\include` and `C:\FFmpeg-dev\lib` into `C:\FFplay64\include` and `C:\FFplay64\lib`, respectively.
-1. Clone this repository to a directory of your choosing, using the following git command:
+We provide a Maven dependency for the FFmpeg 4.0.2 version to be added to your `pom.xml` file
+``` xml  
+    <dependency>
+        <groupId>datavyu</groupId>
+        <artifactId>ffmpeg-libs</artifactId>
+        <version>0.5</version>
+    </dependency>
+```
 
-    
-        git clone https://github.com/databrary/datavyu-ffmpegplugin.git
-    
-1. In Visual Studio, open MediaPlayer.sln using `File -> Open -> Project/Solution` and navigating to `src\main\cpp` in the 
-    folder where you cloned this repository.
-1. Once the solution is open, we have to tell Visual Studio where to find the FFmpeg, Java, and SDL headers and libraries.
-	1. Click on "Solution Explorer" in the bottom of the left pane.
-	1. Right click the `FfmpegMediaPlayer` project under `Solution 'MediaPlayer'` and click `Properties`.
-	1. In the left pane under `Configuration Properties` click `VC++ Directories`.
-		1. Add a directory to `Include Directories` that points to `C:\FFplay64\include`.
-		1. Add a directory to `Include Directories` that points to `C:\Program Files\Java\jdk1.8.0_YOURVERSION\include`
-		1. Add a directory to `Include Directories` that points to `C:\Program Files\Java\jdk1.8.0_YOURVERSION\include\win32`
-		1. Add a directory to `Library Directories` that points to `C:\FFplay64\lib`.
-		1. Add a directory to `Library Directories` that points to `C:\Program Files\Java\jdk1.8.0_YOURVERSION\lib`.
-1. Right click on the `MediaPlayer` solution and hit build. The build should be a success and create new DLL's in your 
-    root directory of the Datavyu ffmpegplugin project.
+Here is a simple example on how to create and initialize the Java Player, all what you have to do is to be creative and create your own Java controller for the player
 
-### Testing Native Code
-To test the native code we use Google's C++ test framework [link](https://github.com/google/googletest).
+``` java
+    import org.datavyu.plugins.ffmpeg.*;
 
-All Unit tests are located in the MediaPlayerTest project, the tests run automatically when building the 
-Visual Studio solution (MediaPlayer.sln)
+    import javax.swing.*;
+    import java.io.File;
+    import java.net.URI;
 
-We strongly recommend building the VS solution instead of by project in order to test changes made to the different players. 
+    public class SimpleJavaMediaPlayer {
 
-## Java Code
-The java code provides [examples](src/main/java/org/datavyu/plugins/ffmpeg/examples) on how to interface with the 
-movie stream interface; especially on how to playback image frames and audio frames 
-through separate threads.
-    
-## Deployment
-To build process we use maven. Dependencies are described in a pom file. The package is build with
+        public static void main(String[] args) {
+            // Define the media file, add your file path here !
+            URI mediaPath = new File("PATH/TO/MOVIE/FILE").toURI();
 
-    mvn package
-    
-and deployed with 
+            // Create the media player using the constructor with URI and a Java Container
+            MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, new JDialog());
 
-    mvn deploy
-    
-Emergency deployment (not recommended): If tests are broken you can exclude them from the deployment
-through the command
+            // Initialize the player
+            mediaPlayer.init();
 
-    mvn deploy
+            // Start Playing
+            mediaPlayer.play();
+        }
+    }
+```
+Note that The Java Player is using the MediaPLayerData Interface in order to access the buffers sent through the JNI interface.
+
+### MPV Player
+The MPV Player is a fully functional media player providing an [API](https://github.com/mpv-player/mpv/blob/master/libmpv/client.h) to embed MPV in a window, in this repo we are providing and java bridge to control an MPV instance from Java. 
+
+We provide a Maven dependency for the MPV 0.29.1 version to be added to your `pom.xml` file in addition to the FFmpeg dependency mentioned above.
+``` xml  
+    <dependency>
+        <groupId>datavyu</groupId>
+        <artifactId>mpv-libs</artifactId>
+        <version>0.1</version>
+    </dependency>
+```
+Here is a simple example on how to create and initialize the [MPV Player](https://github.com/mpv-player/mpv), all what you have to do is to be creative and build your own Java controller for the player
+
+``` java
+    import org.datavyu.plugins.ffmpeg.MediaPlayer;
+    import org.datavyu.plugins.ffmpeg.MpvMediaPlayer;
+
+    import javax.swing.*;
+    import java.io.File;
+    import java.net.URI;
+
+    public class SimpleMpvMediaPlayer {
+
+        public static void main(String[] args) {
+            // Define the media file, add your file path here !
+            URI mediaPath = new File("PATH/TO/MOVIE/FILE").toURI();
+
+            // Create the media player using the constructor with URI
+            MediaPlayer mediaPlayer = new MpvMediaPlayer(mediaPath, new JDialog());
+
+            // Initialize the player
+            mediaPlayer.init();
+
+            // Start Playing
+            mediaPlayer.play();
+        }
+    }
+```
+Note that the MPV player will embed a native window in the Java Container passed as an argument to the `MpvMediaPlayer` constructor.
+
+### SDL Player
+The SDL player is relying on FFmpeg engine as the Java player does, but is using [Simple DirectMedia Layer SDL2 Framework](https://www.libsdl.org/) to Display Images and Play Audio natively.
+
+We provide a Maven dependency for the SDL2.0.8 version to be added to your `pom.xml` file in addition to the FFmpeg dependency mentioned above
+
+``` xml  
+    <dependency>
+        <groupId>datavyu</groupId>
+        <artifactId>sdl-libs</artifactId>
+        <version>0.1</version>
+    </dependency>
+```
+
+Here is a simple example on how to create and initialize an SDL Player, all what you have to do is to be creative and create your own Java controller for the player
+
+``` java
+    import org.datavyu.plugins.ffmpeg.*;
+
+    import java.io.File;
+    import java.net.URI;
+
+    public class SimpleSdlMediaPlayer {
+        public static void main(String[] args) {
+            // Define the media file, add your file path here !
+            URI mediaPath = new File("PATH/TO/MOVIE/FILE").toURI();
+
+            // Create the media player using the constructor with URI
+            MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
+
+            // Initialize the player
+            mediaPlayer.init();
+
+            // Start Playing
+            mediaPlayer.play();
+        }
+    }
+```
+
+A simple video controller example is used [here](src/main/java/org/datavyu/plugins/ffmpeg/examples/JMediaPlayerControlFrame.java) to control media players through key binding, and a more sophisticated controller is provided in [Datavyu](https://github.com/databrary/datavyu/blob/master/src/main/java/org/datavyu/views/VideoController.java).
+
+## Bug reports
+Please use the [issue tracker](https://github.com/databrary/datavyu-ffmpegplugin/issues) provided by GitHub to send us bug reports or feature requests. Follow the template's instructions or the issue will likely be ignored or closed as invalid.
+
+Using the bug tracker as place for simple questions is recommended.
+
+## Contributing
+Please refer to the [wiki](https://github.com/databrary/datavyu-ffmpegplugin/wiki) and read on how you could hep us to
+improve this tool.
+
+You can check the wiki or the issue tracker for ideas on what you could contribute with.
 
 ## Authors
 * Florian Raudies
