@@ -732,6 +732,8 @@ int VideoState::ReadPacketsToQueues() {
   int64_t stream_start_time;
   bool pkt_in_play_range = false;
   bool fast_seek = true;
+  int64_t image_seek_pts = 0;
+  int64_t audio_seek_pts = 0;
   int64_t pkt_ts;
   double image_time_base = av_q2d(p_image_stream_->time_base);
   double audio_time_base = av_q2d(p_audio_stream_->time_base);
@@ -797,6 +799,9 @@ int VideoState::ReadPacketsToQueues() {
       }
 
       fast_seek = seek_flags_ == kSeekFastFlag;
+      image_seek_pts = seek_time_ / (image_time_base * (double)AV_TIME_BASE);
+      audio_seek_pts = seek_time_ / (audio_time_base * (double)AV_TIME_BASE);
+
       if (fast_seek) {
         int64_t seek_min =
             seek_distance_ > 0 ? seek_time_ - seek_distance_ + 2 : INT64_MIN;
@@ -925,11 +930,11 @@ int VideoState::ReadPacketsToQueues() {
             ((double)max_duration_ / 1000000);
 
     if (pkt->stream_index == audio_stream_index_ && pkt_in_play_range &&
-        (fast_seek || pkt_ts >= seek_time_)) {
+        (fast_seek || pkt_ts >= audio_seek_pts)) {
       p_audio_packet_queue_->Put(pkt);
     } else if (pkt->stream_index == image_stream_index_ && pkt_in_play_range &&
                !(p_image_stream_->disposition & AV_DISPOSITION_ATTACHED_PIC) &&
-               (fast_seek || pkt_ts >= seek_time_)) {
+               (fast_seek || pkt_ts >= image_seek_pts)) {
       p_image_packet_queue_->Put(pkt);
     } else {
       av_packet_unref(pkt);

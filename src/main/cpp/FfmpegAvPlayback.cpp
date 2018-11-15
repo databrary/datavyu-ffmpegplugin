@@ -23,9 +23,8 @@ void FfmpegAvPlayback::TogglePause() {
   // Update the external clock
   pExtclk->SetTime(pExtclk->GetTime(), pExtclk->GetSerial());
 
-  // Flip the paused flag on the clocks
-  bool flipped = !p_video_state_->IsPaused();
-  p_video_state_->SetPaused(flipped);
+  // Flip the paused flag
+  p_video_state_->SetPaused(!p_video_state_->IsPaused());
 }
 
 FfmpegAvPlayback::FfmpegAvPlayback()
