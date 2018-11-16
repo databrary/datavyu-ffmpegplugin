@@ -5,6 +5,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.net.URI;
@@ -70,6 +71,17 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
      */
     public FfmpegJavaMediaPlayer(URI mediaPath, Container container) {
         this(mediaPath, container, AudioPlayerThread.getMonoFormat(),
+                ColorSpace.getInstance(ColorSpace.CS_sRGB));
+    }
+
+    /**
+     * Create an ffmpeg media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
+     */
+    public FfmpegJavaMediaPlayer(URI mediaPath) {
+        this(mediaPath, new JDialog(), AudioPlayerThread.getMonoFormat(),
                 ColorSpace.getInstance(ColorSpace.CS_sRGB));
     }
 
