@@ -191,7 +191,7 @@ out:
 int VideoState::GetImageFrame(AVFrame *frame) {
   int got_frame;
   Clock *p_master_clock = nullptr;
-  GetMasterClock(&p_master_clock);
+	GetMasterClock(&p_master_clock);
 
   if ((got_frame = p_image_decoder_->Decode(frame)) < 0) {
     return -1;
@@ -918,7 +918,7 @@ int VideoState::ReadPacketsToQueues() {
     stream_start_time =
         p_format_context->streams[pkt->stream_index]->start_time;
     pkt_ts = pkt->pts == AV_NOPTS_VALUE ? pkt->dts : pkt->pts;
-
+    
     pkt_in_play_range =
         max_duration_ == AV_NOPTS_VALUE ||
         (pkt_ts -
@@ -929,12 +929,10 @@ int VideoState::ReadPacketsToQueues() {
                     1000000 <=
             ((double)max_duration_ / 1000000);
 
-    if (pkt->stream_index == audio_stream_index_ && pkt_in_play_range &&
-        (fast_seek || pkt_ts >= audio_seek_pts)) {
+    if (pkt->stream_index == audio_stream_index_ && pkt_in_play_range) {
       p_audio_packet_queue_->Put(pkt);
     } else if (pkt->stream_index == image_stream_index_ && pkt_in_play_range &&
-               !(p_image_stream_->disposition & AV_DISPOSITION_ATTACHED_PIC) &&
-               (fast_seek || pkt_ts >= image_seek_pts)) {
+               !(p_image_stream_->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
       p_image_packet_queue_->Put(pkt);
     } else {
       av_packet_unref(pkt);
@@ -961,6 +959,11 @@ int VideoState::DecodeAudioPacketsToFrames() {
   int got_frame = 0;
   AVRational tb;
   int ret = 0;
+  int64_t audio_seek_pts;
+  bool fast_seek;
+  double audio_time_base = av_q2d(p_audio_stream_->time_base);
+  fast_seek = seek_flags_ == kSeekFastFlag;
+  audio_seek_pts = seek_time_ / (audio_time_base * (double)AV_TIME_BASE);
 
   if (!p_frame) {
     return AVERROR(ENOMEM);
@@ -969,6 +972,10 @@ int VideoState::DecodeAudioPacketsToFrames() {
   do {
     if ((got_frame = p_audio_decoder_->Decode(p_frame)) < 0) {
       goto the_end;
+    }
+
+    if (!fast_seek && p_frame->pts < audio_seek_pts) {
+      continue;
     }
 
     if (got_frame) {
@@ -1011,12 +1018,27 @@ int VideoState::DecodeImagePacketsToFrames() {
     return AVERROR(ENOMEM);
   }
 
+	bool fast_seek;
+  int64_t image_seek_pts;
+  double image_time_base = av_q2d(p_image_stream_->time_base);
+
   for (;;) {
     ret = GetImageFrame(p_frame);
-    if (ret < 0)
+    
+		if (ret < 0) {
       goto the_end;
-    if (!ret)
+    }
+
+    if (!ret) {
+      continue;    
+		}
+
+	  fast_seek = seek_flags_ == kSeekFastFlag;
+    image_seek_pts = seek_time_ / (image_time_base * (double)AV_TIME_BASE);
+		if (!fast_seek && p_frame->pts < image_seek_pts) {
+      av_frame_unref(p_frame);
       continue;
+    }
 
     av_log(NULL, AV_LOG_TRACE, " Video frame pts = %I64d, tb = %2.7f\n",
            p_frame->pts, av_q2d(time_base));
