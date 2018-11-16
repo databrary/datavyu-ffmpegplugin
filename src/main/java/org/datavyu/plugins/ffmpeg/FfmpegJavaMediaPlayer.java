@@ -1,5 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.util.NativeLibraryLoader;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
@@ -28,7 +29,20 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private ColorSpace colorSpace;
 
     static {
-        System.loadLibrary("FfmpegJavaMediaPlayer");
+        try {
+            System.out.println("Extracting libraries for ffmpeg.");
+            NativeLibraryLoader.extract("avutil-56");
+            NativeLibraryLoader.extract("swscale-5");
+            NativeLibraryLoader.extract("swresample-3");
+            NativeLibraryLoader.extract("avcodec-58");
+            NativeLibraryLoader.extract("avformat-58");
+            NativeLibraryLoader.extract("avfilter-7");
+            NativeLibraryLoader.extract("avdevice-58");
+            NativeLibraryLoader.extract("postproc-55");
+            NativeLibraryLoader.extractAndLoad("FfmpegJavaMediaPlayer");
+        } catch (Exception e) {
+            System.out.println("Failed loading ffmpeg libraries due to error: "+ e);
+        }
     }
 
     /**
