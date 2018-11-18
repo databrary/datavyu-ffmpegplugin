@@ -103,7 +103,15 @@ uint32_t FfmpegJavaAvPlaybackPipline::StepForward() {
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::StepBackward() { return ERROR_NONE; }
+uint32_t FfmpegJavaAvPlaybackPipline::StepBackward() { 
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+
+  p_java_playback_->StepToPreviousFrame();
+
+	return ERROR_NONE;
+}
 
 uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
   // TODO(fraudies): Stalling and finish need to be set from the video player

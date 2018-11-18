@@ -231,8 +231,15 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegStepForward(
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegStepBackward(
 	JNIEnv *env, jobject obj, jlong ref_media) {
-	// TODO(fraudies): Implement me here
-  return ERROR_NONE;
+  CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+  if (NULL == pMedia) return ERROR_MEDIA_NULL;
+
+  CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+  if (NULL == pPipeline) return ERROR_PIPELINE_NULL;
+
+  jint iRet = (jint)pPipeline->StepBackward();
+
+  return iRet;
 }
 
 /*

@@ -60,6 +60,9 @@ public:
 
 	static double kAvSyncThresholdMax;
   static int kEnableSeekByBytes;
+  static int kSeekPreciseFlag;
+  static int kSeekFastFlag;
+
   virtual ~VideoState();
 
   int ReadPacketsToQueues();
@@ -337,8 +340,6 @@ private:
 
   // get the current synchronization type
   AvSyncType GetMasterSyncType() const;
-  static int kSeekPreciseFlag;
-  static int kSeekFastFlag;
   static bool kEnableShowFormat;
   static bool kEnableFastDecode;
   static bool kEnableGeneratePts;

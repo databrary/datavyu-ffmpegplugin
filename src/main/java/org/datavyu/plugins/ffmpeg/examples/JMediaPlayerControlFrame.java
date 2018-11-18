@@ -1,7 +1,6 @@
 package org.datavyu.plugins.ffmpeg.examples;
 
 import org.datavyu.plugins.ffmpeg.MediaPlayer;
-import org.datavyu.plugins.ffmpeg.NativeMediaPlayer;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -43,14 +42,6 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
             case KeyEvent.VK_NUMPAD8:
                 System.out.println("Play");
                 mediaPlayer.play();
-                break;
-            case KeyEvent.VK_F:
-                System.out.println("Step forward by 1/fps");
-                int time = (int) (mediaPlayer.getPresentationTime() * 1000);
-                int delta = (int) (1000.0 / mediaPlayer.getFps());
-                int newTime = time + delta;
-                System.out.println("Time " + time + " msec" + " + delta of " + delta + " ms gives " + newTime + " ms");
-                mediaPlayer.seek(newTime/1000.0);
                 break;
             case KeyEvent.VK_S:
                 System.out.println("Step Forward");
