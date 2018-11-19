@@ -30,6 +30,70 @@
         </repository>
     </repositories>
 
+    <properties>
+        <!-- The msbuild.exe path is for Visual Studio 2017 Community version-->
+        <msbuild.exe>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe</msbuild.exe>
+        <msbuild.configuration>Release</msbuild.configuration>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>Windwows-x64</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                    <arch>!x86</arch>
+                </os>
+            </activation>
+            <dependencies>
+
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <configuration>
+                            <executable>${msbuild.exe}</executable>
+                            <workingDirectory>src/main/cpp</workingDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-with-msbuild</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>MediaPlayer.sln</argument>
+                                        <argument>/t:Clean</argument>
+                                        <argument>/p:Configuration=${msbuild.configuration}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-with-msbuild</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>/p:Configuration=${msbuild.configuration}</argument>
+                                        <argument>MediaPlayer.sln</argument>
+                                        <argument>/t:build</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
 
