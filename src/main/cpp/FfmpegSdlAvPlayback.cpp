@@ -652,9 +652,7 @@ void FfmpegSdlAvPlayback::Initialize() {
         p_video_state_->GetFrameAspectRatio());
   }
 
-  if (display_disabled_) {
-    p_video_state_->SetVideoDisabled(1);
-  }
+
   int flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
   if (p_video_state_->GetAudioDisabled()) {
     flags &= ~SDL_INIT_AUDIO;
