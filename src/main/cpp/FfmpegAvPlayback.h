@@ -13,6 +13,7 @@ public:
                                  const std::function<void()> &func);
   virtual void Play();
   virtual void Stop();
+  virtual void Pause();
   virtual void TogglePauseAndStopStep();
 
   inline virtual void Seek(int64_t time, int64_t difference,

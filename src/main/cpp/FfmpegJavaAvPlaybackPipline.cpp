@@ -198,7 +198,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetRate(float *p_rate) {
 // Note this function is available only when streaming through SDL pipline
 uint32_t FfmpegJavaAvPlaybackPipline::SetVolume(float volume) {
   if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
+    return ERROR_PLAYBACK_NULL;
 	}
 
   // TODO(fraudies): Implement this once ready

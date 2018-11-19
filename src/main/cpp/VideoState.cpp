@@ -1,4 +1,6 @@
 #include "VideoState.h"
+
+
 int VideoState::kSeekPreciseFlag = 0x01;
 int VideoState::kSeekFastFlag = 0x10;
 bool VideoState::kEnableShowFormat = true; // Show the format information
@@ -483,8 +485,12 @@ int VideoState::DecodeAudioFrame() {
   wanted_nb_samples = SynchronizeAudio(p_audio_frame->p_frame_->nb_samples);
 
   original_sample_rate = p_audio_frame->p_frame_->sample_rate;
-  // Change the sample_rate by the playback rate
+  // Change the sample_rate by the playback rate, mute for negative values
   p_audio_frame->p_frame_->sample_rate *= current_speed_;
+  //p_audio_frame->p_frame_->sample_rate *= fabs(current_speed_);
+  //if (signbit(current_speed_)) {
+  //  is_muted_ = true;
+	//}
 
   if (p_audio_frame->p_frame_->format != audio_parms_source_.sample_format_ ||
       dec_channel_layout != audio_parms_source_.channel_layout_ ||
@@ -744,8 +750,10 @@ int VideoState::ReadPacketsToQueues() {
   // inside the condition if it is also stopped
 
   for (;;) {
-    if (abort_request_)
+    if (abort_request_) {
       break;
+    }
+
     if (is_paused_ != last_is_paused_) {
       last_is_paused_ = is_paused_;
       if (is_paused_) {
@@ -762,12 +770,13 @@ int VideoState::ReadPacketsToQueues() {
         // remove?
         av_read_pause(p_format_context);
       } else {
-        av_read_play(p_format_context); // Start Playing a network based stream
+        av_read_play(p_format_context);  // Start Playing a network based stream
         if (player_state_callbacks[TO_PLAYING]) {
           player_state_callbacks[TO_PLAYING]();
         }
       }
     }
+
     if (was_stalled) {
       if (is_paused_) {
         if (is_stopped_) {
@@ -786,6 +795,7 @@ int VideoState::ReadPacketsToQueues() {
       }
       was_stalled = false;
     }
+
     if (speed_request_) {
       current_speed_ = requested_speed_;
       speed_request_ = false;
@@ -881,7 +891,7 @@ int VideoState::ReadPacketsToQueues() {
                                   p_image_packet_queue_->GetSerial() &&
                               p_image_frame_queue_->GetNumToDisplay() == 0))) {
       if (num_loop_ != 1 && (!num_loop_ || --num_loop_)) {
-        Seek(start_time_ != AV_NOPTS_VALUE ? start_time_ : 0, 0, false);
+        Seek(GetStartTime(), 0, false);
       }
     }
     ret = av_read_frame(p_format_context, pkt);
@@ -925,7 +935,7 @@ int VideoState::ReadPacketsToQueues() {
          (stream_start_time != AV_NOPTS_VALUE ? stream_start_time : 0)) *
                     av_q2d(p_format_context->streams[pkt->stream_index]
                                ->time_base) -
-                (double)(start_time_ != AV_NOPTS_VALUE ? start_time_ : 0) /
+                (double)GetStartTime() /
                     1000000 <=
             ((double)max_duration_ / 1000000);
 

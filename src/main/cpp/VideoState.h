@@ -179,19 +179,21 @@ public:
   void GetMasterClock(Clock **pp_clock) const;
 
   inline double GetFrameRate() const {
-    return p_image_stream_ ? this->frame_rate_ : 0;
+    return p_image_stream_ ? frame_rate_ : 0;
   }
 
   /* prepare a new audio buffer */
   void GetAudioCallback(uint8_t *stream, int len);
 
   inline bool GetAudioDisabled() const { return audio_disabled_; }
-  inline void SetAudioDisabled(bool disabled) { audio_disabled_ = disabled; }
 
   inline bool GetVideoDisabled() const { return video_disabled_; }
-  inline void SetVideoDisabled(bool disabled) { video_disabled_ = disabled; }
 
-private:
+	inline int64_t GetStartTime() const {
+    return start_time_ != AV_NOPTS_VALUE ? start_time_ : 0;
+  }
+
+ private:
   bool abort_request_;
   bool is_paused_; // TODO(fraudies): Check if this need to be atomic
   bool last_is_paused_;
@@ -222,8 +224,8 @@ private:
   double current_speed_;
   bool speed_request_;
 
-  bool audio_disabled_;
-  bool video_disabled_;
+  bool audio_disabled_; // only available at startup
+  bool video_disabled_; // only availabel at startup
 
   int last_video_stream_;
   int last_audio_stream_;
@@ -272,8 +274,8 @@ private:
   struct AudioParams audio_parms_source_;
   struct AudioParams audio_params_target_;
   int num_frame_drops_early_;
-  int64_t start_time_;   // initial start time
-  int64_t max_duration_; // initial play time
+  int64_t start_time_;   // initial start time, in AV_TIME_BASE units
+  int64_t max_duration_; // initial play time, in AV_TIME_BASE units
   int num_loop_;         // loop through the video
 
   inline int CompareAudioFormats(enum AVSampleFormat fmt1,

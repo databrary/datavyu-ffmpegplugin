@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg.examples;
 
 import org.datavyu.plugins.ffmpeg.MediaPlayer;
+import org.datavyu.plugins.ffmpeg.PlaybackRateController;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -33,7 +34,8 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
     public void keyPressed(KeyEvent e) {
         double currentTime, nextTime;
         float currentVolume, nextVolume;
-        float rate = mediaPlayer.getRate();
+        float currentRate, nextRate;
+        currentRate = mediaPlayer.getRate();
         switch (e.getKeyCode()) {
             case KeyEvent.VK_NUMPAD5:
                 System.out.println("Stop");
@@ -42,6 +44,10 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
             case KeyEvent.VK_NUMPAD8:
                 System.out.println("Play");
                 mediaPlayer.play();
+                break;
+            case KeyEvent.VK_NUMPAD2:
+                System.out.println("Pause");
+                mediaPlayer.pause();
                 break;
             case KeyEvent.VK_S:
                 System.out.println("Step Forward");
@@ -58,12 +64,14 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
                                     " Stream Duration = " + mediaPlayer.getDuration());
                 break;
             case KeyEvent.VK_NUMPAD6:
-                System.out.println("Change rate from " + rate + " to " + rate*2);
-                mediaPlayer.setRate(rate*2);
+                nextRate = PlaybackRateController.stepToFaster(currentRate);
+                System.out.println("Change rate from " + currentRate + " to " + nextRate);
+                mediaPlayer.setRate(nextRate);
                 break;
             case KeyEvent.VK_NUMPAD4:
-                System.out.println("Change rate from " + rate + " to " + rate/2);
-                mediaPlayer.setRate(rate/2);
+                nextRate = PlaybackRateController.stepToSlower(currentRate);
+                System.out.println("Change rate from " + currentRate + " to " + nextRate);
+                mediaPlayer.setRate(nextRate);
                 break;
             case KeyEvent.VK_SPACE:
                 System.out.println("Pause");

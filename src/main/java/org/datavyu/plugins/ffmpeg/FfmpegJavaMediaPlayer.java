@@ -221,9 +221,9 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
             if (volume == 0 ) {
                 audioPlayerThread.setMute(true);
             } else {
-                if(audioPlayerThread.isMute()){
+                if (audioPlayerThread.isMute()){
                     audioPlayerThread.setMute(false); // make sure that the audio is un muted
-                }else{
+                } else {
                     audioPlayerThread.setVolume(volume); // Update the volume of the SoundDataLine
                 }
                 mutedVolume = volume;

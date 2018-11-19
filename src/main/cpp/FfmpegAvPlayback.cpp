@@ -50,24 +50,42 @@ void FfmpegAvPlayback::Play() {
   }
 }
 
+void FfmpegAvPlayback::Pause() {
+  if (!p_video_state_->IsPaused()) {
+    TogglePauseAndStopStep();
+    p_video_state_->SetStopped(false);
+  }
+}
+
 // Stop and put the playback speed to 0x
-// Note the playback speed is not implemetnted yet
 void FfmpegAvPlayback::Stop() {
+
   if (!p_video_state_->IsPaused()) {
     TogglePauseAndStopStep();
     p_video_state_->SetStopped(true);
   }
+
+	// Seek to the start time
+  uint64_t start_time = p_video_state_->GetStartTime();
+  uint64_t current_time = (uint64_t) (p_video_state_->GetTime() * AV_TIME_BASE);
+  Seek(start_time, current_time - start_time, VideoState::kSeekPreciseFlag);
 }
 
-// pause and keep the playback speed.
-// Note the playback speed is not implemetnted yet
+// Pause and keep the playback speed
 void FfmpegAvPlayback::TogglePauseAndStopStep() {
   TogglePause();
   p_video_state_->SetStepping(false);
 }
 
 int FfmpegAvPlayback::SetSpeed(double speed) {
-  int err = p_video_state_->SetSpeed(speed);
+  int err = ERROR_NONE;
+	if (speed < 0) {
+		err = ERROR_FFMPEG_FILTER_NOT_FOUND; // no filter available for backward playback
+	} else if (speed < std::numeric_limits<double>::epsilon()) {
+    Pause();
+  } else {
+    err = p_video_state_->SetSpeed(speed);
+  }
   return err ? ERROR_FFMPEG_FILTER_NOT_FOUND : ERROR_NONE;
 }
 
