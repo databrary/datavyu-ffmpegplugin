@@ -59,16 +59,10 @@ void FfmpegAvPlayback::Pause() {
 
 // Stop and put the playback speed to 0x
 void FfmpegAvPlayback::Stop() {
-
   if (!p_video_state_->IsPaused()) {
     TogglePauseAndStopStep();
     p_video_state_->SetStopped(true);
   }
-
-	// Seek to the start time
-  uint64_t start_time = p_video_state_->GetStartTime();
-  uint64_t current_time = (uint64_t) (p_video_state_->GetTime() * AV_TIME_BASE);
-  Seek(start_time, current_time - start_time, VideoState::kSeekPreciseFlag);
 }
 
 // Pause and keep the playback speed
