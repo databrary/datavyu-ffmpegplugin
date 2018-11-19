@@ -171,8 +171,9 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
     if (!display_disabled_ && force_refresh_ && frame_queue->HasShownFrame()) {
       display = true;
       force_refresh_ = false;
-      if (p_video_state_->IsStepping() && !p_video_state_->IsPaused())
+      if (p_video_state_->IsStepping() && !p_video_state_->IsPaused()) {
         TogglePause();
+      }
     }
   }
 

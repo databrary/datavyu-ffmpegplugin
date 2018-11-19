@@ -13,6 +13,7 @@ public:
                                  const std::function<void()> &func);
   virtual void Play();
   virtual void Stop();
+  virtual void Pause();
   virtual void TogglePauseAndStopStep();
 
   inline virtual void Seek(int64_t time, int64_t difference,
@@ -49,6 +50,17 @@ public:
 
     p_video_state_->SetStepping(true);
   }
+
+	inline void StepToPreviousFrame() {
+		// Get the current time and seek if it is NaN
+    double time = GetTime();
+    if (!isnan(time)) {
+      double difference = -1.0 / GetFrameRate();
+      p_video_state_->Seek((int64_t)((time + difference) * AV_TIME_BASE),
+                           (int64_t)(difference * AV_TIME_BASE),
+                           VideoState::kSeekPreciseFlag);
+    }
+	}
 
 protected:
   // The video state used for this playback

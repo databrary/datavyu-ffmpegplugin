@@ -100,7 +100,13 @@ uint32_t FfmpegSdlAvPlaybackPipeline::StepForward() {
   return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::StepBackward() { return ERROR_NONE; }
+uint32_t FfmpegSdlAvPlaybackPipeline::StepBackward() {
+  if (p_sdl_playback_ == nullptr) return ERROR_PLAYBACK_NULL;
+
+  p_sdl_playback_->StepToPreviousFrame();
+
+  return ERROR_NONE;
+}
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
   // TODO(fraudies): Stalling and finish need to be set from the video player
@@ -111,13 +117,19 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  double pos = p_sdl_playback_->GetTime();
-  if (isnan(pos))
+  
+	double pos = p_sdl_playback_->GetTime();
+  
+	if (isnan(pos)) {
     pos = (double)p_sdl_playback_->GetSeekTime() / AV_TIME_BASE;
-  double incr = dSeekTime - pos;
+  }
+
   if (p_sdl_playback_->GetStartTime() != AV_NOPTS_VALUE &&
-      dSeekTime < p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE)
+      dSeekTime < p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE) {
     dSeekTime = p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE;
+  }
+
+  double incr = dSeekTime - pos;
 
   p_sdl_playback_->Seek((int64_t)(dSeekTime * AV_TIME_BASE),
                      (int64_t)(incr * AV_TIME_BASE), seek_flags);

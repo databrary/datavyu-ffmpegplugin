@@ -396,8 +396,7 @@ public class TestMediaPlayerData {
 
             sleep(SLEEP_DURATION_IN_MILLIS, false);
             now = mediaPlayer.getPresentationTime();
-            if (playerType == PlayerType.JAVA_JDIALOG
-                    || playerType == PlayerType.SDL) {
+            if (playerType == PlayerType.JAVA_JDIALOG) {
                 LOGGER.info(" Requested Time " + randomTime + " sec, current time " + now +" sec");
                 softAssert.assertTrue(Math.abs(now - randomTime) <= SEEK_TOLERANCE_IN_SECONDS);
             } else {
