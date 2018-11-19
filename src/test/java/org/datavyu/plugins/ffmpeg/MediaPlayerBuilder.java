@@ -38,6 +38,7 @@ public class MediaPlayerBuilder {
     private static List<Object[]> sdlProviderList = new LinkedList<>();
     private static List<Object[]> ffmpegProviderList = new LinkedList<>();
     private static List<Object[]> mpvJavaProviderList = new LinkedList<>();
+    private static List<Object[]> mpvSdlProviderList = new LinkedList<>();
 
     // Data Provider Arrays
     private static Object[][] playersProvider;
@@ -46,6 +47,7 @@ public class MediaPlayerBuilder {
     private static Object[][] sdlProvider;
     private static Object[][] ffmpegProvider;
     private static Object[][] mpvJavaProvider;
+    private static Object[][] mpvSdlProvider;
 
     // This movie is about 30MB has 640 x 360 pixels @ 29.97 fps with 2.5 min play time
     static final String TEST_MOVIE_PATH = "http://www.html5videoplayer.net/videos/toystory.mp4";
@@ -101,6 +103,7 @@ public class MediaPlayerBuilder {
                 Object[] player = new Object[] {movie, type};
                 if(type == PlayerType.SDL){
                     sdlProviderList.add(player);
+                    mpvSdlProviderList.add(player);
                     ffmpegProviderList.add(player);
                 }
                 if(type == PlayerType.JAVA_JDIALOG) {
@@ -111,6 +114,7 @@ public class MediaPlayerBuilder {
                 if(type == PlayerType.MPV) {
                     mpvProviderList.add(player);
                     mpvJavaProviderList.add(player);
+                    mpvSdlProviderList.add(player);
                 }
                 playersProviderList.add(player);
             }
@@ -118,6 +122,7 @@ public class MediaPlayerBuilder {
         playersProvider = playersProviderList.stream().toArray(Object[][]:: new);
         ffmpegProvider = ffmpegProviderList.stream().toArray(Object[][]:: new);
         mpvJavaProvider = mpvJavaProviderList.stream().toArray(Object[][]:: new);
+        mpvSdlProvider = mpvSdlProviderList.stream().toArray(Object[][]:: new);
         mpvProvider = mpvProviderList.stream().toArray(Object[][]:: new);
         sdlProvider = sdlProviderList.stream().toArray(Object[][]:: new);
         javaProvider = javaProviderList.stream().toArray(Object[][]:: new);
@@ -148,7 +153,7 @@ public class MediaPlayerBuilder {
         if(testName.contains("TestPlaybackRate")){
             return mpvProvider;
         } else if(testName.contains("TestMediaPlayerData")){
-            return playersProvider;
+            return mpvProvider;
         }
 
         return playersProvider;
