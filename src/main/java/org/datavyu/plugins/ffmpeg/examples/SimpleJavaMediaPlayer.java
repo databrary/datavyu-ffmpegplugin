@@ -15,6 +15,13 @@ public class SimpleJavaMediaPlayer {
         // Create the media player using the constructor with File
         MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, new JDialog());
 
+        mediaPlayer.addMediaErrorListener(new MediaErrorListener() {
+            @Override
+            public void onError(Object source, int errorCode, String message) {
+                System.err.println(errorCode + ": " + message);
+            }
+        });
+
         // Initialize the player
         mediaPlayer.init();
 
