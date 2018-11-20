@@ -5,6 +5,7 @@ import sun.awt.windows.WComponentPeer;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
+import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
 
@@ -34,9 +35,26 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     private PlayerStateListener stateListener;
 
+    /**
+     * Create an MPV media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
+     * @param container The container to display the frame in
+     */
     public MpvMediaPlayer(URI mediaPath, Container container) {
         super(mediaPath);
         this.container = container;
+    }
+
+    /**
+     * Create an MPV media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
+     */
+    public MpvMediaPlayer(URI mediaPath) {
+        this(mediaPath, new JDialog());
     }
 
     @Override
