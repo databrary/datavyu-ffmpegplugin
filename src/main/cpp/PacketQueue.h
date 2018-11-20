@@ -1,95 +1,82 @@
-#include <mutex>
 #include <condition_variable>
+#include <mutex>
 
 extern "C" {
-	#include <libavcodec/avcodec.h> // codecs
-	#include <libavutil/mem.h> // memory
+#include <libavcodec/avcodec.h> // codecs
+#include <libavutil/mem.h>      // memory
 }
 
 #ifndef PACKET_QUEUE_H_
 #define PACKET_QUEUE_H_
 
-/**
- * Port of the packet queue from ffplay.c into c++
- *
- * Replaces the SDL mutex through c++ std mutex/condition variable
- */
+// Port of the packet queue from ffplay.c into c++
+//
+// Replaces the SDL mutex through c++ std mutex/condition variable
 class PacketQueue {
-    private:
-        // This list maintains the next for the queue
-        typedef struct MyAVPacketList {
-            AVPacket pkt;
-            struct MyAVPacketList *next;
-            int serial;
-        } MyAVPacketList;
+ public:
+  AVPacket
+      flush_packet_;  // TODO(fraudies): better use one object for all queues
 
-        int abort_request;
-        int serial;
-        int nb_packets;
+  PacketQueue();
 
-        MyAVPacketList *first_pkt, *last_pkt;
-        int size;
-		int64_t duration;
-        int condition;
-        std::mutex mutex;
-        std::condition_variable cond;
+  virtual ~PacketQueue() {
+    Flush();
+    av_packet_unref(&flush_packet_);
+    av_freep(&flush_packet_);
+  }
 
-		int _put(AVPacket *pkt);
+  void Flush();
 
-    public:
-        AVPacket flush_pkt; // TODO(fraudies): better use one object for all queues
+  void Abort();
 
-		PacketQueue();
+  inline bool IsAbortRequested() const { return is_abort_requested_; }
 
-		// Should we detroy the mutex and condition_variabe also ?
-        virtual ~PacketQueue() {
-            flush();
-            av_packet_unref(&flush_pkt);
-            av_freep(&flush_pkt);
-        }
+  inline void GetPtrSerial(int **pp_serial) { *pp_serial = &serial_; }
 
-		void flush();
+  inline int GetSerial() const { return serial_; }
 
-		void abort();
+  inline int GetSize() const { return size_; }
 
-		inline int is_abort_request() const {
-			return abort_request;
-		}
+  inline int getNumberOfPackets() const { return num_packets_; }
 
-		inline int* get_p_serial() { 
-			return &serial;
-		}
+  inline int64_t GetDuration() const { return duration_; }
 
-		inline int get_serial() const {
-			return serial;
-		}
+  void Start();
 
-		inline int get_size() const {
-			return size;
-		}
+  int Put(AVPacket *p_packet);  // Must remain a pointer to cleanup package
 
-		inline int get_nb_packets() const {
-			return nb_packets;
-		}
+  int PutNullPacket(int stream_index);
 
-		inline int64_t get_duration() const {
-			return duration;
-		}
+  int PutFlushPacket();
 
-		void start();
+  inline bool IsFlushPacket(const AVPacket &pkt) const {
+    return pkt.data == flush_packet_.data;
+  }
 
-		int put(AVPacket *pkt);
+  /* return < 0 if aborted, 0 if no packet and > 0 if packet.  */
+  int Get(AVPacket *pkt, int block, int *serial);
 
-		int put_null_packet(int stream_index);
+private:
+  // This list maintains the next for the queue
+  typedef struct MyAVPacketList {
+    AVPacket packet_;
+    struct MyAVPacketList *p_next_;
+    int serial_;
+  } MyAVPacketList;
 
-		int put_flush_packet();
+  bool is_abort_requested_;
+  int serial_;
+  int num_packets_;
 
-        inline bool is_flush_packet(const AVPacket & pkt) const{
-            return pkt.data == flush_pkt.data;
-        }
+  MyAVPacketList *p_first_packet_;
+  MyAVPacketList *p_last_packet_;
+  int size_;
+  int64_t duration_;
+  bool put_condition_;
+  std::mutex mutex_;
+  std::condition_variable condition_;
 
-        /* return < 0 if aborted, 0 if no packet and > 0 if packet.  */
-		int get(AVPacket *pkt, int block, int *serial);
+  int _Put(AVPacket *p_packet);
 };
 
 #endif PACKET_QUEUE_H_

@@ -1,5 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.util.NativeLibraryLoader;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URI;
@@ -14,7 +15,21 @@ import java.net.URI;
 public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     static {
-        System.loadLibrary("FfmpegSdlMediaPlayer");
+        try {
+            System.out.println("Extracting libraries for ffmpeg and SDL2.");
+            NativeLibraryLoader.extract("avutil-56");
+            NativeLibraryLoader.extract("swscale-5");
+            NativeLibraryLoader.extract("swresample-3");
+            NativeLibraryLoader.extract("avcodec-58");
+            NativeLibraryLoader.extract("avformat-58");
+            NativeLibraryLoader.extract("avfilter-7");
+            NativeLibraryLoader.extract("avdevice-58");
+            NativeLibraryLoader.extract("postproc-55");
+            NativeLibraryLoader.extract("SDL2");
+            NativeLibraryLoader.extractAndLoad("FfmpegSdlMediaPlayer");
+        } catch (Exception e) {
+            System.out.println("Failed loading libraries due to error: "+ e);
+        }
     }
 
     public FfmpegSdlMediaPlayer(URI mediaPath) {
@@ -86,7 +101,10 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerStepBackward() throws MediaException {
-        throw new NotImplementedException();
+        int rc = ffmpegStepBackward(getNativeMediaRef());
+        if (0 != rc) {
+            throwMediaErrorException(rc, null);
+        }
     }
 
     @Override
@@ -198,8 +216,8 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     }
 
     @Override
-    protected void playerSeek(double streamTime) throws MediaException {
-        int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
+    protected void playerSeek(double streamTime, int flags) throws MediaException {
+        int rc = ffmpegSeek(getNativeMediaRef(), streamTime, flags);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -207,12 +225,22 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     public int getImageWidth() {
-        throw new UnsupportedOperationException();
+        int[] width = new int[1];
+        int rc = ffmpegGetImageWidth(getNativeMediaRef(), width);
+        if (rc != 0) {
+            throwMediaErrorException(rc, null);
+        }
+        return width[0];
     }
 
     @Override
     public int getImageHeight() {
-        throw new UnsupportedOperationException();
+        int[] height = new int[1];
+        int rc = ffmpegGetImageHeight(getNativeMediaRef(), height);
+        if (rc != 0) {
+            throwMediaErrorException(rc, null);
+        }
+        return height[0];
     }
 
     @Override
@@ -232,6 +260,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     protected native int ffmpegPause(long refNativeMedia);
     protected native int ffmpegStop(long refNativeMedia);
     protected native int ffmpegStepForward(long refNativeMedia);
+    protected native int ffmpegStepBackward(long refNativeMedia);
     protected native int ffmpegFinish(long refNativeMedia);
     protected native int ffmpegGetRate(long refNativeMedia, float[] rate);
     protected native int ffmpegSetRate(long refNativeMedia, float rate);
@@ -240,7 +269,9 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     protected native int ffmpegGetBalance(long refNativeMedia, float[] balance);
     protected native int ffmpegSetBalance(long refNativeMedia, float balance);
     protected native int ffmpegGetDuration(long refNativeMedia, double[] duration);
-    protected native int ffmpegSeek(long refNativeMedia, double streamTime);
+    protected native int ffmpegSeek(long refNativeMedia, double streamTime, int flags);
+    protected native int ffmpegGetImageWidth(long refNativeMedia, int[] width);
+    protected native int ffmpegGetImageHeight(long refNativeMedia, int[] height);
     protected native int ffmpegGetVolume(long refNativeMedia, float[] volume);
     protected native int ffmpegSetVolume(long refNativeMedia, float volume);
 }

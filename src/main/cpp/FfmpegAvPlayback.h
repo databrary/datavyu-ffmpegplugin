@@ -4,42 +4,82 @@
 #include "VideoState.h"
 
 class FfmpegAvPlayback {
-protected:
-	VideoState* pVideoState;
-	double frame_timer;
-
-	int width, height;
-
-	int force_refresh;
-	int display_disable;
-	
-	int frame_drops_late;
-	double rdftspeed;
-	double last_vis_time;
-
-	void stream_toggle_pause();
-	int get_frame_timer();
-	void set_frame_timer(int newFrame_timer);
-	void set_force_refresh(int refresh);
-	double vp_duration(Frame *vp, Frame *nextvp, double max_frame_duration);
 public:
-	FfmpegAvPlayback();
-	int Init(const char *filename, AVInputFormat *iformat, int audio_buffer_size);
-	virtual ~FfmpegAvPlayback();
-	virtual void set_player_state_callback_func(PlayerStateCallback callback, const std::function<void()>& func);
-	virtual void play();
-	virtual void stop();
-	virtual void toggle_pause();
-	virtual void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
-	virtual double get_duration() const;
-	virtual double get_stream_time() const;
-	virtual double get_fps() const;
-	virtual int set_rate(double rate);
-	virtual double get_rate() const;
-	int64_t get_start_time() const;
-	int64_t get_seek_pos() const;
-	void step_to_next_frame();
-};
+  FfmpegAvPlayback();
+  int OpenVideo(const char *filename, AVInputFormat *p_input_format,
+                int audio_buffer_size);
+  virtual void
+  SetPlayerStateCallbackFunction(VideoState::PlayerStateCallback callback,
+                                 const std::function<void()> &func);
+  virtual void Play();
+  virtual void Stop();
+  virtual void TogglePauseAndStopStep();
 
+  inline virtual void Seek(int64_t time, int64_t difference,
+                           int seek_flags) {
+    p_video_state_->Seek(time, difference, seek_flags);
+  }
+  inline virtual double GetDuration() const {
+    return p_video_state_->GetDuration();
+  }
+  inline virtual double GetTime() const { return p_video_state_->GetTime(); }
+  inline virtual double GetFrameRate() const {
+    return p_video_state_->GetFrameRate();
+  }
+
+  // Set the playback speed
+  virtual int SetSpeed(double speed);
+
+  // Get the playback speed
+  inline virtual double GetSpeed() const { return p_video_state_->GetSpeed(); }
+
+  inline int64_t GetStartTime() const {
+    AVFormatContext *p_format_context = nullptr;
+    p_video_state_->GetFormatContext(&p_format_context);
+    return p_format_context->start_time;
+  }
+
+  inline int64_t GetSeekTime() const { return p_video_state_->GetSeekTime(); }
+
+  inline void StepToNextFrame() {
+    // if the stream is paused unpause it, then step
+    if (p_video_state_->IsPaused()) {
+      TogglePause();
+    }
+
+    p_video_state_->SetStepping(true);
+  }
+
+protected:
+  // The video state used for this playback
+  VideoState *p_video_state_;
+
+  // Time when the last frame was shown
+  double frame_last_shown_time_;
+
+  int frame_width_;
+  int frame_height_;
+
+  // Force a refresh of the display
+  bool force_refresh_;
+
+  // Disable the display
+  bool display_disabled_;
+
+  // Counts the number of early frame drops
+  int num_frame_drops_late_;
+
+  // Enable the showing of the status
+  static bool kEnableShowStatus;
+
+  void TogglePause();
+  inline double GetFrameLastShownTime() const { return frame_last_shown_time_; }
+  inline void SetFrameLastShownTime(double time) {
+    frame_last_shown_time_ = time;
+  }
+  inline void SetForceReferesh(bool refresh) { force_refresh_ = refresh; }
+  double ComputeFrameDuration(Frame *vp, Frame *nextvp,
+                              double max_frame_duration);
+};
 
 #endif // FFMPEGAVPLAYBACK_H_

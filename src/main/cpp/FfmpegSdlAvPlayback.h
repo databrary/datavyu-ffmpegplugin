@@ -1,178 +1,193 @@
 #ifndef FFMPEGSDLAVPLAYBACK_H_
 #define FFMPEGSDLAVPLAYBACK_H_
 
-#include <atomic>
-#include "VideoState.h"
 #include "FfmpegAVPlayback.h"
+#include "VideoState.h"
+#include <atomic>
 
 extern "C" {
-	#include <SDL2/SDL.h>
-	#include <SDL2/SDL_thread.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_thread.h>
 }
 
-/* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
-#define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
-
-/* AV sync correction is done if above the maximum AV sync threshold */
-#define AV_SYNC_THRESHOLD_MAX 0.1
-
-/* Step size for volume control in dB */
-#define SDL_VOLUME_STEP (0.75)
-
-/* polls for possible required screen refresh at least this often, should be less than 1/fps */
-#define REFRESH_RATE 0.01
-
-#define USE_ONEPASS_SUBTITLE_RENDER 1
-
-#define CURSOR_HIDE_DELAY 1000000
-
-/* NOTE: the size must be big enough to compensate the hardware audio buffersize size */
-/* TODO: We assume that a decoded and resampled frame fits into this buffer */
-#define SAMPLE_ARRAY_SIZE (8 * 65536)
-
-#define FF_QUIT_EVENT    (SDL_USEREVENT + 2)
-
-const char program_name[] = "Datavyu-ffmpeg-plugin";
-
-static const char *window_title;
-static int borderless;
-static int64_t cursor_last_shown;
-static int cursor_hidden = 0;
-static int exit_on_keydown;
-static int exit_on_mousedown;
-
-static int default_width = 640;
-static int default_height = 480;
-static unsigned sws_flags = SWS_BICUBIC;
-
-static int16_t sample_array[SAMPLE_ARRAY_SIZE];
-static int sample_array_index;
-
-static const struct TextureFormatEntry {
-	enum AVPixelFormat format;
-	int texture_fmt;
-} sdl_texture_format_map[] = {
-	{ AV_PIX_FMT_RGB8,           SDL_PIXELFORMAT_RGB332 },
-	{ AV_PIX_FMT_RGB444,         SDL_PIXELFORMAT_RGB444 },
-	{ AV_PIX_FMT_RGB555,         SDL_PIXELFORMAT_RGB555 },
-	{ AV_PIX_FMT_BGR555,         SDL_PIXELFORMAT_BGR555 },
-	{ AV_PIX_FMT_RGB565,         SDL_PIXELFORMAT_RGB565 },
-	{ AV_PIX_FMT_BGR565,         SDL_PIXELFORMAT_BGR565 },
-	{ AV_PIX_FMT_RGB24,          SDL_PIXELFORMAT_RGB24 },
-	{ AV_PIX_FMT_BGR24,          SDL_PIXELFORMAT_BGR24 },
-	{ AV_PIX_FMT_0RGB32,         SDL_PIXELFORMAT_RGB888 },
-	{ AV_PIX_FMT_0BGR32,         SDL_PIXELFORMAT_BGR888 },
-	{ AV_PIX_FMT_NE(RGB0, 0BGR), SDL_PIXELFORMAT_RGBX8888 },
-	{ AV_PIX_FMT_NE(BGR0, 0RGB), SDL_PIXELFORMAT_BGRX8888 },
-	{ AV_PIX_FMT_RGB32,          SDL_PIXELFORMAT_ARGB8888 },
-	{ AV_PIX_FMT_RGB32_1,        SDL_PIXELFORMAT_RGBA8888 },
-	{ AV_PIX_FMT_BGR32,          SDL_PIXELFORMAT_ABGR8888 },
-	{ AV_PIX_FMT_BGR32_1,        SDL_PIXELFORMAT_BGRA8888 },
-	{ AV_PIX_FMT_YUV420P,        SDL_PIXELFORMAT_IYUV },
-	{ AV_PIX_FMT_YUYV422,        SDL_PIXELFORMAT_YUY2 },
-	{ AV_PIX_FMT_UYVY422,        SDL_PIXELFORMAT_UYVY },
-	{ AV_PIX_FMT_NONE,           SDL_PIXELFORMAT_UNKNOWN },
-};
-
-static SDL_RendererInfo renderer_info = { 0 };
-
+#define FF_QUIT_EVENT (SDL_USEREVENT + 2)
 
 class FfmpegSdlAvPlayback : public FfmpegAvPlayback {
+public:
+  FfmpegSdlAvPlayback(int startup_volume = SDL_MIX_MAXVOLUME);
+  ~FfmpegSdlAvPlayback();
+
+  int OpenVideo(const char *filename, AVInputFormat *iformat);
+
+  inline void GetVideoState(VideoState **pp_video_state) const {
+    *pp_video_state = p_video_state_;
+  }
+
+  inline void PauseAudio() { SDL_PauseAudioDevice(audio_dev_, 0); }
+
+  // Toggle full screen mode
+  inline void ToggleFullscreen() {
+    enabled_full_screen_ = !enabled_full_screen_;
+    SDL_SetWindowFullscreen(
+        p_window_, enabled_full_screen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+  }
+
+  // Get the volume
+  inline double GetVolume() const { return audio_volume_; }
+
+  // Get Image Width
+  int GetImageWidth() const;
+
+  // Get image Height
+  int GetImageHeight() const;
+
+  // Get the volume step in Decibel
+  int GetVolumeStep() const;
+
+  // Step the volume in decibel in the desired direction
+  void StepVolume(double stepInDecibel);
+
+  // Set the volume
+  void SetVolume(double volume);
+
+  // Initializes the SDL ecosystem and starts the display loop
+  int InitializeAndStartDisplayLoop();
+
+  // Initializes the SDL ecosystem and starts the event loop to process
+  // events from the SDL window
+  static void InitializeAndListenForEvents(FfmpegSdlAvPlayback *p_player);
 
 private:
-	SDL_Window* window;
-	SDL_Renderer* renderer;
-	SDL_AudioDeviceID audio_dev = 0;
-	int ytop, xleft;
-	int xpos;
+  SDL_Window *p_window_;
+  SDL_Renderer *p_renderer_;
+  SDL_AudioDeviceID audio_dev_ = 0;
+  int x_left_;
+  int y_top_;
+  int x_pos_;
 
-	struct SwsContext *img_convert_ctx;
-	struct SwsContext *sub_convert_ctx;
+  struct SwsContext *p_img_convert_ctx_;
 
-	SDL_Texture *vis_texture;
-	SDL_Texture *sub_texture;
-	SDL_Texture *vid_texture;
+  SDL_Texture *p_vis_texture_;
+  SDL_Texture *p_vid_texture_;
 
-	int last_i_start;
+  int screen_width_;
+  int screen_height_;
+  int enabled_full_screen_;
 
-	int screen_width;
-	int screen_height;
-	int is_full_screen;
+  int audio_volume_;
 
-	int audio_volume;
+  int64_t cursor_last_shown_time_;
+  bool is_cursor_hidden_;
+  char *p_window_title_;
+  SDL_RendererInfo renderer_info_;
+  std::atomic<bool> is_stopped_ = false;
+  std::thread *p_display_thread_id_ = nullptr;
 
-	inline int compute_mod(int a, int b);
+  static int kDefaultWidth;
+  static int kDefaultHeight;
+  static unsigned kSwsFlags;
+  static const char *kDefaultWindowTitle; // assumed if the file can't be opened
+  static int kWindowResizable;
+  static int kAudioMinBufferSize;
+  static int kAudioMaxCallbackPerSec;
+  static double kVolumeStepInDecibel;
+  static double kRefreshRate;
+  static int kCursorHideDelayInMillis;
 
-	inline void fill_rectangle(int x, int y, int w, int h);
+  struct TextureFormatEntry {
+    enum AVPixelFormat format;
+    int texture_fmt;
+  };
 
-	static void calculate_display_rect(SDL_Rect *rect,
-		int scr_xleft, int scr_ytop, int scr_width, int scr_height,
-		int pic_width, int pic_height, AVRational pic_sar);
+  inline void GetSize(int *p_width, int *p_height) const {
+    *p_width = frame_width_;
+    *p_height = frame_height_;
+  }
 
-	std::atomic<bool> stopped = false;
-	std::thread* display_tid = nullptr;
+  void SetSize(int width, int height);
 
-	void InitSdl(); // This is private because it has to be called on the same thread as the looping
-	int video_open(const char* filename);
-	void closeAudioDevice();
-	void video_image_display();
-	void stop_display_loop();
-public:
-	FfmpegSdlAvPlayback(int startup_volume = SDL_MIX_MAXVOLUME);
-	~FfmpegSdlAvPlayback();
+  inline void SetCursorLastShownTime(int64_t time) {
+    int64_t cursor_last_shown_time_ = time;
+  }
 
-	int Init(const char *filename, AVInputFormat *iformat);
+  inline void SetIsCursorHidden(bool hidden) { is_cursor_hidden_ = hidden; }
 
-	VideoState* get_VideoState();
+  inline bool IsCursorHidden() const { return is_cursor_hidden_; }
 
-	int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate,
-		struct AudioParams *audio_hw_params);
+  inline bool IsScreenSizeSet() const {
+    return screen_width_ != 0 && screen_height_ != 0;
+  }
 
-	static void set_default_window_size(int width, int height, AVRational sar);
+  inline static int ComputeCustomModulus(int a, int b) {
+    return a < 0 ? a % b + b : a % b;
+  }
 
-	void pauseAudioDevice();
+  inline void FillRectangle(int x, int y, int w, int h) {
+    SDL_Rect rect = {x, y, w, h};
+    if (w >= 0 && h >= 0) {
+      SDL_RenderFillRect(p_renderer_, &rect);
+    }
+  }
 
-	/* copy samples for viewing in editor window */
-	static void update_sample_display(short *samples, int samples_size);
+  // Calculates the rectangle to display taking into account the source position
+  // and the frame width, height, and aspect ratio
+  static void CalculateRectangleForDisplay(SDL_Rect *rect, int scr_xleft,
+                                           int scr_ytop, int scr_width,
+                                           int scr_height, int frame_width,
+                                           int frame_height,
+                                           AVRational frame_aspect_ratio);
 
-	void toggle_full_screen();
+  inline void StopDisplayLoop() { is_stopped_ = true; }
 
-	int upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsContext **img_convert_ctx);
+  // Initialize the SDL ecosystem
+  void Initialize();
 
-	static void get_sdl_pix_fmt_and_blendmode(int format, Uint32 *sdl_pix_fmt, SDL_BlendMode *sdl_blendmode);
+  int OpenWindow(const char *window_name);
+  inline void CloseAudio() { SDL_CloseAudioDevice(audio_dev_); }
 
-	int realloc_texture(SDL_Texture **texture, Uint32 new_format, int new_width, 
-						int new_height, SDL_BlendMode blendmode, int init_texture);
+  // helper method to DisplayVideoFrame
+  void GetAndDisplayVideoFrame();
 
-	/* display the current picture, if any */
-	void video_display();
+  // display the current picture, if any
+  void DisplayVideoFrame();
 
-	int get_audio_volume() const;
+  static const TextureFormatEntry kTextureFormatMap[];
 
-	void update_volume(int sign, double step);
+  int UploadTexture(SDL_Texture **tex, AVFrame *frame,
+                    struct SwsContext **img_convert_ctx);
 
-	// Function Called from the event loop
-	void refresh_loop_wait_event(SDL_Event *event);
+  int OpenAudio(int64_t wanted_channel_layout, int wanted_nb_channels,
+                int wanted_sample_rate, struct AudioParams *audio_hw_params);
 
-	/* called to display each frame */
-	void video_refresh(double *remaining_time);
+  static void SetDefaultWindowSize(int width, int height, AVRational sar);
 
-	void destroy();
+  static void GetPixelFormatAndBlendmode(int format, Uint32 *sdl_pix_fmt,
+                                         SDL_BlendMode *sdl_blendmode);
 
-	void init_and_event_loop();
+  int ReallocateTexture(SDL_Texture **texture, Uint32 new_format, int new_width,
+                        int new_height, SDL_BlendMode blendmode,
+                        bool init_texture);
 
-	int init_and_start_display_loop();
+  // called to display each frame
+  void UpdateFrame(double *remaining_time);
+
+  // Function Called from the event loop
+  void DisplayAndProcessEvent(SDL_Event *event);
 };
 
-static void sdl_audio_callback_bridge(void* vs, Uint8 *stream, int len) {
-	FfmpegSdlAvPlayback* pFfmpegSdlAvPlayback = static_cast<FfmpegSdlAvPlayback*>(vs);
-	VideoState* pVideoState = pFfmpegSdlAvPlayback->get_VideoState();
-	pVideoState->audio_callback(stream, len);
+static void sdl_audio_callback_bridge(void *vs, Uint8 *stream, int len) {
+  FfmpegSdlAvPlayback *pFfmpegSdlAvPlayback =
+      static_cast<FfmpegSdlAvPlayback *>(vs);
+  VideoState *p_video_state = nullptr;
+  pFfmpegSdlAvPlayback->GetVideoState(&p_video_state);
+  p_video_state->GetAudioCallback(stream, len);
 
-	// Note, the mixer can work inplace using the same stream as src and dest, see source code here
-	// https://github.com/davidsiaw/SDL2/blob/c315c99d46f89ef8dbb1b4eeab0fe38ea8a8b6c5/src/audio/SDL_mixer.c
-	if (!pVideoState->get_muted() && stream)
-		SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len, pFfmpegSdlAvPlayback->get_audio_volume());
+  // Note, the mixer can work inplace using the same stream as src and dest, see
+  // source code here
+  // https://github.com/davidsiaw/SDL2/blob/c315c99d46f89ef8dbb1b4eeab0fe38ea8a8b6c5/src/audio/SDL_mixer.c
+  if (!p_video_state->IsMuted() && stream)
+    SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len,
+                       pFfmpegSdlAvPlayback->GetVolumeStep());
 }
 
 #endif FFMPEGSDLAVPLAYBACK_H_

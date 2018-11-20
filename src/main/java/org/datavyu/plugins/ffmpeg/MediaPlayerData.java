@@ -55,17 +55,4 @@ public interface MediaPlayerData extends MediaPlayer {
      */
     void updateImageData(byte[] data);
 
-    /**
-     * Get the width of the image in pixels
-     *
-     * @return Image width
-     */
-    int getImageWidth();
-
-    /**
-     * Get the height of the image in pixels
-     *
-     * @return Image height
-     */
-    int getImageHeight();
 }

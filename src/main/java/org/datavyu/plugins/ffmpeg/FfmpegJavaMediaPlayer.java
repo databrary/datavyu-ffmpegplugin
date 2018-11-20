@@ -1,9 +1,11 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.util.NativeLibraryLoader;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.net.URI;
@@ -21,14 +23,27 @@ import static java.awt.color.ColorSpace.CS_sRGB;
  */
 public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements MediaPlayerData {
     private AudioPlayerThread audioPlayerThread = null;
-    private ImagePlayerThread imagePlayerThread = null;
+    private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
     private Container container;
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
     private AudioFormat audioFormat;
     private ColorSpace colorSpace;
 
     static {
-        System.loadLibrary("FfmpegJavaMediaPlayer");
+        try {
+            System.out.println("Extracting libraries for ffmpeg.");
+            NativeLibraryLoader.extract("avutil-56");
+            NativeLibraryLoader.extract("swscale-5");
+            NativeLibraryLoader.extract("swresample-3");
+            NativeLibraryLoader.extract("avcodec-58");
+            NativeLibraryLoader.extract("avformat-58");
+            NativeLibraryLoader.extract("avfilter-7");
+            NativeLibraryLoader.extract("avdevice-58");
+            NativeLibraryLoader.extract("postproc-55");
+            NativeLibraryLoader.extractAndLoad("FfmpegJavaMediaPlayer");
+        } catch (Exception e) {
+            System.out.println("Failed loading ffmpeg libraries due to error: "+ e);
+        }
     }
 
     /**
@@ -59,6 +74,17 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
                 ColorSpace.getInstance(ColorSpace.CS_sRGB));
     }
 
+    /**
+     * Create an ffmpeg media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
+     */
+    public FfmpegJavaMediaPlayer(URI mediaPath) {
+        this(mediaPath, new JDialog(), AudioPlayerThread.getMonoFormat(),
+                ColorSpace.getInstance(ColorSpace.CS_sRGB));
+    }
+
     private void initAndStartAudioPlayer() {
         audioPlayerThread = new AudioPlayerThread(this);
         try {
@@ -70,9 +96,9 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
 
     private void initAndStartImagePlayer() {
-        imagePlayerThread = new ImagePlayerThread(this);
-        imagePlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
-        imagePlayerThread.start();
+        imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
+        imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
+        imageCanvasPlayerThread.start();
     }
 
     @Override
@@ -149,7 +175,10 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     @Override
     protected void playerStepBackward() throws MediaException {
-        throw new NotImplementedException();
+        int rc = ffmpegStepBackward(getNativeMediaRef());
+        if (0 != rc) {
+            throwMediaErrorException(rc, null);
+        }
     }
 
     @Override
@@ -257,8 +286,8 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
 
     @Override
-    protected void playerSeek(double streamTime) throws MediaException {
-        int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
+    protected void playerSeek(double streamTime, int flags) throws MediaException {
+        int rc = ffmpegSeek(getNativeMediaRef(), streamTime, flags);
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
@@ -266,8 +295,8 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     @Override
     protected void playerDispose() {
-        if (imagePlayerThread != null) {
-            imagePlayerThread.terminate();
+        if (imageCanvasPlayerThread != null) {
+            imageCanvasPlayerThread.terminate();
         }
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();
@@ -379,13 +408,14 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private native int ffmpegPause(long refNativeMedia);
     private native int ffmpegStop(long refNativeMedia);
     private native int ffmpegStepForward(long refNativeMedia);
+    private native int ffmpegStepBackward(long refNativeMedia);
     private native int ffmpegFinish(long refNativeMedia);
     private native int ffmpegGetRate(long refNativeMedia, float[] rate);
     private native int ffmpegSetRate(long refNativeMedia, float rate);
     private native int ffmpegGetPresentationTime(long refNativeMedia, double[] time);
     private native int ffmpegGetFps(long refNativeMedia, double[] fps);
     private native int ffmpegGetDuration(long refNativeMedia, double[] duration);
-    private native int ffmpegSeek(long refNativeMedia, double streamTime);
+    private native int ffmpegSeek(long refNativeMedia, double streamTime, int flags);
 
     private native int ffmpegHasAudioData(long refNativeMedia, boolean[] hasData);
     private native int ffmpegHasImageData(long refNativeMedia, boolean[] hasData);

@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg.examples;
 
 import org.datavyu.plugins.ffmpeg.MediaPlayer;
+import org.datavyu.plugins.ffmpeg.NativeMediaPlayer;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

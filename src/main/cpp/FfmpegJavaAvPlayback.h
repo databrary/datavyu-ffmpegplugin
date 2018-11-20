@@ -1,54 +1,54 @@
 #ifndef FFMPEGJAVAAVPLAYBACK_H_
 #define FFMPEGJAVAAVPLAYBACK_H_
 
-#include "VideoState.h"
 #include "FfmpegAVPlayback.h"
+#include "VideoState.h"
 
 class FfmpegJavaAvPlayback : public FfmpegAvPlayback {
 private:
-	const AudioFormat* pAudioFormat;
-	const PixelFormat* pPixelFormat;
-	const int audioBufferSizeInBy;
-	struct SwsContext* img_convert_ctx;
-	double remaining_time_to_display;
+  const AudioFormat *kPtrAudioFormat;
+  const PixelFormat *kPtrPixelFormat;
+  const int kAudioBufferSizeInBy;
+
+  struct SwsContext *p_img_convert_ctx_;
+  double remaining_time_to_display_;
+
 public:
-	FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
-		const PixelFormat *pPixelFormat,
-		const int audioBufferSizeInBy);
-	virtual ~FfmpegJavaAvPlayback();
+  FfmpegJavaAvPlayback(const AudioFormat *kPtrAudioFormat,
+                       const PixelFormat *kPtrPixelFormat,
+                       const int kAudioBufferSizeInBy);
+  virtual ~FfmpegJavaAvPlayback();
 
-	int Init(const char *filename,
-		AVInputFormat *iformat);
+  int Init(const char *p_filename, AVInputFormat *p_input_format);
 
-	int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
-		int wanted_sample_rate, struct AudioParams *audio_hw_params);
+  int AudioOpen(int64_t wanted_channel_layout, int wanted_nb_channels,
+                int wanted_sample_rate, struct AudioParams *audio_hw_params);
 
-	VideoState* get_VideoState();
+  VideoState *GetVideoState();
 
-	void destroy();
+  void Destroy();
 
-	int start_stream();
+  int StartStream();
 
-	void set_balance(float fBalance);
-	float get_balance();
+  void SetBalance(float balance);
+  float GetBalance();
 
-	void set_audioSyncDelay(long lMillis);
-	long get_audioSyncDelay();
+  void SetAudioSyncDelay(long millis);
+  long getAudioSyncDelay();
 
-	int get_image_width() const;
-	int get_image_height() const;
+  int GetImageWidth() const;
+  int GetImageHeight() const;
 
-	bool has_image_data() const;
-	bool has_audio_data() const;
+  bool HasImageData() const;
+  bool HasAudioData() const;
 
-	bool do_display(double *remaining_time);
+  bool DoDisplay(double *p_remaining_time);
 
-	void update_image_buffer(uint8_t* pImageData, const long len);
-	void update_audio_buffer(uint8_t* pAudioData, const long len);
+  void UpdateImageBuffer(uint8_t *p_image_data, const long len);
+  void UpdateAudioBuffer(uint8_t *p_audio_data, const long len);
 
-	void get_audio_format(AudioFormat* pAudioFormat);
-	void get_pixel_format(PixelFormat* pPixelFormat);
+  void GetAudioFormat(AudioFormat *p_audio_format);
+  void GetPixelFormat(PixelFormat *p_pixel_format);
 };
 
 #endif // end of FFMPEGJAVAAVPLAYBACK_H_
-

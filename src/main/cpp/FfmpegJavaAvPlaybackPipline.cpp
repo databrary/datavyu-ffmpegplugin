@@ -1,315 +1,335 @@
 #include "FfmpegJavaAvPlaybackPipline.h"
 
-uint32_t FfmpegJavaAvPlaybackPipline::Init(const char * input_file) {
+uint32_t FfmpegJavaAvPlaybackPipline::Init(const char *input_file) {
 
-	av_log_set_flags(AV_LOG_SKIP_REPEATED);
-	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
-	AVInputFormat *file_iformat = nullptr;
+  av_log_set_flags(AV_LOG_SKIP_REPEATED);
+  av_log(NULL, AV_LOG_WARNING, "Init Network\n");
+  AVInputFormat *file_iformat = nullptr;
 
-	pJavaPlayback = new (std::nothrow) FfmpegJavaAvPlayback(
-		m_pOptions->GetAudioFormat(), 
-		m_pOptions->GetPixelFormat(), 
-		m_pOptions->GetAudioBufferSizeInBy());
+  p_java_playback_ = new (std::nothrow) FfmpegJavaAvPlayback(
+      p_options_->GetAudioFormat(), p_options_->GetPixelFormat(),
+      p_options_->GetAudioBufferSizeInBy());
 
-	if (!pJavaPlayback) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to initialize the java playback pipeline");
-		return ERROR_PIPELINE_NULL;
-	}
+  if (!p_java_playback_) {
+    av_log(NULL, AV_LOG_ERROR,
+           "Unable to initialize the java playback pipeline");
+    return ERROR_PIPELINE_NULL;
+  }
 
-	int err = pJavaPlayback->Init(input_file, file_iformat);
-	if (err) {
-		delete pJavaPlayback;
-		return err;
-	}
+  int err = p_java_playback_->Init(input_file, file_iformat);
+  if (err) {
+    delete p_java_playback_;
+    return err;
+  }
 
-	// Assign the callback functions
-	pJavaPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {
-		this->UpdatePlayerState(Unknown);
-	});
-	pJavaPlayback->set_player_state_callback_func(TO_READY, [this] {
-		this->UpdatePlayerState(Ready);
-	});
-	pJavaPlayback->set_player_state_callback_func(TO_PLAYING, [this] {
-		this->UpdatePlayerState(Playing);
-	});
-	pJavaPlayback->set_player_state_callback_func(TO_PAUSED, [this] {
-		this->UpdatePlayerState(Paused);
-	});
-	pJavaPlayback->set_player_state_callback_func(TO_STOPPED, [this] {
-		this->UpdatePlayerState(Stopped);
-	});
-	pJavaPlayback->set_player_state_callback_func(TO_STALLED, [this] {
-		this->UpdatePlayerState(Stalled);
-	});
-	pJavaPlayback->set_player_state_callback_func(TO_FINISHED, [this] {
-		this->UpdatePlayerState(Finished);
-	});
+  // Assign the callback functions
+  p_java_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_UNKNOWN,
+      [this] { this->UpdatePlayerState(Unknown); });
+  p_java_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_READY,
+      [this] { this->UpdatePlayerState(Ready); });
+  p_java_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_PLAYING,
+      [this] { this->UpdatePlayerState(Playing); });
+  p_java_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_PAUSED,
+      [this] { this->UpdatePlayerState(Paused); });
+  p_java_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_STOPPED,
+      [this] { this->UpdatePlayerState(Stopped); });
+  p_java_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_STALLED,
+      [this] { this->UpdatePlayerState(Stalled); });
+  p_java_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_FINISHED,
+      [this] { this->UpdatePlayerState(Finished); });
 
-	return pJavaPlayback->start_stream();
+  return p_java_playback_->StartStream();
 }
 
 void FfmpegJavaAvPlaybackPipline::Dispose() {
-	pJavaPlayback->destroy();
-	delete pJavaPlayback;
-	pJavaPlayback = nullptr;
+  p_java_playback_->Destroy();
+  delete p_java_playback_;
+  p_java_playback_ = nullptr;
 }
 
-FfmpegJavaAvPlaybackPipline::FfmpegJavaAvPlaybackPipline(CPipelineOptions * pOptions) 
-	: CPipelineData(pOptions), pJavaPlayback(nullptr) 
-{ }
+FfmpegJavaAvPlaybackPipline::FfmpegJavaAvPlaybackPipline(
+    CPipelineOptions *p_options)
+    : CPipelineData(p_options), p_java_playback_(nullptr) {}
 
 FfmpegJavaAvPlaybackPipline::~FfmpegJavaAvPlaybackPipline() {
-	// Clean-up done in dispose that is called from the destructor of the super-class
+  // Clean-up done in dispose that is called from the destructor of the
+  // super-class
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Play() {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	pJavaPlayback->play();
+  p_java_playback_->Play();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Stop() {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	pJavaPlayback->stop();
+  p_java_playback_->Stop();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Pause() {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	pJavaPlayback->toggle_pause();
+  p_java_playback_->TogglePauseAndStopStep();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::StepForward() {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	pJavaPlayback->step_to_next_frame();
+  p_java_playback_->StepToNextFrame();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::StepBackward()
-{
-	return ERROR_NONE;
-}
+uint32_t FfmpegJavaAvPlaybackPipline::StepBackward() { return ERROR_NONE; }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
-	// TODO(fraudies): Stalling and finish need to be set from the video player
-	return ERROR_NONE;
+  // TODO(fraudies): Stalling and finish need to be set from the video player
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::Seek(double dSeekTime) {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time, int seek_flags) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	double pos = pJavaPlayback->get_stream_time();
+  double pos = p_java_playback_->GetTime();
 
-	if (isnan(pos))
-		pos = (double)pJavaPlayback->get_seek_pos() / AV_TIME_BASE;
+  if (isnan(pos))
+    pos = (double)p_java_playback_->GetSeekTime() / AV_TIME_BASE;
 
-	double incr = dSeekTime - pos;
+  double difference = time - pos;
 
-	if (pJavaPlayback->get_start_time() != AV_NOPTS_VALUE
-		&& dSeekTime < pJavaPlayback->get_start_time() / (double)AV_TIME_BASE) {
-		dSeekTime = pJavaPlayback->get_start_time() / (double)AV_TIME_BASE;
+  if (p_java_playback_->GetStartTime() != AV_NOPTS_VALUE &&
+      time < p_java_playback_->GetStartTime() / (double)AV_TIME_BASE) {
+    time = p_java_playback_->GetStartTime() / (double)AV_TIME_BASE;
+  }
+
+  p_java_playback_->Seek((int64_t)(time * AV_TIME_BASE),
+                         (int64_t)(difference * AV_TIME_BASE), seek_flags);
+
+  return ERROR_NONE;
+}
+
+uint32_t FfmpegJavaAvPlaybackPipline::GetDuration(double *p_duration) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
 	}
 
-	pJavaPlayback->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+  *p_duration = p_java_playback_->GetDuration();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetDuration(double* pdDuration) {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double *p_stream_time) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	*pdDuration = pJavaPlayback->get_duration();
+  // The master clock (Audio Clock by default) could return NaN and affect
+  // performance while seeking. However returning the external clock should
+  // resolve this issue (Note that the timestamp return by the external is not
+  // as accurate as the audio clock  (Master))
 
-	return ERROR_NONE;
+  *p_stream_time = p_java_playback_->GetTime();
+
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double* pdStreamTime) {
-	if (pJavaPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
+uint32_t FfmpegJavaAvPlaybackPipline::GetFps(double *p_fps) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	// The master clock (Audio Clock by default) could return NaN and affect 
-	// performance while seeking. However returning the external clock should 
-	// resolve this issue (Note that the timestamp return by the external is not as
-	// accurate as the audio clock  (Master))
+  *p_fps = p_java_playback_->GetFrameRate();
 
-	*pdStreamTime = pJavaPlayback->get_stream_time();
-
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetFps(double* pdFps) {
-	if (pJavaPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
+uint32_t FfmpegJavaAvPlaybackPipline::SetRate(float rate) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	*pdFps = pJavaPlayback->get_fps();
-
-	return ERROR_NONE;
+  return p_java_playback_->SetSpeed(rate);
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::SetRate(float fRate) {
-	if (pJavaPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
+uint32_t FfmpegJavaAvPlaybackPipline::GetRate(float *p_rate) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	return pJavaPlayback->set_rate(fRate);
-}
+  *p_rate = (float)p_java_playback_->GetSpeed();
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetRate(float* pfRate) {
-	if (pJavaPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-
-	*pfRate = (float) pJavaPlayback->get_rate();
-
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 // Note this function is available only when streaming through SDL pipline
-uint32_t FfmpegJavaAvPlaybackPipline::SetVolume(float fVolume) {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::SetVolume(float volume) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	// TODO(fraudies): Implement this once ready
-	//pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
+  // TODO(fraudies): Implement this once ready
+  // pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
 }
 
 // Note this function is available only when streaming through SDL pipline
-uint32_t FfmpegJavaAvPlaybackPipline::GetVolume(float* pfVolume) {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::GetVolume(float *p_volume) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	// TODO(fraudies): Implement this once ready
-	//*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
+  // TODO(fraudies): Implement this once ready
+  //*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::SetBalance(float fBalance) {
-	// TODO(fraudies): Not sure how to wire this
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::SetBalance(float balance) {
+  // TODO(fraudies): Not sure how to wire this
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	pJavaPlayback->set_balance(fBalance);
+  p_java_playback_->SetBalance(balance);
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetBalance(float* pfBalance) {
-	// TODO(fraudies): Not sure how to wire this
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::GetBalance(float *p_balance) {
+  // TODO(fraudies): Not sure how to wire this
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	*pfBalance = pJavaPlayback->get_balance();
+  *p_balance = p_java_playback_->GetBalance();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::SetAudioSyncDelay(long lMillis) {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::SetAudioSyncDelay(long millis) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	pJavaPlayback->set_audioSyncDelay(lMillis);
+  p_java_playback_->SetAudioSyncDelay(millis);
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetAudioSyncDelay(long* plMillis) {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::GetAudioSyncDelay(long *p_millis) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	*plMillis = pJavaPlayback->get_audioSyncDelay();
+  *p_millis = p_java_playback_->getAudioSyncDelay();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::HasAudioData(bool* bAudioData) const {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::HasAudioData(bool *p_has_audio_data) const {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	*bAudioData = pJavaPlayback->has_audio_data();
+  *p_has_audio_data = p_java_playback_->HasAudioData();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::HasImageData(bool* bImageData) const {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::HasImageData(bool *p_has_image_data) const {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	*bImageData = pJavaPlayback->has_image_data();
+  *p_has_image_data = p_java_playback_->HasImageData();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetImageWidth(int* iWidth) const {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::GetImageWidth(int *p_width) const {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	*iWidth = pJavaPlayback->get_image_width();
+  *p_width = p_java_playback_->GetImageWidth();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetImageHeight(int* iHeight) const {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::GetImageHeight(int *p_height) const {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	*iHeight = pJavaPlayback->get_image_height();
+  *p_height = p_java_playback_->GetImageHeight();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetAudioFormat(AudioFormat* pAudioFormat) const {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t
+FfmpegJavaAvPlaybackPipline::GetAudioFormat(AudioFormat *p_audio_format) const {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	pJavaPlayback->get_audio_format(pAudioFormat);
+  p_java_playback_->GetAudioFormat(p_audio_format);
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::GetPixelFormat(PixelFormat* pPixelFormat) const {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t
+FfmpegJavaAvPlaybackPipline::GetPixelFormat(PixelFormat *p_pixel_format) const {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	pJavaPlayback->get_pixel_format(pPixelFormat);
+  p_java_playback_->GetPixelFormat(p_pixel_format);
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::UpdateImageBuffer(uint8_t* pImageData, const long len) {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::UpdateImageBuffer(uint8_t *p_image_data,
+                                                        const long len) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	pJavaPlayback->update_image_buffer(pImageData, len);
+  p_java_playback_->UpdateImageBuffer(p_image_data, len);
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::UpdateAudioBuffer(uint8_t* pAudioData, const long len) {
-	if (pJavaPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegJavaAvPlaybackPipline::UpdateAudioBuffer(uint8_t *p_audio_data,
+                                                        const long len) {
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;  
+	}
 
-	pJavaPlayback->update_audio_buffer(pAudioData, len);
+  p_java_playback_->UpdateAudioBuffer(p_audio_data, len);
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
-
-
-

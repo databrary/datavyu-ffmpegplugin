@@ -1,227 +1,231 @@
 #include "FfmpegSdlAvPlaybackPipeline.h"
 #include "MediaPlayerErrors.h"
 
-FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(CPipelineOptions* pOptions) 
-	: CPipeline(pOptions), pSdlPlayback(nullptr) 
-{}
+FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(
+    CPipelineOptions *pOptions)
+    : CPipeline(pOptions), p_sdl_playback_(nullptr) {}
 
 FfmpegSdlAvPlaybackPipeline::~FfmpegSdlAvPlaybackPipeline() {
-	// Clean-up done in dispose that is called from the destructor of the super-class
+  // Clean-up done in dispose that is called from the destructor of the
+  // super-class
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char * input_file) {
-	// TODO: Proper error handling and wiring up of input arguments
-	av_log_set_flags(AV_LOG_SKIP_REPEATED);
-	av_log(NULL, AV_LOG_WARNING, "Init Network\n");
-	AVInputFormat *file_iformat = nullptr;
+uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char *input_file) {
+  // TODO: Proper error handling and wiring up of input arguments
+  av_log_set_flags(AV_LOG_SKIP_REPEATED);
+  av_log(NULL, AV_LOG_WARNING, "Init Network\n");
+  AVInputFormat *file_iformat = nullptr;
 
-	pSdlPlayback = new (std::nothrow) FfmpegSdlAvPlayback();
+  p_sdl_playback_ = new (std::nothrow) FfmpegSdlAvPlayback();
 
-	if (!pSdlPlayback) {
-		return ERROR_PIPELINE_NULL;
-	}
+  if (!p_sdl_playback_) {
+    return ERROR_PIPELINE_NULL;
+  }
 
-	int err = pSdlPlayback->Init(input_file, file_iformat);
-	if (err) {
-		delete pSdlPlayback;
-		return err;
-	}
+  int err = p_sdl_playback_->OpenVideo(input_file, file_iformat);
+  if (err) {
+    delete p_sdl_playback_;
+    return err;
+  }
 
-	// Assign the callback functions	
-	pSdlPlayback->set_player_state_callback_func(TO_UNKNOWN, [this] {
-		this->UpdatePlayerState(Unknown);
-	});
-	pSdlPlayback->set_player_state_callback_func(TO_READY, [this] {
-		this->UpdatePlayerState(Ready);
-	});
-	pSdlPlayback->set_player_state_callback_func(TO_PLAYING, [this] {
-		this->UpdatePlayerState(Playing);
-	});
-	pSdlPlayback->set_player_state_callback_func(TO_PAUSED, [this] {
-		this->UpdatePlayerState(Paused);
-	});
-	pSdlPlayback->set_player_state_callback_func(TO_STOPPED, [this] {
-		this->UpdatePlayerState(Stopped);
-	});
-	pSdlPlayback->set_player_state_callback_func(TO_STALLED, [this] {
-		this->UpdatePlayerState(Stalled);
-	});
-	pSdlPlayback->set_player_state_callback_func(TO_FINISHED, [this] {
-		this->UpdatePlayerState(Finished);
-	});
-	
-	err = pSdlPlayback->init_and_start_display_loop();
-	if (err) {
-		return err;
-	}
+  // Assign the callback functions
+  p_sdl_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_UNKNOWN,
+      [this] { this->UpdatePlayerState(Unknown); });
+  p_sdl_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_READY,
+      [this] { this->UpdatePlayerState(Ready); });
+  p_sdl_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_PLAYING,
+      [this] { this->UpdatePlayerState(Playing); });
+  p_sdl_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_PAUSED,
+      [this] { this->UpdatePlayerState(Paused); });
+  p_sdl_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_STOPPED,
+      [this] { this->UpdatePlayerState(Stopped); });
+  p_sdl_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_STALLED,
+      [this] { this->UpdatePlayerState(Stalled); });
+  p_sdl_playback_->SetPlayerStateCallbackFunction(
+      VideoState::PlayerStateCallback::TO_FINISHED,
+      [this] { this->UpdatePlayerState(Finished); });
 
-	return ERROR_NONE;
+  err = p_sdl_playback_->InitializeAndStartDisplayLoop();
+  if (err) {
+    return err;
+  }
+
+  return ERROR_NONE;
 }
 
 void FfmpegSdlAvPlaybackPipeline::Dispose() {
-	pSdlPlayback->destroy();
-	delete pSdlPlayback;
-	pSdlPlayback = nullptr;
+  delete p_sdl_playback_;
+  p_sdl_playback_ = nullptr;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Play() {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-	pSdlPlayback->play();
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+  p_sdl_playback_->Play();
 
-	return ERROR_NONE; // no error
+  return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Stop() {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-	pSdlPlayback->stop();
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+  p_sdl_playback_->Stop();
 
-	return ERROR_NONE; // no error
+  return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-	pSdlPlayback->toggle_pause();
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+  p_sdl_playback_->TogglePauseAndStopStep();
 
-	return ERROR_NONE; // no error
+  return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::StepForward()
-{
-	if (pSdlPlayback == nullptr)
-		return ERROR_PLAYBACK_NULL;
+uint32_t FfmpegSdlAvPlaybackPipeline::StepForward() {
+  if (p_sdl_playback_ == nullptr)
+    return ERROR_PLAYBACK_NULL;
 
-	pSdlPlayback->step_to_next_frame();
+  p_sdl_playback_->StepToNextFrame();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::StepBackward()
-{
-	return ERROR_NONE;
-}
+uint32_t FfmpegSdlAvPlaybackPipeline::StepBackward() { return ERROR_NONE; }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
-	// TODO(fraudies): Stalling and finish need to be set from the video player
-	return ERROR_NONE;
+  // TODO(fraudies): Stalling and finish need to be set from the video player
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-	double pos = pSdlPlayback->get_stream_time();
-	if (isnan(pos))
-		pos = (double)pSdlPlayback->get_seek_pos() / AV_TIME_BASE;
-	double incr = dSeekTime - pos;
-	if (pSdlPlayback->get_start_time() != AV_NOPTS_VALUE && dSeekTime < pSdlPlayback->get_start_time() / (double)AV_TIME_BASE)
-		dSeekTime = pSdlPlayback->get_start_time() / (double)AV_TIME_BASE;
+uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+  double pos = p_sdl_playback_->GetTime();
+  if (isnan(pos))
+    pos = (double)p_sdl_playback_->GetSeekTime() / AV_TIME_BASE;
+  double incr = dSeekTime - pos;
+  if (p_sdl_playback_->GetStartTime() != AV_NOPTS_VALUE &&
+      dSeekTime < p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE)
+    dSeekTime = p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE;
 
-	pSdlPlayback->stream_seek((int64_t)(dSeekTime * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+  p_sdl_playback_->Seek((int64_t)(dSeekTime * AV_TIME_BASE),
+                     (int64_t)(incr * AV_TIME_BASE), seek_flags);
 
-	return ERROR_NONE; // no error
+  return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetDuration(double* pdDuration) {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-	*pdDuration = pSdlPlayback->get_duration();
+uint32_t FfmpegSdlAvPlaybackPipeline::GetDuration(double *pdDuration) {
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+  *pdDuration = p_sdl_playback_->GetDuration();
 
-	return ERROR_NONE; // no error
+  return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double* pdStreamTime) {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
+uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double *pdStreamTime) {
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	// The master clock (Audio Clock by default) could return NaN and affect 
-	// performance while seeking. However returning the external clock should 
-	// resolve this issue (Note that the timestamp return by the external is not as
-	// accurate as the audio clock  (Master))
-	//*pdStreamTime = pSdlPlayback->get_master_clock();
+  // The master clock (Audio Clock by default) could return NaN and affect
+  // performance while seeking. However returning the external clock should
+  // resolve this issue (Note that the timestamp return by the external is not
+  // as accurate as the audio clock  (Master))
+  //*pdStreamTime = pSdlPlayback->get_master_clock();
 
-	*pdStreamTime = pSdlPlayback->get_stream_time();
+  *pdStreamTime = p_sdl_playback_->GetTime();
 
-	return ERROR_NONE; // no error
+  return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double * pdFps) {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
+uint32_t FfmpegSdlAvPlaybackPipeline::GetFps(double *pdFps) {
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	*pdFps = pSdlPlayback->get_fps();
+  *pdFps = p_sdl_playback_->GetFrameRate();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetRate(float fRate) {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	return pSdlPlayback->set_rate(fRate);
+  return p_sdl_playback_->SetSpeed(fRate);
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetRate(float* pfRate) {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
+uint32_t FfmpegSdlAvPlaybackPipeline::GetRate(float *pfRate) {
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
 
-	*pfRate = pSdlPlayback->get_rate();
+  *pfRate = p_sdl_playback_->GetSpeed();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetVolume(float fVolume) {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-	pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
-	return ERROR_NONE;
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+  p_sdl_playback_->SetVolume(fVolume * SDL_MIX_MAXVOLUME);
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetVolume(float* pfVolume) {
-	if (pSdlPlayback == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-	*pfVolume = pSdlPlayback->get_audio_volume() / (double)SDL_MIX_MAXVOLUME;
-	return ERROR_NONE;
+uint32_t FfmpegSdlAvPlaybackPipeline::GetVolume(float *pfVolume) {
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+  *pfVolume = p_sdl_playback_->GetVolume() / (double)SDL_MIX_MAXVOLUME;
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetBalance(float fBalance) {
-	// TODO(fraudies): Not sure how to wire this
-	return ERROR_NONE;
+  // TODO(fraudies): Not sure how to wire this
+  return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetBalance(float* pfBalance) {
-	// TODO(fraudies): Not sure how to wire this
-	return ERROR_NONE;
+uint32_t FfmpegSdlAvPlaybackPipeline::GetBalance(float *pfBalance) {
+  // TODO(fraudies): Not sure how to wire this
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetAudioSyncDelay(long lMillis) {
-	// TODO(fraudies): Implement this
-	return ERROR_NONE; // no error
+  // TODO(fraudies): Implement this
+  return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioSyncDelay(long* plMillis) {
-	// TODO(fraudies): Implement this
-	return ERROR_NONE; // no error
+uint32_t FfmpegSdlAvPlaybackPipeline::GetAudioSyncDelay(long *plMillis) {
+  // TODO(fraudies): Implement this
+  return ERROR_NONE; // no error
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetImageWidth(int * iWidth) const
-{
+uint32_t FfmpegSdlAvPlaybackPipeline::GetImageWidth(int *iWidth) const {
+	if (p_sdl_playback_ == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+	*iWidth = p_sdl_playback_->GetImageWidth();
 	return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int * iHeight) const
-{
+uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int *iHeight) const {
+	if (p_sdl_playback_ == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+	*iHeight = p_sdl_playback_->GetImageHeight();
 	return ERROR_NONE;
 }
