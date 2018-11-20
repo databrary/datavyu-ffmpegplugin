@@ -1,9 +1,9 @@
-# Datavyu ffmpegplugin [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+# Datavyu Player [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 ## Overview
-The Datavyu ffmpegplugin is a Java Media Player using[FFmpeg](https://github.com/FFmpeg/FFmpeg) and [MPV Player](https://github.com/mpv-player/mpv) as backend engines that we interface too through Java Native Interface (JNI). It supports a wide variety of video file formats, audio and video codecs for Windows Platform. Datavyu ffmpegplugin used within [Datavyu](http://www.datavyu.org/) a video annotation tool but could be embedded in any Java application.
+The Datavyu Player is a Java Media Player using [FFmpeg](https://github.com/FFmpeg/FFmpeg) and [MPV Player](https://github.com/mpv-player/mpv) as backend engines that we interface too through Java Native Interface (JNI). It supports a wide variety of video file formats, audio and video codecs for Windows Platform. Datavyu Player is used within [Datavyu](http://www.datavyu.org/) a video annotation tool but could be embedded in any Java application.
 
-To learn how to use the plugin, please refer to the [Examples](##Examples) section below as well as the [Java](src/main/java/org/datavyu/plugins/ffmpeg/examples) programs. You may also find it useful to refer to the wiki pages to set up a development environment and contribute to the project.
+To learn how to use the plugin, please refer to the [Examples](##Examples) section below as well as the [Java](src/main/java/org/datavyu/plugins/ffmpeg/examples) programs. You may also find it useful to refer to the [wiki](https://github.com/databrary/datavyu-ffmpegplugin/wiki) pages to set up a development environment and contribute to the project.
 
 What's special about this player?
 
@@ -22,22 +22,20 @@ What we are working on?
 - An implementation of Java SE 8 or newer; [OpenJDK](http://openjdk.java.net/install/) or
 [Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/).
 - Windows 7 or later.
-- A somewhat capable CPU.
-- Only for the MPV player: A not too crappy GPU. mpv is not intended to be used with bad GPUs. 
 
 ## Downloads
-The latest version of the datavyu-ffmpegplugin could be downloaded using the following Maven dependency (inside the pom.xml file):
+The latest version of the Datavyu Player could be downloaded using the following Maven dependency (inside the pom.xml file):
 
 ``` xml  
     <dependency>
-        <groupId>datavyu</groupId>
+        <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
         <version>0.18</version>
     </dependency>
 ```
 
 ## Examples
-With the Datavyu-ffmpegplugin you can lunch and control multiple instance of one the provided media player from your java application. Creating an instantiating a Media Player is a matter of passing a file path and an AWT Container to the MediaPlayer interface.
+With the Datavyu-ffmpegplugin you can lunch and control multiple instance of one the provided media player from your java application. Creating and instantiating a Media Player is a matter of passing a file path to the MediaPlayer interface.
 
 ### JAVA Player
 The Java Player is using FFmpeg API's to decode and read the stream, the player will pull both image buffers and audio buffers from the native side and display the video in a Java container.
@@ -45,13 +43,13 @@ The Java Player is using FFmpeg API's to decode and read the stream, the player 
 We provide a Maven dependency for the FFmpeg 4.0.2 version to be added to your `pom.xml` file
 ``` xml  
     <dependency>
-        <groupId>datavyu</groupId>
+        <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-libs</artifactId>
         <version>4.0.2</version>
     </dependency>
 ```
 
-Here is a simple example on how to create and initialize the Java Player, all what you have to do is to be creative and create your own Java controller for the player
+Here is a simple example on how to create and initialize the Datavyu Java Player, all what you have to do is to be creative and create your own Java controller for the player
 
 ``` java
     import org.datavyu.plugins.ffmpeg.*;
@@ -80,17 +78,17 @@ Here is a simple example on how to create and initialize the Java Player, all wh
 Note that The Java Player is using the MediaPLayerData Interface in order to access the buffers sent through the JNI interface.
 
 ### MPV Player
-The MPV Player is a fully functional media player providing an [API](https://github.com/mpv-player/mpv/blob/master/libmpv/client.h) to embed MPV in a window, in this repo we are providing and java bridge to control an MPV instance from Java. 
+The MPV Player is a fully functional media player providing an [API](https://github.com/mpv-player/mpv/blob/master/libmpv/client.h) to embed MPV in a window, in this repo we are providing an MPV java wrapper to control an MPV instance from your Java application. 
 
 We provide a Maven dependency for the MPV 0.29.1 version to be added to your `pom.xml` file in addition to the FFmpeg dependency mentioned above.
 ``` xml  
     <dependency>
-        <groupId>datavyu</groupId>
+        <groupId>org.datavyu</groupId>
         <artifactId>mpv-libs</artifactId>
         <version>0.29.1</version>
     </dependency>
 ```
-Here is a simple example on how to create and initialize the [MPV Player](https://github.com/mpv-player/mpv), all what you have to do is to be creative and build your own Java controller for the player
+Here is a simple example on how to create and initialize the [MPV Player](https://github.com/mpv-player/mpv), all what you have to do is to be creative and build your own Java controller for the player.
 
 ``` java
     import org.datavyu.plugins.ffmpeg.MediaPlayer;
@@ -122,11 +120,11 @@ Note that the MPV player will embed a native window in the Java Container passed
 ### SDL Player
 The SDL player is relying on FFmpeg engine as the Java player does, but is using [Simple DirectMedia Layer SDL2 Framework](https://www.libsdl.org/) to Display Images and Play Audio natively.
 
-We provide a Maven dependency for the SDL2.0.8 version to be added to your `pom.xml` file in addition to the FFmpeg dependency mentioned above
+We provide a Maven dependency for the SDL 2.0.8 version to be added to your `pom.xml` file in addition to the FFmpeg dependency mentioned above
 
 ``` xml  
     <dependency>
-        <groupId>datavyu</groupId>
+        <groupId>org.datavyu</groupId>
         <artifactId>sdl-libs</artifactId>
         <version>2.0.8</version>
     </dependency>
@@ -165,7 +163,7 @@ Please use the [issue tracker](https://github.com/databrary/datavyu-ffmpegplugin
 Using the bug tracker as place for simple questions is recommended.
 
 ## Contributing
-Please refer to the [wiki](https://github.com/databrary/datavyu-ffmpegplugin/wiki) and read on how you could hep us to
+Please refer to the [wiki](https://github.com/databrary/datavyu-ffmpegplugin/wiki) and read on how you could help us to
 improve this tool.
 
 You can check the wiki or the issue tracker for ideas on what you could contribute with.
@@ -175,4 +173,4 @@ You can check the wiki or the issue tracker for ideas on what you could contribu
 * Reda Nezzar
 * Jesse Lingeman
 
-[<img src="https://nyu.databrary.org/web/images/grants/nyu.jpg">](https://www.nyu.edu/)
+[<img src="https://nyu.databrary.org/web/images/grants/nyu.jpg" width="300">](https://www.nyu.edu/)
