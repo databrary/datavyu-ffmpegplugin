@@ -56,6 +56,7 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
             case KeyEvent.VK_D:
                 System.out.println("Step Backward");
                 mediaPlayer.stepBackward();
+                System.out.println("Finished backward step");
                 break;
             case KeyEvent.VK_I:
                 System.out.println("Stream Information : Fps = " + mediaPlayer.getFps() +
