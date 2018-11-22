@@ -109,7 +109,7 @@ public class NativeLibraryLoader {
         URL url = getResource(destName);
         InputStream in = url.openStream();
         File outfile = new File(libraryFolder, destName + getExtension(destName));
-        if(outfile.exists()){
+        if (outfile.exists()) {
             return outfile;
         }
         FileOutputStream out = new FileOutputStream(outfile);
