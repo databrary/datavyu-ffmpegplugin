@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
 import org.datavyu.util.MediaTimerTask;
+import org.datavyu.util.Subject;
 
 import java.net.URI;
 
@@ -15,8 +16,11 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
     boolean isUpdateTimeEnabled = false;
     // The current time is not the presentation time, the current
     // time is used to periodically synchronize to a master a clock.
-    double currentTime;
-    double prevTime = -1.0;
+    double streamCurrentTime;
+    double streamPrevTime = -1.0;
+    double masterCurrentTime;
+
+    Subject masterClock;
 
     /**
      * Create an ffmpeg media player instance
@@ -73,10 +77,16 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
             double presentationTime = playerGetPresentationTime();
             if (presentationTime >= 0.0) {
                 double newTime = presentationTime;
-                System.out.println("Current Time " + newTime + " sec, previous time " + prevTime +" sec");
-                if (Double.compare(newTime, prevTime) != 0) {
-                    setCurrentTime(newTime);
-                    prevTime = newTime;
+                System.out.println("Current Time " + newTime + " sec, previous time " + streamPrevTime +" sec");
+                if (Double.compare(newTime, streamPrevTime) != 0) {
+                    if(Math.abs(newTime - masterCurrentTime) <= 1.5){
+                        System.out.println("Need Sync FROM PLUGIN success");
+                        setStreamCurrentTime(masterCurrentTime);
+                    } else {
+                        setStreamCurrentTime(newTime);
+                    }
+
+                    streamPrevTime = newTime;
                 }
             }
         }
@@ -102,7 +112,20 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
         }
     }
 
-    protected void setCurrentTime(double currentTime) {
-        this.currentTime = currentTime;
+    protected void setStreamCurrentTime(double streamCurrentTime) {
+        this.streamCurrentTime = streamCurrentTime;
+    }
+
+    @Override
+    public void updateMasterTime() {
+        double masterClockTime = (double) masterClock.getUpdate(this);
+        if(masterClockTime != 0.0){
+            masterCurrentTime = masterClockTime;
+        }
+    }
+
+    @Override
+    public void setSubject(Subject masterClock) {
+        this.masterClock = masterClock;
     }
 }

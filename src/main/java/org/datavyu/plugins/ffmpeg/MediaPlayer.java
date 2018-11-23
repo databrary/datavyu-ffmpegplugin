@@ -1,6 +1,8 @@
 package org.datavyu.plugins.ffmpeg;
 
 
+import org.datavyu.util.Subject;
+
 import javax.sound.sampled.AudioFormat;
 import java.awt.color.ColorSpace;
 
@@ -238,4 +240,18 @@ public interface MediaPlayer {
      * after this method is invoked.
      */
     void dispose();
+
+    /**
+     * MASTER CLOCK, UPDATES
+     * */
+
+    //method to update the observer, used by subject
+    void updateMasterTime();
+
+    void updateMasterMinTime();
+
+    void updateMasterMaxTime();
+
+    //attach with subject to observe
+    void setSubject(Subject sub);
 }
