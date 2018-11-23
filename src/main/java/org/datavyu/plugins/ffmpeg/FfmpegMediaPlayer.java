@@ -1,5 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.util.MediaTimerTask;
+
 import java.net.URI;
 
 /**
@@ -8,6 +10,13 @@ import java.net.URI;
 public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
     float mutedVolume = 1.0f;  // last volume before mute
     boolean muteEnabled = false;
+
+    MediaTimerTask mediaTimerTask = null;
+    boolean isUpdateTimeEnabled = false;
+    // The current time is not the presentation time, the current
+    // time is used to periodically synchronize to a master a clock.
+    double currentTime;
+    double prevTime = -1.0;
 
     /**
      * Create an ffmpeg media player instance
@@ -56,5 +65,44 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
                 playerSetVolume(mutedVolume);
             }
         }
+    }
+
+    @Override
+    protected void playerUpdateCurrentTime() {
+        if (isUpdateTimeEnabled) {
+            double presentationTime = playerGetPresentationTime();
+            if (presentationTime >= 0.0) {
+                double newTime = presentationTime;
+                System.out.println("Current Time " + newTime + " sec, previous time " + prevTime +" sec");
+                if (Double.compare(newTime, prevTime) != 0) {
+                    setCurrentTime(newTime);
+                    prevTime = newTime;
+                }
+            }
+        }
+    }
+
+    protected void createMediaTimer() {
+        synchronized (MediaTimerTask.timerLock) {
+            if (mediaTimerTask == null) {
+                mediaTimerTask = new MediaTimerTask(this);
+                mediaTimerTask.start();
+            }
+            isUpdateTimeEnabled = true;
+        }
+    }
+
+    protected void destroyMediaTimer() {
+        synchronized (MediaTimerTask.timerLock) {
+            if (mediaTimerTask != null) {
+                isUpdateTimeEnabled = false;
+                mediaTimerTask.stop();
+                mediaTimerTask = null;
+            }
+        }
+    }
+
+    protected void setCurrentTime(double currentTime) {
+        this.currentTime = currentTime;
     }
 }
