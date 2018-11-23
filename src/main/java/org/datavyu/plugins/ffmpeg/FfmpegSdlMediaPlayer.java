@@ -1,7 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
 import org.datavyu.util.NativeLibraryLoader;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URI;
 
@@ -44,6 +43,8 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
         }
     }
 
+    private PlayerStateListener stateListener;
+
     public FfmpegSdlMediaPlayer(URI mediaPath) {
         super(mediaPath);
     }
@@ -52,6 +53,9 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     public void init() {
         initNative(); // start the event queue, make sure to register all state/error listeners before
         long[] newNativeMediaRef = new long[1];
+
+        stateListener = new _PlayerStateListener();
+        this.addMediaPlayerStateListener(stateListener);
 
         int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath);
         if (0 != rc) {
@@ -257,7 +261,41 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     @Override
     protected void playerDispose() {
+        if (mediaTimerTask != null) {
+            destroyMediaTimer();
+        }
         ffmpegDisposePlayer(getNativeMediaRef());
+    }
+
+
+    class _PlayerStateListener implements PlayerStateListener {
+
+        @Override
+        public void onReady(PlayerStateEvent evt) { }
+
+        @Override
+        public void onPlaying(PlayerStateEvent evt) {
+            createMediaTimer();
+        }
+
+        @Override
+        public void onPause(PlayerStateEvent evt) {
+            isUpdateTimeEnabled = false;
+        }
+
+        @Override
+        public void onStop(PlayerStateEvent evt) {
+            isUpdateTimeEnabled = false;
+        }
+
+        @Override
+        public void onStall(PlayerStateEvent evt) { }
+
+        @Override
+        public void onFinish(PlayerStateEvent evt) { }
+
+        @Override
+        public void onHalt(PlayerStateEvent evt) { }
     }
 
     // Native methods
