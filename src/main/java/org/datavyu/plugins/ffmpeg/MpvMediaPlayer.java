@@ -276,13 +276,19 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         }
 
         @Override
-        public void onPlaying(PlayerStateEvent evt) { }
+        public void onPlaying(PlayerStateEvent evt) {
+            createMediaTimer();
+        }
 
         @Override
-        public void onPause(PlayerStateEvent evt) { }
+        public void onPause(PlayerStateEvent evt) {
+            isUpdateTimeEnabled = false;
+        }
 
         @Override
-        public void onStop(PlayerStateEvent evt) { }
+        public void onStop(PlayerStateEvent evt) {
+            isUpdateTimeEnabled = false;
+        }
 
         @Override
         public void onStall(PlayerStateEvent evt) { }
@@ -296,6 +302,9 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     @Override
     protected void playerDispose() {
+        if (mediaTimerTask != null) {
+            destroyMediaTimer();
+        }
         mpvDisposePlayer(getNativeMediaRef());
     }
 
