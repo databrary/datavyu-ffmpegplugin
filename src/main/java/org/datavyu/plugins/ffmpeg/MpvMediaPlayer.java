@@ -3,6 +3,7 @@ package org.datavyu.plugins.ffmpeg;
 //import sun.awt.windows.WComponentPeer;
 import com.sun.javafx.tk.TKStage;
 import javafx.stage.Stage;
+import org.datavyu.util.NativeLibraryLoader;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
@@ -16,16 +17,29 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     static {
         try {
-            System.out.println("Extracting libraries for ffmpeg and MPV.");
-            NativeLibraryLoader.extract("avutil-56");
-            NativeLibraryLoader.extract("swscale-5");
-            NativeLibraryLoader.extract("swresample-3");
-            NativeLibraryLoader.extract("avcodec-58");
-            NativeLibraryLoader.extract("avformat-58");
-            NativeLibraryLoader.extract("avfilter-7");
-            NativeLibraryLoader.extract("avdevice-58");
-            NativeLibraryLoader.extract("postproc-55");
-            NativeLibraryLoader.extract("mpv-1");
+            if(!NativeLibraryLoader.isMacOs) {
+                System.out.println("Extracting Windows libraries for ffmpeg and MPV.");
+                NativeLibraryLoader.extract("avutil-56");
+                NativeLibraryLoader.extract("swscale-5");
+                NativeLibraryLoader.extract("swresample-3");
+                NativeLibraryLoader.extract("avcodec-58");
+                NativeLibraryLoader.extract("avformat-58");
+                NativeLibraryLoader.extract("avfilter-7");
+                NativeLibraryLoader.extract("avdevice-58");
+                NativeLibraryLoader.extract("postproc-55");
+                NativeLibraryLoader.extract("mpv-1");
+            } else {
+                System.out.println("Extracting Mac OS libraries for ffmpeg and MPV.");
+                NativeLibraryLoader.extract("avutil.56");
+                NativeLibraryLoader.extract("swscale.5");
+                NativeLibraryLoader.extract("swresample.3");
+                NativeLibraryLoader.extract("avcodec.58");
+                NativeLibraryLoader.extract("avformat.58");
+                NativeLibraryLoader.extract("avfilter.7");
+                NativeLibraryLoader.extract("avdevice.58");
+                NativeLibraryLoader.extract("postproc.55");
+                NativeLibraryLoader.extract("mpv.1");
+            }
             NativeLibraryLoader.extractAndLoad("MpvMediaPlayer");
         } catch (Exception e) {
             System.out.println("Failed loading libraries due to error: "+ e);

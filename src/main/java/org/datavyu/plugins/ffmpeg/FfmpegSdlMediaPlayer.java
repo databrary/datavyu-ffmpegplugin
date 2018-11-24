@@ -16,16 +16,28 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     static {
         try {
-            System.out.println("Extracting libraries for ffmpeg and SDL2.");
-            NativeLibraryLoader.extract("avutil-56");
-            NativeLibraryLoader.extract("swscale-5");
-            NativeLibraryLoader.extract("swresample-3");
-            NativeLibraryLoader.extract("avcodec-58");
-            NativeLibraryLoader.extract("avformat-58");
-            NativeLibraryLoader.extract("avfilter-7");
-            NativeLibraryLoader.extract("avdevice-58");
-            NativeLibraryLoader.extract("postproc-55");
-            NativeLibraryLoader.extract("SDL2");
+            if(! NativeLibraryLoader.isMacOs) {
+                System.out.println("Extracting Windows libraries for ffmpeg.");
+                NativeLibraryLoader.extract("avutil-56");
+                NativeLibraryLoader.extract("swscale-5");
+                NativeLibraryLoader.extract("swresample-3");
+                NativeLibraryLoader.extract("avcodec-58");
+                NativeLibraryLoader.extract("avformat-58");
+                NativeLibraryLoader.extract("avfilter-7");
+                NativeLibraryLoader.extract("avdevice-58");
+                NativeLibraryLoader.extract("postproc-55");
+                NativeLibraryLoader.extract("SDL2");
+            } else {
+                System.out.println("Extracting Mac OS libraries for ffmpeg.");
+                NativeLibraryLoader.extract("avutil.56");
+                NativeLibraryLoader.extract("swscale.5");
+                NativeLibraryLoader.extract("swresample.3");
+                NativeLibraryLoader.extract("avcodec.58");
+                NativeLibraryLoader.extract("avformat.58");
+                NativeLibraryLoader.extract("avfilter.7");
+                NativeLibraryLoader.extract("avdevice.58");
+                NativeLibraryLoader.extract("postproc.55");
+            }
             NativeLibraryLoader.extractAndLoad("FfmpegSdlMediaPlayer");
         } catch (Exception e) {
             System.out.println("Failed loading libraries due to error: "+ e);
