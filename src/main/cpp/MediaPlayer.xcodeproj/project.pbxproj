@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E926190D219A3D1E0083EA8E /* libSDL2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E926190C219A3D1E0083EA8E /* libSDL2.dylib */; };
 		E95D247A21966E25007A6758 /* FrameQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D245021966E20007A6758 /* FrameQueue.cpp */; };
 		E95D247B21966E25007A6758 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D245121966E20007A6758 /* Pipeline.cpp */; };
 		E95D247C21966E25007A6758 /* PipelineOptions.h in Sources */ = {isa = PBXBuildFile; fileRef = E95D245221966E20007A6758 /* PipelineOptions.h */; };
@@ -57,7 +58,6 @@
 		E95D24BB219672A8007A6758 /* libavdevice.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D244121966DB9007A6758 /* libavdevice.58.dylib */; };
 		E95D24BC219672A8007A6758 /* libavfilter.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D244221966DB9007A6758 /* libavfilter.7.dylib */; };
 		E95D24BD219672A8007A6758 /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D244521966DB9007A6758 /* libavformat.58.dylib */; };
-		E95D24BE219672A8007A6758 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D243C21966DA7007A6758 /* SDL2.framework */; };
 		E95D24BF219672A8007A6758 /* libmpv.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D244E21966DC6007A6758 /* libmpv.1.dylib */; };
 /* End PBXBuildFile section */
 
@@ -74,6 +74,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E926190C219A3D1E0083EA8E /* libSDL2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2.dylib; path = dependencies/lib/libSDL2.dylib; sourceTree = "<group>"; };
 		E95D243121966BBF007A6758 /* MediaPlayer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MediaPlayer; sourceTree = BUILT_PRODUCTS_DIR; };
 		E95D243C21966DA7007A6758 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = dependencies/SDL2.framework; sourceTree = "<group>"; };
 		E95D243E21966DB9007A6758 /* libpostproc.55.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpostproc.55.dylib; path = "dependencies/ffmpeg-shared/bin/libpostproc.55.dylib"; sourceTree = "<group>"; };
@@ -143,6 +144,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E926190D219A3D1E0083EA8E /* libSDL2.dylib in Frameworks */,
 				E95D24B6219672A8007A6758 /* libavutil.56.dylib in Frameworks */,
 				E95D24B7219672A8007A6758 /* libpostproc.55.dylib in Frameworks */,
 				E95D24B8219672A8007A6758 /* libswresample.3.dylib in Frameworks */,
@@ -151,7 +153,6 @@
 				E95D24BB219672A8007A6758 /* libavdevice.58.dylib in Frameworks */,
 				E95D24BC219672A8007A6758 /* libavfilter.7.dylib in Frameworks */,
 				E95D24BD219672A8007A6758 /* libavformat.58.dylib in Frameworks */,
-				E95D24BE219672A8007A6758 /* SDL2.framework in Frameworks */,
 				E95D24BF219672A8007A6758 /* libmpv.1.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -220,6 +221,7 @@
 		E95D243B21966DA7007A6758 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E926190C219A3D1E0083EA8E /* libSDL2.dylib */,
 				E95D24AA219671CA007A6758 /* libavutil.56.dylib */,
 				E95D244E21966DC6007A6758 /* libmpv.1.dylib */,
 				E95D244321966DB9007A6758 /* libavcodec.58.dylib */,
@@ -460,18 +462,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
+				DYLIB_INSTALL_NAME_BASE = "$(INSTALL_PATH)";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/framework/**";
 				HEADER_SEARCH_PATHS = (
 					"/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/**",
-					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
-					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
-					"${PROJECT_DIR}/dependencies/mpv/include",
+					"${PROJECT_DIR}/dependencies/include",
 				);
+				INSTALL_PATH = "@rpath";
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/dependencies/ffmpeg-shared/bin",
-					"$(PROJECT_DIR)/dependencies/mpv/lib",
-					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/dependencies/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -481,18 +483,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
+				DYLIB_INSTALL_NAME_BASE = "$(INSTALL_PATH)";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/framework/**";
 				HEADER_SEARCH_PATHS = (
 					"/Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/include/**",
-					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
-					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
-					"${PROJECT_DIR}/dependencies/mpv/include",
+					"${PROJECT_DIR}/dependencies/include",
 				);
+				INSTALL_PATH = "@rpath";
+				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/dependencies/ffmpeg-shared/bin",
-					"$(PROJECT_DIR)/dependencies/mpv/lib",
-					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/dependencies/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

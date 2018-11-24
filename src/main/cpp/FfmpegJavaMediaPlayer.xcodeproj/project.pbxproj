@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E92618F2219A024D0083EA8E /* libavutil.56.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618CE219A01D40083EA8E /* libavutil.56.dylib */; };
+		E92618F3219A024D0083EA8E /* libpostproc.55.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618D4219A01D40083EA8E /* libpostproc.55.dylib */; };
+		E92618F4219A024D0083EA8E /* libswresample.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618D3219A01D40083EA8E /* libswresample.3.dylib */; };
+		E92618F5219A024D0083EA8E /* libswscale.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618D0219A01D40083EA8E /* libswscale.5.dylib */; };
+		E92618F6219A024D0083EA8E /* libavcodec.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618D5219A01D40083EA8E /* libavcodec.58.dylib */; };
+		E92618F7219A024D0083EA8E /* libavdevice.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618D1219A01D40083EA8E /* libavdevice.58.dylib */; };
+		E92618F8219A024D0083EA8E /* libavfilter.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618CF219A01D40083EA8E /* libavfilter.7.dylib */; };
+		E92618F9219A024D0083EA8E /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618D2219A01D40083EA8E /* libavformat.58.dylib */; };
 		E95D23602196544D007A6758 /* PipelineOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D233921965449007A6758 /* PipelineOptions.h */; };
 		E95D23612196544D007A6758 /* VideoState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D233A21965449007A6758 /* VideoState.cpp */; };
 		E95D23622196544D007A6758 /* FfmpegAvPlayback.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D233B2196544A007A6758 /* FfmpegAvPlayback.h */; };
@@ -46,19 +54,19 @@
 		E95D23842196544D007A6758 /* FfmpegErrorUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D235D2196544D007A6758 /* FfmpegErrorUtils.cpp */; };
 		E95D23852196544D007A6758 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D235E2196544D007A6758 /* Pipeline.cpp */; };
 		E95D23862196544D007A6758 /* FrameQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D235F2196544D007A6758 /* FrameQueue.cpp */; };
-		E95D239021965488007A6758 /* libpostproc.55.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D238821965488007A6758 /* libpostproc.55.dylib */; };
-		E95D239121965488007A6758 /* libswresample.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D238921965488007A6758 /* libswresample.3.dylib */; };
-		E95D239221965488007A6758 /* libavutil.56.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D238A21965488007A6758 /* libavutil.56.dylib */; };
-		E95D239321965488007A6758 /* libavdevice.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D238B21965488007A6758 /* libavdevice.58.dylib */; };
-		E95D239421965488007A6758 /* libavfilter.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D238C21965488007A6758 /* libavfilter.7.dylib */; };
-		E95D239521965488007A6758 /* libavcodec.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D238D21965488007A6758 /* libavcodec.58.dylib */; };
-		E95D239621965488007A6758 /* libswscale.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D238E21965488007A6758 /* libswscale.5.dylib */; };
-		E95D239721965488007A6758 /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D238F21965488007A6758 /* libavformat.58.dylib */; };
 		E95D2399219656FB007A6758 /* FfmpegJavaMediaPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D2398219656FA007A6758 /* FfmpegJavaMediaPlayer.cpp */; };
 		E95D239B21965740007A6758 /* Media.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D239A2196573F007A6758 /* Media.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E92618CE219A01D40083EA8E /* libavutil.56.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavutil.56.dylib; path = dependencies/lib/libavutil.56.dylib; sourceTree = "<group>"; };
+		E92618CF219A01D40083EA8E /* libavfilter.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavfilter.7.dylib; path = dependencies/lib/libavfilter.7.dylib; sourceTree = "<group>"; };
+		E92618D0219A01D40083EA8E /* libswscale.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswscale.5.dylib; path = dependencies/lib/libswscale.5.dylib; sourceTree = "<group>"; };
+		E92618D1219A01D40083EA8E /* libavdevice.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavdevice.58.dylib; path = dependencies/lib/libavdevice.58.dylib; sourceTree = "<group>"; };
+		E92618D2219A01D40083EA8E /* libavformat.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavformat.58.dylib; path = dependencies/lib/libavformat.58.dylib; sourceTree = "<group>"; };
+		E92618D3219A01D40083EA8E /* libswresample.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswresample.3.dylib; path = dependencies/lib/libswresample.3.dylib; sourceTree = "<group>"; };
+		E92618D4219A01D40083EA8E /* libpostproc.55.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpostproc.55.dylib; path = dependencies/lib/libpostproc.55.dylib; sourceTree = "<group>"; };
+		E92618D5219A01D40083EA8E /* libavcodec.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavcodec.58.dylib; path = dependencies/lib/libavcodec.58.dylib; sourceTree = "<group>"; };
 		E95564D521963D3800A2AD8D /* libFfmpegJavaMediaPlayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libFfmpegJavaMediaPlayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E95D233921965449007A6758 /* PipelineOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PipelineOptions.h; sourceTree = "<group>"; };
 		E95D233A21965449007A6758 /* VideoState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VideoState.cpp; sourceTree = "<group>"; };
@@ -116,14 +124,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E95D239021965488007A6758 /* libpostproc.55.dylib in Frameworks */,
-				E95D239121965488007A6758 /* libswresample.3.dylib in Frameworks */,
-				E95D239221965488007A6758 /* libavutil.56.dylib in Frameworks */,
-				E95D239321965488007A6758 /* libavdevice.58.dylib in Frameworks */,
-				E95D239421965488007A6758 /* libavfilter.7.dylib in Frameworks */,
-				E95D239521965488007A6758 /* libavcodec.58.dylib in Frameworks */,
-				E95D239621965488007A6758 /* libswscale.5.dylib in Frameworks */,
-				E95D239721965488007A6758 /* libavformat.58.dylib in Frameworks */,
+				E92618F2219A024D0083EA8E /* libavutil.56.dylib in Frameworks */,
+				E92618F3219A024D0083EA8E /* libpostproc.55.dylib in Frameworks */,
+				E92618F4219A024D0083EA8E /* libswresample.3.dylib in Frameworks */,
+				E92618F5219A024D0083EA8E /* libswscale.5.dylib in Frameworks */,
+				E92618F6219A024D0083EA8E /* libavcodec.58.dylib in Frameworks */,
+				E92618F7219A024D0083EA8E /* libavdevice.58.dylib in Frameworks */,
+				E92618F8219A024D0083EA8E /* libavfilter.7.dylib in Frameworks */,
+				E92618F9219A024D0083EA8E /* libavformat.58.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,6 +198,14 @@
 		E95D238721965487007A6758 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E92618D5219A01D40083EA8E /* libavcodec.58.dylib */,
+				E92618D1219A01D40083EA8E /* libavdevice.58.dylib */,
+				E92618CF219A01D40083EA8E /* libavfilter.7.dylib */,
+				E92618D2219A01D40083EA8E /* libavformat.58.dylib */,
+				E92618CE219A01D40083EA8E /* libavutil.56.dylib */,
+				E92618D4219A01D40083EA8E /* libpostproc.55.dylib */,
+				E92618D3219A01D40083EA8E /* libswresample.3.dylib */,
+				E92618D0219A01D40083EA8E /* libswscale.5.dylib */,
 				E95D238D21965488007A6758 /* libavcodec.58.dylib */,
 				E95D238B21965488007A6758 /* libavdevice.58.dylib */,
 				E95D238C21965488007A6758 /* libavfilter.7.dylib */,
@@ -246,7 +262,7 @@
 				E95564D121963D3800A2AD8D /* Sources */,
 				E95564D221963D3800A2AD8D /* Frameworks */,
 				E95564D321963D3800A2AD8D /* Headers */,
-				2B1DD7C02196AB9F001685D8 /* ShellScript */,
+				E9261914219A41B10083EA8E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -289,7 +305,7 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2B1DD7C02196AB9F001685D8 /* ShellScript */ = {
+		E9261914219A41B10083EA8E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -448,16 +464,16 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/framework/**";
 				HEADER_SEARCH_PATHS = (
 					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
-					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
-					"${PROJECT_DIR}/dependencies/mpv/include",
-					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
+					"${PROJECT_DIR}/dependencies/include",
 				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/dependencies/ffmpeg-shared/bin",
+					"$(PROJECT_DIR)/dependencies/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -471,16 +487,16 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/framework/**";
 				HEADER_SEARCH_PATHS = (
 					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
-					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
-					"${PROJECT_DIR}/dependencies/mpv/include",
-					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
+					"${PROJECT_DIR}/dependencies/include",
 				);
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/dependencies/ffmpeg-shared/bin",
+					"$(PROJECT_DIR)/dependencies/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

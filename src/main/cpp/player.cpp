@@ -17,14 +17,14 @@ int runFFmpegPlayer(const char *input_filename, AVInputFormat *file_iformat) {
 }
 
 int runMpvPlayer(const char *input_filename) {
-  MpvAvPlayback *pPlayer = new MpvAvPlayback();
-  pPlayer->InitAndEventLoop(input_filename);
+  MpvAvPlayback *p_player = new MpvAvPlayback();
+  p_player->InitAndEventLoop(input_filename);
   return 0;
 }
 
 int main(int argc, char **argv) {
   static const char *input_filename =
-      "toystory.mp4"; //"Nature_30fps_1080p.mp4" //
+      "/Users/RedaNezzar/Documents/source/datavyu-ffmpegplugin/src/test/resources/toystory.mp4"; //"Nature_30fps_1080p.mp4" //
                                 //"DatavyuSampleVideo.mp4" // "counter.mp4" //
                                 //"http://www.html5videoplayer.net/videos/toystory.mp4";
   AVInputFormat *file_iformat = nullptr;
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   /******************************************************
    * Uncomment this part to test the mpv player
    ******************************************************/
-  //runMpvPlayer(input_filename);
+//  runMpvPlayer(input_filename);
 
   return 0;
 }

@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E95D22DE219646AA007A6758 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22DD219646AA007A6758 /* SDL2.framework */; };
-		E95D22E7219646BB007A6758 /* libpostproc.55.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22DF219646BB007A6758 /* libpostproc.55.dylib */; };
-		E95D22E8219646BB007A6758 /* libswresample.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E0219646BB007A6758 /* libswresample.3.dylib */; };
-		E95D22E9219646BB007A6758 /* libavutil.56.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E1219646BB007A6758 /* libavutil.56.dylib */; };
-		E95D22EA219646BB007A6758 /* libavdevice.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E2219646BB007A6758 /* libavdevice.58.dylib */; };
-		E95D22EB219646BB007A6758 /* libavfilter.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E3219646BB007A6758 /* libavfilter.7.dylib */; };
-		E95D22EC219646BB007A6758 /* libavcodec.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E4219646BB007A6758 /* libavcodec.58.dylib */; };
-		E95D22ED219646BB007A6758 /* libswscale.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E5219646BB007A6758 /* libswscale.5.dylib */; };
-		E95D22EE219646BB007A6758 /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E95D22E6219646BB007A6758 /* libavformat.58.dylib */; };
+		E92618E7219A020F0083EA8E /* libavutil.56.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618DE219A020F0083EA8E /* libavutil.56.dylib */; };
+		E92618E8219A020F0083EA8E /* libavfilter.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618DF219A020F0083EA8E /* libavfilter.7.dylib */; };
+		E92618E9219A020F0083EA8E /* libswscale.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618E0219A020F0083EA8E /* libswscale.5.dylib */; };
+		E92618EB219A020F0083EA8E /* libavdevice.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618E2219A020F0083EA8E /* libavdevice.58.dylib */; };
+		E92618EC219A020F0083EA8E /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618E3219A020F0083EA8E /* libavformat.58.dylib */; };
+		E92618ED219A020F0083EA8E /* libswresample.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618E4219A020F0083EA8E /* libswresample.3.dylib */; };
+		E92618EE219A020F0083EA8E /* libpostproc.55.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618E5219A020F0083EA8E /* libpostproc.55.dylib */; };
+		E92618EF219A020F0083EA8E /* libavcodec.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E92618E6219A020F0083EA8E /* libavcodec.58.dylib */; };
+		E926190F219A3D560083EA8E /* libSDL2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E926190E219A3D560083EA8E /* libSDL2.dylib */; };
 		E95D2314219647A6007A6758 /* FrameQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22EF219647A2007A6758 /* FrameQueue.cpp */; };
 		E95D2315219647A6007A6758 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22F0219647A2007A6758 /* Pipeline.cpp */; };
 		E95D2316219647A6007A6758 /* PipelineOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22F1219647A2007A6758 /* PipelineOptions.h */; };
@@ -56,6 +56,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E92618DE219A020F0083EA8E /* libavutil.56.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavutil.56.dylib; path = dependencies/lib/libavutil.56.dylib; sourceTree = "<group>"; };
+		E92618DF219A020F0083EA8E /* libavfilter.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavfilter.7.dylib; path = dependencies/lib/libavfilter.7.dylib; sourceTree = "<group>"; };
+		E92618E0219A020F0083EA8E /* libswscale.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswscale.5.dylib; path = dependencies/lib/libswscale.5.dylib; sourceTree = "<group>"; };
+		E92618E1219A020F0083EA8E /* libmpv.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmpv.1.dylib; path = dependencies/lib/libmpv.1.dylib; sourceTree = "<group>"; };
+		E92618E2219A020F0083EA8E /* libavdevice.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavdevice.58.dylib; path = dependencies/lib/libavdevice.58.dylib; sourceTree = "<group>"; };
+		E92618E3219A020F0083EA8E /* libavformat.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavformat.58.dylib; path = dependencies/lib/libavformat.58.dylib; sourceTree = "<group>"; };
+		E92618E4219A020F0083EA8E /* libswresample.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswresample.3.dylib; path = dependencies/lib/libswresample.3.dylib; sourceTree = "<group>"; };
+		E92618E5219A020F0083EA8E /* libpostproc.55.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpostproc.55.dylib; path = dependencies/lib/libpostproc.55.dylib; sourceTree = "<group>"; };
+		E92618E6219A020F0083EA8E /* libavcodec.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavcodec.58.dylib; path = dependencies/lib/libavcodec.58.dylib; sourceTree = "<group>"; };
+		E92618F0219A021D0083EA8E /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = dependencies/framework/SDL2.framework; sourceTree = "<group>"; };
+		E926190E219A3D560083EA8E /* libSDL2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2.dylib; path = dependencies/lib/libSDL2.dylib; sourceTree = "<group>"; };
 		E95D22D5219644C2007A6758 /* libFfmpegSdlMediaPlayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libFfmpegSdlMediaPlayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E95D22DD219646AA007A6758 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = dependencies/SDL2.framework; sourceTree = "<group>"; };
 		E95D22DF219646BB007A6758 /* libpostproc.55.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpostproc.55.dylib; path = "dependencies/ffmpeg-shared/bin/libpostproc.55.dylib"; sourceTree = "<group>"; };
@@ -110,15 +121,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E95D22E7219646BB007A6758 /* libpostproc.55.dylib in Frameworks */,
-				E95D22E8219646BB007A6758 /* libswresample.3.dylib in Frameworks */,
-				E95D22E9219646BB007A6758 /* libavutil.56.dylib in Frameworks */,
-				E95D22EA219646BB007A6758 /* libavdevice.58.dylib in Frameworks */,
-				E95D22EB219646BB007A6758 /* libavfilter.7.dylib in Frameworks */,
-				E95D22EC219646BB007A6758 /* libavcodec.58.dylib in Frameworks */,
-				E95D22ED219646BB007A6758 /* libswscale.5.dylib in Frameworks */,
-				E95D22EE219646BB007A6758 /* libavformat.58.dylib in Frameworks */,
-				E95D22DE219646AA007A6758 /* SDL2.framework in Frameworks */,
+				E926190F219A3D560083EA8E /* libSDL2.dylib in Frameworks */,
+				E92618E7219A020F0083EA8E /* libavutil.56.dylib in Frameworks */,
+				E92618E8219A020F0083EA8E /* libavfilter.7.dylib in Frameworks */,
+				E92618E9219A020F0083EA8E /* libswscale.5.dylib in Frameworks */,
+				E92618EB219A020F0083EA8E /* libavdevice.58.dylib in Frameworks */,
+				E92618EC219A020F0083EA8E /* libavformat.58.dylib in Frameworks */,
+				E92618ED219A020F0083EA8E /* libswresample.3.dylib in Frameworks */,
+				E92618EE219A020F0083EA8E /* libpostproc.55.dylib in Frameworks */,
+				E92618EF219A020F0083EA8E /* libavcodec.58.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,14 +192,25 @@
 		E95D22DC219646AA007A6758 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E926190E219A3D560083EA8E /* libSDL2.dylib */,
+				E92618F0219A021D0083EA8E /* SDL2.framework */,
 				E95D22E4219646BB007A6758 /* libavcodec.58.dylib */,
+				E92618E6219A020F0083EA8E /* libavcodec.58.dylib */,
 				E95D22E2219646BB007A6758 /* libavdevice.58.dylib */,
+				E92618E2219A020F0083EA8E /* libavdevice.58.dylib */,
 				E95D22E3219646BB007A6758 /* libavfilter.7.dylib */,
 				E95D22E6219646BB007A6758 /* libavformat.58.dylib */,
+				E92618DF219A020F0083EA8E /* libavfilter.7.dylib */,
+				E92618E3219A020F0083EA8E /* libavformat.58.dylib */,
 				E95D22E1219646BB007A6758 /* libavutil.56.dylib */,
 				E95D22DF219646BB007A6758 /* libpostproc.55.dylib */,
+				E92618E5219A020F0083EA8E /* libpostproc.55.dylib */,
 				E95D22E0219646BB007A6758 /* libswresample.3.dylib */,
+				E92618E1219A020F0083EA8E /* libmpv.1.dylib */,
+				E92618E4219A020F0083EA8E /* libswresample.3.dylib */,
 				E95D22E5219646BB007A6758 /* libswscale.5.dylib */,
+				E92618DE219A020F0083EA8E /* libavutil.56.dylib */,
+				E92618E0219A020F0083EA8E /* libswscale.5.dylib */,
 				E95D22DD219646AA007A6758 /* SDL2.framework */,
 			);
 			name = Frameworks;
@@ -235,7 +257,7 @@
 				E95D22D1219644C2007A6758 /* Sources */,
 				E95D22D2219644C2007A6758 /* Frameworks */,
 				E95D22D3219644C2007A6758 /* Headers */,
-				2B1DD7C12196AE54001685D8 /* ShellScript */,
+				E9261913219A41210083EA8E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -278,7 +300,7 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2B1DD7C12196AE54001685D8 /* ShellScript */ = {
+		E9261913219A41210083EA8E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -436,18 +458,16 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/framework";
 				HEADER_SEARCH_PATHS = (
 					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
-					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
-					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
-					"${PROJECT_DIR}/dependencies/mpv/include",
+					"${PROJECT_DIR}/dependencies/include",
 				);
-				INSTALL_PATH = "$(PROJECT_DIR)/build";
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/dependencies/ffmpeg-shared/bin",
-					"$(PROJECT_DIR)/dependencies/SDL2.framwork",
+					"$(PROJECT_DIR)/dependencies/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -461,18 +481,16 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/framework";
 				HEADER_SEARCH_PATHS = (
 					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
-					"${PROJECT_DIR}/dependencies/ffmpeg-dev/include",
-					"${PROJECT_DIR}/dependencies/googletest/googletest/include",
-					"${PROJECT_DIR}/dependencies/mpv/include",
+					"${PROJECT_DIR}/dependencies/include",
 				);
-				INSTALL_PATH = "$(PROJECT_DIR)/build";
+				INSTALL_PATH = "@rpath";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/dependencies/ffmpeg-shared/bin",
-					"$(PROJECT_DIR)/dependencies/SDL2.framwork",
+					"$(PROJECT_DIR)/dependencies/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

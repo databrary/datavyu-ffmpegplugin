@@ -8,7 +8,6 @@ MpvAvPlayback::~MpvAvPlayback() {}
 int MpvAvPlayback::Init(const char *p_filename, const intptr_t windowID) {
     std::setlocale(LC_NUMERIC, "C");
     int err;
-    intptr_t _mpvHandle;
     
     LoadMpvDynamic();
 #ifdef _WIN32
@@ -19,41 +18,41 @@ int MpvAvPlayback::Init(const char *p_filename, const intptr_t windowID) {
         return MpvToJavaErrNo(MPV_ERROR_GENERIC);
     }
         
-        _mpvHandle = mpv_create_();
-        if (!_mpvHandle) {
-            mpv_terminate_destroy_(_mpvHandle);
+    mpv_handle_ = mpv_create_();
+    if (!mpv_handle_) {
+            mpv_terminate_destroy_(mpv_handle_);
         }
         
-        err = MpvToJavaErrNo(mpv_set_option_string_(_mpvHandle, "keep-open", "always"));
+        err = MpvToJavaErrNo(mpv_set_option_string_(mpv_handle_, "keep-open", "always"));
         if (err != 0) {
             return err;
         }
         
 #ifdef _WIN32
         intptr_t windowId = windowID;
-        err = MpvToJavaErrNo(mpv_set_option_(_mpvHandle, "wid", MPV_FORMAT_INT64, &windowId));
+        err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "wid", MPV_FORMAT_INT64, &windowId));
         if (err != 0) {
             return err;
         }
 #elif __APPLE__
         int64_t windowId =  windowID;
-        err = MpvToJavaErrNo(mpv_set_option_(_mpvHandle, "wid", MPV_FORMAT_INT64, &windowId));
+        err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "wid", MPV_FORMAT_INT64, &windowId));
         if (err != 0) {
             return err;
         }
 #endif
 
-  double _startUpVolume = 100;
-  err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "volume", MPV_FORMAT_DOUBLE,
-                                       &_startUpVolume));
-  if (err != 0) {
-    return err;
-  }
+//  double _startUpVolume = 100;
+//  err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "volume", MPV_FORMAT_DOUBLE,
+//                                       &_startUpVolume));
+//  if (err != 0) {
+//    return err;
+//  }
 
-  err = MpvToJavaErrNo(Pause());
-  if (err != 0) {
-    return err;
-  }
+//  err = MpvToJavaErrNo(Pause());
+//  if (err != 0) {
+//    return err;
+//  }
 
   err = MpvToJavaErrNo(mpv_initialize_(mpv_handle_));
   if (err != 0) {
@@ -331,16 +330,18 @@ void MpvAvPlayback::InitAndEventLoop(const char *p_filename) {
   SDL_GetWindowWMInfo(window, &wm_info);
 #ifdef _WIN32
   HWND hwnd = wm_info.info.win.window;
+#elif __APPLE__
+    NSWindow* hwnd = wm_info.info.cocoa.window;
 #endif
 
   MpvAvPlayback *pPlayer = new MpvAvPlayback();
   int err;
-#ifdef _WIN32
+//#ifdef _WIN32
   err = pPlayer->Init(p_filename, (intptr_t)hwnd);
   if (err) {
     fprintf(stderr, "Error %d when opening input file %s", err, p_filename);
   }
-#endif
+//#endif
 
   double incr, pos, frac;
   double rate, currentVolume;
