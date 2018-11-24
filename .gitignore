@@ -1,4 +1,5 @@
 *.dll
+*.dylib
 *.lib
 *.obj
 *.exp
@@ -54,3 +55,8 @@ resource.h
 
 # Google Test Package
 packages/
+
+.DS_Store
+
+**/dependencies/*
+SDL2.framework/*

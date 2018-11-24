@@ -6,43 +6,53 @@ MpvAvPlayback::MpvAvPlayback() : initial_play_(true) {}
 MpvAvPlayback::~MpvAvPlayback() {}
 
 int MpvAvPlayback::Init(const char *p_filename, const intptr_t windowID) {
-  std::setlocale(LC_NUMERIC, "C");
-  int err;
+    std::setlocale(LC_NUMERIC, "C");
+    int err;
+    
+    LoadMpvDynamic();
+#ifdef _WIN32
+    if (!_libMpvDll) {
+#elif __APPLE__        
+    if (!_libMpvDylib){
+#endif
+        return MpvToJavaErrNo(MPV_ERROR_GENERIC);
+    }
+        
+    mpv_handle_ = mpv_create_();
+    if (!mpv_handle_) {
+            mpv_terminate_destroy_(mpv_handle_);
+        }
+        
+        err = MpvToJavaErrNo(mpv_set_option_string_(mpv_handle_, "keep-open", "always"));
+        if (err != 0) {
+            return err;
+        }
+        
+#ifdef _WIN32
+        intptr_t windowId = windowID;
+        err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "wid", MPV_FORMAT_INT64, &windowId));
+        if (err != 0) {
+            return err;
+        }
+#elif __APPLE__
+        int64_t windowId =  windowID;
+        err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "wid", MPV_FORMAT_INT64, &windowId));
+        if (err != 0) {
+            return err;
+        }
+#endif
 
-  LoadMpvDynamic();
-  if (!lib_mpv_dll_) {
-    return MpvToJavaErrNo(MPV_ERROR_GENERIC);
-  }
+//  double _startUpVolume = 100;
+//  err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "volume", MPV_FORMAT_DOUBLE,
+//                                       &_startUpVolume));
+//  if (err != 0) {
+//    return err;
+//  }
 
-  mpv_handle_ = mpv_create_();
-  if (!mpv_handle_) {
-    mpv_terminate_destroy_(mpv_handle_);
-  }
-
-  err = MpvToJavaErrNo(
-      mpv_set_option_string_(mpv_handle_, "keep-open", "always"));
-  if (err != 0) {
-    return err;
-  }
-
-  intptr_t windowId = windowID;
-  err = MpvToJavaErrNo(
-      mpv_set_option_(mpv_handle_, "wid", MPV_FORMAT_INT64, &windowId));
-  if (err != 0) {
-    return err;
-  }
-
-  double _startUpVolume = 100;
-  err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "volume", MPV_FORMAT_DOUBLE,
-                                       &_startUpVolume));
-  if (err != 0) {
-    return err;
-  }
-
-  err = MpvToJavaErrNo(Pause());
-  if (err != 0) {
-    return err;
-  }
+//  err = MpvToJavaErrNo(Pause());
+//  if (err != 0) {
+//    return err;
+//  }
 
   err = MpvToJavaErrNo(mpv_initialize_(mpv_handle_));
   if (err != 0) {
@@ -70,34 +80,39 @@ int MpvAvPlayback::Init(const char *p_filename, const intptr_t windowID) {
 }
 
 void MpvAvPlayback::LoadMpvDynamic() {
-  lib_mpv_dll_ =
-      LoadLibrary(L"mpv-1.dll"); // The dll is included in the DEV builds by
-                                 // lachs0r: https://mpv.srsfckn.biz/
-  mpv_create_ = (MpvCreate)GetProcAddress(lib_mpv_dll_, "mpv_create");
-  mpv_initialize_ =
-      (MpvInitialize)GetProcAddress(lib_mpv_dll_, "mpv_initialize");
-  mpv_terminate_destroy_ = (MpvTerminateDestroy)GetProcAddress(
-      lib_mpv_dll_, "mpv_terminate_destroy");
-  mpv_command_ = (MpvCommand)GetProcAddress(lib_mpv_dll_, "mpv_command");
-  mpv_command_async_ =
-      (MpvCommandAsync)GetProcAddress(lib_mpv_dll_, "mpv_command_async");
-  mpv_command_string_ =
-      (MpvCommandString)GetProcAddress(lib_mpv_dll_, "mpv_command_string");
-  mpv_set_option_ =
-      (MpvSetOption)GetProcAddress(lib_mpv_dll_, "mpv_set_option");
-  mpv_set_option_string_ =
-      (MpvSetOptionString)GetProcAddress(lib_mpv_dll_, "mpv_set_option_string");
-  mpv_get_property_string_ =
-      (MpvGetPropertystring)GetProcAddress(lib_mpv_dll_, "mpv_get_property");
-  mpv_get_property_ =
-      (MpvGetProperty)GetProcAddress(lib_mpv_dll_, "mpv_get_property");
-  mpv_set_property_ =
-      (MpvSetProperty)GetProcAddress(lib_mpv_dll_, "mpv_set_property");
-  mpv_set_property_async_ = (MpvSetPropertyAsync)GetProcAddress(
-      lib_mpv_dll_, "mpv_set_property_async");
-  mpv_free_ = (MpvFree)GetProcAddress(lib_mpv_dll_, "mpv_free");
-  mpv_wait_event_ =
-      (MpvWaitEvent)GetProcAddress(lib_mpv_dll_, "mpv_wait_event");
+#ifdef _WIN32
+    _libMpvDll = LoadLibrary(L"mpv-1.dll"); // The dll is included in the DEV builds by lachs0r: https://mpv.srsfckn.biz/
+    mpv_create_ = (MpvCreate)GetProcAddress(_libMpvDll, "mpv_create");
+    mpv_initialize_ = (MpvInitialize)GetProcAddress(_libMpvDll, "mpv_initialize");
+    mpv_terminate_destroy_ = (MpvTerminateDestroy)GetProcAddress(_libMpvDll, "mpv_terminate_destroy");
+    mpv_command_ = (MpvCommand)GetProcAddress(_libMpvDll, "mpv_command");
+    mpv_command_async_ = (MpvCommandAsync)GetProcAddress(_libMpvDll, "mpv_command_async");
+    mpv_command_string_ = (MpvCommandString)GetProcAddress(_libMpvDll, "mpv_command_string");
+    mpv_set_option_ = (MpvSetOption)GetProcAddress(_libMpvDll, "mpv_set_option");
+    mpv_set_option_string_ = (MpvSetOptionString)GetProcAddress(_libMpvDll, "mpv_set_option_string");
+    mpv_get_property_string_ = (MpvGetPropertystring)GetProcAddress(_libMpvDll, "mpv_get_property");
+    mpv_get_property_ = (MpvGetProperty)GetProcAddress(_libMpvDll, "mpv_get_property");
+    mpv_set_property_ = (MpvSetProperty)GetProcAddress(_libMpvDll, "mpv_set_property");
+    mpv_set_property_async_ = (MpvSetPropertyAsync)GetProcAddress(_libMpvDll, "mpv_set_property_async");
+    mpv_free_ = (MpvFree)GetProcAddress(_libMpvDll, "mpv_free");
+    mpv_wait_event_ = (MpvWaitEvent)GetProcAddress(_libMpvDll, "mpv_wait_event");
+#elif  __APPLE__
+    _libMpvDylib = dlopen("libmpv.1.101.0.dylib", RTLD_LOCAL);
+    mpv_create_ = (MpvCreate)dlsym(_libMpvDylib, "mpv_create");
+    mpv_initialize_ = (MpvInitialize)dlsym(_libMpvDylib, "mpv_initialize");
+    mpv_terminate_destroy_ = (MpvTerminateDestroy)dlsym(_libMpvDylib, "mpv_terminate_destroy");
+    mpv_command_ = (MpvCommand)dlsym(_libMpvDylib, "mpv_command");
+    mpv_command_async_ = (MpvCommandAsync)dlsym(_libMpvDylib, "mpv_command_async");
+    mpv_command_string_ = (MpvCommandString)dlsym(_libMpvDylib, "mpv_command_string");
+    mpv_set_option_ = (MpvSetOption)dlsym(_libMpvDylib, "mpv_set_option");
+    mpv_set_option_string_ = (MpvSetOptionString)dlsym(_libMpvDylib, "mpv_set_option_string");
+    mpv_get_property_string_ = (MpvGetPropertystring)dlsym(_libMpvDylib, "mpv_get_property");
+    mpv_get_property_ = (MpvGetProperty)dlsym(_libMpvDylib, "mpv_get_property");
+    mpv_set_property_ = (MpvSetProperty)dlsym(_libMpvDylib, "mpv_set_property");
+    mpv_set_property_async_ = (MpvSetPropertyAsync)dlsym(_libMpvDylib, "mpv_set_property_async");
+    mpv_free_ = (MpvFree)dlsym(_libMpvDylib, "mpv_free");
+    mpv_wait_event_ = (MpvWaitEvent)dlsym(_libMpvDylib, "mpv_wait_event");
+#endif
 }
 
 int MpvAvPlayback::Play() {
@@ -313,13 +328,20 @@ void MpvAvPlayback::InitAndEventLoop(const char *p_filename) {
   SDL_SysWMinfo wm_info;
   SDL_VERSION(&wm_info.version);
   SDL_GetWindowWMInfo(window, &wm_info);
+#ifdef _WIN32
   HWND hwnd = wm_info.info.win.window;
+#elif __APPLE__
+    NSWindow* hwnd = wm_info.info.cocoa.window;
+#endif
 
   MpvAvPlayback *pPlayer = new MpvAvPlayback();
-  int err = pPlayer->Init(p_filename, (intptr_t)hwnd);
+  int err;
+//#ifdef _WIN32
+  err = pPlayer->Init(p_filename, (intptr_t)hwnd);
   if (err) {
     fprintf(stderr, "Error %d when opening input file %s", err, p_filename);
   }
+//#endif
 
   double incr, pos, frac;
   double rate, currentVolume;
