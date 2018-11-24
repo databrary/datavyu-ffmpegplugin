@@ -1,8 +1,5 @@
 package org.datavyu.plugins.ffmpeg;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
@@ -25,7 +22,6 @@ import java.util.Hashtable;
  * Display Min Time: 44 ms (displaying the frame is faster; small aea to draw)
  */
 public class ImageCanvasPlayerThread extends Thread {
-    private final static Logger LOGGER = LogManager.getFormatterLogger(ImageCanvasPlayerThread.class);
     private MediaPlayerData mediaPlayerData;
     private SampleModel sm;
     private ComponentColorModel cm;
@@ -94,12 +90,12 @@ public class ImageCanvasPlayerThread extends Thread {
 
         if (canvasAspectRatio > imgAspectRatio) {
             y1 = canvasHeight;
-            // keep image aspect ratio
+            // Maintain aspect ratio
             canvasHeight = (int) (canvasWidth * imgAspectRatio);
             y1 = (y1 - canvasHeight) / 2;
         } else {
             x1 = canvasWidth;
-            // keep image aspect ratio
+            // Maintain aspect ratio
             canvasWidth = (int) (canvasHeight / imgAspectRatio);
             x1 = (x1 - canvasWidth) / 2;
         }
@@ -111,49 +107,45 @@ public class ImageCanvasPlayerThread extends Thread {
     public void init(ColorSpace colorSpace, int width, int height, Container container) {
         this.imgWidth = width;
         this.imgHeight = height;
-
         // Allocate byte buffer
-        this.data = new byte[this.imgWidth *this.imgHeight *NUM_COLOR_CHANNELS];
-
+        this.data = new byte[this.imgWidth * this.imgHeight * NUM_COLOR_CHANNELS];
+        // Set defaults
         cm = new ComponentColorModel(colorSpace, false, false, Transparency.OPAQUE,
                 DataBuffer.TYPE_BYTE);
-        // Set defaults
         sm = cm.createCompatibleSampleModel(this.imgWidth, this.imgHeight);
         // Initialize an empty image
         DataBufferByte dataBuffer = new DataBufferByte(this.data, this.imgWidth *this.imgHeight);
         WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
-
         // Create the canvas and add it to the center fo the container
         this.canvas = new Canvas();
-
-        // Add A black background to the canvas
+        // Add a black background to the canvas
         this.canvas.setBackground(Color.BLACK);
-
         container.add(canvas, BorderLayout.CENTER);
         container.setBounds(0, 0, this.imgWidth, this.imgHeight);
         container.setVisible(true);
         // Make sure to make the canvas visible before creating the buffer strategy
         this.canvas.createBufferStrategy(NUM_BUFFERS);
         strategy = this.canvas.getBufferStrategy();
-
+        // Update the display
         updateDisplay();
     }
 
     public void run() {
         while (!terminate) {
             long start = System.currentTimeMillis();
+            // Get the next image data -- may return the same data if no newer data is available
             mediaPlayerData.updateImageData(data);
-
             // Create data buffer
             DataBufferByte dataBuffer = new DataBufferByte(data, imgWidth * imgHeight);
             // Create writable raster
             WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
             // Create the original image
             image = new BufferedImage(cm, raster, false, properties);
+            // Update the display
             updateDisplay();
-            // This does not measure the time to update the display
+            // Compute the wait time as update time - time taken
             double waitTime = REFRESH_PERIOD - (System.currentTimeMillis() - start)/TO_MILLIS;
             // If we need to wait
             if (waitTime > 0) {

@@ -103,7 +103,15 @@ uint32_t FfmpegJavaAvPlaybackPipline::StepForward() {
   return ERROR_NONE;
 }
 
-uint32_t FfmpegJavaAvPlaybackPipline::StepBackward() { return ERROR_NONE; }
+uint32_t FfmpegJavaAvPlaybackPipline::StepBackward() { 
+  if (p_java_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+
+  p_java_playback_->StepToPreviousFrame();
+
+	return ERROR_NONE;
+}
 
 uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
   // TODO(fraudies): Stalling and finish need to be set from the video player
@@ -117,15 +125,16 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time, int seek_flags) {
 
   double pos = p_java_playback_->GetTime();
 
-  if (isnan(pos))
-    pos = (double)p_java_playback_->GetSeekTime() / AV_TIME_BASE;
-
-  double difference = time - pos;
+  if (isnan(pos)) {
+    pos = (double)p_java_playback_->GetSeekTime() / AV_TIME_BASE;  
+	}
 
   if (p_java_playback_->GetStartTime() != AV_NOPTS_VALUE &&
       time < p_java_playback_->GetStartTime() / (double)AV_TIME_BASE) {
     time = p_java_playback_->GetStartTime() / (double)AV_TIME_BASE;
   }
+
+  double difference = time - pos;
 
   p_java_playback_->Seek((int64_t)(time * AV_TIME_BASE),
                          (int64_t)(difference * AV_TIME_BASE), seek_flags);
@@ -189,7 +198,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetRate(float *p_rate) {
 // Note this function is available only when streaming through SDL pipline
 uint32_t FfmpegJavaAvPlaybackPipline::SetVolume(float volume) {
   if (p_java_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;  
+    return ERROR_PLAYBACK_NULL;
 	}
 
   // TODO(fraudies): Implement this once ready

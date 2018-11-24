@@ -80,13 +80,13 @@ public interface MediaPlayer {
     void play();
 
     /**
-     * Stops playing of the media.
+     * Stops playing of the media and resets the time to start time.
      */
     void stop();
 
     /**
-     * Pauses the media playing.  Calling play() after pause() will continue
-     * playing the media from where it left off.
+     * Pauses the media playing and when calling play or pause again
+     * will continue to play where the player left off.
      */
     void pause();
 
@@ -110,9 +110,13 @@ public interface MediaPlayer {
     //**************************************************************************
     /**
      * Sets the rate of playback. A positive value indicates forward play and
-     * a negative value reverse play.
+     * a negative value reverse play. Notice, that players may not support the
+     * full range of [-inf, +inf] of playback rates.
      *
-     * @param rate
+     * If a rate is not supported an Exception
+     *
+     * @param rate The rate
+     * @trows MediaException
      */
     void setRate(float rate);
 

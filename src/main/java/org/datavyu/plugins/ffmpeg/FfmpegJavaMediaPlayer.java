@@ -1,9 +1,11 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.util.NativeLibraryLoader;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.net.URI;
@@ -23,12 +25,25 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private AudioPlayerThread audioPlayerThread = null;
     private ImageCanvasPlayerThread imageCanvasPlayerThread = null;
     private Container container;
-    private static final int AUDIO_BUFFER_SIZE = 4*1024; // % 4 kB
+    private static final int AUDIO_BUFFER_SIZE = 4*1024; // 4 kB
     private AudioFormat audioFormat;
     private ColorSpace colorSpace;
 
     static {
-        System.loadLibrary("FfmpegJavaMediaPlayer");
+        try {
+            System.out.println("Extracting libraries for ffmpeg.");
+            NativeLibraryLoader.extract("avutil-56");
+            NativeLibraryLoader.extract("swscale-5");
+            NativeLibraryLoader.extract("swresample-3");
+            NativeLibraryLoader.extract("avcodec-58");
+            NativeLibraryLoader.extract("avformat-58");
+            NativeLibraryLoader.extract("avfilter-7");
+            NativeLibraryLoader.extract("avdevice-58");
+            NativeLibraryLoader.extract("postproc-55");
+            NativeLibraryLoader.extractAndLoad("FfmpegJavaMediaPlayer");
+        } catch (Exception e) {
+            System.out.println("Failed loading ffmpeg libraries due to error: "+ e);
+        }
     }
 
     /**
@@ -56,6 +71,17 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
      */
     public FfmpegJavaMediaPlayer(URI mediaPath, Container container) {
         this(mediaPath, container, AudioPlayerThread.getMonoFormat(),
+                ColorSpace.getInstance(ColorSpace.CS_sRGB));
+    }
+
+    /**
+     * Create an ffmpeg media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
+     */
+    public FfmpegJavaMediaPlayer(URI mediaPath) {
+        this(mediaPath, new JDialog(), AudioPlayerThread.getMonoFormat(),
                 ColorSpace.getInstance(ColorSpace.CS_sRGB));
     }
 
@@ -221,9 +247,9 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
             if (volume == 0 ) {
                 audioPlayerThread.setMute(true);
             } else {
-                if(audioPlayerThread.isMute()){
+                if (audioPlayerThread.isMute()){
                     audioPlayerThread.setMute(false); // make sure that the audio is un muted
-                }else{
+                } else {
                     audioPlayerThread.setVolume(volume); // Update the volume of the SoundDataLine
                 }
                 mutedVolume = volume;

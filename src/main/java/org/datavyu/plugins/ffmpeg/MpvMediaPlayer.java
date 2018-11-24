@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
+import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -14,7 +15,21 @@ import java.net.URI;
 public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     static {
-        System.loadLibrary("MpvMediaPlayer");
+        try {
+            System.out.println("Extracting libraries for ffmpeg and MPV.");
+            NativeLibraryLoader.extract("avutil-56");
+            NativeLibraryLoader.extract("swscale-5");
+            NativeLibraryLoader.extract("swresample-3");
+            NativeLibraryLoader.extract("avcodec-58");
+            NativeLibraryLoader.extract("avformat-58");
+            NativeLibraryLoader.extract("avfilter-7");
+            NativeLibraryLoader.extract("avdevice-58");
+            NativeLibraryLoader.extract("postproc-55");
+            NativeLibraryLoader.extract("mpv-1");
+            NativeLibraryLoader.extractAndLoad("MpvMediaPlayer");
+        } catch (Exception e) {
+            System.out.println("Failed loading libraries due to error: "+ e);
+        }
     }
 
     private Stage stage;
@@ -24,6 +39,13 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     private PlayerStateListener stateListener;
 
+    /**
+     * Create an MPV media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
+     * @param container The container to display the frame in
+     */
     public MpvMediaPlayer(URI mediaPath, Container container) {
         super(mediaPath);
         this.container = container;
@@ -32,6 +54,16 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     public MpvMediaPlayer(URI mediaPath, Stage stage) {
         super(mediaPath);
         this.stage = stage;
+    }
+
+    /**
+     * Create an MPV media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
+     */
+    public MpvMediaPlayer(URI mediaPath) {
+        this(mediaPath, new JDialog());
     }
 
     @Override

@@ -1,19 +1,4 @@
-/**
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package org.datavyu.util;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,6 +25,9 @@ public class NativeLibraryLoader {
     /** Logger for this native library loader */
     private static Logger logger = LogManager.getLogger(NativeLibraryLoader.class);
 
+    /** Buffer size when copying files from streams */
+    public static final int BUFFER_COPY_SIZE = 16*1024; // 16 kB
+
     /**
      * Folder where we unzip libraries must be current working directory for the library loader to find dependent
      * libraries.
@@ -47,12 +35,6 @@ public class NativeLibraryLoader {
     private static File libraryFolder = new File(System.getProperty("user.dir"));
 
     private static boolean isMacOs = System.getProperty("os.name").contains("Mac");
-
-    /** Buffer size when copying files from streams */
-    public static final int BUFFER_COPY_SIZE = 16*1024; // 16 kB
-
-    /** Native Library Extension */
-    private static String extension;
 
     /**
      * Get resource URL for a given library name that is part of the jar.
@@ -63,19 +45,41 @@ public class NativeLibraryLoader {
      */
     private static URL getResource(String libName) throws Exception {
         Enumeration<URL> resources;
+        String extension;
         ClassLoader classLoader = NativeLibraryLoader.class.getClassLoader();
         if (isMacOs) {
-            extension = "jnilib";
-            resources = classLoader.getResources("lib" + libName + "." + extension);
+            extension = ".jnilib";
+            resources = classLoader.getResources("lib" + libName + extension);
             if (!resources.hasMoreElements()) {
-                extension = "dylib";
-                resources = classLoader.getResources(libName + "." + extension);
+                extension = ".dylib";
+                resources = classLoader.getResources(libName + extension);
             }
         } else {
-            extension = "dll";
-            resources = classLoader.getResources(libName + "." + extension);
+            extension = ".dll";
+            resources = classLoader.getResources(libName + extension);
         }
         return resources.hasMoreElements() ? resources.nextElement() : null;
+    }
+
+    /**
+     * Get the file extension for a library name.
+     *
+     * @param libName The library name.
+     * @return The extension as string.
+     * @throws Exception Could come from the class loader.
+     */
+    private static String getExtension(String libName) throws Exception {
+        String extension;
+        if (isMacOs) {
+            extension = ".jnilib";
+            if (!NativeLibraryLoader.class.getClassLoader()
+                    .getResources("lib" + libName + extension).hasMoreElements()) {
+                extension = ".dylib";
+            }
+        } else {
+            extension = ".dll";
+        }
+        return extension;
     }
 
     /**
@@ -104,7 +108,10 @@ public class NativeLibraryLoader {
         logger.info("Attempting to extract " + destName);
         URL url = getResource(destName);
         InputStream in = url.openStream();
-        File outfile = new File(libraryFolder, destName + "." + extension);
+        File outfile = new File(libraryFolder, destName + getExtension(destName));
+        if(outfile.exists()){
+            return outfile;
+        }
         FileOutputStream out = new FileOutputStream(outfile);
         BufferedOutputStream dest = new BufferedOutputStream(out, BUFFER_COPY_SIZE);
         int count;

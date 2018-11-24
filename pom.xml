@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>datavyu</groupId>
+    <groupId>org.datavyu</groupId>
     <artifactId>ffmpeg-plugin</artifactId>
     <version>0.19-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -29,6 +29,136 @@
             <layout>default</layout>
         </repository>
     </repositories>
+
+    <properties>
+        <!-- The msbuild.exe path is for Visual Studio 2017 Community version-->
+        <msbuild.exe>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe</msbuild.exe>
+        <msbuild.configuration.release>Release</msbuild.configuration.release>
+        <msbuild.configuration.debug>Debug</msbuild.configuration.debug>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>win64-release</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                    <arch>!x86</arch>
+                </os>
+            </activation>
+            <dependencies>
+
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <configuration>
+                            <executable>${msbuild.exe}</executable>
+                            <workingDirectory>src/main/cpp</workingDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-with-msbuild</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>MediaPlayer.sln</argument>
+                                        <argument>/t:Clean</argument>
+                                        <argument>/p:Configuration=${msbuild.configuration.release}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-with-msbuild</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>/p:Configuration=${msbuild.configuration.release}</argument>
+                                        <!--Need to update the argument value if you change the name
+                                        of the Visual Studio Solution-->
+                                        <argument>MediaPlayer.sln</argument>
+                                        <argument>/t:build</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>win64-debug</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                    <arch>!x86</arch>
+                </os>
+                <property>
+                    <name>debug</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <dependencies>
+
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <configuration>
+                            <executable>${msbuild.exe}</executable>
+                            <workingDirectory>src/main/cpp</workingDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-with-msbuild</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>MediaPlayer.sln</argument>
+                                        <argument>/t:Clean</argument>
+                                        <argument>/p:Configuration=${msbuild.configuration.debug}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-with-msbuild</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>/p:Configuration=${msbuild.configuration.debug}</argument>
+                                        <!--Need to update the argument value if you change the name
+                                        of the Visual Studio Solution-->
+                                        <argument>MediaPlayer.sln</argument>
+                                        <argument>/t:build</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
@@ -135,23 +265,23 @@
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
         <!-- FFmpeg 4.0 Version -->
         <dependency>
-            <groupId>datavyu</groupId>
+            <groupId>org.datavyu</groupId>
             <artifactId>ffmpeg-libs</artifactId>
-            <version>0.6</version>
+            <version>4.0.2</version>
         </dependency>
 
         <!-- SDL 2.0.8 -->
         <dependency>
-            <groupId>datavyu</groupId>
+            <groupId>org.datavyu</groupId>
             <artifactId>sdl-libs</artifactId>
-            <version>0.2</version>
+            <version>2.0.8</version>
         </dependency>
 
         <!-- MPV 0.29.1 -->
         <dependency>
-            <groupId>datavyu</groupId>
+            <groupId>org.datavyu</groupId>
             <artifactId>mpv-libs</artifactId>
-            <version>0.2</version>
+            <version>0.29.1</version>
         </dependency>
 
     </dependencies>

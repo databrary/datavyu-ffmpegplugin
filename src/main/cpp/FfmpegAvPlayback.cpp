@@ -23,9 +23,8 @@ void FfmpegAvPlayback::TogglePause() {
   // Update the external clock
   pExtclk->SetTime(pExtclk->GetTime(), pExtclk->GetSerial());
 
-  // Flip the paused flag on the clocks
-  bool flipped = !p_video_state_->IsPaused();
-  p_video_state_->SetPaused(flipped);
+  // Flip the paused flag
+  p_video_state_->SetPaused(!p_video_state_->IsPaused());
 }
 
 FfmpegAvPlayback::FfmpegAvPlayback()
@@ -51,8 +50,14 @@ void FfmpegAvPlayback::Play() {
   }
 }
 
+void FfmpegAvPlayback::Pause() {
+  if (!p_video_state_->IsPaused()) {
+    TogglePauseAndStopStep();
+    p_video_state_->SetStopped(false);
+  }
+}
+
 // Stop and put the playback speed to 0x
-// Note the playback speed is not implemetnted yet
 void FfmpegAvPlayback::Stop() {
   if (!p_video_state_->IsPaused()) {
     TogglePauseAndStopStep();
@@ -60,15 +65,21 @@ void FfmpegAvPlayback::Stop() {
   }
 }
 
-// pause and keep the playback speed.
-// Note the playback speed is not implemetnted yet
+// Pause and keep the playback speed
 void FfmpegAvPlayback::TogglePauseAndStopStep() {
   TogglePause();
   p_video_state_->SetStepping(false);
 }
 
 int FfmpegAvPlayback::SetSpeed(double speed) {
-  int err = p_video_state_->SetSpeed(speed);
+  int err = ERROR_NONE;
+	if (speed < 0) {
+		err = ERROR_FFMPEG_FILTER_NOT_FOUND; // no filter available for backward playback
+	} else if (speed < std::numeric_limits<double>::epsilon()) {
+    Pause();
+  } else {
+    err = p_video_state_->SetSpeed(speed);
+  }
   return err ? ERROR_FFMPEG_FILTER_NOT_FOUND : ERROR_NONE;
 }
 

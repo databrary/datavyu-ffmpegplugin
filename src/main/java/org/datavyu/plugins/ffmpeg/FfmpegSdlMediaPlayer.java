@@ -1,5 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.util.NativeLibraryLoader;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URI;
@@ -14,7 +15,21 @@ import java.net.URI;
 public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     static {
-        System.loadLibrary("FfmpegSdlMediaPlayer");
+        try {
+            System.out.println("Extracting libraries for ffmpeg and SDL2.");
+            NativeLibraryLoader.extract("avutil-56");
+            NativeLibraryLoader.extract("swscale-5");
+            NativeLibraryLoader.extract("swresample-3");
+            NativeLibraryLoader.extract("avcodec-58");
+            NativeLibraryLoader.extract("avformat-58");
+            NativeLibraryLoader.extract("avfilter-7");
+            NativeLibraryLoader.extract("avdevice-58");
+            NativeLibraryLoader.extract("postproc-55");
+            NativeLibraryLoader.extract("SDL2");
+            NativeLibraryLoader.extractAndLoad("FfmpegSdlMediaPlayer");
+        } catch (Exception e) {
+            System.out.println("Failed loading libraries due to error: "+ e);
+        }
     }
 
     public FfmpegSdlMediaPlayer(URI mediaPath) {
