@@ -107,14 +107,6 @@
 		E95D235D2196544D007A6758 /* FfmpegErrorUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegErrorUtils.cpp; sourceTree = "<group>"; };
 		E95D235E2196544D007A6758 /* Pipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Pipeline.cpp; sourceTree = "<group>"; };
 		E95D235F2196544D007A6758 /* FrameQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FrameQueue.cpp; sourceTree = "<group>"; };
-		E95D238821965488007A6758 /* libpostproc.55.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpostproc.55.dylib; path = "dependencies/ffmpeg-shared/bin/libpostproc.55.dylib"; sourceTree = "<group>"; };
-		E95D238921965488007A6758 /* libswresample.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswresample.3.dylib; path = "dependencies/ffmpeg-shared/bin/libswresample.3.dylib"; sourceTree = "<group>"; };
-		E95D238A21965488007A6758 /* libavutil.56.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavutil.56.dylib; path = "dependencies/ffmpeg-shared/bin/libavutil.56.dylib"; sourceTree = "<group>"; };
-		E95D238B21965488007A6758 /* libavdevice.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavdevice.58.dylib; path = "dependencies/ffmpeg-shared/bin/libavdevice.58.dylib"; sourceTree = "<group>"; };
-		E95D238C21965488007A6758 /* libavfilter.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavfilter.7.dylib; path = "dependencies/ffmpeg-shared/bin/libavfilter.7.dylib"; sourceTree = "<group>"; };
-		E95D238D21965488007A6758 /* libavcodec.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavcodec.58.dylib; path = "dependencies/ffmpeg-shared/bin/libavcodec.58.dylib"; sourceTree = "<group>"; };
-		E95D238E21965488007A6758 /* libswscale.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswscale.5.dylib; path = "dependencies/ffmpeg-shared/bin/libswscale.5.dylib"; sourceTree = "<group>"; };
-		E95D238F21965488007A6758 /* libavformat.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavformat.58.dylib; path = "dependencies/ffmpeg-shared/bin/libavformat.58.dylib"; sourceTree = "<group>"; };
 		E95D2398219656FA007A6758 /* FfmpegJavaMediaPlayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegJavaMediaPlayer.cpp; sourceTree = "<group>"; };
 		E95D239A2196573F007A6758 /* Media.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Media.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -206,14 +198,6 @@
 				E92618D4219A01D40083EA8E /* libpostproc.55.dylib */,
 				E92618D3219A01D40083EA8E /* libswresample.3.dylib */,
 				E92618D0219A01D40083EA8E /* libswscale.5.dylib */,
-				E95D238D21965488007A6758 /* libavcodec.58.dylib */,
-				E95D238B21965488007A6758 /* libavdevice.58.dylib */,
-				E95D238C21965488007A6758 /* libavfilter.7.dylib */,
-				E95D238F21965488007A6758 /* libavformat.58.dylib */,
-				E95D238A21965488007A6758 /* libavutil.56.dylib */,
-				E95D238821965488007A6758 /* libpostproc.55.dylib */,
-				E95D238921965488007A6758 /* libswresample.3.dylib */,
-				E95D238E21965488007A6758 /* libswscale.5.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -470,7 +454,7 @@
 					"${PROJECT_DIR}/dependencies/include",
 				);
 				INSTALL_PATH = "@rpath";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
+				LD_RUNPATH_SEARCH_PATHS = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/dependencies/lib",
@@ -493,7 +477,7 @@
 					"${PROJECT_DIR}/dependencies/include",
 				);
 				INSTALL_PATH = "@rpath";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
+				LD_RUNPATH_SEARCH_PATHS = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/dependencies/lib",

@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E95564D421963D3800A2AD8D"
-               BuildableName = "libFfmpegJavaMediaPlayer.dylib"
-               BlueprintName = "FfmpegJavaMediaPlayer"
-               ReferencedContainer = "container:FfmpegJavaMediaPlayer.xcodeproj">
+               BlueprintIdentifier = "E95D22D4219644C2007A6758"
+               BuildableName = "libFfmpegSdlMediaPlayer.dylib"
+               BlueprintName = "FfmpegSdlMediaPlayer"
+               ReferencedContainer = "container:FfmpegSdlMediaPlayer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,10 +45,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E95564D421963D3800A2AD8D"
-            BuildableName = "libFfmpegJavaMediaPlayer.dylib"
-            BlueprintName = "FfmpegJavaMediaPlayer"
-            ReferencedContainer = "container:FfmpegJavaMediaPlayer.xcodeproj">
+            BlueprintIdentifier = "E95D22D4219644C2007A6758"
+            BuildableName = "libFfmpegSdlMediaPlayer.dylib"
+            BlueprintName = "FfmpegSdlMediaPlayer"
+            ReferencedContainer = "container:FfmpegSdlMediaPlayer.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -63,10 +63,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E95564D421963D3800A2AD8D"
-            BuildableName = "libFfmpegJavaMediaPlayer.dylib"
-            BlueprintName = "FfmpegJavaMediaPlayer"
-            ReferencedContainer = "container:FfmpegJavaMediaPlayer.xcodeproj">
+            BlueprintIdentifier = "E95D22D4219644C2007A6758"
+            BuildableName = "libFfmpegSdlMediaPlayer.dylib"
+            BlueprintName = "FfmpegSdlMediaPlayer"
+            ReferencedContainer = "container:FfmpegSdlMediaPlayer.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

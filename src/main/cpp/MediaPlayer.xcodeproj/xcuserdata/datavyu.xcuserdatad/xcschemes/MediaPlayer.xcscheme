@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E95564D421963D3800A2AD8D"
-               BuildableName = "libFfmpegJavaMediaPlayer.dylib"
-               BlueprintName = "FfmpegJavaMediaPlayer"
-               ReferencedContainer = "container:FfmpegJavaMediaPlayer.xcodeproj">
+               BlueprintIdentifier = "E95D243021966BBF007A6758"
+               BuildableName = "MediaPlayer"
+               BlueprintName = "MediaPlayer"
+               ReferencedContainer = "container:MediaPlayer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,6 +29,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "E95D243021966BBF007A6758"
+            BuildableName = "MediaPlayer"
+            BlueprintName = "MediaPlayer"
+            ReferencedContainer = "container:MediaPlayer.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -42,15 +51,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E95564D421963D3800A2AD8D"
-            BuildableName = "libFfmpegJavaMediaPlayer.dylib"
-            BlueprintName = "FfmpegJavaMediaPlayer"
-            ReferencedContainer = "container:FfmpegJavaMediaPlayer.xcodeproj">
+            BlueprintIdentifier = "E95D243021966BBF007A6758"
+            BuildableName = "MediaPlayer"
+            BlueprintName = "MediaPlayer"
+            ReferencedContainer = "container:MediaPlayer.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -60,15 +70,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E95564D421963D3800A2AD8D"
-            BuildableName = "libFfmpegJavaMediaPlayer.dylib"
-            BlueprintName = "FfmpegJavaMediaPlayer"
-            ReferencedContainer = "container:FfmpegJavaMediaPlayer.xcodeproj">
+            BlueprintIdentifier = "E95D243021966BBF007A6758"
+            BuildableName = "MediaPlayer"
+            BlueprintName = "MediaPlayer"
+            ReferencedContainer = "container:MediaPlayer.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
