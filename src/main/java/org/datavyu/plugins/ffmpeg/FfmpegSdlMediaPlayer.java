@@ -271,11 +271,15 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     class _PlayerStateListener implements PlayerStateListener {
 
         @Override
-        public void onReady(PlayerStateEvent evt) { }
+        public void onReady(PlayerStateEvent evt) {
+            if(masterClock != null) {
+                createMediaTimer();
+            }
+        }
 
         @Override
         public void onPlaying(PlayerStateEvent evt) {
-            createMediaTimer();
+            isUpdateTimeEnabled = true;
         }
 
         @Override

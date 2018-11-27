@@ -418,11 +418,14 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
         @Override
         public void onReady(PlayerStateEvent evt) {
+            if(masterClock != null) {
+                createMediaTimer();
+            }
         }
 
         @Override
         public void onPlaying(PlayerStateEvent evt) {
-            createMediaTimer();
+            isUpdateTimeEnabled = true;
         }
 
         @Override

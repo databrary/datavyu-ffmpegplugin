@@ -1,5 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
+import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -168,7 +169,7 @@ public class MediaPlayerBuilder {
             case JAVA_JDIALOG:
                 return new FfmpegJavaMediaPlayer(movie, new JDialog());
             case MPV:
-                return new MpvMediaPlayer(movie, new JDialog());
+                return new MpvMediaPlayer(movie, new Stage());
             default:
                 throw new IllegalArgumentException("Could not build player for type " + type);
         }

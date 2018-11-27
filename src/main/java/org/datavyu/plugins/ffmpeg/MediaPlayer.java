@@ -241,17 +241,30 @@ public interface MediaPlayer {
      */
     void dispose();
 
+    /** ***********************************
+     * OBSERVER PATTERN: Methods used by an external clock
+     * ***********************************/
     /**
-     * MASTER CLOCK, UPDATES
-     * */
-
-    //method to update the observer, used by subject
+     * Method to update the media player master time, note that this method is used
+     * by the Clock Timer in Datavyu
+     */
     void updateMasterTime();
 
+    /**
+     * Method to update the media player minimum time note that this method is used
+     * by the Clock Timer in Datavyu
+     */
     void updateMasterMinTime();
 
+    /**
+     * Method to update the media player minimum time note that this method is used
+     * by the Clock Timer in Datavyu
+     */
     void updateMasterMaxTime();
 
-    //attach with subject to observe
+    /**
+     * Attach a master clock to observe
+     * @param sub Subject that is represented by the Clock timer
+     */
     void setSubject(Subject sub);
 }

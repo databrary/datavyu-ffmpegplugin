@@ -1,10 +1,8 @@
 package org.datavyu.plugins.ffmpeg;
 
-//import sun.awt.windows.WComponentPeer;
 import com.sun.javafx.tk.TKStage;
 import javafx.stage.Stage;
 import org.datavyu.util.NativeLibraryLoader;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 import javax.swing.*;
@@ -48,23 +46,17 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     private Stage stage;
 
-    private Container container;
     private long windowID;
 
     private PlayerStateListener stateListener;
 
     /**
-     * Create an MPV media player instance and play through java
+     * Create an MPV media player instance and play through javafx
      * framework
      *
      * @param mediaPath The media path
-     * @param container The container to display the frame in
+     * @param stage The container to display the frame in
      */
-    public MpvMediaPlayer(URI mediaPath, Container container) {
-        super(mediaPath);
-        this.container = container;
-    }
-
     public MpvMediaPlayer(URI mediaPath, Stage stage) {
         super(mediaPath);
         this.stage = stage;
@@ -77,7 +69,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
      * @param mediaPath The media path
      */
     public MpvMediaPlayer(URI mediaPath) {
-        this(mediaPath, new JDialog());
+        this(mediaPath, new Stage());
     }
 
     @Override
@@ -89,10 +81,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
         long[] newNativeMediaRef = new long[1];
 
-        if(container != null)
-            initContainer();
-        else
-            initStage();
+        initStage();
 
         int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
         if (0 != rc) {
@@ -110,17 +99,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
             throw new IllegalStateException("Need a valid WID for the MPV Player");
         }
 
-    }
-
-    private void initContainer(){
-        container.setVisible(true);
-        // Container need to be visible in order to get a valid HWND
-
-        // TODO(Reda):find alternative for deprecated getPeer() method
-//        windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
-//        if (windowID == 0){
-//            throw new IllegalStateException("Need a valid WID for the MPV Player");
-//        }
     }
 
     private static long getWindowId(Stage stage) {
@@ -333,13 +311,13 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
         @Override
         public void onReady(PlayerStateEvent evt) {
-            container.setSize(getImageWidth(), getImageHeight());
+            if(masterClock != null) {
+                createMediaTimer();
+            }
         }
 
         @Override
-        public void onPlaying(PlayerStateEvent evt) {
-            createMediaTimer();
-        }
+        public void onPlaying(PlayerStateEvent evt) { isUpdateTimeEnabled = true; }
 
         @Override
         public void onPause(PlayerStateEvent evt) {
