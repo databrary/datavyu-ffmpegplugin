@@ -317,13 +317,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         }
 
         @Override
-<<<<<<< HEAD
-        public void onPlaying(PlayerStateEvent evt) {
-            createMediaTimer();
-        }
-=======
         public void onPlaying(PlayerStateEvent evt) { isUpdateTimeEnabled = true; }
->>>>>>> f10f248bcc198c3673b7754ead80b38746d8efe0
 
         @Override
         public void onPause(PlayerStateEvent evt) {
