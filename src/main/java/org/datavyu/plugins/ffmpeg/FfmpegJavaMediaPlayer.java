@@ -1,7 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
 import org.datavyu.util.NativeLibraryLoader;
-import org.datavyu.util.MediaTimerTask;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
@@ -29,8 +28,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // 4 kB
     private AudioFormat audioFormat;
     private ColorSpace colorSpace;
-
-    private PlayerStateListener stateListener;
 
     static {
         try {
@@ -120,9 +117,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     public void init() {
         initNative(); // start the event queue, make sure to register all state/error listeners before
         long[] newNativeMediaRef = new long[1];
-
-        stateListener = new _PlayerStateListener();
-        this.addMediaPlayerStateListener(stateListener);
 
         int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath, audioFormat, colorSpace, AUDIO_BUFFER_SIZE);
         if (0 != rc) {
@@ -319,9 +313,9 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();
         }
-        if (mediaTimerTask != null) {
-            destroyMediaTimer();
-        }
+
+        destroyMediaTimer();
+
         ffmpegDisposePlayer(getNativeMediaRef());
     }
 
@@ -412,40 +406,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
-    }
-
-    class _PlayerStateListener implements PlayerStateListener {
-
-        @Override
-        public void onReady(PlayerStateEvent evt) {
-            if(masterClock != null) {
-                createMediaTimer();
-            }
-        }
-
-        @Override
-        public void onPlaying(PlayerStateEvent evt) {
-            isUpdateTimeEnabled = true;
-        }
-
-        @Override
-        public void onPause(PlayerStateEvent evt) {
-            isUpdateTimeEnabled = false;
-        }
-
-        @Override
-        public void onStop(PlayerStateEvent evt) {
-            isUpdateTimeEnabled = false;
-        }
-
-        @Override
-        public void onStall(PlayerStateEvent evt) { }
-
-        @Override
-        public void onFinish(PlayerStateEvent evt) { }
-
-        @Override
-        public void onHalt(PlayerStateEvent evt) { }
     }
 
     // Native methods

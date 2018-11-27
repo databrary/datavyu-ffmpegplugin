@@ -1,11 +1,11 @@
 package org.datavyu.plugins.ffmpeg;
 
+import sun.awt.windows.WComponentPeer;
 import com.sun.javafx.tk.TKStage;
 import javafx.stage.Stage;
 import org.datavyu.util.NativeLibraryLoader;
 
 
-import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -44,11 +44,22 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         }
     }
 
+    private Container container;
     private Stage stage;
 
     private long windowID;
 
-    private PlayerStateListener stateListener;
+    /**
+     * Create an MPV media player instance and play through java
+     * framework
+     *
+     * @param mediaPath The media path
+     * @param container The container to display the frame in
+     */
+    public MpvMediaPlayer(URI mediaPath, Container container) {
+      super(mediaPath);
+      this.container = container;
+    }
 
     /**
      * Create an MPV media player instance and play through javafx
@@ -76,12 +87,13 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     public void init() {
         initNative(); // start the event queue, make sure to register all state/error listeners before
 
-        stateListener = new _PlayerStateListener();
-        this.addMediaPlayerStateListener(stateListener);
-
         long[] newNativeMediaRef = new long[1];
 
-        initStage();
+        if (stage != null) {
+          initStage();
+        } else {
+          initContainer();
+        }
 
         int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
         if (0 != rc) {
@@ -100,6 +112,18 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         }
 
     }
+
+    private void initContainer(){
+      //Container need to be visible in order to get a valid HWND
+      container.setVisible(true);
+
+//    TODO(Reda): WComponentPeer is not available on Mac need to find an alternative
+      windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
+      if (windowID == 0){
+        throw new IllegalStateException("Need a valid WID for the MPV Player");
+      }
+    }
+
 
     private static long getWindowId(Stage stage) {
         try {
@@ -126,6 +150,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
             return 0;
         }
     }
+
     @Override
     protected long playerGetAudioSyncDelay() throws MediaException {
         throw new UnsupportedOperationException();
@@ -307,43 +332,9 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         return height[0];
     }
 
-    class _PlayerStateListener implements PlayerStateListener {
-
-        @Override
-        public void onReady(PlayerStateEvent evt) {
-            if(masterClock != null) {
-                createMediaTimer();
-            }
-        }
-
-        @Override
-        public void onPlaying(PlayerStateEvent evt) { isUpdateTimeEnabled = true; }
-
-        @Override
-        public void onPause(PlayerStateEvent evt) {
-            isUpdateTimeEnabled = false;
-        }
-
-        @Override
-        public void onStop(PlayerStateEvent evt) {
-            isUpdateTimeEnabled = false;
-        }
-
-        @Override
-        public void onStall(PlayerStateEvent evt) { }
-
-        @Override
-        public void onFinish(PlayerStateEvent evt) { }
-
-        @Override
-        public void onHalt(PlayerStateEvent evt) { }
-    }
-
     @Override
     protected void playerDispose() {
-        if (mediaTimerTask != null) {
-            destroyMediaTimer();
-        }
+        destroyMediaTimer();
         mpvDisposePlayer(getNativeMediaRef());
     }
 

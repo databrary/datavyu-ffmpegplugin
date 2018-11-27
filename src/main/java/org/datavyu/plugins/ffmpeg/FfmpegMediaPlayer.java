@@ -1,7 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.util.MasterClock;
 import org.datavyu.util.MediaTimerTask;
-import org.datavyu.util.Subject;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URI;
@@ -10,6 +10,9 @@ import java.net.URI;
  * Uses ffmpeg to decode and transcode (optional) image and audio data
  */
 public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
+
+    private PlayerStateListener stateListener;
+
     float mutedVolume = 1.0f;  // last volume before mute
     boolean muteEnabled = false;
 
@@ -17,11 +20,11 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
     boolean isUpdateTimeEnabled = false;
     // The current time is not the presentation time, the current
     // time is used to periodically synchronize to a master a clock.
-    double streamCurrentTime;
-    double streamPrevTime = -1.0;
+    double playerCurrentTime;
+    double playerPreviousTime = -1.0;
     double masterCurrentTime;
 
-    Subject masterClock;
+    MasterClock masterClock;
 
     /**
      * Create an ffmpeg media player instance
@@ -30,6 +33,8 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
      */
     public FfmpegMediaPlayer(URI mediaPath) {
         super(mediaPath);
+        stateListener = new FfmpegPlayerStateListener();
+        this.addMediaPlayerStateListener(stateListener);
     }
 
     void throwMediaErrorException(int code, Throwable cause)
@@ -74,21 +79,19 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
 
     @Override
     protected synchronized void playerUpdateCurrentTime() {
-        if (isUpdateTimeEnabled
-                || Double.compare(playerGetPresentationTime(), streamPrevTime) != 0 ) {
-            double presentationTime = playerGetPresentationTime();
-            if (presentationTime >= 0.0) {
-                double newTime = presentationTime;
-                if (Double.compare(newTime, streamPrevTime) != 0) {
-                    if(Math.abs(newTime - masterCurrentTime) >= SYNC_THRESHOLD){
-                        seek(masterCurrentTime);
-                        streamCurrentTime = masterCurrentTime;
-                    } else {
-                        streamCurrentTime = newTime;
-                    }
-                    streamPrevTime = newTime;
-                }
+        double presentationTime = playerGetPresentationTime();
+
+        if(presentationTime >= 0.0
+            && (Double.compare(presentationTime, playerPreviousTime) != 0
+            || isUpdateTimeEnabled)) {
+
+            if(Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD) {
+                seek(masterCurrentTime);
+                playerCurrentTime = masterCurrentTime;
+            } else {
+                playerCurrentTime = presentationTime;
             }
+            playerPreviousTime = presentationTime;
         }
     }
 
@@ -97,6 +100,7 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
             if (mediaTimerTask == null) {
                 mediaTimerTask = new MediaTimerTask(this);
                 mediaTimerTask.start();
+                isUpdateTimeEnabled = true;
             }
         }
     }
@@ -113,8 +117,8 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
 
     @Override
     public void updateMasterTime() {
-        double masterClockTime = (double) masterClock.getTimeUpdate(this);
-        if(masterClockTime != 0.0){
+        double masterClockTime = masterClock.getTimeUpdate(this);
+        if(masterClockTime != masterCurrentTime){
             masterCurrentTime = masterClockTime/1000;
         }
     }
@@ -132,7 +136,38 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
     }
 
     @Override
-    public void setSubject(Subject masterClock) {
-        this.masterClock = masterClock;
+    public void setMasterClock(MasterClock masterMasterClock) {
+        this.masterClock = masterMasterClock;
+        createMediaTimer();
+    }
+
+     class FfmpegPlayerStateListener implements PlayerStateListener {
+
+        @Override
+        public void onReady(PlayerStateEvent evt) { }
+
+        @Override
+        public void onPlaying(PlayerStateEvent evt) {
+            isUpdateTimeEnabled = true;
+        }
+
+        @Override
+        public void onPause(PlayerStateEvent evt) {
+            isUpdateTimeEnabled = false;
+        }
+
+        @Override
+        public void onStop(PlayerStateEvent evt) {
+            isUpdateTimeEnabled = false;
+        }
+
+        @Override
+        public void onStall(PlayerStateEvent evt) { }
+
+        @Override
+        public void onFinish(PlayerStateEvent evt) { }
+
+        @Override
+        public void onHalt(PlayerStateEvent evt) { }
     }
 }

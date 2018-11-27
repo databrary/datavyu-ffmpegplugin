@@ -6,6 +6,7 @@ import org.datavyu.plugins.ffmpeg.PlaybackRateController;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -19,6 +20,7 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
         jSlider = new JSlider(0, (int) mediaPlayer.getDuration(),0);
         jSlider.setFocusable(false);
         jSlider.addChangeListener(this);
+        add(jSlider, BorderLayout.SOUTH);
         addKeyListener(this);
         pack();
         setSize(640, 480);

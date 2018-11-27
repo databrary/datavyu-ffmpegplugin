@@ -1,10 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
 
-import org.datavyu.util.Subject;
-
-import javax.sound.sampled.AudioFormat;
-import java.awt.color.ColorSpace;
+import org.datavyu.util.MasterClock;
 
 /**
  * This interface is similar to the one in javafx
@@ -43,7 +40,7 @@ public interface MediaPlayer {
     /**
      * Adds a listener for media state.
      *
-     * @param listener
+     * @param listener listener to be added
      * @throws IllegalArgumentException if <code>listener</code> is
      * <code>null</code>.
      */
@@ -52,7 +49,7 @@ public interface MediaPlayer {
     /**
      * Removes a listener for media state.
      *
-     * @param listener
+     * @param listener listener to be removed
      * @throws IllegalArgumentException if <code>listener</code> is
      * <code>null</code>.
      */
@@ -118,7 +115,7 @@ public interface MediaPlayer {
      * If a rate is not supported an Exception
      *
      * @param rate The rate
-     * @trows MediaException
+     * @throws MediaException
      */
     void setRate(float rate);
 
@@ -242,29 +239,38 @@ public interface MediaPlayer {
     void dispose();
 
     /** ***********************************
-     * OBSERVER PATTERN: Methods used by an external clock
+     * Methods used by an external clock to notify the media
+     * player of an update in the External Clock, after any
+     * update notification from the External CLock, each player
+     * should ask for the update by using call backs
+     * in {@link MasterClock} and process the updated value.
      * ***********************************/
+
     /**
-     * Method to update the media player master time, note that this method is used
-     * by the Clock Timer in Datavyu
+     * Method to notify the media player that the External Clock updated its
+     * Master time and the player must request the update
      */
     void updateMasterTime();
 
     /**
-     * Method to update the media player minimum time note that this method is used
-     * by the Clock Timer in Datavyu
+     * Method to notify the media player that the External Clock updated its
+     * min boundary time and the player must request the update.
      */
     void updateMasterMinTime();
 
     /**
-     * Method to update the media player minimum time note that this method is used
-     * by the Clock Timer in Datavyu
+     * Method to notify the media player that the External Clock updated its
+     * max boundary time and the player must request the update.
      */
     void updateMasterMaxTime();
 
     /**
-     * Attach a master clock to observe
-     * @param sub Subject that is represented by the Clock timer
+     * Attach an External Clock to the media player, the media will create
+     * {@link org.datavyu.util.MediaTimerTask } to update the current time
+     * of the media player and force a sync when needed. Note that
+     * attaching an External clock could be done any time during the playback.
+     *
+     * @param masterClock External Clock
      */
-    void setSubject(Subject sub);
+    void setMasterClock(MasterClock masterClock);
 }
