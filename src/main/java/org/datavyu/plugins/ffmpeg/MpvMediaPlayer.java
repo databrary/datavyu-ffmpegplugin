@@ -1,12 +1,13 @@
 package org.datavyu.plugins.ffmpeg;
 
+import com.sun.javafx.tk.TKStage;
+import javafx.stage.Stage;
 import org.datavyu.util.NativeLibraryLoader;
-import sun.awt.windows.WComponentPeer;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Method;
 import java.net.URI;
 
 
@@ -14,37 +15,51 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     static {
         try {
-            System.out.println("Extracting libraries for ffmpeg and MPV.");
-            NativeLibraryLoader.extract("avutil-56");
-            NativeLibraryLoader.extract("swscale-5");
-            NativeLibraryLoader.extract("swresample-3");
-            NativeLibraryLoader.extract("avcodec-58");
-            NativeLibraryLoader.extract("avformat-58");
-            NativeLibraryLoader.extract("avfilter-7");
-            NativeLibraryLoader.extract("avdevice-58");
-            NativeLibraryLoader.extract("postproc-55");
-            NativeLibraryLoader.extract("mpv-1");
+            if(!NativeLibraryLoader.isMacOs) {
+                System.out.println("Extracting Windows libraries for ffmpeg and MPV.");
+                NativeLibraryLoader.extract("avutil-56");
+                NativeLibraryLoader.extract("swscale-5");
+                NativeLibraryLoader.extract("swresample-3");
+                NativeLibraryLoader.extract("avcodec-58");
+                NativeLibraryLoader.extract("avformat-58");
+                NativeLibraryLoader.extract("avfilter-7");
+                NativeLibraryLoader.extract("avdevice-58");
+                NativeLibraryLoader.extract("postproc-55");
+                NativeLibraryLoader.extract("mpv-1");
+            } else {
+                System.out.println("Extracting Mac OS libraries for ffmpeg and MPV.");
+                NativeLibraryLoader.extract("avutil.56");
+                NativeLibraryLoader.extract("swscale.5");
+                NativeLibraryLoader.extract("swresample.3");
+                NativeLibraryLoader.extract("avcodec.58");
+                NativeLibraryLoader.extract("avformat.58");
+                NativeLibraryLoader.extract("avfilter.7");
+                NativeLibraryLoader.extract("avdevice.58");
+                NativeLibraryLoader.extract("postproc.55");
+                NativeLibraryLoader.extract("mpv.1");
+            }
             NativeLibraryLoader.extractAndLoad("MpvMediaPlayer");
         } catch (Exception e) {
             System.out.println("Failed loading libraries due to error: "+ e);
         }
     }
 
-    private Container container;
+    private Stage stage;
+
     private long windowID;
 
     private PlayerStateListener stateListener;
 
     /**
-     * Create an MPV media player instance and play through java
+     * Create an MPV media player instance and play through javafx
      * framework
      *
      * @param mediaPath The media path
-     * @param container The container to display the frame in
+     * @param stage The container to display the frame in
      */
-    public MpvMediaPlayer(URI mediaPath, Container container) {
+    public MpvMediaPlayer(URI mediaPath, Stage stage) {
         super(mediaPath);
-        this.container = container;
+        this.stage = stage;
     }
 
     /**
@@ -54,7 +69,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
      * @param mediaPath The media path
      */
     public MpvMediaPlayer(URI mediaPath) {
-        this(mediaPath, new JDialog());
+        this(mediaPath, new Stage());
     }
 
     @Override
@@ -66,7 +81,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
         long[] newNativeMediaRef = new long[1];
 
-        initContainer();
+        initStage();
 
         int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
         if (0 != rc) {
@@ -76,17 +91,41 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
         nativeMediaRef = newNativeMediaRef[0];
     }
 
-    private void initContainer(){
-        container.setVisible(true);
-        // Container need to be visible in order to get a valid HWND
+    private void initStage() {
+        stage.show();
 
-        // TODO(Reda):find alternative for deprecated getPeer() method
-        windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
+        windowID = getWindowId(stage);
         if (windowID == 0){
             throw new IllegalStateException("Need a valid WID for the MPV Player");
         }
+
     }
 
+    private static long getWindowId(Stage stage) {
+        try {
+            Method tkStageGetter;
+            try {
+                // java 9
+                tkStageGetter = stage.getClass().getSuperclass().getDeclaredMethod("getPeer");
+            } catch (NoSuchMethodException ex) {
+                // java 8
+                tkStageGetter = stage.getClass().getMethod("impl_getPeer");
+            }
+            tkStageGetter.setAccessible(true);
+            TKStage tkStage = (TKStage) tkStageGetter.invoke(stage);
+            Method getPlatformWindow = tkStage.getClass().getDeclaredMethod("getPlatformWindow");
+            getPlatformWindow.setAccessible(true);
+            Object platformWindow = getPlatformWindow.invoke(tkStage);
+            Method getNativeHandle = platformWindow.getClass().getMethod("getNativeHandle");
+            getNativeHandle.setAccessible(true);
+            Object nativeHandle = getNativeHandle.invoke(platformWindow);
+            return (long) nativeHandle;
+        } catch (Throwable e) {
+            System.err.println("Error getting Window Pointer");
+            e.printStackTrace();
+            return 0;
+        }
+    }
     @Override
     protected long playerGetAudioSyncDelay() throws MediaException {
         throw new UnsupportedOperationException();
@@ -272,13 +311,19 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
         @Override
         public void onReady(PlayerStateEvent evt) {
-            container.setSize(getImageWidth(), getImageHeight());
+            if(masterClock != null) {
+                createMediaTimer();
+            }
         }
 
         @Override
+<<<<<<< HEAD
         public void onPlaying(PlayerStateEvent evt) {
             createMediaTimer();
         }
+=======
+        public void onPlaying(PlayerStateEvent evt) { isUpdateTimeEnabled = true; }
+>>>>>>> f10f248bcc198c3673b7754ead80b38746d8efe0
 
         @Override
         public void onPause(PlayerStateEvent evt) {

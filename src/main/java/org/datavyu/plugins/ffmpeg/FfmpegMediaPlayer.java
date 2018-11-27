@@ -2,6 +2,7 @@ package org.datavyu.plugins.ffmpeg;
 
 import org.datavyu.util.MediaTimerTask;
 import org.datavyu.util.Subject;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URI;
 
@@ -72,20 +73,19 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
     }
 
     @Override
-    protected void playerUpdateCurrentTime() {
-        if (isUpdateTimeEnabled) {
+    protected synchronized void playerUpdateCurrentTime() {
+        if (isUpdateTimeEnabled
+                || Double.compare(playerGetPresentationTime(), streamPrevTime) != 0 ) {
             double presentationTime = playerGetPresentationTime();
             if (presentationTime >= 0.0) {
                 double newTime = presentationTime;
-                System.out.println("Current Time " + newTime + " sec, previous time " + streamPrevTime +" sec");
                 if (Double.compare(newTime, streamPrevTime) != 0) {
-                    if(Math.abs(newTime - masterCurrentTime) <= 1.5){
-                        System.out.println("Need Sync FROM PLUGIN success");
-                        setStreamCurrentTime(masterCurrentTime);
+                    if(Math.abs(newTime - masterCurrentTime) >= SYNC_THRESHOLD){
+                        seek(masterCurrentTime);
+                        streamCurrentTime = masterCurrentTime;
                     } else {
-                        setStreamCurrentTime(newTime);
+                        streamCurrentTime = newTime;
                     }
-
                     streamPrevTime = newTime;
                 }
             }
@@ -98,7 +98,6 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
                 mediaTimerTask = new MediaTimerTask(this);
                 mediaTimerTask.start();
             }
-            isUpdateTimeEnabled = true;
         }
     }
 
@@ -112,16 +111,24 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
         }
     }
 
-    protected void setStreamCurrentTime(double streamCurrentTime) {
-        this.streamCurrentTime = streamCurrentTime;
+    @Override
+    public void updateMasterTime() {
+        double masterClockTime = (double) masterClock.getTimeUpdate(this);
+        if(masterClockTime != 0.0){
+            masterCurrentTime = masterClockTime/1000;
+        }
     }
 
     @Override
-    public void updateMasterTime() {
-        double masterClockTime = (double) masterClock.getUpdate(this);
-        if(masterClockTime != 0.0){
-            masterCurrentTime = masterClockTime;
-        }
+    public void updateMasterMinTime() {
+        //TODO: Add a marker to the media
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void updateMasterMaxTime() {
+        //TODO: Add a marker to the media
+        throw new NotImplementedException();
     }
 
     @Override

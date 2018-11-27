@@ -23,6 +23,9 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public static final int SEEK_ACCURATE_FLAG = 0x01;
     public static final int SEEK_FAST_FLAG = 0x10;
 
+    /** Synchronization threshold in milliseconds */
+    public static final double SYNC_THRESHOLD = 0.5; // 0.5 sec  (because some plugins are not very precise in seek)
+
     private final List<WeakReference<MediaErrorListener>> errorListeners = new ArrayList<>();
     private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
 
@@ -631,8 +634,9 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
     /**
      * This method is called by the {@link org.datavyu.util.MediaTimerTask} to update the
-     * current time, note that this method is not part of the {@link MediaPlayer} interface
-     * and using this method will require casting your madiaplyer to {@link NativeMediaPlayer}
+     * current time and will force the player to seek only if we have above the threshold, note
+     * that this method is not part of the {@link MediaPlayer} interface
+     * and using this method will require casting your madia player to {@link NativeMediaPlayer}
      */
     public void updateCurrentTime(){
         if (!isDisposed){

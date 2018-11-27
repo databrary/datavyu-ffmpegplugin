@@ -4,7 +4,12 @@
 #include "FfmpegAVPlayback.h"
 #include "MpvErrorUtils.h"
 #include <MPV/client.h> // This include is just for the MPV_FORMAT usage
+#ifdef _WIN32
 #include <Windows.h>
+#elif __APPLE__
+#include "TargetConditionals.h"
+#include <dlfcn.h>
+#endif
 #include <atomic>
 #include <clocale>
 #include <cstdint>
@@ -46,7 +51,11 @@ typedef mpv_event *(*MpvWaitEvent)(intptr_t, double);
 class MpvAvPlayback {
 
 private:
-  HINSTANCE lib_mpv_dll_;
+#ifdef _WIN32
+  HINSTANCE                _libMpvDll;
+#elif __APPLE__
+  void*                   _libMpvDylib;
+#endif
   intptr_t mpv_handle_;
 
   // Function pointers to mpv api functions

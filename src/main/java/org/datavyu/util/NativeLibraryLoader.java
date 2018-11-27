@@ -34,7 +34,7 @@ public class NativeLibraryLoader {
      */
     private static File libraryFolder = new File(System.getProperty("user.dir"));
 
-    private static boolean isMacOs = System.getProperty("os.name").contains("Mac");
+    public static boolean isMacOs = System.getProperty("os.name").contains("Mac");
 
     /**
      * Get resource URL for a given library name that is part of the jar.
@@ -96,6 +96,10 @@ public class NativeLibraryLoader {
         return libraryFile;
     }
 
+    public static void load(final String destName) {
+        System.loadLibrary(destName);
+    }
+
     /**
      * Extract a library from a resource jar.
      *
@@ -109,9 +113,6 @@ public class NativeLibraryLoader {
         URL url = getResource(destName);
         InputStream in = url.openStream();
         File outfile = new File(libraryFolder, destName + getExtension(destName));
-        if(outfile.exists()){
-            return outfile;
-        }
         FileOutputStream out = new FileOutputStream(outfile);
         BufferedOutputStream dest = new BufferedOutputStream(out, BUFFER_COPY_SIZE);
         int count;

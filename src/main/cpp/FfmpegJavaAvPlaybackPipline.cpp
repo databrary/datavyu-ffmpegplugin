@@ -203,6 +203,8 @@ uint32_t FfmpegJavaAvPlaybackPipline::SetVolume(float volume) {
 
   // TODO(fraudies): Implement this once ready
   // pSdlPlayback->update_volume(signbit(fVolume), fVolume * SDL_MIX_MAXVOLUME);
+    
+    return ERROR_NONE;
 }
 
 // Note this function is available only when streaming through SDL pipline
