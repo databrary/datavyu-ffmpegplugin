@@ -1,9 +1,8 @@
 package org.datavyu.plugins.ffmpeg;
 
-import org.datavyu.util.MasterClock;
-import org.datavyu.util.MediaTimerTask;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.awt.Container;
 import java.net.URI;
 
 /**
@@ -12,19 +11,17 @@ import java.net.URI;
 public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
 
     private PlayerStateListener stateListener;
+    private Container mpvContainer;
 
     float mutedVolume = 1.0f;  // last volume before mute
     boolean muteEnabled = false;
 
-    MediaTimerTask mediaTimerTask = null;
     boolean isUpdateTimeEnabled = false;
     // The current time is not the presentation time, the current
     // time is used to periodically synchronize to a master a clock.
     double playerCurrentTime;
     double playerPreviousTime = -1.0;
     double masterCurrentTime;
-
-    MasterClock masterClock;
 
     /**
      * Create an ffmpeg media player instance
@@ -35,6 +32,18 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
         super(mediaPath);
         stateListener = new FfmpegPlayerStateListener();
         this.addMediaPlayerStateListener(stateListener);
+    }
+
+    //TODO: Use Java FX framework with MPV to remove this constructor
+    /**
+     * Create an ffmpeg media player instance, with an
+     * mpv container, to be resized on ready.
+     *
+     * @param mediaPath The path to the media
+     */
+    public FfmpegMediaPlayer(URI mediaPath, Container mpvContainer) {
+        this(mediaPath);
+        this.mpvContainer = mpvContainer;
     }
 
     void throwMediaErrorException(int code, Throwable cause)
@@ -78,73 +87,48 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
     }
 
     @Override
-    protected synchronized void playerUpdateCurrentTime() {
-        double presentationTime = playerGetPresentationTime();
+    public void updateMasterTime(final double masterClockTime) {
+        if(masterCurrentTime != masterClockTime/1000){
 
-        if(presentationTime >= 0.0
-            && (Double.compare(presentationTime, playerPreviousTime) != 0
-            || isUpdateTimeEnabled)) {
-
-            if(Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD) {
-                seek(masterCurrentTime);
-                playerCurrentTime = masterCurrentTime;
-            } else {
-                playerCurrentTime = presentationTime;
-            }
-            playerPreviousTime = presentationTime;
-        }
-    }
-
-    protected void createMediaTimer() {
-        synchronized (MediaTimerTask.timerLock) {
-            if (mediaTimerTask == null) {
-                mediaTimerTask = new MediaTimerTask(this);
-                mediaTimerTask.start();
-                isUpdateTimeEnabled = true;
-            }
-        }
-    }
-
-    protected void destroyMediaTimer() {
-        synchronized (MediaTimerTask.timerLock) {
-            if (mediaTimerTask != null) {
-                isUpdateTimeEnabled = false;
-                mediaTimerTask.stop();
-                mediaTimerTask = null;
-            }
-        }
-    }
-
-    @Override
-    public void updateMasterTime() {
-        double masterClockTime = masterClock.getTimeUpdate(this);
-        if(masterClockTime != masterCurrentTime){
             masterCurrentTime = masterClockTime/1000;
+            double presentationTime = playerGetPresentationTime();
+
+            if(presentationTime >= 0.0
+                    && (Double.compare(presentationTime, playerPreviousTime) != 0
+                    || isUpdateTimeEnabled)) {
+
+                if(Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD) {
+                    seek(masterCurrentTime);
+                    playerCurrentTime = masterCurrentTime;
+                } else {
+                    playerCurrentTime = presentationTime;
+                }
+                playerPreviousTime = presentationTime;
+            }
         }
     }
 
     @Override
-    public void updateMasterMinTime() {
+    public void updateMasterMinTime(final double minMasterTime) {
         //TODO: Add a marker to the media
         throw new NotImplementedException();
     }
 
     @Override
-    public void updateMasterMaxTime() {
+    public void updateMasterMaxTime(final double maxMasterTime) {
         //TODO: Add a marker to the media
         throw new NotImplementedException();
-    }
-
-    @Override
-    public void setMasterClock(MasterClock masterMasterClock) {
-        this.masterClock = masterMasterClock;
-        createMediaTimer();
     }
 
      class FfmpegPlayerStateListener implements PlayerStateListener {
 
         @Override
-        public void onReady(PlayerStateEvent evt) { }
+        public void onReady(PlayerStateEvent evt) {
+            // Temporary for the MPV player
+            if (mpvContainer != null){
+               mpvContainer.setSize(getImageWidth(), getImageHeight());
+            }
+        }
 
         @Override
         public void onPlaying(PlayerStateEvent evt) {

@@ -3,7 +3,7 @@ package org.datavyu.plugins.ffmpeg;
 import sun.awt.windows.WComponentPeer;
 import com.sun.javafx.tk.TKStage;
 import javafx.stage.Stage;
-import org.datavyu.util.NativeLibraryLoader;
+import org.datavyu.util.LibraryLoader;
 
 
 import java.awt.*;
@@ -15,30 +15,30 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     static {
         try {
-            if(!NativeLibraryLoader.isMacOs) {
+            if(!LibraryLoader.isMacOs) {
                 System.out.println("Extracting Windows libraries for ffmpeg and MPV.");
-                NativeLibraryLoader.extract("avutil-56");
-                NativeLibraryLoader.extract("swscale-5");
-                NativeLibraryLoader.extract("swresample-3");
-                NativeLibraryLoader.extract("avcodec-58");
-                NativeLibraryLoader.extract("avformat-58");
-                NativeLibraryLoader.extract("avfilter-7");
-                NativeLibraryLoader.extract("avdevice-58");
-                NativeLibraryLoader.extract("postproc-55");
-                NativeLibraryLoader.extract("mpv-1");
+                LibraryLoader.extract("avutil-56");
+                LibraryLoader.extract("swscale-5");
+                LibraryLoader.extract("swresample-3");
+                LibraryLoader.extract("avcodec-58");
+                LibraryLoader.extract("avformat-58");
+                LibraryLoader.extract("avfilter-7");
+                LibraryLoader.extract("avdevice-58");
+                LibraryLoader.extract("postproc-55");
+                LibraryLoader.extract("mpv-1");
             } else {
                 System.out.println("Extracting Mac OS libraries for ffmpeg and MPV.");
-                NativeLibraryLoader.extract("avutil.56");
-                NativeLibraryLoader.extract("swscale.5");
-                NativeLibraryLoader.extract("swresample.3");
-                NativeLibraryLoader.extract("avcodec.58");
-                NativeLibraryLoader.extract("avformat.58");
-                NativeLibraryLoader.extract("avfilter.7");
-                NativeLibraryLoader.extract("avdevice.58");
-                NativeLibraryLoader.extract("postproc.55");
-                NativeLibraryLoader.extract("mpv.1");
+                LibraryLoader.extract("avutil.56");
+                LibraryLoader.extract("swscale.5");
+                LibraryLoader.extract("swresample.3");
+                LibraryLoader.extract("avcodec.58");
+                LibraryLoader.extract("avformat.58");
+                LibraryLoader.extract("avfilter.7");
+                LibraryLoader.extract("avdevice.58");
+                LibraryLoader.extract("postproc.55");
+                LibraryLoader.extract("mpv.1");
             }
-            NativeLibraryLoader.extractAndLoad("MpvMediaPlayer");
+            LibraryLoader.extractAndLoad("MpvMediaPlayer");
         } catch (Exception e) {
             System.out.println("Failed loading libraries due to error: "+ e);
         }
@@ -57,7 +57,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
      * @param container The container to display the frame in
      */
     public MpvMediaPlayer(URI mediaPath, Container container) {
-      super(mediaPath);
+      super(mediaPath, container);
       this.container = container;
     }
 
@@ -334,7 +334,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     @Override
     protected void playerDispose() {
-        destroyMediaTimer();
         mpvDisposePlayer(getNativeMediaRef());
     }
 

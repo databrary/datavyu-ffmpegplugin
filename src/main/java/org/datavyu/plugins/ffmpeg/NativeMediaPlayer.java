@@ -290,8 +290,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
     protected abstract void playerDispose();
 
-    protected abstract void playerUpdateCurrentTime();
-
     @Override
     public void setAudioSyncDelay(long delay) {
         try {
@@ -629,18 +627,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
             }
         } finally {
             disposeLock.unlock();
-        }
-    }
-
-    /**
-     * This method is called by the {@link org.datavyu.util.MediaTimerTask} to update the
-     * current time and will force the player to seek only if we have above the threshold, note
-     * that this method is not part of the {@link MediaPlayer} interface
-     * and using this method will require casting your madia player to {@link NativeMediaPlayer}
-     */
-    public void updateCurrentTime(){
-        if (!isDisposed){
-            playerUpdateCurrentTime();
         }
     }
 

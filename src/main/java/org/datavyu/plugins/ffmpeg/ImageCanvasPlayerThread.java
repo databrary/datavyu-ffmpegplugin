@@ -118,7 +118,7 @@ public class ImageCanvasPlayerThread extends Thread {
         WritableRaster raster = WritableRaster.createWritableRaster(sm, dataBuffer, new Point(0, 0));
         // Create the original image
         image = new BufferedImage(cm, raster, false, properties);
-        // Create the canvas and add it to the center fo the container
+        // Create the canvas and add it to the center of the Container
         this.canvas = new Canvas();
         // Add a black background to the canvas
         this.canvas.setBackground(Color.BLACK);

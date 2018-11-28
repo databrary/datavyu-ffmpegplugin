@@ -1,8 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
 
-import org.datavyu.util.MasterClock;
-
 /**
  * This interface is similar to the one in javafx
  * But at the time (July 2018) we decided against making a dependency on javafx
@@ -240,37 +238,26 @@ public interface MediaPlayer {
 
     /** ***********************************
      * Methods used by an external clock to notify the media
-     * player of an update in the External Clock, after any
-     * update notification from the External CLock, each player
-     * should ask for the update by using call backs
-     * in {@link MasterClock} and process the updated value.
+     * player of an update in the External Clock.
+     * Note that Datavyu is updating its clock will notify
+     * players every 100ms.
      * ***********************************/
 
     /**
      * Method to notify the media player that the External Clock updated its
-     * Master time and the player must request the update
+     * Master , and request a seek if necessary.
      */
-    void updateMasterTime();
+    void updateMasterTime(final double masterClockTime);
 
     /**
      * Method to notify the media player that the External Clock updated its
-     * min boundary time and the player must request the update.
+     * min boundary.
      */
-    void updateMasterMinTime();
+    void updateMasterMinTime(final double masterMinTime);
 
     /**
      * Method to notify the media player that the External Clock updated its
-     * max boundary time and the player must request the update.
+     * max boundary.
      */
-    void updateMasterMaxTime();
-
-    /**
-     * Attach an External Clock to the media player, the media will create
-     * {@link org.datavyu.util.MediaTimerTask } to update the current time
-     * of the media player and force a sync when needed. Note that
-     * attaching an External clock could be done any time during the playback.
-     *
-     * @param masterClock External Clock
-     */
-    void setMasterClock(MasterClock masterClock);
+    void updateMasterMaxTime(final double masterMaxTime);
 }
