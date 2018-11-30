@@ -42,17 +42,17 @@ int MpvAvPlayback::Init(const char *p_filename, const intptr_t windowID) {
         }
 #endif
 
-//  double _startUpVolume = 100;
-//  err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "volume", MPV_FORMAT_DOUBLE,
-//                                       &_startUpVolume));
-//  if (err != 0) {
-//    return err;
-//  }
+  double _startUpVolume = 100;
+  err = MpvToJavaErrNo(mpv_set_option_(mpv_handle_, "volume", MPV_FORMAT_DOUBLE,
+                                       &_startUpVolume));
+  if (err != 0) {
+    return err;
+  }
 
-//  err = MpvToJavaErrNo(Pause());
-//  if (err != 0) {
-//    return err;
-//  }
+  err = MpvToJavaErrNo(Pause());
+  if (err != 0) {
+    return err;
+  }
 
   err = MpvToJavaErrNo(mpv_initialize_(mpv_handle_));
   if (err != 0) {
