@@ -80,7 +80,11 @@ private:
   bool is_cursor_hidden_;
   char *p_window_title_;
   SDL_RendererInfo renderer_info_;
-  std::atomic<bool> is_stopped_ = false;
+#ifdef __APPLE__
+  std::atomic<bool> is_stopped_ = {false};
+#elif _WIN32
+    std::atomic<bool> is_stopped_ = false;
+#endif
   std::thread *p_display_thread_id_ = nullptr;
 
   static int kDefaultWidth;
