@@ -200,6 +200,7 @@ public:
   bool is_stopped_; // TODO(fraudies): Check if this need to be atomic
   bool queue_attachments_request_;
 
+  bool seek_done_;
   bool seek_request_;
   int seek_flags_;
   int64_t seek_time_;
@@ -231,6 +232,7 @@ public:
   int last_audio_stream_;
 
   std::condition_variable continue_read_thread_;
+  std::condition_variable continue_after_seek_;
 
   char *filename_;
 

@@ -566,10 +566,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         try {
             markerLock.lock();
             if (!isDisposed) {
-              // If we are not playing or if the rate is within -1x to 0x, then seek accurately; otherwise seek fast
-              float rate = getRate();
-              boolean isNotPlaying = getState() != PlayerStateEvent.PlayerState.PLAYING;
-              int seek_flag = -1 <= rate && rate <= 0 || isNotPlaying ? SEEK_ACCURATE_FLAG : SEEK_FAST_FLAG;
+              // In most cases seek accurate, with the exception of large backward playback rates
+              int seek_flag = getRate() < -1 ? SEEK_FAST_FLAG : SEEK_ACCURATE_FLAG;
               playerSeek(streamTime, seek_flag);
             }
         } catch (MediaException me) {
