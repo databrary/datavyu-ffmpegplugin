@@ -1,7 +1,10 @@
 package org.datavyu.plugins.ffmpeg;
 
 import java.awt.Container;
+import org.datavyu.util.LibraryLoader;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Uses ffmpeg to decode and transcode (optional) image and audio data
@@ -13,6 +16,19 @@ public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
 
     float mutedVolume = 1.0f;  // last volume before mute
     boolean muteEnabled = false;
+
+    /** Library dependencies for ffmpeg */
+    static final List<LibraryLoader.LibraryDependency> FFMPEG_DEPENDENCIES =
+            new ArrayList<LibraryLoader.LibraryDependency>() {{
+        add(new LibraryLoader.LibraryDependency("avutil", "56"));
+        add(new LibraryLoader.LibraryDependency("swscale", "5"));
+        add(new LibraryLoader.LibraryDependency("swresample", "3"));
+        add(new LibraryLoader.LibraryDependency("avcodec", "58"));
+        add(new LibraryLoader.LibraryDependency("avformat", "58"));
+        add(new LibraryLoader.LibraryDependency("avfilter", "7"));
+        add(new LibraryLoader.LibraryDependency("avdevice", "58"));
+        add(new LibraryLoader.LibraryDependency("postproc", "55"));
+    }};
 
     /**
      * Create an ffmpeg media player instance

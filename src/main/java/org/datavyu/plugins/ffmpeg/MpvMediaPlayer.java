@@ -6,42 +6,27 @@ import org.datavyu.util.LibraryLoader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class MpvMediaPlayer extends FfmpegMediaPlayer {
-    /**
-     * Holds the library name and version
-     */
-    private final static class LibraryDependency {
-        LibraryDependency(String name, String version) {
-            this.name = name;
-            this.version = version;
-        }
-        public String getFullName() {
-            return name + SEPARATOR + version;
-        }
-        private static final char SEPARATOR = LibraryLoader.isMacOs ? '.' : '-';
-        private String name;
-        private String version;
-    }
+
+    /** Library dependency for MPV only -- not public because must be used with ffmpeg */
+    private static final List<LibraryLoader.LibraryDependency> MPV_ONLY =
+            new ArrayList<LibraryLoader.LibraryDependency>() {{
+        add(new LibraryLoader.LibraryDependency("mpv", "1"));
+    }};
+
+    /** Library dependencies for MPV */
+    private static final List<LibraryLoader.LibraryDependency> MPV_DEPENDENCIES = Stream.concat(
+            FFMPEG_DEPENDENCIES.stream(),
+            MPV_ONLY.stream()).collect(Collectors.toList());
 
     private static final Logger LOGGER = LogManager.getFormatterLogger(MpvMediaPlayer.class);
-    private static final List<LibraryDependency> librariesToExtract = new ArrayList<LibraryDependency>() {{
-        add(new LibraryDependency("avutil", "56"));
-        add(new LibraryDependency("swscale", "5"));
-        add(new LibraryDependency("swresample", "3"));
-        add(new LibraryDependency("avcodec", "58"));
-        add(new LibraryDependency("avformat", "58"));
-        add(new LibraryDependency("avfilter", "7"));
-        add(new LibraryDependency("avdevice", "58"));
-        add(new LibraryDependency("postproc", "55"));
-        add(new LibraryDependency("mpv", "1"));
-    }};
 
     static {
         try {
-            for (LibraryDependency libraryDependency : librariesToExtract) {
-                LibraryLoader.extract(libraryDependency.getFullName());
-            }
+            LibraryLoader.extract(MPV_DEPENDENCIES);
             LibraryLoader.extractAndLoad("MpvMediaPlayer");
         } catch (Exception e) {
             LOGGER.error("Loading libraries failed due to: " + e);
