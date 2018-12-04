@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.io.File;
 import java.net.URI;
 
-public class SimpleMpvMediaPlayer{
+public class SimpleMpvMediaPlayer {
 
     public static void main(String[] args) {
         // Define the media file
