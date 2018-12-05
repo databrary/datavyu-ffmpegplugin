@@ -1,13 +1,11 @@
 package org.datavyu.plugins.ffmpeg;
 
-//import sun.awt.windows.WComponentPeer;
+import sun.awt.windows.WComponentPeer;
 import com.sun.javafx.tk.TKStage;
 import javafx.stage.Stage;
-import org.datavyu.util.NativeLibraryLoader;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.datavyu.util.LibraryLoader;
 
 
-import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -17,41 +15,39 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
 
     static {
         try {
-            if(!NativeLibraryLoader.isMacOs) {
+            if(!LibraryLoader.isMacOs) {
                 System.out.println("Extracting Windows libraries for ffmpeg and MPV.");
-                NativeLibraryLoader.extract("avutil-56");
-                NativeLibraryLoader.extract("swscale-5");
-                NativeLibraryLoader.extract("swresample-3");
-                NativeLibraryLoader.extract("avcodec-58");
-                NativeLibraryLoader.extract("avformat-58");
-                NativeLibraryLoader.extract("avfilter-7");
-                NativeLibraryLoader.extract("avdevice-58");
-                NativeLibraryLoader.extract("postproc-55");
-                NativeLibraryLoader.extract("mpv-1");
+                LibraryLoader.extract("avutil-56");
+                LibraryLoader.extract("swscale-5");
+                LibraryLoader.extract("swresample-3");
+                LibraryLoader.extract("avcodec-58");
+                LibraryLoader.extract("avformat-58");
+                LibraryLoader.extract("avfilter-7");
+                LibraryLoader.extract("avdevice-58");
+                LibraryLoader.extract("postproc-55");
+                LibraryLoader.extract("mpv-1");
             } else {
                 System.out.println("Extracting Mac OS libraries for ffmpeg and MPV.");
-                NativeLibraryLoader.extract("avutil.56");
-                NativeLibraryLoader.extract("swscale.5");
-                NativeLibraryLoader.extract("swresample.3");
-                NativeLibraryLoader.extract("avcodec.58");
-                NativeLibraryLoader.extract("avformat.58");
-                NativeLibraryLoader.extract("avfilter.7");
-                NativeLibraryLoader.extract("avdevice.58");
-                NativeLibraryLoader.extract("postproc.55");
-                NativeLibraryLoader.extract("mpv.1");
+                LibraryLoader.extract("avutil.56");
+                LibraryLoader.extract("swscale.5");
+                LibraryLoader.extract("swresample.3");
+                LibraryLoader.extract("avcodec.58");
+                LibraryLoader.extract("avformat.58");
+                LibraryLoader.extract("avfilter.7");
+                LibraryLoader.extract("avdevice.58");
+                LibraryLoader.extract("postproc.55");
+                LibraryLoader.extract("mpv.1");
             }
-            NativeLibraryLoader.extractAndLoad("MpvMediaPlayer");
+            LibraryLoader.extractAndLoad("MpvMediaPlayer");
         } catch (Exception e) {
             System.out.println("Failed loading libraries due to error: "+ e);
         }
     }
 
+    private Container container;
     private Stage stage;
 
-    private Container container;
     private long windowID;
-
-    private PlayerStateListener stateListener;
 
     /**
      * Create an MPV media player instance and play through java
@@ -61,10 +57,17 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
      * @param container The container to display the frame in
      */
     public MpvMediaPlayer(URI mediaPath, Container container) {
-        super(mediaPath);
-        this.container = container;
+      super(mediaPath, container);
+      this.container = container;
     }
 
+    /**
+     * Create an MPV media player instance and play through javafx
+     * framework
+     *
+     * @param mediaPath The media path
+     * @param stage The container to display the frame in
+     */
     public MpvMediaPlayer(URI mediaPath, Stage stage) {
         super(mediaPath);
         this.stage = stage;
@@ -77,22 +80,20 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
      * @param mediaPath The media path
      */
     public MpvMediaPlayer(URI mediaPath) {
-        this(mediaPath, new JDialog());
+        this(mediaPath, new Stage());
     }
 
     @Override
     public void init() {
         initNative(); // start the event queue, make sure to register all state/error listeners before
 
-        stateListener = new _PlayerStateListener();
-        this.addMediaPlayerStateListener(stateListener);
-
         long[] newNativeMediaRef = new long[1];
 
-        if(container != null)
-            initContainer();
-        else
-            initStage();
+        if (stage != null) {
+          initStage();
+        } else {
+          initContainer();
+        }
 
         int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
         if (0 != rc) {
@@ -113,15 +114,16 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
     }
 
     private void initContainer(){
-        container.setVisible(true);
-        // Container need to be visible in order to get a valid HWND
+      //Container need to be visible in order to get a valid HWND
+      container.setVisible(true);
 
-        // TODO(Reda):find alternative for deprecated getPeer() method
-//        windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
-//        if (windowID == 0){
-//            throw new IllegalStateException("Need a valid WID for the MPV Player");
-//        }
+//    TODO(Reda): WComponentPeer is not available on Mac need to find an alternative
+      windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
+      if (windowID == 0){
+        throw new IllegalStateException("Need a valid WID for the MPV Player");
+      }
     }
+
 
     private static long getWindowId(Stage stage) {
         try {
@@ -148,6 +150,7 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
             return 0;
         }
     }
+
     @Override
     protected long playerGetAudioSyncDelay() throws MediaException {
         throw new UnsupportedOperationException();
@@ -327,32 +330,6 @@ public class MpvMediaPlayer extends FfmpegMediaPlayer{
             throwMediaErrorException(rc, null);
         }
         return height[0];
-    }
-
-    class _PlayerStateListener implements PlayerStateListener {
-
-        @Override
-        public void onReady(PlayerStateEvent evt) {
-            container.setSize(getImageWidth(), getImageHeight());
-        }
-
-        @Override
-        public void onPlaying(PlayerStateEvent evt) { }
-
-        @Override
-        public void onPause(PlayerStateEvent evt) { }
-
-        @Override
-        public void onStop(PlayerStateEvent evt) { }
-
-        @Override
-        public void onStall(PlayerStateEvent evt) { }
-
-        @Override
-        public void onFinish(PlayerStateEvent evt) { }
-
-        @Override
-        public void onHalt(PlayerStateEvent evt) { }
     }
 
     @Override

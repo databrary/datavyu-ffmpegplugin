@@ -1,6 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
-import org.datavyu.util.NativeLibraryLoader;
+import org.datavyu.util.LibraryLoader;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
@@ -31,28 +31,28 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
     static {
         try {
-            if(! NativeLibraryLoader.isMacOs) {
+            if(! LibraryLoader.isMacOs) {
                 System.out.println("Extracting Windows libraries for ffmpeg.");
-                NativeLibraryLoader.extract("avutil-56");
-                NativeLibraryLoader.extract("swscale-5");
-                NativeLibraryLoader.extract("swresample-3");
-                NativeLibraryLoader.extract("avcodec-58");
-                NativeLibraryLoader.extract("avformat-58");
-                NativeLibraryLoader.extract("avfilter-7");
-                NativeLibraryLoader.extract("avdevice-58");
-                NativeLibraryLoader.extract("postproc-55");
+                LibraryLoader.extract("avutil-56");
+                LibraryLoader.extract("swscale-5");
+                LibraryLoader.extract("swresample-3");
+                LibraryLoader.extract("avcodec-58");
+                LibraryLoader.extract("avformat-58");
+                LibraryLoader.extract("avfilter-7");
+                LibraryLoader.extract("avdevice-58");
+                LibraryLoader.extract("postproc-55");
             } else {
                 System.out.println("Extracting Mac OS libraries for ffmpeg.");
-//                NativeLibraryLoader.extract("avutil.56");
-//                NativeLibraryLoader.extract("swscale.5");
-//                NativeLibraryLoader.extract("swresample.3");
-//                NativeLibraryLoader.extract("avcodec.58");
-//                NativeLibraryLoader.extract("avformat.58");
-//                NativeLibraryLoader.extract("avfilter.7");
-//                NativeLibraryLoader.extract("avdevice.58");
-//                NativeLibraryLoader.extract("postproc.55");
+//                LibraryLoader.extract("avutil.56");
+//                LibraryLoader.extract("swscale.5");
+//                LibraryLoader.extract("swresample.3");
+//                LibraryLoader.extract("avcodec.58");
+//                LibraryLoader.extract("avformat.58");
+//                LibraryLoader.extract("avfilter.7");
+//                LibraryLoader.extract("avdevice.58");
+//                LibraryLoader.extract("postproc.55");
             }
-            NativeLibraryLoader.load("FfmpegJavaMediaPlayer");
+            LibraryLoader.extractAndLoad("FfmpegJavaMediaPlayer");
         } catch (Exception e) {
             System.out.println("Failed loading ffmpeg libraries due to error: "+ e);
         }
@@ -313,6 +313,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         if (audioPlayerThread != null) {
             audioPlayerThread.terminate();
         }
+
         ffmpegDisposePlayer(getNativeMediaRef());
     }
 
@@ -438,3 +439,5 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private native int ffmpegUpdateImageData(long refNativeMedia, byte[] data);
     private native int ffmpegUpdateAudioData(long refNativeMedia, byte[] data);
 }
+
+

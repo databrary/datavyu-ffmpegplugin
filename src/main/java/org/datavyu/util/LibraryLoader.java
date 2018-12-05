@@ -20,10 +20,10 @@ import java.util.Enumeration;
  * I opted to copy the libraries to the current working directory '.' which enables the discovery of dependent
  * libraries automatically.
  */
-public class NativeLibraryLoader {
+public class LibraryLoader {
 
     /** Logger for this native library loader */
-    private static Logger logger = LogManager.getLogger(NativeLibraryLoader.class);
+    private static Logger logger = LogManager.getLogger(LibraryLoader.class);
 
     /** Buffer size when copying files from streams */
     public static final int BUFFER_COPY_SIZE = 16*1024; // 16 kB
@@ -46,7 +46,7 @@ public class NativeLibraryLoader {
     private static URL getResource(String libName) throws Exception {
         Enumeration<URL> resources;
         String extension;
-        ClassLoader classLoader = NativeLibraryLoader.class.getClassLoader();
+        ClassLoader classLoader = LibraryLoader.class.getClassLoader();
         if (isMacOs) {
             extension = ".jnilib";
             resources = classLoader.getResources("lib" + libName + extension);
@@ -72,7 +72,7 @@ public class NativeLibraryLoader {
         String extension;
         if (isMacOs) {
             extension = ".jnilib";
-            if (!NativeLibraryLoader.class.getClassLoader()
+            if (!LibraryLoader.class.getClassLoader()
                     .getResources("lib" + libName + extension).hasMoreElements()) {
                 extension = ".dylib";
             }

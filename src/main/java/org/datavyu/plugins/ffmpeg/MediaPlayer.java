@@ -1,9 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
 
-import javax.sound.sampled.AudioFormat;
-import java.awt.color.ColorSpace;
-
 /**
  * This interface is similar to the one in javafx
  * But at the time (July 2018) we decided against making a dependency on javafx
@@ -41,7 +38,7 @@ public interface MediaPlayer {
     /**
      * Adds a listener for media state.
      *
-     * @param listener
+     * @param listener listener to be added
      * @throws IllegalArgumentException if <code>listener</code> is
      * <code>null</code>.
      */
@@ -50,7 +47,7 @@ public interface MediaPlayer {
     /**
      * Removes a listener for media state.
      *
-     * @param listener
+     * @param listener listener to be removed
      * @throws IllegalArgumentException if <code>listener</code> is
      * <code>null</code>.
      */
@@ -116,7 +113,7 @@ public interface MediaPlayer {
      * If a rate is not supported an Exception
      *
      * @param rate The rate
-     * @trows MediaException
+     * @throws MediaException
      */
     void setRate(float rate);
 
@@ -238,4 +235,29 @@ public interface MediaPlayer {
      * after this method is invoked.
      */
     void dispose();
+
+    /** ***********************************
+     * Methods used by an external clock to notify the media
+     * player of an update in the External Clock.
+     * Note that Datavyu is updating its clock will notify
+     * players every 100ms.
+     * ***********************************/
+
+    /**
+     * Method to notify the media player that the External Clock updated its
+     * Master , and request a seek if necessary.
+     */
+    void updateMasterTime(final double masterClockTime);
+
+    /**
+     * Method to notify the media player that the External Clock updated its
+     * min boundary.
+     */
+    void updateMasterMinTime(final double masterMinTime);
+
+    /**
+     * Method to notify the media player that the External Clock updated its
+     * max boundary.
+     */
+    void updateMasterMaxTime(final double masterMaxTime);
 }

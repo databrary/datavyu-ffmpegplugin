@@ -1,7 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
-import org.datavyu.util.NativeLibraryLoader;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.datavyu.util.LibraryLoader;
 
 import java.net.URI;
 
@@ -16,29 +15,29 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
     static {
         try {
-            if(! NativeLibraryLoader.isMacOs) {
+            if(! LibraryLoader.isMacOs) {
                 System.out.println("Extracting Windows libraries for ffmpeg.");
-                NativeLibraryLoader.extract("avutil-56");
-                NativeLibraryLoader.extract("swscale-5");
-                NativeLibraryLoader.extract("swresample-3");
-                NativeLibraryLoader.extract("avcodec-58");
-                NativeLibraryLoader.extract("avformat-58");
-                NativeLibraryLoader.extract("avfilter-7");
-                NativeLibraryLoader.extract("avdevice-58");
-                NativeLibraryLoader.extract("postproc-55");
-                NativeLibraryLoader.extract("SDL2");
+                LibraryLoader.extract("avutil-56");
+                LibraryLoader.extract("swscale-5");
+                LibraryLoader.extract("swresample-3");
+                LibraryLoader.extract("avcodec-58");
+                LibraryLoader.extract("avformat-58");
+                LibraryLoader.extract("avfilter-7");
+                LibraryLoader.extract("avdevice-58");
+                LibraryLoader.extract("postproc-55");
+                LibraryLoader.extract("SDL2");
             } else {
                 System.out.println("Extracting Mac OS libraries for ffmpeg.");
-                NativeLibraryLoader.extract("avutil.56");
-                NativeLibraryLoader.extract("swscale.5");
-                NativeLibraryLoader.extract("swresample.3");
-                NativeLibraryLoader.extract("avcodec.58");
-                NativeLibraryLoader.extract("avformat.58");
-                NativeLibraryLoader.extract("avfilter.7");
-                NativeLibraryLoader.extract("avdevice.58");
-                NativeLibraryLoader.extract("postproc.55");
+                LibraryLoader.extract("avutil.56");
+                LibraryLoader.extract("swscale.5");
+                LibraryLoader.extract("swresample.3");
+                LibraryLoader.extract("avcodec.58");
+                LibraryLoader.extract("avformat.58");
+                LibraryLoader.extract("avfilter.7");
+                LibraryLoader.extract("avdevice.58");
+                LibraryLoader.extract("postproc.55");
             }
-            NativeLibraryLoader.extractAndLoad("FfmpegSdlMediaPlayer");
+            LibraryLoader.extractAndLoad("FfmpegSdlMediaPlayer");
         } catch (Exception e) {
             System.out.println("Failed loading libraries due to error: "+ e);
         }
