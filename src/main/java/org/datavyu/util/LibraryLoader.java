@@ -134,6 +134,12 @@ public class LibraryLoader {
         URL url = getResource(destName);
         InputStream in = url.openStream();
         File outfile = new File(libraryFolder, destName + getExtension(destName));
+
+        // If the file already exists and is in use aka can't be written
+        if (outfile.exists() && !outfile.canWrite()) {
+            return outfile;
+        }
+
         FileOutputStream out = new FileOutputStream(outfile);
         BufferedOutputStream dest = new BufferedOutputStream(out, BUFFER_COPY_SIZE);
         int count;
