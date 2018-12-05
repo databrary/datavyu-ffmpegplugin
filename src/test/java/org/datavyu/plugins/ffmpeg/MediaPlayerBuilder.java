@@ -169,7 +169,7 @@ public class MediaPlayerBuilder {
             case JAVA_JDIALOG:
                 return new FfmpegJavaMediaPlayer(movie, new JDialog());
             case MPV:
-                return new MpvMediaPlayer(movie, new Stage());
+                return new MpvFxMediaPlayer(movie, new Stage());
             default:
                 throw new IllegalArgumentException("Could not build player for type " + type);
         }

@@ -1,154 +1,40 @@
 package org.datavyu.plugins.ffmpeg;
 
-import sun.awt.windows.WComponentPeer;
-import com.sun.javafx.tk.TKStage;
-import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.util.LibraryLoader;
-
-
-import java.awt.*;
-import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+public abstract class MpvMediaPlayer extends FfmpegMediaPlayer {
 
-public class MpvMediaPlayer extends FfmpegMediaPlayer{
+    /** Library dependency for MPV only -- not public because must be used with ffmpeg */
+    private static final List<LibraryLoader.LibraryDependency> MPV_ONLY =
+            new ArrayList<LibraryLoader.LibraryDependency>() {{
+        add(new LibraryLoader.LibraryDependency("mpv", "1"));
+    }};
+
+    /** Library dependencies for MPV */
+    private static final List<LibraryLoader.LibraryDependency> MPV_DEPENDENCIES = Stream.concat(
+            FFMPEG_DEPENDENCIES.stream(),
+            MPV_ONLY.stream()).collect(Collectors.toList());
+
+    private static final Logger LOGGER = LogManager.getFormatterLogger(MpvMediaPlayer.class);
 
     static {
         try {
-            if(!LibraryLoader.isMacOs) {
-                System.out.println("Extracting Windows libraries for ffmpeg and MPV.");
-                LibraryLoader.extract("avutil-56");
-                LibraryLoader.extract("swscale-5");
-                LibraryLoader.extract("swresample-3");
-                LibraryLoader.extract("avcodec-58");
-                LibraryLoader.extract("avformat-58");
-                LibraryLoader.extract("avfilter-7");
-                LibraryLoader.extract("avdevice-58");
-                LibraryLoader.extract("postproc-55");
-                LibraryLoader.extract("mpv-1");
-            } else {
-                System.out.println("Extracting Mac OS libraries for ffmpeg and MPV.");
-                LibraryLoader.extract("avutil.56");
-                LibraryLoader.extract("swscale.5");
-                LibraryLoader.extract("swresample.3");
-                LibraryLoader.extract("avcodec.58");
-                LibraryLoader.extract("avformat.58");
-                LibraryLoader.extract("avfilter.7");
-                LibraryLoader.extract("avdevice.58");
-                LibraryLoader.extract("postproc.55");
-                LibraryLoader.extract("mpv.1");
-            }
+            LibraryLoader.extract(MPV_DEPENDENCIES);
             LibraryLoader.extractAndLoad("MpvMediaPlayer");
         } catch (Exception e) {
-            System.out.println("Failed loading libraries due to error: "+ e);
+            LOGGER.error("Loading libraries failed due to: " + e);
         }
     }
 
-    private Container container;
-    private Stage stage;
-
-    private long windowID;
-
-    /**
-     * Create an MPV media player instance and play through java
-     * framework
-     *
-     * @param mediaPath The media path
-     * @param container The container to display the frame in
-     */
-    public MpvMediaPlayer(URI mediaPath, Container container) {
-      super(mediaPath, container);
-      this.container = container;
-    }
-
-    /**
-     * Create an MPV media player instance and play through javafx
-     * framework
-     *
-     * @param mediaPath The media path
-     * @param stage The container to display the frame in
-     */
-    public MpvMediaPlayer(URI mediaPath, Stage stage) {
+    protected MpvMediaPlayer(URI mediaPath) {
         super(mediaPath);
-        this.stage = stage;
-    }
-
-    /**
-     * Create an MPV media player instance and play through java
-     * framework
-     *
-     * @param mediaPath The media path
-     */
-    public MpvMediaPlayer(URI mediaPath) {
-        this(mediaPath, new Stage());
-    }
-
-    @Override
-    public void init() {
-        initNative(); // start the event queue, make sure to register all state/error listeners before
-
-        long[] newNativeMediaRef = new long[1];
-
-        if (stage != null) {
-          initStage();
-        } else {
-          initContainer();
-        }
-
-        int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, windowID);
-        if (0 != rc) {
-            throwMediaErrorException(rc, null);
-        }
-
-        nativeMediaRef = newNativeMediaRef[0];
-    }
-
-    private void initStage() {
-        stage.show();
-
-        windowID = getWindowId(stage);
-        if (windowID == 0){
-            throw new IllegalStateException("Need a valid WID for the MPV Player");
-        }
-
-    }
-
-    private void initContainer(){
-      //Container need to be visible in order to get a valid HWND
-      container.setVisible(true);
-
-//    TODO(Reda): WComponentPeer is not available on Mac need to find an alternative
-      windowID = container.getPeer() != null ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
-      if (windowID == 0){
-        throw new IllegalStateException("Need a valid WID for the MPV Player");
-      }
-    }
-
-
-    private static long getWindowId(Stage stage) {
-        try {
-            Method tkStageGetter;
-            try {
-                // java 9
-                tkStageGetter = stage.getClass().getSuperclass().getDeclaredMethod("getPeer");
-            } catch (NoSuchMethodException ex) {
-                // java 8
-                tkStageGetter = stage.getClass().getMethod("impl_getPeer");
-            }
-            tkStageGetter.setAccessible(true);
-            TKStage tkStage = (TKStage) tkStageGetter.invoke(stage);
-            Method getPlatformWindow = tkStage.getClass().getDeclaredMethod("getPlatformWindow");
-            getPlatformWindow.setAccessible(true);
-            Object platformWindow = getPlatformWindow.invoke(tkStage);
-            Method getNativeHandle = platformWindow.getClass().getMethod("getNativeHandle");
-            getNativeHandle.setAccessible(true);
-            Object nativeHandle = getNativeHandle.invoke(platformWindow);
-            return (long) nativeHandle;
-        } catch (Throwable e) {
-            System.err.println("Error getting Window Pointer");
-            e.printStackTrace();
-            return 0;
-        }
     }
 
     @Override

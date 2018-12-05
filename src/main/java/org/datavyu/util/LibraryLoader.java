@@ -7,7 +7,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This native library loader loads libraries from jar resources. It resolves the library file extension based on the
@@ -22,19 +26,36 @@ import java.util.Enumeration;
  */
 public class LibraryLoader {
 
+    /**
+     * Holds the library name and version
+     */
+    public static final class LibraryDependency {
+        public LibraryDependency(String name, String version) {
+            this.name = name;
+            this.version = version;
+        }
+        String getFullName() {
+            return name + SEPARATOR + version;
+        }
+        private final static char SEPARATOR = LibraryLoader.isMacOs ? '.' : '-';
+        private String name;
+        private String version;
+    }
+
     /** Logger for this native library loader */
     private static Logger logger = LogManager.getLogger(LibraryLoader.class);
 
-    /** Buffer size when copying files from streams */
-    public static final int BUFFER_COPY_SIZE = 16*1024; // 16 kB
-
     /**
-     * Folder where we unzip libraries must be current working directory for the library loader to find dependent
-     * libraries.
+     * Folder where we unzip libraries must be current working directory for the library
+     * loader to find dependent libraries.
      */
     private static File libraryFolder = new File(System.getProperty("user.dir"));
 
+    /** True if loading on Mac OS */
     public static boolean isMacOs = System.getProperty("os.name").contains("Mac");
+
+    /** Buffer size when copying files from streams */
+    private static final int BUFFER_COPY_SIZE = 16*1024; // 16 kB
 
     /**
      * Get resource URL for a given library name that is part of the jar.
@@ -113,6 +134,12 @@ public class LibraryLoader {
         URL url = getResource(destName);
         InputStream in = url.openStream();
         File outfile = new File(libraryFolder, destName + getExtension(destName));
+
+        // If the file already exists and is in use aka can't be written
+        if (outfile.exists() && !outfile.canWrite()) {
+            return outfile;
+        }
+
         FileOutputStream out = new FileOutputStream(outfile);
         BufferedOutputStream dest = new BufferedOutputStream(out, BUFFER_COPY_SIZE);
         int count;
@@ -124,5 +151,18 @@ public class LibraryLoader {
         out.close();
         in.close();
         return outfile;
+    }
+
+    /**
+     * Extracts a list of library dependencies.
+     *
+     * @param dependencies The list of dependencies.
+     *
+     * @throws Exception Whenever a library can't be loaded an Exception is thrown
+     */
+    public static void extract(List<LibraryDependency> dependencies) throws Exception {
+        for (LibraryDependency libraryDependency : dependencies) {
+            LibraryLoader.extract(libraryDependency.getFullName());
+        }
     }
 }

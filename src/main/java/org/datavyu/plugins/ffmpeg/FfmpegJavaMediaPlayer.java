@@ -1,6 +1,8 @@
 package org.datavyu.plugins.ffmpeg;
 
 import org.datavyu.util.LibraryLoader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
@@ -28,33 +30,14 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // 4 kB
     private AudioFormat audioFormat;
     private ColorSpace colorSpace;
+    private static final Logger LOGGER = LogManager.getFormatterLogger(MpvMediaPlayer.class);
 
     static {
         try {
-            if(! LibraryLoader.isMacOs) {
-                System.out.println("Extracting Windows libraries for ffmpeg.");
-                LibraryLoader.extract("avutil-56");
-                LibraryLoader.extract("swscale-5");
-                LibraryLoader.extract("swresample-3");
-                LibraryLoader.extract("avcodec-58");
-                LibraryLoader.extract("avformat-58");
-                LibraryLoader.extract("avfilter-7");
-                LibraryLoader.extract("avdevice-58");
-                LibraryLoader.extract("postproc-55");
-            } else {
-                System.out.println("Extracting Mac OS libraries for ffmpeg.");
-//                LibraryLoader.extract("avutil.56");
-//                LibraryLoader.extract("swscale.5");
-//                LibraryLoader.extract("swresample.3");
-//                LibraryLoader.extract("avcodec.58");
-//                LibraryLoader.extract("avformat.58");
-//                LibraryLoader.extract("avfilter.7");
-//                LibraryLoader.extract("avdevice.58");
-//                LibraryLoader.extract("postproc.55");
-            }
-            LibraryLoader.extractAndLoad("FfmpegJavaMediaPlayer");
+            LibraryLoader.extract(FFMPEG_DEPENDENCIES);
+            LibraryLoader.load("FfmpegJavaMediaPlayer");
         } catch (Exception e) {
-            System.out.println("Failed loading ffmpeg libraries due to error: "+ e);
+            LOGGER.error("Loading libraries failed due to: " + e);
         }
     }
 
