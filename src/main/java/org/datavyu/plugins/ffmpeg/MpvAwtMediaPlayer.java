@@ -1,5 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
+import sun.awt.windows.WComponentPeer;
+
 import java.awt.*;
 import java.net.URI;
 
@@ -25,12 +27,21 @@ public class MpvAwtMediaPlayer extends MpvMediaPlayer {
         container.setVisible(true);
 
         long[] newNativeMediaRef = new long[1];
-        int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, 0);
+        int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, getWindowID(container));
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
 
         nativeMediaRef = newNativeMediaRef[0];
+    }
+
+    private long getWindowID(Container container){
+        long windowID = container.getPeer() != null
+                ? ((WComponentPeer) container.getPeer()).getHWnd() : 0;
+        if (windowID == 0){
+            throw new IllegalStateException("Need a valid WID for the MPV Player");
+        }
+        return windowID;
     }
 
     private class PlayerStateListenerImpl implements PlayerStateListener {
