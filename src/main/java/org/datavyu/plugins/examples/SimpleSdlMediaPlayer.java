@@ -1,5 +1,6 @@
-package org.datavyu.plugins.ffmpeg.examples;
+package org.datavyu.plugins.examples;
 
+import org.datavyu.plugins.MediaPlayer;
 import org.datavyu.plugins.ffmpeg.*;
 
 import java.io.File;

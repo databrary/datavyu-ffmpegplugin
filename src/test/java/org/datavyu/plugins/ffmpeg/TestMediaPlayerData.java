@@ -6,16 +6,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
+import org.datavyu.plugins.MediaException;
+import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.MediaPlayerData;
+import org.datavyu.plugins.NativeMediaPlayer;
+import org.datavyu.plugins.PlayerStateEvent;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 
 import static org.datavyu.plugins.ffmpeg.MediaPlayerBuilder.*;
 import static org.datavyu.plugins.ffmpeg.MediaPlayerBuilder.Rate.*;
@@ -25,7 +24,7 @@ import static org.datavyu.plugins.ffmpeg.MediaPlayerBuilder.Rate.*;
  * make sure that all the players match the requirements of a media player, this suite cover calls made
  * from Java to the native player through Java Native Interface and assert if the behavior of the native
  * side is adequate to the sent command.
- * The player state {@link org.datavyu.plugins.ffmpeg.PlayerStateEvent.PlayerState} must be checked
+ * The player state {@link PlayerStateEvent.PlayerState} must be checked
  * after each action and its value should match the current state of the player, note that we have to
  * sleep the current thread for {@link #SLEEP_DURATION_IN_MILLIS} in order to wait for the native side to
  * update its state
@@ -178,7 +177,7 @@ public class TestMediaPlayerData {
 
     /**
      * Tests {@link MediaPlayer#pause()} method that will toggle between pause and play.
-     * The player state {@link org.datavyu.plugins.ffmpeg.PlayerStateEvent.PlayerState} must be
+     * The player state {@link PlayerStateEvent.PlayerState} must be
      * set to PAUSED when the player is paused.
      */
     @Test (dataProvider = "players",

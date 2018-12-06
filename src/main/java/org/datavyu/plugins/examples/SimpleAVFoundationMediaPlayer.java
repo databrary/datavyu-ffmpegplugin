@@ -1,26 +1,23 @@
-package org.datavyu.plugins.ffmpeg.examples;
+package org.datavyu.plugins.examples;
 
-
-import org.datavyu.plugins.ffmpeg.*;
+import org.datavyu.plugins.nativeosx.AVFoundationMediaPlayer;
+import org.datavyu.plugins.MediaPlayer;
 
 import javax.swing.*;
 import java.io.File;
 import java.net.URI;
 
-public class SimpleJavaMediaPlayer {
+public class SimpleAVFoundationMediaPlayer {
     public static void main(String[] args) {
         // Define the media file
         URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
 
         // Create the media player using the constructor with File
-        MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath, new JDialog());
+        MediaPlayer mediaPlayer = new AVFoundationMediaPlayer(mediaPath, new JDialog());
 
-        mediaPlayer.addMediaErrorListener(new MediaErrorListener() {
-            @Override
-            public void onError(Object source, int errorCode, String message) {
-                System.err.println(errorCode + ": " + message);
-            }
-        });
+        mediaPlayer.addMediaErrorListener(
+            (source, errorCode, message)
+                -> System.err.println(errorCode + ": " + message));
 
         // Initialize the player
         mediaPlayer.init();

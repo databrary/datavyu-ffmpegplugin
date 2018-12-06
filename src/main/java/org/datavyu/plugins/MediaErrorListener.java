@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins;
 
 /**
  * An interface used to receive notifications of errors, encountered while

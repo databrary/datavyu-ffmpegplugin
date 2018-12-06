@@ -1,7 +1,7 @@
-package org.datavyu.plugins.ffmpeg.examples;
+package org.datavyu.plugins.examples;
 
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
-import org.datavyu.plugins.ffmpeg.PlaybackRateController;
+import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.PlaybackRateController;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -59,7 +59,8 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
                 System.out.println("Finished backward step");
                 break;
             case KeyEvent.VK_I:
-                System.out.println("Stream Information : Fps = " + mediaPlayer.getFps() +
+                System.out.println("Player State " + mediaPlayer.getState() +
+                                    " Stream Information : Fps = " + mediaPlayer.getFps() +
                                     " Image Width = " + mediaPlayer.getImageWidth() +
                                     " Image Height = " + mediaPlayer.getImageHeight() +
                                     " Stream Duration = " + mediaPlayer.getDuration());
@@ -137,6 +138,8 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
     @Override
     public void stateChanged(ChangeEvent e) {
         int newTime = jSlider.getValue();
+        double currentTime = mediaPlayer.getPresentationTime();
+        System.out.println("Seek from " + currentTime + " sec to " + newTime + "sec");
         mediaPlayer.seek(newTime);
     }
 }

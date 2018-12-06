@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins;
 
 import javax.sound.sampled.AudioFormat;
 import java.awt.color.ColorSpace;

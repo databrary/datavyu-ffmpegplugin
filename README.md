@@ -3,7 +3,7 @@
 ## Overview
 The Datavyu Player is a Java Media Player using [FFmpeg](https://github.com/FFmpeg/FFmpeg) and [MPV Player](https://github.com/mpv-player/mpv) as backend engines that we interface too through Java Native Interface (JNI). It supports a wide variety of video file formats, audio and video codecs for Windows Platform. Datavyu Player is used within [Datavyu](http://www.datavyu.org/) a video annotation tool but could be embedded in any Java application.
 
-To learn how to use the plugin, please refer to the [Examples](##Examples) section below as well as the [Java](src/main/java/org/datavyu/plugins/ffmpeg/examples) programs. You may also find it useful to refer to the [wiki](https://github.com/databrary/datavyu-ffmpegplugin/wiki) pages to set up a development environment and contribute to the project.
+To learn how to use the plugin, please refer to the [Examples](##Examples) section below as well as the [Java](src/main/java/org/datavyu/plugins/examples) programs. You may also find it useful to refer to the [wiki](https://github.com/databrary/datavyu-ffmpegplugin/wiki) pages to set up a development environment and contribute to the project.
 
 What's special about this player?
 
@@ -91,7 +91,7 @@ We provide a Maven dependency for the MPV 0.29.1 version to be added to your `po
 Here is a simple example on how to create and initialize the [MPV Player](https://github.com/mpv-player/mpv), all what you have to do is to be creative and build your own Java controller for the player.
 
 ``` java
-    import org.datavyu.plugins.ffmpeg.MediaPlayer;
+    import org.datavyu.plugins.MediaPlayer;
     import org.datavyu.plugins.ffmpeg.MpvMediaPlayer;
 
     import javax.swing.*;
@@ -155,7 +155,7 @@ Here is a simple example on how to create and initialize an SDL Player, all what
     }
 ```
 
-A simple video controller example is used [here](src/main/java/org/datavyu/plugins/ffmpeg/examples/JMediaPlayerControlFrame.java) to control media players through key binding, and a more sophisticated controller is provided in [Datavyu](https://github.com/databrary/datavyu/blob/master/src/main/java/org/datavyu/views/VideoController.java).
+A simple video controller example is used [here](src/main/java/org/datavyu/plugins/examples/JMediaPlayerControlFrame.java) to control media players through key binding, and a more sophisticated controller is provided in [Datavyu](https://github.com/databrary/datavyu/blob/master/src/main/java/org/datavyu/views/VideoController.java).
 
 ## Bug reports
 Please use the [issue tracker](https://github.com/databrary/datavyu-ffmpegplugin/issues) provided by GitHub to send us bug reports or feature requests. Follow the template's instructions or the issue will likely be ignored or closed as invalid.

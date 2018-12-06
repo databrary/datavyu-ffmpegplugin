@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins;
 
 
 public class MediaException extends RuntimeException {

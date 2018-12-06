@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins;
 
 /**
  * This player state event is for the communication of the player state

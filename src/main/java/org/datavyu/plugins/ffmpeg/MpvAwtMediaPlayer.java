@@ -2,6 +2,9 @@ package org.datavyu.plugins.ffmpeg;
 
 import sun.awt.windows.WComponentPeer;
 
+import org.datavyu.plugins.PlayerStateEvent;
+import org.datavyu.plugins.PlayerStateListener;
+
 import java.awt.*;
 import java.net.URI;
 

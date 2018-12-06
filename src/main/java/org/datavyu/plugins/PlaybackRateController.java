@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins;
 
 import java.util.HashMap;
 import java.util.Map;

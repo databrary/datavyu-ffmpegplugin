@@ -1,8 +1,10 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.MediaPlayerData;
+
 import javax.sound.sampled.*;
 
-public class AudioPlayerThread extends Thread {
+class AudioPlayerThread extends Thread {
     private final static AudioFormat MONO_FORMAT = new AudioFormat(
             AudioFormat.Encoding.PCM_SIGNED,
             44100,

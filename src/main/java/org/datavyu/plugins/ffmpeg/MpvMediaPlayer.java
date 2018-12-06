@@ -2,6 +2,7 @@ package org.datavyu.plugins.ffmpeg;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.plugins.MediaException;
 import org.datavyu.util.LibraryLoader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class MpvMediaPlayer extends FfmpegMediaPlayer {
+abstract class MpvMediaPlayer extends DatavyuMediaPlayer {
 
     /** Library dependency for MPV only -- not public because must be used with ffmpeg */
     private static final List<LibraryLoader.LibraryDependency> MPV_ONLY =
@@ -114,6 +115,11 @@ public abstract class MpvMediaPlayer extends FfmpegMediaPlayer {
     }
 
     @Override
+    protected void playerSetStartTime(double startTime) throws MediaException {
+        playerSeek(startTime);
+    }
+
+    @Override
     protected double playerGetPresentationTime() throws MediaException {
         double[] presentationTime = new double[1];
         int rc = mpvGetPresentationTime(getNativeMediaRef(), presentationTime);
@@ -191,7 +197,7 @@ public abstract class MpvMediaPlayer extends FfmpegMediaPlayer {
     }
 
     @Override
-    protected void playerSeek(double streamTime, int seekFlags) throws MediaException {
+    protected void playerSeek(double streamTime) throws MediaException {
         int rc = mpvSeek(getNativeMediaRef(), streamTime);
         if (0 != rc) {
             throwMediaErrorException(rc, null);

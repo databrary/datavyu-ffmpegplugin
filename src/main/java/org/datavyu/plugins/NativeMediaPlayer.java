@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -22,9 +22,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public final static int eventPlayerFinished = 106;
     public final static int eventPlayerError = 107;
 
-    public static final int SEEK_ACCURATE_FLAG = 0x01;
-    public static final int SEEK_FAST_FLAG = 0x10;
-
     /** Synchronization threshold in milliseconds */
     public static final double SYNC_THRESHOLD = 0.5; // 0.5 sec  (because some plugins are not very precise in seek)
 
@@ -37,10 +34,10 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     private EventQueueThread eventLoop = new EventQueueThread();
     private final Lock disposeLock = new ReentrantLock();
     private boolean isDisposed = false;
-    private double startTime = 0.0;
-    private double stopTime = Double.POSITIVE_INFINITY;
-    private boolean isStartTimeUpdated = false;
-    private boolean isStopTimeSet = false;
+    protected double startTime = 0.0;
+    protected double stopTime = Double.POSITIVE_INFINITY;
+    protected boolean isStartTimeUpdated = false;
+    protected boolean isStopTimeSet = false;
 
 
     protected boolean isUpdateTimeEnabled = false;
@@ -50,7 +47,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     protected double playerPreviousTime = -1.0;
     protected double masterCurrentTime;
 
-    String mediaPath;
+    protected String mediaPath;
 
     private static String resolveURI(URI mediaPath) {
         // If file get the "modified" path
@@ -90,11 +87,11 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         }
     }
 
-    void initNative() {
+    protected void initNative() {
         eventLoop.start();
     }
 
-    long getNativeMediaRef() {
+    protected long getNativeMediaRef() {
         return nativeMediaRef;
     }
 
@@ -290,13 +287,13 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     // TODO: Implement start/stop time in native code
     //protected abstract double playerGetStartTime() throws MediaException;
 
-    //protected abstract void playerSetStartTime(double startTime) throws MediaException;
+    protected abstract void playerSetStartTime(double startTime) throws MediaException;
 
     //protected abstract void playerGetStopTime() throws MediaException;
 
     //protected abstract void playerSetStopTime(double stopTime) throws MediaException;
 
-    protected abstract void playerSeek(double streamTime, int flags) throws MediaException;
+    protected abstract void playerSeek(double streamTime) throws MediaException;
 
     protected abstract void playerDispose();
 
@@ -324,7 +321,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         try {
             if(!isDisposed) {
                 if (isStartTimeUpdated) {
-                    playerSeek(startTime, SEEK_ACCURATE_FLAG);
+                    playerSeek(startTime);
                 }
                 playerPlay();
             }
@@ -338,9 +335,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         try {
             if(!isDisposed) {
                 playerStop();
-                if(playerGetRate() != 1.0F){
-                    playerSetRate(1.0F);
-                }
             }
         } catch (MediaException me) {
             sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
@@ -532,7 +526,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
             if (playerState != PlayerStateEvent.PlayerState.PLAYING
                     && playerState != PlayerStateEvent.PlayerState.FINISHED
                     && playerState != PlayerStateEvent.PlayerState.STOPPED) {
-                playerSeek(startTime, SEEK_ACCURATE_FLAG);
+                playerSetStartTime(startTime);
             } else if (playerState == PlayerStateEvent.PlayerState.STOPPED) {
                 isStartTimeUpdated = true;
             }
@@ -579,9 +573,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         try {
             markerLock.lock();
             if (!isDisposed) {
-              // In most cases seek accurate, with the exception of large backward playback rates
-              int seek_flag = getRate() < -1 ? SEEK_FAST_FLAG : SEEK_ACCURATE_FLAG;
-              playerSeek(streamTime, seek_flag);
+              playerSeek(streamTime);
             }
         } catch (MediaException me) {
             sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));

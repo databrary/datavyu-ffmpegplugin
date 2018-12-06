@@ -1,9 +1,9 @@
-package org.datavyu.plugins.ffmpeg.examples;
+package org.datavyu.plugins.examples;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
-import org.datavyu.plugins.ffmpeg.MediaPlayer;
+import org.datavyu.plugins.MediaPlayer;
 import org.datavyu.plugins.ffmpeg.MpvFxMediaPlayer;
 
 import java.io.File;

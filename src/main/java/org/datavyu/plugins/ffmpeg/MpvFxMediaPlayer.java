@@ -4,6 +4,8 @@ import com.sun.javafx.tk.TKStage;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.plugins.PlayerStateEvent;
+import org.datavyu.plugins.PlayerStateListener;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
