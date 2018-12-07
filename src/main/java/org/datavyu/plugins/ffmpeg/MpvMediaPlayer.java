@@ -2,6 +2,7 @@ package org.datavyu.plugins.ffmpeg;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.plugins.DatavyuMediaPlayer;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.util.LibraryLoader;
 import java.net.URI;

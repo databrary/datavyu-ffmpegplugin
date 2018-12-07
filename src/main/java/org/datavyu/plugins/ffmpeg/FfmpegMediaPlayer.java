@@ -1,5 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.DatavyuMediaPlayer;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.PlayerStateListener;
@@ -24,11 +25,6 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
         super(mediaPath);
         stateListener = new FfmpegPlayerStateListener();
         this.addMediaPlayerStateListener(stateListener);
-    }
-
-
-    @Override
-    protected void playerPlay() throws MediaException {
     }
 
     @Override
@@ -66,15 +62,12 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
         }
 
         @Override
-        public void onStall(PlayerStateEvent evt) {
-        }
+        public void onStall(PlayerStateEvent evt) { }
 
         @Override
-        public void onFinish(PlayerStateEvent evt) {
-        }
+        public void onFinish(PlayerStateEvent evt) { }
 
         @Override
-        public void onHalt(PlayerStateEvent evt) {
-        }
+        public void onHalt(PlayerStateEvent evt) { }
     }
 }

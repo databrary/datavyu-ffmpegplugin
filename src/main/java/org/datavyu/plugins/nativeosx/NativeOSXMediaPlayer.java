@@ -3,7 +3,7 @@ package org.datavyu.plugins.nativeosx;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaException;
-import org.datavyu.plugins.ffmpeg.DatavyuMediaPlayer;
+import org.datavyu.plugins.DatavyuMediaPlayer;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
@@ -13,17 +13,13 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   private static Logger logger = LogManager.getLogger(AVFoundationMediaPlayer.class);
 
-  protected enum SeekFlags{
-    PRECISE_SEEK,
-    MODERATE_SEEK,
-    NORMAL_SEEK
-  }
+  protected static final int PRECISE_SEEK = 0;
+  protected static final int MODERATE_SEEK = 1;
+  protected static final int NORMAL_SEEK = 2;
 
-  private static final int INITIAL_VOLUME = 100;
+  protected static final int INITIAL_VOLUME = 100;
 
   protected NativeOSXPlayer nativePlayerCanvas;
-
-  private Container container;
 
   protected final int id;
   private static int playerCount = 0;
@@ -33,29 +29,18 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   private boolean seeking = false;
   private float prevRate;
 
-  protected NativeOSXMediaPlayer(URI mediaPath, Container container) {
+  protected NativeOSXMediaPlayer(URI mediaPath) {
     super(mediaPath);
     this.nativePlayerCanvas = new NativeOSXPlayer(mediaPath);
     this.id = playerCount;
-    this.container = container;
+    sendPlayerStateEvent(eventPlayerUnknown, 0);
   }
 
-  public static void incPlayerCount() {
+  protected static void incPlayerCount() {
     playerCount++;
   }
-
-  public static void decPlayerCount() {
+  protected static void decPlayerCount() {
     playerCount--;
-  }
-
-  @Override
-  public void init() {
-    container.addNotify();
-    container.add(nativePlayerCanvas, BorderLayout.CENTER);
-    container.setSize(getImageWidth(), getImageHeight());
-    container.setVisible(true);
-    incPlayerCount();
-    sendPlayerStateEvent(eventPlayerReady, 0);
   }
 
   @Override
@@ -113,7 +98,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerSetStartTime(double startTime) throws MediaException {
-    avFoundatioPlayerSeek(startTime, SeekFlags.PRECISE_SEEK);
+    avFoundationPlayerSeek(startTime, PRECISE_SEEK);
   }
 
   @Override
@@ -128,18 +113,31 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected float playerGetVolume() throws MediaException {
+    synchronized(this) {
+      if (muteEnabled)
+        return mutedVolume;
+    }
     return volume;
   }
 
   @Override
-  protected void playerSetVolume(float volume) throws MediaException {
-    EventQueue.invokeLater(() -> nativePlayerCanvas.setVolume(volume, id));
+  protected synchronized void playerSetVolume(float volume) throws MediaException {
+    if (!muteEnabled) {
+      if (volume == 0) {
+        EventQueue.invokeLater(() -> nativePlayerCanvas.setVolume(0, id));
+      } else {
+        EventQueue.invokeLater(() -> nativePlayerCanvas.setVolume(volume * 10, id));
+        this.volume = mutedVolume = volume;
+      }
+    } else {
+      mutedVolume = volume;
+    }
   }
 
   @Override
   protected double playerGetDuration() throws MediaException {
     if (duration == -1) {
-      return nativePlayerCanvas.getDuration(id) / 1000F;
+      return duration = nativePlayerCanvas.getDuration(id) / 1000F;
     }
     return duration;
   }
@@ -156,11 +154,11 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
           nativePlayerCanvas.stop(id);
         }
         if (!wasPlaying || prevRate >= 0 && prevRate <= 8) {
-          avFoundatioPlayerSeek(streamTime, SeekFlags.PRECISE_SEEK);
+          avFoundationPlayerSeek(streamTime, PRECISE_SEEK);
         } else if(prevRate < 0 && prevRate > - 8) {
-          avFoundatioPlayerSeek(streamTime, SeekFlags.MODERATE_SEEK);
+          avFoundationPlayerSeek(streamTime, MODERATE_SEEK);
         } else {
-          avFoundatioPlayerSeek(streamTime, SeekFlags.NORMAL_SEEK);
+          avFoundationPlayerSeek(streamTime, NORMAL_SEEK);
         }
         if (wasPlaying) {
           playerSetRate(prevRate);
@@ -210,5 +208,5 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     throw new NotImplementedException();
   }
 
-  protected abstract void avFoundatioPlayerSeek(double streamTime, SeekFlags flag) throws MediaException;
+  protected abstract void avFoundationPlayerSeek(double streamTime, int flags) throws MediaException;
 }

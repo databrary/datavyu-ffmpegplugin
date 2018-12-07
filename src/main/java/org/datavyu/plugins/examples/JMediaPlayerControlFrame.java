@@ -63,7 +63,8 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
                                     " Stream Information : Fps = " + mediaPlayer.getFps() +
                                     " Image Width = " + mediaPlayer.getImageWidth() +
                                     " Image Height = " + mediaPlayer.getImageHeight() +
-                                    " Stream Duration = " + mediaPlayer.getDuration());
+                                    " Stream Duration = " + mediaPlayer.getDuration() +
+                                    " Presentation Time = " + mediaPlayer.getPresentationTime());
                 break;
             case KeyEvent.VK_NUMPAD6:
                 nextRate = PlaybackRateController.stepToFaster(currentRate);
