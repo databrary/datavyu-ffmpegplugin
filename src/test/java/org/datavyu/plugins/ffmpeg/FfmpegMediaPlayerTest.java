@@ -5,6 +5,9 @@ import org.testng.annotations.Test;
 
 import javax.swing.*;
 
+/**
+ * Tests the ffmpeg player using an AWT window for display
+ */
 public class FfmpegMediaPlayerTest extends MediaPlayerTest {
 
     @DataProvider(name = "ffmpegPlayers")

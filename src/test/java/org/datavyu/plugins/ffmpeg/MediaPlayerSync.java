@@ -16,7 +16,6 @@ public class MediaPlayerSync {
 
     private MediaPlayer mediaPlayer;
     private final Object readyLock = new Object();
-    private final Object seekLock = new Object(); // note the end of seek may trigger a play, stop, or pause
     private final PlayerStateListener playerStateListener = new PlayerStateListener() {
         @Override
         public void onReady(PlayerStateEvent evt) {
@@ -26,25 +25,13 @@ public class MediaPlayerSync {
         }
 
         @Override
-        public void onPlaying(PlayerStateEvent evt) {
-            synchronized (seekLock) {
-                seekLock.notify();
-            }
-        }
+        public void onPlaying(PlayerStateEvent evt) { }
 
         @Override
-        public void onPause(PlayerStateEvent evt) {
-            synchronized (seekLock) {
-                seekLock.notify();
-            }
-        }
+        public void onPause(PlayerStateEvent evt) { }
 
         @Override
-        public void onStop(PlayerStateEvent evt) {
-            synchronized (seekLock) {
-                seekLock.notify();
-            }
-        }
+        public void onStop(PlayerStateEvent evt) { }
 
         @Override
         public void onStall(PlayerStateEvent evt) { }
@@ -67,17 +54,6 @@ public class MediaPlayerSync {
             try {
                 mediaPlayer.init();
                 readyLock.wait();
-            } catch (InterruptedException e) {
-                // Happens if someone interrupts your thread
-            }
-        }
-    }
-
-    public void waitForSeek(double time) {
-        synchronized (seekLock) {
-            try {
-                mediaPlayer.seek(time);
-                seekLock.wait();
             } catch (InterruptedException e) {
                 // Happens if someone interrupts your thread
             }
