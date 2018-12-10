@@ -92,7 +92,7 @@ Here is a simple example on how to create and initialize the [MPV Player](https:
 
 ``` java
     import org.datavyu.plugins.MediaPlayer;
-    import org.datavyu.plugins.ffmpeg.MpvMediaPlayer;
+    import org.datavyu.plugins.mpv.MpvMediaPlayer;
 
     import javax.swing.*;
     import java.io.File;

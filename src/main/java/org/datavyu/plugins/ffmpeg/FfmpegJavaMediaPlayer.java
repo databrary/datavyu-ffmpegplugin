@@ -154,9 +154,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
             throwMediaErrorException(rc, null);
         }
 
-        if (playerGetRate() != 1.0F){
-          playerSetRate(1.0F);
-        }
+        playerSetRate(1.0F);
     }
 
     @Override
@@ -288,7 +286,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
 
     @Override
-    protected void ffmpegPlayerSeek(double streamTime, int flags) throws MediaException {
+    protected void playerSeek(double streamTime, int flags) throws MediaException {
         int rc = ffmpegSeek(getNativeMediaRef(), streamTime, flags);
         if (0 != rc) {
             throwMediaErrorException(rc, null);

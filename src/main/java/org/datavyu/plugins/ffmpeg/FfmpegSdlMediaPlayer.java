@@ -16,7 +16,7 @@ import java.net.URI;
  */
 public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
-    private static final Logger LOGGER = LogManager.getFormatterLogger(MpvMediaPlayer.class);
+    private static final Logger LOGGER = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
 
     static {
         try {
@@ -81,9 +81,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
             throwMediaErrorException(rc, null);
         }
 
-        if (playerGetRate() != 1.0F){
-            playerSetRate(1.0F);
-        }
+        playerSetRate(1.0F);
     }
 
     @Override
@@ -219,7 +217,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     }
 
     @Override
-    protected void ffmpegPlayerSeek(double streamTime, int flags) throws MediaException {
+    protected void playerSeek(double streamTime, int flags) throws MediaException {
         int rc = ffmpegSeek(getNativeMediaRef(), streamTime, flags);
         if (0 != rc) {
             throwMediaErrorException(rc, null);

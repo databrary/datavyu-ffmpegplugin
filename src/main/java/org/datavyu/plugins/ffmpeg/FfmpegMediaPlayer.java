@@ -31,15 +31,15 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
     protected void playerSeek(double streamTime) throws MediaException {
         // In most cases seek accurate, with the exception of large backward playback rates
         int seek_flag = (!isStartTimeUpdated && getRate() < -1) ? SEEK_FAST_FLAG : SEEK_ACCURATE_FLAG;
-        ffmpegPlayerSeek(streamTime, seek_flag);
+        playerSeek(streamTime, seek_flag);
     }
 
     @Override
     protected void playerSetStartTime(double startTime) throws MediaException {
-        ffmpegPlayerSeek(startTime, SEEK_ACCURATE_FLAG);
+        playerSeek(startTime, SEEK_ACCURATE_FLAG);
     }
 
-    protected abstract void ffmpegPlayerSeek(double streamTime, int seek_flag) throws MediaException;
+    protected abstract void playerSeek(double streamTime, int seek_flag) throws MediaException;
 
     class FfmpegPlayerStateListener implements PlayerStateListener {
 

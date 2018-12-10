@@ -2,7 +2,7 @@ package org.datavyu.plugins.examples;
 
 
 import org.datavyu.plugins.MediaPlayer;
-import org.datavyu.plugins.ffmpeg.MpvAwtMediaPlayer;
+import org.datavyu.plugins.mpv.MpvAwtMediaPlayer;
 
 import javax.swing.*;
 import java.io.File;

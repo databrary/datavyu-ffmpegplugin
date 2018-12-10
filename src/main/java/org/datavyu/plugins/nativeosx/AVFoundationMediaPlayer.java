@@ -1,45 +1,62 @@
 package org.datavyu.plugins.nativeosx;
 
 
+import org.datavyu.plugins.MediaError;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.PlayerStateListener;
 
 import java.awt.*;
+import java.io.File;
 import java.net.URI;
 
 public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
   private Container container;
+  private final Object readyLock = new Object();
 
   public AVFoundationMediaPlayer(URI mediaPath, Container container) {
     super(mediaPath);
+    this.addMediaPlayerStateListener(new AVFoundationMediaPlayer.PlayerStateListenerImpl());
     this.container = container;
   }
 
   @Override
   public void init() {
-    addMediaPlayerStateListener(new PlayerStateListenerImpl());
     initNative();
+
+    // Test if he file exists
+    File mediaFile = new File(mediaPath);
+    if (!mediaFile.exists()){
+      throwMediaErrorException(MediaError.ERROR_MEDIA_INVALID.code(), null);
+    }
 
     container.addNotify();
     container.add(nativePlayerCanvas, BorderLayout.CENTER);
 
     incPlayerCount();
     sendPlayerStateEvent(eventPlayerReady, 0);
+
+    synchronized (readyLock) {
+      try {
+        readyLock.wait();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   @Override
-  protected void avFoundationPlayerSeek(double streamTime, int flags) throws MediaException {
+  protected void playerSeek(double streamTime, int flags) throws MediaException {
     switch (flags){
-      case NORMAL_SEEK:
-        nativePlayerCanvas.setTime((long) streamTime * 1000, id);
+      case NORMAL_SEEK_FLAG:
+        EventQueue.invokeLater(() -> nativePlayerCanvas.setTime((long) streamTime * 1000, id));
         break;
-      case PRECISE_SEEK:
-        nativePlayerCanvas.setTimePrecise((long) streamTime * 1000, id);
+      case PRECISE_SEEK_FLAG:
+        EventQueue.invokeLater(() -> nativePlayerCanvas.setTimePrecise((long) streamTime * 1000, id));
         break;
-      case MODERATE_SEEK:
-        nativePlayerCanvas.setTimeModerate((long) streamTime * 1000, id);
+      case MODERATE_SEEK_FLAG:
+        EventQueue.invokeLater(() -> nativePlayerCanvas.setTimeModerate((long) streamTime * 1000, id));
         break;
     }
   }
@@ -48,9 +65,12 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
     @Override
     public void onReady(PlayerStateEvent evt) {
-      container.setSize(getImageWidth(), getImageHeight());
-      container.setVisible(true);
-      playerSetStartTime(0);
+      synchronized (readyLock){
+        container.setSize(getImageWidth(), getImageHeight());
+        container.setVisible(true);
+        playerSetStartTime(0);
+        readyLock.notify();
+      }
     }
 
     @Override

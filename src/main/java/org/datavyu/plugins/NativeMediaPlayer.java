@@ -34,10 +34,11 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     private EventQueueThread eventLoop = new EventQueueThread();
     private final Lock disposeLock = new ReentrantLock();
     private boolean isDisposed = false;
-    protected double startTime = 0.0;
-    protected double stopTime = Double.POSITIVE_INFINITY;
+    private double startTime = 0.0;
+    private double stopTime = Double.POSITIVE_INFINITY;
+    private boolean isStopTimeSet = false;
     protected boolean isStartTimeUpdated = false;
-    protected boolean isStopTimeSet = false;
+
 
 
     protected boolean isUpdateTimeEnabled = false;
@@ -356,6 +357,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public void stepForward() {
         try {
             if (!isDisposed) {
+                stop();
                 playerStepForward();
             }
         } catch (MediaException me) {
@@ -367,6 +369,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public void stepBackward() {
         try {
             if (!isDisposed) {
+                stop();
                 playerStepBackward();
             }
         } catch (MediaException me) {

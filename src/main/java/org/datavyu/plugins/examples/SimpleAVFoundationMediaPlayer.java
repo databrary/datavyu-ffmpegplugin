@@ -17,7 +17,7 @@ public class SimpleAVFoundationMediaPlayer {
 
         mediaPlayer.addMediaErrorListener(
             (source, errorCode, message)
-                -> System.err.println(errorCode + ": " + message));
+                -> System.err.println(source.getClass() + " - " + errorCode + ": " + message));
 
         // Initialize the player
         mediaPlayer.init();

@@ -131,6 +131,7 @@ public class LibraryLoader {
      */
     public static File extract(final String destName) throws Exception {
         logger.info("Attempting to extract " + destName);
+
         File outfile = new File(libraryFolder,destName + getExtension(destName));
 
         // If the file already exists and is in use aka can't be written

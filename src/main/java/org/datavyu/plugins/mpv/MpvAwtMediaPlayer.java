@@ -1,4 +1,4 @@
-package org.datavyu.plugins.ffmpeg;
+package org.datavyu.plugins.mpv;
 
 import sun.awt.windows.WComponentPeer;
 

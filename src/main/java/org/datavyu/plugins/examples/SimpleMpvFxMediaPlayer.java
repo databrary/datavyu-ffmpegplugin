@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.datavyu.plugins.MediaPlayer;
-import org.datavyu.plugins.ffmpeg.MpvFxMediaPlayer;
+import org.datavyu.plugins.mpv.MpvFxMediaPlayer;
 
 import java.io.File;
 import java.net.URI;

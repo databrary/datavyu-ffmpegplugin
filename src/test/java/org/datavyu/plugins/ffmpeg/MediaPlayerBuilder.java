@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.mpv.MpvFxMediaPlayer;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.annotations.DataProvider;

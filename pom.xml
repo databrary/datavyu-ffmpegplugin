@@ -121,8 +121,6 @@
                 <configuration>
                   <arguments>
                     <argument>/p:Configuration=${msbuild.configuration.release}</argument>
-                    <!--Need to update the argument value if you change the name
-                    of the Visual Studio Solution-->
                     <argument>MediaPlayer.sln</argument>
                     <argument>/t:build</argument>
                   </arguments>

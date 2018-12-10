@@ -14,12 +14,12 @@ extern "C" {
 #endif
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvInitPlayer
  * Signature: ([JLjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvInitPlayer(
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvInitPlayer(
     JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath,
     jlong windowID) {
 
@@ -73,12 +73,12 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvInitPlayer(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvDisposePlayer
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvDisposePlayer(
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvDisposePlayer(
     JNIEnv *env, jobject object, jlong ref_media) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -97,11 +97,11 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvDisposePlayer(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvPlay
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvPlay(
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvPlay(
     JNIEnv *env, jobject obj, jlong ref_media) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -118,11 +118,11 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvPlay(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvPause
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvPause(
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvPause(
     JNIEnv *env, jobject obj, jlong ref_media) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -139,11 +139,11 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvPause(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvStop
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvStop(
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvStop(
     JNIEnv *env, jobject obj, jlong ref_media) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -160,12 +160,12 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvStop(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvStepForward
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvStepForward(JNIEnv *env,
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvStepForward(JNIEnv *env,
                                                               jobject obj,
                                                               jlong ref_media) {
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -182,12 +182,12 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvStepForward(JNIEnv *env,
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvStepBackward
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvStepBackward(
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvStepBackward(
     JNIEnv *env, jobject obj, jlong ref_media) {
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
   if (NULL == pMedia)
@@ -203,11 +203,11 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvStepBackward(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvFinish
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvFinish(
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvFinish(
     JNIEnv *env, jobject obj, jlong ref_media) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -224,12 +224,12 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvFinish(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvGetRate
  * Signature: (J[F)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetRate(
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvGetRate(
     JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfRate) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -251,12 +251,12 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetRate(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvSetRate
  * Signature: (JF)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSetRate(JNIEnv *env,
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvSetRate(JNIEnv *env,
                                                           jobject obj,
                                                           jlong ref_media,
                                                           jfloat rate) {
@@ -275,12 +275,12 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSetRate(JNIEnv *env,
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvGetPresentationTime
  * Signature: (J[D)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetPresentationTime(
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvGetPresentationTime(
     JNIEnv *env, jobject obj, jlong ref_media,
     jdoubleArray jrgdPresentationTime) {
 
@@ -303,11 +303,11 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetPresentationTime(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvGetFps
  * Signature: (J[D)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetFps(
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvGetFps(
     JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jdFps) {
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
   if (NULL == pMedia)
@@ -328,12 +328,12 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetFps(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvGetDuration
  * Signature: (J[D)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetDuration(
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvGetDuration(
     JNIEnv *env, jobject obj, jlong ref_media, jdoubleArray jrgdDuration) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -355,11 +355,11 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetDuration(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvSeek
  * Signature: (JD)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSeek(
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvSeek(
     JNIEnv *env, jobject obj, jlong ref_media, jdouble stream_time) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -376,12 +376,12 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSeek(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvGetImageWidth
  * Signature: (J[I)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetImageWidth(
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvGetImageWidth(
     JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
   if (NULL == pMedia)
@@ -402,12 +402,12 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetImageWidth(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvGetImageHeight
  * Signature: (J[I)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetImageHeight(
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvGetImageHeight(
     JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
   if (NULL == pMedia)
@@ -428,12 +428,12 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetImageHeight(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvGetVolume
  * Signature: (J[F)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetVolume(
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvGetVolume(
     JNIEnv *env, jobject obj, jlong ref_media, jfloatArray jrgfVolume) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
@@ -455,12 +455,12 @@ Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvGetVolume(
 }
 
 /*
- * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvSetVolume
  * Signature: (JF)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_mpvSetVolume(JNIEnv *env,
+Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvSetVolume(JNIEnv *env,
                                                             jobject obj,
                                                             jlong ref_media,
                                                             jfloat volume) {
