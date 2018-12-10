@@ -173,4 +173,4 @@ You can check the wiki or the issue tracker for ideas on what you could contribu
 * Reda Nezzar
 * Jesse Lingeman
 
-[<img src="https://nyu.databrary.org/web/images/grants/nyu.jpg" width="300">](https://www.nyu.edu/)
+[<img src="https://nyu.databrary.org/web/images/grants/nyu.jpg" imageWidth="300">](https://www.nyu.edu/)

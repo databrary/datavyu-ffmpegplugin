@@ -1,5 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
