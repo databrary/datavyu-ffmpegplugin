@@ -1,41 +1,21 @@
 package org.datavyu.plugins.ffmpeg;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import javax.swing.*;
-import java.net.URI;
 
+/**
+ * Tests the MPV player using a AWT window for display
+ */
 public class MpvMediaPlayerTest extends MediaPlayerTest {
-
-    private static class MpvJxApplication extends Application {
-        private URI mediaPath;
-        private MediaPlayer mediaPlayer;
-
-        public MpvJxApplication(URI mediaPath) {
-            this.mediaPath = mediaPath;
-        }
-
-        @Override
-        public void start(Stage primaryStage) {
-            mediaPlayer = new MpvFxMediaPlayer(mediaPath, primaryStage);
-            mediaPlayer.init();
-        }
-
-        public MediaPlayer getMediaPlayer() {
-            return mediaPlayer;
-        }
-    }
 
     @DataProvider(name = "mpvPlayers")
     public Object[][] createPlayerWithMedia() {
         // TODO(fraudies): Work with all video files
         MediaInformation mediaInformation = MEDIA.stream().findFirst().get();
-        //MediaPlayer mediaPlayer = new MpvFxMediaPlayer(mediaInformation.getLocalPath(), new Stage());
         MediaPlayerSync mediaPlayerSync = MediaPlayerSync.createMediaPlayerSync(
-                new MpvJxApplication(mediaInformation.getLocalPath()).getMediaPlayer());
+                new MpvAwtMediaPlayer(mediaInformation.getLocalPath(), new JDialog()));
         return new Object[][] {{ mediaPlayerSync, mediaInformation}};
     }
 
@@ -44,4 +24,34 @@ public class MpvMediaPlayerTest extends MediaPlayerTest {
         super.testReadyState(player, mediaInformation);
     }
 
+    @Test(dataProvider = "mpvPlayers")
+    public void testMetadata(MediaPlayerSync player, MediaInformation mediaInformation) {
+        super.testMetadata(player, mediaInformation);
+    }
+
+
+    @Test(dataProvider = "mpvPlayers")
+    public void testSeek(MediaPlayerSync player, MediaInformation mediaInformation) {
+        super.testSeek(player, mediaInformation);
+    }
+
+    @Test(dataProvider = "mpvPlayers")
+    public void testStepForward(MediaPlayerSync player, MediaInformation mediaInformation) {
+        super.testStepForward(player, mediaInformation);
+    }
+
+    @Test(dataProvider = "mpvPlayers")
+    public void testStepForwardAtEnd(MediaPlayerSync player, MediaInformation mediaInformation) {
+        super.testStepForwardAtEnd(player, mediaInformation);
+    }
+
+    @Test(dataProvider = "mpvPlayers")
+    public void testStepBackward(MediaPlayerSync player, MediaInformation mediaInformation) {
+        super.testStepBackward(player, mediaInformation);
+    }
+
+    @Test(dataProvider = "mpvPlayers")
+    public void testStepBackwardAtStart(MediaPlayerSync player, MediaInformation mediaInformation) {
+        super.testStepBackwardAtStart(player, mediaInformation);
+    }
 }

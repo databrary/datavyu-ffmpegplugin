@@ -44,7 +44,7 @@ public class MediaPlayerTest {
         double duration = mediaInformation.getDuration();
         List<Double> seekTimes = createSeekTimes(startTime, duration);
         seekTimes.forEach(expectedTime -> {
-            player.waitForSeek(expectedTime);
+            player.getMediaPlayer().seek(expectedTime);
             // TODO: Need to see how we can remove this sleeping
             sleep(100);
             double actualTime = player.getMediaPlayer().getPresentationTime();
@@ -58,7 +58,7 @@ public class MediaPlayerTest {
         double seekTime = randomTime(startTime, duration);
         double delta = 1.0/mediaInformation.getFramesPerSecond();
         // Seek to random position
-        player.waitForSeek(seekTime);
+        player.getMediaPlayer().seek(seekTime);
         sleep(100);
         // We may not seek to the exact time
         double expectedTime = player.getMediaPlayer().getPresentationTime() + delta;
@@ -76,7 +76,7 @@ public class MediaPlayerTest {
         double seekTime = startTime + duration - 1;
         double delta = 1.0/mediaInformation.getFramesPerSecond();
 
-        player.waitForSeek(seekTime);
+        player.getMediaPlayer().seek(seekTime);
         sleep(100);
         double expectedTime = player.getMediaPlayer().getPresentationTime();
         player.getMediaPlayer().stepForward();
@@ -91,19 +91,18 @@ public class MediaPlayerTest {
         double seekTime = randomTime(startTime, duration);
         double delta = 1.0/mediaInformation.getFramesPerSecond();
 
-        player.waitForSeek(seekTime + delta);
+        player.getMediaPlayer().seek(seekTime + delta);
         sleep(100);
         double expectedTime = player.getMediaPlayer().getPresentationTime();
         player.getMediaPlayer().stepBackward();
-        sleep(200);
+        sleep(300);
         double actualTime = player.getMediaPlayer().getPresentationTime();
         Assert.assertEquals(actualTime, expectedTime, 0.001);
     }
 
     protected void testStepBackwardAtStart(MediaPlayerSync player, MediaInformation mediaInformation) {
         double startTime = mediaInformation.getStartTime();
-        double delta = 1.0/mediaInformation.getFramesPerSecond();
-        player.waitForSeek(startTime);
+        player.getMediaPlayer().seek(startTime);
         sleep(100);
         double expectedTime = player.getMediaPlayer().getPresentationTime();
         player.getMediaPlayer().stepBackward();
