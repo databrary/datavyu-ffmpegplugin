@@ -52,7 +52,7 @@ public class JavaFxMediaPlayer extends DatavyuMediaPlayer {
         stage.setHeight(getImageHeight());
         stage.setWidth(getImageWidth());
         stage.show();
-        readyLock.notify();
+        readyLock.notifyAll();
       }
     });
 
