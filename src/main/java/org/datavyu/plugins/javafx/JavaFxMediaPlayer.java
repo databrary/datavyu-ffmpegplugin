@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.datavyu.plugins.DatavyuMediaPlayer;
 import org.datavyu.plugins.MediaException;
+import org.datavyu.util.FrameRate;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URI;
@@ -24,31 +25,37 @@ public class JavaFxMediaPlayer extends DatavyuMediaPlayer {
   private StackPane root;
   private Scene scene;
 
-  public JavaFxMediaPlayer(URI mediaPath, Stage stage) {
+  private final Object readyLock;
+
+  private float fps = -1;
+
+  public JavaFxMediaPlayer(URI mediaPath, Stage stage, Object readyLock) {
     super(mediaPath);
     this.media = new Media(mediaPath.toString());
+    this.readyLock = readyLock;
     this.stage = stage;
   }
 
   @Override
-  public synchronized void init() {
+  public void init() {
     initNative();
     initStage();
 
-    mediaPlayer.setOnReady(() -> {
-      stage.setHeight(getImageHeight());
-      stage.setWidth(getImageWidth());
-      stage.show();
-
-      sendPlayerStateEvent(eventPlayerReady, 0);
-    });
-    mediaPlayer.setOnPlaying(() -> sendPlayerStateEvent(eventPlayerPlaying, 0));
-    mediaPlayer.setOnStopped(() -> sendPlayerStateEvent(eventPlayerStopped, 0));
-    mediaPlayer.setOnPaused(() -> sendPlayerStateEvent(eventPlayerPaused, 0));
+    fps = FrameRate.createDefaultFrameRate(mediaPath).getFPS();
   }
 
   private void initStage() {
     mediaPlayer = new MediaPlayer(media);
+
+    mediaPlayer.setOnReady(() -> {
+      synchronized (readyLock){
+        stage.setHeight(getImageHeight());
+        stage.setWidth(getImageWidth());
+        stage.show();
+        readyLock.notify();
+      }
+    });
+
     mediaView = new MediaView(mediaPlayer);
     root = new StackPane(mediaView);
     scene = new Scene(root);
@@ -81,12 +88,18 @@ public class JavaFxMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerStepForward() throws MediaException {
-
+    double stepSize = Math.ceil(1000F / fps);
+    double time = mediaPlayer.getCurrentTime().toMillis();
+    double newTime = Math.min(Math.max(time + stepSize, 0), mediaPlayer.getTotalDuration().toMillis());
+    playerSeek(newTime / 1000);
   }
 
   @Override
   protected void playerStepBackward() throws MediaException {
-
+    double stepSize = Math.ceil(1000F / fps);
+    double time = mediaPlayer.getCurrentTime().toMillis();
+    double newTime = Math.min(Math.max(time - stepSize, 0), mediaPlayer.getTotalDuration().toMillis());
+    playerSeek(newTime / 1000);
   }
 
   @Override
@@ -99,9 +112,7 @@ public class JavaFxMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
-  protected void playerFinish() throws MediaException {
-
-  }
+  protected void playerFinish() throws MediaException { }
 
   @Override
   protected float playerGetRate() throws MediaException {
@@ -120,7 +131,7 @@ public class JavaFxMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected double playerGetFps() throws MediaException {
-    return 0;
+    return fps;
   }
 
   @Override
