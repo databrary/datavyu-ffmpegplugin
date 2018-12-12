@@ -12,7 +12,7 @@ import java.net.URI;
 
 abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
-  private static Logger logger = LogManager.getLogger(AVFoundationMediaPlayer.class);
+  private static Logger logger = LogManager.getLogger(NativeOSXMediaPlayer.class);
 
   // The time seeked to will be within the bound [time-0, time+0]
   protected static final int PRECISE_SEEK_FLAG = 0;
@@ -21,21 +21,21 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   // The time seeked to will be within the bound [time-INFINITE, time+INFINITE]
   protected static final int NORMAL_SEEK_FLAG = 2;
 
-  protected static final int INITIAL_VOLUME = 100;
+  protected static final int INITIAL_VOLUME = 10;
 
-  protected NativeOSXPlayer nativePlayerCanvas;
+  protected NativeOSXPlayer mediaPlayer;
 
   protected final int id;
   private static int playerCount = 0;
-
+  protected double fps = -1;
+  protected double duration = -1;
   private float volume = INITIAL_VOLUME;
-  private double duration = -1;
   private boolean seeking = false;
   private float prevRate;
 
   protected NativeOSXMediaPlayer(URI mediaPath) {
     super(mediaPath);
-    this.nativePlayerCanvas = new NativeOSXPlayer(mediaPath);
+    this.mediaPlayer = new NativeOSXPlayer(mediaPath);
     this.id = playerCount;
     this.prevRate = 1F;
     sendPlayerStateEvent(eventPlayerUnknown, 0);
@@ -51,9 +51,10 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   @Override
   protected void playerPlay() throws MediaException {
     if (getState() == PlayerStateEvent.PlayerState.PAUSED){
-      EventQueue.invokeLater(() -> nativePlayerCanvas.setRate(prevRate, id));
+      EventQueue.invokeLater(() -> mediaPlayer.setRate(prevRate, id));
     } else {
-      EventQueue.invokeLater(() -> nativePlayerCanvas.play(id));
+      EventQueue.invokeLater(() -> mediaPlayer.play(id));
+      playerSetMute(false);
     }
 
     sendPlayerStateEvent(eventPlayerPlaying, 0);
@@ -62,7 +63,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   @Override
   protected void playerStop() throws MediaException {
     if (isPlaying()) {
-      EventQueue.invokeLater(() -> nativePlayerCanvas.stop(id));
+      EventQueue.invokeLater(() -> mediaPlayer.stop(id));
 
       sendPlayerStateEvent(eventPlayerStopped, 0);
     }
@@ -70,18 +71,20 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerStepForward() throws MediaException {
-    double stepSize = Math.ceil(1000F / nativePlayerCanvas.getFPS(id));
-    double time = nativePlayerCanvas.getCurrentTime(id);
-    long newTime = (long) Math.min(Math.max(time + stepSize, 0), nativePlayerCanvas.getDuration(id));
-    nativePlayerCanvas.setTimePrecise(newTime, id);
+    double stepSize = Math.ceil(1000F / mediaPlayer.getFPS(id));
+    double time = mediaPlayer.getCurrentTime(id);
+    long newTime = (long) Math.min(Math.max(time + stepSize, 0), mediaPlayer.getDuration(id));
+    logger.info("Stepping Forward from " +time+ " sec, to " + newTime + " sec");
+    mediaPlayer.setTimePrecise(newTime, id);
   }
 
   @Override
   protected void playerStepBackward() throws MediaException {
-    double stepSize = Math.ceil(1000F / nativePlayerCanvas.getFPS(id));
-    double time = nativePlayerCanvas.getCurrentTime(id);
-    long newTime = (long) Math.min(Math.max(time - stepSize, 0), nativePlayerCanvas.getDuration(id));
-    nativePlayerCanvas.setTimePrecise(newTime, id);
+    double stepSize = Math.ceil(1000F / mediaPlayer.getFPS(id));
+    double time = mediaPlayer.getCurrentTime(id);
+    long newTime = (long) Math.min(Math.max(time - stepSize, 0), mediaPlayer.getDuration(id));
+    logger.info("Stepping Backward from " + (time/1000.0) + " sec, to " + (newTime/1000.0) + " sec");
+    mediaPlayer.setTimePrecise(newTime, id);
   }
 
   @Override
@@ -104,28 +107,29 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected float playerGetRate() throws MediaException {
-    return nativePlayerCanvas.getRate(id);
+    return mediaPlayer.getRate(id);
   }
 
   @Override
   protected void playerSetRate(float rate) throws MediaException {
-    nativePlayerCanvas.setRate(rate, id);
+    logger.info("Setting Rate to : " + rate + "X");
+    mediaPlayer.setRate(rate, id);
   }
 
 
   @Override
   protected void playerSetStartTime(double startTime) throws MediaException {
-    playerSeek(startTime, PRECISE_SEEK_FLAG);
+    playerSeek((long) (startTime * 1000), PRECISE_SEEK_FLAG);
   }
 
   @Override
   protected double playerGetPresentationTime() throws MediaException {
-    return (nativePlayerCanvas.getCurrentTime(id) / 1000F);
+    return (mediaPlayer.getCurrentTime(id) / 1000.0);
   }
 
   @Override
   protected double playerGetFps() throws MediaException {
-    return nativePlayerCanvas.getFPS(id);
+    return mediaPlayer.getFPS(id);
   }
 
   @Override
@@ -139,11 +143,12 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected synchronized void playerSetVolume(float volume) throws MediaException {
+    logger.info("Setting Volume to " + volume);
     if (!muteEnabled) {
       if (volume == 0) {
-        EventQueue.invokeLater(() -> nativePlayerCanvas.setVolume(0, id));
+        EventQueue.invokeLater(() -> mediaPlayer.setVolume(0, id));
       } else {
-        EventQueue.invokeLater(() -> nativePlayerCanvas.setVolume(volume * 10, id));
+        EventQueue.invokeLater(() -> mediaPlayer.setVolume(volume , id));
         this.volume = mutedVolume = volume;
       }
     } else {
@@ -153,10 +158,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected double playerGetDuration() throws MediaException {
-    if (duration <= -1) {
-      return duration = nativePlayerCanvas.getDuration(id) / 1000F;
-    }
-    return duration;
+    return (mediaPlayer.getDuration(id) / 1000.0);
   }
 
   @Override
@@ -164,23 +166,25 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     if (!seeking) {
       seeking = true;
       EventQueue.invokeLater(() -> {
-        logger.info("Seeking to position: " + streamTime + " Is playing: " + isPlaying());
         boolean wasPlaying = isPlaying();
         prevRate = playerGetRate();
         if (isPlaying()) {
-          nativePlayerCanvas.stop(id);
+          mediaPlayer.stop(id);
         }
         if (!wasPlaying || prevRate >= 0 && prevRate <= 8) {
-          playerSeek(streamTime, PRECISE_SEEK_FLAG);
+          logger.info("Precise seek to position: " + streamTime);
+          playerSeek( streamTime * 1000, PRECISE_SEEK_FLAG);
         } else if(prevRate < 0 && prevRate > - 8) {
-          playerSeek(streamTime, MODERATE_SEEK_FLAG);
+          logger.info("Moderate seek to position: " + streamTime);
+          playerSeek(streamTime * 1000, MODERATE_SEEK_FLAG);
         } else {
-          playerSeek(streamTime, NORMAL_SEEK_FLAG);
+          logger.info("Seek to position: " + streamTime);
+          playerSeek(streamTime * 1000, NORMAL_SEEK_FLAG);
         }
         if (wasPlaying) {
           playerSetRate(prevRate);
         }
-        nativePlayerCanvas.repaint();
+        mediaPlayer.repaint();
         seeking = false;
       });
     }
@@ -188,21 +192,22 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerDispose() {
+    logger.info("Disposing the player");
     decPlayerCount();
   }
 
   @Override
   public int getImageWidth() {
-    return (int) nativePlayerCanvas.getMovieWidth(id);
+    return (int) mediaPlayer.getMovieWidth(id);
   }
 
   @Override
   public int getImageHeight() {
-    return (int) nativePlayerCanvas.getMovieHeight(id);
+    return (int) mediaPlayer.getMovieHeight(id);
   }
 
   protected boolean isPlaying() {
-    return !nativePlayerCanvas.isPlaying(id); // the native os plugin return false when is playing
+    return !mediaPlayer.isPlaying(id); // the native os plugin return false when is playing
   }
 
   @Override
