@@ -70,7 +70,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
     }
 
     endInitTime = System.currentTimeMillis();
-    logger.info("Time to initialize : " + (endInitTime - startInitTime) + " ms");
+    logger.debug("Time to initialize : " + (endInitTime - startInitTime) + " ms");
   }
 
   @Override

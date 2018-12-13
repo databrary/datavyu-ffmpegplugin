@@ -21,7 +21,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   // The time seeked to will be within the bound [time-INFINITE, time+INFINITE]
   protected static final int NORMAL_SEEK_FLAG = 2;
 
-  protected static final int INITIAL_VOLUME = 10;
+  protected static final float INITIAL_VOLUME = 1F;
 
   protected NativeOSXPlayer mediaPlayer;
 
@@ -53,8 +53,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     if (getState() == PlayerStateEvent.PlayerState.PAUSED){
       EventQueue.invokeLater(() -> mediaPlayer.setRate(prevRate, id));
     } else {
-      EventQueue.invokeLater(() -> mediaPlayer.play(id));
-      playerSetMute(false);
+      EventQueue.invokeLater(() -> mediaPlayer.setRate(1F, id));
     }
 
     sendPlayerStateEvent(eventPlayerPlaying, 0);
@@ -145,12 +144,8 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   protected synchronized void playerSetVolume(float volume) throws MediaException {
     logger.info("Setting Volume to " + volume);
     if (!muteEnabled) {
-      if (volume == 0) {
-        EventQueue.invokeLater(() -> mediaPlayer.setVolume(0, id));
-      } else {
-        EventQueue.invokeLater(() -> mediaPlayer.setVolume(volume , id));
-        this.volume = mutedVolume = volume;
-      }
+      EventQueue.invokeLater(() -> mediaPlayer.setVolume(volume, id));
+      this.volume = mutedVolume = volume;
     } else {
       mutedVolume = volume;
     }
@@ -172,13 +167,13 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
           mediaPlayer.stop(id);
         }
         if (!wasPlaying || prevRate >= 0 && prevRate <= 8) {
-          logger.info("Precise seek to position: " + streamTime);
+          logger.debug("Precise seek to position: " + streamTime);
           playerSeek( streamTime * 1000, PRECISE_SEEK_FLAG);
         } else if(prevRate < 0 && prevRate > - 8) {
-          logger.info("Moderate seek to position: " + streamTime);
+          logger.debug("Moderate seek to position: " + streamTime);
           playerSeek(streamTime * 1000, MODERATE_SEEK_FLAG);
         } else {
-          logger.info("Seek to position: " + streamTime);
+          logger.debug("Seek to position: " + streamTime);
           playerSeek(streamTime * 1000, NORMAL_SEEK_FLAG);
         }
         if (wasPlaying) {
