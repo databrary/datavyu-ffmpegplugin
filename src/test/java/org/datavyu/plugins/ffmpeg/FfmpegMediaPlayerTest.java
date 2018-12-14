@@ -4,54 +4,88 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Tests the ffmpeg player using an AWT window for display
  */
 public class FfmpegMediaPlayerTest extends MediaPlayerTest {
 
-    @DataProvider(name = "ffmpegPlayers")
-    public Object[][] createPlayerWithMedia() {
-        // TODO(fraudies): Work with all video files
-        MediaInformation mediaInformation = MEDIA.stream().findFirst().get();
-        MediaPlayer mediaPlayer = new FfmpegJavaMediaPlayer(mediaInformation.getLocalPath(), new JDialog());
-        MediaPlayerSync mediaPlayerSync = MediaPlayerSync.createMediaPlayerSync(mediaPlayer);
-        return new Object[][] {{ mediaPlayerSync, mediaInformation}};
+    public static class FfmpegBuilder implements Builder {
+        private MediaInformation mediaInformation;
+        private Container container;
+
+        FfmpegBuilder() { }
+
+        FfmpegBuilder withMedia(MediaInformation mediaInformation) {
+            this.mediaInformation = mediaInformation;
+            return this;
+        }
+
+        FfmpegBuilder withContainer(Container container) {
+            this.container = container;
+            return this;
+        }
+
+        @Override
+        public MediaPlayerSync build() {
+            MediaPlayer mediaPlayer = new FfmpegJavaMediaPlayer(mediaInformation.getLocalPath(), container);
+            return MediaPlayerSync.createMediaPlayerSync(mediaPlayer);
+        }
     }
 
-    @Test(dataProvider = "ffmpegPlayers")
-    public void testReadyState(MediaPlayerSync player, MediaInformation mediaInformation) {
-        super.testReadyState(player, mediaInformation);
+    @DataProvider(name = "shortMedia")
+    public Object[][] createPlayerWithShorthMedia() {
+        return new Object[][] {{ new FfmpegBuilder().withMedia(SHORT_MEDIA).withContainer(new JDialog()), SHORT_MEDIA}};
     }
 
-    @Test(dataProvider = "ffmpegPlayers")
-    public void testMetadata(MediaPlayerSync player, MediaInformation mediaInformation) {
-        super.testMetadata(player, mediaInformation);
+    @DataProvider(name = "longMedia")
+    public Object[][] createPlayerWithLongMedia() {
+        return new Object[][] {{ new FfmpegBuilder().withMedia(LONG_MEDIA).withContainer(new JDialog()), LONG_MEDIA}};
     }
 
-
-    @Test(dataProvider = "ffmpegPlayers")
-    public void testSeek(MediaPlayerSync player, MediaInformation mediaInformation) {
-        super.testSeek(player, mediaInformation);
+    @DataProvider(name = "wrongMedia")
+    public Object[][] createPlayerWithWrongMedia() {
+        return new Object[][] {{ new FfmpegBuilder().withMedia(WRONG_MEDIA).withContainer(new JDialog()), WRONG_MEDIA}};
     }
 
-    @Test(dataProvider = "ffmpegPlayers")
-    public void testStepForward(MediaPlayerSync player, MediaInformation mediaInformation) {
-        super.testStepForward(player, mediaInformation);
+    @Test(dataProvider = "shortMedia")
+    public void testReadyState(Builder build, MediaInformation mediaInformation) {
+        super.testReadyState(build, mediaInformation);
     }
 
-    @Test(dataProvider = "ffmpegPlayers")
-    public void testStepForwardAtEnd(MediaPlayerSync player, MediaInformation mediaInformation) {
-        super.testStepForwardAtEnd(player, mediaInformation);
+    @Test(dataProvider = "shortMedia")
+    public void testMetadata(Builder build, MediaInformation mediaInformation) {
+        super.testMetadata(build, mediaInformation);
     }
 
-    @Test(dataProvider = "ffmpegPlayers")
-    public void testStepBackward(MediaPlayerSync player, MediaInformation mediaInformation) {
-        super.testStepBackward(player, mediaInformation);
+    @Test(dataProvider = "wrongMedia", expectedExceptions = MediaException.class)
+    public void testWrongFilename(Builder builder, MediaInformation mediaInformation) {
+        super.testWrongFile(builder, mediaInformation);
     }
 
-    @Test(dataProvider = "ffmpegPlayers")
-    public void testStepBackwardAtStart(MediaPlayerSync player, MediaInformation mediaInformation) {
-        super.testStepBackwardAtStart(player, mediaInformation);
+    @Test(dataProvider = "shortMedia")
+    public void testSeek(Builder builder, MediaInformation mediaInformation) {
+        super.testSeek(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
+    public void testStepForward(Builder builder, MediaInformation mediaInformation) {
+        super.testStepForward(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
+    public void testStepForwardAtEnd(Builder builder, MediaInformation mediaInformation) {
+        super.testStepForwardAtEnd(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
+    public void testStepBackward(Builder builder, MediaInformation mediaInformation) {
+        super.testStepBackward(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
+    public void testStepBackwardAtStart(Builder builder, MediaInformation mediaInformation) {
+        super.testStepBackwardAtStart(builder, mediaInformation);
     }
 }
