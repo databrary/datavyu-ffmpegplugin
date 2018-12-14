@@ -1,5 +1,6 @@
 *.dll
 *.dylib
+*.jnilib
 *.lib
 *.obj
 *.exp

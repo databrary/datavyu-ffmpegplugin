@@ -1,5 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.MediaException;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,7 @@ import java.net.URI;
  */
 public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
-    private static final Logger LOGGER = LogManager.getFormatterLogger(MpvMediaPlayer.class);
+    private static final Logger LOGGER = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
 
     static {
         try {
@@ -79,6 +80,8 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+
+        playerSetRate(1.0F);
     }
 
     @Override

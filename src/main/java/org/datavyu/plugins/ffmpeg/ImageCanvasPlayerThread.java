@@ -1,5 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.MediaPlayerData;
+
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
@@ -21,7 +23,7 @@ import java.util.Hashtable;
  * Display Max Time: 2 s (Noticed that the thread is not updating the image while resizing)
  * Display Min Time: 44 ms (displaying the frame is faster; small aea to draw)
  */
-public class ImageCanvasPlayerThread extends Thread {
+class ImageCanvasPlayerThread extends Thread {
     private MediaPlayerData mediaPlayerData;
     private SampleModel sm;
     private ComponentColorModel cm;

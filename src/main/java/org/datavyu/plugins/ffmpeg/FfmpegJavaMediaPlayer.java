@@ -1,5 +1,8 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.MediaError;
+import org.datavyu.plugins.MediaException;
+import org.datavyu.plugins.MediaPlayerData;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +33,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     private static final int AUDIO_BUFFER_SIZE = 4*1024; // 4 kB
     private AudioFormat audioFormat;
     private ColorSpace colorSpace;
-    private static final Logger LOGGER = LogManager.getFormatterLogger(MpvMediaPlayer.class);
+    private static final Logger LOGGER = LogManager.getFormatterLogger(FfmpegJavaMediaPlayer.class);
 
     static {
         try {
@@ -150,6 +153,8 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+
+        playerSetRate(1.0F);
     }
 
     @Override

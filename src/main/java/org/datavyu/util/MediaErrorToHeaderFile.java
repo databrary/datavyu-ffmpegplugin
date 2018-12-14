@@ -1,6 +1,6 @@
 package org.datavyu.util;
 
-import org.datavyu.plugins.ffmpeg.MediaError;
+import org.datavyu.plugins.MediaError;
 
 import java.io.File;
 import java.io.FileNotFoundException;
