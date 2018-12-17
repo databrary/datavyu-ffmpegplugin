@@ -63,12 +63,6 @@
 
       <dependencies>
         <dependency>
-          <groupId>ch.randelshofer.quaqua</groupId>
-          <artifactId>quaqua-osx64</artifactId>
-          <version>7.0.1</version>
-        </dependency>
-
-        <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>libNativeOSXCanvas</artifactId>
           <version>0.92</version>
@@ -94,6 +88,7 @@
             <artifactId>exec-maven-plugin</artifactId>
             <version>1.6.0</version>
             <configuration>
+              <!--MSBuild Documentation https://docs.microsoft.com/en-au/visualstudio/msbuild/msbuild-command-line-reference?view=vs-2017-->
               <executable>${msbuild.exe}</executable>
               <workingDirectory>src/main/cpp</workingDirectory>
             </configuration>

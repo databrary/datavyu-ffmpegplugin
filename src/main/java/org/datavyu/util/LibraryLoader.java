@@ -135,7 +135,8 @@ public class LibraryLoader {
         File outfile = new File(libraryFolder,destName + getExtension(destName));
 
         // If the file already exists and is in use aka can't be written
-        if (outfile.exists() && !outfile.canWrite()) {
+        if (outfile.exists()) {
+            logger.info("Attempting to extract an existing file " + destName);
             return outfile;
         }
 
