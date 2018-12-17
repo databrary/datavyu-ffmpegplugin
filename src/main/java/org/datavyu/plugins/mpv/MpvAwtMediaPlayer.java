@@ -42,6 +42,7 @@ public class MpvAwtMediaPlayer extends MpvMediaPlayer {
         if (container.getPeer() == null){
             throw new RuntimeException("Unable to retrieve window id");
         }
+
         return ((WComponentPeer) container.getPeer()).getHWnd();
     }
 

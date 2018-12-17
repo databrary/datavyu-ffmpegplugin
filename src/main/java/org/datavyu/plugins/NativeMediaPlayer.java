@@ -1,5 +1,8 @@
 package org.datavyu.plugins;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.datavyu.plugins.nativeosx.AVFoundationMediaPlayer;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.ref.WeakReference;
@@ -13,6 +16,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class NativeMediaPlayer implements MediaPlayer {
+
+    private static Logger logger = LogManager.getLogger(NativeMediaPlayer.class);
+
     public final static int eventPlayerUnknown = 100;
     public final static int eventPlayerReady = 101;
     public final static int eventPlayerPlaying = 102;
@@ -23,7 +29,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     public final static int eventPlayerError = 107;
 
     /** Synchronization threshold in milliseconds */
-    public static final double SYNC_THRESHOLD = 0.5; // 0.5 sec  (because some plugins are not very precise in seek)
+    public static final double SYNC_THRESHOLD = 1.0; // 1.0 sec  (because some plugin  are not very precise in seek)
 
     private final List<WeakReference<MediaErrorListener>> errorListeners = new ArrayList<>();
     private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
@@ -644,6 +650,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
                     || isUpdateTimeEnabled)) {
 
                 if (Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD) {
+                    logger.warn("Periodic Sync - Clock diff: " + Math.abs(presentationTime - masterCurrentTime) + " sec.");
                     seek(masterCurrentTime);
                     playerCurrentTime = masterCurrentTime;
                 } else {
