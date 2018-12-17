@@ -38,7 +38,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     static {
         try {
             LibraryLoader.extract(FFMPEG_DEPENDENCIES);
-            LibraryLoader.load("FfmpegJavaMediaPlayer");
+            LibraryLoader.extractAndLoad("FfmpegJavaMediaPlayer");
         } catch (Exception e) {
             LOGGER.error("Loading libraries failed due to: " + e);
         }
