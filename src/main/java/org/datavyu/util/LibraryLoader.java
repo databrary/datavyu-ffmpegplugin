@@ -73,7 +73,7 @@ public class LibraryLoader {
             resources = classLoader.getResources("lib" + libName + extension);
             if (!resources.hasMoreElements()) {
                 extension = ".dylib";
-                resources = classLoader.getResources(libName + extension);
+                resources = classLoader.getResources("lib" + libName + extension);
             }
         } else {
             extension = ".dll";
@@ -132,7 +132,12 @@ public class LibraryLoader {
     public static File extract(final String destName) throws Exception {
         logger.info("Attempting to extract " + destName);
 
-        File outfile = new File(libraryFolder,destName + getExtension(destName));
+        File outfile;
+        if(isMacOs){
+            outfile = new File(libraryFolder,"lib" + destName + getExtension(destName));
+        } else {
+            outfile = new File(libraryFolder, destName + getExtension(destName));
+        }
 
         // If the file already exists and is in use aka can't be written
         if (outfile.exists()) {

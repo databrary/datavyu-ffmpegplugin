@@ -20,13 +20,13 @@
   <distributionManagement>
     <repository>
       <id>central</id>
-      <name>ip-10-0-0-114-releases</name>
-      <url>https://projects.databrary.org/artifactory/libs-release-local</url>
+      <name>oss-jfrog-artifactory-releases</name>
+      <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
     </repository>
     <snapshotRepository>
       <id>snapshots</id>
-      <name>ip-10-0-0-114-snapshots</name>
-      <url>https://projects.databrary.org/artifactory/libs-snapshot-local</url>
+      <name>oss-jfrog-artifactory-snapshots</name>
+      <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
     </snapshotRepository>
   </distributionManagement>
 
@@ -41,6 +41,12 @@
       <id>datavyu</id>
       <url>http://datavyu.org/maven2</url>
       <layout>default</layout>
+    </repository>
+
+    <repository>
+      <id>central</id>
+      <name>oss-jfrog-artifactory-releases</name>
+      <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
     </repository>
   </repositories>
 
@@ -67,7 +73,41 @@
           <artifactId>libNativeOSXCanvas</artifactId>
           <version>0.92</version>
         </dependency>
+
+        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
+        <!-- FFmpeg 4.0 Version -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>ffmpeg-libs</artifactId>
+          <version>4.0.2</version>
+          <classifier>mac</classifier>
+        </dependency>
+
+        <!-- SDL 2.0.8 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>sdl-libs</artifactId>
+          <version>2.0.8</version>
+        </dependency>
+
+        <!-- MPV 0.29.1 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>mpv-libs</artifactId>
+          <version>0.29.1</version>
+        </dependency>
       </dependencies>
+
+      <build>
+        <resources>
+          <resource>
+            <directory>./</directory>
+            <includes>
+              <include>libFfmpegJavaMediaPlayer.dylib</include>
+            </includes>
+          </resource>
+        </resources>
+      </build>
 
     </profile>
     <profile>
@@ -78,11 +118,48 @@
           <arch>!x86</arch>
         </os>
       </activation>
+
       <dependencies>
 
+        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
+        <!-- FFmpeg 4.0 Version -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>ffmpeg-libs</artifactId>
+          <version>4.0.2</version>
+          <classifier>win-64</classifier>
+        </dependency>
+
+        <!-- SDL 2.0.8 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>sdl-libs</artifactId>
+          <version>2.0.8</version>
+        </dependency>
+
+        <!-- MPV 0.29.1 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>mpv-libs</artifactId>
+          <version>0.29.1</version>
+        </dependency>
+
       </dependencies>
+
       <build>
+
+        <resources>
+          <resource>
+            <directory>./</directory>
+            <includes>
+              <include>FfmpegJavaMediaPlayer.dll</include>
+              <include>MpvMediaPlayer.dll</include>
+            </includes>
+          </resource>
+        </resources>
+
         <plugins>
+
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
@@ -123,11 +200,14 @@
               </execution>
             </executions>
           </plugin>
+
         </plugins>
       </build>
     </profile>
+
     <profile>
       <id>win64-debug</id>
+
       <activation>
         <os>
           <family>Windows</family>
@@ -138,11 +218,47 @@
           <value>true</value>
         </property>
       </activation>
+
       <dependencies>
 
+        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
+        <!-- FFmpeg 4.0 Version -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>ffmpeg-libs</artifactId>
+          <version>4.0.2</version>
+          <classifier>win-64</classifier>
+        </dependency>
+
+        <!-- SDL 2.0.8 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>sdl-libs</artifactId>
+          <version>2.0.8</version>
+        </dependency>
+
+        <!-- MPV 0.29.1 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>mpv-libs</artifactId>
+          <version>0.29.1</version>
+        </dependency>
+
       </dependencies>
+
       <build>
+        <resources>
+          <resource>
+            <directory>./</directory>
+            <includes>
+              <include>FfmpegJavaMediaPlayer.dll</include>
+              <include>MpvMediaPlayer.dll</include>
+            </includes>
+          </resource>
+        </resources>
+
         <plugins>
+
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
@@ -151,7 +267,9 @@
               <executable>${msbuild.exe}</executable>
               <workingDirectory>src/main/cpp</workingDirectory>
             </configuration>
+
             <executions>
+
               <execution>
                 <id>clean-with-msbuild</id>
                 <phase>clean</phase>
@@ -166,6 +284,7 @@
                   </arguments>
                 </configuration>
               </execution>
+
               <execution>
                 <id>build-with-msbuild</id>
                 <phase>compile</phase>
@@ -182,30 +301,21 @@
                   </arguments>
                 </configuration>
               </execution>
+
             </executions>
           </plugin>
+
         </plugins>
       </build>
     </profile>
-  </profiles>
 
+  </profiles>
 
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
 
-    <resources>
-      <resource>
-        <directory>./</directory>
-        <includes>
-          <include>FfmpegJavaMediaPlayer.dll</include>
-          <include>libFfmpegJavaMediaPlayer.dylib</include>
-          <include>FfmpegSdlMediaPlayer.dll</include>
-          <include>MpvMediaPlayer.dll</include>
-        </includes>
-      </resource>
-    </resources>
-
     <plugins>
+
       <!-- Following plugin executes the testng tests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -218,6 +328,7 @@
           </suiteXmlFiles>
         </configuration>
       </plugin>
+
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.7.0</version>
@@ -250,10 +361,13 @@
           -->
         </configuration>
       </plugin>
+
     </plugins>
+
   </build>
 
   <dependencies>
+
     <!-- Logger API -->
     <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
     <!-- Documentation: https://logging.apache.org/log4j/2.x/manual/api.html -->
@@ -293,26 +407,5 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-    <!-- FFmpeg 4.0 Version -->
-    <dependency>
-      <groupId>org.datavyu</groupId>
-      <artifactId>ffmpeg-libs</artifactId>
-      <version>4.0.2</version>
-    </dependency>
-
-    <!-- SDL 2.0.8 -->
-    <dependency>
-      <groupId>org.datavyu</groupId>
-      <artifactId>sdl-libs</artifactId>
-      <version>2.0.8</version>
-    </dependency>
-
-    <!-- MPV 0.29.1 -->
-    <dependency>
-      <groupId>org.datavyu</groupId>
-      <artifactId>mpv-libs</artifactId>
-      <version>0.29.1</version>
-    </dependency>
   </dependencies>
 </project>
