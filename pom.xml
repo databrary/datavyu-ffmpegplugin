@@ -136,7 +136,7 @@
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
           <version>4.0.2</version>
-          <classifier>win-64</classifier>
+          <classifier>win</classifier>
         </dependency>
 
         <!-- SDL 2.0.8 -->
@@ -378,6 +378,19 @@
           </excludes>
           -->
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>
