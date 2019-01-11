@@ -107,6 +107,15 @@
             </includes>
           </resource>
         </resources>
+
+        <plugins>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <classifier>mac</classifier>
+            </configuration>
+          </plugin>
+        </plugins>
       </build>
 
     </profile>
@@ -159,7 +168,12 @@
         </resources>
 
         <plugins>
-
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <classifier>win</classifier>
+            </configuration>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
@@ -200,7 +214,6 @@
               </execution>
             </executions>
           </plugin>
-
         </plugins>
       </build>
     </profile>
@@ -227,7 +240,7 @@
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
           <version>4.0.2</version>
-          <classifier>win-64</classifier>
+          <classifier>win</classifier>
         </dependency>
 
         <!-- SDL 2.0.8 -->
@@ -258,7 +271,12 @@
         </resources>
 
         <plugins>
-
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <classifier>win</classifier>
+            </configuration>
+          </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
