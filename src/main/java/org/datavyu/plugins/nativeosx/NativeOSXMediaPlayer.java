@@ -192,6 +192,9 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
+  protected boolean playerIsSeekPlaybackEnabled() { return false; }
+
+  @Override
   public int getImageWidth() {
     return (int) mediaPlayer.getMovieWidth(id);
   }

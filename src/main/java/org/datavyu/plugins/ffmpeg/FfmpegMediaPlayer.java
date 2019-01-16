@@ -39,6 +39,11 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
         playerSeek(startTime, SEEK_ACCURATE_FLAG);
     }
 
+    @Override
+    protected boolean playerIsSeekPlaybackEnabled() {
+        return playBackRate <= 0F ;
+    }
+
     protected abstract void playerSeek(double streamTime, int seek_flag) throws MediaException;
 
     class FfmpegPlayerStateListener implements PlayerStateListener {
@@ -47,19 +52,13 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
         public void onReady(PlayerStateEvent evt) { }
 
         @Override
-        public void onPlaying(PlayerStateEvent evt) {
-            isUpdateTimeEnabled = true;
-        }
+        public void onPlaying(PlayerStateEvent evt) { }
 
         @Override
-        public void onPause(PlayerStateEvent evt) {
-            isUpdateTimeEnabled = false;
-        }
+        public void onPause(PlayerStateEvent evt) { }
 
         @Override
-        public void onStop(PlayerStateEvent evt) {
-            isUpdateTimeEnabled = false;
-        }
+        public void onStop(PlayerStateEvent evt) {}
 
         @Override
         public void onStall(PlayerStateEvent evt) { }

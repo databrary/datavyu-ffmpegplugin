@@ -619,26 +619,29 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
       } else if (p_video_state_->HasAudioStream()) {
         av_diff = p_master_clock->GetTime() - p_audio_clock->GetTime();
       }
-      av_log(
-          NULL, AV_LOG_INFO,
-          "%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB "
-          "vq=%5dKB sq=%5dB f=%f /%f   \r",
-          p_master_clock->GetTime(), p_video_state_->GetSpeed(),
-          p_image_clock->GetTime(),
-          (p_video_state_->HasAudioStream() && p_video_state_->HasImageStream())
-              ? "A-V"
-              : (p_video_state_->HasImageStream()
-                     ? "M-V"
-                     : (p_video_state_->HasAudioStream() ? "M-A" : "   ")),
-          av_diff, p_video_state_->GetNumFrameDropsEarly(),
-          num_frame_drops_late_, aqsize / 1024, vqsize / 1024, sqsize,
-          p_video_state_->HasImageStream()
-              ? p_decoder->GetNumberOfIncorrectDtsValues()
-              : 0,
-          p_video_state_->HasImageStream()
-              ? p_decoder->GetNumberOfIncorrectPtsValues()
-              : 0);
-      fflush(stdout);
+#if _DEBUG
+	  av_log(
+		  NULL, AV_LOG_INFO,
+		  "%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB "
+		  "vq=%5dKB sq=%5dB f=%f /%f   \r",
+		  p_master_clock->GetTime(), p_video_state_->GetSpeed(),
+		  p_image_clock->GetTime(),
+		  (p_video_state_->HasAudioStream() && p_video_state_->HasImageStream())
+		  ? "A-V"
+		  : (p_video_state_->HasImageStream()
+			  ? "M-V"
+			  : (p_video_state_->HasAudioStream() ? "M-A" : "   ")),
+		  av_diff, p_video_state_->GetNumFrameDropsEarly(),
+		  num_frame_drops_late_, aqsize / 1024, vqsize / 1024, sqsize,
+		  p_video_state_->HasImageStream()
+		  ? p_decoder->GetNumberOfIncorrectDtsValues()
+		  : 0,
+		  p_video_state_->HasImageStream()
+		  ? p_decoder->GetNumberOfIncorrectPtsValues()
+		  : 0);
+	  fflush(stdout);
+#endif // _DEBUG
+
       last_time = cur_time;
     }
   }

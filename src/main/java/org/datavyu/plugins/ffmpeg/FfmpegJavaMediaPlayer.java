@@ -153,8 +153,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
-
-        playerSetRate(1.0F);
     }
 
     @Override
@@ -291,6 +289,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
         if (0 != rc) {
             throwMediaErrorException(rc, null);
         }
+        LOGGER.trace("Player is seeking to " + streamTime + " sec, with " + flags + " Flag");
     }
 
     @Override
