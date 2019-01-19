@@ -1031,7 +1031,7 @@ int VideoState::DecodeAudioPacketsToFrames() {
       if (seek_notify) {
         seek_done_ = true;
         continue_after_seek_.notify_one();
-			}
+	  }
     }
   } while (ret >= 0 || ret == AVERROR(EAGAIN) || ret == AVERROR_EOF);
 the_end:

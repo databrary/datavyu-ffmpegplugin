@@ -2,7 +2,6 @@ package org.datavyu.plugins;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.PlayerStateEvent.PlayerState;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.ref.WeakReference;
@@ -655,7 +654,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
                     && Double.compare(presentationTime, masterCurrentTime) != 0 ) {
 
                 if (Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD
-                    || isSeekPlaybackEnabled()) {
+                    && !isSeekPlaybackEnabled()) {
                     logger.warn("Periodic Sync - Seek Playback " + isSeekPlaybackEnabled() + " - Clock diff: " + Math.abs(presentationTime - masterCurrentTime) + " sec.");
                     seek(masterCurrentTime);
                 }

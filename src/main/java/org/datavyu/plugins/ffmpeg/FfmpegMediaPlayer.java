@@ -41,7 +41,7 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
 
     @Override
     protected boolean playerIsSeekPlaybackEnabled() {
-        return playBackRate <= 0F ;
+        return playBackRate < 0F ;
     }
 
     protected abstract void playerSeek(double streamTime, int seek_flag) throws MediaException;

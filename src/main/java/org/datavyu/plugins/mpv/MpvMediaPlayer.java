@@ -232,7 +232,7 @@ abstract class MpvMediaPlayer extends DatavyuMediaPlayer {
 
     @Override
     protected boolean playerIsSeekPlaybackEnabled() {
-        return playBackRate <= 0F;
+        return playBackRate < 0F;
     }
 
 

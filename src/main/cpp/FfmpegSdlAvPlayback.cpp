@@ -779,6 +779,9 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         break;
       case SDLK_s: // S: Step to next frame
         p_player->StepToNextFrame();
+        break;      
+	    case SDLK_b: // S: Step to next frame
+        p_player->StepToPreviousFrame();
         break;
       case SDLK_KP_PLUS:
         if (p_video_state->SetSpeed(rate * 2)) {
