@@ -650,8 +650,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
             masterCurrentTime = masterClockTime / 1000;
             double presentationTime = playerGetPresentationTime();
 
-            if ( !Double.isNaN(presentationTime)
-                    && Double.compare(presentationTime, masterCurrentTime) != 0 ) {
+            if (!Double.isNaN(presentationTime)
+                && Double.compare(presentationTime, masterCurrentTime) != 0 ) {
 
                 if (Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD
                     && !isSeekPlaybackEnabled()) {
