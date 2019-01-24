@@ -13,7 +13,8 @@ import java.net.URL;
 import java.util.Optional;
 
 public class MediaInformation {
-    private static final String RESOURCE_NAME = "moviePlayer";
+    private static final String RESOURCE_NAME = "resources";
+    private static final String RESOURCE_DIR = "src/test"; // System.getProperty("java.io.tmpdir")
     private static final String LOCAL_RESOURCE_DIR = createLocalResourcePath(RESOURCE_NAME);
     private final static Logger LOGGER = LogManager.getFormatterLogger(MediaInformation.class);
     static {
@@ -107,7 +108,7 @@ public class MediaInformation {
 
     private static String createLocalResourcePath(String resourceName) {
         try {
-            File resourcePath = new File(System.getProperty("java.io.tmpdir") + "/" + resourceName);
+            File resourcePath = new File( RESOURCE_DIR + "/" + resourceName);
             FileUtils.forceMkdir(resourcePath);
             return resourcePath.getAbsolutePath();
         } catch (IOException io) {

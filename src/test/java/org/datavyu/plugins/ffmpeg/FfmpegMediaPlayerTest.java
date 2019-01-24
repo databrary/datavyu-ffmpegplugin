@@ -55,6 +55,11 @@ public class FfmpegMediaPlayerTest extends MediaPlayerTest {
     }
 
     @Test(dataProvider = "shortMedia")
+    public void testStateTransition(Builder builder, MediaInformation mediaInformation) {
+        super.testStateTransition(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
     public void testMetadata(Builder build, MediaInformation mediaInformation) {
         super.testMetadata(build, mediaInformation);
     }
@@ -67,6 +72,11 @@ public class FfmpegMediaPlayerTest extends MediaPlayerTest {
     @Test(dataProvider = "shortMedia")
     public void testSeek(Builder builder, MediaInformation mediaInformation) {
         super.testSeek(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
+    public void testSeekAtStart(Builder builder, MediaInformation mediaInformation) {
+        super.testSeekAtStart(builder, mediaInformation);
     }
 
     @Test(dataProvider = "shortMedia")
