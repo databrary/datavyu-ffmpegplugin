@@ -32,13 +32,21 @@ public class MpvMediaPlayerTest extends MediaPlayerTest {
             MediaPlayer mediaPlayer = new MpvAwtMediaPlayer(mediaInformation.getLocalPath(), container);
             return MediaPlayerSync.createMediaPlayerSync(mediaPlayer);
         }
-
     }
 
     @DataProvider(name = "shortMedia")
-    public Object[][] createPlayerWithMedia() {
-        return new Object[][] {{
-            new MpvBuilder().withMedia(SHORT_MEDIA).withContainer(new JDialog()).build(), SHORT_MEDIA}};
+    public Object[][] createPlayerWithShortMedia() {
+        return new Object[][] {{new MpvBuilder().withMedia(SHORT_MEDIA).withContainer(new JDialog()), SHORT_MEDIA}};
+    }
+
+    @DataProvider(name = "longMedia")
+    public Object[][] createPlayerWithLongMedia() {
+        return new Object[][] {{ new MpvBuilder().withMedia(LONG_MEDIA).withContainer(new JDialog()), LONG_MEDIA}};
+    }
+
+    @DataProvider(name = "wrongMedia")
+    public Object[][] createPlayerWithWrongMedia() {
+        return new Object[][] {{ new MpvBuilder().withMedia(WRONG_MEDIA).withContainer(new JDialog()), WRONG_MEDIA}};
     }
 
     @Test(dataProvider = "shortMedia")
@@ -47,14 +55,23 @@ public class MpvMediaPlayerTest extends MediaPlayerTest {
     }
 
     @Test(dataProvider = "shortMedia")
+    public void testStateTransition(Builder builder, MediaInformation mediaInformation) {
+        super.testStateTransition(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
     public void testMetadata(Builder builder, MediaInformation mediaInformation) {
         super.testMetadata(builder, mediaInformation);
     }
 
-
     @Test(dataProvider = "shortMedia")
     public void testSeek(Builder builder, MediaInformation mediaInformation) {
         super.testSeek(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
+    public void testSeekAtStart(Builder builder, MediaInformation mediaInformation) {
+        super.testSeekAtStart(builder, mediaInformation);
     }
 
     @Test(dataProvider = "shortMedia")
