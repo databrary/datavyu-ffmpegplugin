@@ -8,28 +8,29 @@ import java.util.List;
 
 public abstract class DatavyuMediaPlayer extends NativeMediaPlayer {
 
-  protected float mutedVolume = 1.0f;  // last volume before mute
+  protected float mutedVolume = 1.0f; // last volume before mute
   protected boolean muteEnabled = false;
 
   /** Library dependencies for ffmpeg */
   protected static final List<LibraryLoader.LibraryDependency> FFMPEG_DEPENDENCIES =
-      new ArrayList<LibraryLoader.LibraryDependency>() {{
-        add(new LibraryLoader.LibraryDependency("avutil", "56"));
-        add(new LibraryLoader.LibraryDependency("swscale", "5"));
-        add(new LibraryLoader.LibraryDependency("swresample", "3"));
-        add(new LibraryLoader.LibraryDependency("avcodec", "58"));
-        add(new LibraryLoader.LibraryDependency("avformat", "58"));
-        add(new LibraryLoader.LibraryDependency("avfilter", "7"));
-        add(new LibraryLoader.LibraryDependency("avdevice", "58"));
-        add(new LibraryLoader.LibraryDependency("postproc", "55"));
-      }};
+      new ArrayList<LibraryLoader.LibraryDependency>() {
+        {
+          add(new LibraryLoader.LibraryDependency("avutil", "56"));
+          add(new LibraryLoader.LibraryDependency("swscale", "5"));
+          add(new LibraryLoader.LibraryDependency("swresample", "3"));
+          add(new LibraryLoader.LibraryDependency("avcodec", "58"));
+          add(new LibraryLoader.LibraryDependency("avformat", "58"));
+          add(new LibraryLoader.LibraryDependency("avfilter", "7"));
+          add(new LibraryLoader.LibraryDependency("avdevice", "58"));
+          add(new LibraryLoader.LibraryDependency("postproc", "55"));
+        }
+      };
 
   protected DatavyuMediaPlayer(URI mediaPath) {
     super(mediaPath);
   }
 
-  protected void throwMediaErrorException(int code, Throwable cause)
-      throws MediaException {
+  protected void throwMediaErrorException(int code, Throwable cause) throws MediaException {
     MediaError me = MediaError.getFromCode(code);
     throw new MediaException(me.description(), cause, me);
   }
@@ -67,5 +68,4 @@ public abstract class DatavyuMediaPlayer extends NativeMediaPlayer {
       }
     }
   }
-
 }

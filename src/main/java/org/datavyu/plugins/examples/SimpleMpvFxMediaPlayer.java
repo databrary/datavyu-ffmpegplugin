@@ -11,16 +11,15 @@ import java.net.URI;
 
 public class SimpleMpvFxMediaPlayer extends Application {
 
-    @Override
-    public void start(Stage primaryStage) {
-        URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
-        MediaPlayer mediaPlayer = new MpvFxMediaPlayer(mediaPath, primaryStage);
-        mediaPlayer.init();
-        Platform.runLater(() -> new JMediaPlayerControlFrame(mediaPlayer));
-    }
+  @Override
+  public void start(Stage primaryStage) {
+    URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
+    MediaPlayer mediaPlayer = new MpvFxMediaPlayer(mediaPath, primaryStage);
+    mediaPlayer.init();
+    Platform.runLater(() -> new JMediaPlayerControlFrame(mediaPlayer));
+  }
 
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
+  public static void main(String[] args) {
+    Application.launch(args);
+  }
 }
-
