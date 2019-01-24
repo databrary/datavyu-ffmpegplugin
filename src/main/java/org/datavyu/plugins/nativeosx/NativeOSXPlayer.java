@@ -31,19 +31,34 @@ public class NativeOSXPlayer extends Canvas {
 
   // This method is implemented in native code. See NativeOSXCanvas.m
   native void addNativeOSXCoreAnimationLayer(String path);
+
   native void stop(int id);
+
   native void play(int id);
+
   native void setTime(long time, int id);
+
   native void setTimePrecise(long time, int id);
+
   native void setTimeModerate(long time, int id);
+
   native void setVolume(float time, int id);
+
   native void release(int id);
+
   native double getMovieHeight(int id);
+
   native double getMovieWidth(int id);
+
   native long getCurrentTime(int id);
+
   native long getDuration(int id);
+
   native float getRate(int id);
+
   native void setRate(float rate, int id);
+
   native boolean isPlaying(int id);
+
   native float getFPS(int id);
 }
