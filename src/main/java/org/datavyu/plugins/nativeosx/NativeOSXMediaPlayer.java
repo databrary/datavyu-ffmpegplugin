@@ -62,11 +62,8 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerStop() throws MediaException {
-    if (isPlaying()) {
       EventQueue.invokeLater(() -> mediaPlayer.stop(id));
-
       sendPlayerStateEvent(eventPlayerStopped, 0);
-    }
   }
 
   @Override
