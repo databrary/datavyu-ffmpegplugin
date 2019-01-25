@@ -114,9 +114,11 @@ class ImageCanvasPlayerThread extends Thread {
     this.imgHeight = height;
     // Allocate byte buffer
     this.data = new byte[this.imgWidth * this.imgHeight * NUM_COLOR_CHANNELS];
+    // Update the Image buffer to Pull a frame from the queue and update
+    // the PTS from NaN to 0.0 sec
+    mediaPlayerData.updateImageData(data);
     // Set defaults
-    cm =
-        new ComponentColorModel(
+    cm = new ComponentColorModel(
             colorSpace, false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
     sm = cm.createCompatibleSampleModel(this.imgWidth, this.imgHeight);
     // Initialize an empty image

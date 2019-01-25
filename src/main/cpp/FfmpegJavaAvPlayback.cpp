@@ -211,6 +211,7 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
         av_diff = p_master_clock->GetTime() - p_image_clock->GetTime();
       else if (p_video_state_->HasAudioStream())
         av_diff = p_master_clock->GetTime() - p_audio_clock->GetTime();
+#ifdef DEBUG
       av_log(
           NULL, AV_LOG_INFO,
           "m %7.2f, a %7.2f, v %7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d "
@@ -234,6 +235,7 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
               ? p_decoder->GetNumberOfIncorrectPtsValues()
               : 0);
       fflush(stdout);
+#endif
       last_time = cur_time;
     }
   }
