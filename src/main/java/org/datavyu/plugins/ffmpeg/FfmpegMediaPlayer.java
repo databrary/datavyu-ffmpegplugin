@@ -14,6 +14,8 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
 
   private PlayerStateListener stateListener;
 
+  protected final Object initLock = new Object();
+
   /**
    * Create an ffmpeg media player instance
    *
@@ -42,7 +44,18 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
   class FfmpegPlayerStateListener implements PlayerStateListener {
 
     @Override
-    public void onReady(PlayerStateEvent evt) {}
+    public void onReady(PlayerStateEvent evt) {
+      synchronized (initLock) {
+        try {
+          // wait for the initialization of the Java Side
+          // This will make sure to have a correct PTS
+          initLock.wait(100);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+      System.out.println("PTS " + getPresentationTime());
+    }
 
     @Override
     public void onPlaying(PlayerStateEvent evt) {
