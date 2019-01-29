@@ -59,7 +59,7 @@ void FfmpegAvPlayback::Pause() {
 
 // Stop and put the playback speed to 0x
 void FfmpegAvPlayback::Stop() {
-  if (!p_video_state_->IsStopped()) {
+  if (!p_video_state_->IsPaused()) {
     TogglePauseAndStopStep();
     p_video_state_->SetStopped(true);
 	SetSpeed(1);
