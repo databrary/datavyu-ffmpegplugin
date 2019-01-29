@@ -15,6 +15,8 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char *input_file) {
            "Unable to initialize the java playback pipeline");
     return ERROR_PIPELINE_NULL;
   }
+  
+  UpdatePlayerState(Unknown);
 
   int err = p_java_playback_->Init(input_file, file_iformat);
   if (err) {
@@ -69,6 +71,8 @@ uint32_t FfmpegJavaAvPlaybackPipline::Play() {
 	}
 
   p_java_playback_->Play();
+  
+  UpdatePlayerState(Playing);
 
   return ERROR_NONE;
 }
@@ -79,6 +83,8 @@ uint32_t FfmpegJavaAvPlaybackPipline::Stop() {
   }
 
   p_java_playback_->Stop();
+    
+  UpdatePlayerState(Stopped);
 
   return ERROR_NONE;
 }
@@ -88,7 +94,9 @@ uint32_t FfmpegJavaAvPlaybackPipline::Pause() {
     return ERROR_PLAYBACK_NULL;
   }
 
-  p_java_playback_->TogglePauseAndStopStep();
+  p_java_playback_->Pause();
+
+  UpdatePlayerState(Paused);
 
   return ERROR_NONE;
 }
@@ -110,7 +118,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::StepBackward() {
 
   p_java_playback_->StepToPreviousFrame();
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::Finish() {
