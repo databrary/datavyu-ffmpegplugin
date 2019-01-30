@@ -124,6 +124,10 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     if (hasImageData()) {
       initAndStartImagePlayer();
     }
+
+    synchronized (initLock) {
+      initLock.notify();
+    }
   }
 
   @Override
