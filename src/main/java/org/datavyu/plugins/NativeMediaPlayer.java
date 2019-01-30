@@ -364,6 +364,21 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   }
 
   @Override
+  public void togglePause(){
+    try {
+      if (!isDisposed) {
+        if (getState() == PlayerStateEvent.PlayerState.PAUSED) {
+          play();
+        } else {
+          pause();
+        }
+      }
+    } catch (MediaException me) {
+      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+    }
+  }
+
+  @Override
   public void stepForward() {
     try {
       if (!isDisposed) {

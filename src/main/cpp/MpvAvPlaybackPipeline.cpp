@@ -64,19 +64,12 @@ uint32_t MpvAvPlaybackPipeline::Pause() {
   if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  int err = p_mpv_playback_->TogglePause();
+  int err = p_mpv_playback_->Pause();
   if (err < 0) {
     return err;
   }
 
-  bool isPaused;
-  err = p_mpv_playback_->IsPaused(&isPaused);
-
-  if (isPaused) {
-    UpdatePlayerState(Paused);
-  } else {
-    UpdatePlayerState(Playing);
-  }
+  UpdatePlayerState(Paused);
 
   return ERROR_NONE; // no error
 }

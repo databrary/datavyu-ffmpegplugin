@@ -80,7 +80,6 @@ private:
   void LoadMpvDynamic();
 
   int DoMpvCommand(const char **cmd);
-  int Pause();
 
   bool initial_play_;
   const char *kContainerFpsProperty = "container-fps";
@@ -105,6 +104,7 @@ public:
   int IsPaused(bool *isPaused);
   int Play();
   int Stop();
+  int Pause();
   int TogglePause();
   int SetRate(double newRate);
   int GetRate(double *p_rate);

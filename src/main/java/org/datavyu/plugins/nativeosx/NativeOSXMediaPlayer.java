@@ -62,11 +62,8 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerStop() throws MediaException {
-    if (isPlaying()) {
       EventQueue.invokeLater(() -> mediaPlayer.stop(id));
-
       sendPlayerStateEvent(eventPlayerStopped, 0);
-    }
   }
 
   @Override
@@ -90,11 +87,16 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerPause() throws MediaException {
-    // AVFoundation will change the rate to 0 when
+    // AVFoundation will change the rate to 0 when stopped
     // we need to save the rate before a stop
-    if (!isPlaying()) {
-      playerPlay();
-    } else {
+
+    if (getState() == PlayerStateEvent.PlayerState.STOPPED) {
+      // if the player was stopped, we need to
+      // override the stopped state and return
+      prevRate = 1F;
+      sendPlayerStateEvent(eventPlayerPaused, 0);
+      return;
+    } else if (getState() == PlayerStateEvent.PlayerState.PLAYING) {
       prevRate = playerGetRate();
       playerStop();
 
