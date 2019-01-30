@@ -54,7 +54,6 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
           e.printStackTrace();
         }
       }
-      System.out.println("PTS " + getPresentationTime());
     }
 
     @Override
