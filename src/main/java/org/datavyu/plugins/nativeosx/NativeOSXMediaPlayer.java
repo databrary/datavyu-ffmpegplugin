@@ -96,11 +96,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
       prevRate = 1F;
       sendPlayerStateEvent(eventPlayerPaused, 0);
       return;
-    }
-
-    if (!isPlaying()) {
-      playerPlay();
-    } else {
+    } else if (getState() == PlayerStateEvent.PlayerState.PLAYING) {
       prevRate = playerGetRate();
       playerStop();
 

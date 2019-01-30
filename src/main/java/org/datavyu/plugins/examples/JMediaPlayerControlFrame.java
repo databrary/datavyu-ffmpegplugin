@@ -84,8 +84,8 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
         mediaPlayer.setRate(nextRate);
         break;
       case KeyEvent.VK_SPACE:
-        System.out.println("Pause");
-        mediaPlayer.pause();
+        System.out.println("Toggle Pause");
+        mediaPlayer.togglePause();
         break;
       case KeyEvent.VK_LEFT:
         currentTime = mediaPlayer.getPresentationTime();

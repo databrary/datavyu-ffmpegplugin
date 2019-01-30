@@ -67,14 +67,18 @@ public interface MediaPlayer {
    */
   void play();
 
-  /** Stops playing of the media and resets the time to start time. */
+  /** Stops playing of the media and resets the Rate to 1X. */
   void stop();
 
   /**
-   * Pauses the media playing and when calling play or pause
-   * again will continue to play where the player left off.
+   * Pauses the media playing and keep the current Rate.
    */
   void pause();
+
+  /**
+   * Toggle between Pause and Play
+   */
+  void togglePause();
 
   /** Step to the next frame and pause the media. */
   void stepForward();
