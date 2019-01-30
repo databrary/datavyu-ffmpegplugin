@@ -44,13 +44,14 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   protected static void incPlayerCount() {
     playerCount++;
   }
+
   protected static void decPlayerCount() {
     playerCount--;
   }
 
   @Override
   protected void playerPlay() throws MediaException {
-    if (getState() == PlayerStateEvent.PlayerState.PAUSED){
+    if (getState() == PlayerStateEvent.PlayerState.PAUSED) {
       EventQueue.invokeLater(() -> mediaPlayer.setRate(prevRate, id));
     } else {
       EventQueue.invokeLater(() -> mediaPlayer.setRate(1F, id));
@@ -61,11 +62,8 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerStop() throws MediaException {
-    if (isPlaying()) {
       EventQueue.invokeLater(() -> mediaPlayer.stop(id));
-
       sendPlayerStateEvent(eventPlayerStopped, 0);
-    }
   }
 
   @Override
@@ -73,7 +71,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     double stepSize = Math.ceil(1000F / mediaPlayer.getFPS(id));
     double time = mediaPlayer.getCurrentTime(id);
     long newTime = (long) Math.min(Math.max(time + stepSize, 0), mediaPlayer.getDuration(id));
-    logger.info("Stepping Forward from " +time+ " sec, to " + newTime + " sec");
+    logger.info("Stepping Forward from " + time + " sec, to " + newTime + " sec");
     mediaPlayer.setTimePrecise(newTime, id);
   }
 
@@ -82,27 +80,33 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     double stepSize = Math.ceil(1000F / mediaPlayer.getFPS(id));
     double time = mediaPlayer.getCurrentTime(id);
     long newTime = (long) Math.min(Math.max(time - stepSize, 0), mediaPlayer.getDuration(id));
-    logger.info("Stepping Backward from " + (time/1000.0) + " sec, to " + (newTime/1000.0) + " sec");
+    logger.info(
+        "Stepping Backward from " + (time / 1000.0) + " sec, to " + (newTime / 1000.0) + " sec");
     mediaPlayer.setTimePrecise(newTime, id);
   }
 
   @Override
   protected void playerPause() throws MediaException {
-    // AVFoundation will change the rate to 0 when
+    // AVFoundation will change the rate to 0 when stopped
     // we need to save the rate before a stop
-    if (!isPlaying()){
-      playerPlay();
-    } else {
+
+    if (getState() == PlayerStateEvent.PlayerState.STOPPED) {
+      // if the player was stopped, we need to
+      // override the stopped state and return
+      prevRate = 1F;
+      sendPlayerStateEvent(eventPlayerPaused, 0);
+      return;
+    } else if (getState() == PlayerStateEvent.PlayerState.PLAYING) {
       prevRate = playerGetRate();
       playerStop();
 
       // Override the stopped state
-      sendPlayerStateEvent(eventPlayerPaused,0);
+      sendPlayerStateEvent(eventPlayerPaused, 0);
     }
   }
 
   @Override
-  protected void playerFinish() throws MediaException { }
+  protected void playerFinish() throws MediaException {}
 
   @Override
   protected float playerGetRate() throws MediaException {
@@ -114,7 +118,6 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     logger.info("Setting Rate to : " + rate + "X");
     mediaPlayer.setRate(rate, id);
   }
-
 
   @Override
   protected void playerSetStartTime(double startTime) throws MediaException {
@@ -133,9 +136,8 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected float playerGetVolume() throws MediaException {
-    synchronized(this) {
-      if (muteEnabled)
-        return mutedVolume;
+    synchronized (this) {
+      if (muteEnabled) return mutedVolume;
     }
     return volume;
   }
@@ -160,28 +162,29 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   protected void playerSeek(double streamTime) throws MediaException {
     if (!seeking) {
       seeking = true;
-      EventQueue.invokeLater(() -> {
-        boolean wasPlaying = isPlaying();
-        prevRate = playerGetRate();
-        if (isPlaying()) {
-          mediaPlayer.stop(id);
-        }
-        if (!wasPlaying || prevRate >= 0 && prevRate <= 8) {
-          logger.debug("Precise seek to position: " + streamTime);
-          playerSeek( streamTime * 1000, PRECISE_SEEK_FLAG);
-        } else if(prevRate < 0 && prevRate > - 8) {
-          logger.debug("Moderate seek to position: " + streamTime);
-          playerSeek(streamTime * 1000, MODERATE_SEEK_FLAG);
-        } else {
-          logger.debug("Seek to position: " + streamTime);
-          playerSeek(streamTime * 1000, NORMAL_SEEK_FLAG);
-        }
-        if (wasPlaying) {
-          playerSetRate(prevRate);
-        }
-        mediaPlayer.repaint();
-        seeking = false;
-      });
+      EventQueue.invokeLater(
+          () -> {
+            boolean wasPlaying = isPlaying();
+            prevRate = playerGetRate();
+            if (isPlaying()) {
+              mediaPlayer.stop(id);
+            }
+            if (!wasPlaying || prevRate >= 0 && prevRate <= 8) {
+              logger.debug("Precise seek to position: " + streamTime);
+              playerSeek(streamTime * 1000, PRECISE_SEEK_FLAG);
+            } else if (prevRate < 0 && prevRate > -8) {
+              logger.debug("Moderate seek to position: " + streamTime);
+              playerSeek(streamTime * 1000, MODERATE_SEEK_FLAG);
+            } else {
+              logger.debug("Seek to position: " + streamTime);
+              playerSeek(streamTime * 1000, NORMAL_SEEK_FLAG);
+            }
+            if (wasPlaying) {
+              playerSetRate(prevRate);
+            }
+            mediaPlayer.repaint();
+            seeking = false;
+          });
     }
   }
 

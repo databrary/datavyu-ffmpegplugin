@@ -39,7 +39,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
     // Test if the file exists
     File mediaFile = new File(mediaPath);
-    if (!mediaFile.exists()){
+    if (!mediaFile.exists()) {
       throwMediaErrorException(MediaError.ERROR_MEDIA_INVALID.code(), null);
     }
 
@@ -47,16 +47,17 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
     container.add(mediaPlayer, BorderLayout.CENTER);
 
     incPlayerCount();
-    Runnable waitForReady = () -> {
-      while (playerGetFps() <= 0){
-        try {
-          Thread.sleep(100);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      }
-      sendPlayerStateEvent(eventPlayerReady, 0);
-    };
+    Runnable waitForReady =
+        () -> {
+          while (playerGetFps() <= 0) {
+            try {
+              Thread.sleep(100);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+          }
+            sendPlayerStateEvent(eventPlayerReady, 0);
+        };
 
     new Thread(waitForReady).start();
 
@@ -75,7 +76,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
   @Override
   protected void playerSeek(double streamTime, int flags) throws MediaException {
-    switch (flags){
+    switch (flags) {
       case NORMAL_SEEK_FLAG:
         EventQueue.invokeLater(() -> mediaPlayer.setTime((long) streamTime, id));
         break;
@@ -92,7 +93,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
     @Override
     public void onReady(PlayerStateEvent evt) {
-      synchronized (readyLock){
+      synchronized (readyLock) {
         container.setSize(getImageWidth(), getImageHeight());
         container.setVisible(true);
         readyLock.notify();
@@ -116,12 +117,12 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
     }
 
     @Override
-    public void onStall(PlayerStateEvent evt) { }
+    public void onStall(PlayerStateEvent evt) {}
 
     @Override
-    public void onFinish(PlayerStateEvent evt) { }
+    public void onFinish(PlayerStateEvent evt) {}
 
     @Override
-    public void onHalt(PlayerStateEvent evt) { }
+    public void onHalt(PlayerStateEvent evt) {}
   }
 }

@@ -764,54 +764,24 @@ int VideoState::ReadPacketsToQueues() {
   // double image_time_base = av_q2d(p_image_stream_->time_base);
   // double audio_time_base = av_q2d(p_audio_stream_->time_base);
 
-  // TODO: Need to work in TO_STOPPED state
-  // Reda: added bool stopped when we trigger stop; when stopped both is stopped
-  // and paused are set to 1 So each time we check for pause we need to check
-  // inside the condition if it is also stopped
-
   for (;;) {
     if (abort_request_) {
       break;
     }
 
-    if (is_paused_ != last_is_paused_) {
-      last_is_paused_ = is_paused_;
-      if (is_paused_) {
-        if (is_stopped_) {
-          if (player_state_callbacks[TO_STOPPED]) {
-            player_state_callbacks[TO_STOPPED]();
-          }
-        } else {
-          if (player_state_callbacks[TO_PAUSED]) {
-            player_state_callbacks[TO_PAUSED]();
-          }
-        }
-        // TODO(fraudies): This is used when reading from a network stream,
-        // remove?
-        av_read_pause(p_format_context);
-      } else {
-        av_read_play(p_format_context);  // Start Playing a network based stream
-        if (player_state_callbacks[TO_PLAYING]) {
-          player_state_callbacks[TO_PLAYING]();
-        }
-      }
-    }
-
     if (was_stalled) {
-      if (is_paused_) {
-        if (is_stopped_) {
-          if (player_state_callbacks[TO_STOPPED]) {
+      if (is_paused_ && is_stopped_) {
+        if (player_state_callbacks[TO_STOPPED]) {
             player_state_callbacks[TO_STOPPED]();
-          }
-        } else {
+        }
+      } else if (is_paused_ && !is_stopped_) {
           if (player_state_callbacks[TO_PAUSED]) {
             player_state_callbacks[TO_PAUSED]();
           }
-        }
-      } else {
-        if (player_state_callbacks[TO_PLAYING]) {
-          player_state_callbacks[TO_PLAYING]();
-        }
+      } else if (!is_paused_ && !is_stopped_) {
+          if (player_state_callbacks[TO_PLAYING]) {
+            player_state_callbacks[TO_PLAYING]();
+          }
       }
       was_stalled = false;
     }
@@ -871,11 +841,6 @@ int VideoState::ReadPacketsToQueues() {
       if (is_paused_) {
         step_to_next_frame_callback();  // Assume that the step callback is set
                                         // -- otherwise fail hard here
-      } else {
-        if (player_state_callbacks[TO_PLAYING]) {
-          player_state_callbacks[TO_PLAYING]();
-        }
-        was_stalled = false;
       }
     }
     if (queue_attachments_request_) {
@@ -1031,7 +996,7 @@ int VideoState::DecodeAudioPacketsToFrames() {
       if (seek_notify) {
         seek_done_ = true;
         continue_after_seek_.notify_one();
-	  }
+      }
     }
   } while (ret >= 0 || ret == AVERROR(EAGAIN) || ret == AVERROR_EOF);
 the_end:
