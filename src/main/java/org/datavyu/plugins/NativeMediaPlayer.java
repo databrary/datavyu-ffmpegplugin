@@ -2,7 +2,6 @@ package org.datavyu.plugins;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.nativeosx.AVFoundationMediaPlayer;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.ref.WeakReference;
@@ -29,8 +28,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   public static final int eventPlayerError = 107;
 
   /** Synchronization threshold in milliseconds */
-  public static final double SYNC_THRESHOLD =
-      1.0; // 1.0 sec  (because some plugin  are not very precise in seek)
+  public static final double SYNC_THRESHOLD = 0.5; // 0.5 sec  (because some plugin are not very precise in seek)
 
   private final List<WeakReference<MediaErrorListener>> errorListeners = new ArrayList<>();
   private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
@@ -46,12 +44,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   private boolean isStopTimeSet = false;
   protected boolean isStartTimeUpdated = false;
 
-  protected boolean isUpdateTimeEnabled = false;
-  // The current time is not the presentation time, the current
-  // time is used to periodically synchronize to a master a clock.
-  protected double playerCurrentTime;
-  protected double playerPreviousTime = -1.0;
   protected double masterCurrentTime;
+  protected float playBackRate = 1f;
 
   protected String mediaPath;
 
@@ -300,6 +294,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   protected abstract void playerSetStartTime(double startTime) throws MediaException;
 
+  protected abstract boolean playerIsSeekPlaybackEnabled() throws MediaException;
+
   // protected abstract void playerGetStopTime() throws MediaException;
 
   // protected abstract void playerSetStopTime(double stopTime) throws MediaException;
@@ -406,7 +402,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   public float getRate() {
     try {
       if (!isDisposed) {
-        return playerGetRate();
+        return isSeekPlaybackEnabled() ? playBackRate : playerGetRate();
       }
     } catch (MediaException me) {
       sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
@@ -424,6 +420,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     } catch (MediaException me) {
       sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
     }
+    // Native players will throw an exception when rates are not supported
+    playBackRate = rate;
   }
 
   @Override
@@ -649,25 +647,29 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   }
 
   @Override
+  public boolean isSeekPlaybackEnabled() {
+    if (!isDisposed) {
+      return playerIsSeekPlaybackEnabled();
+    }
+    return false;
+  }
+
+  @Override
   public synchronized void updateMasterTime(final double masterClockTime) {
     if (!isDisposed) {
       masterCurrentTime = masterClockTime / 1000;
       double presentationTime = playerGetPresentationTime();
 
       if (!Double.isNaN(presentationTime)
-          && (Double.compare(presentationTime, masterCurrentTime) != 0 || isUpdateTimeEnabled)) {
+          && Double.compare(presentationTime, masterCurrentTime) != 0) {
 
-        if (Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD) {
-          logger.warn(
-              "Periodic Sync - Clock diff: "
-                  + Math.abs(presentationTime - masterCurrentTime)
-                  + " sec.");
+        if (Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD
+            && !isSeekPlaybackEnabled()) {
+          logger.warn("Periodic Sync - Seek Playback " + isSeekPlaybackEnabled() +
+                          " - Clock diff: " + Math.abs(presentationTime - masterCurrentTime) +
+                          " sec.");
           seek(masterCurrentTime);
-          playerCurrentTime = masterCurrentTime;
-        } else {
-          playerCurrentTime = presentationTime;
         }
-        playerPreviousTime = presentationTime;
       }
     }
   }

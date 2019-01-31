@@ -51,7 +51,7 @@ public:
     p_video_state_->SetStepping(true);
   }
 
-	inline void StepToPreviousFrame() {
+  inline void StepToPreviousFrame() {
 		// Get the current time and seek if it is NaN
     double time = GetTime();
     if (!isnan(time)) {
@@ -60,7 +60,7 @@ public:
                            (int64_t)(difference * AV_TIME_BASE),
                            VideoState::kSeekPreciseFlag);
     }
-	}
+  }
 
 protected:
   // The video state used for this playback

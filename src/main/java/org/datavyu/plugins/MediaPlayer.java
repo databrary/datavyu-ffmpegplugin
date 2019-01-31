@@ -221,6 +221,15 @@ public interface MediaPlayer {
   void dispose();
 
   /**
+   * Check if the current rate is supported natively by the player, if not,
+   * the plugin will pause when the speed is not supported and the playback
+   * will will performed through seeks requested by an external clock3
+   *
+   * @return true if the rate is supported
+   */
+  boolean isSeekPlaybackEnabled();
+
+  /**
    * ***********************************
    * Methods used by an external clock to notify the media
    * player of an update in the External Clock. Note that Datavyu
