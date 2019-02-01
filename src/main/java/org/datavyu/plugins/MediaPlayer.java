@@ -219,7 +219,6 @@ public interface MediaPlayer {
    * be unusable after this method is invoked.
    */
   void dispose();
-
   /**
    * Check if the current rate is supported natively by the player, if not,
    * the plugin will pause when the speed is not supported and the playback
@@ -228,30 +227,4 @@ public interface MediaPlayer {
    * @return true if the rate is supported
    */
   boolean isSeekPlaybackEnabled();
-
-  /**
-   * ***********************************
-   * Methods used by an external clock to notify the media
-   * player of an update in the External Clock. Note that Datavyu
-   * is updating its clock will notify players every 100ms.
-   * **********************************
-   */
-
-  /**
-   * Method to notify the media player that the External
-   * Clock updated its Master , and request a seek if necessary.
-   */
-  void updateMasterTime(final double masterClockTime);
-
-  /**
-   * Method to notify the media player that the External Clock
-   * updated its min boundary.
-   */
-  void updateMasterMinTime(final double masterMinTime);
-
-  /**
-   * Method to notify the media player that the External Clock
-   * updated its max boundary.
-   */
-  void updateMasterMaxTime(final double masterMaxTime);
 }

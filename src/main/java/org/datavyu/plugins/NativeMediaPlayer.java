@@ -47,6 +47,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   protected double masterCurrentTime;
   protected float playBackRate = 1f;
 
+
   protected String mediaPath;
 
   private static String resolveURI(URI mediaPath) {
@@ -652,38 +653,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
       return playerIsSeekPlaybackEnabled();
     }
     return false;
-  }
-
-  @Override
-  public synchronized void updateMasterTime(final double masterClockTime) {
-    if (!isDisposed) {
-      masterCurrentTime = masterClockTime / 1000;
-      double presentationTime = playerGetPresentationTime();
-
-      if (!Double.isNaN(presentationTime)
-          && Double.compare(presentationTime, masterCurrentTime) != 0) {
-
-        if (Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD
-            && !isSeekPlaybackEnabled()) {
-          logger.warn("Periodic Sync - Seek Playback " + isSeekPlaybackEnabled() +
-                          " - Clock diff: " + Math.abs(presentationTime - masterCurrentTime) +
-                          " sec.");
-          seek(masterCurrentTime);
-        }
-      }
-    }
-  }
-
-  @Override
-  public synchronized void updateMasterMinTime(final double minMasterTime) {
-    // TODO: Add a marker to the media
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public synchronized void updateMasterMaxTime(final double maxMasterTime) {
-    // TODO: Add a marker to the media
-    throw new NotImplementedException();
   }
 
   // **************************************************************************
