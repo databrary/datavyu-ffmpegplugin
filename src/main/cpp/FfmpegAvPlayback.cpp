@@ -68,6 +68,7 @@ void FfmpegAvPlayback::Stop() {
   } else if (!p_video_state_->IsPaused()) {
     TogglePauseAndStopStep();
     p_video_state_->SetStopped(true);
+	SetSpeed(1);
   }
 }
 
@@ -79,9 +80,9 @@ void FfmpegAvPlayback::TogglePauseAndStopStep() {
 
 int FfmpegAvPlayback::SetSpeed(double speed) {
   int err = ERROR_NONE;
-	if (speed < 0) {
-		err = ERROR_FFMPEG_FILTER_NOT_FOUND; // no filter available for backward playback
-	} else if (speed < std::numeric_limits<double>::epsilon()) {
+  if (speed < 0) {
+	err = ERROR_FFMPEG_FILTER_NOT_FOUND; // no filter available for backward playback
+  } else if (speed < std::numeric_limits<double>::epsilon()) {
     Pause();
   } else {
     err = p_video_state_->SetSpeed(speed);

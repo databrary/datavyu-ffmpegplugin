@@ -229,6 +229,11 @@ abstract class MpvMediaPlayer extends DatavyuMediaPlayer {
     mpvDisposePlayer(getNativeMediaRef());
   }
 
+  @Override
+  protected boolean playerIsSeekPlaybackEnabled() {
+    return playBackRate < 0F;
+  }
+
   protected native int mpvInitPlayer(long[] newNativeMedia, String sourcePath, long windowID);
 
   protected native int mpvDisposePlayer(long refNativeMedia);

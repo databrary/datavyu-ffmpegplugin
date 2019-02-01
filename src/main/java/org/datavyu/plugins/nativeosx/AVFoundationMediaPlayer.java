@@ -56,7 +56,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
               e.printStackTrace();
             }
           }
-          sendPlayerStateEvent(eventPlayerReady, 0);
+            sendPlayerStateEvent(eventPlayerReady, 0);
         };
 
     new Thread(waitForReady).start();
@@ -103,19 +103,16 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
     @Override
     public void onPlaying(PlayerStateEvent evt) {
-      isUpdateTimeEnabled = true;
       logger.info("Player is Playing");
     }
 
     @Override
     public void onPause(PlayerStateEvent evt) {
-      isUpdateTimeEnabled = false;
       logger.info("Player is Paused");
     }
 
     @Override
     public void onStop(PlayerStateEvent evt) {
-      isUpdateTimeEnabled = false;
       logger.info("Player is Stopped");
     }
 
