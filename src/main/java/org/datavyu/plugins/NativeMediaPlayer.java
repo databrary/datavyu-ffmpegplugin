@@ -47,11 +47,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   protected boolean isStartTimeUpdated = false;
 
   protected boolean isUpdateTimeEnabled = false;
-  // The current time is not the presentation time, the current
-  // time is used to periodically synchronize to a master a clock.
-  protected double playerCurrentTime;
-  protected double playerPreviousTime = -1.0;
-  protected double masterCurrentTime;
 
   protected String mediaPath;
 
@@ -646,42 +641,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     } finally {
       disposeLock.unlock();
     }
-  }
-
-  @Override
-  public synchronized void updateMasterTime(final double masterClockTime) {
-    if (!isDisposed) {
-      masterCurrentTime = masterClockTime / 1000;
-      double presentationTime = playerGetPresentationTime();
-
-      if (!Double.isNaN(presentationTime)
-          && (Double.compare(presentationTime, masterCurrentTime) != 0 || isUpdateTimeEnabled)) {
-
-        if (Math.abs(presentationTime - masterCurrentTime) >= SYNC_THRESHOLD) {
-          logger.warn(
-              "Periodic Sync - Clock diff: "
-                  + Math.abs(presentationTime - masterCurrentTime)
-                  + " sec.");
-          seek(masterCurrentTime);
-          playerCurrentTime = masterCurrentTime;
-        } else {
-          playerCurrentTime = presentationTime;
-        }
-        playerPreviousTime = presentationTime;
-      }
-    }
-  }
-
-  @Override
-  public synchronized void updateMasterMinTime(final double minMasterTime) {
-    // TODO: Add a marker to the media
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public synchronized void updateMasterMaxTime(final double maxMasterTime) {
-    // TODO: Add a marker to the media
-    throw new NotImplementedException();
   }
 
   // **************************************************************************
