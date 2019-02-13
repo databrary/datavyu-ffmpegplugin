@@ -4,14 +4,14 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-
-import javax.swing.*;
-import java.net.URI;
+import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.PlayerStateEvent;
+import org.datavyu.plugins.PlayerStateListener;
 
 public class MediaPlayerSync {
-    private final static Logger LOGGER = LogManager.getFormatterLogger(MediaInformation.class);
+    private final static Logger logger = LogManager.getFormatterLogger(MediaPlayerSync.class);
     static {
-        Configurator.setRootLevel(Level.INFO);
+        Configurator.setRootLevel(Level.DEBUG);
     }
 
     private MediaPlayer mediaPlayer;
@@ -21,6 +21,7 @@ public class MediaPlayerSync {
         public void onReady(PlayerStateEvent evt) {
             synchronized (readyLock) {
                 readyLock.notify();
+                logger.debug("Player is Ready");
             }
         }
 
@@ -52,7 +53,10 @@ public class MediaPlayerSync {
     void waitForInit() {
         synchronized (readyLock) {
             try {
+                logger.debug("Init Media Player");
                 mediaPlayer.init();
+
+                logger.debug("Waiting for Ready state");
                 readyLock.wait();
             } catch (InterruptedException e) {
                 // Happens if someone interrupts your thread

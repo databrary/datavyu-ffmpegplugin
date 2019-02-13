@@ -26,7 +26,6 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
     super(mediaPath);
     this.addMediaPlayerStateListener(new AVFoundationMediaPlayer.PlayerStateListenerImpl());
     this.container = container;
-    sendPlayerStateEvent(eventPlayerUnknown, 0);
   }
 
   @Override
@@ -49,6 +48,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
     incPlayerCount();
     Runnable waitForReady =
         () -> {
+          logger.debug("Waiting for a valid FPS value");
           while (playerGetFps() <= 0) {
             try {
               Thread.sleep(100);
@@ -56,14 +56,16 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
               e.printStackTrace();
             }
           }
-            sendPlayerStateEvent(eventPlayerReady, 0);
+
+          logger.debug("Sending Ready State");
+          sendPlayerStateEvent(eventPlayerReady, 0);
         };
 
     new Thread(waitForReady).start();
 
     synchronized (readyLock) {
       try {
-        logger.info("Waiting for Ready state");
+        logger.debug("Waiting for Ready state");
         readyLock.wait();
       } catch (InterruptedException e) {
         logger.error(e.getMessage());

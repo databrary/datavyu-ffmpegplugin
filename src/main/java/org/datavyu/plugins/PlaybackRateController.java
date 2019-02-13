@@ -6,7 +6,7 @@ import java.util.Map;
 public class PlaybackRateController {
 
   // Defines the rate symbols with mapping to the float value
-  private enum Rate {
+  public enum Rate {
     UNKNOWN(Float.NaN),
     MINUS_32(-32f),
     MINUS_16(-16f),

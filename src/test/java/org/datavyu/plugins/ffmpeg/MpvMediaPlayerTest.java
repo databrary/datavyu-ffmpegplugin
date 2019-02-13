@@ -1,5 +1,8 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.MediaException;
+import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.mpv.MpvAwtMediaPlayer;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -64,6 +67,16 @@ public class MpvMediaPlayerTest extends MediaPlayerTest {
         super.testMetadata(builder, mediaInformation);
     }
 
+    @Test(dataProvider = "wrongMedia", expectedExceptions = MediaException.class)
+    public void testWrongFilename(Builder builder, MediaInformation mediaInformation) {
+        super.testWrongFile(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
+    public void testTimeAtStart(Builder builder, MediaInformation mediaInformation) {
+        super.testTimeAtStart(builder, mediaInformation);
+    }
+
     @Test(dataProvider = "shortMedia")
     public void testSeek(Builder builder, MediaInformation mediaInformation) {
         super.testSeek(builder, mediaInformation);
@@ -92,5 +105,10 @@ public class MpvMediaPlayerTest extends MediaPlayerTest {
     @Test(dataProvider = "shortMedia")
     public void testStepBackwardAtStart(Builder builder, MediaInformation mediaInformation) {
         super.testStepBackwardAtStart(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "longMedia")
+    public void testRates(Builder builder, MediaInformation mediaInformation) {
+        super.testRates(builder, mediaInformation);
     }
 }
