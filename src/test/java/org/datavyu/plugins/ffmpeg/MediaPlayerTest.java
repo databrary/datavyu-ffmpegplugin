@@ -1,22 +1,54 @@
 package org.datavyu.plugins.ffmpeg;
 
-import org.datavyu.plugins.ffmpeg.PlayerStateEvent.PlayerState;
+import javafx.util.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.datavyu.plugins.MediaException;
+import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.PlaybackRateController;
+import org.datavyu.plugins.PlayerStateEvent.PlayerState;
 import org.testng.Assert;
 
 import java.io.File;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class MediaPlayerTest {
+    /** The LOGGER for this class */
+    private static final Logger logger = LogManager.getFormatterLogger(MediaPlayerTest.class);
+
     /** The total number of seeks that need to be processed during the test **/
     private static final int NUMBER_OF_SEEKS = 10;
+
+    /** The total number of steps that need to be processed during the test **/
+    private static final int NUMBER_OF_STEPS = 10;
+
+    /** The start time of the playback rate interval */
+    private static final double START_TIME = 0;
+
+    /** The end time of the playback rate interval */
+    private static final double END_TIME = 10;
 
     /** The Seek tolerance in seconds**/
     private static final double SEEK_TOLERANCE_IN_SECONDS = 0.100; // 100 ms
 
+    private static final double TO_MILLI = 1000;
+
     interface Builder {
         MediaPlayerSync build();
+    }
+
+    static class TimeInterval {
+
+        double start; // start time in sec
+        double stop; // stop time in sec
+
+        public TimeInterval(double start, double stop) {
+            this.start = start;
+            this.stop = stop;
+        }
     }
 
     static final MediaInformation SHORT_MEDIA = MediaInformation.create(
@@ -38,11 +70,13 @@ public class MediaPlayerTest {
             new File("wrongFileName").toURI(),0.0, 0.0, 0, 0, 0.0);
 
     protected void testReadyState(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Ready state Test");
         MediaPlayerSync player = builder.build();
-        Assert.assertTrue(player.getMediaPlayer().getState() == PlayerStateEvent.PlayerState.READY);
+        Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.READY);
     }
 
     protected void testStateTransition(Builder builder, MediaInformation mediaInformation) {
+        logger.info("State transition Test");
         MediaPlayerSync player = builder.build();
         Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.READY);
 
@@ -84,6 +118,7 @@ public class MediaPlayerTest {
     }
 
     protected void testMetadata(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Meta data Test");
         MediaPlayerSync player = builder.build();
         MediaPlayer mediaPlayer = player.getMediaPlayer();
         Assert.assertEquals(mediaPlayer.getDuration(), mediaInformation.getDuration(), 0.01);
@@ -93,10 +128,18 @@ public class MediaPlayerTest {
     }
 
     protected void testWrongFile(Builder builder, MediaInformation mediaInformation) throws MediaException {
+        logger.info("Wrong file Test");
         builder.build();
     }
 
+    protected void testTimeAtStart(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Presentation time at launch Test");
+        MediaPlayerSync player = builder.build();
+        Assert.assertNotEquals(player.getMediaPlayer().getPresentationTime(), Double.NaN);
+    }
+
     protected void testSeek(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Seek Test");
         MediaPlayerSync player = builder.build();
         double startTime = mediaInformation.getStartTime();
         double duration = mediaInformation.getDuration();
@@ -110,8 +153,8 @@ public class MediaPlayerTest {
     }
 
     protected void testSeekAtStart(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Seek at start Test");
         MediaPlayerSync player = builder.build();
-        Assert.assertNotEquals(player.getMediaPlayer().getPresentationTime(), Double.NaN);
         double duration = mediaInformation.getDuration();
         // Get a random time from the second half
         double startTime =  duration / 2;
@@ -125,25 +168,35 @@ public class MediaPlayerTest {
     }
 
     protected void testStepForward(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Step forward Test");
         MediaPlayerSync player = builder.build();
         double startTime = mediaInformation.getStartTime();
         double duration = mediaInformation.getDuration();
-        double seekTime = randomTime(startTime, duration);
+
+        double seekTime = (duration - startTime) / 2.0;
         double delta = 1.0/mediaInformation.getFramesPerSecond();
-        // Seek to random position
+
+        // Seek
         player.getMediaPlayer().seek(seekTime);
         sleep(100);
-        // We may not seek to the exact time
-        double expectedTime = player.getMediaPlayer().getPresentationTime() + delta;
-        //Assert.assertNotEquals(expectedTime, Double.NaN);
 
-        player.getMediaPlayer().stepForward();
-        sleep(200);
+        // We may not seek to the exact time
         double actualTime = player.getMediaPlayer().getPresentationTime();
-        Assert.assertEquals(actualTime, expectedTime, 0.001);
+        Assert.assertEquals(actualTime, seekTime, SEEK_TOLERANCE_IN_SECONDS);
+
+        for (int i = 0; i < NUMBER_OF_STEPS; i++) {
+
+            double beforeStepTime = player.getMediaPlayer().getPresentationTime();
+            player.getMediaPlayer().stepForward();
+            sleep(100);
+            actualTime = player.getMediaPlayer().getPresentationTime();
+            double expectedTime = beforeStepTime + delta;
+            Assert.assertEquals(actualTime, expectedTime, 0.01);
+        }
     }
 
     protected void testStepForwardAtEnd(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Step forward at end Test");
         MediaPlayerSync player = builder.build();
         double startTime = mediaInformation.getStartTime();
         double duration = mediaInformation.getDuration();
@@ -163,23 +216,35 @@ public class MediaPlayerTest {
     }
 
     protected void testStepBackward(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Step backward Test");
         MediaPlayerSync player = builder.build();
         double startTime = mediaInformation.getStartTime();
         double duration = mediaInformation.getDuration();
-        double seekTime = randomTime(startTime, duration);
+
+        double seekTime = (duration - startTime) / 2.0;
         double delta = 1.0/mediaInformation.getFramesPerSecond();
 
-        player.getMediaPlayer().seek(seekTime + delta);
-        sleep(300);
-        double expectedTime = player.getMediaPlayer().getPresentationTime();
-        //Assert.assertNotEquals(expectedTime, Double.NaN);
+        // Seek
+        player.getMediaPlayer().seek(seekTime);
+        sleep(100);
 
-        player.getMediaPlayer().stepBackward();
+        // We may not seek to the exact time
         double actualTime = player.getMediaPlayer().getPresentationTime();
-        Assert.assertEquals(actualTime, expectedTime, 0.001);
+        Assert.assertEquals(actualTime, seekTime, SEEK_TOLERANCE_IN_SECONDS);
+
+        for (int i = 0; i < NUMBER_OF_STEPS; i++) {
+
+            double beforeStepTime = player.getMediaPlayer().getPresentationTime();
+            player.getMediaPlayer().stepBackward();
+            sleep(100);
+            actualTime = player.getMediaPlayer().getPresentationTime();
+            double expectedTime = beforeStepTime - delta;
+            Assert.assertEquals(actualTime, expectedTime, 0.01);
+        }
     }
 
     protected void testStepBackwardAtStart(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Step backward at start Test");
         MediaPlayerSync player = builder.build();
         double startTime = mediaInformation.getStartTime();
         player.getMediaPlayer().seek(startTime);
@@ -190,6 +255,39 @@ public class MediaPlayerTest {
         player.getMediaPlayer().stepBackward();
         double actualTime = player.getMediaPlayer().getPresentationTime();
         Assert.assertEquals(actualTime, expectedTime, 0.001);
+    }
+
+    protected void testRates(Builder builder, MediaInformation mediaInformation) {
+        logger.info("Playback speeds Test");
+        MediaPlayerSync player = builder.build();
+        createRatesIntervals().forEach(parameter -> {
+            double start = parameter.getKey().start;
+            double stop = parameter.getKey().stop;
+            double duration = stop - start;
+            float rate = parameter.getValue();
+
+            logger.debug("Start: " + start
+                             + " Stop: " + stop
+                             + " Duration: " + duration
+                             + " Rate " + rate);
+
+            player.getMediaPlayer().seek(start);
+            sleep(100);
+
+            player.getMediaPlayer().setRate(rate);
+            player.getMediaPlayer().play();
+
+            sleep((long) (duration * TO_MILLI));
+
+            double actualDuration = player.getMediaPlayer().getPresentationTime() - start;
+            double expectedDuration = Math.abs(rate) * duration;
+            double diffInPercent = diffInPercent(actualDuration, expectedDuration);
+
+            player.getMediaPlayer().stop();
+            sleep(100);
+
+            Assert.assertTrue(diffInPercent > -5f && diffInPercent < +5f);
+        });
     }
 
     // Create seek times including the upper/lower bound in the stream
@@ -207,6 +305,13 @@ public class MediaPlayerTest {
                 }).boxed().collect(Collectors.toList());
     }
 
+    private static List<Pair<TimeInterval, Float>> createRatesIntervals(){
+        return EnumSet.range(PlaybackRateController.Rate.PLUS_1_DIV_32, PlaybackRateController.Rate.PLUS_32)
+                .stream()
+                .map(rate -> new Pair<>(new TimeInterval(START_TIME, END_TIME), rate.getValue()))
+                .collect(Collectors.toList());
+    }
+
     private static double randomTime(double startTime, double duration) {
         return (startTime + (Math.random() * (duration - startTime)));
     }
@@ -215,5 +320,9 @@ public class MediaPlayerTest {
         try {
             Thread.sleep(timeInMillis);
         } catch (InterruptedException e) { /* normal */ }
+    }
+
+    private static double diffInPercent(double actual, double expected) {
+        return (expected - actual) / expected * 100;
     }
 }

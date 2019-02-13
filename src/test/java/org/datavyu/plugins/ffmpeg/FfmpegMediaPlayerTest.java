@@ -1,5 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.MediaException;
+import org.datavyu.plugins.MediaPlayer;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -35,7 +37,7 @@ public class FfmpegMediaPlayerTest extends MediaPlayerTest {
     }
 
     @DataProvider(name = "shortMedia")
-    public Object[][] createPlayerWithShorthMedia() {
+    public Object[][] createPlayerWithShortMedia() {
         return new Object[][] {{ new FfmpegBuilder().withMedia(SHORT_MEDIA).withContainer(new JDialog()), SHORT_MEDIA}};
     }
 
@@ -70,6 +72,11 @@ public class FfmpegMediaPlayerTest extends MediaPlayerTest {
     }
 
     @Test(dataProvider = "shortMedia")
+    public void testTimeAtStart(Builder builder, MediaInformation mediaInformation) {
+        super.testTimeAtStart(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "shortMedia")
     public void testSeek(Builder builder, MediaInformation mediaInformation) {
         super.testSeek(builder, mediaInformation);
     }
@@ -97,5 +104,10 @@ public class FfmpegMediaPlayerTest extends MediaPlayerTest {
     @Test(dataProvider = "shortMedia")
     public void testStepBackwardAtStart(Builder builder, MediaInformation mediaInformation) {
         super.testStepBackwardAtStart(builder, mediaInformation);
+    }
+
+    @Test(dataProvider = "longMedia")
+    public void testRates(Builder builder, MediaInformation mediaInformation) {
+        super.testRates(builder, mediaInformation);
     }
 }
