@@ -58,6 +58,8 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     this.container = container;
     this.audioFormat = audioFormat;
     this.colorSpace = colorSpace;
+    this.audioPlayerThread = new AudioPlayerThread(this);
+    this.imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
   }
 
   /**
@@ -88,7 +90,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   private void initAndStartAudioPlayer() {
-    audioPlayerThread = new AudioPlayerThread(this);
     try {
       audioPlayerThread.init(getAudioFormat(), AUDIO_BUFFER_SIZE);
       audioPlayerThread.start();
@@ -98,7 +99,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   private void initAndStartImagePlayer() {
-    imageCanvasPlayerThread = new ImageCanvasPlayerThread(this);
     imageCanvasPlayerThread.init(getColorSpace(), getImageWidth(), getImageHeight(), container);
     imageCanvasPlayerThread.start();
   }
@@ -303,10 +303,10 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
   @Override
   protected void playerDispose() {
-    if (imageCanvasPlayerThread != null) {
+    if (imageCanvasPlayerThread.isInit()) {
       imageCanvasPlayerThread.terminate();
     }
-    if (audioPlayerThread != null) {
+    if (audioPlayerThread.isInit()) {
       audioPlayerThread.terminate();
     }
 

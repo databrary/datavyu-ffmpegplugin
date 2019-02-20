@@ -35,6 +35,8 @@ class ImageCanvasPlayerThread extends Thread {
   private static final double REFRESH_PERIOD = 0.01; // >= 1/fps
   private static final double TO_MILLIS = 1000.0;
 
+  private boolean isInit = false;
+
   /**
    * x1 and y1 are respectively the x and y coordinates of the left, upper corner of the destination
    * rectangle.
@@ -138,6 +140,12 @@ class ImageCanvasPlayerThread extends Thread {
     strategy = this.canvas.getBufferStrategy();
     // Update the display
     updateDisplay();
+
+    isInit = true;
+  }
+
+  public boolean isInit() {
+    return isInit;
   }
 
   public void run() {
@@ -168,5 +176,6 @@ class ImageCanvasPlayerThread extends Thread {
 
   public void terminate() {
     terminate = true;
+    isInit = false;
   }
 }

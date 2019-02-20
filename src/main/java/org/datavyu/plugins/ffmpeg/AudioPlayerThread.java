@@ -12,6 +12,7 @@ class AudioPlayerThread extends Thread {
       new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, 44100, 8, 2, 2, 44100, false);
   private FloatControl volumeControl;
   private BooleanControl muteControl;
+  private boolean isInit = false;
 
   /**
    * Get new audio format for mono playback.
@@ -53,6 +54,12 @@ class AudioPlayerThread extends Thread {
 
     data = new byte[bufferSize];
     soundLine.start();
+
+    isInit = true;
+  }
+
+  public boolean isInit() {
+    return isInit;
   }
 
   public void setVolume(final float newVolume) {
@@ -92,6 +99,7 @@ class AudioPlayerThread extends Thread {
 
   public void terminate() {
     stopped = true;
+    isInit = false;
     soundLine.drain();
     soundLine.stop();
     soundLine.close();
