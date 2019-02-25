@@ -13,8 +13,10 @@
     <!-- The msbuild.exe path is for Visual Studio 2017 Community version-->
     <msbuild.exe>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe
     </msbuild.exe>
-    <msbuild.configuration.release>Release</msbuild.configuration.release>
-    <msbuild.configuration.debug>Debug</msbuild.configuration.debug>
+    <!-- You will need to install the command-line tool -->
+    <xcodebuild>/usr/bin/xcodebuild</xcodebuild>
+    <configuration.release>Release</configuration.release>
+    <configuration.debug>Debug</configuration.debug>
   </properties>
 
   <distributionManagement>
@@ -60,7 +62,7 @@
 
   <profiles>
     <profile>
-      <id>mac</id>
+      <id>mac-debug</id>
       <activation>
         <os>
           <family>mac</family>
@@ -82,19 +84,98 @@
           <version>4.0.2</version>
           <classifier>mac</classifier>
         </dependency>
+      </dependencies>
 
-        <!-- SDL 2.0.8 -->
+      <build>
+        <resources>
+          <resource>
+            <directory>./</directory>
+            <includes>
+              <include>libFfmpegJavaMediaPlayer.dylib</include>
+            </includes>
+          </resource>
+        </resources>
+
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <configuration>
+              <executable>${xcodebuild}</executable>
+              <workingDirectory>src/main/cpp</workingDirectory>
+            </configuration>
+
+            <executions>
+
+              <execution>
+                <id>clean-with-xcodebuild</id>
+                <phase>clean</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>-project</argument>
+                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>clean</argument>
+                    <argument>-configuration</argument>
+                    <argument>${configuration.debug}</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>build-with-xcodebuild</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>-project</argument>
+                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-configuration</argument>
+                    <argument>${configuration.debug}</argument>
+                    <argument>build</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <classifier>mac</classifier>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+    <profile>
+      <id>mac-release</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+
+      <dependencies>
         <dependency>
           <groupId>org.datavyu</groupId>
-          <artifactId>sdl-libs</artifactId>
-          <version>2.0.8</version>
+          <artifactId>libNativeOSXCanvas</artifactId>
+          <version>0.92</version>
         </dependency>
 
-        <!-- MPV 0.29.1 -->
+        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
+        <!-- FFmpeg 4.0 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
-          <artifactId>mpv-libs</artifactId>
-          <version>0.29.1</version>
+          <artifactId>ffmpeg-libs</artifactId>
+          <version>4.0.2</version>
+          <classifier>mac</classifier>
         </dependency>
       </dependencies>
 
@@ -109,6 +190,53 @@
         </resources>
 
         <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <configuration>
+              <executable>${xcodebuild}</executable>
+              <workingDirectory>src/main/cpp</workingDirectory>
+            </configuration>
+
+            <executions>
+
+              <execution>
+                <id>clean-with-xcodebuild</id>
+                <phase>clean</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>-project</argument>
+                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>clean</argument>
+                    <argument>-configuration</argument>
+                    <argument>${configuration.release}</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>build-with-xcodebuild</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>-project</argument>
+                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-configuration</argument>
+                    <argument>${configuration.release}</argument>
+                    <argument>build</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+            </executions>
+          </plugin>
           <plugin>
             <artifactId>maven-jar-plugin</artifactId>
             <configuration>
@@ -194,7 +322,7 @@
                   <arguments>
                     <argument>MediaPlayer.sln</argument>
                     <argument>/t:Clean</argument>
-                    <argument>/p:Configuration=${msbuild.configuration.release}</argument>
+                    <argument>/p:Configuration=${configuration.release}</argument>
                   </arguments>
                 </configuration>
               </execution>
@@ -206,7 +334,7 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>/p:Configuration=${msbuild.configuration.release}</argument>
+                    <argument>/p:Configuration=${configuration.release}</argument>
                     <argument>MediaPlayer.sln</argument>
                     <argument>/t:build</argument>
                   </arguments>
@@ -298,7 +426,7 @@
                   <arguments>
                     <argument>MediaPlayer.sln</argument>
                     <argument>/t:Clean</argument>
-                    <argument>/p:Configuration=${msbuild.configuration.debug}</argument>
+                    <argument>/p:Configuration=${configuration.debug}</argument>
                   </arguments>
                 </configuration>
               </execution>
@@ -311,7 +439,7 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>/p:Configuration=${msbuild.configuration.debug}</argument>
+                    <argument>/p:Configuration=${configuration.debug}</argument>
                     <!--Need to update the argument value if you change the name
                     of the Visual Studio Solution-->
                     <argument>MediaPlayer.sln</argument>
