@@ -98,6 +98,19 @@
 
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration combine.self="append">
+              <!-- Note all paths play off from sourceDirectory -->
+              <excludes>
+                <exclude>**/org/datavyu/plugins/mpv/*</exclude>
+                <exclude>**/org/datavyu/plugins/examples/*</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+
+          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <version>1.6.0</version>
@@ -190,6 +203,19 @@
         </resources>
 
         <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration combine.self="append">
+              <!-- Note all paths play off from sourceDirectory -->
+              <excludes>
+                <exclude>**/org/datavyu/plugins/mpv/*</exclude>
+                <exclude>**/org/datavyu/plugins/examples/*</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
@@ -476,8 +502,9 @@
       </plugin>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.0</version>
         <configuration>
           <debug>false</debug>
           <optimize>true</optimize>
@@ -485,7 +512,7 @@
           <target>1.8</target>
           <!-- Note all paths play off from sourceDirectory -->
           <excludes>
-            <exclude>org/datavyu/plugins/ffmpegplayer/prototypes/*.java</exclude>
+            <exclude>**/org/datavyu/plugins/examples/*</exclude>
           </excludes>
         </configuration>
       </plugin>
