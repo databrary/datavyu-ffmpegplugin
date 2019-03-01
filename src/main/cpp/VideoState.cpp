@@ -586,6 +586,7 @@ VideoState::VideoState(int audio_buffer_size)
       is_paused_(true),  // TRUE
       last_is_paused_(false),
       is_stopped_(false),
+      is_playing_(false),
       queue_attachments_request_(false),
       seek_done_(false),
       seek_request_(false),
@@ -778,7 +779,7 @@ int VideoState::ReadPacketsToQueues() {
           if (player_state_callbacks[TO_PAUSED]) {
             player_state_callbacks[TO_PAUSED]();
           }
-      } else if (!is_paused_ && !is_stopped_) {
+      } else if (is_playing_ && !is_paused_ && !is_stopped_) {
           if (player_state_callbacks[TO_PLAYING]) {
             player_state_callbacks[TO_PLAYING]();
           }

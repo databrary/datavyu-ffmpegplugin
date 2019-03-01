@@ -114,6 +114,7 @@ public:
 
   inline bool IsStopped() const { return is_stopped_; }
   inline void SetStopped(bool is_stopped) { is_stopped_ = is_stopped; }
+  inline void SetPlaying(bool is_playing) { is_playing_ = is_playing; }
 
   inline int IsStepping() const { return is_stepping_; }
   inline void SetStepping(bool is_stepping) { is_stepping_ = is_stepping; }
@@ -198,6 +199,7 @@ public:
   bool is_paused_; // TODO(fraudies): Check if this need to be atomic
   bool last_is_paused_;
   bool is_stopped_; // TODO(fraudies): Check if this need to be atomic
+  bool is_playing_;
   bool queue_attachments_request_;
 
   bool seek_done_;
