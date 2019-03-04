@@ -76,8 +76,13 @@ public class MediaPlayerTest {
     }
 
     protected void testStateTransition(Builder builder, MediaInformation mediaInformation) {
-        logger.info("State transition Test");
+        logger.info("State transitions Test");
         MediaPlayerSync player = builder.build();
+        Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.READY);
+
+        // Test Seek When Player is Ready
+        player.getMediaPlayer().seek(0.0);
+        sleep(200);
         Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.READY);
 
         // Test READY -> PLAYING
@@ -85,8 +90,18 @@ public class MediaPlayerTest {
         sleep(200);
         Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.PLAYING);
 
+        // Test STALLED -> PLAYING
+        player.getMediaPlayer().seek(10.0);
+        sleep(200);
+        Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.PLAYING);
+
         // Test PLAYING -> STOPPED
         player.getMediaPlayer().stop();
+        sleep(200);
+        Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.STOPPED);
+
+        // Test STALLED -> STOPPED
+        player.getMediaPlayer().seek(10.0);
         sleep(200);
         Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.STOPPED);
 
@@ -97,6 +112,11 @@ public class MediaPlayerTest {
 
         // Test PLAYING -> PAUSED
         player.getMediaPlayer().pause();
+        sleep(200);
+        Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.PAUSED);
+
+        // Test STALLED -> PAUSED
+        player.getMediaPlayer().seek(10.0);
         sleep(200);
         Assert.assertTrue(player.getMediaPlayer().getState() == PlayerState.PAUSED);
 
