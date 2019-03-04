@@ -48,6 +48,7 @@ void FfmpegAvPlayback::Play() {
     TogglePauseAndStopStep();
     p_video_state_->SetStopped(false);
     p_video_state_->SetPaused(false);
+    p_video_state_->SetPlaying(true);
   }
 }
 
@@ -55,6 +56,7 @@ void FfmpegAvPlayback::Pause() {
   if (!p_video_state_->IsPaused()) {
     TogglePauseAndStopStep();
     p_video_state_->SetStopped(false);
+    p_video_state_->SetPlaying(false);
   }
 }
 
@@ -65,9 +67,11 @@ void FfmpegAvPlayback::Stop() {
     // The Player is already stopped
     // Need to update player state
     p_video_state_->SetStopped(true);
+    p_video_state_->SetPlaying(false);
   } else if (!p_video_state_->IsPaused()) {
     TogglePauseAndStopStep();
     p_video_state_->SetStopped(true);
+    p_video_state_->SetPlaying(false);
 	SetSpeed(1);
   }
 }
