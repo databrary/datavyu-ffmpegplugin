@@ -135,7 +135,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time, int seek_flags) {
 
   if (isnan(pos)) {
     pos = (double)p_java_playback_->GetSeekTime() / AV_TIME_BASE;  
-	}
+  }
 
   if (p_java_playback_->GetStartTime() != AV_NOPTS_VALUE &&
       time < p_java_playback_->GetStartTime() / (double)AV_TIME_BASE) {
@@ -148,6 +148,16 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time, int seek_flags) {
                          (int64_t)(difference * AV_TIME_BASE), seek_flags);
 
   return ERROR_NONE;
+}
+
+uint32_t FfmpegJavaAvPlaybackPipline::SeekToFrame(int frame_nb) {
+    if (p_java_playback_ == nullptr) {
+        return ERROR_PLAYBACK_NULL;
+    }
+    
+    p_java_playback_->SeekToFrame(frame_nb);
+    
+    return ERROR_NONE;
 }
 
 uint32_t FfmpegJavaAvPlaybackPipline::GetDuration(double *p_duration) {

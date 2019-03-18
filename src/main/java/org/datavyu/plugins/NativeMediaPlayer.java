@@ -27,9 +27,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   public static final int eventPlayerFinished = 106;
   public static final int eventPlayerError = 107;
 
-  /** Synchronization threshold in milliseconds */
-  public static final double SYNC_THRESHOLD = 0.5; // 0.5 sec  (because some plugin are not very precise in seek)
-
   private final List<WeakReference<MediaErrorListener>> errorListeners = new ArrayList<>();
   private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
 
@@ -44,7 +41,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   private boolean isStopTimeSet = false;
   protected boolean isStartTimeUpdated = false;
 
-  protected double masterCurrentTime;
   protected float playBackRate = 1f;
 
 
@@ -302,6 +298,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   // protected abstract void playerSetStopTime(double stopTime) throws MediaException;
 
   protected abstract void playerSeek(double streamTime) throws MediaException;
+
+  protected abstract void playerSeekToFrame(int frameNumber) throws MediaException;
 
   protected abstract void playerDispose();
 
@@ -591,6 +589,25 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
       markerLock.lock();
       if (!isDisposed) {
         playerSeek(streamTime);
+      }
+    } catch (MediaException me) {
+      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+    } finally {
+      markerLock.unlock();
+    }
+  }
+
+  @Override
+  public void seekToFrame(int frameNumber) {
+
+    if (frameNumber < 0) {
+      frameNumber = 0;
+    }
+
+    try {
+      markerLock.lock();
+      if (!isDisposed) {
+        playerSeekToFrame(frameNumber);
       }
     } catch (MediaException me) {
       sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));

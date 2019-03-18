@@ -62,6 +62,7 @@ public:
   static int kEnableSeekByBytes;
   static int kSeekPreciseFlag;
   static int kSeekFastFlag;
+  static int kSeekFrameFlag;
 
   virtual ~VideoState();
 
@@ -107,6 +108,7 @@ public:
   inline void ToggleMute() { is_muted_ = !is_muted_; }
   void SetPts(double pts, int serial);
   void Seek(int64_t time, int64_t distance, int seek_flags);
+  void SeekToFrame(int frame_nb);
 
   /* Setter and Getters */
   inline bool IsPaused() const { return is_paused_; }
@@ -206,6 +208,7 @@ public:
   bool seek_request_;
   int seek_flags_;
   int64_t seek_time_;
+  int seek_frame_;
   int64_t seek_distance_; // Signed distance between the current time and the
                           // seek time
   AvSyncType sync_type_;  // default is AV_SYNC_AUDIO_MASTER
@@ -304,8 +307,7 @@ public:
   int OpenStreamComponent(int stream_index);
   int GetImageFrame(AVFrame *frame);
 
-  int QueueImage(AVFrame *image_frame, double pts, double duration, int64_t pos,
-                 int serial);
+  int QueueImage(AVFrame *image_frame, double pts, double duration, int64_t pos, int frame_pos, int serial);
   void CloseStreamComponent(int stream_index);
   bool StreamHasEnoughPackets(const AVStream &p_stream, int stream_index,
                               const PacketQueue &packet_queue);

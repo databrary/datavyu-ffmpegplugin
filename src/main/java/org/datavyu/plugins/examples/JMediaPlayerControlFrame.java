@@ -35,6 +35,8 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
     double currentTime, nextTime;
     float currentVolume, nextVolume;
     float currentRate, nextRate;
+    int frameNB;
+    double step = (1.0 / mediaPlayer.getFps());
     currentRate = mediaPlayer.getRate();
     switch (e.getKeyCode()) {
       case KeyEvent.VK_NUMPAD5:
@@ -57,6 +59,27 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
         System.out.println("Step Backward");
         mediaPlayer.stepBackward();
         System.out.println("Finished backward step");
+        break;
+      case KeyEvent.VK_X:
+        nextTime = mediaPlayer.getPresentationTime() + step;
+        // Don't step if is the current time
+        if (!Double.isNaN(nextTime)) {
+          frameNB = (int) Math.ceil(nextTime / step);
+          System.out.println(
+              "Step Forward to Frame "
+                  + frameNB);
+          mediaPlayer.seekToFrame(frameNB);
+        }
+        break;
+      case KeyEvent.VK_C:
+        nextTime = mediaPlayer.getPresentationTime() - step;
+        if (!Double.isNaN(nextTime)) {
+          frameNB = (int) Math.ceil(nextTime / step);
+          System.out.println(
+              "Step backward to Frame "
+                  + frameNB);
+          mediaPlayer.seekToFrame(frameNB);
+        }
         break;
       case KeyEvent.VK_I:
         System.out.println(

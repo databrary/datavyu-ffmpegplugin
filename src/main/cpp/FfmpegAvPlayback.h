@@ -20,6 +20,9 @@ public:
                            int seek_flags) {
     p_video_state_->Seek(time, difference, seek_flags);
   }
+  inline virtual void SeekToFrame(int frame_nb) {
+    p_video_state_->SeekToFrame(frame_nb);
+  }
   inline virtual double GetDuration() const {
     return p_video_state_->GetDuration();
   }
@@ -52,7 +55,7 @@ public:
   }
 
   inline void StepToPreviousFrame() {
-		// Get the current time and seek if it is NaN
+	// Get the current time and seek if it is NaN
     double time = GetTime();
     if (!isnan(time)) {
       double difference = -1.0 / GetFrameRate();

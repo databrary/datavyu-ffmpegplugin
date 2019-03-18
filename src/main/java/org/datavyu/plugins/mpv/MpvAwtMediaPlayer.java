@@ -1,6 +1,7 @@
 package org.datavyu.plugins.mpv;
 
-import sun.awt.windows.WComponentPeer;
+import org.datavyu.plugins.MediaException;
+//import sun.awt.windows.WComponentPeer;
 
 import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.PlayerStateListener;
@@ -42,7 +43,13 @@ public class MpvAwtMediaPlayer extends MpvMediaPlayer {
       throw new RuntimeException("Unable to retrieve window id");
     }
 
-    return ((WComponentPeer) container.getPeer()).getHWnd();
+//    return ((WComponentPeer) container.getPeer()).getHWnd();
+    return 0;
+  }
+
+  @Override
+  protected void playerSeekToFrame(int frameNumber) throws MediaException {
+
   }
 
   private class PlayerStateListenerImpl implements PlayerStateListener {

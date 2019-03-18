@@ -16,6 +16,7 @@ typedef struct Frame {
   double pts_;       // presentation timestamp for the frame
   double duration_;  // estimated duration of the frame
   int64_t byte_pos_; // byte position of the frame in the input file
+  int frame_pos_; // The Frame positin in the input file
   int width_;
   int height_;
   int format_;

@@ -251,6 +251,8 @@ void FfmpegJavaAvPlayback::UpdateImageBuffer(uint8_t *p_image_data,
   if (doUpdate) {
     Frame *vp = nullptr;
     queue->PeekLast(&vp);
+    av_log(NULL, AV_LOG_DEBUG, "Display Image Frame - Number %d\n"
+             , vp->frame_pos_);
     p_img_convert_ctx_ = sws_getCachedContext(
         p_img_convert_ctx_, vp->p_frame_->width, vp->p_frame_->height,
         static_cast<AVPixelFormat>(vp->p_frame_->format), vp->p_frame_->width,

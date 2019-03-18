@@ -156,6 +156,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffm
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSeek
   (JNIEnv *, jobject, jlong, jdouble, jint);
+    
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
+ * Method:    ffmpegSeekToFrame
+ * Signature: (JDI)I
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSeekToFrame
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer

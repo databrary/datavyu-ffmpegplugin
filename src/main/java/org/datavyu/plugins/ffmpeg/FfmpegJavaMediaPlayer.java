@@ -302,6 +302,15 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   @Override
+  protected void playerSeek(int frameNumber) throws MediaException {
+    int rc = ffmpegSeekToFrame(getNativeMediaRef(), frameNumber);
+    if (0 != rc) {
+      throwMediaErrorException(rc, null);
+    }
+    LOGGER.trace("Player is seeking to Frame Number" + frameNumber);
+  }
+
+  @Override
   protected void playerDispose() {
     if (imageCanvasPlayerThread.isInit()) {
       imageCanvasPlayerThread.terminate();
@@ -433,6 +442,8 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   private native int ffmpegGetDuration(long refNativeMedia, double[] duration);
 
   private native int ffmpegSeek(long refNativeMedia, double streamTime, int flags);
+
+  private native int ffmpegSeekToFrame(long refNativeMedia, int frameNumber);
 
   private native int ffmpegHasAudioData(long refNativeMedia, boolean[] hasData);
 

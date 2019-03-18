@@ -392,6 +392,25 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSeek(
 
   return iRet;
 }
+    
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
+ * Method:    ffmpegSeek
+ * Signature: (JD)I
+*/
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSeekToFrame(
+    JNIEnv *env, jobject obj, jlong ref_media, jint frame_nb) {
+  CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+  if (NULL == pMedia) return ERROR_MEDIA_NULL;
+        
+  CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+  if (NULL == pPipeline) return ERROR_PIPELINE_NULL;
+        
+  jint iRet = (jint)pPipeline->SeekToFrame(frame_nb);
+        
+  return iRet;
+}
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
