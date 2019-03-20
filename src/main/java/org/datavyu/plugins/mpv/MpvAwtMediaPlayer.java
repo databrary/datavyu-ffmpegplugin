@@ -1,7 +1,7 @@
 package org.datavyu.plugins.mpv;
 
 import org.datavyu.plugins.MediaException;
-import sun.awt.windows.WComponentPeer;WComponentPeer
+import sun.awt.windows.WComponentPeer;
 
 import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.PlayerStateListener;

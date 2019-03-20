@@ -1043,8 +1043,8 @@ int VideoState::DecodeImagePacketsToFrames() {
     image_seek_pts = seek_time_ / (image_time_base * (double)AV_TIME_BASE);
     // Calculate the frame position in the file
     frame_pos = (p_frame->pts * time_base.num * p_image_stream_->r_frame_rate.num) / (time_base.den * p_image_stream_->r_frame_rate.den);
-    if (!fast_seek && (p_frame->pts < image_seek_pts
-                       || frame_pos < seek_frame_)) {
+    if ((!fast_seek && p_frame->pts < image_seek_pts)
+        || (!fast_seek && seek_flags_ == kSeekFrameFlag && frame_pos < seek_frame_)) {
       av_frame_unref(p_frame);
       continue;
     }
