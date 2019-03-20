@@ -1,5 +1,6 @@
 package org.datavyu.plugins.mpv;
 
+import org.datavyu.plugins.MediaException;
 import sun.awt.windows.WComponentPeer;
 
 import org.datavyu.plugins.PlayerStateEvent;
@@ -43,6 +44,11 @@ public class MpvAwtMediaPlayer extends MpvMediaPlayer {
     }
 
     return ((WComponentPeer) container.getPeer()).getHWnd();
+  }
+
+  @Override
+  protected void playerSeekToFrame(int frameNumber) throws MediaException {
+
   }
 
   private class PlayerStateListenerImpl implements PlayerStateListener {

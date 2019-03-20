@@ -89,6 +89,11 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
     }
   }
 
+  @Override
+  protected void playerSeekToFrame(int frameNumber) throws MediaException {
+
+  }
+
   private class PlayerStateListenerImpl implements PlayerStateListener {
 
     @Override

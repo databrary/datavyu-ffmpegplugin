@@ -2,6 +2,7 @@
 
 int VideoState::kSeekPreciseFlag = 0x01;
 int VideoState::kSeekFastFlag = 0x10;
+int VideoState::kSeekFrameFlag = 0x11;
 bool VideoState::kEnableShowFormat = true;  // Show the format information
 bool VideoState::kEnableFastDecode = false;
 bool VideoState::kEnableGeneratePts =
@@ -226,7 +227,7 @@ int VideoState::GetImageFrame(AVFrame *frame) {
 }
 
 int VideoState::QueueImage(AVFrame *p_image_frame, double pts, double duration,
-                           int64_t pos, int serial) {
+                           int64_t pos, int frame_pos,int serial) {
   Frame *p_frame = nullptr;
   p_image_frame_queue_->PeekWritable(&p_frame);
   if (!p_frame) {
@@ -244,6 +245,7 @@ int VideoState::QueueImage(AVFrame *p_image_frame, double pts, double duration,
   p_frame->duration_ = duration;
   p_frame->byte_pos_ = pos;
   p_frame->serial_ = serial;
+  p_frame->frame_pos_ = frame_pos;
 
   av_frame_move_ref(p_frame->p_frame_, p_image_frame);
   p_image_frame_queue_->Push();
@@ -592,6 +594,7 @@ VideoState::VideoState(int audio_buffer_size)
       seek_request_(false),
       seek_flags_(kSeekFastFlag),
       seek_time_(0),
+      seek_frame_(0),
       seek_distance_(0),
       sync_type_(AV_SYNC_AUDIO_MASTER),
       frame_rate_(0.0),
@@ -1011,6 +1014,7 @@ int VideoState::DecodeImagePacketsToFrames() {
   double pts;
   double duration;
   int ret;
+  int frame_pos = 0;
   AVRational time_base = p_image_stream_->time_base;
   AVRational frame_rate =
       av_guess_frame_rate(p_format_context, p_image_stream_, NULL);
@@ -1037,7 +1041,10 @@ int VideoState::DecodeImagePacketsToFrames() {
 
     fast_seek = seek_flags_ == kSeekFastFlag;
     image_seek_pts = seek_time_ / (image_time_base * (double)AV_TIME_BASE);
-    if (!fast_seek && p_frame->pts < image_seek_pts) {
+    // Calculate the frame position in the file
+    frame_pos = (p_frame->pts * time_base.num * p_image_stream_->r_frame_rate.num) / (time_base.den * p_image_stream_->r_frame_rate.den);
+    if ((!fast_seek && p_frame->pts < image_seek_pts)
+        || (!fast_seek && seek_flags_ == kSeekFrameFlag && frame_pos < seek_frame_)) {
       av_frame_unref(p_frame);
       continue;
     }
@@ -1050,7 +1057,7 @@ int VideoState::DecodeImagePacketsToFrames() {
                    : 0;
     pts = (p_frame->pts == AV_NOPTS_VALUE) ? NAN
                                            : p_frame->pts * av_q2d(time_base);
-    ret = QueueImage(p_frame, pts, duration, p_frame->pkt_pos,
+    ret = QueueImage(p_frame, pts, duration, p_frame->pkt_pos, frame_pos,
                      p_image_decoder_->GetSerial());
 
     // Seek complete processed after we enqueued an image
@@ -1274,6 +1281,30 @@ void VideoState::Seek(int64_t time, int64_t distance, int seek_flags) {
     seek_done_ = false;
     continue_read_thread_.notify_one();
 
+    std::unique_lock<std::mutex> lck(mtx);
+    // Blocks until the seek request is done which we defined by
+    // enquing either an image frame or audio frame
+    continue_after_seek_.wait(lck, [this] { return this->seek_done_; });
+  }
+}
+
+/* seek in the stream */
+void VideoState::SeekToFrame(int frame_nb) {
+  // Only seek if
+    // - there is no seek request in progress AND
+    // - this seek time is different from the last OR
+    //        the last seek was not precise (the we might not be at seek time)
+  if (!seek_request_) {
+    std::mutex mtx;
+        
+    seek_frame_ = frame_nb;
+    seek_flags_ = kSeekFrameFlag;
+    seek_request_ = true;
+    seek_done_ = false;
+    // Need to convert the frame number into a time stamp that will be used during the precise seek
+    // to land on the closest key frame before requesting the frame number
+    seek_time_ = (int64_t)(frame_nb * (1.0 / GetFrameRate()) * AV_TIME_BASE);
+    continue_read_thread_.notify_one();
     std::unique_lock<std::mutex> lck(mtx);
     // Blocks until the seek request is done which we defined by
     // enquing either an image frame or audio frame

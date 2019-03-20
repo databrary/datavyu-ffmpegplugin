@@ -4,6 +4,7 @@ import com.sun.javafx.tk.TKStage;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.PlayerStateListener;
 
@@ -84,6 +85,11 @@ public final class MpvFxMediaPlayer extends MpvMediaPlayer {
       LOGGER.error("Unable to retrieve window id, due to Error: " + ex);
       throw new RuntimeException("Unable to retrieve window id");
     }
+  }
+
+  @Override
+  protected void playerSeekToFrame(int frameNumber) throws MediaException {
+
   }
 
   private class PlayerStateListenerImpl implements PlayerStateListener {
