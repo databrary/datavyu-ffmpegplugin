@@ -136,6 +136,14 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_mpv_MpvMediaPlayer_mpvSeek
   (JNIEnv *, jobject, jlong, jdouble);
 
 /*
+ * Class:     org_datavyu_plugins_ffmpeg_MpvMediaPlayer
+ * Method:    ffmpegSeekToFrame
+ * Signature: (JDI)I
+*/
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_MpvMediaPlayer_ffmpegSeekToFrame
+(JNIEnv *, jobject, jlong, jint);
+
+/*
  * Class:     org_datavyu_plugins_mpv_MpvMediaPlayer
  * Method:    mpvGetImageWidth
  * Signature: (J[I)I

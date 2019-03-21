@@ -33,6 +33,7 @@ private:
   virtual uint32_t Finish();
 
   virtual uint32_t Seek(double seek_time, int seek_flags);
+  virtual uint32_t SeekToFrame(int frame_nb);
 
   virtual uint32_t GetDuration(double *p_duration);
   virtual uint32_t GetStreamTime(double *p_stream_time);

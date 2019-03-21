@@ -11,6 +11,7 @@ import org.datavyu.plugins.PlayerStateListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public final class MpvFxMediaPlayer extends MpvMediaPlayer {
   private Stage stage;
@@ -89,7 +90,7 @@ public final class MpvFxMediaPlayer extends MpvMediaPlayer {
 
   @Override
   protected void playerSeekToFrame(int frameNumber) throws MediaException {
-
+    throw new NotImplementedException();
   }
 
   private class PlayerStateListenerImpl implements PlayerStateListener {

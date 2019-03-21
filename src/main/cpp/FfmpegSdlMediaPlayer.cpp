@@ -473,6 +473,25 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSeek(
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegSeekToFrame
+ * Signature: (JD)I
+*/
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSeekToFrame(
+	JNIEnv *env, jobject obj, jlong ref_media, jint frame_nb) {
+	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+	if (NULL == pMedia) return ERROR_MEDIA_NULL;
+
+	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+	if (NULL == pPipeline) return ERROR_PIPELINE_NULL;
+
+	jint iRet = (jint)pPipeline->SeekToFrame(frame_nb);
+
+	return iRet;
+}
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
  * Method:    ffmpegGetImageWidth
  * Signature: (J[I)I
  */

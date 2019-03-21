@@ -8,6 +8,7 @@ import org.datavyu.plugins.PlayerStateListener;
 
 import java.awt.*;
 import java.net.URI;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MpvAwtMediaPlayer extends MpvMediaPlayer {
   private Container container;
@@ -48,7 +49,7 @@ public class MpvAwtMediaPlayer extends MpvMediaPlayer {
 
   @Override
   protected void playerSeekToFrame(int frameNumber) throws MediaException {
-
+    throw new NotImplementedException();
   }
 
   private class PlayerStateListenerImpl implements PlayerStateListener {

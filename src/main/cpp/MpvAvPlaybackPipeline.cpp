@@ -122,6 +122,11 @@ uint32_t MpvAvPlaybackPipeline::Seek(double seek_time, int seek_flags) {
   return ERROR_NONE;
 }
 
+uint32_t MpvAvPlaybackPipeline::SeekToFrame(int frame_nb) {
+  return ERROR_NONE; // no error
+}
+
+
 uint32_t MpvAvPlaybackPipeline::GetDuration(double *p_duration) {
   if (p_mpv_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;

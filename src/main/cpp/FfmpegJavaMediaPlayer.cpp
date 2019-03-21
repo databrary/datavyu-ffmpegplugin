@@ -395,7 +395,7 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSeek(
     
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
- * Method:    ffmpegSeek
+ * Method:    ffmpegSeekToFrame
  * Signature: (JD)I
 */
 JNIEXPORT jint JNICALL
