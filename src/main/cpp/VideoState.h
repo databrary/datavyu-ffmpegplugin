@@ -58,7 +58,7 @@ public:
     NUM_PLAYER_STATE_CALLBACKS
   };
 
-	static double kAvSyncThresholdMax;
+  static double kAvSyncThresholdMax;
   static int kEnableSeekByBytes;
   static int kSeekPreciseFlag;
   static int kSeekFastFlag;

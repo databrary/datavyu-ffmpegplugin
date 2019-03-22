@@ -121,11 +121,13 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
         goto retry;
       }
 
-      if (lastvp->serial_ != vp->serial_)
+      if (lastvp->serial_ != vp->serial_) {
         frame_last_shown_time_ = av_gettime_relative() / 1000000.0;
+      }
 
-      if (p_video_state_->IsPaused() && !force_refresh_)
+      if (p_video_state_->IsPaused() && !force_refresh_) {
         goto display;
+      }
 
       /* compute nominal last_duration */
       last_duration = ComputeFrameDuration(
@@ -141,8 +143,9 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
 
       frame_last_shown_time_ += delay;
       if (delay > 0 &&
-          time - frame_last_shown_time_ > VideoState::kAvSyncThresholdMax)
+          time - frame_last_shown_time_ > VideoState::kAvSyncThresholdMax) {
         frame_last_shown_time_ = time;
+      }
 
       std::unique_lock<std::mutex> locker(frame_queue->GetMutex());
       if (!isnan(vp->pts_)) {
@@ -158,6 +161,7 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
         if (!p_video_state_->IsStepping() &&
             time > frame_last_shown_time_ + duration) {
           num_frame_drops_late_++;
+          av_log(NULL, AV_LOG_INFO, "DoDisplay - Need to drop %d frame - Peek next frame, go to retry!\n", num_frame_drops_late_);
           frame_queue->Next();
           goto retry;
         }
@@ -251,8 +255,8 @@ void FfmpegJavaAvPlayback::UpdateImageBuffer(uint8_t *p_image_data,
   if (doUpdate) {
     Frame *vp = nullptr;
     queue->PeekLast(&vp);
-    av_log(NULL, AV_LOG_DEBUG, "Display Image Frame - Number %d\n"
-             , vp->frame_pos_);
+    av_log(NULL, AV_LOG_DEBUG, "Update Image Buffer - Number %d - PTS %2.7f\n"
+             , vp->frame_pos_, vp->p_frame_->pts);
     p_img_convert_ctx_ = sws_getCachedContext(
         p_img_convert_ctx_, vp->p_frame_->width, vp->p_frame_->height,
         static_cast<AVPixelFormat>(vp->p_frame_->format), vp->p_frame_->width,
