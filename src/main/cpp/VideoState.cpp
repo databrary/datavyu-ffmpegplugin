@@ -1165,15 +1165,17 @@ int VideoState::StartStream() {
     goto fail;
   }
 
-  if (p_format_context->pb)
+  if (p_format_context->pb) {
     p_format_context->pb->eof_reached =
         0;  // FIXME hack, ffplay maybe should not use
             // avio_feof() to test for the end
+  }
 
-  if (kEnableSeekByBytes < 0)
+  if (kEnableSeekByBytes < 0) {
     kEnableSeekByBytes =
         !!(p_format_context->iformat->flags & AVFMT_TS_DISCONT) &&
         strcmp("ogg", p_format_context->iformat->name);
+  }
 
   max_frame_duration_ =
       (p_format_context->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
@@ -1181,11 +1183,12 @@ int VideoState::StartStream() {
   /* if seeking requested, we execute it */
   if (start_time_ != AV_NOPTS_VALUE) {
     int64_t timestamp;
-
+      
     timestamp = start_time_;
     /* add the stream start time */
-    if (p_format_context->start_time != AV_NOPTS_VALUE)
+    if (p_format_context->start_time != AV_NOPTS_VALUE) {
       timestamp += p_format_context->start_time;
+    }
     ret = avformat_seek_file(p_format_context, -1, INT64_MIN, timestamp,
                              INT64_MAX, 0);
     if (ret < 0) {
@@ -1204,14 +1207,17 @@ int VideoState::StartStream() {
     st->discard = AVDISCARD_ALL;
   }
 
-  if (!video_disabled_)
+  if (!video_disabled_) {
     st_index[AVMEDIA_TYPE_VIDEO] =
         av_find_best_stream(p_format_context, AVMEDIA_TYPE_VIDEO,
                             st_index[AVMEDIA_TYPE_VIDEO], -1, NULL, 0);
-  if (!audio_disabled_)
+  }
+    
+  if (!audio_disabled_) {
     st_index[AVMEDIA_TYPE_AUDIO] = av_find_best_stream(
         p_format_context, AVMEDIA_TYPE_AUDIO, st_index[AVMEDIA_TYPE_AUDIO],
         st_index[AVMEDIA_TYPE_VIDEO], NULL, 0);
+  }
 
   /* open the streams */
   if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {

@@ -28,7 +28,8 @@ void FfmpegAvPlayback::TogglePause() {
 }
 
 FfmpegAvPlayback::FfmpegAvPlayback()
-    : p_video_state_(nullptr), display_disabled_(false), frame_width_(0), frame_height_(0),
+    : p_video_state_(nullptr), display_disabled_(false),
+      frame_last_shown_time_(0.0) ,frame_width_(0), frame_height_(0),
       force_refresh_(1), num_frame_drops_late_(0) {}
 
 int FfmpegAvPlayback::OpenVideo(const char *filename, AVInputFormat *p_input_format,
