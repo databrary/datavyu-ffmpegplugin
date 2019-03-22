@@ -161,7 +161,6 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
         if (!p_video_state_->IsStepping() &&
             time > frame_last_shown_time_ + duration) {
           num_frame_drops_late_++;
-          av_log(NULL, AV_LOG_INFO, "DoDisplay - Need to drop %d frame - Peek next frame, go to retry!\n", num_frame_drops_late_);
           frame_queue->Next();
           goto retry;
         }
