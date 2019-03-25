@@ -40,7 +40,6 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     this.mediaPlayer = new NativeOSXPlayer(mediaPath);
     this.id = playerCount;
     this.prevRate = 1F;
-    sendPlayerStateEvent(eventPlayerUnknown, 0);
   }
 
   protected static void incPlayerCount() { playerCount++; }
@@ -49,6 +48,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerPlay() throws MediaException {
+    logger.debug("Start Player " + this.id);
     if (getState() == PlayerStateEvent.PlayerState.PAUSED) {
       EventQueue.invokeLater(() -> mediaPlayer.setRate(prevRate, id));
     } else {
@@ -195,7 +195,11 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   @Override
   protected void playerDispose() {
     logger.info("Disposing the player");
-    decPlayerCount();
+    // Nothing to do here
+    // IMPORTANT: can't release player resources (Bug!)
+    // and to keep the correct player id can't decrement the
+    // player count
+    // FIXME properly release player instance resources
   }
 
   @Override

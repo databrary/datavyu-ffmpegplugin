@@ -47,7 +47,6 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
     container.addNotify();
     container.add(mediaPlayer, BorderLayout.CENTER);
 
-    incPlayerCount();
     Runnable waitForReady =
         () -> {
           while (playerGetFps() <= 0) {
@@ -70,7 +69,8 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
         logger.error(e.getMessage());
       }
     }
-
+    // Always increment the player count after creating an instance
+    incPlayerCount();
     endInitTime = System.currentTimeMillis();
     logger.debug("Time to initialize : " + (endInitTime - startInitTime) + " ms");
   }
