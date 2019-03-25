@@ -23,6 +23,8 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   protected static final float INITIAL_VOLUME = 1F;
 
+  protected double startTime = 0.0;
+
   protected NativeOSXPlayer mediaPlayer;
 
   protected final int id;
@@ -41,13 +43,9 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     sendPlayerStateEvent(eventPlayerUnknown, 0);
   }
 
-  protected static void incPlayerCount() {
-    playerCount++;
-  }
+  protected static void incPlayerCount() { playerCount++; }
 
-  protected static void decPlayerCount() {
-    playerCount--;
-  }
+  protected static void decPlayerCount() { playerCount--; }
 
   @Override
   protected void playerPlay() throws MediaException {
@@ -120,7 +118,13 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
+  protected double playerGetStartTime() throws MediaException {
+    return startTime;
+  }
+
+  @Override
   protected void playerSetStartTime(double startTime) throws MediaException {
+    this.startTime = startTime;
     playerSeek((long) (startTime * 1000), PRECISE_SEEK_FLAG);
   }
 

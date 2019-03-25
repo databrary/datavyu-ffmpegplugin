@@ -286,8 +286,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   protected abstract double playerGetDuration() throws MediaException;
 
-  // TODO: Implement start/stop time in native code
-  // protected abstract double playerGetStartTime() throws MediaException;
+  protected abstract double playerGetStartTime() throws MediaException;
 
   protected abstract void playerSetStartTime(double startTime) throws MediaException;
 
@@ -534,7 +533,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   /** Gets the time within the duration of the media to start playing. */
   @Override
   public double getStartTime() {
-    return startTime;
+    return playerGetStartTime();
   }
 
   /** Sets the start time within the media to play. */
