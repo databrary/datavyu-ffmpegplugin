@@ -43,7 +43,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   protected float playBackRate = 1f;
 
-
   protected String mediaPath;
 
   private static String resolveURI(URI mediaPath) {
