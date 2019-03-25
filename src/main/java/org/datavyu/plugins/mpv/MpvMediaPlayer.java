@@ -25,6 +25,8 @@ abstract class MpvMediaPlayer extends DatavyuMediaPlayer {
   private static final List<LibraryLoader.LibraryDependency> MPV_DEPENDENCIES =
       Stream.concat(FFMPEG_DEPENDENCIES.stream(), MPV_ONLY.stream()).collect(Collectors.toList());
 
+  protected double startTime = 0.0;
+
   private static final Logger LOGGER = LogManager.getFormatterLogger(MpvMediaPlayer.class);
 
   static {
@@ -114,6 +116,11 @@ abstract class MpvMediaPlayer extends DatavyuMediaPlayer {
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
+  }
+
+  @Override
+  protected double playerGetStartTime() throws MediaException {
+    return startTime;
   }
 
   @Override

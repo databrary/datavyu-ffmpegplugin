@@ -102,6 +102,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
       synchronized (readyLock) {
         container.setSize(getImageWidth(), getImageHeight());
         container.setVisible(true);
+        startTime = getPresentationTime();
         readyLock.notify();
         logger.info("Player is Ready");
       }

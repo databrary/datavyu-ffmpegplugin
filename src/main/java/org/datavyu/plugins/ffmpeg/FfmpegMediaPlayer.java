@@ -16,6 +16,8 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
 
   protected final Object initLock = new Object();
 
+  protected double startTime = 0.0;
+
   /**
    * Create an ffmpeg media player instance
    *
@@ -40,7 +42,13 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
+  protected double playerGetStartTime() throws MediaException {
+    return startTime;
+  }
+
+  @Override
   protected void playerSetStartTime(double startTime) throws MediaException {
+    this.startTime = startTime;
     playerSeek(startTime, SEEK_ACCURATE_FLAG);
   }
 
