@@ -140,6 +140,10 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time, int seek_flags) {
   if (p_java_playback_->GetStartTime() != AV_NOPTS_VALUE &&
       time < p_java_playback_->GetStartTime() / (double)AV_TIME_BASE) {
     time = p_java_playback_->GetStartTime() / (double)AV_TIME_BASE;
+  } else if (p_java_playback_->GetDuration() != AV_NOPTS_VALUE &&
+             time >= p_java_playback_->GetDuration()) {
+      //FIXME Remove the 0.1 sec difference when seeking to end of stream is fixed
+      time = p_java_playback_->GetDuration() - 0.1;
   }
 
   double difference = time - pos;
