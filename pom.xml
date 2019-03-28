@@ -6,7 +6,7 @@
 
   <groupId>org.datavyu</groupId>
   <artifactId>ffmpeg-plugin</artifactId>
-  <version>0.19-SNAPSHOT</version>
+  <version>0.19</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -18,19 +18,6 @@
     <configuration.release>Release</configuration.release>
     <configuration.debug>Debug</configuration.debug>
   </properties>
-
-  <distributionManagement>
-    <repository>
-      <id>central</id>
-      <name>oss-jfrog-artifactory-releases</name>
-      <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
-    </repository>
-    <snapshotRepository>
-      <id>snapshots</id>
-      <name>oss-jfrog-artifactory-snapshots</name>
-      <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <repositories>
     <repository>
@@ -61,6 +48,46 @@
   </pluginRepositories>
 
   <profiles>
+    <profile>
+      <id>deploy-bintray</id>
+      <activation>
+        <property>
+          <name>deploy.bintray</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <properties>
+      </properties>
+      <distributionManagement>
+        <repository>
+          <id>bintray-datavyu-datavyu</id>
+          <name>datavyu-datavyu</name>
+          <url>https://api.bintray.com/maven/datavyu/datavyu/ffmpeg-plugin</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>deploy-artifactory</id>
+      <activation>
+        <property>
+          <name>!deploy.bintray</name>
+        </property>
+      </activation>
+      <properties>
+      </properties>
+      <distributionManagement>
+        <repository>
+          <id>central</id>
+          <name>oss-jfrog-artifactory-releases</name>
+          <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+        </repository>
+        <snapshotRepository>
+          <id>snapshots</id>
+          <name>oss-jfrog-artifactory-snapshots</name>
+          <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
     <profile>
       <id>mac-debug</id>
       <activation>
@@ -518,20 +545,21 @@
       </plugin>
 
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
+        <version>3.1.1</version>
         <configuration>
           <archive>
             <manifestEntries>
-              <Automatic-Module-Name>org.datavyu.plugins.ffmpegplayer</Automatic-Module-Name>
+              <Automatic-Module-Name>org.datavyu</Automatic-Module-Name>
             </manifestEntries>
           </archive>
           <!-- Note, if you want to compile a source but not include it, exclude it here -->
-          <!--
+          <!-- -->
           <excludes>
-              <exclude>org/datavyu/plugins/ffmpegplayer/prototypes</exclude>
+              <exclude>org/datavyu/plugins/examples</exclude>
           </excludes>
-          -->
+
         </configuration>
       </plugin>
 
@@ -548,6 +576,19 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
 
   </build>
@@ -557,31 +598,31 @@
     <!-- Logger API -->
     <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
     <!-- Documentation: https://logging.apache.org/log4j/2.x/manual/api.html -->
-    <!-- Updated here: 09/20/2017 -->
+    <!-- Updated here: 03/28/2019 -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.9.0</version>
+      <version>2.11.2</version>
     </dependency>
 
     <!-- Logger Core -->
     <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
     <!-- Documentation: (see API) -->
-    <!-- Updated here: 09/20/2017 -->
+    <!-- Updated here: 03/28/2019 -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.9.0</version>
+      <version>2.11.2</version>
     </dependency>
 
     <!-- Test cases -->
     <!-- Artifact: https://mvnrepository.com/artifact/org.testng/testng -->
     <!-- Documentation: http://testng.org/doc/documentation-main.html -->
-    <!-- Updated here: 02/25/2018 -->
+    <!-- Updated here: 03/28/2019 -->
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.14.2</version>
+      <version>6.14.3</version>
       <scope>test</scope>
     </dependency>
 
