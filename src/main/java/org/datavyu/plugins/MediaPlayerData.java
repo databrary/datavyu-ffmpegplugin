@@ -44,7 +44,6 @@ public interface MediaPlayerData extends MediaPlayer {
    * Update the byte buffer with the most recent audio data to play
    *
    * @param data The data that is updated on the native side
-   * @return The audio data
    */
   void updateAudioData(byte[] data);
 
@@ -52,7 +51,6 @@ public interface MediaPlayerData extends MediaPlayer {
    * Update the byte buffer with the most recent image data to play
    *
    * @param data The data that is updated on the native side
-   * @return The image data
    */
   void updateImageData(byte[] data);
 }
