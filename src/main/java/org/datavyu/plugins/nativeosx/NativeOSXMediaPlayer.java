@@ -114,6 +114,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   @Override
   protected void playerSetRate(float rate) throws MediaException {
     logger.info("Setting Rate to : " + rate + "X");
+    prevRate = playerGetRate();
     mediaPlayer.setRate(rate, id);
   }
 
@@ -169,7 +170,6 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
       EventQueue.invokeLater(
           () -> {
             boolean wasPlaying = isPlaying();
-            prevRate = playerGetRate();
             if (isPlaying()) {
               mediaPlayer.stop(id);
             }

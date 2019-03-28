@@ -1270,6 +1270,7 @@ void VideoState::SetPts(double pts, int serial) {
                            kAvNoSyncThreshold);
 }
 
+// FIXME Seek to end of stream
 /* seek in the stream */
 void VideoState::Seek(int64_t time, int64_t distance, int seek_flags) {
   // Only seek if
@@ -1297,9 +1298,7 @@ void VideoState::Seek(int64_t time, int64_t distance, int seek_flags) {
 /* seek in the stream */
 void VideoState::SeekToFrame(int frame_nb) {
   // Only seek if
-    // - there is no seek request in progress AND
-    // - this seek time is different from the last OR
-    //        the last seek was not precise (the we might not be at seek time)
+    // - there is no seek request in progress
   if (!seek_request_) {
     std::mutex mtx;
         
