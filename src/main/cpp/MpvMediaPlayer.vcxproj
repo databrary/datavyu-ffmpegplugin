@@ -85,6 +85,8 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Program Files\Java\jdk1.8.0_172\include\win32;C:\Program Files\Java\jdk1.8.0_172\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\Java\jdk1.8.0_172\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -94,6 +96,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>C:\Program Files\Java\jdk1.8.0_172\include\win32;C:\Program Files\Java\jdk1.8.0_172\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Java\jdk1.8.0_172\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -148,7 +153,7 @@ copy /Y "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\..\..\$(ProjectName).
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -162,7 +167,11 @@ copy /Y "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\..\..\$(ProjectName).
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;jawt.lib;avutil.lib;avdevice.lib;avfilter.lib;avformat.lib;avcodec.lib;postproc.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)..\..\..\$(ProjectName).dll"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

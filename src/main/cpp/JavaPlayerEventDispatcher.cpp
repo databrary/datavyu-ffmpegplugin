@@ -23,137 +23,137 @@
  * questions.
  */
 
-#include "JniUtils.h"
 #include "JavaPlayerEventDispatcher.h"
+#include "JniUtils.h"
 #include "org_datavyu_plugins_ffmpeg_NativeMediaPlayer.h"
 
 static bool areJMethodIDsInitialized = false;
 
-jmethodID CJavaPlayerEventDispatcher::m_SendPlayerMediaErrorEventMethod = 0;
-jmethodID CJavaPlayerEventDispatcher::m_SendPlayerStateEventMethod = 0;
+jmethodID CJavaPlayerEventDispatcher::send_player_media_error_event_method_ = 0;
+jmethodID CJavaPlayerEventDispatcher::send_player_state_event_method_ = 0;
 
 CJavaPlayerEventDispatcher::CJavaPlayerEventDispatcher()
-: m_PlayerVM(NULL),
-  m_PlayerInstance(NULL),
-  m_MediaReference(0L)
-{
+    : p_player_vm_(NULL), player_instance_(NULL), media_reference_(0L) {}
+
+CJavaPlayerEventDispatcher::~CJavaPlayerEventDispatcher() { Dispose(); }
+
+void CJavaPlayerEventDispatcher::Init(JNIEnv *env, jobject PlayerInstance,
+                                      CMedia *pMedia) {
+  if (env->GetJavaVM(&p_player_vm_) != JNI_OK) {
+    if (env->ExceptionCheck()) {
+      env->ExceptionClear();
+    }
+    return;
+  }
+  player_instance_ = env->NewGlobalRef(PlayerInstance);
+  media_reference_ = (jlong)ptr_to_jlong(pMedia);
+
+  // Initialize jmethodID data members. These are derived from the class of
+  // the object and not its instance. No, this particular implementation is
+  // not thread-safe, but the worst that can happen is that the jmethodIDs are
+  // initialized more than once which is still better than once per player.
+  if (false == areJMethodIDsInitialized) {
+    CJavaEnvironment javaEnv(env);
+    bool hasException = false;
+    jclass klass = env->GetObjectClass(player_instance_);
+
+    send_player_media_error_event_method_ =
+        env->GetMethodID(klass, "sendPlayerMediaErrorEvent", "(I)V");
+    hasException = javaEnv.ReportException();
+
+    if (!hasException) {
+      send_player_state_event_method_ =
+          env->GetMethodID(klass, "sendPlayerStateEvent", "(ID)V");
+      hasException = javaEnv.ReportException();
+    }
+
+    env->DeleteLocalRef(klass);
+
+    areJMethodIDsInitialized = !hasException;
+  }
 }
 
-CJavaPlayerEventDispatcher::~CJavaPlayerEventDispatcher()
-{
-    Dispose();
+void CJavaPlayerEventDispatcher::Dispose() {
+  CJavaEnvironment jenv(p_player_vm_);
+  JNIEnv *pEnv = jenv.GetEnvironment();
+  if (pEnv) {
+    pEnv->DeleteGlobalRef(player_instance_);
+    player_instance_ = nullptr; // prevent further calls to this object
+  }
 }
 
-void CJavaPlayerEventDispatcher::Init(JNIEnv *env, jobject PlayerInstance, CMedia* pMedia)
-{
-    if (env->GetJavaVM(&m_PlayerVM) != JNI_OK) {
-        if (env->ExceptionCheck()) {
-            env->ExceptionClear();
-        }
-        return;
+bool CJavaPlayerEventDispatcher::SendPlayerMediaErrorEvent(int errorCode) {
+  bool bSucceeded = false;
+  CJavaEnvironment jenv(p_player_vm_);
+  JNIEnv *pEnv = jenv.GetEnvironment();
+  if (pEnv) {
+    jobject localPlayer = pEnv->NewLocalRef(player_instance_);
+    if (localPlayer) {
+      pEnv->CallVoidMethod(localPlayer, send_player_media_error_event_method_,
+                           errorCode);
+      pEnv->DeleteLocalRef(localPlayer);
+
+      bSucceeded = !jenv.ReportException();
     }
-    m_PlayerInstance = env->NewGlobalRef(PlayerInstance);
-    m_MediaReference = (jlong) ptr_to_jlong(pMedia);
+  }
 
-    // Initialize jmethodID data members. These are derived from the class of
-    // the object and not its instance. No, this particular implementation is
-    // not thread-safe, but the worst that can happen is that the jmethodIDs are
-    // initialized more than once which is still better than once per player.
-    if (false == areJMethodIDsInitialized)
-    {
-        CJavaEnvironment javaEnv(env);
-        bool hasException = false;
-        jclass klass = env->GetObjectClass(m_PlayerInstance);
-
-        m_SendPlayerMediaErrorEventMethod = env->GetMethodID(klass, "sendPlayerMediaErrorEvent", "(I)V");
-        hasException = javaEnv.reportException();
-
-        if (!hasException)
-        {
-            m_SendPlayerStateEventMethod = env->GetMethodID(klass, "sendPlayerStateEvent", "(ID)V");
-            hasException = javaEnv.reportException();
-        }
-
-        env->DeleteLocalRef(klass);
-
-        areJMethodIDsInitialized = !hasException;
-    }
-
+  return bSucceeded;
 }
 
-void CJavaPlayerEventDispatcher::Dispose()
-{
-    CJavaEnvironment jenv(m_PlayerVM);
-    JNIEnv *pEnv = jenv.getEnvironment();
-    if (pEnv) {
-        pEnv->DeleteGlobalRef(m_PlayerInstance);
-        m_PlayerInstance = NULL; // prevent further calls to this object
+bool CJavaPlayerEventDispatcher::SendPlayerStateEvent(int newState,
+                                                      double presentTime) {
+  long newJavaState;
+
+  switch (newState) {
+  case CPipeline::Unknown:
+    newJavaState =
+        org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerUnknown;
+    break;
+  case CPipeline::Ready:
+    newJavaState =
+        org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerReady;
+    break;
+  case CPipeline::Playing:
+    newJavaState =
+        org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerPlaying;
+    break;
+  case CPipeline::Paused:
+    newJavaState =
+        org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerPaused;
+    break;
+  case CPipeline::Stopped:
+    newJavaState =
+        org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerStopped;
+    break;
+  case CPipeline::Stalled:
+    newJavaState =
+        org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerStalled;
+    break;
+  case CPipeline::Finished:
+    newJavaState =
+        org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerFinished;
+    break;
+  case CPipeline::Error:
+    newJavaState =
+        org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerError;
+    break;
+  default:
+    return false;
+  }
+
+  bool bSucceeded = false;
+  CJavaEnvironment jenv(p_player_vm_);
+  JNIEnv *pEnv = jenv.GetEnvironment();
+  if (pEnv) {
+    jobject localPlayer = pEnv->NewLocalRef(player_instance_);
+    if (localPlayer) {
+      pEnv->CallVoidMethod(localPlayer, send_player_state_event_method_,
+                           newJavaState, presentTime);
+      pEnv->DeleteLocalRef(localPlayer);
+
+      bSucceeded = !jenv.ReportException();
     }
-}
+  }
 
-bool CJavaPlayerEventDispatcher::SendPlayerMediaErrorEvent(int errorCode)
-{
-    bool bSucceeded = false;
-    CJavaEnvironment jenv(m_PlayerVM);
-    JNIEnv *pEnv = jenv.getEnvironment();
-    if (pEnv) {
-        jobject localPlayer = pEnv->NewLocalRef(m_PlayerInstance);
-        if (localPlayer) {
-            pEnv->CallVoidMethod(localPlayer, m_SendPlayerMediaErrorEventMethod, errorCode);
-            pEnv->DeleteLocalRef(localPlayer);
-
-            bSucceeded = !jenv.reportException();
-        }
-    }
-
-    return bSucceeded;
-}
-
-bool CJavaPlayerEventDispatcher::SendPlayerStateEvent(int newState, double presentTime)
-{
-    long newJavaState;
-
-    switch(newState) {
-    case CPipeline::Unknown:
-        newJavaState = org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerUnknown;
-        break;
-    case CPipeline::Ready:
-        newJavaState = org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerReady;
-        break;
-    case CPipeline::Playing:
-        newJavaState = org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerPlaying;
-        break;
-    case CPipeline::Paused:
-        newJavaState = org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerPaused;
-        break;
-    case CPipeline::Stopped:
-        newJavaState = org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerStopped;
-        break;
-    case CPipeline::Stalled:
-        newJavaState = org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerStalled;
-        break;
-    case CPipeline::Finished:
-        newJavaState = org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerFinished;
-        break;
-    case CPipeline::Error:
-        newJavaState = org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerError;
-        break;
-    default:
-        return false;
-    }
-
-    bool bSucceeded = false;
-    CJavaEnvironment jenv(m_PlayerVM);
-    JNIEnv *pEnv = jenv.getEnvironment();
-    if (pEnv) {
-        jobject localPlayer = pEnv->NewLocalRef(m_PlayerInstance);
-        if (localPlayer) {
-            pEnv->CallVoidMethod(localPlayer, m_SendPlayerStateEventMethod, newJavaState, presentTime);
-            pEnv->DeleteLocalRef(localPlayer);
-
-            bSucceeded = !jenv.reportException();
-        }
-    }
-
-    return bSucceeded;
+  return bSucceeded;
 }

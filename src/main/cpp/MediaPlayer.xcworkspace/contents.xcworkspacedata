@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:">
+   </FileRef>
+   <FileRef
+      location = "group:MediaPlayer.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MpvMediaPlayer.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:FfmpegSdlMediaPlayer.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:FfmpegJavaMediaPlayer.xcodeproj">
+   </FileRef>
+</Workspace>

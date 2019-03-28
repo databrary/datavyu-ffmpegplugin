@@ -1,264 +1,293 @@
 #include "FfmpegJavaAvPlayback.h"
-#include "MediaPlayerErrors.h"
 #include "FfmpegErrorUtils.h"
+#include "MediaPlayerErrors.h"
 
 FfmpegJavaAvPlayback::FfmpegJavaAvPlayback(const AudioFormat *pAudioFormat,
-	const PixelFormat *pPixelFormat,
-	const int audioBufferSizeInBy) : FfmpegAvPlayback(),
-		pAudioFormat(pAudioFormat), 
-		pPixelFormat(pPixelFormat),
-		audioBufferSizeInBy(audioBufferSizeInBy),
-		img_convert_ctx(nullptr),
-		remaining_time_to_display(0)
-{ }
+                                           const PixelFormat *pPixelFormat,
+                                           const int audioBufferSizeInBy)
+    : FfmpegAvPlayback(), kPtrAudioFormat(pAudioFormat),
+      kPtrPixelFormat(pPixelFormat), kAudioBufferSizeInBy(audioBufferSizeInBy),
+      p_img_convert_ctx_(nullptr), remaining_time_to_display_(0) {}
 
-FfmpegJavaAvPlayback::~FfmpegJavaAvPlayback()
-{ }
+FfmpegJavaAvPlayback::~FfmpegJavaAvPlayback() {}
 
-int FfmpegJavaAvPlayback::Init(const char * filename, AVInputFormat * iformat) {
+int FfmpegJavaAvPlayback::Init(const char *filename, AVInputFormat *iformat) {
 
-	/* register all codecs, demux and protocols */
+  /* register all codecs, demux and protocols */
 #if CONFIG_AVDEVICE
-	avdevice_register_all();
+  avdevice_register_all();
 #endif
-	avformat_network_init();
+  avformat_network_init();
 
-	int err = FfmpegAvPlayback::Init(filename, iformat, audioBufferSizeInBy);  // initializes the video state
-	if (err) {
-		return err;
-	}
+  int err = FfmpegAvPlayback::OpenVideo(
+      filename, iformat, kAudioBufferSizeInBy); // initializes the video state
+  if (err) {
+    return err;
+  }
 
-	pVideoState->set_destroy_callback([this] {
-		this->destroy();
-	});
+  p_video_state_->SetDestroyCallback([this] { Destroy(); });
 
-	// TODO: Clean-up this callback as the first three parameters are not used here
-	pVideoState->set_audio_open_callback([this](int64_t wanted_channel_layout, int wanted_nb_channels,
-		int wanted_sample_rate, struct AudioParams *audio_hw_params) {
-		return this->audio_open(wanted_channel_layout, wanted_nb_channels, wanted_sample_rate, audio_hw_params);
-	});
+  // TODO: Clean-up this callback as the first three parameters are not used
+  // here
+  p_video_state_->SetAudioOpenCallback(
+      [this](int64_t wanted_channel_layout, int wanted_nb_channels,
+             int wanted_sample_rate, struct AudioParams *audio_hw_params) {
+        return AudioOpen(wanted_channel_layout, wanted_nb_channels,
+                         wanted_sample_rate, audio_hw_params);
+      });
 
+  p_video_state_->SetStepToNextFrameCallback(
+      [this] { this->StepToNextFrame(); });
 
-	pVideoState->set_step_to_next_frame_callback([this] {
-		this->step_to_next_frame();
-	});
-
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
-VideoState * FfmpegJavaAvPlayback::get_VideoState() { return pVideoState; }
+VideoState *FfmpegJavaAvPlayback::GetVideoState() { return p_video_state_; }
 
-int FfmpegJavaAvPlayback::audio_open(int64_t wanted_channel_layout, int wanted_nb_channels,
-	int wanted_sample_rate, struct AudioParams *audio_hw_params) {
-	// TODO(fraudies): If we need to change the audio format overwrite pAudioFormat here
-	pAudioFormat->toAudioParams(audio_hw_params);
-	return audioBufferSizeInBy;
+int FfmpegJavaAvPlayback::AudioOpen(int64_t wanted_channel_layout,
+                                    int wanted_nb_channels,
+                                    int wanted_sample_rate,
+                                    struct AudioParams *audio_hw_params) {
+  // TODO(fraudies): If we need to change the audio format overwrite
+  // pAudioFormat here
+  kPtrAudioFormat->ToAudioParams(audio_hw_params);
+  return kAudioBufferSizeInBy;
 }
 
-void FfmpegJavaAvPlayback::destroy() {
-	// stop_display_loop(); // only necessary when using as library -- has no effect otherwise
-	sws_freeContext(img_convert_ctx);
+void FfmpegJavaAvPlayback::Destroy() {
 
-	if (pVideoState)
-		pVideoState->stream_close();
+  sws_freeContext(p_img_convert_ctx_);
 
-#if CONFIG_VIDEO_FILTER
-	//av_freep(&vfilters_list);
+  delete p_video_state_;
+  avformat_network_deinit();
+
+  av_log(NULL, AV_LOG_QUIET, "%s", "");
+}
+
+int FfmpegJavaAvPlayback::StartStream() {
+  return FfmpegToJavaErrNo(p_video_state_->StartStream());
+}
+
+void FfmpegJavaAvPlayback::SetBalance(float balance) {}
+
+float FfmpegJavaAvPlayback::GetBalance() { return 0.0f; }
+
+void FfmpegJavaAvPlayback::SetAudioSyncDelay(long millis) {}
+
+long FfmpegJavaAvPlayback::getAudioSyncDelay() { return 0; }
+
+int FfmpegJavaAvPlayback::GetImageWidth() const {
+  return p_video_state_->GetFrameWidth();
+}
+
+int FfmpegJavaAvPlayback::GetImageHeight() const {
+  return p_video_state_->GetFrameHeight();
+}
+
+bool FfmpegJavaAvPlayback::HasImageData() const {
+  return p_video_state_->HasImageStream();
+}
+
+bool FfmpegJavaAvPlayback::HasAudioData() const {
+  return p_video_state_->HasAudioStream();
+}
+
+bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
+  bool display = false;
+
+  double time;
+
+  Frame *sp, *sp2;
+  FrameQueue *frame_queue = nullptr;
+  p_video_state_->GetImageFrameQueue(&frame_queue);
+
+  if (p_video_state_->HasImageStream()) {
+  retry:
+    if (frame_queue->GetNumToDisplay() == 0) {
+      // nothing to do, no picture to display in the queue
+    } else {
+      double last_duration, duration, delay;
+      Frame *vp = nullptr;
+      Frame *lastvp = nullptr;
+      PacketQueue *packet_queue = nullptr;
+      p_video_state_->GetImagePacketQueue(&packet_queue);
+
+      /* dequeue the picture */
+      frame_queue->PeekLast(&lastvp);
+      frame_queue->Peek(&vp);
+
+      if (vp->serial_ != packet_queue->GetSerial()) {
+        frame_queue->Next();
+        goto retry;
+      }
+
+      if (lastvp->serial_ != vp->serial_) {
+        frame_last_shown_time_ = av_gettime_relative() / 1000000.0;
+      }
+
+      if (p_video_state_->IsPaused() && !force_refresh_) {
+        goto display;
+      }
+
+      /* compute nominal last_duration */
+      last_duration = ComputeFrameDuration(
+          lastvp, vp, p_video_state_->GetMaxFrameDuration());
+      delay = p_video_state_->ComputeTargetDelay(last_duration);
+
+      time = av_gettime_relative() / 1000000.0;
+      if (time < frame_last_shown_time_ + delay) {
+        *remaining_time =
+            FFMIN(frame_last_shown_time_ + delay - time, *remaining_time);
+        goto display;
+      }
+
+      frame_last_shown_time_ += delay;
+      if (delay > 0 &&
+          time - frame_last_shown_time_ > VideoState::kAvSyncThresholdMax) {
+        frame_last_shown_time_ = time;
+      }
+
+      std::unique_lock<std::mutex> locker(frame_queue->GetMutex());
+      if (!isnan(vp->pts_)) {
+        p_video_state_->SetPts(vp->pts_, vp->serial_);
+      }
+      locker.unlock();
+
+      if (frame_queue->GetNumToDisplay() > 1) {
+        Frame *nextvp = nullptr;
+        frame_queue->PeekNext(&nextvp);
+        duration = ComputeFrameDuration(vp, nextvp,
+                                        p_video_state_->GetMaxFrameDuration());
+        if (!p_video_state_->IsStepping() &&
+            time > frame_last_shown_time_ + duration) {
+          num_frame_drops_late_++;
+          frame_queue->Next();
+          goto retry;
+        }
+      }
+
+      frame_queue->Next();
+      force_refresh_ = true;
+    }
+  display:
+    /* display picture */
+    if (!display_disabled_ && force_refresh_ && frame_queue->HasShownFrame()) {
+      display = true;
+      force_refresh_ = false;
+      if (p_video_state_->IsStepping() && !p_video_state_->IsPaused()) {
+        TogglePause();
+      }
+    }
+  }
+
+  if (kEnableShowStatus) {
+    static int64_t last_time;
+    int64_t cur_time;
+    int aqsize, vqsize, sqsize;
+    double av_diff;
+    PacketQueue *image_packet_queue = nullptr;
+    PacketQueue *audio_packet_queue = nullptr;
+    p_video_state_->GetImagePacketQueue(&image_packet_queue);
+    p_video_state_->GetAudioPacketQueue(&audio_packet_queue);
+    Clock *p_master_clock = nullptr;
+    Clock *p_image_clock = nullptr;
+    Clock *p_audio_clock = nullptr;
+    p_video_state_->GetMasterClock(&p_master_clock);
+    p_video_state_->GetImageClock(&p_image_clock);
+    p_video_state_->GetAudioClock(&p_audio_clock);
+    Decoder *p_decoder = nullptr;
+    p_video_state_->GetImageDecoder(&p_decoder);
+
+    cur_time = av_gettime_relative();
+    if (!last_time || (cur_time - last_time) >= 30000) {
+      aqsize = 0;
+      vqsize = 0;
+      sqsize = 0;
+      if (p_video_state_->HasAudioStream())
+        aqsize = audio_packet_queue->GetSize();
+      if (p_video_state_->HasImageStream())
+        vqsize = image_packet_queue->GetSize();
+      av_diff = 0;
+      if (p_video_state_->HasAudioStream() && p_video_state_->HasImageStream())
+        av_diff = p_audio_clock->GetTime() - p_image_clock->GetTime();
+      else if (p_video_state_->HasImageStream())
+        av_diff = p_master_clock->GetTime() - p_image_clock->GetTime();
+      else if (p_video_state_->HasAudioStream())
+        av_diff = p_master_clock->GetTime() - p_audio_clock->GetTime();
+#ifdef DEBUG
+      av_log(
+          NULL, AV_LOG_INFO,
+          "m %7.2f, a %7.2f, v %7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d "
+          "re=%7.2f aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
+          p_master_clock->GetTime(),
+          p_audio_clock != nullptr ? p_audio_clock->GetTime() : 0,
+          p_image_clock != nullptr ? p_image_clock->GetTime() : 0,
+          p_video_state_->GetSpeed(),
+          (p_video_state_->HasAudioStream() && p_video_state_->HasImageStream())
+              ? "A-V"
+              : (p_video_state_->HasImageStream()
+                     ? "M-V"
+                     : (p_video_state_->HasAudioStream() ? "M-A" : "   ")),
+          av_diff, p_video_state_->GetNumFrameDropsEarly(),
+          num_frame_drops_late_, *remaining_time, aqsize / 1024, vqsize / 1024,
+          sqsize,
+          p_video_state_->HasImageStream()
+              ? p_decoder->GetNumberOfIncorrectDtsValues()
+              : 0,
+          p_video_state_->HasImageStream()
+              ? p_decoder->GetNumberOfIncorrectPtsValues()
+              : 0);
+      fflush(stdout);
 #endif
-	avformat_network_deinit();
+      last_time = cur_time;
+    }
+  }
 
-	av_log(NULL, AV_LOG_QUIET, "%s", "");
+  return display;
 }
 
-int FfmpegJavaAvPlayback::start_stream() {
-	return ffmpegToJavaErrNo(pVideoState->stream_start());
+void FfmpegJavaAvPlayback::UpdateImageBuffer(uint8_t *p_image_data,
+                                             const long len) {
+  bool doUpdate = DoDisplay(&remaining_time_to_display_);
+  FrameQueue *queue = nullptr;
+  p_video_state_->GetImageFrameQueue(&queue);
+  if (doUpdate) {
+    Frame *vp = nullptr;
+    queue->PeekLast(&vp);
+    av_log(NULL, AV_LOG_DEBUG, "Update Image Buffer - Number %d - PTS %2.7f\n"
+             , vp->frame_pos_, vp->p_frame_->pts);
+    p_img_convert_ctx_ = sws_getCachedContext(
+        p_img_convert_ctx_, vp->p_frame_->width, vp->p_frame_->height,
+        static_cast<AVPixelFormat>(vp->p_frame_->format), vp->p_frame_->width,
+        vp->p_frame_->height, kPtrPixelFormat->pixel_format_, SWS_BICUBIC, NULL,
+        NULL, NULL);
+    if (p_img_convert_ctx_ != NULL) {
+      // TODO(fraudies): Add switch case statement for the different pixel
+      // formats Left the pixels allocation/free here to support resizing
+      // through sws_scale natively
+      uint8_t *pixels[4];
+      int pitch[4];
+      av_image_alloc(pixels, pitch, vp->width_, vp->height_, AV_PIX_FMT_RGB24,
+                     1);
+      sws_scale(p_img_convert_ctx_, (const uint8_t *const *)vp->p_frame_->data,
+                vp->p_frame_->linesize, 0, vp->p_frame_->height, pixels, pitch);
+      // Maybe check that we have 3 components
+      memcpy(p_image_data, pixels[0],
+             vp->p_frame_->width * vp->p_frame_->height * 3 * sizeof(uint8_t));
+      av_freep(&pixels[0]);
+    }
+  }
 }
 
-void FfmpegJavaAvPlayback::set_balance(float fBalance) {
+void FfmpegJavaAvPlayback::UpdateAudioBuffer(uint8_t *p_audio_data,
+                                             const long len) {
+  p_video_state_->GetAudioCallback(p_audio_data, len);
 }
 
-float FfmpegJavaAvPlayback::get_balance() {
-	return 0.0f;
+void FfmpegJavaAvPlayback::GetAudioFormat(AudioFormat *p_audio_format) {
+  *p_audio_format = *this->kPtrAudioFormat;
 }
 
-void FfmpegJavaAvPlayback::set_audioSyncDelay(long lMillis){
-}
-
-long FfmpegJavaAvPlayback::get_audioSyncDelay() {
-	return 0;
-}
-
-int FfmpegJavaAvPlayback::get_image_width() const {
-	return pVideoState->get_image_width();
-}
-
-int FfmpegJavaAvPlayback::get_image_height() const {
-	return pVideoState->get_image_height();
-}
-
-bool FfmpegJavaAvPlayback::has_image_data() const {
-	return pVideoState->has_image_data();
-}
-
-bool FfmpegJavaAvPlayback::has_audio_data() const {
-	return pVideoState->has_audio_data();
-}
-
-bool FfmpegJavaAvPlayback::do_display(double *remaining_time) {
-	bool display = false;
-	
-	double time;
-
-	Frame *sp, *sp2;
-
-	if (pVideoState->get_video_st()) {
-	retry:
-		if (pVideoState->get_pPictq()->nb_remaining() == 0) {
-			// nothing to do, no picture to display in the queue
-		}
-		else {
-			double last_duration, duration, delay;
-			Frame *vp, *lastvp;
-
-			/* dequeue the picture */
-			lastvp = pVideoState->get_pPictq()->peek_last();
-			vp = pVideoState->get_pPictq()->peek();
-
-			if (vp->serial != pVideoState->get_pVideoq()->get_serial()) {
-				pVideoState->get_pPictq()->next();
-				goto retry;
-			}
-
-			if (lastvp->serial != vp->serial)
-				frame_timer = av_gettime_relative() / 1000000.0;
-
-			if (pVideoState->get_paused() && !force_refresh)
-				goto display;
-
-			/* compute nominal last_duration */
-			last_duration = vp_duration(lastvp, vp, pVideoState->get_max_frame_duration());
-			delay = pVideoState->compute_target_delay(last_duration);
-
-			time = av_gettime_relative() / 1000000.0;
-			if (time < frame_timer + delay) {
-				*remaining_time = FFMIN(frame_timer + delay - time, *remaining_time);
-				goto display;
-			}
-
-			frame_timer += delay;
-			if (delay > 0 && time - frame_timer > AV_SYNC_THRESHOLD_MAX)
-				frame_timer = time;
-
-			std::unique_lock<std::mutex> locker(pVideoState->get_pPictq()->get_mutex());
-			if (!isnan(vp->pts))
-				pVideoState->update_pts(vp->pts, vp->serial);
-			locker.unlock();
-
-			if (pVideoState->get_pPictq()->nb_remaining() > 1) {
-				Frame *nextvp = pVideoState->get_pPictq()->peek_next();
-				duration = vp_duration(vp, nextvp, pVideoState->get_max_frame_duration());
-				if (!pVideoState->get_step() && time > frame_timer + duration) {
-					frame_drops_late++;
-					pVideoState->get_pPictq()->next();
-					goto retry;
-				}
-			}
-
-			pVideoState->get_pPictq()->next();
-			force_refresh = 1;
-		}
-	display:
-		/* display picture */
-		if (!display_disable
-			&& force_refresh
-			&& pVideoState->get_pPictq()->get_rindex_shown()) {
-			display = true;
-			force_refresh = 0;
-			if (pVideoState->get_step() && !pVideoState->get_paused())
-				stream_toggle_pause();
-		}
-	}
-
-	if (show_status) {
-		static int64_t last_time;
-		int64_t cur_time;
-		int aqsize, vqsize, sqsize;
-		double av_diff;
-
-		cur_time = av_gettime_relative();
-		if (!last_time || (cur_time - last_time) >= 30000) {
-			aqsize = 0;
-			vqsize = 0;
-			sqsize = 0;
-			if (pVideoState->get_audio_st())
-				aqsize = pVideoState->get_pAudioq()->get_size();
-			if (pVideoState->get_video_st())
-				vqsize = pVideoState->get_pVideoq()->get_size();
-			if (pVideoState->get_subtitle_st())
-				sqsize = pVideoState->get_pSubtitleq()->get_size();
-			av_diff = 0;
-			if (pVideoState->get_audio_st() && pVideoState->get_video_st())
-				av_diff = pVideoState->get_pAudclk()->get_time() - pVideoState->get_pVidclk()->get_time();
-			else if (pVideoState->get_video_st())
-				av_diff = pVideoState->get_master_clock()->get_time() - pVideoState->get_pVidclk()->get_time();
-			else if (pVideoState->get_audio_st())
-				av_diff = pVideoState->get_master_clock()->get_time() - pVideoState->get_pAudclk()->get_time();
-			av_log(NULL, AV_LOG_INFO,
-				"m %7.2f, a %7.2f, v %7.2f at %1.3fX %s:%7.3f de=%4d dl=%4d re=%7.2f aq=%5dKB vq=%5dKB sq=%5dB f=%f /%f   \r",
-				pVideoState->get_master_clock()->get_time(),
-				pVideoState->get_pAudclk() != nullptr ? pVideoState->get_pAudclk()->get_time() : 0,
-				pVideoState->get_pVidclk() != nullptr ? pVideoState->get_pVidclk()->get_time() : 0,
-				pVideoState->get_rate(),
-				(pVideoState->get_audio_st() && pVideoState->get_video_st()) ? "A-V" : (pVideoState->get_video_st() ? "M-V" : (pVideoState->get_audio_st() ? "M-A" : "   ")),
-				av_diff,
-				pVideoState->get_frame_drops_early(),
-				frame_drops_late,
-				*remaining_time,
-				aqsize / 1024,
-				vqsize / 1024,
-				sqsize,
-				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_dts : 0,
-				pVideoState->get_video_st() ? pVideoState->get_pViddec()->get_avctx()->pts_correction_num_faulty_pts : 0);
-			fflush(stdout);
-			last_time = cur_time;
-		}
-	}
-
-	return display;
-}
-
-void FfmpegJavaAvPlayback::update_image_buffer(uint8_t* pImageData, const long len) {
-	bool doUpdate = do_display(&remaining_time_to_display);
-	if (doUpdate) {
-		Frame *vp = pVideoState->get_pPictq()->peek_last();
-		img_convert_ctx = sws_getCachedContext(
-			img_convert_ctx,
-			vp->frame->width, vp->frame->height, static_cast<AVPixelFormat>(vp->frame->format), 
-			vp->frame->width, vp->frame->height, pPixelFormat->type,
-			SWS_BICUBIC, NULL, NULL, NULL);
-		if (img_convert_ctx != NULL) {
-			// TODO(fraudies): Add switch case statement for the different pixel formats
-			// Left the pixels allocation/free here to support resizing through sws_scale natively
-			uint8_t* pixels[4];
-			int pitch[4];
-			av_image_alloc(pixels, pitch, vp->width, vp->height, AV_PIX_FMT_RGB24, 1);
-			sws_scale(img_convert_ctx, (const uint8_t * const *) vp->frame->data, vp->frame->linesize,
-				0, vp->frame->height, pixels, pitch);
-			// Maybe check that we have 3 components
-			memcpy(pImageData, pixels[0], vp->frame->width * vp->frame->height * 3 * sizeof(uint8_t));
-			av_freep(&pixels[0]);
-		}
-	}
-}
-
-void FfmpegJavaAvPlayback::update_audio_buffer(uint8_t* pAudioData, const long len) {
-	pVideoState->audio_callback(pAudioData, len);
-}
-
-void FfmpegJavaAvPlayback::get_audio_format(AudioFormat* pAudioFormat) {
-	*pAudioFormat = *this->pAudioFormat;
-}
-
-void FfmpegJavaAvPlayback::get_pixel_format(PixelFormat* pPixelFormat) {
-	*pPixelFormat = *this->pPixelFormat;
+void FfmpegJavaAvPlayback::GetPixelFormat(PixelFormat *p_pixel_format) {
+  *p_pixel_format = *this->kPtrPixelFormat;
 }

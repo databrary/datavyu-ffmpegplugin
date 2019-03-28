@@ -2,145 +2,637 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>datavyu</groupId>
-    <artifactId>ffmpeg-plugin</artifactId>
-    <version>0.18</version>
-    <packaging>jar</packaging>
+  <groupId>org.datavyu</groupId>
+  <artifactId>ffmpeg-plugin</artifactId>
+  <version>0.19</version>
+  <packaging>jar</packaging>
 
-    <distributionManagement>
+  <properties>
+    <!-- The msbuild.exe path is for Visual Studio 2017 Community version-->
+    <msbuild.exe>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe
+    </msbuild.exe>
+    <!-- You will need to install the command-line tool -->
+    <xcodebuild>/usr/bin/xcodebuild</xcodebuild>
+    <configuration.release>Release</configuration.release>
+    <configuration.debug>Debug</configuration.debug>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>java</id>
+      <url>http://download.java.net/maven/2</url>
+      <layout>default</layout>
+    </repository>
+
+    <repository>
+      <id>datavyu</id>
+      <url>http://datavyu.org/maven2</url>
+      <layout>default</layout>
+    </repository>
+
+    <repository>
+      <id>central</id>
+      <name>oss-jfrog-artifactory-releases</name>
+      <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>datavyu</id>
+      <url>http://datavyu.org/maven2</url>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <profiles>
+    <profile>
+      <id>deploy-bintray</id>
+      <activation>
+        <property>
+          <name>deploy.bintray</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <properties>
+      </properties>
+      <distributionManagement>
         <repository>
-            <id>central</id>
-            <name>ip-10-0-0-114-releases</name>
-            <url>https://projects.databrary.org/artifactory/libs-release-local</url>
+          <id>bintray-datavyu-datavyu</id>
+          <name>datavyu-datavyu</name>
+          <url>https://api.bintray.com/maven/datavyu/datavyu/ffmpeg-plugin</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>deploy-artifactory</id>
+      <activation>
+        <property>
+          <name>!deploy.bintray</name>
+        </property>
+      </activation>
+      <properties>
+      </properties>
+      <distributionManagement>
+        <repository>
+          <id>central</id>
+          <name>oss-jfrog-artifactory-releases</name>
+          <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <name>ip-10-0-0-114-snapshots</name>
-            <url>https://projects.databrary.org/artifactory/libs-snapshot-local</url>
+          <id>snapshots</id>
+          <name>oss-jfrog-artifactory-snapshots</name>
+          <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
         </snapshotRepository>
-    </distributionManagement>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>mac-debug</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
 
-    <repositories>
-        <repository>
-            <id>java</id>
-            <url>http://download.java.net/maven/2</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
-
-    <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
-
-        <resources>
-            <resource>
-                <directory>./</directory>
-                <includes>
-                    <include>FfmpegJavaMediaPlayer.dll</include>
-                    <include>FfmpegSdlMediaPlayer.dll</include>
-                    <include>MpvMediaPlayer.dll</include>
-                </includes>
-            </resource>
-        </resources>
-
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <debug>false</debug>
-                    <optimize>true</optimize>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <!-- Note all paths play off from sourceDirectory -->
-                    <excludes>
-                        <exclude>org/datavyu/plugins/ffmpegplayer/prototypes/*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Automatic-Module-Name>org.datavyu.plugins.ffmpegplayer</Automatic-Module-Name>
-                        </manifestEntries>
-                    </archive>
-                    <!-- Note, if you want to compile a source but not include it, exclude it here -->
-                    <!--
-                    <excludes>
-                        <exclude>org/datavyu/plugins/ffmpegplayer/prototypes</exclude>
-                    </excludes>
-                    -->
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <dependencies>
-        <!-- Logger API -->
-        <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
-        <!-- Documentation: https://logging.apache.org/log4j/2.x/manual/api.html -->
-        <!-- Updated here: 09/20/2017 -->
+      <dependencies>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.9.0</version>
-        </dependency>
-
-        <!-- Logger Core -->
-        <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-        <!-- Documentation: (see API) -->
-        <!-- Updated here: 09/20/2017 -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.9.0</version>
-        </dependency>
-
-        <!-- Test cases -->
-        <!-- Artifact: https://mvnrepository.com/artifact/org.testng/testng -->
-        <!-- Documentation: http://testng.org/doc/documentation-main.html -->
-        <!-- Updated here: 02/25/2018 -->
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.14.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Uses FileUtils -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.6</version>
-            <scope>test</scope>
+          <groupId>org.datavyu</groupId>
+          <artifactId>libNativeOSXCanvas</artifactId>
+          <version>0.92</version>
         </dependency>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
         <!-- FFmpeg 4.0 Version -->
         <dependency>
-            <groupId>datavyu</groupId>
-            <artifactId>ffmpeg-libs</artifactId>
-            <version>0.5</version>
+          <groupId>org.datavyu</groupId>
+          <artifactId>ffmpeg-libs</artifactId>
+          <version>4.0.2</version>
+          <classifier>mac</classifier>
+        </dependency>
+      </dependencies>
+
+      <build>
+        <resources>
+          <resource>
+            <directory>./</directory>
+            <includes>
+              <include>libFfmpegJavaMediaPlayer.dylib</include>
+            </includes>
+          </resource>
+        </resources>
+
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration combine.self="append">
+              <!-- Note all paths play off from sourceDirectory -->
+              <excludes>
+                <exclude>**/org/datavyu/plugins/mpv/*</exclude>
+                <exclude>**/org/datavyu/plugins/examples/*</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <configuration>
+              <executable>${xcodebuild}</executable>
+              <workingDirectory>src/main/cpp</workingDirectory>
+            </configuration>
+
+            <executions>
+
+              <execution>
+                <id>clean-with-xcodebuild</id>
+                <phase>clean</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>-project</argument>
+                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>clean</argument>
+                    <argument>-configuration</argument>
+                    <argument>${configuration.debug}</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>build-with-xcodebuild</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>-project</argument>
+                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-configuration</argument>
+                    <argument>${configuration.debug}</argument>
+                    <argument>build</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <classifier>mac</classifier>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+    <profile>
+      <id>mac-release</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+
+      <dependencies>
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>libNativeOSXCanvas</artifactId>
+          <version>0.92</version>
+        </dependency>
+
+        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
+        <!-- FFmpeg 4.0 Version -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>ffmpeg-libs</artifactId>
+          <version>4.0.2</version>
+          <classifier>mac</classifier>
+        </dependency>
+      </dependencies>
+
+      <build>
+        <resources>
+          <resource>
+            <directory>./</directory>
+            <includes>
+              <include>libFfmpegJavaMediaPlayer.dylib</include>
+            </includes>
+          </resource>
+        </resources>
+
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.0</version>
+            <configuration combine.self="append">
+              <!-- Note all paths play off from sourceDirectory -->
+              <excludes>
+                <exclude>**/org/datavyu/plugins/mpv/*</exclude>
+                <exclude>**/org/datavyu/plugins/examples/*</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <configuration>
+              <executable>${xcodebuild}</executable>
+              <workingDirectory>src/main/cpp</workingDirectory>
+            </configuration>
+
+            <executions>
+
+              <execution>
+                <id>clean-with-xcodebuild</id>
+                <phase>clean</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>-project</argument>
+                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>clean</argument>
+                    <argument>-configuration</argument>
+                    <argument>${configuration.release}</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>build-with-xcodebuild</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>-project</argument>
+                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-configuration</argument>
+                    <argument>${configuration.release}</argument>
+                    <argument>build</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <classifier>mac</classifier>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+    <profile>
+      <id>win64-release</id>
+      <activation>
+        <os>
+          <family>Windows</family>
+          <arch>!x86</arch>
+        </os>
+      </activation>
+
+      <dependencies>
+
+        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
+        <!-- FFmpeg 4.0 Version -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>ffmpeg-libs</artifactId>
+          <version>4.0.2</version>
+          <classifier>win</classifier>
         </dependency>
 
         <!-- SDL 2.0.8 -->
         <dependency>
-            <groupId>datavyu</groupId>
-            <artifactId>sdl-libs</artifactId>
-            <version>0.1</version>
+          <groupId>org.datavyu</groupId>
+          <artifactId>sdl-libs</artifactId>
+          <version>2.0.8</version>
         </dependency>
 
         <!-- MPV 0.29.1 -->
         <dependency>
-            <groupId>datavyu</groupId>
-            <artifactId>mpv-libs</artifactId>
-            <version>0.1</version>
+          <groupId>org.datavyu</groupId>
+          <artifactId>mpv-libs</artifactId>
+          <version>0.29.1</version>
         </dependency>
 
-    </dependencies>
+      </dependencies>
+
+      <build>
+
+        <resources>
+          <resource>
+            <directory>./</directory>
+            <includes>
+              <include>FfmpegJavaMediaPlayer.dll</include>
+              <include>MpvMediaPlayer.dll</include>
+            </includes>
+          </resource>
+        </resources>
+
+        <plugins>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <classifier>win</classifier>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <configuration>
+              <!--MSBuild Documentation https://docs.microsoft.com/en-au/visualstudio/msbuild/msbuild-command-line-reference?view=vs-2017-->
+              <executable>${msbuild.exe}</executable>
+              <workingDirectory>src/main/cpp</workingDirectory>
+            </configuration>
+            <executions>
+              <execution>
+                <id>clean-with-msbuild</id>
+                <phase>clean</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>MediaPlayer.sln</argument>
+                    <argument>/t:Clean</argument>
+                    <argument>/p:Configuration=${configuration.release}</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+              <execution>
+                <id>build-with-msbuild</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>/p:Configuration=${configuration.release}</argument>
+                    <argument>MediaPlayer.sln</argument>
+                    <argument>/t:build</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>win64-debug</id>
+
+      <activation>
+        <os>
+          <family>Windows</family>
+          <arch>!x86</arch>
+        </os>
+        <property>
+          <name>debug</name>
+          <value>true</value>
+        </property>
+      </activation>
+
+      <dependencies>
+
+        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
+        <!-- FFmpeg 4.0 Version -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>ffmpeg-libs</artifactId>
+          <version>4.0.2</version>
+          <classifier>win</classifier>
+        </dependency>
+
+        <!-- SDL 2.0.8 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>sdl-libs</artifactId>
+          <version>2.0.8</version>
+        </dependency>
+
+        <!-- MPV 0.29.1 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>mpv-libs</artifactId>
+          <version>0.29.1</version>
+        </dependency>
+
+      </dependencies>
+
+      <build>
+        <resources>
+          <resource>
+            <directory>./</directory>
+            <includes>
+              <include>FfmpegJavaMediaPlayer.dll</include>
+              <include>MpvMediaPlayer.dll</include>
+            </includes>
+          </resource>
+        </resources>
+
+        <plugins>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <classifier>win</classifier>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <configuration>
+              <executable>${msbuild.exe}</executable>
+              <workingDirectory>src/main/cpp</workingDirectory>
+            </configuration>
+
+            <executions>
+
+              <execution>
+                <id>clean-with-msbuild</id>
+                <phase>clean</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>MediaPlayer.sln</argument>
+                    <argument>/t:Clean</argument>
+                    <argument>/p:Configuration=${configuration.debug}</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>build-with-msbuild</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <arguments>
+                    <argument>/p:Configuration=${configuration.debug}</argument>
+                    <!--Need to update the argument value if you change the name
+                    of the Visual Studio Solution-->
+                    <argument>MediaPlayer.sln</argument>
+                    <argument>/t:build</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+
+    <plugins>
+
+      <!-- Following plugin executes the testng tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.1</version>
+        <configuration>
+          <!-- Suite testng xml file to consider for test execution -->
+          <suiteXmlFiles>
+            <suiteXmlFile>src/test/java/testng.xml</suiteXmlFile>
+          </suiteXmlFiles>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <debug>false</debug>
+          <optimize>true</optimize>
+          <source>1.8</source>
+          <target>1.8</target>
+          <!-- Note all paths play off from sourceDirectory -->
+          <excludes>
+            <exclude>**/org/datavyu/plugins/examples/*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>org.datavyu</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+          <!-- Note, if you want to compile a source but not include it, exclude it here -->
+          <!-- -->
+          <excludes>
+              <exclude>org/datavyu/plugins/examples</exclude>
+          </excludes>
+
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
+
+  <dependencies>
+
+    <!-- Logger API -->
+    <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+    <!-- Documentation: https://logging.apache.org/log4j/2.x/manual/api.html -->
+    <!-- Updated here: 03/28/2019 -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.11.2</version>
+    </dependency>
+
+    <!-- Logger Core -->
+    <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+    <!-- Documentation: (see API) -->
+    <!-- Updated here: 03/28/2019 -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.11.2</version>
+    </dependency>
+
+    <!-- Test cases -->
+    <!-- Artifact: https://mvnrepository.com/artifact/org.testng/testng -->
+    <!-- Documentation: http://testng.org/doc/documentation-main.html -->
+    <!-- Updated here: 03/28/2019 -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.14.3</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Uses FileUtils -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.6</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
 </project>

@@ -26,9 +26,9 @@
 #ifndef _MEDIA_H_
 #define _MEDIA_H_
 
+#include "Pipeline.h"
 #include <map>
 #include <string>
-#include "Pipeline.h"
 
 using namespace std;
 
@@ -37,20 +37,19 @@ using namespace std;
  *
  * Analagous to Jfxmedia's java version.
  */
-class CMedia
-{
+class CMedia {
 public:
-    CMedia(CPipeline* pPipe);
-    virtual ~CMedia();
+  CMedia(CPipeline *pPipe);
+  virtual ~CMedia();
 
-    CPipeline*      GetPipeline();
-    static bool     IsValid(CMedia* pMedia);
-
-protected:
-    CMedia() : m_pPipeline(NULL) {}
+  CPipeline *GetPipeline();
+  static bool IsValid(CMedia *pMedia);
 
 protected:
-    CPipeline*      m_pPipeline;
+  CMedia() : p_pipeline(NULL) {}
+
+protected:
+  CPipeline *p_pipeline;
 };
 
-#endif  //_MEDIA_H_
+#endif //_MEDIA_H_

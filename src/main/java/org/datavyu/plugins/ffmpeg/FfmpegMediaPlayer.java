@@ -1,60 +1,97 @@
 package org.datavyu.plugins.ffmpeg;
 
+import org.datavyu.plugins.DatavyuMediaPlayer;
+import org.datavyu.plugins.MediaException;
+import org.datavyu.plugins.PlayerStateEvent;
+import org.datavyu.plugins.PlayerStateListener;
 import java.net.URI;
 
-/**
- * Uses ffmpeg to decode and transcode (optional) image and audio data
- */
-public abstract class FfmpegMediaPlayer extends NativeMediaPlayer {
-    float mutedVolume = 1.0f;  // last volume before mute
-    boolean muteEnabled = false;
+/** Uses ffmpeg to decode and transcode (optional) image and audio data */
+abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
 
-    /**
-     * Create an ffmpeg media player instance
-     *
-     * @param mediaPath The path to the media
-     */
-    public FfmpegMediaPlayer(URI mediaPath) {
-        super(mediaPath);
-    }
+  protected static final int SEEK_ACCURATE_FLAG = 0x01;
+  protected static final int SEEK_FAST_FLAG = 0x10;
 
-    void throwMediaErrorException(int code, Throwable cause)
-            throws MediaException {
-        MediaError me = MediaError.getFromCode(code);
-        throw new MediaException(me.description(), cause, me);
-    }
+  private PlayerStateListener stateListener;
+
+  protected final Object initLock = new Object();
+
+  protected double startTime = 0.0;
+
+  /**
+   * Create an ffmpeg media player instance
+   *
+   * @param mediaPath The path to the media
+   */
+  protected FfmpegMediaPlayer(URI mediaPath) {
+    super(mediaPath);
+    stateListener = new FfmpegPlayerStateListener();
+    this.addMediaPlayerStateListener(stateListener);
+  }
+
+  @Override
+  protected void playerSeek(double streamTime) throws MediaException {
+    // In most cases seek accurate, with the exception of large backward playback rates
+    int seek_flag = (!isStartTimeUpdated && getRate() < -1) ? SEEK_FAST_FLAG : SEEK_ACCURATE_FLAG;
+    playerSeek(streamTime, seek_flag);
+  }
+
+  @Override
+  protected void playerSeekToFrame(int frameNumber) throws MediaException {
+    playerSeek(frameNumber);
+  }
+
+  @Override
+  protected double playerGetStartTime() throws MediaException {
+    return startTime;
+  }
+
+  @Override
+  protected void playerSetStartTime(double startTime) throws MediaException {
+    this.startTime = startTime;
+    playerSeek(startTime, SEEK_ACCURATE_FLAG);
+  }
+
+  @Override
+  protected boolean playerIsSeekPlaybackEnabled() {
+    return playBackRate < 0F ;
+  }
+
+  protected abstract void playerSeek(double streamTime, int seek_flag) throws MediaException;
+
+  protected abstract void playerSeek(int frameNumber) throws MediaException;
+
+  class FfmpegPlayerStateListener implements PlayerStateListener {
 
     @Override
-    protected boolean playerGetMute() throws MediaException {
-        return muteEnabled;
-    }
-
-    @Override
-    protected synchronized void playerSetMute(boolean enable) throws MediaException {
-        if (enable != muteEnabled) {
-            if (enable) {
-                // Cache the current volume.
-                float currentVolume = getVolume();
-
-                // Set the volume to zero.
-                playerSetVolume(0);
-
-                // Set the mute flag. It is necessary to do this after
-                // calling setVolume() as otherwise the volume will not
-                // be set to zero.
-                muteEnabled = true;
-
-                // Save the pre-mute volume.
-                mutedVolume = currentVolume;
-            } else {
-                // Unset the mute flag. It is necessary to do this before
-                // calling setVolume() as otherwise the volume will not
-                // be set to the cached value.
-                muteEnabled = false;
-
-                // Set the volume to the cached value.
-                playerSetVolume(mutedVolume);
-            }
+    public void onReady(PlayerStateEvent evt) {
+      synchronized (initLock) {
+        try {
+          // wait for the initialization of the Java Side
+          // This will make sure to have a correct PTS
+          initLock.wait(100);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
         }
+      }
     }
+
+    @Override
+    public void onPlaying(PlayerStateEvent evt) {}
+
+    @Override
+    public void onPause(PlayerStateEvent evt) {}
+
+    @Override
+    public void onStop(PlayerStateEvent evt) {}
+
+    @Override
+    public void onStall(PlayerStateEvent evt) {}
+
+    @Override
+    public void onFinish(PlayerStateEvent evt) {}
+
+    @Override
+    public void onHalt(PlayerStateEvent evt) {}
+  }
 }

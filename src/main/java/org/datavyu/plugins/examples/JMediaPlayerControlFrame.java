@@ -1,0 +1,176 @@
+package org.datavyu.plugins.examples;
+
+import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.PlaybackRateController;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+public class JMediaPlayerControlFrame extends JFrame implements KeyListener, ChangeListener {
+
+  private MediaPlayer mediaPlayer;
+  private JSlider jSlider;
+
+  JMediaPlayerControlFrame(MediaPlayer mediaPlayer) {
+    this.mediaPlayer = mediaPlayer;
+    jSlider = new JSlider(0, (int) mediaPlayer.getDuration(), 0);
+    jSlider.setFocusable(false);
+    jSlider.addChangeListener(this);
+    add(jSlider, BorderLayout.SOUTH);
+    addKeyListener(this);
+    pack();
+    setSize(640, 480);
+    setVisible(true);
+  }
+
+  @Override
+  public void keyTyped(KeyEvent e) {}
+
+  @Override
+  public void keyPressed(KeyEvent e) {
+    double currentTime, nextTime;
+    float currentVolume, nextVolume;
+    float currentRate, nextRate;
+    int frameNB;
+    double step = (1.0 / mediaPlayer.getFps());
+    currentRate = mediaPlayer.getRate();
+    switch (e.getKeyCode()) {
+      case KeyEvent.VK_NUMPAD5:
+        System.out.println("Stop");
+        mediaPlayer.stop();
+        break;
+      case KeyEvent.VK_NUMPAD8:
+        System.out.println("Play");
+        mediaPlayer.play();
+        break;
+      case KeyEvent.VK_NUMPAD2:
+        System.out.println("Pause");
+        mediaPlayer.pause();
+        break;
+      case KeyEvent.VK_S:
+        System.out.println("Step Forward");
+        mediaPlayer.stepForward();
+        break;
+      case KeyEvent.VK_D:
+        System.out.println("Step Backward");
+        mediaPlayer.stepBackward();
+        System.out.println("Finished backward step");
+        break;
+      case KeyEvent.VK_X:
+        nextTime = mediaPlayer.getPresentationTime() + step;
+        // Don't step if is the current time
+        if (!Double.isNaN(nextTime)) {
+          frameNB = (int) Math.ceil(nextTime / step);
+          System.out.println(
+              "Step Forward to Frame "
+                  + frameNB);
+          mediaPlayer.seekToFrame(frameNB);
+        }
+        break;
+      case KeyEvent.VK_C:
+        nextTime = mediaPlayer.getPresentationTime() - step;
+        if (!Double.isNaN(nextTime)) {
+          frameNB = (int) Math.ceil(nextTime / step);
+          System.out.println(
+              "Step backward to Frame "
+                  + frameNB);
+          mediaPlayer.seekToFrame(frameNB);
+        }
+        break;
+      case KeyEvent.VK_I:
+        System.out.println(
+            "Player State "
+                + mediaPlayer.getState()
+                + " Stream Information : Fps = "
+                + mediaPlayer.getFps()
+                + " Image Width = "
+                + mediaPlayer.getImageWidth()
+                + " Image Height = "
+                + mediaPlayer.getImageHeight()
+                + " Stream Duration = "
+                + mediaPlayer.getDuration()
+                + " Presentation Time = "
+                + mediaPlayer.getPresentationTime());
+        break;
+      case KeyEvent.VK_NUMPAD6:
+        nextRate = PlaybackRateController.stepToFaster(currentRate);
+        System.out.println("Change rate from " + currentRate + " to " + nextRate);
+        mediaPlayer.setRate(nextRate);
+        break;
+      case KeyEvent.VK_NUMPAD4:
+        nextRate = PlaybackRateController.stepToSlower(currentRate);
+        System.out.println("Change rate from " + currentRate + " to " + nextRate);
+        mediaPlayer.setRate(nextRate);
+        break;
+      case KeyEvent.VK_SPACE:
+        System.out.println("Toggle Pause");
+        mediaPlayer.togglePause();
+        break;
+      case KeyEvent.VK_LEFT:
+        currentTime = mediaPlayer.getPresentationTime();
+        nextTime = currentTime - 1;
+        System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
+        mediaPlayer.seek(nextTime);
+        break;
+      case KeyEvent.VK_RIGHT:
+        currentTime = mediaPlayer.getPresentationTime();
+        nextTime = currentTime + 1;
+        System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
+        mediaPlayer.seek(nextTime);
+        break;
+      case KeyEvent.VK_UP:
+        currentTime = mediaPlayer.getPresentationTime();
+        nextTime = currentTime + 5;
+        System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
+        mediaPlayer.seek(nextTime);
+        break;
+      case KeyEvent.VK_DOWN:
+        currentTime = mediaPlayer.getPresentationTime();
+        nextTime = currentTime - 5;
+        System.out.println("Seek from " + currentTime + " sec to " + nextTime + "sec");
+        mediaPlayer.seek(nextTime);
+        break;
+      case KeyEvent.VK_0:
+        currentVolume = mediaPlayer.getVolume();
+        nextVolume = currentVolume - 0.1F;
+        System.out.println("Change volume from " + currentVolume + " dB to " + nextVolume + " dB");
+        mediaPlayer.setVolume(nextVolume);
+        break;
+      case KeyEvent.VK_9:
+        currentVolume = mediaPlayer.getVolume();
+        nextVolume = currentVolume + 0.1F;
+        System.out.println("Change volume from " + currentVolume + " dB to " + nextVolume + " dB");
+        mediaPlayer.setVolume(nextVolume);
+        break;
+      case KeyEvent.VK_M:
+        System.out.println("Mute");
+        mediaPlayer.setMute(true);
+        break;
+      case KeyEvent.VK_N:
+        System.out.println("Un-mute");
+        mediaPlayer.setMute(false);
+        break;
+      case KeyEvent.VK_ESCAPE:
+        mediaPlayer.dispose();
+        System.exit(0);
+        System.out.println("Dispose the media player");
+      default:
+        System.err.println("Unrecognized event " + e.paramString());
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e) {}
+
+  @Override
+  public void stateChanged(ChangeEvent e) {
+    int newTime = jSlider.getValue();
+    double currentTime = mediaPlayer.getPresentationTime();
+    System.out.println("Seek from " + currentTime + " sec to " + newTime + "sec");
+    mediaPlayer.seek(newTime);
+  }
+}

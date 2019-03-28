@@ -1,6 +1,7 @@
 #include "PipelineData.h"
 
-CPipelineData::CPipelineData(CPipelineOptions* pOptions) : CPipeline(pOptions) {}
+CPipelineData::CPipelineData(CPipelineOptions *pOptions)
+    : CPipeline(pOptions) {}
 
 CPipelineData::~CPipelineData() {}
 

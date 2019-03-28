@@ -1,94 +1,112 @@
 #include "FrameQueue.h"
 
-void unref_item(Frame *vp) {
-	av_frame_unref(vp->frame);
+void unref_item(Frame *vp) { av_frame_unref(vp->p_frame_); }
+
+FrameQueue::FrameQueue(const PacketQueue *pktq, int max_size, bool keep_last)
+    : read_index_(0), write_index_(0), size_(0), max_size_(max_size),
+      keep_last_(keep_last), read_index_shown_(0), p_packet_queue_(pktq) {}
+
+FrameQueue::~FrameQueue() {
+  for (int i = 0; i < max_size_; i++) {
+    Frame *vp = &p_frames_[i];
+    if (vp) {
+      unref_item(vp);
+      av_frame_free(&vp->p_frame_);
+    }
+  }
+  delete[] p_frames_;
 }
 
-FrameQueue::FrameQueue(const PacketQueue* pktq, int max_size, int keep_last) :
-	rindex(0),
-	windex(0),
-	size(0),
-	max_size(max_size),
-	keep_last(keep_last),
-	rindex_shown(0),
-	pktq(pktq) {}
+int FrameQueue::CreateFrameQueue(FrameQueue **pp_frame_queue,
+                                 const PacketQueue *p_packet_queue,
+                                 int max_size, bool keep_last) {
+  *pp_frame_queue =
+      new (std::nothrow) FrameQueue(p_packet_queue, max_size, keep_last);
 
-FrameQueue* FrameQueue::create_frame_queue(const PacketQueue* pktq, int max_size, int keep_last) {
-	FrameQueue *fq = new (std::nothrow) FrameQueue(pktq, max_size, keep_last);
+  if (!(*pp_frame_queue)) {
+    av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue object");
+    return ENOMEM;
+  }
 
-	if (!fq) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to create frame queue object");
-		return nullptr;
-	}
+  (*pp_frame_queue)->p_frames_ =
+      new (std::nothrow) Frame[max_size](); // initialize with zeros
 
-	fq->queue = new (std::nothrow) Frame[max_size](); // initialize with zeros
+  if (!(*pp_frame_queue)->p_frames_) {
+    av_log(NULL, AV_LOG_ERROR, "Unable to initialize frame queue");
+    return ENOMEM;
+  }
 
-	if (!fq->queue) {
-		av_log(NULL, AV_LOG_ERROR, "Unable to initialize frame queue");
-		return nullptr;
-	}
+  for (int i = 0; i < max_size; i++) {
+    (*pp_frame_queue)->p_frames_[i].p_frame_ = av_frame_alloc();
 
-	for (int i = 0; i < max_size; i++) {
-		fq->queue[i].frame = av_frame_alloc();
+    if (!(*pp_frame_queue)->p_frames_[i].p_frame_) {
+      av_log(NULL, AV_LOG_ERROR, "Unable to create frame in queue");
+      delete (*pp_frame_queue); // will clean up any memory allocated before
+      return ENOMEM;
+    }
+  }
 
-		if (!fq->queue[i].frame) {
-			av_log(NULL, AV_LOG_ERROR, "Unable to create frame in queue");
-			delete fq; // will clean up any memory allocated before
-			return nullptr;
-		}
-	}
-
-	return fq;
+  return 0;
 }
 
-void FrameQueue::signal() {
-	std::unique_lock<std::mutex> locker(mutex);
-	cond.notify_one();
-	locker.unlock();
+void FrameQueue::Signal() {
+  std::unique_lock<std::mutex> locker(mutex_);
+  condition_.notify_one();
+  locker.unlock();
 }
 
-Frame *FrameQueue::peek_writable() {
-	// waits until we have space to put a new frame
-	std::unique_lock<std::mutex> locker(mutex);
-	cond.wait(locker, [&] { return size < max_size || pktq->is_abort_request(); });
-	locker.unlock();
-	return pktq->is_abort_request() ? nullptr : &queue[windex];
+void FrameQueue::PeekWritable(Frame **pp_frame) {
+  // waits until we have space to put a new frame
+  std::unique_lock<std::mutex> locker(mutex_);
+  condition_.wait(locker, [&] {
+    return size_ < max_size_ || p_packet_queue_->IsAbortRequested();
+  });
+  locker.unlock();
+  *pp_frame =
+      p_packet_queue_->IsAbortRequested() ? nullptr : &p_frames_[write_index_];
 }
 
-Frame *FrameQueue::peek_readable() {
-	// waits until we have a readable new frame
-	std::unique_lock<std::mutex> locker(mutex);
-	cond.wait(locker, [&] { return size - rindex_shown > 0 || pktq->is_abort_request(); });
-	locker.unlock();
-	return pktq->is_abort_request() ? nullptr : &queue[(rindex + rindex_shown) % max_size];
+void FrameQueue::PeekReadable(Frame **pp_frame) {
+  // waits until we have a readable new frame
+  std::unique_lock<std::mutex> locker(mutex_);
+  condition_.wait(locker, [&] {
+    return size_ - read_index_shown_ > 0 || p_packet_queue_->IsAbortRequested();
+  });
+  locker.unlock();
+  *pp_frame = p_packet_queue_->IsAbortRequested()
+                  ? nullptr
+                  : &p_frames_[(read_index_ + read_index_shown_) % max_size_];
 }
 
-void FrameQueue::push() {
-	if (++windex == max_size)
-		windex = 0;
-	std::unique_lock<std::mutex> locker(mutex);
-	size++;
-	cond.notify_one();
-	locker.unlock();
+void FrameQueue::Push() {
+  if (++write_index_ == max_size_) {
+    write_index_ = 0;
+  }
+  std::unique_lock<std::mutex> locker(mutex_);
+  size_++;
+  condition_.notify_one();
+  locker.unlock();
 }
 
-void FrameQueue::next() {
-	if (keep_last && !rindex_shown) {
-		rindex_shown = 1;
-		return;
-	}
-	unref_item(&queue[rindex]);
-	if (++rindex == max_size)
-		rindex = 0;
-	std::unique_lock<std::mutex> locker(mutex);
-	size--;
-	cond.notify_one();
-	locker.unlock();
+void FrameQueue::Next() {
+  if (keep_last_ && !read_index_shown_) {
+    read_index_shown_ = 1;
+    return;
+  }
+  unref_item(&p_frames_[read_index_]);
+  if (++read_index_ == max_size_) {
+    read_index_ = 0;
+  }
+  std::unique_lock<std::mutex> locker(mutex_);
+  size_--;
+  condition_.notify_one();
+  locker.unlock();
 }
-
 
 // return last shown position
-int64_t FrameQueue::last_pos() {
-	Frame *fp = &queue[rindex];
-	return rindex_shown && fp->serial == pktq->get_serial() ? fp->pos : -1;
+int64_t FrameQueue::GetBytePosOfLastFrame() {
+  Frame *fp = &p_frames_[read_index_];
+  return read_index_shown_ && fp->serial_ == p_packet_queue_->GetSerial()
+             ? fp->byte_pos_
+             : -1;
 }

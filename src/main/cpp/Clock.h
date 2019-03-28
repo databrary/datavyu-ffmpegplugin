@@ -1,13 +1,12 @@
 #include <mutex>
 
 extern "C" {
-	#include <libavutil/time.h> // timer
+#include <libavutil/time.h> // timer
 }
 
 #ifndef CLOCK_H_
 #define CLOCK_H_
 
-#define AV_NOSYNC_THRESHOLD 10 // 10 sec
 #define MICRO 1000000.0
 
 // Clock to keep decoding in sync
@@ -20,29 +19,27 @@ extern "C" {
 // code design at the cost of performance).
 //
 class Clock {
-    private:
-        double time;				// clock time
-        int serial;					// clock is based on a packet with this serial
-        const int *queueSerial;	// pointer to the current packet queue serial, used for obsolete clock detection
-		inline bool is_seek() const { return *queueSerial != serial; }
-    public:
-        enum {
-            AV_SYNC_AUDIO_MASTER, // default
-            AV_SYNC_VIDEO_MASTER,
-            AV_SYNC_EXTERNAL_CLOCK, // synchronize to an external clock
-        };
+public:
+  Clock(const int *queue_serial);
 
-		Clock(const int *queue_serial);
+  Clock();
 
-		Clock();
-    
-		double get_time() const; // for stream time, depends on rate
+  double GetTime() const; // for stream time, depends on rate
 
-		inline double get_serial() const { return serial; }
+  inline double GetSerial() const { return serial; }
 
-		void set_time(double newTime, int newSerial);
+  void SetTime(double newTime, int newSerial);
 
-		static void sync_slave_to_master(Clock *c, Clock *slave);
+  static void SyncMasterToSlave(Clock *master, Clock *slave,
+                                double noSyncThreshold);
+
+private:
+  double time;          // clock time
+  int serial;           // clock is based on a packet with this serial
+  const int *p_serial_; // pointer to the current packet queue serial,
+                        // used for obsolete clock detection
+
+  inline bool SerialNoMatch() const { return *p_serial_ != serial; }
 };
 
 #endif CLOCK_H_
