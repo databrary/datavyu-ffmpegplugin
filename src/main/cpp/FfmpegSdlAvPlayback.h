@@ -8,6 +8,8 @@
 extern "C" {
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
+#include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_version.h>
 }
 
 #define FF_QUIT_EVENT (SDL_USEREVENT + 2)
@@ -51,14 +53,15 @@ public:
   void SetVolume(double volume);
 
   // Initializes the SDL ecosystem and starts the display loop
-  int InitializeAndStartDisplayLoop();
+  int InitializeAndStartDisplayLoop(long window_id);
 
   // Initializes the SDL ecosystem and starts the event loop to process
   // events from the SDL window
-  static void InitializeAndListenForEvents(FfmpegSdlAvPlayback *p_player);
+  static void InitializeAndListenForEvents(FfmpegSdlAvPlayback *p_player, long window_id);
 
 private:
   SDL_Window *p_window_;
+  SDL_Window *p_dummy_window_;
   SDL_Renderer *p_renderer_;
   SDL_AudioDeviceID audio_dev_ = 0;
   int x_left_;
@@ -144,7 +147,7 @@ private:
   inline void StopDisplayLoop() { is_stopped_ = true; }
 
   // Initialize the SDL ecosystem
-  void Initialize();
+  void Initialize(long window_id);
 
   int OpenWindow(const char *window_name);
   inline void CloseAudio() { SDL_CloseAudioDevice(audio_dev_); }
@@ -174,6 +177,9 @@ private:
 
   // called to display each frame
   void UpdateFrame(double *remaining_time);
+
+  void SystemEventHandler(SDL_Event &event);
+  void EventHandler(SDL_Event &event);
 
   // Function Called from the event loop
   void DisplayAndProcessEvent(SDL_Event *event);

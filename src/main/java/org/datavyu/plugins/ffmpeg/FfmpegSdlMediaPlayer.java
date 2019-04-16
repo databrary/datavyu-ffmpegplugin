@@ -1,11 +1,14 @@
 package org.datavyu.plugins.ffmpeg;
 
+import java.awt.Container;
+import java.lang.reflect.InvocationTargetException;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
+import org.datavyu.util.Utils;
 
 /**
  * Uses the SDL framework to playback the images and sound natively
@@ -15,8 +18,8 @@ import java.net.URI;
  * <p>It also provides volume control through the native SDL audio playback
  */
 public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
-
-  private static final Logger LOGGER = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
+  private static final Logger logger = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
+  private Container container;
 
   static {
     try {
@@ -27,20 +30,34 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
       LibraryLoader.extract("SDL2"); // Unfortunately SDL does not conform to the pattern
       LibraryLoader.extractAndLoad("FfmpegSdlMediaPlayer");
     } catch (Exception e) {
-      LOGGER.error("Loading libraries failed due to: " + e);
+      logger.error("Loading libraries failed due to: " + e);
     }
+  }
+
+  public FfmpegSdlMediaPlayer(URI mediaPath, Container container) {
+    super(mediaPath);
+    this.container = container;
   }
 
   public FfmpegSdlMediaPlayer(URI mediaPath) {
     super(mediaPath);
+    this.container = null;
   }
 
   @Override
   public void init() {
     initNative(); // start the event queue, make sure to register all state/error listeners before
     long[] newNativeMediaRef = new long[1];
+    long wid = 0;
+    if (container != null) {
+      try {
+        wid = Utils.getConateinerId(container);
+      } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+        logger.error("Error getting window handle: " + e.getMessage());
+      }
+    }
 
-    int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath);
+    int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath, wid);
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
@@ -227,7 +244,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
-    LOGGER.trace("Player is seeking to Frame Number" + frameNumber);
+    logger.trace("Player is seeking to Frame Number" + frameNumber);
   }
 
   @Override
@@ -256,7 +273,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   // Native methods
-  protected native int ffmpegInitPlayer(long[] newNativeMedia, String sourcePath);
+  protected native int ffmpegInitPlayer(long[] newNativeMedia, String sourcePath, long windowID);
 
   protected native int ffmpegDisposePlayer(long refNativeMedia);
 

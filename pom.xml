@@ -320,11 +320,12 @@
           <classifier>win</classifier>
         </dependency>
 
-        <!-- SDL 2.0.8 -->
+        <!-- SDL 2.0.9 -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>sdl-libs</artifactId>
-          <version>2.0.8</version>
+          <version>2.0.9</version>
+          <classifier>win</classifier>
         </dependency>
 
         <!-- MPV 0.29.1 -->
@@ -343,6 +344,7 @@
             <directory>./</directory>
             <includes>
               <include>FfmpegJavaMediaPlayer.dll</include>
+              <include>FfmpegSdlMediaPlayer.dll</include>
               <include>MpvMediaPlayer.dll</include>
             </includes>
           </resource>
@@ -424,11 +426,12 @@
           <classifier>win</classifier>
         </dependency>
 
-        <!-- SDL 2.0.8 -->
+        <!-- SDL 2.0.9 -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>sdl-libs</artifactId>
-          <version>2.0.8</version>
+          <version>2.0.9</version>
+          <classifier>win</classifier>
         </dependency>
 
         <!-- MPV 0.29.1 -->
@@ -446,6 +449,7 @@
             <directory>./</directory>
             <includes>
               <include>FfmpegJavaMediaPlayer.dll</include>
+              <include>FfmpegSdlMediaPlayer.dll</include>
               <include>MpvMediaPlayer.dll</include>
             </includes>
           </resource>
