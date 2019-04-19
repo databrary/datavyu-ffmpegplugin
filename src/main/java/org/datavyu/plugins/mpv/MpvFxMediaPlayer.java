@@ -1,5 +1,6 @@
 package org.datavyu.plugins.mpv;
 
+import java.lang.reflect.InvocationTargetException;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,9 +25,16 @@ public final class MpvFxMediaPlayer extends MpvMediaPlayer {
   public void init() {
     addMediaPlayerStateListener(new PlayerStateListenerImpl());
     initNative(); // starts the event queue, make sure to register all state/error listeners before
-
+    long wid =0;
+    if (stage != null) {
+      try {
+        wid = Utils.getHWnd(stage);
+      } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+        logger.error("Error getting window handle: " + e.getMessage());
+      }
+    }
     long[] newNativeMediaRef = new long[1];
-    int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, Utils.getStageId(stage));
+    int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, wid);
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }

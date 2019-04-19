@@ -1,14 +1,11 @@
 package org.datavyu.plugins.ffmpeg;
 
-import java.awt.Container;
-import java.lang.reflect.InvocationTargetException;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
-import org.datavyu.util.Utils;
 
 /**
  * Uses the SDL framework to playback the images and sound natively
@@ -17,52 +14,21 @@ import org.datavyu.util.Utils;
  *
  * <p>It also provides volume control through the native SDL audio playback
  */
-public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
+abstract class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   private static final Logger logger = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
-  private Container container;
 
   static {
     try {
-      if (LibraryLoader.isMacOs) {
-        throw new RuntimeException("Ffmpeg + SDL media player Is not supported on Mac OSx");
-      }
       LibraryLoader.extract(FFMPEG_DEPENDENCIES);
-      LibraryLoader.extract("SDL2"); // Unfortunately SDL does not conform to the pattern
+      LibraryLoader.extractAndLoad("SDL2");
       LibraryLoader.extractAndLoad("FfmpegSdlMediaPlayer");
     } catch (Exception e) {
       logger.error("Loading libraries failed due to: " + e);
     }
   }
 
-  public FfmpegSdlMediaPlayer(URI mediaPath, Container container) {
-    super(mediaPath);
-    this.container = container;
-  }
-
   public FfmpegSdlMediaPlayer(URI mediaPath) {
     super(mediaPath);
-    this.container = null;
-  }
-
-  @Override
-  public void init() {
-    initNative(); // start the event queue, make sure to register all state/error listeners before
-    long[] newNativeMediaRef = new long[1];
-    long wid = 0;
-    if (container != null) {
-      try {
-        wid = Utils.getConateinerId(container);
-      } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
-        logger.error("Error getting window handle: " + e.getMessage());
-      }
-    }
-
-    int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath, wid);
-    if (0 != rc) {
-      throwMediaErrorException(rc, null);
-    }
-
-    nativeMediaRef = newNativeMediaRef[0];
   }
 
   @Override

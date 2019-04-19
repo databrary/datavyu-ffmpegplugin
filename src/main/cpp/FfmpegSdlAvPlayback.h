@@ -1,6 +1,10 @@
 #ifndef FFMPEGSDLAVPLAYBACK_H_
 #define FFMPEGSDLAVPLAYBACK_H_
 
+#ifdef __APPLE__
+#define SDL_MAIN_HANDLED
+#endif
+
 #include "FfmpegAVPlayback.h"
 #include "VideoState.h"
 #include <atomic>
@@ -86,7 +90,7 @@ private:
 #ifdef __APPLE__
   std::atomic<bool> is_stopped_ = {false};
 #elif _WIN32
-    std::atomic<bool> is_stopped_ = false;
+  std::atomic<bool> is_stopped_ = false;
 #endif
   std::thread *p_display_thread_id_ = nullptr;
 

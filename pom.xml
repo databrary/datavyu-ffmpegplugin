@@ -104,11 +104,19 @@
         </dependency>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.0 Version -->
+        <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
-          <version>4.0.2</version>
+          <version>4.1.1</version>
+          <classifier>mac</classifier>
+        </dependency>
+
+        <!-- SDL 2.0.9 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>sdl-libs</artifactId>
+          <version>2.0.9</version>
           <classifier>mac</classifier>
         </dependency>
       </dependencies>
@@ -119,6 +127,7 @@
             <directory>./</directory>
             <includes>
               <include>libFfmpegJavaMediaPlayer.dylib</include>
+              <include>libFfmpegSdlMediaPlayer.dylib</include>
             </includes>
           </resource>
         </resources>
@@ -210,11 +219,19 @@
         </dependency>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.0 Version -->
+        <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
-          <version>4.0.2</version>
+          <version>4.1.1</version>
+          <classifier>mac</classifier>
+        </dependency>
+
+        <!-- SDL 2.0.9 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>sdl-libs</artifactId>
+          <version>2.0.9</version>
           <classifier>mac</classifier>
         </dependency>
       </dependencies>
@@ -225,6 +242,7 @@
             <directory>./</directory>
             <includes>
               <include>libFfmpegJavaMediaPlayer.dylib</include>
+              <include>libFfmpegSdlMediaPlayer.dylib</include>
             </includes>
           </resource>
         </resources>
@@ -312,11 +330,11 @@
       <dependencies>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.0 Version -->
+        <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
-          <version>4.0.2</version>
+          <version>4.1.1</version>
           <classifier>win</classifier>
         </dependency>
 
@@ -418,11 +436,11 @@
       <dependencies>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.0 Version -->
+        <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
-          <version>4.0.2</version>
+          <version>4.1.1</version>
           <classifier>win</classifier>
         </dependency>
 
@@ -637,6 +655,5 @@
       <version>2.6</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 </project>
