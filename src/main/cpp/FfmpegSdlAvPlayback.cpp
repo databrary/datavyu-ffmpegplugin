@@ -129,19 +129,19 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
 
   // Cleanup resampling
   sws_freeContext(p_img_convert_ctx_);
-  
   SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, nullptr);
-  if (p_dummy_window_) {
-	  SDL_DestroyWindow(p_dummy_window_);
-  }
-
+  SDL_SetHint(SDL_HINT_RENDER_DRIVER, nullptr);
   // Cleanup SDL components
   if (p_renderer_) {
     SDL_DestroyRenderer(p_renderer_);
   }
-  
+
   if (p_window_) {
-    SDL_DestroyWindow(p_window_);
+	  SDL_DestroyWindow(p_window_);
+  }
+
+  if (p_dummy_window_) {
+	  SDL_DestroyWindow(p_dummy_window_);
   }
 
   avformat_network_deinit();
@@ -674,38 +674,38 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
     }
   }
 }
-
+void FfmpegSdlAvPlayback::InitializeSDL() {
+#ifdef __APPLE__
+	SDL_SetMainReady();
+#endif
+	int flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
+	if (p_video_state_->GetAudioDisabled()) {
+		flags &= ~SDL_INIT_AUDIO;
+	}
+	else {
+		/* Try to work around an occasional ALSA buffer underflow issue when the
+		 * period size is NPOT due to ALSA resampling by forcing the buffer size. */
+		if (!SDL_getenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE")) {
+			SDL_setenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE", "1", 1);
+		}
+	}
+	if (display_disabled_) {
+		flags &= ~SDL_INIT_VIDEO;
+	}
+	if (SDL_Init(flags)) {
+		av_log(NULL, AV_LOG_FATAL, "Could not initialize SDL - %s\n",
+			SDL_GetError());
+		av_log(NULL, AV_LOG_FATAL, "(Did you set the DISPLAY variable?)\n");
+		exit(1);
+	}
+}
 void FfmpegSdlAvPlayback::Initialize(long window_id) {
-
   if (p_video_state_->GetFrameWidth()) {
     FfmpegSdlAvPlayback::SetDefaultWindowSize(
         p_video_state_->GetFrameWidth(), p_video_state_->GetFrameHeight(),
         p_video_state_->GetFrameAspectRatio());
   }
-#ifdef __APPLE__
-    SDL_SetMainReady();
-#endif
-  int flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
-  if (p_video_state_->GetAudioDisabled()) {
-    flags &= ~SDL_INIT_AUDIO;
-  } else {
-    /* Try to work around an occasional ALSA buffer underflow issue when the
-     * period size is NPOT due to ALSA resampling by forcing the buffer size. */
-    if (!SDL_getenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE")) {
-      SDL_setenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE", "1", 1);
-    }
-  }
-  if (display_disabled_) {
-    flags &= ~SDL_INIT_VIDEO;
-  }
-  if (SDL_Init(flags)) {
-    av_log(NULL, AV_LOG_FATAL, "Could not initialize SDL - %s\n",
-           SDL_GetError());
-    av_log(NULL, AV_LOG_FATAL, "(Did you set the DISPLAY variable?)\n");
-    exit(1);
-  }
 
-  SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
   SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
 
   if (!display_disabled_) {
@@ -717,6 +717,7 @@ void FfmpegSdlAvPlayback::Initialize(long window_id) {
     }
 
     if (window_id != 0) {
+		SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
         SDL_InitSubSystem(SDL_INIT_VIDEO);
         // Need a dummy window with OpenGL to share pixel format
         //https://discourse.libsdl.org/t/sdl-textureaccess-streaming-window-resize-crash/21761
@@ -731,7 +732,6 @@ void FfmpegSdlAvPlayback::Initialize(long window_id) {
         // Use OpenGL renderer instead of D3D
         //https://stackoverflow.com/questions/40312553/sdl2-crashes-on-window-resize
         SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
-        SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
 #ifdef _WIN32
         p_window_ = SDL_CreateWindowFrom(LongToHandle(window_id));
 #elif __APPLE__
@@ -745,6 +745,7 @@ void FfmpegSdlAvPlayback::Initialize(long window_id) {
         SDL_SetWindowSize(p_window_, kDefaultWidth, kDefaultHeight);
         SDL_SetWindowPosition(p_window_, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED);
     } else {
+	  SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
       p_window_ = SDL_CreateWindow(kDefaultWindowTitle, SDL_WINDOWPOS_UNDEFINED,
                                  SDL_WINDOWPOS_UNDEFINED, kDefaultWidth,
                                  kDefaultHeight, flags);
@@ -788,6 +789,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
   Clock *p_master_clock = nullptr;
 
   // Initialize before starting the stream
+  p_player->InitializeSDL();
   p_player->Initialize(window_id);
   VideoState *p_video_state = nullptr;
   p_player->GetVideoState(&p_video_state);
@@ -1038,46 +1040,34 @@ void FfmpegSdlAvPlayback::EventHandler(SDL_Event &event) {
 
 
 int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop(long window_id) {
-  std::mutex mtx;
-  std::condition_variable cv;
-  bool is_initialized = false;
   intptr_t wid = window_id;
+  InitializeSDL();
 
-  p_display_thread_id_ =
-      new (std::nothrow) std::thread([this, &is_initialized, &cv, &wid] {
-        Initialize(wid);
-        is_initialized = true;
-        cv.notify_all();
-
-        SDL_Event event;
-        while (!is_stopped_) {
-          DisplayAndProcessEvent(&event);
-          if (SDL_EventState(SDL_SYSWMEVENT, SDL_QUERY) == SDL_ENABLE) {
-              SystemEventHandler(event);
-          } else {
-              EventHandler(event);
-          }
-        }
-      });
-
-  if (!p_display_thread_id_) {
-    av_log(NULL, AV_LOG_ERROR, "Unable to create playback thread\n");
-    return -1;
-  }
-
-  std::unique_lock<std::mutex> lck(mtx);
-  cv.wait(lck, [&is_initialized] { return is_initialized; });
   int err = FfmpegToJavaErrNo(p_video_state_->StartStream());
   if (err) {
     av_log(NULL, AV_LOG_ERROR, "Unable to start the stream\n");
     return err;
   }
 
-  if (p_video_state_->GetFrameWidth()) {
-    FfmpegSdlAvPlayback::SetDefaultWindowSize(
-        p_video_state_->GetFrameWidth(), p_video_state_->GetFrameHeight(),
-        p_video_state_->GetFrameAspectRatio());
-  }
+  p_display_thread_id_ =
+	  new (std::nothrow) std::thread([this, &wid] {
+	  Initialize(wid);
 
+	  SDL_Event event;
+	  while (!is_stopped_) {
+		  DisplayAndProcessEvent(&event);
+		  if (SDL_EventState(SDL_SYSWMEVENT, SDL_QUERY) == SDL_ENABLE) {
+			  SystemEventHandler(event);
+		  }
+		  else {
+			  EventHandler(event);
+		  }
+	  }
+  });
+
+  if (!p_display_thread_id_) {
+	  av_log(NULL, AV_LOG_ERROR, "Unable to create playback thread\n");
+	  return -1;
+  }
   return 0;
 }

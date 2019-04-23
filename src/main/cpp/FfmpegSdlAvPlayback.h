@@ -149,8 +149,10 @@ private:
                                            AVRational frame_aspect_ratio);
 
   inline void StopDisplayLoop() { is_stopped_ = true; }
-
+  
   // Initialize the SDL ecosystem
+  void InitializeSDL();
+  // Initialize the SDL window
   void Initialize(long window_id);
 
   int OpenWindow(const char *window_name);
