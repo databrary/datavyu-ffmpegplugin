@@ -19,7 +19,7 @@ public:
   FfmpegSdlAvPlaybackPipeline(CPipelineOptions *pOptions, const long window_id_);
   virtual ~FfmpegSdlAvPlaybackPipeline();
   
-  intptr_t window_id_;
+  long window_id_;
 private:
   virtual uint32_t Play();
   virtual uint32_t Stop();

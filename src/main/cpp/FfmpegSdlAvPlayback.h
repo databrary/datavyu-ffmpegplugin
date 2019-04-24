@@ -7,7 +7,9 @@
 
 #include "FfmpegAVPlayback.h"
 #include "VideoState.h"
+#include <iostream>
 #include <atomic>
+#include <csignal>
 
 extern "C" {
 #include <SDL2/SDL.h>
@@ -83,6 +85,8 @@ private:
 
   int audio_volume_;
 
+  double remaining_time_;
+
   int64_t cursor_last_shown_time_;
   bool is_cursor_hidden_;
   char *p_window_title_;
@@ -152,8 +156,12 @@ private:
   
   // Initialize the SDL ecosystem
   void InitializeSDL();
+
+  // Initialize the SDL ecosystem
+  void InitializeSDLWindow(long window_id);
+
   // Initialize the SDL window
-  void Initialize(long window_id);
+  void InitializeRenderer();
 
   int OpenWindow(const char *window_name);
   inline void CloseAudio() { SDL_CloseAudioDevice(audio_dev_); }

@@ -2,7 +2,6 @@ package org.datavyu.util;
 
 import com.sun.javafx.tk.TKStage;
 import java.awt.Container;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
@@ -10,8 +9,6 @@ import java.util.regex.Pattern;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Utils {
@@ -43,9 +40,6 @@ public class Utils {
     }
     if (obj instanceof Stage) {
       return getStageHWnd((Stage) obj);
-    }
-    if (obj instanceof Shell) {
-      return getShellHWnd((Shell) obj);
     }
     return 0;
   }
@@ -109,8 +103,6 @@ public class Utils {
     }
   }
 
-
-
   static Object invokeMethod(Object o, String methodName)
       throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     Class c = o.getClass();
@@ -121,31 +113,6 @@ public class Utils {
       }
     }
     throw new RuntimeException("Could not find method named '"+methodName+"' on class " + c);
-  }
-
-  static long getShellHWnd(Shell shell) {
-    Field viewField;
-    Field idField;
-    long handle = 0;
-    try {
-      if (isMac) {
-        viewField = Control.class.getDeclaredField("view");
-        Object view = viewField.get(shell);
-        Class<?> idClass = Class.forName("org.eclipse.swt.internal.cocoa.id");
-        idField = idClass.getDeclaredField("id");
-        handle = idField.getLong(view);
-      } else {
-        idField =  Control.class.getDeclaredField("handle");
-        handle = idField.getInt(shell);
-      }
-    } catch (NoSuchFieldException e) {
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
-    return handle;
   }
 
   // Implement this natively

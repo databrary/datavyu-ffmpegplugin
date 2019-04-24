@@ -90,7 +90,8 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  p_sdl_playback_->TogglePauseAndStopStep();
+
+  p_sdl_playback_->Pause();
 
   UpdatePlayerState(Paused);
 
