@@ -1,10 +1,6 @@
 #include "FfmpegSdlAvPlayback.h"
 #include "FfmpegErrorUtils.h"
 #include "MediaPlayerErrors.h"
-#ifdef _WIN32
-#include <Basetsd.h>
-#elif __APPLE__
-#endif
 
 
 int FfmpegSdlAvPlayback::kDefaultWidth = 640;
@@ -668,9 +664,6 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
   }
 }
 void FfmpegSdlAvPlayback::InitializeSDL() {
-#ifdef __APPLE__
-	SDL_SetMainReady();
-#endif
 	int flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
 	if (p_video_state_->GetAudioDisabled()) {
 		flags &= ~SDL_INIT_AUDIO;
@@ -1044,7 +1037,7 @@ void FfmpegSdlAvPlayback::EventHandler(SDL_Event &event) {
 int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop(long window_id) {
 
   long wid = window_id;
-
+#ifdef _WIN32
   InitializeSDL();
 
   // Must Initlialize SDL before starting the stream
@@ -1081,5 +1074,48 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop(long window_id) {
 	  av_log(NULL, AV_LOG_ERROR, "Unable to create playback thread\n");
 	  return -1;
   }
+#elif __APPLE__
+    __block int err;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        InitializeSDL();
+        
+        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            // Must Initlialize SDL before starting the stream
+            err = FfmpegToJavaErrNo(p_video_state_->StartStream());
+        });
+        
+        InitializeSDLWindow(wid);
+        InitializeRenderer();
+        
+        if (!frame_width_) {
+            char *p_filename = nullptr;
+            p_video_state_->GetFilename(&p_filename);
+            OpenWindow(p_filename);
+        }
+    });
+    if (err) {
+        av_log(NULL, AV_LOG_ERROR, "Unable to start the stream\n");
+        return err;
+    }
+    
+    p_display_thread_id_ =
+    new (std::nothrow) std::thread([this] {
+        SDL_Event event;
+        while (!is_stopped_) {
+            DisplayAndProcessEvent(&event);
+            if (SDL_EventState(SDL_SYSWMEVENT, SDL_QUERY) == SDL_ENABLE) {
+                SystemEventHandler(event);
+            }
+            else {
+                EventHandler(event);
+            }
+        }
+    });
+    
+    if (!p_display_thread_id_) {
+        av_log(NULL, AV_LOG_ERROR, "Unable to create playback thread\n");
+        return -1;
+    }
+#endif
   return 0;
 }

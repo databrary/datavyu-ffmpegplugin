@@ -1,15 +1,16 @@
 #ifndef FFMPEGSDLAVPLAYBACK_H_
 #define FFMPEGSDLAVPLAYBACK_H_
 
-#ifdef __APPLE__
-#define SDL_MAIN_HANDLED
-#endif
-
 #include "FfmpegAVPlayback.h"
 #include "VideoState.h"
 #include <iostream>
 #include <atomic>
-#include <csignal>
+
+#ifdef _WIN32
+#include <Basetsd.h>
+#elif __APPLE__
+#include <dispatch/dispatch.h>
+#endif
 
 extern "C" {
 #include <SDL2/SDL.h>

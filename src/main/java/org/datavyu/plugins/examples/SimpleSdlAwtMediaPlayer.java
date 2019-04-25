@@ -1,5 +1,6 @@
 package org.datavyu.plugins.examples;
 
+import javax.swing.SwingUtilities;
 import org.datavyu.plugins.MediaPlayer;
 
 import java.io.File;
