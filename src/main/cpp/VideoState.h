@@ -31,6 +31,7 @@ extern "C" {
 #include "libavutil/time.h"
 #include "libswresample/swresample.h"
 #include "libswscale/swscale.h"
+#include "SDL2/SDL.h"
 #include <assert.h>
 }
 
@@ -186,7 +187,7 @@ public:
   }
 
   /* prepare a new audio buffer */
-  void GetAudioCallback(uint8_t *stream, int len);
+  void GetAudioCallback(uint8_t *stream, int len, int volume);
 
   inline bool GetAudioDisabled() const { return audio_disabled_; }
 

@@ -484,17 +484,21 @@ int FfmpegSdlAvPlayback::GetVolumeStep() const {
              : -1000.0;
 }
 
-void FfmpegSdlAvPlayback::StepVolume(double stepInDecibel) {
+//FIXME(Reda): SDL volume range from 0 to 128 this is not working and need to be removed
+void FfmpegSdlAvPlayback::StepVolume(int sign, double stepInDecibel) {
   double volume_level = GetVolumeStep();
   int new_volume = lrint(SDL_MIX_MAXVOLUME *
-                         pow(10.0, (volume_level + stepInDecibel) / 20.0));
+                         pow(10.0, (volume_level * stepInDecibel) / 20.0));
   audio_volume_ =
       av_clip(audio_volume_ == new_volume ? audio_volume_ : new_volume, 0,
               SDL_MIX_MAXVOLUME);
 }
 
 void FfmpegSdlAvPlayback::SetVolume(double volume) {
-  audio_volume_ = FFMAX(0, volume);
+  double new_volume = av_clip(SDL_MIX_MAXVOLUME * av_clip(volume, 0, 100) / 100, 0,
+		SDL_MIX_MAXVOLUME);
+  audio_volume_ = av_clip(audio_volume_ == new_volume ? audio_volume_ : new_volume, 0,
+			SDL_MIX_MAXVOLUME);
 }
 
 void FfmpegSdlAvPlayback::DisplayAndProcessEvent(SDL_Event *event) {
@@ -803,6 +807,8 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
   // Match Datavyu Key event
   for (;;) {
     double x;
+	double currentVolume = 0; 
+	double nextVolume = 0;
     p_player->DisplayAndProcessEvent(&event);
     switch (event.type) {
     case SDL_KEYDOWN:
@@ -834,11 +840,16 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         break;
       case SDLK_KP_MULTIPLY:
       case SDLK_0:
-        p_player->StepVolume(+kVolumeStepInDecibel);
+		currentVolume = p_player->GetVolume();
+		nextVolume = currentVolume + 10;
+		av_log(NULL, AV_LOG_INFO, "Next Volume %2.2f\n", nextVolume);
+        p_player->SetVolume(nextVolume);
         break;
       case SDLK_KP_DIVIDE:
       case SDLK_9:
-        p_player->StepVolume(-kVolumeStepInDecibel);
+		currentVolume = p_player->GetVolume();
+		nextVolume = currentVolume - 10;
+		p_player->SetVolume(nextVolume);
         break;
       case SDLK_s: // S: Step to next frame
         p_player->StepToNextFrame();

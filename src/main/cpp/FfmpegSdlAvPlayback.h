@@ -42,7 +42,8 @@ public:
   }
 
   // Get the volume
-  inline double GetVolume() const { return audio_volume_; }
+  inline double GetVolume() const { return av_clip(100 * av_clip(audio_volume_, 0, SDL_MIX_MAXVOLUME) / SDL_MIX_MAXVOLUME, 0,
+	  100);}
 
   // Get Image Width
   int GetImageWidth() const;
@@ -54,7 +55,7 @@ public:
   int GetVolumeStep() const;
 
   // Step the volume in decibel in the desired direction
-  void StepVolume(double stepInDecibel);
+  void StepVolume(int sign, double stepInDecibel);
 
   // Set the volume
   void SetVolume(double volume);
@@ -205,14 +206,15 @@ static void sdl_audio_callback_bridge(void *vs, Uint8 *stream, int len) {
       static_cast<FfmpegSdlAvPlayback *>(vs);
   VideoState *p_video_state = nullptr;
   pFfmpegSdlAvPlayback->GetVideoState(&p_video_state);
-  p_video_state->GetAudioCallback(stream, len);
+  int volume = pFfmpegSdlAvPlayback->GetVolume();
+  p_video_state->GetAudioCallback(stream, len, volume);
 
+  // SDL_MixAudioFormat need to be called from the video state class
   // Note, the mixer can work inplace using the same stream as src and dest, see
   // source code here
   // https://github.com/davidsiaw/SDL2/blob/c315c99d46f89ef8dbb1b4eeab0fe38ea8a8b6c5/src/audio/SDL_mixer.c
-  if (!p_video_state->IsMuted() && stream)
-    SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len,
-                       pFfmpegSdlAvPlayback->GetVolumeStep());
+  //if (!p_video_state->IsMuted() && stream)
+	 // SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len, pFfmpegSdlAvPlayback->GetVolume());
 }
 
 #endif FFMPEGSDLAVPLAYBACK_H_
