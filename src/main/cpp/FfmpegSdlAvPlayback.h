@@ -51,12 +51,6 @@ public:
   // Get image Height
   int GetImageHeight() const;
 
-  // Get the volume step in Decibel
-  int GetVolumeStep() const;
-
-  // Step the volume in decibel in the desired direction
-  void StepVolume(int sign, double stepInDecibel);
-
   // Set the volume
   void SetVolume(double volume);
 
@@ -75,11 +69,14 @@ private:
   int x_left_;
   int y_top_;
   int x_pos_;
+  int window_id_;
 
   struct SwsContext *p_img_convert_ctx_;
 
   SDL_Texture *p_vis_texture_;
   SDL_Texture *p_vid_texture_;
+
+  SDL_Rect display_rect_;
 
   int screen_width_;
   int screen_height_;
@@ -207,7 +204,9 @@ static void sdl_audio_callback_bridge(void *vs, Uint8 *stream, int len) {
   VideoState *p_video_state = nullptr;
   pFfmpegSdlAvPlayback->GetVideoState(&p_video_state);
   int volume = pFfmpegSdlAvPlayback->GetVolume();
+#ifdef SDL_ENABLED
   p_video_state->GetAudioCallback(stream, len, volume);
+#endif // SDL_ENABLED
 
   // SDL_MixAudioFormat need to be called from the video state class
   // Note, the mixer can work inplace using the same stream as src and dest, see

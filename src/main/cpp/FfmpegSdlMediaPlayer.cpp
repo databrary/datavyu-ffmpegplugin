@@ -1,6 +1,3 @@
-#ifdef __OBJC__
-#import <AppKit/NSView.h>
-#endif
 #include "FfmpegJniUtils.h"
 #include "FfmpegSdlAvPlaybackPipeline.h"
 #include "JavaPlayerEventDispatcher.h"
@@ -9,55 +6,11 @@
 #include "MediaPlayerErrors.h"
 #include "Pipeline.h"
 
-//#import <jawt_md.h>
-
-
 using namespace std;
-
-//// Legacy NSView-based rendering
-//typedef struct JAWT_MacOSXDrawingSurfaceInfo {
-//    NSView *cocoaViewRef; // the view is guaranteed to be valid only for the duration of Component.paint method
-//} JAWT_MacOSXDrawingSurfaceInfo;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/*
- * Class:     org_datavyu_util_Utils
- * Method:    getHWnd
- * Signature: (Ljava/awt/Container;[J)I
-*/
-JNIEXPORT jint JNICALL Java_org_datavyu_util_Utils_getHWnd
-    (JNIEnv *env, jclass cls, jobject canvas, jlongArray hwnd) {
-#ifdef JAWT_MACOSX_USE_CALAYER // Java for Mac OS X 10.6 Update 4 or later require
-//        long result;
-//        JAWT awt;
-//        JAWT_DrawingSurface* ds;
-//        JAWT_DrawingSurfaceInfo* dsi;
-//        JAWT_MacOSXDrawingSurfaceInfo* dsi_cocoa;
-//        jint lock;
-//        
-//        awt.version = JAWT_VERSION_1_4 | JAWT_MACOSX_USE_CALAYER;
-//        if (JAWT_GetAWT(env, &awt) != 0) {
-//            ds = awt.GetDrawingSurface(env, canvas);
-//            if (ds != NULL) {
-//                lock = ds->Lock(ds);
-//                if ((lock & JAWT_LOCK_ERROR) == 0) {
-//                    dsi = ds->GetDrawingSurfaceInfo(ds);
-//                    dsi_cocoa = (JAWT_MacOSXDrawingSurfaceInfo*)dsi->platformInfo;
-//                    result = dsi_cocoa->cocoaViewRef;
-//                    ds->FreeDrawingSurfaceInfo(dsi);
-//                    ds->Unlock(ds);
-//                }
-//            }
-//            awt.FreeDrawingSurface(ds);
-//        }
-//        
-//        env->SetFloatArrayRegion(jrgfRate, 0, 1, &jfRate);
-#endif
-  return ERROR_NONE;
-}
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer

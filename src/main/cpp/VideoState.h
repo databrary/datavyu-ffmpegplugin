@@ -31,8 +31,10 @@ extern "C" {
 #include "libavutil/time.h"
 #include "libswresample/swresample.h"
 #include "libswscale/swscale.h"
-#include "SDL2/SDL.h"
 #include <assert.h>
+#ifdef SDL_ENABLED
+#include "SDL2/SDL.h"
+#endif // SDL_ENABLED
 }
 
 // Video state holds the state of the video player for both
@@ -187,7 +189,11 @@ public:
   }
 
   /* prepare a new audio buffer */
-  void GetAudioCallback(uint8_t *stream, int len, int volume);
+#ifdef SDL_ENABLED
+  void GetAudioCallback(uint8_t *stream, int len, int audio_volume);
+#else
+  void GetAudioCallback(uint8_t *stream, int len);
+#endif // SDL_ENABLED
 
   inline bool GetAudioDisabled() const { return audio_disabled_; }
 

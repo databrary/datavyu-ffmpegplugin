@@ -82,7 +82,7 @@ void FfmpegSdlAvPlayback::CalculateRectangleForDisplay(
 }
 
 FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
-    : FfmpegAvPlayback(), y_top_(0), x_left_(0), p_window_(nullptr), p_dummy_window_(nullptr),
+    : FfmpegAvPlayback(), y_top_(0), x_left_(0), window_id_(0), p_window_(nullptr), p_dummy_window_(nullptr),
       p_renderer_(nullptr), p_img_convert_ctx_(nullptr),
       p_vis_texture_(nullptr), p_vid_texture_(nullptr), screen_width_(0),
       screen_height_(0), enabled_full_screen_(0), audio_volume_(0), remaining_time_(0),
@@ -478,22 +478,6 @@ int FfmpegSdlAvPlayback::GetImageHeight() const {
 	return p_video_state_->GetFrameHeight();
 }
 
-int FfmpegSdlAvPlayback::GetVolumeStep() const {
-  return audio_volume_
-             ? (20 * log(audio_volume_ / (double)SDL_MIX_MAXVOLUME) / log(10))
-             : -1000.0;
-}
-
-//FIXME(Reda): SDL volume range from 0 to 128 this is not working and need to be removed
-void FfmpegSdlAvPlayback::StepVolume(int sign, double stepInDecibel) {
-  double volume_level = GetVolumeStep();
-  int new_volume = lrint(SDL_MIX_MAXVOLUME *
-                         pow(10.0, (volume_level * stepInDecibel) / 20.0));
-  audio_volume_ =
-      av_clip(audio_volume_ == new_volume ? audio_volume_ : new_volume, 0,
-              SDL_MIX_MAXVOLUME);
-}
-
 void FfmpegSdlAvPlayback::SetVolume(double volume) {
   double new_volume = av_clip(SDL_MIX_MAXVOLUME * av_clip(volume, 0, 100) / 100, 0,
 		SDL_MIX_MAXVOLUME);
@@ -755,6 +739,7 @@ void FfmpegSdlAvPlayback::InitializeRenderer() {
           av_log(NULL, AV_LOG_VERBOSE, "Initialized %s renderer.\n",
                  renderer_info_.name);
       }
+	  window_id_ = SDL_GetWindowID(p_window_);
     }
     if (!p_window_ || !p_renderer_ || !renderer_info_.num_texture_formats) {
       av_log(NULL, AV_LOG_FATAL, "Failed to create window or renderer: %s",
@@ -840,16 +825,15 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         break;
       case SDLK_KP_MULTIPLY:
       case SDLK_0:
-		currentVolume = p_player->GetVolume();
-		nextVolume = currentVolume + 10;
-		av_log(NULL, AV_LOG_INFO, "Next Volume %2.2f\n", nextVolume);
+		    currentVolume = p_player->GetVolume();
+		    nextVolume = currentVolume + 10;
         p_player->SetVolume(nextVolume);
         break;
       case SDLK_KP_DIVIDE:
       case SDLK_9:
-		currentVolume = p_player->GetVolume();
-		nextVolume = currentVolume - 10;
-		p_player->SetVolume(nextVolume);
+        currentVolume = p_player->GetVolume();
+        nextVolume = currentVolume - 10;
+        p_player->SetVolume(nextVolume);
         break;
       case SDLK_s: // S: Step to next frame
         p_player->StepToNextFrame();
@@ -983,9 +967,9 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
     case SDL_WINDOWEVENT:
       switch (event.window.event) {
       case SDL_WINDOWEVENT_RESIZED:
-		p_player->SetSize(event.window.data1, event.window.data2);
+		    p_player->SetSize(event.window.data1, event.window.data2);
       case SDL_WINDOWEVENT_EXPOSED:
-		p_player->DisplayVideoFrame(); // Redraw the rectangle
+        p_player->SetForceReferesh(true); // Redraw the rectangle
       }
       break;
     case SDL_QUIT:
@@ -1030,18 +1014,25 @@ void FfmpegSdlAvPlayback::SystemEventHandler(SDL_Event &event) {
 
 void FfmpegSdlAvPlayback::EventHandler(SDL_Event &event) {
 	// Add handling of resizing the window
-	switch (event.type) {
-	case SDL_WINDOWEVENT:
+	if (event.type == SDL_WINDOWEVENT && event.window.windowID == window_id_) {
 		switch (event.window.event) {
 		case SDL_WINDOWEVENT_RESIZED:
 			SetSize(event.window.data1, event.window.data2);
+			SDL_RenderPresent(p_renderer_);
 		case SDL_WINDOWEVENT_EXPOSED:
-			DisplayVideoFrame(); // We just need to recalculate the display rectangle
-			// Note: Force a refresh will peek next frame
+			force_refresh_ = true;
+			break;
+		case SDL_WINDOWEVENT_CLOSE:
+			SDL_HideWindow(p_window_);
+			SetVolume(0);
+			break;
+		case SDL_WINDOWEVENT_SHOWN:
+			SDL_ShowWindow(p_window_);
+			SDL_RaiseWindow(p_window_);
+			break;
+		default:
+			break;
 		}
-		break;
-	default:
-		break;
 	}
 }
 
@@ -1096,7 +1087,7 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop(long window_id) {
         });
         
         InitializeSDLWindow(wid);
-        InitializeRenderer();
+		    InitializeRenderer();
         
         if (!frame_width_) {
             char *p_filename = nullptr;

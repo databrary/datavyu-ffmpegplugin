@@ -114,7 +114,4 @@ public class Utils {
     }
     throw new RuntimeException("Could not find method named '"+methodName+"' on class " + c);
   }
-
-  // Implement this natively
-  private native static int getHWnd(Container container, long[] hwnd);
 }
