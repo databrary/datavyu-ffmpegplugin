@@ -262,3 +262,19 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int *iHeight) const {
 	*iHeight = p_sdl_playback_->GetImageHeight();
 	return ERROR_NONE;
 }
+
+uint32_t FfmpegSdlAvPlaybackPipeline::HideWindow() {
+    if (p_sdl_playback_ == nullptr) {
+        return ERROR_PLAYBACK_NULL;
+    }
+    p_sdl_playback_->HideWindow();
+    return ERROR_NONE;
+}
+
+uint32_t FfmpegSdlAvPlaybackPipeline::ShowWindow() {
+    if (p_sdl_playback_ == nullptr) {
+        return ERROR_PLAYBACK_NULL;
+    }
+    p_sdl_playback_->ShowWindow();
+    return ERROR_NONE;
+}

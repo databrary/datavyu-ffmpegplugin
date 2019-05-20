@@ -45,6 +45,40 @@ public:
   inline double GetVolume() const { return av_clip(100 * av_clip(audio_volume_, 0, SDL_MIX_MAXVOLUME) / SDL_MIX_MAXVOLUME, 0,
 	  100);}
 
+  inline void ShowWindow() {
+#ifdef _WIN32
+      SDL_Window * window = SDL_GetWindowFromID(window_id_);
+      if (window) {
+          SDL_ShowWindow(p_window_);
+          SDL_RaiseWindow(p_window_);
+      }
+#elif __APPLE__
+      dispatch_async(dispatch_get_main_queue(), ^{
+          SDL_Window * window = SDL_GetWindowFromID(window_id_);
+          if (window) {
+              SDL_ShowWindow(p_window_);
+              SDL_RaiseWindow(p_window_);
+          }
+      });
+#endif
+  }
+    
+  inline void HideWindow() {
+#ifdef _WIN32
+      SDL_Window * window = SDL_GetWindowFromID(window_id_);
+      if (window) {
+          SDL_HideWindow(p_window_);
+      }
+#elif __APPLE__
+      dispatch_async(dispatch_get_main_queue(), ^{
+          SDL_Window * window = SDL_GetWindowFromID(window_id_);
+          if (window) {
+              SDL_HideWindow(window);
+          }
+      });
+#endif
+  }
+ 
   // Get Image Width
   int GetImageWidth() const;
 

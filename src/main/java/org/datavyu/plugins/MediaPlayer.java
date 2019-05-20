@@ -236,4 +236,16 @@ public interface MediaPlayer {
    * @return true if the rate is supported
    */
   boolean isSeekPlaybackEnabled();
+
+  /**
+   * Expose SDL player window, this method is available only for the SDL player, will
+   * throw an exception if called from a Java player.
+   */
+  void showSDLWindow();
+
+  /**
+   * Hide SDL player window, this method is available only for the SDL player, will
+   * throw an exception if called from a Java player.
+   */
+  void hideSDLWindow();
 }

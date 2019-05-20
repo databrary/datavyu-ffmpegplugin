@@ -50,6 +50,9 @@ private:
   virtual uint32_t GetImageWidth(int *p_width) const;
   virtual uint32_t GetImageHeight(int *p_height) const;
 
+  virtual uint32_t ShowWindow();
+  virtual uint32_t HideWindow();
+
   FfmpegSdlAvPlayback *p_sdl_playback_;
 };
 
