@@ -6,7 +6,7 @@
 
   <groupId>org.datavyu</groupId>
   <artifactId>ffmpeg-plugin</artifactId>
-  <version>0.20-SNAPSHOT</version>
+  <version>0.20</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -17,6 +17,7 @@
     <xcodebuild>/usr/bin/xcodebuild</xcodebuild>
     <configuration.release>Release</configuration.release>
     <configuration.debug>Debug</configuration.debug>
+    <configuration.xcode.scheme>MediaPlayerWorkspace</configuration.xcode.scheme>
   </properties>
 
   <repositories>
@@ -165,9 +166,11 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>-project</argument>
-                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-workspace</argument>
+                    <argument>MediaPLayer.xcworkspace</argument>
                     <argument>clean</argument>
+                    <argument>-scheme</argument>
+                    <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
                     <argument>${configuration.debug}</argument>
                   </arguments>
@@ -182,8 +185,10 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>-project</argument>
-                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-workspace</argument>
+                    <argument>MediaPLayer.xcworkspace</argument>
+                    <argument>-scheme</argument>
+                    <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
                     <argument>${configuration.debug}</argument>
                     <argument>build</argument>
@@ -280,9 +285,11 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>-project</argument>
-                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-workspace</argument>
+                    <argument>MediaPLayer.xcworkspace</argument>
                     <argument>clean</argument>
+                    <argument>-scheme</argument>
+                    <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
                     <argument>${configuration.release}</argument>
                   </arguments>
@@ -297,8 +304,10 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>-project</argument>
-                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-workspace</argument>
+                    <argument>MediaPLayer.xcworkspace</argument>
+                    <argument>-scheme</argument>
+                    <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
                     <argument>${configuration.release}</argument>
                     <argument>build</argument>

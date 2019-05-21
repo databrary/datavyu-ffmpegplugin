@@ -8,9 +8,6 @@
       location = "group:MediaPlayer.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:MpvMediaPlayer.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:FfmpegSdlMediaPlayer.xcodeproj">
    </FileRef>
    <FileRef
