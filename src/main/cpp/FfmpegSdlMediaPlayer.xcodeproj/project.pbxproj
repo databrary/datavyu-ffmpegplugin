@@ -16,9 +16,6 @@
 		2B8011A022678004002548E4 /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B80119822678004002548E4 /* libavformat.58.dylib */; };
 		2B8011A122678004002548E4 /* libavfilter.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B80119922678004002548E4 /* libavfilter.7.dylib */; };
 		2B8011A5226792D1002548E4 /* libSDL2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B8011A4226792D1002548E4 /* libSDL2.dylib */; };
-		2B8011C0226A4368002548E4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B8011BF226A4368002548E4 /* AppKit.framework */; };
-		2B8011C2226A59CC002548E4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B8011C1226A59CC002548E4 /* Cocoa.framework */; };
-		2B8011C4226A59D6002548E4 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B8011C3226A59D6002548E4 /* CoreFoundation.framework */; };
 		E95D2314219647A6007A6758 /* FrameQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22EF219647A2007A6758 /* FrameQueue.cpp */; };
 		E95D2315219647A6007A6758 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95D22F0219647A2007A6758 /* Pipeline.cpp */; };
 		E95D2316219647A6007A6758 /* PipelineOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = E95D22F1219647A2007A6758 /* PipelineOptions.h */; };
@@ -68,9 +65,6 @@
 		2B80119822678004002548E4 /* libavformat.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavformat.58.dylib; path = dependencies/lib/libavformat.58.dylib; sourceTree = "<group>"; };
 		2B80119922678004002548E4 /* libavfilter.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavfilter.7.dylib; path = dependencies/lib/libavfilter.7.dylib; sourceTree = "<group>"; };
 		2B8011A4226792D1002548E4 /* libSDL2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2.dylib; path = dependencies/lib/libSDL2.dylib; sourceTree = "<group>"; };
-		2B8011BF226A4368002548E4 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		2B8011C1226A59CC002548E4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		2B8011C3226A59D6002548E4 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E95D22D5219644C2007A6758 /* libFfmpegSdlMediaPlayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libFfmpegSdlMediaPlayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E95D22EF219647A2007A6758 /* FrameQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FrameQueue.cpp; sourceTree = "<group>"; };
 		E95D22F0219647A2007A6758 /* Pipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Pipeline.cpp; sourceTree = "<group>"; };
@@ -116,9 +110,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2B8011C4226A59D6002548E4 /* CoreFoundation.framework in Frameworks */,
-				2B8011C2226A59CC002548E4 /* Cocoa.framework in Frameworks */,
-				2B8011C0226A4368002548E4 /* AppKit.framework in Frameworks */,
 				2B8011A5226792D1002548E4 /* libSDL2.dylib in Frameworks */,
 				2B80119A22678004002548E4 /* libpostproc.55.dylib in Frameworks */,
 				2B80119B22678004002548E4 /* libswresample.3.dylib in Frameworks */,
@@ -190,9 +181,6 @@
 		E95D22DC219646AA007A6758 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2B8011C3226A59D6002548E4 /* CoreFoundation.framework */,
-				2B8011C1226A59CC002548E4 /* Cocoa.framework */,
-				2B8011BF226A4368002548E4 /* AppKit.framework */,
 				2B8011A4226792D1002548E4 /* libSDL2.dylib */,
 				2B80119422678004002548E4 /* libavcodec.58.dylib */,
 				2B80119522678004002548E4 /* libavdevice.58.dylib */,
@@ -383,7 +371,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -435,7 +423,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
@@ -451,6 +439,11 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/dependencies/framework/**",
 					"/Library/Frameworks/**",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"SDL_ENABLED=1",
+					"DEBUG=1",
+					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = (
 					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
@@ -484,6 +477,7 @@
 					"$(PROJECT_DIR)/dependencies/framework/**",
 					"/Library/Frameworks/**",
 				);
+				GCC_PREPROCESSOR_DEFINITIONS = "SDL_ENABLED=1";
 				HEADER_SEARCH_PATHS = (
 					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
 					"${PROJECT_DIR}/dependencies/include",
