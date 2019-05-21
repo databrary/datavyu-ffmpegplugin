@@ -2,6 +2,7 @@
 #include "FfmpegErrorUtils.h"
 #include "MediaPlayerErrors.h"
 
+
 int FfmpegSdlAvPlayback::kDefaultWidth = 640;
 int FfmpegSdlAvPlayback::kDefaultHeight = 480;
 unsigned FfmpegSdlAvPlayback::kSwsFlags = SWS_BICUBIC;
@@ -81,10 +82,10 @@ void FfmpegSdlAvPlayback::CalculateRectangleForDisplay(
 }
 
 FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
-    : FfmpegAvPlayback(), y_top_(0), x_left_(0), p_window_(nullptr),
+    : FfmpegAvPlayback(), y_top_(0), x_left_(0), window_id_(0), p_window_(nullptr), p_dummy_window_(nullptr),
       p_renderer_(nullptr), p_img_convert_ctx_(nullptr),
       p_vis_texture_(nullptr), p_vid_texture_(nullptr), screen_width_(0),
-      screen_height_(0), enabled_full_screen_(0), audio_volume_(0),
+      screen_height_(0), enabled_full_screen_(0), audio_volume_(0), remaining_time_(0),
       cursor_last_shown_time_(0), is_cursor_hidden_(false),
       renderer_info_({0}) {
 
@@ -102,8 +103,9 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
 }
 
 FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
-
   StopDisplayLoop();
+
+  SDL_DelEventWatch(resizingEventHandler, this);
 
   if (audio_dev_) {
     CloseAudio();
@@ -114,14 +116,19 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   // Cleanup textures
   if (p_vis_texture_) {
     SDL_DestroyTexture(p_vis_texture_);
+	p_vis_texture_ = nullptr;
   }
 
   if (p_vid_texture_) {
     SDL_DestroyTexture(p_vid_texture_);
+	p_vid_texture_ = nullptr;
   }
 
   // Cleanup resampling
   sws_freeContext(p_img_convert_ctx_);
+
+  SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, nullptr);
+  SDL_SetHint(SDL_HINT_RENDER_DRIVER, nullptr);
 
   // Cleanup SDL components
   if (p_renderer_) {
@@ -129,9 +136,12 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   }
 
   if (p_window_) {
-    SDL_DestroyWindow(p_window_);
+	  SDL_DestroyWindow(p_window_);
   }
 
+  if (p_dummy_window_) {
+	  SDL_DestroyWindow(p_dummy_window_);
+  }
   avformat_network_deinit();
 
   av_free(p_window_title_);
@@ -272,6 +282,19 @@ int FfmpegSdlAvPlayback::OpenWindow(const char *p_window_name) {
     frame_width_ = kDefaultWidth;
     frame_height_ = kDefaultHeight;
   }
+
+  // Adjust window size to the display usable bounds 
+  SDL_Rect r;
+  if (SDL_GetDisplayUsableBounds(0, &r) == 0) {
+	if (frame_height_ > r.h) {
+	  frame_height_ = r.h;
+	} else if (frame_width_ > r.w) {
+	  frame_width_ = r.w;
+	}
+  } else {
+	av_log(NULL, AV_LOG_WARNING, "Get Usable Display Failed %s\n", SDL_GetError());
+  }
+
   p_window_title_ = av_strdup(p_window_name);
 
   SDL_SetWindowTitle(p_window_, p_window_title_);
@@ -282,6 +305,8 @@ int FfmpegSdlAvPlayback::OpenWindow(const char *p_window_name) {
     SDL_SetWindowFullscreen(p_window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
   }
   SDL_ShowWindow(p_window_);
+
+  FfmpegSdlAvPlayback::SetSize(frame_width_, frame_height_);
 
   return 0;
 }
@@ -417,11 +442,6 @@ int FfmpegSdlAvPlayback::ReallocateTexture(SDL_Texture **pp_texture,
 }
 
 void FfmpegSdlAvPlayback::DisplayVideoFrame() {
-  if (!frame_width_) {
-    char *p_filename = nullptr;
-    p_video_state_->GetFilename(&p_filename);
-    OpenWindow(p_filename);
-  }
 
   SDL_SetRenderDrawColor(p_renderer_, 0, 0, 0, 255);
   SDL_RenderClear(p_renderer_);
@@ -444,8 +464,7 @@ void FfmpegSdlAvPlayback::GetAndDisplayVideoFrame() {
                                p_frame->aspect_ratio_);
 
   if (!p_frame->is_uploaded_) {
-    if (UploadTexture(&p_vid_texture_, p_frame->p_frame_, &p_img_convert_ctx_) <
-        0)
+    if (UploadTexture(&p_vid_texture_, p_frame->p_frame_, &p_img_convert_ctx_) < 0)
       return;
     p_frame->is_uploaded_ = true;
   }
@@ -462,27 +481,14 @@ int FfmpegSdlAvPlayback::GetImageHeight() const {
 	return p_video_state_->GetFrameHeight();
 }
 
-int FfmpegSdlAvPlayback::GetVolumeStep() const {
-  return audio_volume_
-             ? (20 * log(audio_volume_ / (double)SDL_MIX_MAXVOLUME) / log(10))
-             : -1000.0;
-}
-
-void FfmpegSdlAvPlayback::StepVolume(double stepInDecibel) {
-  double volume_level = GetVolumeStep();
-  int new_volume = lrint(SDL_MIX_MAXVOLUME *
-                         pow(10.0, (volume_level + stepInDecibel) / 20.0));
-  audio_volume_ =
-      av_clip(audio_volume_ == new_volume ? audio_volume_ : new_volume, 0,
-              SDL_MIX_MAXVOLUME);
-}
-
 void FfmpegSdlAvPlayback::SetVolume(double volume) {
-  audio_volume_ = FFMAX(0, volume);
+  double new_volume = av_clip(SDL_MIX_MAXVOLUME * av_clip(volume, 0, 100) / 100, 0,
+		SDL_MIX_MAXVOLUME);
+  audio_volume_ = av_clip(audio_volume_ == new_volume ? audio_volume_ : new_volume, 0,
+			SDL_MIX_MAXVOLUME);
 }
 
 void FfmpegSdlAvPlayback::DisplayAndProcessEvent(SDL_Event *event) {
-  double remaining_time = 0.0;
   SDL_PumpEvents();
   while (
       !SDL_PeepEvents(event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT)) {
@@ -491,11 +497,23 @@ void FfmpegSdlAvPlayback::DisplayAndProcessEvent(SDL_Event *event) {
       SDL_ShowCursor(0);
       is_cursor_hidden_ = true;
     }
-    if (remaining_time > 0.0)
-      av_usleep((int64_t)(remaining_time * 1000000.0));
-    remaining_time = kRefreshRate;
-    if (!p_video_state_->IsPaused() || force_refresh_)
-      UpdateFrame(&remaining_time);
+	if (remaining_time_ > 0.0) {
+	  av_usleep((int64_t)(remaining_time_ * 1000000.0));
+	}
+#ifdef _WIN32
+    remaining_time_ = kRefreshRate;
+    if (!p_video_state_->IsPaused() || force_refresh_) {
+      UpdateFrame(&remaining_time_);
+    }
+#elif __APPLE__
+    __block double remaining_time = kRefreshRate;
+    __block bool force_refresh = force_refresh_;
+    dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+      if (!p_video_state_->IsPaused() || force_refresh) {
+        UpdateFrame(&remaining_time);
+      }
+    });
+#endif
     SDL_PumpEvents();
   }
 }
@@ -646,49 +664,82 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
     }
   }
 }
+void FfmpegSdlAvPlayback::InitializeSDL() {
+	int flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
+	if (p_video_state_->GetAudioDisabled()) {
+		flags &= ~SDL_INIT_AUDIO;
+	}
+	else {
+		/* Try to work around an occasional ALSA buffer underflow issue when the
+		 * period size is NPOT due to ALSA resampling by forcing the buffer size. */
+		if (!SDL_getenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE")) {
+			SDL_setenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE", "1", 1);
+		}
+	}
+	if (display_disabled_) {
+		flags &= ~SDL_INIT_VIDEO;
+	}
+	if (SDL_Init(flags)) {
+		av_log(NULL, AV_LOG_FATAL, "Could not initialize SDL - %s\n",
+			SDL_GetError());
+		av_log(NULL, AV_LOG_FATAL, "(Did you set the DISPLAY variable?)\n");
+		exit(1);
+	}
+}
 
-void FfmpegSdlAvPlayback::Initialize() {
+void FfmpegSdlAvPlayback::InitializeSDLWindow(long window_id) {
+	if (p_video_state_->GetFrameWidth()) {
+		FfmpegSdlAvPlayback::SetDefaultWindowSize(
+			p_video_state_->GetFrameWidth(), p_video_state_->GetFrameHeight(),
+			p_video_state_->GetFrameAspectRatio());
+	}
 
-  if (p_video_state_->GetFrameWidth()) {
-    FfmpegSdlAvPlayback::SetDefaultWindowSize(
-        p_video_state_->GetFrameWidth(), p_video_state_->GetFrameHeight(),
-        p_video_state_->GetFrameAspectRatio());
-  }
+	SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
+	if (!display_disabled_) {
+		int flags = SDL_WINDOW_HIDDEN;
+		if (kWindowResizable) {
+			flags |= SDL_WINDOW_RESIZABLE;
+		}
+		else {
+			flags |= SDL_WINDOW_BORDERLESS;
+		}
 
-
-  int flags = SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER;
-  if (p_video_state_->GetAudioDisabled()) {
-    flags &= ~SDL_INIT_AUDIO;
-  } else {
-    /* Try to work around an occasional ALSA buffer underflow issue when the
-     * period size is NPOT due to ALSA resampling by forcing the buffer size. */
-    if (!SDL_getenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE")) {
-      SDL_setenv("SDL_AUDIO_ALSA_SET_BUFFER_SIZE", "1", 1);
-    }
-  }
-  if (display_disabled_) {
-    flags &= ~SDL_INIT_VIDEO;
-  }
-  if (SDL_Init(flags)) {
-    av_log(NULL, AV_LOG_FATAL, "Could not initialize SDL - %s\n",
-           SDL_GetError());
-    av_log(NULL, AV_LOG_FATAL, "(Did you set the DISPLAY variable?)\n");
-    exit(1);
-  }
-
-  SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
-  SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
-
+		if (window_id != 0) {
+			SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
+			SDL_InitSubSystem(SDL_INIT_VIDEO);
+			// Need a dummy window with OpenGL to share pixel format
+			//https://discourse.libsdl.org/t/sdl-textureaccess-streaming-window-resize-crash/21761
+			p_dummy_window_ = SDL_CreateWindow("", 0, 0, 1, 1, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+			char sBuf[32];
+#ifdef _WIN32
+			sprintf_s<32>(sBuf, "%p", p_dummy_window_);
+#elif __APPLE__
+			sprintf(sBuf, "%p", p_dummy_window_);
+#endif
+			SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, sBuf);
+			// Use OpenGL renderer instead of D3D
+			//https://stackoverflow.com/questions/40312553/sdl2-crashes-on-window-resize
+			SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+#ifdef _WIN32
+			p_window_ = SDL_CreateWindowFrom(LongToHandle(window_id));
+#elif __APPLE__
+			intptr_t wid = window_id;
+			p_window_ = SDL_CreateWindowFrom(&window_id);
+#endif
+		}
+		else {
+			SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
+			p_window_ = SDL_CreateWindow(kDefaultWindowTitle, SDL_WINDOWPOS_UNDEFINED,
+				SDL_WINDOWPOS_UNDEFINED, kDefaultWidth,
+				kDefaultHeight, flags);
+		}
+		// Run window resizing events on a separate thread, to continuously update the renderer rectangle
+		// Also this will allow a faster update of the displayed rectangle when multiple windows are used
+		SDL_AddEventWatch(resizingEventHandler, this);
+	}
+}
+void FfmpegSdlAvPlayback::InitializeRenderer() {
   if (!display_disabled_) {
-    int flags = SDL_WINDOW_HIDDEN;
-    if (kWindowResizable) {
-      flags |= SDL_WINDOW_RESIZABLE;
-    } else {
-      flags |= SDL_WINDOW_BORDERLESS;
-    }
-    p_window_ = SDL_CreateWindow(kDefaultWindowTitle, SDL_WINDOWPOS_UNDEFINED,
-                                 SDL_WINDOWPOS_UNDEFINED, kDefaultWidth,
-                                 kDefaultHeight, flags);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     if (p_window_) {
       p_renderer_ = SDL_CreateRenderer(
@@ -704,42 +755,61 @@ void FfmpegSdlAvPlayback::Initialize() {
           av_log(NULL, AV_LOG_VERBOSE, "Initialized %s renderer.\n",
                  renderer_info_.name);
       }
+	  window_id_ = SDL_GetWindowID(p_window_);
     }
     if (!p_window_ || !p_renderer_ || !renderer_info_.num_texture_formats) {
       av_log(NULL, AV_LOG_FATAL, "Failed to create window or renderer: %s",
              SDL_GetError());
-      if (p_renderer_)
+      if (p_renderer_) {
         SDL_DestroyRenderer(p_renderer_);
-      if (p_window_)
+      }
+      if (p_dummy_window_) {
+        SDL_DestroyWindow(p_dummy_window_);
+      }
+      if (p_window_) {
         SDL_DestroyWindow(p_window_);
+      }
     }
   }
 }
 
 void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
-    FfmpegSdlAvPlayback *p_player) {
+    FfmpegSdlAvPlayback *p_player, long window_id) {
   SDL_Event event;
   double incr, pos, frac, rate;
   Clock *p_master_clock = nullptr;
 
   // Initialize before starting the stream
-  p_player->Initialize();
+  p_player->InitializeSDL();
   VideoState *p_video_state = nullptr;
   p_player->GetVideoState(&p_video_state);
   p_video_state->StartStream();
+
+  if (p_video_state->GetFrameWidth()) {
+	  FfmpegSdlAvPlayback::SetDefaultWindowSize(
+		  p_video_state->GetFrameWidth(), p_video_state->GetFrameHeight(),
+		  p_video_state->GetFrameAspectRatio());
+  }
+
+  p_player->InitializeSDLWindow(window_id);
+  p_player->InitializeRenderer();
+
+  if (!p_player->frame_width_) {
+	  char *p_filename = nullptr;
+	  p_video_state->GetFilename(&p_filename);
+	  p_player->OpenWindow(p_filename);
+  }
+
   rate = 1;
   p_video_state->GetMasterClock(&p_master_clock);
   AVFormatContext *p_format_context = nullptr;
   p_video_state->GetFormatContext(&p_format_context);
 
-  if (p_video_state->GetFrameWidth()) {
-    FfmpegSdlAvPlayback::SetDefaultWindowSize(
-        p_video_state->GetFrameWidth(), p_video_state->GetFrameHeight(),
-        p_video_state->GetFrameAspectRatio());
-  }
-
+  // Match Datavyu Key event
   for (;;) {
     double x;
+	double currentVolume = 0; 
+	double nextVolume = 0;
     p_player->DisplayAndProcessEvent(&event);
     switch (event.type) {
     case SDL_KEYDOWN:
@@ -771,11 +841,15 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         break;
       case SDLK_KP_MULTIPLY:
       case SDLK_0:
-        p_player->StepVolume(+kVolumeStepInDecibel);
+        currentVolume = p_player->GetVolume();
+        nextVolume = currentVolume + 10;
+        p_player->SetVolume(nextVolume);
         break;
       case SDLK_KP_DIVIDE:
       case SDLK_9:
-        p_player->StepVolume(-kVolumeStepInDecibel);
+        currentVolume = p_player->GetVolume();
+        nextVolume = currentVolume - 10;
+        p_player->SetVolume(nextVolume);
         break;
       case SDLK_s: // S: Step to next frame
         p_player->StepToNextFrame();
@@ -911,7 +985,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
       case SDL_WINDOWEVENT_RESIZED:
         p_player->SetSize(event.window.data1, event.window.data2);
       case SDL_WINDOWEVENT_EXPOSED:
-        p_player->SetForceReferesh(true);
+        p_player->SetForceReferesh(true); // Redraw the rectangle
       }
       break;
     case SDL_QUIT:
@@ -925,57 +999,140 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
   }
 }
 
-int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
-  std::mutex mtx;
-  std::condition_variable cv;
-  bool is_initialized = false;
-
-  p_display_thread_id_ =
-      new (std::nothrow) std::thread([this, &is_initialized, &cv] {
-        Initialize();
-        is_initialized = true;
-        cv.notify_all();
-
-        SDL_Event event;
-        while (!is_stopped_) {
-          DisplayAndProcessEvent(&event);
-          // Add handling of resizing the window
-          switch (event.type) {
-          case SDL_WINDOWEVENT:
-            switch (event.window.event) {
-            case SDL_WINDOWEVENT_RESIZED:
-              screen_width_ = frame_width_ = event.window.data1;
-              screen_height_ = frame_height_ = event.window.data2;
-              if (p_vis_texture_) {
-                SDL_DestroyTexture(p_vis_texture_);
-                p_vis_texture_ = NULL;
-              }
-            case SDL_WINDOWEVENT_EXPOSED:
-              force_refresh_ = 1;
+void FfmpegSdlAvPlayback::SystemEventHandler(SDL_Event &event) {
+#ifdef _WIN32
+	// Add handling of resizing the window
+	LPRECT lrpc;
+	int width, height;
+	switch (event.type) {
+	case SDL_SYSWMEVENT:
+            switch (event.syswm.msg->msg.win.msg) {
+                    case WM_SIZE:
+                    lrpc = (LPRECT)event.syswm.msg->msg.win.lParam;
+                    width = LOWORD(lrpc);
+                    height = HIWORD(lrpc);
+                    av_log(NULL, AV_LOG_VERBOSE, "System Resizing WM_SIZE: Width %d and Height %d \n", width, height);
+                    SetSize(width, height);
+                    if ((WPARAM)event.syswm.msg->msg.win.wParam != SIZE_MINIMIZED) {
+                        av_log(NULL, AV_LOG_VERBOSE, "Force Refresh\n");
+                        force_refresh_ = 1;
+                    }
             }
             break;
-          default:
+        default:
             break;
+    }
+#elif __APPLE__
+#endif
+
+}
+
+void FfmpegSdlAvPlayback::EventHandler(SDL_Event &event) {
+		// Add handling of resizing the window
+		switch (event.window.event) {
+		case SDL_WINDOWEVENT_CLOSE:
+			HideWindow();
+			SetVolume(0);
+			break;
+		case SDL_WINDOWEVENT_EXPOSED:
+#ifdef _WIN32
+			DisplayVideoFrame();
+#elif __APPLE__
+			dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+			  DisplayVideoFrame();
+			});
+#endif
+			break;
+		default:
+			break;
+		}
+}
+
+int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop(long window_id) {
+
+  long wid = window_id;
+#ifdef _WIN32
+  InitializeSDL();
+
+  // Must Initlialize SDL before starting the stream
+  int err = FfmpegToJavaErrNo(p_video_state_->StartStream());
+  if (err) {
+	  av_log(NULL, AV_LOG_ERROR, "Unable to start the stream\n");
+	  return err;
+  }
+
+  p_display_thread_id_ =
+	  new (std::nothrow) std::thread([this, &wid] {
+	  InitializeSDLWindow(wid);
+	  InitializeRenderer();
+
+	  if (!frame_width_) {
+		  char *p_filename = nullptr;
+		  p_video_state_->GetFilename(&p_filename);
+		  OpenWindow(p_filename);
+	  }
+
+	  SDL_Event event;
+	  while (!is_stopped_) {
+		  DisplayAndProcessEvent(&event);
+          if (event.type == SDL_WINDOWEVENT && event.window.windowID == window_id_) {
+              if (SDL_EventState(SDL_SYSWMEVENT, SDL_QUERY) == SDL_ENABLE) {
+                  SystemEventHandler(event);
+              }
+              else {
+                  EventHandler(event);
+              }
           }
-        }
-      });
+	  }
+  });
 
   if (!p_display_thread_id_) {
-    av_log(NULL, AV_LOG_ERROR, "Unable to create playback thread");
-    return -1;
+	  av_log(NULL, AV_LOG_ERROR, "Unable to create playback thread\n");
+	  return -1;
   }
-
-  std::unique_lock<std::mutex> lck(mtx);
-  cv.wait(lck, [&is_initialized] { return is_initialized; });
-  int err = FfmpegToJavaErrNo(p_video_state_->StartStream());
-  if (err)
-    return err;
-
-  if (p_video_state_->GetFrameWidth()) {
-    FfmpegSdlAvPlayback::SetDefaultWindowSize(
-        p_video_state_->GetFrameWidth(), p_video_state_->GetFrameHeight(),
-        p_video_state_->GetFrameAspectRatio());
-  }
-
+#elif __APPLE__
+    __block int err;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        InitializeSDL();
+        
+        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            // Must Initlialize SDL before starting the stream
+            err = FfmpegToJavaErrNo(p_video_state_->StartStream());
+        });
+        
+        InitializeSDLWindow(wid);
+        InitializeRenderer();
+        
+        if (!frame_width_) {
+            char *p_filename = nullptr;
+            p_video_state_->GetFilename(&p_filename);
+            OpenWindow(p_filename);
+        }
+    });
+    if (err) {
+        av_log(NULL, AV_LOG_ERROR, "Unable to start the stream\n");
+        return err;
+    }
+    
+    p_display_thread_id_ =
+    new (std::nothrow) std::thread([this] {
+        SDL_Event event;
+        while (!is_stopped_) {
+            DisplayAndProcessEvent(&event);
+            if (event.type == SDL_WINDOWEVENT && event.window.windowID == window_id_) {
+                if (SDL_EventState(SDL_SYSWMEVENT, SDL_QUERY) == SDL_ENABLE) {
+                    SystemEventHandler(event);
+                } else {
+                    EventHandler(event);
+                }
+            }
+        }
+    });
+    
+    if (!p_display_thread_id_) {
+        av_log(NULL, AV_LOG_ERROR, "Unable to create playback thread\n");
+        return -1;
+    }
+#endif
   return 0;
 }

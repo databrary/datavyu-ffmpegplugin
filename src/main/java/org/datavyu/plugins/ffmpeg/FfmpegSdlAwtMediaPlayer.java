@@ -1,37 +1,35 @@
-package org.datavyu.plugins.mpv;
+package org.datavyu.plugins.ffmpeg;
 
+import java.awt.Container;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.MediaException;
-import org.datavyu.util.Utils;
-
 import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.PlayerStateListener;
+import org.datavyu.util.Utils;
 
-import java.awt.*;
-import java.net.URI;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-public class MpvAwtMediaPlayer extends MpvMediaPlayer {
-  private static final Logger logger = LogManager.getFormatterLogger(MpvAwtMediaPlayer.class);
+public class FfmpegSdlAwtMediaPlayer extends FfmpegSdlMediaPlayer {
+  private static final Logger logger = LogManager.getFormatterLogger(FfmpegSdlAwtMediaPlayer.class);
   private Container container;
 
-  /**
-   * Create an MPV media player instance and play through java framework
-   *
-   * @param mediaPath The media path
-   * @param container The container to display the frame in
-   */
-  public MpvAwtMediaPlayer(URI mediaPath, Container container) {
+  public FfmpegSdlAwtMediaPlayer(URI mediaPath) {
+    super(mediaPath);
+    this.container = null;
+  }
+
+  public FfmpegSdlAwtMediaPlayer(URI mediaPath, Container container) {
     super(mediaPath);
     this.container = container;
   }
 
+
   @Override
   public void init() {
     addMediaPlayerStateListener(new PlayerStateListenerImpl());
-    initNative(); // starts the event queue, make sure to register all state/error listeners before
+
+    initNative(); // start the event queue, make sure to register all state/error listeners before
+    long[] newNativeMediaRef = new long[1];
     long wid = 0;
     if (container != null) {
       try {
@@ -41,8 +39,7 @@ public class MpvAwtMediaPlayer extends MpvMediaPlayer {
       }
     }
 
-    long[] newNativeMediaRef = new long[1];
-    int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, wid);
+    int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath, wid);
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
@@ -50,17 +47,10 @@ public class MpvAwtMediaPlayer extends MpvMediaPlayer {
     nativeMediaRef = newNativeMediaRef[0];
   }
 
-  @Override
-  protected void playerSeekToFrame(int frameNumber) throws MediaException {
-    throw new NotImplementedException();
-  }
-
   private class PlayerStateListenerImpl implements PlayerStateListener {
 
     @Override
-    public void onReady(PlayerStateEvent evt) {
-      container.setSize(getImageWidth(), getImageHeight());
-    }
+    public void onReady(PlayerStateEvent evt) {}
 
     @Override
     public void onPlaying(PlayerStateEvent evt) {}

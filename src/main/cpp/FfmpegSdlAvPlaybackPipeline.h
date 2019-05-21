@@ -16,9 +16,10 @@ class FfmpegSdlAvPlaybackPipeline : public CPipeline {
 public:
   virtual uint32_t Init(const char *input_file);
   virtual void Dispose();
-  FfmpegSdlAvPlaybackPipeline(CPipelineOptions *pOptions);
+  FfmpegSdlAvPlaybackPipeline(CPipelineOptions *pOptions, const long window_id_);
   virtual ~FfmpegSdlAvPlaybackPipeline();
-
+  
+  long window_id_;
 private:
   virtual uint32_t Play();
   virtual uint32_t Stop();
@@ -48,6 +49,9 @@ private:
 
   virtual uint32_t GetImageWidth(int *p_width) const;
   virtual uint32_t GetImageHeight(int *p_height) const;
+
+  virtual uint32_t ShowWindow();
+  virtual uint32_t HideWindow();
 
   FfmpegSdlAvPlayback *p_sdl_playback_;
 };

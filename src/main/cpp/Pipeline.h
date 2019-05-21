@@ -86,6 +86,11 @@ public:
   virtual uint32_t SetAudioSyncDelay(long lMillis) = 0;
   virtual uint32_t GetAudioSyncDelay(long *plMillis) = 0;
 
+#ifdef SDL_ENABLED
+  virtual uint32_t ShowWindow() = 0;
+  virtual uint32_t HideWindow() = 0;
+#endif
+
 protected:
   CJavaPlayerEventDispatcher *p_event_dispatcher_;
   CPipelineOptions *p_options_;

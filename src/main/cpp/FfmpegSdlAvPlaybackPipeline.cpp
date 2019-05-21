@@ -2,8 +2,8 @@
 #include "MediaPlayerErrors.h"
 
 FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(
-    CPipelineOptions *pOptions)
-    : CPipeline(pOptions), p_sdl_playback_(nullptr) {}
+    CPipelineOptions *pOptions, long window_id)
+    : CPipeline(pOptions), window_id_(window_id), p_sdl_playback_(nullptr) {}
 
 FfmpegSdlAvPlaybackPipeline::~FfmpegSdlAvPlaybackPipeline() {
   // Clean-up done in dispose that is called from the destructor of the
@@ -51,7 +51,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char *input_file) {
       VideoState::PlayerStateCallback::TO_FINISHED,
       [this] { this->UpdatePlayerState(Finished); });
 
-  err = p_sdl_playback_->InitializeAndStartDisplayLoop();
+  err = p_sdl_playback_->InitializeAndStartDisplayLoop(window_id_);
   if (err) {
     return err;
   }
@@ -70,6 +70,8 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Play() {
   }
   p_sdl_playback_->Play();
 
+  UpdatePlayerState(Playing);
+
   return ERROR_NONE; // no error
 }
 
@@ -79,6 +81,8 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Stop() {
   }
   p_sdl_playback_->Stop();
 
+  UpdatePlayerState(Stopped);
+
   return ERROR_NONE; // no error
 }
 
@@ -86,7 +90,10 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  p_sdl_playback_->TogglePauseAndStopStep();
+
+  p_sdl_playback_->Pause();
+
+  UpdatePlayerState(Paused);
 
   return ERROR_NONE; // no error
 }
@@ -127,6 +134,10 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
   if (p_sdl_playback_->GetStartTime() != AV_NOPTS_VALUE &&
       dSeekTime < p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE) {
     dSeekTime = p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE;
+  } else if (p_sdl_playback_->GetDuration() != AV_NOPTS_VALUE &&
+	dSeekTime >= p_sdl_playback_->GetDuration()) {
+	//FIXME Remove the 0.1 sec difference when seeking to end of stream is fixed
+	dSeekTime = p_sdl_playback_->GetDuration() - 0.1;
   }
 
   double incr = dSeekTime - pos;
@@ -138,6 +149,12 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SeekToFrame(int frame_nb) {
+  if (p_sdl_playback_ == nullptr) {
+	return ERROR_PLAYBACK_NULL;
+  }
+
+  p_sdl_playback_->SeekToFrame(frame_nb);
+
   return ERROR_NONE; // no error
 }
 
@@ -244,4 +261,20 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int *iHeight) const {
 	}
 	*iHeight = p_sdl_playback_->GetImageHeight();
 	return ERROR_NONE;
+}
+
+uint32_t FfmpegSdlAvPlaybackPipeline::HideWindow() {
+    if (p_sdl_playback_ == nullptr) {
+        return ERROR_PLAYBACK_NULL;
+    }
+    p_sdl_playback_->HideWindow();
+    return ERROR_NONE;
+}
+
+uint32_t FfmpegSdlAvPlaybackPipeline::ShowWindow() {
+    if (p_sdl_playback_ == nullptr) {
+        return ERROR_PLAYBACK_NULL;
+    }
+    p_sdl_playback_->ShowWindow();
+    return ERROR_NONE;
 }

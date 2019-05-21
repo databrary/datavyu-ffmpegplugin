@@ -301,6 +301,10 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   protected abstract void playerDispose();
 
+  protected abstract void playerShowSDLWindow() throws NotImplementedException;
+
+  protected abstract void playerHideSDLWindow() throws NotImplementedException;
+
   @Override
   public void setAudioSyncDelay(long delay) {
     try {
@@ -669,6 +673,31 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     }
     return false;
   }
+
+  @Override
+  public void showSDLWindow() {
+    if (!isDisposed) {
+      try{
+        playerShowSDLWindow();
+        setMute(false);
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      }
+    }
+  }
+
+  @Override
+  public void hideSDLWindow() {
+    if (!isDisposed) {
+      try{
+        playerHideSDLWindow();
+        setMute(true);
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      }
+    }
+  }
+
 
   // **************************************************************************
   // ***** Non-JNI methods called by the native layer. These methods are called

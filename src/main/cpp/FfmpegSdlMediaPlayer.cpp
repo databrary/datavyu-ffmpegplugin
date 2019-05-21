@@ -19,7 +19,7 @@ extern "C" {
  */
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegInitPlayer(
-    JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath) {
+    JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath, jlong wid) {
 
   CPipelineOptions *pOptions = new (nothrow) CPipelineOptions();
   if (NULL == pOptions) {
@@ -27,7 +27,7 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegInitPlayer(
   }
 
   CPipeline *pPipeline =
-      new (std::nothrow) FfmpegSdlAvPlaybackPipeline(pOptions);
+      new (std::nothrow) FfmpegSdlAvPlaybackPipeline(pOptions, wid);
 
   if (NULL == pPipeline) {
     return ERROR_PIPELINE_NULL;
@@ -589,6 +589,52 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetVolume(
   jint iRet = (jint)pPipeline->SetVolume((float)volume);
 
   return iRet;
+}
+    
+/*
+* Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+* Method:    ffmpegShowWindow
+* Signature: (J)I
+*/
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegShowWindow(
+    JNIEnv *env, jobject object, jlong ref_media) {
+    CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+    if (NULL == pMedia)
+        return ERROR_MEDIA_NULL;
+    
+    CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+    if (NULL == pPipeline)
+        return ERROR_PIPELINE_NULL;
+    
+    jint iRet = 0;
+#ifdef SDL_ENABLED
+    iRet = (jint)pPipeline->ShowWindow();
+#endif
+    return iRet;
+}
+    
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegHideWindow
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegHideWindow(
+    JNIEnv *env, jobject object, jlong ref_media) {
+    CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+    if (NULL == pMedia)
+        return ERROR_MEDIA_NULL;
+    
+    CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+    if (NULL == pPipeline)
+        return ERROR_PIPELINE_NULL;
+    
+    jint iRet = 0;
+#ifdef SDL_ENABLED
+    iRet = (jint)pPipeline->HideWindow();
+#endif
+    return iRet;
 }
 
 #ifdef __cplusplus

@@ -11,7 +11,7 @@ int runFFmpegPlayer(const char *input_filename, AVInputFormat *file_iformat) {
     fprintf(stderr, "Error %d when opening input file %s", err, input_filename);
     return err;
   }
-  FfmpegSdlAvPlayback::InitializeAndListenForEvents(p_player);
+  FfmpegSdlAvPlayback::InitializeAndListenForEvents(p_player, NULL);
 
   return 0;
 }
@@ -24,8 +24,8 @@ int runMpvPlayer(const char *input_filename) {
 
 int main(int argc, char **argv) {
 	static const char *input_filename =
-		//"Nature_30fps_1080p.mp4"
-		"DatavyuSampleVideo.mp4"; 
+    "Nature_30fps_1080p.mp4";
+		//"DatavyuSampleVideo.mp4";
 		// "counter.mp4";
         //"http://www.html5videoplayer.net/videos/toystory.mp4";
   AVInputFormat *file_iformat = nullptr;

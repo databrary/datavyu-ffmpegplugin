@@ -3,11 +3,20 @@
 
 #include "FfmpegAVPlayback.h"
 #include "VideoState.h"
+#include <iostream>
 #include <atomic>
+
+#ifdef _WIN32
+#include <Basetsd.h>
+#elif __APPLE__
+#include <dispatch/dispatch.h>
+#endif
 
 extern "C" {
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
+#include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_version.h>
 }
 
 #define FF_QUIT_EVENT (SDL_USEREVENT + 2)
@@ -33,48 +42,89 @@ public:
   }
 
   // Get the volume
-  inline double GetVolume() const { return audio_volume_; }
+  inline double GetVolume() const { return av_clip(100 * av_clip(audio_volume_, 0, SDL_MIX_MAXVOLUME) / SDL_MIX_MAXVOLUME, 0,
+	  100);}
 
+  inline void ShowWindow() {
+#ifdef _WIN32
+      SDL_Window * window = SDL_GetWindowFromID(window_id_);
+      if (window) {
+          SDL_ShowWindow(p_window_);
+          SDL_RaiseWindow(p_window_);
+      }
+#elif __APPLE__
+      dispatch_async(dispatch_get_main_queue(), ^{
+          SDL_Window * window = SDL_GetWindowFromID(window_id_);
+          if (window) {
+              SDL_ShowWindow(p_window_);
+              SDL_RaiseWindow(p_window_);
+          }
+      });
+#endif
+  }
+    
+  inline void HideWindow() {
+#ifdef _WIN32
+      SDL_Window * window = SDL_GetWindowFromID(window_id_);
+      if (window) {
+          SDL_HideWindow(p_window_);
+      }
+#elif __APPLE__
+      dispatch_async(dispatch_get_main_queue(), ^{
+          SDL_Window * window = SDL_GetWindowFromID(window_id_);
+          if (window) {
+              SDL_HideWindow(window);
+          }
+      });
+#endif
+  }
+
+  inline int GetWindowID() {
+	 return window_id_;
+  }
+ 
   // Get Image Width
   int GetImageWidth() const;
 
   // Get image Height
   int GetImageHeight() const;
 
-  // Get the volume step in Decibel
-  int GetVolumeStep() const;
-
-  // Step the volume in decibel in the desired direction
-  void StepVolume(double stepInDecibel);
-
   // Set the volume
   void SetVolume(double volume);
 
   // Initializes the SDL ecosystem and starts the display loop
-  int InitializeAndStartDisplayLoop();
+  int InitializeAndStartDisplayLoop(long window_id);
+
+  void SetSize(int width, int height);
 
   // Initializes the SDL ecosystem and starts the event loop to process
   // events from the SDL window
-  static void InitializeAndListenForEvents(FfmpegSdlAvPlayback *p_player);
+  static void InitializeAndListenForEvents(FfmpegSdlAvPlayback *p_player, long window_id);
 
 private:
   SDL_Window *p_window_;
+  SDL_Window *p_dummy_window_;
   SDL_Renderer *p_renderer_;
   SDL_AudioDeviceID audio_dev_ = 0;
   int x_left_;
   int y_top_;
   int x_pos_;
+  int window_id_;
 
   struct SwsContext *p_img_convert_ctx_;
 
   SDL_Texture *p_vis_texture_;
   SDL_Texture *p_vid_texture_;
 
+  SDL_Rect display_rect_;
+
   int screen_width_;
   int screen_height_;
   int enabled_full_screen_;
 
   int audio_volume_;
+
+  double remaining_time_;
 
   int64_t cursor_last_shown_time_;
   bool is_cursor_hidden_;
@@ -83,7 +133,7 @@ private:
 #ifdef __APPLE__
   std::atomic<bool> is_stopped_ = {false};
 #elif _WIN32
-    std::atomic<bool> is_stopped_ = false;
+  std::atomic<bool> is_stopped_ = false;
 #endif
   std::thread *p_display_thread_id_ = nullptr;
 
@@ -107,8 +157,6 @@ private:
     *p_width = frame_width_;
     *p_height = frame_height_;
   }
-
-  void SetSize(int width, int height);
 
   inline void SetCursorLastShownTime(int64_t time) {
     int64_t cursor_last_shown_time_ = time;
@@ -142,9 +190,15 @@ private:
                                            AVRational frame_aspect_ratio);
 
   inline void StopDisplayLoop() { is_stopped_ = true; }
+  
+  // Initialize the SDL ecosystem
+  void InitializeSDL();
 
   // Initialize the SDL ecosystem
-  void Initialize();
+  void InitializeSDLWindow(long window_id);
+
+  // Initialize the SDL window
+  void InitializeRenderer();
 
   int OpenWindow(const char *window_name);
   inline void CloseAudio() { SDL_CloseAudioDevice(audio_dev_); }
@@ -175,6 +229,10 @@ private:
   // called to display each frame
   void UpdateFrame(double *remaining_time);
 
+  void SystemEventHandler(SDL_Event &event);
+  //SDL_EventFilter resizingEventWatcher(void *data, SDL_Event *event);
+  void EventHandler(SDL_Event &event);
+
   // Function Called from the event loop
   void DisplayAndProcessEvent(SDL_Event *event);
 };
@@ -184,14 +242,29 @@ static void sdl_audio_callback_bridge(void *vs, Uint8 *stream, int len) {
       static_cast<FfmpegSdlAvPlayback *>(vs);
   VideoState *p_video_state = nullptr;
   pFfmpegSdlAvPlayback->GetVideoState(&p_video_state);
-  p_video_state->GetAudioCallback(stream, len);
+  int volume = pFfmpegSdlAvPlayback->GetVolume();
+#ifdef SDL_ENABLED
+  p_video_state->GetAudioCallback(stream, len, volume);
+#endif // SDL_ENABLED
 
+  // SDL_MixAudioFormat need to be called from the video state class
   // Note, the mixer can work inplace using the same stream as src and dest, see
   // source code here
   // https://github.com/davidsiaw/SDL2/blob/c315c99d46f89ef8dbb1b4eeab0fe38ea8a8b6c5/src/audio/SDL_mixer.c
-  if (!p_video_state->IsMuted() && stream)
-    SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len,
-                       pFfmpegSdlAvPlayback->GetVolumeStep());
+  //if (!p_video_state->IsMuted() && stream)
+	 // SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len, pFfmpegSdlAvPlayback->GetVolume());
+}
+
+static int resizingEventHandler(void* p_player, SDL_Event* event) {
+	FfmpegSdlAvPlayback *pFfmpegSdlAvPlayback =
+		static_cast<FfmpegSdlAvPlayback *>(p_player);
+	if (event->type == SDL_WINDOWEVENT &&
+		event->window.event == SDL_WINDOWEVENT_RESIZED) {
+		if (pFfmpegSdlAvPlayback->GetWindowID() == event->window.windowID) {
+			pFfmpegSdlAvPlayback->SetSize(event->window.data1, event->window.data2);
+		}
+	}
+	return 0;
 }
 
 #endif FFMPEGSDLAVPLAYBACK_H_

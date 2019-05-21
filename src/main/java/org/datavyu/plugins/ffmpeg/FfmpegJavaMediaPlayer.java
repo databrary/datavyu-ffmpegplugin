@@ -323,6 +323,16 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   @Override
+  protected void playerShowSDLWindow() {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  protected void playerHideSDLWindow() {
+    throw new NotImplementedException();
+  }
+
+  @Override
   public boolean hasAudioData() {
     boolean[] hasData = new boolean[1];
     int rc = ffmpegHasAudioData(getNativeMediaRef(), hasData);

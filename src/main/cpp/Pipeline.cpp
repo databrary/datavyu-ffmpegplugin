@@ -27,7 +27,7 @@
 #include "JavaPlayerEventDispatcher.h"
 #include "MediaPlayerErrors.h"
 
-CPipeline::CPipeline(CPipelineOptions *p_options)
+CPipeline::CPipeline(CPipelineOptions *p_options) 
     : p_event_dispatcher_(nullptr), p_options_(p_options), player_state_(Unknown),
       player_pending_state_(Unknown) {}
 
