@@ -105,6 +105,8 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
 FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   StopDisplayLoop();
 
+  SDL_DelEventWatch(resizingEventHandler, this);
+
   if (audio_dev_) {
     CloseAudio();
   }
@@ -440,6 +442,7 @@ int FfmpegSdlAvPlayback::ReallocateTexture(SDL_Texture **pp_texture,
 }
 
 void FfmpegSdlAvPlayback::DisplayVideoFrame() {
+
   SDL_SetRenderDrawColor(p_renderer_, 0, 0, 0, 255);
   SDL_RenderClear(p_renderer_);
   if (p_video_state_->HasImageStream()) {
@@ -730,6 +733,9 @@ void FfmpegSdlAvPlayback::InitializeSDLWindow(long window_id) {
 				SDL_WINDOWPOS_UNDEFINED, kDefaultWidth,
 				kDefaultHeight, flags);
 		}
+		// Run window resizing events on a separate thread, to continuously update the renderer rectangle
+		// Also this will allow a faster update of the displayed rectangle when multiple windows are used
+		SDL_AddEventWatch(resizingEventHandler, this);
 	}
 }
 void FfmpegSdlAvPlayback::InitializeRenderer() {
@@ -1021,21 +1027,22 @@ void FfmpegSdlAvPlayback::SystemEventHandler(SDL_Event &event) {
 
 }
 
-
 void FfmpegSdlAvPlayback::EventHandler(SDL_Event &event) {
-	// Add handling of resizing the window
+		// Add handling of resizing the window
 		switch (event.window.event) {
-        case SDL_WINDOWEVENT_CLOSE:
-            HideWindow();
-            SetVolume(0);
-            break;
-        case SDL_WINDOWEVENT_RESIZED:
-            SetSize(event.window.data1, event.window.data2);
-        case SDL_WINDOWEVENT_EXPOSED:
-            dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-              DisplayVideoFrame();
-            });
-            break;
+		case SDL_WINDOWEVENT_CLOSE:
+			HideWindow();
+			SetVolume(0);
+			break;
+		case SDL_WINDOWEVENT_EXPOSED:
+#ifdef _WIN32
+			DisplayVideoFrame();
+#elif __APPLE__
+			dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+			  DisplayVideoFrame();
+			});
+#endif
+			break;
 		default:
 			break;
 		}

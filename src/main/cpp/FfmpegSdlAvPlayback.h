@@ -78,6 +78,10 @@ public:
       });
 #endif
   }
+
+  inline int GetWindowID() {
+	 return window_id_;
+  }
  
   // Get Image Width
   int GetImageWidth() const;
@@ -90,6 +94,8 @@ public:
 
   // Initializes the SDL ecosystem and starts the display loop
   int InitializeAndStartDisplayLoop(long window_id);
+
+  void SetSize(int width, int height);
 
   // Initializes the SDL ecosystem and starts the event loop to process
   // events from the SDL window
@@ -151,8 +157,6 @@ private:
     *p_width = frame_width_;
     *p_height = frame_height_;
   }
-
-  void SetSize(int width, int height);
 
   inline void SetCursorLastShownTime(int64_t time) {
     int64_t cursor_last_shown_time_ = time;
@@ -226,6 +230,7 @@ private:
   void UpdateFrame(double *remaining_time);
 
   void SystemEventHandler(SDL_Event &event);
+  //SDL_EventFilter resizingEventWatcher(void *data, SDL_Event *event);
   void EventHandler(SDL_Event &event);
 
   // Function Called from the event loop
@@ -248,6 +253,18 @@ static void sdl_audio_callback_bridge(void *vs, Uint8 *stream, int len) {
   // https://github.com/davidsiaw/SDL2/blob/c315c99d46f89ef8dbb1b4eeab0fe38ea8a8b6c5/src/audio/SDL_mixer.c
   //if (!p_video_state->IsMuted() && stream)
 	 // SDL_MixAudioFormat(stream, stream, AUDIO_S16SYS, len, pFfmpegSdlAvPlayback->GetVolume());
+}
+
+static int resizingEventHandler(void* p_player, SDL_Event* event) {
+	FfmpegSdlAvPlayback *pFfmpegSdlAvPlayback =
+		static_cast<FfmpegSdlAvPlayback *>(p_player);
+	if (event->type == SDL_WINDOWEVENT &&
+		event->window.event == SDL_WINDOWEVENT_RESIZED) {
+		if (pFfmpegSdlAvPlayback->GetWindowID() == event->window.windowID) {
+			pFfmpegSdlAvPlayback->SetSize(event->window.data1, event->window.data2);
+		}
+	}
+	return 0;
 }
 
 #endif FFMPEGSDLAVPLAYBACK_H_
