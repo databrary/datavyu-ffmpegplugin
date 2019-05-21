@@ -15,19 +15,15 @@ import java.net.URI;
  * <p>It also provides volume control through the native SDL audio playback
  */
 public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
-
-  private static final Logger LOGGER = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
+  private static final Logger logger = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
 
   static {
     try {
-      if (LibraryLoader.isMacOs) {
-        throw new RuntimeException("Ffmpeg + SDL media player Is not supported on Mac OSx");
-      }
       LibraryLoader.extract(FFMPEG_DEPENDENCIES);
-      LibraryLoader.extract("SDL2"); // Unfortunately SDL does not conform to the pattern
+      LibraryLoader.extractAndLoad("SDL2");
       LibraryLoader.extractAndLoad("FfmpegSdlMediaPlayer");
     } catch (Exception e) {
-      LOGGER.error("Loading libraries failed due to: " + e);
+      logger.error("Loading libraries failed due to: " + e);
     }
   }
 
@@ -227,7 +223,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
-    LOGGER.trace("Player is seeking to Frame Number" + frameNumber);
+    logger.trace("Player is seeking to Frame Number" + frameNumber);
   }
 
   @Override
@@ -253,6 +249,22 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   @Override
   protected void playerDispose() {
     ffmpegDisposePlayer(getNativeMediaRef());
+  }
+
+  @Override
+  protected void playerShowSDLWindow() {
+    int rc = ffmpegShowWindow(getNativeMediaRef());
+    if (rc != 0) {
+      throwMediaErrorException(rc, null);
+    }
+  }
+
+  @Override
+  protected void playerHideSDLWindow() {
+    int rc = ffmpegHideWindow(getNativeMediaRef());
+    if (rc != 0) {
+      throwMediaErrorException(rc, null);
+    }
   }
 
   // Native methods
@@ -301,4 +313,8 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   protected native int ffmpegGetVolume(long refNativeMedia, float[] volume);
 
   protected native int ffmpegSetVolume(long refNativeMedia, float volume);
+
+  protected native int ffmpegShowWindow(long refNativeMedia);
+
+  protected native int ffmpegHideWindow(long refNativeMedia);
 }

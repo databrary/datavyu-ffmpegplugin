@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 abstract class MpvMediaPlayer extends DatavyuMediaPlayer {
 
@@ -234,6 +235,16 @@ abstract class MpvMediaPlayer extends DatavyuMediaPlayer {
   @Override
   protected void playerDispose() {
     mpvDisposePlayer(getNativeMediaRef());
+  }
+
+  @Override
+  protected void playerShowSDLWindow() {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  protected void playerHideSDLWindow() {
+    throw new NotImplementedException();
   }
 
   @Override

@@ -1392,30 +1392,44 @@ void VideoState::GetMasterClock(Clock **pp_clock) const {
 }
 
 /* prepare a new audio buffer */
+#ifdef SDL_ENABLED
+void VideoState::GetAudioCallback(uint8_t *stream, int len, int audio_volume) {
+#else
 void VideoState::GetAudioCallback(uint8_t *stream, int len) {
+#endif // SDL_ENABLED
   int audio_size, len1;
 
   while (len > 0) {
-    if (audio_buffer_index_ >= audio_buffer_size_) {
-      audio_size = DecodeAudioFrame();
-      if (audio_size < 0) {
-        /* if error, just output silence */
-        p_audio_buffer_ = NULL;
-        audio_buffer_size_ = audio_default_buffer_size_ /
-                             audio_params_target_.frame_size_ *
-                             audio_params_target_.frame_size_;
-      } else {
-        audio_buffer_size_ = audio_size;
-      }
-      audio_buffer_index_ = 0;
-    }
-    len1 = audio_buffer_size_ - audio_buffer_index_;
-    if (len1 > len) len1 = len;
-    if (!is_muted_ && p_audio_buffer_)
-      memcpy(stream, (uint8_t *)p_audio_buffer_ + audio_buffer_index_, len1);
-    else {
-      memset(stream, 0, len1);
-    }
+	  if (audio_buffer_index_ >= audio_buffer_size_) {
+		  audio_size = DecodeAudioFrame();
+		  if (audio_size < 0) {
+			  /* if error, just output silence */
+			  p_audio_buffer_ = NULL;
+			  audio_buffer_size_ = audio_default_buffer_size_ /
+				  audio_params_target_.frame_size_ *
+				  audio_params_target_.frame_size_;
+		  }
+		  else {
+			  audio_buffer_size_ = audio_size;
+		  }
+		  audio_buffer_index_ = 0;
+	  }
+	  len1 = audio_buffer_size_ - audio_buffer_index_;
+	  if (len1 > len) len1 = len;
+#ifdef SDL_ENABLED
+	  if (!is_muted_ && p_audio_buffer_ && audio_volume == SDL_MIX_MAXVOLUME) {
+#else
+	  if (!is_muted_ && p_audio_buffer_) {
+#endif // SDL_ENABLED
+		memcpy(stream, (uint8_t *)p_audio_buffer_ + audio_buffer_index_, len1);
+	  } else {
+		memset(stream, 0, len1);
+#ifdef SDL_ENABLED
+		if (!is_muted_ && p_audio_buffer_) {
+			SDL_MixAudioFormat(stream, (uint8_t *)p_audio_buffer_ + audio_buffer_index_, AUDIO_S16SYS, len1, audio_volume);
+		}
+#endif // SDL_ENABLED
+	  }
     len -= len1;
     stream += len1;
     audio_buffer_index_ += len1;

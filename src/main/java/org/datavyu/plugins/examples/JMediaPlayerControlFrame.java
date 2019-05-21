@@ -154,6 +154,14 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
         System.out.println("Un-mute");
         mediaPlayer.setMute(false);
         break;
+      case KeyEvent.VK_H:
+        System.out.println("Hide SDL Window");
+        mediaPlayer.hideSDLWindow();
+        break;
+      case KeyEvent.VK_J:
+        System.out.println("Hide SDL Window");
+        mediaPlayer.showSDLWindow();
+        break;
       case KeyEvent.VK_ESCAPE:
         mediaPlayer.dispose();
         System.exit(0);

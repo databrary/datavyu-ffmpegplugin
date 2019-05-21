@@ -6,7 +6,7 @@
 
   <groupId>org.datavyu</groupId>
   <artifactId>ffmpeg-plugin</artifactId>
-  <version>0.19</version>
+  <version>0.20</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -17,6 +17,7 @@
     <xcodebuild>/usr/bin/xcodebuild</xcodebuild>
     <configuration.release>Release</configuration.release>
     <configuration.debug>Debug</configuration.debug>
+    <configuration.xcode.scheme>MediaPlayerWorkspace</configuration.xcode.scheme>
   </properties>
 
   <repositories>
@@ -104,11 +105,19 @@
         </dependency>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.0 Version -->
+        <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
-          <version>4.0.2</version>
+          <version>4.1.1</version>
+          <classifier>mac</classifier>
+        </dependency>
+
+        <!-- SDL 2.0.9 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>sdl-libs</artifactId>
+          <version>2.0.9</version>
           <classifier>mac</classifier>
         </dependency>
       </dependencies>
@@ -119,6 +128,7 @@
             <directory>./</directory>
             <includes>
               <include>libFfmpegJavaMediaPlayer.dylib</include>
+              <include>libFfmpegSdlMediaPlayer.dylib</include>
             </includes>
           </resource>
         </resources>
@@ -156,9 +166,11 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>-project</argument>
-                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-workspace</argument>
+                    <argument>MediaPLayer.xcworkspace</argument>
                     <argument>clean</argument>
+                    <argument>-scheme</argument>
+                    <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
                     <argument>${configuration.debug}</argument>
                   </arguments>
@@ -173,8 +185,10 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>-project</argument>
-                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-workspace</argument>
+                    <argument>MediaPLayer.xcworkspace</argument>
+                    <argument>-scheme</argument>
+                    <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
                     <argument>${configuration.debug}</argument>
                     <argument>build</argument>
@@ -210,11 +224,19 @@
         </dependency>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.0 Version -->
+        <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
-          <version>4.0.2</version>
+          <version>4.1.1</version>
+          <classifier>mac</classifier>
+        </dependency>
+
+        <!-- SDL 2.0.9 -->
+        <dependency>
+          <groupId>org.datavyu</groupId>
+          <artifactId>sdl-libs</artifactId>
+          <version>2.0.9</version>
           <classifier>mac</classifier>
         </dependency>
       </dependencies>
@@ -225,6 +247,7 @@
             <directory>./</directory>
             <includes>
               <include>libFfmpegJavaMediaPlayer.dylib</include>
+              <include>libFfmpegSdlMediaPlayer.dylib</include>
             </includes>
           </resource>
         </resources>
@@ -262,9 +285,11 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>-project</argument>
-                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-workspace</argument>
+                    <argument>MediaPLayer.xcworkspace</argument>
                     <argument>clean</argument>
+                    <argument>-scheme</argument>
+                    <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
                     <argument>${configuration.release}</argument>
                   </arguments>
@@ -279,8 +304,10 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>-project</argument>
-                    <argument>FfmpegJavaMediaPlayer.xcodeproj</argument>
+                    <argument>-workspace</argument>
+                    <argument>MediaPLayer.xcworkspace</argument>
+                    <argument>-scheme</argument>
+                    <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
                     <argument>${configuration.release}</argument>
                     <argument>build</argument>
@@ -312,19 +339,20 @@
       <dependencies>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.0 Version -->
+        <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
-          <version>4.0.2</version>
+          <version>4.1.1</version>
           <classifier>win</classifier>
         </dependency>
 
-        <!-- SDL 2.0.8 -->
+        <!-- SDL 2.0.9 -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>sdl-libs</artifactId>
-          <version>2.0.8</version>
+          <version>2.0.9</version>
+          <classifier>win</classifier>
         </dependency>
 
         <!-- MPV 0.29.1 -->
@@ -343,6 +371,7 @@
             <directory>./</directory>
             <includes>
               <include>FfmpegJavaMediaPlayer.dll</include>
+              <include>FfmpegSdlMediaPlayer.dll</include>
               <include>MpvMediaPlayer.dll</include>
             </includes>
           </resource>
@@ -416,19 +445,20 @@
       <dependencies>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.0 Version -->
+        <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>ffmpeg-libs</artifactId>
-          <version>4.0.2</version>
+          <version>4.1.1</version>
           <classifier>win</classifier>
         </dependency>
 
-        <!-- SDL 2.0.8 -->
+        <!-- SDL 2.0.9 -->
         <dependency>
           <groupId>org.datavyu</groupId>
           <artifactId>sdl-libs</artifactId>
-          <version>2.0.8</version>
+          <version>2.0.9</version>
+          <classifier>win</classifier>
         </dependency>
 
         <!-- MPV 0.29.1 -->
@@ -446,6 +476,7 @@
             <directory>./</directory>
             <includes>
               <include>FfmpegJavaMediaPlayer.dll</include>
+              <include>FfmpegSdlMediaPlayer.dll</include>
               <include>MpvMediaPlayer.dll</include>
             </includes>
           </resource>
@@ -633,6 +664,5 @@
       <version>2.6</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 </project>

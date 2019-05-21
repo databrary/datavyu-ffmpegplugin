@@ -281,7 +281,11 @@ void FfmpegJavaAvPlayback::UpdateImageBuffer(uint8_t *p_image_data,
 
 void FfmpegJavaAvPlayback::UpdateAudioBuffer(uint8_t *p_audio_data,
                                              const long len) {
+  // IMPORTANT: Always set the volume to SDL_MIX_MAXVOLUME
+#ifndef SDL_ENABLED
   p_video_state_->GetAudioCallback(p_audio_data, len);
+#endif // !SDL_ENABLED
+
 }
 
 void FfmpegJavaAvPlayback::GetAudioFormat(AudioFormat *p_audio_format) {

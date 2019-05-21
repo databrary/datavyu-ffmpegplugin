@@ -1,7 +1,10 @@
 package org.datavyu.plugins.mpv;
 
+import java.lang.reflect.InvocationTargetException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaException;
-import sun.awt.windows.WComponentPeer;
+import org.datavyu.util.Utils;
 
 import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.PlayerStateListener;
@@ -11,6 +14,7 @@ import java.net.URI;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MpvAwtMediaPlayer extends MpvMediaPlayer {
+  private static final Logger logger = LogManager.getFormatterLogger(MpvAwtMediaPlayer.class);
   private Container container;
 
   /**
@@ -28,23 +32,22 @@ public class MpvAwtMediaPlayer extends MpvMediaPlayer {
   public void init() {
     addMediaPlayerStateListener(new PlayerStateListenerImpl());
     initNative(); // starts the event queue, make sure to register all state/error listeners before
-    container.setVisible(true);
+    long wid = 0;
+    if (container != null) {
+      try {
+        wid = Utils.getHWnd(container);
+      } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException e) {
+        logger.error("Error getting window handle: " + e.getMessage());
+      }
+    }
 
     long[] newNativeMediaRef = new long[1];
-    int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, getWindowID(container));
+    int rc = mpvInitPlayer(newNativeMediaRef, mediaPath, wid);
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
 
     nativeMediaRef = newNativeMediaRef[0];
-  }
-
-  private long getWindowID(Container container) {
-    if (container.getPeer() == null) {
-      throw new RuntimeException("Unable to retrieve window id");
-    }
-
-    return ((WComponentPeer) container.getPeer()).getHWnd();
   }
 
   @Override

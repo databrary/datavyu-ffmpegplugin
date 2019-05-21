@@ -1,7 +1,7 @@
 package org.datavyu.plugins.examples;
 
 import org.datavyu.plugins.MediaPlayer;
-import org.datavyu.plugins.ffmpeg.*;
+import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
 import java.io.File;
 import java.net.URI;
@@ -16,8 +16,6 @@ public class SimpleSdlMediaPlayer {
 
     // Initialize the player
     mediaPlayer.init();
-
-    mediaPlayer.play();
     // Open a JFrame to control the media player through key commands
     new JMediaPlayerControlFrame(mediaPlayer);
   }
