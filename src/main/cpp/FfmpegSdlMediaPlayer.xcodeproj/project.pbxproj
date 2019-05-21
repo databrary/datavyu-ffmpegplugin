@@ -68,7 +68,6 @@
 		2B80119822678004002548E4 /* libavformat.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavformat.58.dylib; path = dependencies/lib/libavformat.58.dylib; sourceTree = "<group>"; };
 		2B80119922678004002548E4 /* libavfilter.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavfilter.7.dylib; path = dependencies/lib/libavfilter.7.dylib; sourceTree = "<group>"; };
 		2B8011A4226792D1002548E4 /* libSDL2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2.dylib; path = dependencies/lib/libSDL2.dylib; sourceTree = "<group>"; };
-		2B8011BA2269263C002548E4 /* org_datavyu_util_Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = org_datavyu_util_Utils.h; sourceTree = "<group>"; };
 		2B8011BF226A4368002548E4 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		2B8011C1226A59CC002548E4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		2B8011C3226A59D6002548E4 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -138,7 +137,6 @@
 		E95D22CC219644C2007A6758 = {
 			isa = PBXGroup;
 			children = (
-				2B8011BA2269263C002548E4 /* org_datavyu_util_Utils.h */,
 				E95D230D219647A4007A6758 /* AudioVideoFormats.cpp */,
 				E95D22F9219647A2007A6758 /* AudioVideoFormats.h */,
 				E95D22FA219647A2007A6758 /* Clock.cpp */,
