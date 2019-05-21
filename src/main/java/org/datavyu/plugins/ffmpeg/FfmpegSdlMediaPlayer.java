@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Uses the SDL framework to playback the images and sound natively
@@ -15,7 +14,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  *
  * <p>It also provides volume control through the native SDL audio playback
  */
-abstract class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
+public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   private static final Logger logger = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
 
   static {
@@ -30,6 +29,19 @@ abstract class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
   public FfmpegSdlMediaPlayer(URI mediaPath) {
     super(mediaPath);
+  }
+
+  @Override
+  public void init() {
+    initNative(); // start the event queue, make sure to register all state/error listeners before
+    long[] newNativeMediaRef = new long[1];
+
+    int rc = ffmpegInitPlayer(newNativeMediaRef, mediaPath);
+    if (0 != rc) {
+      throwMediaErrorException(rc, null);
+    }
+
+    nativeMediaRef = newNativeMediaRef[0];
   }
 
   @Override
@@ -256,7 +268,7 @@ abstract class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   // Native methods
-  protected native int ffmpegInitPlayer(long[] newNativeMedia, String sourcePath, long windowID);
+  protected native int ffmpegInitPlayer(long[] newNativeMedia, String sourcePath);
 
   protected native int ffmpegDisposePlayer(long refNativeMedia);
 

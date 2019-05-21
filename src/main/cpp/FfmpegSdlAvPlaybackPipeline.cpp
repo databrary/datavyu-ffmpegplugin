@@ -2,8 +2,8 @@
 #include "MediaPlayerErrors.h"
 
 FfmpegSdlAvPlaybackPipeline::FfmpegSdlAvPlaybackPipeline(
-    CPipelineOptions *pOptions, long window_id)
-    : CPipeline(pOptions), window_id_(window_id), p_sdl_playback_(nullptr) {}
+    CPipelineOptions *pOptions)
+    : CPipeline(pOptions), p_sdl_playback_(nullptr) {}
 
 FfmpegSdlAvPlaybackPipeline::~FfmpegSdlAvPlaybackPipeline() {
   // Clean-up done in dispose that is called from the destructor of the
@@ -51,7 +51,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char *input_file) {
       VideoState::PlayerStateCallback::TO_FINISHED,
       [this] { this->UpdatePlayerState(Finished); });
 
-  err = p_sdl_playback_->InitializeAndStartDisplayLoop(window_id_);
+  err = p_sdl_playback_->InitializeAndStartDisplayLoop();
   if (err) {
     return err;
   }

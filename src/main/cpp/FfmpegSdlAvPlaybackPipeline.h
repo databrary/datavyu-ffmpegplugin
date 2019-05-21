@@ -16,10 +16,9 @@ class FfmpegSdlAvPlaybackPipeline : public CPipeline {
 public:
   virtual uint32_t Init(const char *input_file);
   virtual void Dispose();
-  FfmpegSdlAvPlaybackPipeline(CPipelineOptions *pOptions, const long window_id_);
+  FfmpegSdlAvPlaybackPipeline(CPipelineOptions *pOptions);
   virtual ~FfmpegSdlAvPlaybackPipeline();
-  
-  long window_id_;
+
 private:
   virtual uint32_t Play();
   virtual uint32_t Stop();

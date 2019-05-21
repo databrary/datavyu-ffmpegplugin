@@ -82,7 +82,7 @@ void FfmpegSdlAvPlayback::CalculateRectangleForDisplay(
 }
 
 FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
-    : FfmpegAvPlayback(), y_top_(0), x_left_(0), window_id_(0), p_window_(nullptr), p_dummy_window_(nullptr),
+    : FfmpegAvPlayback(), y_top_(0), x_left_(0), window_id_(0), p_window_(nullptr),
       p_renderer_(nullptr), p_img_convert_ctx_(nullptr),
       p_vis_texture_(nullptr), p_vid_texture_(nullptr), screen_width_(0),
       screen_height_(0), enabled_full_screen_(0), audio_volume_(0), remaining_time_(0),
@@ -127,9 +127,6 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   // Cleanup resampling
   sws_freeContext(p_img_convert_ctx_);
 
-  SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, nullptr);
-  SDL_SetHint(SDL_HINT_RENDER_DRIVER, nullptr);
-
   // Cleanup SDL components
   if (p_renderer_) {
     SDL_DestroyRenderer(p_renderer_);
@@ -139,9 +136,6 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
 	  SDL_DestroyWindow(p_window_);
   }
 
-  if (p_dummy_window_) {
-	  SDL_DestroyWindow(p_dummy_window_);
-  }
   avformat_network_deinit();
 
   av_free(p_window_title_);
@@ -687,7 +681,7 @@ void FfmpegSdlAvPlayback::InitializeSDL() {
 	}
 }
 
-void FfmpegSdlAvPlayback::InitializeSDLWindow(long window_id) {
+void FfmpegSdlAvPlayback::InitializeSDLWindow() {
 	if (p_video_state_->GetFrameWidth()) {
 		FfmpegSdlAvPlayback::SetDefaultWindowSize(
 			p_video_state_->GetFrameWidth(), p_video_state_->GetFrameHeight(),
@@ -695,6 +689,7 @@ void FfmpegSdlAvPlayback::InitializeSDLWindow(long window_id) {
 	}
 
 	SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
+    SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
 	if (!display_disabled_) {
 		int flags = SDL_WINDOW_HIDDEN;
 		if (kWindowResizable) {
@@ -704,35 +699,10 @@ void FfmpegSdlAvPlayback::InitializeSDLWindow(long window_id) {
 			flags |= SDL_WINDOW_BORDERLESS;
 		}
 
-		if (window_id != 0) {
-			SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
-			SDL_InitSubSystem(SDL_INIT_VIDEO);
-			// Need a dummy window with OpenGL to share pixel format
-			//https://discourse.libsdl.org/t/sdl-textureaccess-streaming-window-resize-crash/21761
-			p_dummy_window_ = SDL_CreateWindow("", 0, 0, 1, 1, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-			char sBuf[32];
-#ifdef _WIN32
-			sprintf_s<32>(sBuf, "%p", p_dummy_window_);
-#elif __APPLE__
-			sprintf(sBuf, "%p", p_dummy_window_);
-#endif
-			SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, sBuf);
-			// Use OpenGL renderer instead of D3D
-			//https://stackoverflow.com/questions/40312553/sdl2-crashes-on-window-resize
-			SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
-#ifdef _WIN32
-			p_window_ = SDL_CreateWindowFrom(LongToHandle(window_id));
-#elif __APPLE__
-			intptr_t wid = window_id;
-			p_window_ = SDL_CreateWindowFrom(&window_id);
-#endif
-		}
-		else {
-			SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
-			p_window_ = SDL_CreateWindow(kDefaultWindowTitle, SDL_WINDOWPOS_UNDEFINED,
+        p_window_ = SDL_CreateWindow(kDefaultWindowTitle, SDL_WINDOWPOS_UNDEFINED,
 				SDL_WINDOWPOS_UNDEFINED, kDefaultWidth,
 				kDefaultHeight, flags);
-		}
+
 		// Run window resizing events on a separate thread, to continuously update the renderer rectangle
 		// Also this will allow a faster update of the displayed rectangle when multiple windows are used
 		SDL_AddEventWatch(resizingEventHandler, this);
@@ -763,9 +733,6 @@ void FfmpegSdlAvPlayback::InitializeRenderer() {
       if (p_renderer_) {
         SDL_DestroyRenderer(p_renderer_);
       }
-      if (p_dummy_window_) {
-        SDL_DestroyWindow(p_dummy_window_);
-      }
       if (p_window_) {
         SDL_DestroyWindow(p_window_);
       }
@@ -773,8 +740,7 @@ void FfmpegSdlAvPlayback::InitializeRenderer() {
   }
 }
 
-void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
-    FfmpegSdlAvPlayback *p_player, long window_id) {
+void FfmpegSdlAvPlayback::InitializeAndListenForEvents(FfmpegSdlAvPlayback *p_player) {
   SDL_Event event;
   double incr, pos, frac, rate;
   Clock *p_master_clock = nullptr;
@@ -791,7 +757,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
 		  p_video_state->GetFrameAspectRatio());
   }
 
-  p_player->InitializeSDLWindow(window_id);
+  p_player->InitializeSDLWindow();
   p_player->InitializeRenderer();
 
   if (!p_player->frame_width_) {
@@ -1048,9 +1014,7 @@ void FfmpegSdlAvPlayback::EventHandler(SDL_Event &event) {
 		}
 }
 
-int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop(long window_id) {
-
-  long wid = window_id;
+int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
 #ifdef _WIN32
   InitializeSDL();
 
@@ -1100,7 +1064,7 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop(long window_id) {
             err = FfmpegToJavaErrNo(p_video_state_->StartStream());
         });
         
-        InitializeSDLWindow(wid);
+        InitializeSDLWindow();
         InitializeRenderer();
         
         if (!frame_width_) {

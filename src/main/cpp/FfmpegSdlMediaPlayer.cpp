@@ -19,7 +19,7 @@ extern "C" {
  */
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegInitPlayer(
-    JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath, jlong wid) {
+    JNIEnv *env, jobject obj, jlongArray jlMediaHandle, jstring sourcePath) {
 
   CPipelineOptions *pOptions = new (nothrow) CPipelineOptions();
   if (NULL == pOptions) {
@@ -27,7 +27,7 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegInitPlayer(
   }
 
   CPipeline *pPipeline =
-      new (std::nothrow) FfmpegSdlAvPlaybackPipeline(pOptions, wid);
+      new (std::nothrow) FfmpegSdlAvPlaybackPipeline(pOptions);
 
   if (NULL == pPipeline) {
     return ERROR_PIPELINE_NULL;

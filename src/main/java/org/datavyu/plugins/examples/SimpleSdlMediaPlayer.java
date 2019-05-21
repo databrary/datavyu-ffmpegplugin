@@ -1,19 +1,18 @@
 package org.datavyu.plugins.examples;
 
-import javax.swing.SwingUtilities;
 import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
 import java.io.File;
 import java.net.URI;
-import org.datavyu.plugins.ffmpeg.FfmpegSdlAwtMediaPlayer;
 
-public class SimpleSdlAwtMediaPlayer {
+public class SimpleSdlMediaPlayer {
   public static void main(String[] args) {
     // Define the media file
     URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
 
     // Create the media player using the constructor with File
-    MediaPlayer mediaPlayer = new FfmpegSdlAwtMediaPlayer(mediaPath);
+    MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
 
     // Initialize the player
     mediaPlayer.init();
