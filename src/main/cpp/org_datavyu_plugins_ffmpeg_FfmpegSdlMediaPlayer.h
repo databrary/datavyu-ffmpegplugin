@@ -30,10 +30,10 @@ extern "C" {
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
  * Method:    ffmpegInitPlayer
- * Signature: ([JLjava/lang/String;I)I
+ * Signature: ([JLjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegInitPlayer
-  (JNIEnv *, jobject, jlongArray, jstring, jlong);
+  (JNIEnv *, jobject, jlongArray, jstring);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer

@@ -11,7 +11,7 @@ int runFFmpegPlayer(const char *input_filename, AVInputFormat *file_iformat) {
     fprintf(stderr, "Error %d when opening input file %s", err, input_filename);
     return err;
   }
-  FfmpegSdlAvPlayback::InitializeAndListenForEvents(p_player, NULL);
+  FfmpegSdlAvPlayback::InitializeAndListenForEvents(p_player);
 
   return 0;
 }

@@ -166,7 +166,7 @@ public class MediaPlayerBuilder {
     URI movie = new File(movieFile).toURI();
     switch (type) {
       case SDL:
-        return new FfmpegSdlAwtMediaPlayer(movie, new JFrame());
+        return new FfmpegSdlMediaPlayer(movie);
       case JAVA_JDIALOG:
         return new FfmpegJavaMediaPlayer(movie, new JDialog());
       case MPV:

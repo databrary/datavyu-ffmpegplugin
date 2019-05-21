@@ -93,17 +93,16 @@ public:
   void SetVolume(double volume);
 
   // Initializes the SDL ecosystem and starts the display loop
-  int InitializeAndStartDisplayLoop(long window_id);
+  int InitializeAndStartDisplayLoop();
 
   void SetSize(int width, int height);
 
   // Initializes the SDL ecosystem and starts the event loop to process
   // events from the SDL window
-  static void InitializeAndListenForEvents(FfmpegSdlAvPlayback *p_player, long window_id);
+  static void InitializeAndListenForEvents(FfmpegSdlAvPlayback *p_player);
 
 private:
   SDL_Window *p_window_;
-  SDL_Window *p_dummy_window_;
   SDL_Renderer *p_renderer_;
   SDL_AudioDeviceID audio_dev_ = 0;
   int x_left_;
@@ -195,7 +194,7 @@ private:
   void InitializeSDL();
 
   // Initialize the SDL ecosystem
-  void InitializeSDLWindow(long window_id);
+  void InitializeSDLWindow();
 
   // Initialize the SDL window
   void InitializeRenderer();
