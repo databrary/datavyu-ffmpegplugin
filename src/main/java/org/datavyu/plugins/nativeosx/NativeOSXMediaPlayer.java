@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.DatavyuMediaPlayer;
-import org.datavyu.plugins.PlayerStateEvent;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
@@ -49,19 +48,30 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   @Override
   protected void playerPlay() throws MediaException {
     logger.debug("Start Player " + this.id);
-    if (getState() == PlayerStateEvent.PlayerState.PAUSED) {
-      EventQueue.invokeLater(() -> mediaPlayer.setRate(prevRate, id));
-    } else {
-      EventQueue.invokeLater(() -> mediaPlayer.setRate(1F, id));
-    }
-
+    EventQueue.invokeLater(() -> mediaPlayer.setRate(prevRate, id));
     sendPlayerStateEvent(eventPlayerPlaying, 0);
   }
 
   @Override
   protected void playerStop() throws MediaException {
-      EventQueue.invokeLater(() -> mediaPlayer.stop(id));
+      EventQueue.invokeLater(() -> {
+        prevRate = 1F;
+        mediaPlayer.stop(id);
+      });
       sendPlayerStateEvent(eventPlayerStopped, 0);
+  }
+
+  /**
+   * Stops the player and save the rate, this method is used when Pausing the player.
+   * Note: AVFoundation player set the rate to 0 when stopped, and there is no Pause feature.
+   * @param rate
+   */
+  private void playerStop(final float rate) {
+    EventQueue.invokeLater(() -> {
+      prevRate = rate;
+      mediaPlayer.stop(id);
+    });
+    sendPlayerStateEvent(eventPlayerStopped, 0);
   }
 
   @Override
@@ -85,22 +95,12 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerPause() throws MediaException {
-    // AVFoundation will change the rate to 0 when stopped
-    // we need to save the rate before a stop
-
-    if (getState() == PlayerStateEvent.PlayerState.STOPPED) {
-      // if the player was stopped, we need to
-      // override the stopped state and return
-      prevRate = 1F;
-      sendPlayerStateEvent(eventPlayerPaused, 0);
-      return;
-    } else if (getState() == PlayerStateEvent.PlayerState.PLAYING) {
-      prevRate = playerGetRate();
-      playerStop();
-
-      // Override the stopped state
-      sendPlayerStateEvent(eventPlayerPaused, 0);
+    float rate = mediaPlayer.getRate(id);
+    if (rate != 0F) {
+      playerStop(rate);
+      System.out.println("Pausing Video at " + rate + "X");
     }
+    sendPlayerStateEvent(eventPlayerPaused, 0);
   }
 
   @Override
@@ -114,8 +114,13 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   @Override
   protected void playerSetRate(float rate) throws MediaException {
     logger.info("Setting Rate to : " + rate + "X");
-    prevRate = playerGetRate();
-    mediaPlayer.setRate(rate, id);
+    EventQueue.invokeLater(
+        () -> {
+          if (mediaPlayer.getRate(id) != 0) {
+            prevRate = mediaPlayer.getRate(id);
+            mediaPlayer.setRate(rate, id);
+          }
+        });
   }
 
   @Override
@@ -170,8 +175,8 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
       EventQueue.invokeLater(
           () -> {
             boolean wasPlaying = isPlaying();
-            if (isPlaying()) {
-              mediaPlayer.stop(id);
+            if (wasPlaying) {
+              playerPause();
             }
             if (!wasPlaying || prevRate >= 0 && prevRate <= 8) {
               logger.debug("Precise seek to position: " + streamTime);
@@ -184,7 +189,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
               playerSeek(streamTime * 1000, NORMAL_SEEK_FLAG);
             }
             if (wasPlaying) {
-              playerSetRate(prevRate);
+              playerPlay();
             }
             mediaPlayer.repaint();
             seeking = false;
