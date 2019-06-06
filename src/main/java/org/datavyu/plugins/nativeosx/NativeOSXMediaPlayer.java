@@ -32,46 +32,56 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   protected double duration = -1;
   private float volume = INITIAL_VOLUME;
   private boolean seeking = false;
-  private float prevRate;
+  private float prevRate = 1F;
 
   protected NativeOSXMediaPlayer(URI mediaPath) {
     super(mediaPath);
     this.mediaPlayer = new NativeOSXPlayer(mediaPath);
     this.id = playerCount;
-    this.prevRate = 1F;
   }
 
-  protected static void incPlayerCount() { playerCount++; }
+  protected static void incPlayerCount() {
+    playerCount++;
+  }
 
-  protected static void decPlayerCount() { playerCount--; }
+  protected static void decPlayerCount() {
+    playerCount--;
+  }
 
   @Override
   protected void playerPlay() throws MediaException {
     logger.debug("Start Player " + this.id);
-    EventQueue.invokeLater(() -> mediaPlayer.setRate(prevRate, id));
-    sendPlayerStateEvent(eventPlayerPlaying, 0);
+    EventQueue.invokeLater(
+        () -> {
+          mediaPlayer.setRate(prevRate, id);
+          sendPlayerStateEvent(eventPlayerPlaying, 0);
+        });
   }
 
   @Override
   protected void playerStop() throws MediaException {
-      EventQueue.invokeLater(() -> {
-        prevRate = 1F;
-        mediaPlayer.stop(id);
-      });
-      sendPlayerStateEvent(eventPlayerStopped, 0);
+    EventQueue.invokeLater(
+        () -> {
+          prevRate = 1F;
+          mediaPlayer.stop(id);
+          sendPlayerStateEvent(eventPlayerStopped, 0);
+        });
   }
 
   /**
-   * Stops the player and save the rate, this method is used when Pausing the player.
-   * Note: AVFoundation player set the rate to 0 when stopped, and there is no Pause feature.
+   * Stops the player and save the rate, this method is used when Pausing the player. Note:
+   * AVFoundation player set the rate to 0 when stopped, and there is no Pause feature.
+   *
    * @param rate
    */
   private void playerStop(final float rate) {
-    EventQueue.invokeLater(() -> {
-      prevRate = rate;
-      mediaPlayer.stop(id);
-    });
-    sendPlayerStateEvent(eventPlayerStopped, 0);
+    EventQueue.invokeLater(
+        () -> {
+          prevRate = rate == 0 ? 1F : rate;
+          mediaPlayer.stop(id);
+          logger.debug("Player Pausing at " + rate + "X");
+          sendPlayerStateEvent(eventPlayerPaused, 0);
+        });
   }
 
   @Override
@@ -95,12 +105,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerPause() throws MediaException {
-    float rate = mediaPlayer.getRate(id);
-    if (rate != 0F) {
-      playerStop(rate);
-      System.out.println("Pausing Video at " + rate + "X");
-    }
-    sendPlayerStateEvent(eventPlayerPaused, 0);
+    playerStop(mediaPlayer.getRate(id));
   }
 
   @Override
@@ -116,9 +121,11 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     logger.info("Setting Rate to : " + rate + "X");
     EventQueue.invokeLater(
         () -> {
-          if (mediaPlayer.getRate(id) != 0) {
-            prevRate = mediaPlayer.getRate(id);
-            mediaPlayer.setRate(rate, id);
+          if (rate != 0) {
+            prevRate = rate;
+            playerPlay();
+          } else {
+            playerStop();
           }
         });
   }
@@ -218,7 +225,9 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
-  protected boolean playerIsSeekPlaybackEnabled() { return false; }
+  protected boolean playerIsSeekPlaybackEnabled() {
+    return false;
+  }
 
   @Override
   public int getImageWidth() {
