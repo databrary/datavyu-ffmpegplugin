@@ -20,12 +20,15 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
   private Container container;
   private final Object readyLock = new Object();
 
+  private PlayerStateListener stateListener;
+
   private long startInitTime;
   private long endInitTime;
 
   public AVFoundationMediaPlayer(URI mediaPath, Container container) {
     super(mediaPath);
-    this.addMediaPlayerStateListener(new AVFoundationMediaPlayer.PlayerStateListenerImpl());
+    stateListener = new PlayerStateListenerImpl();
+    this.addMediaPlayerStateListener(stateListener);
     this.container = container;
     sendPlayerStateEvent(eventPlayerUnknown, 0);
   }
@@ -46,17 +49,19 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
     container.addNotify();
     container.add(mediaPlayer, BorderLayout.CENTER);
+    container.setBackground(Color.BLACK);
 
     Runnable waitForReady =
         () -> {
-          while (playerGetFps() <= 0) {
+          //TODO(Reda): Timeout this loop and throw an exception
+          while (playerGetFps() <= 0 && Float.compare((float) playerGetDuration(),0) < 0) {
             try {
               Thread.sleep(100);
             } catch (InterruptedException e) {
               e.printStackTrace();
             }
           }
-            sendPlayerStateEvent(eventPlayerReady, 0);
+          sendPlayerStateEvent(eventPlayerReady, 0);
         };
 
     new Thread(waitForReady).start();
@@ -65,14 +70,15 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
       try {
         logger.info("Waiting for Ready state");
         readyLock.wait();
+        // Always increment the player count after creating an instance
+        // Important: don't decrement the player count when releasing resources
+        incPlayerCount();
+        endInitTime = System.currentTimeMillis();
+        logger.debug("Time to initialize : " + (endInitTime - startInitTime) + " ms");
       } catch (InterruptedException e) {
         logger.error(e.getMessage());
       }
     }
-    // Always increment the player count after creating an instance
-    incPlayerCount();
-    endInitTime = System.currentTimeMillis();
-    logger.debug("Time to initialize : " + (endInitTime - startInitTime) + " ms");
   }
 
   @Override
@@ -104,7 +110,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
         container.setVisible(true);
         startTime = getPresentationTime();
         readyLock.notify();
-        logger.info("Player is Ready");
+        logger.debug("Player is Ready - FPS " + playerGetFps() + " - Duration " + playerGetDuration());
       }
     }
 
