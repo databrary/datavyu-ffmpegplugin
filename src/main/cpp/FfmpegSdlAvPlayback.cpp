@@ -135,11 +135,20 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   }
 
   if (p_window_) {
-	Uint32 flags = SDL_GetWindowFlags(p_window_);
-	av_log(NULL, AV_LOG_INFO, "SDL Quit Subsytem for window %d \n", window_id_);
-	SDL_QuitSubSystem(flags);
-	SDL_DestroyWindow(p_window_);
-	kWindowCount--;
+#ifdef __APPLE__
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      Uint32 flags = SDL_GetWindowFlags(p_window_);
+      av_log(NULL, AV_LOG_INFO, "SDL Quit Subsytem for window %d \n", window_id_);
+      SDL_QuitSubSystem(flags);
+      SDL_DestroyWindow(p_window_);
+    });
+#elif _WIN32
+    Uint32 flags = SDL_GetWindowFlags(p_window_);
+    av_log(NULL, AV_LOG_INFO, "SDL Quit Subsytem for window %d \n", window_id_);
+    SDL_QuitSubSystem(flags);
+    SDL_DestroyWindow(p_window_);
+#endif
+    kWindowCount--;
 	av_log(NULL, AV_LOG_INFO, "Remaining SDL Window %d \n", kWindowCount);
   }
 
@@ -512,8 +521,9 @@ void FfmpegSdlAvPlayback::DisplayAndProcessEvent(SDL_Event *event) {
 #elif __APPLE__
     __block double remaining_time = kRefreshRate;
     __block bool force_refresh = force_refresh_;
+    __block bool isPaussed = p_video_state_->IsPaused();
     dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-      if (!p_video_state_->IsPaused() || force_refresh) {
+      if (!isPaussed || force_refresh) {
         UpdateFrame(&remaining_time);
       }
     });
@@ -713,7 +723,7 @@ void FfmpegSdlAvPlayback::InitializeSDLWindow() {
 				SDL_WINDOWPOS_UNDEFINED, kDefaultWidth,
 				kDefaultHeight, flags);
 
-		kWindowCount++;
+        kWindowCount++;
 
 		// Run window resizing events on a separate thread, to continuously update the renderer rectangle
 		// Also this will allow a faster update of the displayed rectangle when multiple windows are used
