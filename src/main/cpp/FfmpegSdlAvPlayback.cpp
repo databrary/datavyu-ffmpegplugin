@@ -20,6 +20,8 @@ double FfmpegSdlAvPlayback::kVolumeStepInDecibel = 0.75;
  * less than 1/fps */
 double FfmpegSdlAvPlayback::kRefreshRate = 0.01;
 int FfmpegSdlAvPlayback::kCursorHideDelayInMillis = 1000000;
+int FfmpegSdlAvPlayback::kWindowCount = 0;
+
 /* initialize the texture format map */
 const FfmpegSdlAvPlayback::TextureFormatEntry
     FfmpegSdlAvPlayback::kTextureFormatMap[] = {
@@ -133,14 +135,22 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   }
 
   if (p_window_) {
-	  SDL_DestroyWindow(p_window_);
+	Uint32 flags = SDL_GetWindowFlags(p_window_);
+	av_log(NULL, AV_LOG_INFO, "SDL Quit Subsytem for window %d \n", window_id_);
+	SDL_QuitSubSystem(flags);
+	SDL_DestroyWindow(p_window_);
+	kWindowCount--;
+	av_log(NULL, AV_LOG_INFO, "Remaining SDL Window %d \n", kWindowCount);
   }
 
   avformat_network_deinit();
 
   av_free(p_window_title_);
 
-  SDL_Quit();
+  if (kWindowCount <= 0) {
+	av_log(NULL, AV_LOG_INFO, "SDL Quit\n");
+	SDL_Quit();
+  }
 
   av_log(NULL, AV_LOG_QUIET, "%s", "");
 }
@@ -703,6 +713,8 @@ void FfmpegSdlAvPlayback::InitializeSDLWindow() {
 				SDL_WINDOWPOS_UNDEFINED, kDefaultWidth,
 				kDefaultHeight, flags);
 
+		kWindowCount++;
+
 		// Run window resizing events on a separate thread, to continuously update the renderer rectangle
 		// Also this will allow a faster update of the displayed rectangle when multiple windows are used
 		SDL_AddEventWatch(resizingEventHandler, this);
@@ -1039,14 +1051,14 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
 	  SDL_Event event;
 	  while (!is_stopped_) {
 		  DisplayAndProcessEvent(&event);
-          if (event.type == SDL_WINDOWEVENT && event.window.windowID == window_id_) {
-              if (SDL_EventState(SDL_SYSWMEVENT, SDL_QUERY) == SDL_ENABLE) {
-                  SystemEventHandler(event);
-              }
-              else {
-                  EventHandler(event);
-              }
-          }
+		  if (event.type == SDL_WINDOWEVENT && event.window.windowID == window_id_) {
+			  if (SDL_EventState(SDL_SYSWMEVENT, SDL_QUERY) == SDL_ENABLE) {
+				  SystemEventHandler(event);
+			  }
+			  else {
+				  EventHandler(event);
+			  }
+		  }
 	  }
   });
 

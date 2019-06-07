@@ -146,6 +146,7 @@ private:
   static double kVolumeStepInDecibel;
   static double kRefreshRate;
   static int kCursorHideDelayInMillis;
+  static int kWindowCount;
 
   struct TextureFormatEntry {
     enum AVPixelFormat format;

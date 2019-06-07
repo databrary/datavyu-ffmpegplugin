@@ -3,6 +3,7 @@ package org.datavyu.plugins.ffmpeg;
 import org.datavyu.plugins.DatavyuMediaPlayer;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.PlayerStateEvent;
+import org.datavyu.plugins.PlayerStateEvent.PlayerState;
 import org.datavyu.plugins.PlayerStateListener;
 import java.net.URI;
 
@@ -33,7 +34,12 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
   protected void playerSeek(double streamTime) throws MediaException {
     // In most cases seek accurate, with the exception of large backward playback rates
     int seek_flag = (!isStartTimeUpdated && getRate() < -1) ? SEEK_FAST_FLAG : SEEK_ACCURATE_FLAG;
+    // Mute player when seeking and not playing
+    if (getState() != PlayerState.PLAYING) {
+      setMute(true);
+    }
     playerSeek(streamTime, seek_flag);
+    setMute(false);
   }
 
   @Override
