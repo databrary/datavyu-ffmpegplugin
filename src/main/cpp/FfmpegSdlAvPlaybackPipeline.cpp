@@ -128,7 +128,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
   double pos = p_sdl_playback_->GetTime();
   
   if (isnan(pos)) {
-    pos = (double)p_sdl_playback_->GetSeekTime() / AV_TIME_BASE;
+    pos = (double)p_sdl_playback_->GetSeekTime() / (double)AV_TIME_BASE;
   }
 
   if (p_sdl_playback_->GetStartTime() != AV_NOPTS_VALUE &&

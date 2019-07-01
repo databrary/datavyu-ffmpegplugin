@@ -839,6 +839,7 @@ int VideoState::ReadPacketsToQueues() {
             0);  // 0 != -1 which will return NAN for interim time
       }
       seek_request_ = false;
+	    seek_done_ = true; // Seek is done here, not in the Audio and Frame packet threads
       queue_attachments_request_ = true;
       end_of_file_ = false;
 
@@ -995,10 +996,8 @@ int VideoState::DecodeAudioPacketsToFrames() {
       av_frame_move_ref(p_audio_frame->p_frame_, p_frame);
       p_audio_frame_queue_->Push();
 
-      // Seek is complete after we pushed an audio frame to the queue
-      seek_notify = !seek_done_;
-      if (seek_notify) {
-        seek_done_ = true;
+      // Seek is complete when Read Thread requested a seek and after we pushed an audio frame to the queue
+      if (seek_done_) {
         continue_after_seek_.notify_one();
       }
     }
@@ -1060,12 +1059,10 @@ int VideoState::DecodeImagePacketsToFrames() {
     ret = QueueImage(p_frame, pts, duration, p_frame->pkt_pos, frame_pos,
                      p_image_decoder_->GetSerial());
 
-    // Seek complete processed after we enqueued an image
+    // Seek complete processed after we request a seek and enqueued an image
     // Actually, it would be best after we displayed an image but
     // we don't have that signal here
-    seek_notify = !seek_done_;
-    if (seek_notify) {
-      seek_done_ = true;
+    if (seek_done_) {
       continue_after_seek_.notify_one();
     }
 
@@ -1291,7 +1288,8 @@ void VideoState::Seek(int64_t time, int64_t distance, int seek_flags) {
     std::unique_lock<std::mutex> lck(mtx);
     // Blocks until the seek request is done which we defined by
     // enquing either an image frame or audio frame
-    continue_after_seek_.wait(lck, [this] { return this->seek_done_; });
+	  // Important(Reda): Added a time out for the wait, to avoid dead lock while stressing the jog or seek
+    continue_after_seek_.wait_for(lck, std::chrono::milliseconds(10),[this] { return this->seek_done_; });
   }
 }
 
@@ -1301,7 +1299,7 @@ void VideoState::SeekToFrame(int frame_nb) {
     // - there is no seek request in progress
   if (!seek_request_) {
     std::mutex mtx;
-        
+
     seek_frame_ = frame_nb;
     seek_flags_ = kSeekFrameFlag;
     seek_request_ = true;
@@ -1313,7 +1311,8 @@ void VideoState::SeekToFrame(int frame_nb) {
     std::unique_lock<std::mutex> lck(mtx);
     // Blocks until the seek request is done which we defined by
     // enquing either an image frame or audio frame
-    continue_after_seek_.wait(lck, [this] { return this->seek_done_; });
+	  // Important(Reda): Added a time out for the wait, to avoid dead lock while stressing the jog or seek
+    continue_after_seek_.wait_for(lck, std::chrono::milliseconds(10),[this] { return this->seek_done_; });
   }
 }
 
