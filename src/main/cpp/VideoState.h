@@ -106,7 +106,9 @@ public:
   inline bool HasImageStream() const { return p_image_stream_ != nullptr; }
   inline double GetDuration() const { return duration_; };  // duration in sec
   inline double GetTime() const {
-    return p_image_clock_->GetTime();
+	// Image Clock might return NaN after a seek which could mess up future seeks requested
+	// By Datavyu, If Image Clock is NaN we return the exrternal clock which is always updated after a seek.
+    return isnan(p_image_clock_->GetTime()) ? p_external_clock_->GetTime() : p_image_clock_->GetTime();
   }  // current time in sec
   inline void ToggleMute() { is_muted_ = !is_muted_; }
   void SetPts(double pts, int serial);

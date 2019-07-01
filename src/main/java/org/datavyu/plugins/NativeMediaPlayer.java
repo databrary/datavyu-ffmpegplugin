@@ -379,7 +379,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   public void stepForward() {
     try {
       if (!isDisposed) {
-        stop();
         playerStepForward();
       }
     } catch (MediaException me) {
@@ -391,7 +390,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   public void stepBackward() {
     try {
       if (!isDisposed) {
-        stop();
         playerStepBackward();
       }
     } catch (MediaException me) {
