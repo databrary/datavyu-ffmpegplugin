@@ -2,6 +2,7 @@ package org.datavyu.plugins;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer.SdlPlayerKeyEvent;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.ref.WeakReference;
@@ -29,6 +30,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   private final List<WeakReference<MediaErrorListener>> errorListeners = new ArrayList<>();
   private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
+  private final List<WeakReference<SdlKeyEventListener>> keyListeners = new ArrayList<>();
 
   private final Lock markerLock = new ReentrantLock();
   protected long nativeMediaRef = 0;
@@ -114,6 +116,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
               HandleStateEvents((PlayerStateEvent) evt);
             } else if (evt instanceof MediaErrorEvent) {
               HandleErrorEvents((MediaErrorEvent) evt);
+            } else if (evt instanceof SdlPlayerKeyEvent) {
+              HandleSdlKeyEvents((SdlPlayerKeyEvent) evt);
             }
           }
         } catch (Exception e) {
@@ -187,6 +191,19 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
       }
     }
 
+    private void HandleSdlKeyEvents(SdlPlayerKeyEvent evt) {
+      for (ListIterator<WeakReference<SdlKeyEventListener>> it = keyListeners.listIterator();
+          it.hasNext(); ) {
+        SdlKeyEventListener l = it.next().get();
+        if (l != null) {
+          l.onKeyEvent(evt.getSource(), evt.getNativeMediaRef() ,evt.getKeyCode());
+        } else {
+          it.remove();
+        }
+      }
+    }
+
+
     public void postEvent(PlayerEvent event) {
       eventQueue.offer(event);
     }
@@ -240,6 +257,26 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
               playerStateListeners.listIterator();
           it.hasNext(); ) {
         PlayerStateListener l = it.next().get();
+        if (l == null || l == listener) {
+          it.remove();
+        }
+      }
+    }
+  }
+
+  @Override
+  public void addSdlKeyEventListener(SdlKeyEventListener listener) {
+    if (listener != null) {
+      this.keyListeners.add(new WeakReference(listener));
+    }
+  }
+
+  @Override
+  public void removeSdlKeyEventListener(SdlKeyEventListener listener) {
+    if (listener != null) {
+      for (ListIterator<WeakReference<SdlKeyEventListener>> it = keyListeners.listIterator();
+          it.hasNext(); ) {
+        SdlKeyEventListener l = it.next().get();
         if (l == null || l == listener) {
           it.remove();
         }
@@ -731,5 +768,9 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
       default:
         break;
     }
+  }
+
+  protected void sendSdlPlayerkeyEvent(int keyEvent) {
+    sendPlayerEvent(new SdlPlayerKeyEvent(this, this.getNativeMediaRef(),keyEvent));
   }
 }

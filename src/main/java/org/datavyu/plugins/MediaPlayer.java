@@ -49,6 +49,22 @@ public interface MediaPlayer {
   void removeMediaPlayerStateListener(PlayerStateListener listener);
 
   /**
+   * Adds a listener for SDL player key events.
+   *
+   * @param listener listener to be added
+   * @throws IllegalArgumentException if <code>listener</code> is <code>null</code>.
+   */
+  void addSdlKeyEventListener(SdlKeyEventListener listener);
+
+  /**
+   * Removes a listener for SDL player key events.
+   *
+   * @param listener listener to be removed
+   * @throws IllegalArgumentException if <code>listener</code> is <code>null</code>.
+   */
+  void removeSdlKeyEventListener(SdlKeyEventListener listener);
+
+  /**
    * Set the amount of time to delay for the audio.
    *
    * @param delay time in milliseconds

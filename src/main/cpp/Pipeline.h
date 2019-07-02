@@ -31,6 +31,12 @@
 #include <stdint.h>
 #include <sys/stat.h>
 
+extern "C" {
+//#ifdef SDL_ENABLED
+#include <SDL2\SDL_keycode.h>
+//#endif // SDL_ENABLED
+}
+
 class CMedia;
 class CJavaPlayerEventDispatcher;
 
@@ -67,7 +73,7 @@ public:
 
   virtual uint32_t Seek(double dSeekTime, int seek_flags) = 0;
   virtual uint32_t SeekToFrame(int frame_nb) = 0;
-  
+
   virtual uint32_t GetDuration(double *pdDuration) = 0;
   virtual uint32_t GetStreamTime(double *pdStreamTime) = 0;
   virtual uint32_t GetFps(double *pdFps) = 0;
@@ -100,6 +106,10 @@ protected:
 
   void UpdatePlayerState(PlayerState new_state);
   void SetPlayerState(PlayerState new_state, bool silent);
+#ifdef SDL_ENABLED
+  void MapSdlToJavaKey(SDL_Keycode sdlkeyCode);
+  void DispatchKeyEvent(int javaKeyCode);
+#endif // SDL_ENABLED
 };
 
 #endif //_PIPELINE_H_

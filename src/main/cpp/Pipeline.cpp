@@ -27,9 +27,9 @@
 #include "JavaPlayerEventDispatcher.h"
 #include "MediaPlayerErrors.h"
 
-CPipeline::CPipeline(CPipelineOptions *p_options) 
-    : p_event_dispatcher_(nullptr), p_options_(p_options), player_state_(Unknown),
-      player_pending_state_(Unknown) {}
+CPipeline::CPipeline(CPipelineOptions *p_options)
+    : p_event_dispatcher_(nullptr), p_options_(p_options),
+      player_state_(Unknown), player_pending_state_(Unknown) {}
 
 CPipeline::~CPipeline() {
   if (nullptr != p_options_) {
@@ -39,8 +39,8 @@ CPipeline::~CPipeline() {
   Dispose();
 
   if (nullptr != p_event_dispatcher_) {
-    delete p_event_dispatcher_;  
-	}
+    delete p_event_dispatcher_;
+  }
 }
 
 void CPipeline::SetEventDispatcher(
@@ -132,3 +132,69 @@ void CPipeline::SetPlayerState(PlayerState new_state, bool silent) {
     }
   }
 }
+
+#ifdef SDL_ENABLED
+void CPipeline::MapSdlToJavaKey(SDL_Keycode sdlKeyCode) {
+  int javaCode = -1;
+  // Map Numpad keys from SDL to Java keyEvent
+  switch (sdlKeyCode) {
+  case SDLK_KP_0:
+    javaCode = 0x60;
+    break;
+  case SDLK_KP_1:
+    javaCode = 0x61;
+    break;
+  case SDLK_KP_2:
+    javaCode = 0x62;
+    break;
+  case SDLK_KP_3:
+    javaCode = 0x63;
+    break;
+  case SDLK_KP_4:
+    javaCode = 0x64;
+    break;
+  case SDLK_KP_5:
+    javaCode = 0x65;
+    break;
+  case SDLK_KP_6:
+    javaCode = 0x66;
+    break;
+  case SDLK_KP_7:
+    javaCode = 0x67;
+    break;
+  case SDLK_KP_8:
+    javaCode = 0x68;
+    break;
+  case SDLK_KP_9:
+    javaCode = 0x69;
+    break;
+  case SDLK_KP_MULTIPLY:
+    javaCode = 0x6A;
+    break;
+  case SDLK_KP_PLUS:
+    javaCode = 0x6B;
+    break;
+  case SDLK_KP_DIVIDE:
+    javaCode = 0x6F;
+    break;
+  case SDLK_KP_MINUS:
+    javaCode = 0x2D;
+    break;
+  case SDLK_KP_ENTER:
+    javaCode = '\n';
+    break;
+  case SDLK_KP_PERIOD:
+    javaCode = 0x2E;
+    break;
+  }
+
+  if (javaCode != -1)
+    DispatchKeyEvent(javaCode);
+}
+
+void CPipeline::DispatchKeyEvent(int javaKeyCode) {
+  if (nullptr != p_event_dispatcher_) {
+    p_event_dispatcher_->SendSdlPlayerKeyEvent(javaKeyCode);
+  }
+}
+#endif // SDL_ENABLED

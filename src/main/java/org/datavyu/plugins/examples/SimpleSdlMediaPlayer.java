@@ -1,6 +1,7 @@
 package org.datavyu.plugins.examples;
 
 import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
 import java.io.File;
@@ -13,6 +14,14 @@ public class SimpleSdlMediaPlayer {
 
     // Create the media player using the constructor with File
     MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
+
+    mediaPlayer.addSdlKeyEventListener(
+        new SdlKeyEventListener() {
+          @Override
+          public void onKeyEvent(Object source, long nativeMediaRef,int javaKeyCode) {
+            System.out.println("SDL Media " + nativeMediaRef  + " event " + javaKeyCode);
+          }
+        });
 
     // Initialize the player
     mediaPlayer.init();

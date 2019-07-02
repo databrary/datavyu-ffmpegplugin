@@ -31,6 +31,9 @@ static bool areJMethodIDsInitialized = false;
 
 jmethodID CJavaPlayerEventDispatcher::send_player_media_error_event_method_ = 0;
 jmethodID CJavaPlayerEventDispatcher::send_player_state_event_method_ = 0;
+#ifdef SDL_ENABLED
+jmethodID CJavaPlayerEventDispatcher::send_sdl_player_key_event_method_ = 0;
+#endif // SDL_ENABLED
 
 CJavaPlayerEventDispatcher::CJavaPlayerEventDispatcher()
     : p_player_vm_(NULL), player_instance_(NULL), media_reference_(0L) {}
@@ -64,6 +67,10 @@ void CJavaPlayerEventDispatcher::Init(JNIEnv *env, jobject PlayerInstance,
     if (!hasException) {
       send_player_state_event_method_ =
           env->GetMethodID(klass, "sendPlayerStateEvent", "(ID)V");
+#ifdef SDL_ENABLED
+      send_sdl_player_key_event_method_ =
+          env->GetMethodID(klass, "sendSdlPlayerkeyEvent", "(I)V");
+#endif // SDL_ENABLED
       hasException = javaEnv.ReportException();
     }
 
@@ -157,3 +164,23 @@ bool CJavaPlayerEventDispatcher::SendPlayerStateEvent(int newState,
 
   return bSucceeded;
 }
+
+#ifdef SDL_ENABLED
+bool CJavaPlayerEventDispatcher::SendSdlPlayerKeyEvent(int keyId) {
+  bool bSucceeded = false;
+  CJavaEnvironment jenv(p_player_vm_);
+  JNIEnv *pEnv = jenv.GetEnvironment();
+  if (pEnv) {
+    jobject localPlayer = pEnv->NewLocalRef(player_instance_);
+    if (localPlayer) {
+      pEnv->CallVoidMethod(localPlayer, send_sdl_player_key_event_method_,
+                           keyId);
+      pEnv->DeleteLocalRef(localPlayer);
+
+      bSucceeded = !jenv.ReportException();
+    }
+  }
+
+  return bSucceeded;
+}
+#endif // SDL_ENABLED
