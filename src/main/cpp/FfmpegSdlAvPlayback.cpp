@@ -1026,14 +1026,7 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
             SetVolume(0);
             break;
           case SDL_WINDOWEVENT_EXPOSED:
-#ifdef _WIN32
             DisplayVideoFrame();
-#elif __APPLE__
-            dispatch_sync(
-                dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                  DisplayVideoFrame();
-                });
-#endif
             break;
           default:
             break;
@@ -1077,12 +1070,30 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
     SDL_Event event;
     while (!is_stopped_) {
       DisplayAndProcessEvent(&event);
-      if (event.type == SDL_WINDOWEVENT &&
-          event.window.windowID == window_id_) {
-        if (SDL_EventState(SDL_SYSWMEVENT, SDL_QUERY) == SDL_ENABLE) {
-          SystemEventHandler(event);
-        } else {
-          EventHandler(event);
+      if (event.window.windowID == window_id_) {
+        switch (event.type) {
+          case SDL_KEYDOWN:
+            dispatch_sync(dispatch_get_main_queue(), ^{
+              dispatch_keyEvent_callback_(event.key.keysym.sym);
+            });
+            break;
+          case SDL_WINDOWEVENT:
+            switch (event.window.event) {
+              case SDL_WINDOWEVENT_CLOSE:
+                HideWindow();
+                SetVolume(0);
+                break;
+              case SDL_WINDOWEVENT_EXPOSED:
+                dispatch_sync(
+                    dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                        DisplayVideoFrame();
+                    });
+                break;
+              default:
+                break;
+            }
+            default:
+              break;
         }
       }
     }
