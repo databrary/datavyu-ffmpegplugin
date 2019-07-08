@@ -32,9 +32,9 @@
 #include <sys/stat.h>
 
 extern "C" {
-//#ifdef SDL_ENABLED
-#include <SDL2\SDL_keycode.h>
-//#endif // SDL_ENABLED
+#ifdef SDL_ENABLED
+#include <SDL2/SDL_keycode.h>
+#endif // SDL_ENABLED
 }
 
 class CMedia;

@@ -1016,6 +1016,9 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
       DisplayAndProcessEvent(&event);
       if (event.window.windowID == window_id_) {
         switch (event.type) {
+		case SDL_KEYDOWN:
+		  dispatch_keyEvent_callback_(event.key.keysym.sym);
+		  break;
         case SDL_WINDOWEVENT:
           switch (event.window.event) {
           case SDL_WINDOWEVENT_CLOSE:
@@ -1035,9 +1038,6 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
           default:
             break;
           }
-        case SDL_KEYDOWN:
-          dispatch_keyEvent_callback_(event.key.keysym.sym);
-          break;
         default:
           break;
         }

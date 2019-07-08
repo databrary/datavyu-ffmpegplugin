@@ -1,8 +1,5 @@
 package org.datavyu.plugins.ffmpeg;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.PlayerEvent;
 import org.datavyu.util.LibraryLoader;

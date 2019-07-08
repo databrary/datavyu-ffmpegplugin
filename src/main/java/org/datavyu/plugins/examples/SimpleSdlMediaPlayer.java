@@ -14,14 +14,14 @@ public class SimpleSdlMediaPlayer {
 
     // Create the media player using the constructor with File
     MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
+    SdlKeyEventListener sdlKeyEventListener = new SdlKeyEventListener() {
+      @Override
+      public void onKeyEvent(Object source, long nativeMediaRef, int javaKeyCode) {
+        System.out.println("SDL Media " + nativeMediaRef  + " event " + javaKeyCode);
 
-    mediaPlayer.addSdlKeyEventListener(
-        new SdlKeyEventListener() {
-          @Override
-          public void onKeyEvent(Object source, long nativeMediaRef,int javaKeyCode) {
-            System.out.println("SDL Media " + nativeMediaRef  + " event " + javaKeyCode);
-          }
-        });
+      }
+    };
+    mediaPlayer.addSdlKeyEventListener(sdlKeyEventListener);
 
     // Initialize the player
     mediaPlayer.init();

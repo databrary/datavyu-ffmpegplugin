@@ -30,7 +30,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   private final List<WeakReference<MediaErrorListener>> errorListeners = new ArrayList<>();
   private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
-  private final List<WeakReference<SdlKeyEventListener>> keyListeners = new ArrayList<>();
+  private final List<SdlKeyEventListener> keyListeners = new ArrayList<>();
 
   private final Lock markerLock = new ReentrantLock();
   protected long nativeMediaRef = 0;
@@ -192,9 +192,11 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     }
 
     private void HandleSdlKeyEvents(SdlPlayerKeyEvent evt) {
-      for (ListIterator<WeakReference<SdlKeyEventListener>> it = keyListeners.listIterator();
+      logger.info("Received an event from the native side");
+      logger.info("key listener size " + keyListeners.size());
+      for (ListIterator<SdlKeyEventListener> it = keyListeners.listIterator();
           it.hasNext(); ) {
-        SdlKeyEventListener l = it.next().get();
+        SdlKeyEventListener l = it.next();
         if (l != null) {
           l.onKeyEvent(evt.getSource(), evt.getNativeMediaRef() ,evt.getKeyCode());
         } else {
@@ -267,16 +269,16 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   @Override
   public void addSdlKeyEventListener(SdlKeyEventListener listener) {
     if (listener != null) {
-      this.keyListeners.add(new WeakReference(listener));
+      this.keyListeners.add(listener);
     }
   }
 
   @Override
   public void removeSdlKeyEventListener(SdlKeyEventListener listener) {
     if (listener != null) {
-      for (ListIterator<WeakReference<SdlKeyEventListener>> it = keyListeners.listIterator();
+      for (ListIterator<SdlKeyEventListener> it = keyListeners.listIterator();
           it.hasNext(); ) {
-        SdlKeyEventListener l = it.next().get();
+        SdlKeyEventListener l = it.next();
         if (l == null || l == listener) {
           it.remove();
         }
@@ -692,6 +694,10 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
         if (errorListeners != null) {
           errorListeners.clear();
+        }
+
+        if (keyListeners != null) {
+          keyListeners.clear();
         }
 
         isDisposed = true;

@@ -188,13 +188,16 @@ void CPipeline::MapSdlToJavaKey(SDL_Keycode sdlKeyCode) {
     break;
   }
 
-  if (javaCode != -1)
-    DispatchKeyEvent(javaCode);
+  if (javaCode != -1) {
+	  DispatchKeyEvent(javaCode);
+  }
 }
 
 void CPipeline::DispatchKeyEvent(int javaKeyCode) {
   if (nullptr != p_event_dispatcher_) {
-    p_event_dispatcher_->SendSdlPlayerKeyEvent(javaKeyCode);
+	if (!p_event_dispatcher_->SendSdlPlayerKeyEvent(javaKeyCode)) {
+	  av_log(NULL, AV_LOG_INFO, "Couldn't dispatch the Java Key");
+	}
   }
 }
 #endif // SDL_ENABLED
