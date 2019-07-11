@@ -1026,7 +1026,7 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
   }
 
   p_display_thread_id_ = new (std::nothrow) std::thread([this] {
-#ifdef _WIND32
+#ifdef _WIN32
     InitializeSDLWindow();
     InitializeRenderer();
 
