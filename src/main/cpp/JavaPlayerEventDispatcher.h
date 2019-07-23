@@ -43,6 +43,9 @@ public:
 
   virtual bool SendPlayerMediaErrorEvent(int errorCode);
   virtual bool SendPlayerStateEvent(int newState, double presentTime);
+#ifdef SDL_ENABLED
+  virtual bool SendSdlPlayerKeyEvent(int keyId);
+#endif // SDL_ENABLED
 
 private:
   JavaVM *p_player_vm_;
@@ -53,6 +56,9 @@ private:
 
   static jmethodID send_player_media_error_event_method_;
   static jmethodID send_player_state_event_method_;
+#ifdef SDL_ENABLED
+  static jmethodID send_sdl_player_key_event_method_;
+#endif // SDL_ENABLED
 
   static jobject CreateObject(JNIEnv *env, jmethodID *cid,
                               const char *class_name, const char *signature,

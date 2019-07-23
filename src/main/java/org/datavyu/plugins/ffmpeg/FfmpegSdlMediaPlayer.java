@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
 import org.datavyu.plugins.MediaException;
+import org.datavyu.plugins.PlayerEvent;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -264,6 +265,31 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     int rc = ffmpegHideWindow(getNativeMediaRef());
     if (rc != 0) {
       throwMediaErrorException(rc, null);
+    }
+  }
+
+  public static class SdlPlayerKeyEvent extends PlayerEvent {
+
+    private final Object source;
+    private final int keyCode;
+    private final long nativeMediaRef;
+
+    public SdlPlayerKeyEvent(Object source, long nativeMediaRef,int keyCode) {
+      this.source = source;
+      this.nativeMediaRef = nativeMediaRef;
+      this.keyCode = keyCode;
+    }
+
+    public Object getSource() {
+      return source;
+    }
+
+    public long getNativeMediaRef() {
+      return nativeMediaRef;
+    }
+
+    public int getKeyCode() {
+      return keyCode;
     }
   }
 
