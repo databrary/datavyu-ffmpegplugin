@@ -253,7 +253,26 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerShowSDLWindow() {
+  protected int[] playerGetWindowSize() throws MediaException{
+    int[] width = new int[1];
+    int[] height = new int[1];
+    int rc = ffmpegGetWindowSize(getNativeMediaRef(), width, height);
+    if (rc != 0) {
+      throwMediaErrorException(rc, null);
+    }
+    return new int[] {width[0], height[0]};
+  }
+
+  @Override
+  protected void playerSetWindowSize(final int width, final int height) throws MediaException{
+    int rc = ffmpegSetWindowSize(getNativeMediaRef(), width, height);
+    if (rc != 0) {
+      throwMediaErrorException(rc, null);
+    }
+  }
+
+  @Override
+  protected void playerShowSDLWindow() throws MediaException{
     int rc = ffmpegShowWindow(getNativeMediaRef());
     if (rc != 0) {
       throwMediaErrorException(rc, null);
@@ -261,7 +280,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerHideSDLWindow() {
+  protected void playerHideSDLWindow() throws MediaException{
     int rc = ffmpegHideWindow(getNativeMediaRef());
     if (rc != 0) {
       throwMediaErrorException(rc, null);
@@ -339,6 +358,10 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   protected native int ffmpegGetVolume(long refNativeMedia, float[] volume);
 
   protected native int ffmpegSetVolume(long refNativeMedia, float volume);
+
+  protected native int ffmpegGetWindowSize(long refNativeMedia, int[] width, int[] height);
+
+  protected native int ffmpegSetWindowSize(long refNativeMedia, int width, int height);
 
   protected native int ffmpegShowWindow(long refNativeMedia);
 

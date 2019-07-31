@@ -49,6 +49,16 @@ public final class MpvFxMediaPlayer extends MpvMediaPlayer {
     throw new NotImplementedException();
   }
 
+  @Override
+  protected int[] playerGetWindowSize() throws MediaException {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  protected void playerSetWindowSize(int width, int height) throws MediaException {
+    throw new NotImplementedException();
+  }
+
   private class PlayerStateListenerImpl implements PlayerStateListener {
 
     @Override

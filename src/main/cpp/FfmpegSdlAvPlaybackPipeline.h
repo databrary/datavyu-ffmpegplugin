@@ -47,7 +47,10 @@ private:
   virtual uint32_t GetAudioSyncDelay(long *p_millis);
 
   virtual uint32_t GetImageWidth(int *p_width) const;
-  virtual uint32_t GetImageHeight(int *p_height) const;
+  virtual uint32_t GetImageHeight(int *p_height) const;  
+  
+  virtual uint32_t GetWindowSize(int *p_width, int *p_height) const;
+  virtual uint32_t SetWindowSize(int width, int height);
 
   virtual uint32_t ShowWindow();
   virtual uint32_t HideWindow();

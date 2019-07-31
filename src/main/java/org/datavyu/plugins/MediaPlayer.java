@@ -264,4 +264,23 @@ public interface MediaPlayer {
    * throw an exception if called from a Java player.
    */
   void hideSDLWindow();
+
+  /**
+   * Return SDL Window Height
+   * @return window height
+   */
+  int getWindowHeight();
+
+  /**
+   * Return SDL Window Width
+   * @return window width
+   */
+  int getWindowWidth();
+
+  /**
+   * Set SDL Window new width and height
+   * @param width
+   * @param height
+   */
+  void setWindowSize(int width, int height);
 }

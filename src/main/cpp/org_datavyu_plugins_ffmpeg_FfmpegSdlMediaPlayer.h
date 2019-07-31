@@ -211,6 +211,39 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmp
 JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetVolume
   (JNIEnv *, jobject, jlong, jfloat);
 
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegGetWindowSize
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowSize
+(JNIEnv *, jobject, jlong, jintArray, jintArray);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegSetWindowSize
+ * Signature: (JII)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetWindowSize
+(JNIEnv *, jobject, jlong, jint, jint);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegShowWindow
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegShowWindow
+(JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegHideWindow
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegHideWindow
+(JNIEnv *, jobject, jlong);
+
+
 #ifdef __cplusplus
 }
 #endif
