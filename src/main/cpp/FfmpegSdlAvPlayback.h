@@ -131,8 +131,6 @@ private:
 
   double remaining_time_;
 
-  int64_t cursor_last_shown_time_;
-  bool is_cursor_hidden_;
   char *p_window_title_;
   SDL_RendererInfo renderer_info_;
 #ifdef __APPLE__
@@ -164,14 +162,6 @@ private:
     *p_width = frame_width_;
     *p_height = frame_height_;
   }
-
-  inline void SetCursorLastShownTime(int64_t time) {
-    int64_t cursor_last_shown_time_ = time;
-  }
-
-  inline void SetIsCursorHidden(bool hidden) { is_cursor_hidden_ = hidden; }
-
-  inline bool IsCursorHidden() const { return is_cursor_hidden_; }
 
   inline bool IsScreenSizeSet() const {
     return screen_width_ != 0 && screen_height_ != 0;

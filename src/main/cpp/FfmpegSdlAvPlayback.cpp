@@ -87,8 +87,7 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
       p_window_(nullptr), p_renderer_(nullptr), p_img_convert_ctx_(nullptr),
       p_vis_texture_(nullptr), p_vid_texture_(nullptr), screen_width_(0),
       screen_height_(0), enabled_full_screen_(0), audio_volume_(0),
-      remaining_time_(0), cursor_last_shown_time_(0), is_cursor_hidden_(false),
-      renderer_info_({0}) {
+      remaining_time_(0), renderer_info_({0}) {
 
   if (startup_volume < 0) {
     av_log(NULL, AV_LOG_WARNING, "-volume=%d < 0, setting to 0\n",
@@ -512,11 +511,6 @@ void FfmpegSdlAvPlayback::DisplayAndProcessEvent(SDL_Event *event) {
   SDL_PumpEvents();
   while (!is_stopped_ &&
       !SDL_PeepEvents(event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT)) {
-    if (!is_cursor_hidden_ && av_gettime_relative() - cursor_last_shown_time_ >
-                                  kCursorHideDelayInMillis) {
-      SDL_ShowCursor(0);
-      is_cursor_hidden_ = true;
-    }
     if (remaining_time_ > 0.0) {
       av_usleep((int64_t)(remaining_time_ * 1000000.0));
     }
@@ -931,11 +925,6 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         }
       }
     case SDL_MOUSEMOTION:
-      if (p_player->IsCursorHidden()) {
-        SDL_ShowCursor(1);
-        p_player->SetIsCursorHidden(false);
-      }
-      p_player->SetCursorLastShownTime(av_gettime_relative());
       int width;
       int height;
       p_player->GetSize(&width, &height);
