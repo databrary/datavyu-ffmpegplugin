@@ -86,7 +86,7 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
     : FfmpegAvPlayback(), y_top_(0), x_left_(0), window_id_(0),
       p_window_(nullptr), p_renderer_(nullptr), p_img_convert_ctx_(nullptr),
       p_vis_texture_(nullptr), p_vid_texture_(nullptr), screen_width_(0),
-      screen_height_(0), enabled_full_screen_(0), audio_volume_(0),
+      screen_height_(0), enabled_full_screen_(0), audio_volume_(0), p_window_title_(nullptr),
       remaining_time_(0), renderer_info_({0}) {
 
   if (startup_volume < 0) {
@@ -105,8 +105,10 @@ FfmpegSdlAvPlayback::FfmpegSdlAvPlayback(int startup_volume)
 FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   StopDisplayLoop();
   
-  p_display_thread_id_->detach();
-  p_display_thread_id_ = nullptr;
+  if (p_display_thread_id_) {
+	p_display_thread_id_->detach();
+	p_display_thread_id_ = nullptr;
+  }
   
   SDL_DelEventWatch(resizingEventHandler, this);
 
@@ -157,7 +159,9 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
 
   avformat_network_deinit();
 
-  av_free(p_window_title_);
+  if (p_window_title_ != nullptr) {
+	p_window_title_ = nullptr;
+  }
 
   if (kWindowCount <= 0) {
     av_log(NULL, AV_LOG_INFO, "SDL Quit\n");
