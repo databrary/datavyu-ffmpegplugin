@@ -1,5 +1,6 @@
 package org.datavyu.plugins.examples;
 
+import org.datavyu.plugins.MediaErrorListener;
 import org.datavyu.plugins.MediaPlayer;
 import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
@@ -14,14 +15,22 @@ public class SimpleSdlMediaPlayer {
 
     // Create the media player using the constructor with File
     MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
-    SdlKeyEventListener sdlKeyEventListener = new SdlKeyEventListener() {
-      @Override
-      public void onKeyEvent(Object source, long nativeMediaRef, int javaKeyCode) {
-        System.out.println("SDL Media " + nativeMediaRef  + " event " + javaKeyCode);
 
-      }
-    };
-    mediaPlayer.addSdlKeyEventListener(sdlKeyEventListener);
+    mediaPlayer.addMediaErrorListener(
+        new MediaErrorListener() {
+          @Override
+          public void onError(Object source, int errorCode, String message) {
+            System.err.println(errorCode + ": " + message);
+          }
+        });
+
+    mediaPlayer.addSdlKeyEventListener(
+        new SdlKeyEventListener() {
+          @Override
+          public void onKeyEvent(Object source, long nativeMediaRef, int javaKeyCode) {
+            System.out.println("SDL Media " + nativeMediaRef + " event " + javaKeyCode);
+          }
+        });
 
     // Initialize the player
     mediaPlayer.init();
