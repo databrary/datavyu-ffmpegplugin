@@ -88,7 +88,43 @@ public:
   int GetImageWidth() const;
 
   // Get image Height
-  int GetImageHeight() const;
+  int GetImageHeight() const; 
+
+  // Get SDL Window Size
+  inline void GetWindowSize(int *width, int *height) const {
+#ifdef _WIN32
+	  SDL_Window *window = SDL_GetWindowFromID(window_id_);
+	  if (window) {
+		  SDL_GetWindowSize(p_window_, width, height);
+	  }
+#elif __APPLE__
+	  dispatch_async(dispatch_get_main_queue(), ^{
+		SDL_Window *window = SDL_GetWindowFromID(window_id_);
+		if (window) {
+			SDL_GetWindowSize(p_window_, width, height);
+		}
+	  });
+#endif
+  }
+
+  // Set SDL Window Size
+  inline void SetWindowSize(int width, int height) {
+#ifdef _WIN32
+	  SDL_Window *window = SDL_GetWindowFromID(window_id_);
+	  if (window) {
+		  SDL_SetWindowSize(p_window_, width, height);
+		  SetSize(width, height);
+	  }
+#elif __APPLE__
+	  dispatch_async(dispatch_get_main_queue(), ^{
+		SDL_Window *window = SDL_GetWindowFromID(window_id_);
+		if (window) {
+			SDL_SetWindowSize(p_window_, width, height);
+			SetSize(width, height);
+		}
+	  });
+#endif
+  }
 
   // Set the volume
   void SetVolume(double volume);

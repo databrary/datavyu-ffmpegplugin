@@ -323,6 +323,16 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   @Override
+  protected int[] playerGetWindowSize() throws MediaException {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  protected void playerSetWindowSize(int width, int height) throws MediaException {
+    throw new NotImplementedException();
+  }
+
+  @Override
   protected void playerShowSDLWindow() {
     throw new NotImplementedException();
   }

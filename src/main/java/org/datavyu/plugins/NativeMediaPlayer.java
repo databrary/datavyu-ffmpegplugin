@@ -340,9 +340,13 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   protected abstract void playerDispose();
 
-  protected abstract void playerShowSDLWindow() throws NotImplementedException;
+  protected abstract int[] playerGetWindowSize() throws MediaException;
 
-  protected abstract void playerHideSDLWindow() throws NotImplementedException;
+  protected abstract void playerSetWindowSize(int width, int height) throws MediaException;
+
+  protected abstract void playerShowSDLWindow() throws MediaException;
+
+  protected abstract void playerHideSDLWindow() throws MediaException;
 
   @Override
   public void setAudioSyncDelay(long delay) {
@@ -733,6 +737,41 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
       try{
         playerHideSDLWindow();
         setMute(true);
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      }
+    }
+  }
+
+  @Override
+  public int getWindowHeight() {
+    if (!isDisposed) {
+      try{
+        return playerGetWindowSize()[1];
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public int getWindowWidth() {
+    if (!isDisposed) {
+      try{
+        return playerGetWindowSize()[0];
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public void setWindowSize(final int width, final int height) {
+    if (!isDisposed) {
+      try{
+        playerSetWindowSize(width, height);
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
       }

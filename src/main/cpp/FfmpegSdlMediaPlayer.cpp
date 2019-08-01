@@ -590,6 +590,54 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetVolume(
 
   return iRet;
 }
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegGetWindowWidth
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowSize
+(JNIEnv *env, jobject obj, jlong ref_media, jintArray jriWindowWidth, jintArray jriWindowHeight) {
+	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+#ifdef SDL_ENABLED
+	int iWindowWidth;
+	int iWindowHeight;
+	uint32_t uErrCode = pPipeline->GetWindowSize(&iWindowWidth, &iWindowHeight);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+	jint jiWindowWidth = (jint)iWindowWidth;
+	jint jiWindowHeight = (jint)iWindowHeight;
+	env->SetIntArrayRegion(jriWindowWidth, 0, 1, &jiWindowWidth);
+	env->SetIntArrayRegion(jriWindowHeight, 0, 1, &jiWindowHeight);
+#endif
+	return ERROR_NONE;
+}
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegSetWindowSize
+ * Signature: (JII)I
+ */
+JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetWindowSize
+(JNIEnv *env, jobject obj, jlong ref_media, jint jiWidth, jint jiHeight) {
+	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+#ifdef SDL_ENABLED
+	jint iRet = (jint)pPipeline->SetWindowSize(jiWidth, jiHeight);
+#endif
+	return iRet;
+}
     
 /*
 * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
