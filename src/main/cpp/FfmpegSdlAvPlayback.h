@@ -88,26 +88,7 @@ public:
   int GetImageWidth() const;
 
   // Get image Height
-  int GetImageHeight() const;  
-  
-  // Get Window Width
-  inline int GetWindowWidth() const {
-#ifdef _WIN32
-	  SDL_Window *window = SDL_GetWindowFromID(window_id_);
-	  if (window) {
-		  SDL_ShowWindow(p_window_);
-		  SDL_RaiseWindow(p_window_);
-	  }
-#elif __APPLE__
-	  dispatch_async(dispatch_get_main_queue(), ^{
-		SDL_Window *window = SDL_GetWindowFromID(window_id_);
-		if (window) {
-		  SDL_ShowWindow(p_window_);
-		  SDL_RaiseWindow(p_window_);
-		}
-		  });
-#endif
-  }
+  int GetImageHeight() const; 
 
   // Get SDL Window Size
   inline void GetWindowSize(int *width, int *height) const {
