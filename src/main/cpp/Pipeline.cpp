@@ -178,7 +178,7 @@ void CPipeline::MapSdlToJavaKey(SDL_Keycode sdlKeyCode) {
     javaCode = 0x6F;
     break;
   case SDLK_KP_MINUS:
-    javaCode = 0x2D;
+    javaCode = 0x6D;
     break;
   case SDLK_KP_ENTER:
     javaCode = '\n';
