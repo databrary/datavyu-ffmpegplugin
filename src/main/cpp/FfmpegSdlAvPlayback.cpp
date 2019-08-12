@@ -706,7 +706,7 @@ void FfmpegSdlAvPlayback::InitializeSDL() {
 }
 
 void FfmpegSdlAvPlayback::InitializeSDLWindow() {
-  if (p_video_state_->GetFrameWidth()) {
+  if (p_video_state_) {
     FfmpegSdlAvPlayback::SetDefaultWindowSize(
         p_video_state_->GetFrameWidth(), p_video_state_->GetFrameHeight(),
         p_video_state_->GetFrameAspectRatio());
@@ -990,34 +990,17 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
 int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
 #ifdef _WIN32
   InitializeSDL();
-
+#elif __APPLE__
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    InitializeSDL();
+  });
+#endif
   // Must Initlialize SDL before starting the stream
   int err = FfmpegToJavaErrNo(p_video_state_->StartStream());
-#elif __APPLE__
-    __block int err;
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        InitializeSDL();
-        
-        dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            // Must Initlialize SDL before starting the stream
-            err = FfmpegToJavaErrNo(p_video_state_->StartStream());
-        });
-        
-        InitializeSDLWindow();
-        InitializeRenderer();
-        
-        if (!frame_width_) {
-            char *p_filename = nullptr;
-            p_video_state_->GetFilename(&p_filename);
-            OpenWindow(p_filename);
-        }
-    });
-#endif
   if (err) {
     av_log(NULL, AV_LOG_ERROR, "Unable to start the stream\n");
     return err;
   }
-
   p_display_thread_id_ = new (std::nothrow) std::thread([this] {
 #ifdef _WIN32
     InitializeSDLWindow();
@@ -1028,6 +1011,17 @@ int FfmpegSdlAvPlayback::InitializeAndStartDisplayLoop() {
       p_video_state_->GetFilename(&p_filename);
       OpenWindow(p_filename);
     }
+#elif __APPLE__
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      InitializeSDLWindow();
+      InitializeRenderer();
+          
+      if (!frame_width_) {
+        char *p_filename = nullptr;
+        p_video_state_->GetFilename(&p_filename);
+        OpenWindow(p_filename);
+      }
+    });
 #endif
     SDL_Event event;
     while (!is_stopped_) {

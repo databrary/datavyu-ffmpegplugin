@@ -1,7 +1,10 @@
 package org.datavyu.plugins.examples;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaErrorListener;
 import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.NativeMediaPlayer;
 import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
@@ -9,6 +12,8 @@ import java.io.File;
 import java.net.URI;
 
 public class SimpleSdlMediaPlayer {
+  private static Logger logger = LogManager.getLogger(SimpleSdlMediaPlayer.class);
+
   public static void main(String[] args) {
     // Define the media file
     URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
@@ -17,20 +22,10 @@ public class SimpleSdlMediaPlayer {
     MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
 
     mediaPlayer.addMediaErrorListener(
-        new MediaErrorListener() {
-          @Override
-          public void onError(Object source, int errorCode, String message) {
-            System.err.println(errorCode + ": " + message);
-          }
-        });
+        (source, errorCode, message) -> logger.error(errorCode + ": " + message));
 
     mediaPlayer.addSdlKeyEventListener(
-        new SdlKeyEventListener() {
-          @Override
-          public void onKeyEvent(Object source, long nativeMediaRef, int javaKeyCode) {
-            System.out.println("SDL Media " + nativeMediaRef + " event " + javaKeyCode);
-          }
-        });
+        (source, nativeMediaRef, javaKeyCode) -> logger.info("SDL Media " + nativeMediaRef + " event " + javaKeyCode));
 
     // Initialize the player
     mediaPlayer.init();
