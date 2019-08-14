@@ -10,8 +10,6 @@ branches:
 
 image: Visual Studio 2017
 
-clone_depth: 1
-
 environment:
   JAVA_HOME: C:\Program Files\Java\jdk1.8.0
 
@@ -38,6 +36,7 @@ install:
   - cmd: SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
   - cmd: mvn --version
   - cmd: java -version
+  - cmd: where msbuild
 
 cache:
   - C:\maven\
