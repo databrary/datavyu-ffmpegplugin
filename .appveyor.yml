@@ -16,9 +16,10 @@ install:
           }
           if (!(Test-path -Path "C:\FFplay64")) {
             (new-object System.Net.WebClient).DownloadFile(
-              "https://drive.google.com/uc?export=download&id=1_7Dj88l-WIGq0mCe9LKIyBfHrzBz5ZIu"
+              "https://drive.google.com/uc?export=download&id=1_7Dj88l-WIGq0mCe9LKIyBfHrzBz5ZIu",
+              'C:\'
             )
-            [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\FFplay64.zip", "C:")
+            [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\FFplay64.zip", "C:\")
           } 
   - cmd: SET PATH=C:\maven\apache-maven-3.2.5\bin;%JAVA_HOME%\bin;%PATH%
   - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=2g -Xmx4g
