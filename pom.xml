@@ -22,6 +22,15 @@
 
   <repositories>
     <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>central</id>
+      <name>libs-release</name>
+      <url>https://oss.jfrog.org/artifactory/libs-release</url>
+    </repository>
+
+    <repository>
       <id>java</id>
       <url>http://download.java.net/maven/2</url>
       <layout>default</layout>
@@ -37,14 +46,14 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-      <id>central</id>
+      <id>central-local</id>
       <name>oss-jfrog-artifactory-releases</name>
       <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
     </repository>
 
     <repository>
       <snapshots />
-      <id>snapshots</id>
+      <id>snapshots-local</id>
       <name>oss-jfrog-artifactory-snapshots</name>
       <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
     </repository>
