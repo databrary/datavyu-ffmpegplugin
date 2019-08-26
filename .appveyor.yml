@@ -4,18 +4,14 @@ image: Visual Studio 2017
 
 install:
   - ps: |
-      if (!(Test-Path -Path "C:\apache-maven-3.5.4" )) {
-        Invoke-WebRequest "http://www.us.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip" -OutFile "C:\maven-bin.zip"
-        Expand-Archive -LiteralPath C:\maven-bin.zip -DestinationPath C:\
-      }
       if (!(Test-path -Path "C:\FFplay64")) {
-        Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1h2xOZpaMakDyUmGGdsO7OQdeP4bNFr0H" -OutFile "C:\FFplay64.zip"
+        Write-Output "Download FFmpeg Dependencies"
+        Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1AtTBKgDgkMYnm7j0y3cEaVDqRs2ZPfxd" -OutFile "C:\FFplay64.zip"
         Expand-Archive -LiteralPath C:\FFplay64.zip -DestinationPath C:\
       }
       $msbuild = (Get-Command msbuild).path
       Write-Output $msbuild
-  - cmd: SET JAVA_HOME=C:\Program Files\Java\jdk1.8.0
-  - cmd: SET PATH=C:\maven\apache-maven-3.5.4\bin;%JAVA_HOME%\bin;%PATH%
+
   - cmd: mvn --version
   - cmd: java -version
 
