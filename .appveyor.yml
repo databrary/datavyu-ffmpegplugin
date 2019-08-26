@@ -22,4 +22,4 @@ cache:
   - C:\FFplay64\
 
 build_script:
-  - mvn -Pwin64-release -Dmsbuild.exe=$msbuild -Dmaven.test.skip=true clean compile
+  - mvn -X -U -Pwin64-release -Dmsbuild.exe=$msbuild -Dmaven.test.skip=true clean compile

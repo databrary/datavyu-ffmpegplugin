@@ -65,31 +65,6 @@
       <url>http://datavyu.org/maven2</url>
       <layout>default</layout>
     </pluginRepository>
-
-    <pluginRepository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>central</id>
-      <name>oss-jfrog-artifactory-releases</name>
-      <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
-    </pluginRepository>
-
-    <pluginRepository>
-      <snapshots />
-      <id>snapshots</id>
-      <name>oss-jfrog-artifactory-snapshots</name>
-      <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
-    </pluginRepository>
-
-    <pluginRepository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>bintray-datavyu-datavyu</id>
-      <name>bintray-plugins</name>
-      <url>https://dl.bintray.com/datavyu/datavyu</url>
-    </pluginRepository>
   </pluginRepositories>
 
   <profiles>
