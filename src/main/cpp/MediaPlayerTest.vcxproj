@@ -35,13 +35,13 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Program Files\Java\jdk1.8.0_172\include\win32;C:\Program Files\Java\jdk1.8.0_172\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Java\jdk1.8.0_172\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include\win32;$(JAVA_HOME)\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(JAVA_HOME)\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Program Files\Java\jdk1.8.0_172\include\win32;C:\Program Files\Java\jdk1.8.0_172\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Java\jdk1.8.0_172\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include\win32;$(JAVA_HOME)\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(JAVA_HOME)\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="TestClock.cpp" />
