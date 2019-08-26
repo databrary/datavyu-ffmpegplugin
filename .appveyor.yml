@@ -7,6 +7,7 @@ install:
       if (!(Test-path -Path "C:\FFplay64")) {
         Write-Output "Download FFmpeg Dependencies"
         Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1AtTBKgDgkMYnm7j0y3cEaVDqRs2ZPfxd" -OutFile "C:\FFplay64.zip"
+        Write-Output "Extract FFmpeg dependencies"
         Expand-Archive -LiteralPath C:\FFplay64.zip -DestinationPath C:\
       }
       $msbuild = (Get-Command msbuild).path

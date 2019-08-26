@@ -37,22 +37,6 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-      <id>central-local</id>
-      <name>oss-jfrog-artifactory-releases</name>
-      <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
-    </repository>
-
-    <repository>
-      <snapshots />
-      <id>snapshots-local</id>
-      <name>oss-jfrog-artifactory-snapshots</name>
-      <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
-    </repository>
-
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
       <id>bintray-datavyu-datavyu</id>
       <name>bintray</name>
       <url>https://dl.bintray.com/datavyu/datavyu</url>
