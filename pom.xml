@@ -650,21 +650,21 @@
     <!-- Logger API -->
     <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
     <!-- Documentation: https://logging.apache.org/log4j/2.x/manual/api.html -->
-    <!-- Updated here: 03/28/2019 -->
+    <!-- Updated here: 08/28/2019 -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.11.2</version>
+      <version>2.12.1</version>
     </dependency>
 
     <!-- Logger Core -->
     <!-- Artifact: https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
     <!-- Documentation: (see API) -->
-    <!-- Updated here: 03/28/2019 -->
+    <!-- Updated here: 08/28/2019 -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.11.2</version>
+      <version>2.12.1</version>
     </dependency>
 
     <!-- Test cases -->
