@@ -450,10 +450,11 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/framework/**";
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
+					"$(JAVA_HOME)/include/**",
 					"${PROJECT_DIR}/dependencies/include",
 				);
 				INSTALL_PATH = "@rpath";
+				JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home;
 				LD_RUNPATH_SEARCH_PATHS = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -474,10 +475,11 @@
 				EXECUTABLE_PREFIX = lib;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/framework/**";
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
+					"$(JAVA_HOME)/include/**",
 					"${PROJECT_DIR}/dependencies/include",
 				);
 				INSTALL_PATH = "@rpath";
+				JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home;
 				LD_RUNPATH_SEARCH_PATHS = "@rpath";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

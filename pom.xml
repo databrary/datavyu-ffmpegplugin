@@ -215,6 +215,11 @@
                     <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
                     <argument>${configuration.build}</argument>
+                    <!--java.home property points to the jre folder that is why we
+                    are pointing java.home parent directory
+                    Note: ${env.JAVA_HOME} (if JAVA_HOME is set properly) could be used
+                    but is not recommended, not as portable as java.home -->
+                    <argument>JAVA_HOME=${java.home}/..</argument>
                     <argument>build</argument>
                   </arguments>
                 </configuration>
