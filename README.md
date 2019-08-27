@@ -1,4 +1,6 @@
-# Datavyu Player [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+# Datavyu Player
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Build status](https://ci.appveyor.com/api/projects/status/n59twat1udwdt7rw?svg=true)](https://ci.appveyor.com/project/TheoWolf/datavyu-ffmpegplugin)
 
 ## Overview
 The Datavyu Player is a Java Media Player using [FFmpeg](https://github.com/FFmpeg/FFmpeg), [MPV](https://github.com/mpv-player/mpv) and [AVFoundation](https://developer.apple.com/av-foundation/) Players as backend engines that we interface too through Java Native Interface (JNI). It supports a wide variety of video file formats, audio and video codecs for Windows and Mac OS Platforms. Datavyu Player is used within [Datavyu](http://www.datavyu.org/) a video annotation tool but could be embedded in any Java application.
