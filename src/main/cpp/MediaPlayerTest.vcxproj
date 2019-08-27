@@ -93,6 +93,9 @@
     <PreLinkEvent>
       <Command>copy /Y "$(SolutionDir)*.dll" "$(TargetDir)"</Command>
     </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>copy /Y C:\FFplay64\dlls\*.dll $(SolutionDir)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -129,6 +132,9 @@
     <PreLinkEvent>
       <Command>copy /Y "$(SolutionDir)*.dll" "$(TargetDir)"</Command>
     </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>copy /Y C:\FFplay64\dlls\*.dll $(SolutionDir)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
