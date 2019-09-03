@@ -19,8 +19,8 @@ cache:
 install:
   - curl -L https://github.com/databrary/FFplay64/raw/master/dependencies.zip -o $TRAVIS_BUILD_DIR/src/main/cpp/dependencies.zip
   - unzip -qq $TRAVIS_BUILD_DIR/src/main/cpp/dependencies.zip -d $TRAVIS_BUILD_DIR/src/main/cpp/
-  - echo java -version
-  - echo mvn -version
+  - java -version
+  - mvn -version
 
 script:
   - mvn -X -U -Prelease,mac -Dmaven.test.skip=true clean compile

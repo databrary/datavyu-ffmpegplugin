@@ -191,7 +191,7 @@
                 <configuration>
                   <arguments>
                     <argument>-workspace</argument>
-                    <argument>MediaPLayer.xcworkspace</argument>
+                    <argument>MediaPlayer.xcworkspace</argument>
                     <argument>clean</argument>
                     <argument>-scheme</argument>
                     <argument>${configuration.xcode.scheme}</argument>
@@ -210,7 +210,7 @@
                 <configuration>
                   <arguments>
                     <argument>-workspace</argument>
-                    <argument>MediaPLayer.xcworkspace</argument>
+                    <argument>MediaPlayer.xcworkspace</argument>
                     <argument>-scheme</argument>
                     <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
