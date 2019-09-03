@@ -1,4 +1,4 @@
-os: os
+os: osx
 
 osx_image: xcode9.3
 
@@ -18,8 +18,8 @@ cache:
     - $TRAVIS_BUILD_DIR/src/main/cpp/dependencies.zip
 
 install:
-  - curl https://github.com/databrary/FFplay64/raw/master/dependencies.zip -o $HOME/dependencies.zip
-  - unzip $HOME/dependencies.zip -d $TRAVIS_BUILD_DIR/src/main/cpp/
+  - curl -L https://github.com/databrary/FFplay64/raw/master/dependencies.zip -o $TRAVIS_BUILD_DIR/src/main/cpp/
+  - unzip -qq $TRAVIS_BUILD_DIR/src/main/cpp/dependencies.zip -d $TRAVIS_BUILD_DIR/src/main/cpp/
   - echo java -version
   - echo mvn -version
 
