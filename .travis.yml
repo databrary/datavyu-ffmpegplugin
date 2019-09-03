@@ -18,7 +18,6 @@ cache:
     - $TRAVIS_BUILD_DIR/src/main/cpp/dependencies.zip
 
 install:
-  - $TRAVIS_BUILD_DIR
   - curl https://github.com/databrary/FFplay64/raw/master/dependencies.zip -o $HOME/dependencies.zip
   - unzip $HOME/dependencies.zip -d $TRAVIS_BUILD_DIR/src/main/cpp/
   - echo java -version
