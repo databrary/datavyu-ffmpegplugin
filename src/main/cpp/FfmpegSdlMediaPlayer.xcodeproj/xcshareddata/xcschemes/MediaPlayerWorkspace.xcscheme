@@ -7,6 +7,20 @@
       buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
+            buildForTesting = "NO"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2BFF453023172B9C00B4E072"
+               BuildableName = "MediaPLayerTest"
+               BlueprintName = "MediaPLayerTest"
+               ReferencedContainer = "container:MediaPLayerTest.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
             buildForProfiling = "YES"
@@ -42,14 +56,24 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2BFF45D2231ED15F00B4E072"
+               BuildableName = "MediaPlayerGoogleTest.xctest"
+               BlueprintName = "MediaPlayerGoogleTest"
+               ReferencedContainer = "container:MediaPLayerTest.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E95D22D4219644C2007A6758"
-            BuildableName = "libFfmpegSdlMediaPlayer.dylib"
-            BlueprintName = "FfmpegSdlMediaPlayer"
-            ReferencedContainer = "container:FfmpegSdlMediaPlayer.xcodeproj">
+            BlueprintIdentifier = "2BFF453023172B9C00B4E072"
+            BuildableName = "MediaPLayerTest"
+            BlueprintName = "MediaPLayerTest"
+            ReferencedContainer = "container:MediaPLayerTest.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -57,23 +81,24 @@
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "E95D22D4219644C2007A6758"
-            BuildableName = "libFfmpegSdlMediaPlayer.dylib"
-            BlueprintName = "FfmpegSdlMediaPlayer"
-            ReferencedContainer = "container:FfmpegSdlMediaPlayer.xcodeproj">
+            BlueprintIdentifier = "2BFF453023172B9C00B4E072"
+            BuildableName = "MediaPLayerTest"
+            BlueprintName = "MediaPLayerTest"
+            ReferencedContainer = "container:MediaPLayerTest.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

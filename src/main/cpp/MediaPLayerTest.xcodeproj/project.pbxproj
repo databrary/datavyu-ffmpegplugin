@@ -1,0 +1,635 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2BFF453F2317338A00B4E072 /* TestDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF453B2317338900B4E072 /* TestDecoder.cpp */; };
+		2BFF45402317338A00B4E072 /* TestClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF453C2317338A00B4E072 /* TestClock.cpp */; };
+		2BFF45412317338A00B4E072 /* TestPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF453D2317338A00B4E072 /* TestPacketQueue.cpp */; };
+		2BFF45422317338A00B4E072 /* TestFrameQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF453E2317338A00B4E072 /* TestFrameQueue.cpp */; };
+		2BFF454F231733DD00B4E072 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4544231733DD00B4E072 /* libgtest.a */; };
+		2BFF4550231733DD00B4E072 /* libpostproc.55.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4545231733DD00B4E072 /* libpostproc.55.dylib */; };
+		2BFF4551231733DD00B4E072 /* libswresample.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4546231733DD00B4E072 /* libswresample.3.dylib */; };
+		2BFF4552231733DD00B4E072 /* libavcodec.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4547231733DD00B4E072 /* libavcodec.58.dylib */; };
+		2BFF4553231733DD00B4E072 /* libavdevice.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4548231733DD00B4E072 /* libavdevice.58.dylib */; };
+		2BFF4554231733DD00B4E072 /* libavfilter.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4549231733DD00B4E072 /* libavfilter.7.dylib */; };
+		2BFF4555231733DD00B4E072 /* libavutil.56.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454A231733DD00B4E072 /* libavutil.56.dylib */; };
+		2BFF4556231733DD00B4E072 /* libgtest_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454B231733DD00B4E072 /* libgtest_main.a */; };
+		2BFF4557231733DD00B4E072 /* libswscale.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454C231733DD00B4E072 /* libswscale.5.dylib */; };
+		2BFF4558231733DD00B4E072 /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454D231733DD00B4E072 /* libavformat.58.dylib */; };
+		2BFF4559231733DD00B4E072 /* libSDL2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454E231733DD00B4E072 /* libSDL2.dylib */; };
+		2BFF456D2317345800B4E072 /* AudioVideoFormats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45672317345800B4E072 /* AudioVideoFormats.cpp */; };
+		2BFF456E2317345800B4E072 /* Decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45642317345800B4E072 /* Decoder.cpp */; };
+		2BFF456F2317345800B4E072 /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF455E2317345700B4E072 /* Pipeline.cpp */; };
+		2BFF45702317345800B4E072 /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF455C2317345700B4E072 /* Clock.cpp */; };
+		2BFF45712317345800B4E072 /* PacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45612317345700B4E072 /* PacketQueue.cpp */; };
+		2BFF45722317345800B4E072 /* VideoState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45652317345800B4E072 /* VideoState.cpp */; };
+		2BFF45732317345800B4E072 /* Media.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45692317345800B4E072 /* Media.cpp */; };
+		2BFF45742317345800B4E072 /* FrameQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF455D2317345700B4E072 /* FrameQueue.cpp */; };
+		2BFF457A231736E200B4E072 /* JavaPlayerEventDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF4578231736E200B4E072 /* JavaPlayerEventDispatcher.cpp */; };
+		2BFF45842317372B00B4E072 /* FfmpegAvPlayback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF457E2317372A00B4E072 /* FfmpegAvPlayback.cpp */; };
+		2BFF45852317372B00B4E072 /* FfmpegErrorUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF457D2317372A00B4E072 /* FfmpegErrorUtils.cpp */; };
+		2BFF45862317372B00B4E072 /* JniUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF457F2317372A00B4E072 /* JniUtils.cpp */; };
+		2BFF45872317372B00B4E072 /* FfmpegJniUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45812317372B00B4E072 /* FfmpegJniUtils.cpp */; };
+		2BFF45E1231ED25000B4E072 /* TestPacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45DC231ED24F00B4E072 /* TestPacketQueue.cpp */; };
+		2BFF45E2231ED25000B4E072 /* TestDecoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45DD231ED24F00B4E072 /* TestDecoder.cpp */; };
+		2BFF45E3231ED25000B4E072 /* TestClock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45DE231ED24F00B4E072 /* TestClock.cpp */; };
+		2BFF45E4231ED25000B4E072 /* TestFrameQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45DF231ED24F00B4E072 /* TestFrameQueue.cpp */; };
+		2BFF45F1231ED36700B4E072 /* GoogleTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45F0231ED36700B4E072 /* GoogleTests.mm */; };
+		2BFF45F6231ED4AB00B4E072 /* Decoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45F2231ED4AB00B4E072 /* Decoder.cpp */; };
+		2BFF45F7231ED4AB00B4E072 /* PacketQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45F3231ED4AB00B4E072 /* PacketQueue.cpp */; };
+		2BFF45F8231ED4AB00B4E072 /* Clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45F4231ED4AB00B4E072 /* Clock.cpp */; };
+		2BFF45F9231ED4AB00B4E072 /* FrameQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BFF45F5231ED4AB00B4E072 /* FrameQueue.cpp */; };
+		2BFF461B231EE67200B4E072 /* libgtest_main.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454B231733DD00B4E072 /* libgtest_main.a */; };
+		2BFF461C231EE67200B4E072 /* libgtest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4544231733DD00B4E072 /* libgtest.a */; };
+		2BFF461D231EE67200B4E072 /* libavcodec.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4547231733DD00B4E072 /* libavcodec.58.dylib */; };
+		2BFF461E231EE67200B4E072 /* libavdevice.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4548231733DD00B4E072 /* libavdevice.58.dylib */; };
+		2BFF461F231EE67200B4E072 /* libavfilter.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4549231733DD00B4E072 /* libavfilter.7.dylib */; };
+		2BFF4620231EE67200B4E072 /* libavformat.58.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454D231733DD00B4E072 /* libavformat.58.dylib */; };
+		2BFF4621231EE67200B4E072 /* libavutil.56.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454A231733DD00B4E072 /* libavutil.56.dylib */; };
+		2BFF4622231EE67200B4E072 /* libpostproc.55.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4545231733DD00B4E072 /* libpostproc.55.dylib */; };
+		2BFF4623231EE67200B4E072 /* libSDL2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454E231733DD00B4E072 /* libSDL2.dylib */; };
+		2BFF4624231EE67200B4E072 /* libswresample.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF4546231733DD00B4E072 /* libswresample.3.dylib */; };
+		2BFF4625231EE67200B4E072 /* libswscale.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BFF454C231733DD00B4E072 /* libswscale.5.dylib */; };
+		2BFF4631231EE6D700B4E072 /* libavformat.58.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF4626231EE6D700B4E072 /* libavformat.58.dylib */; };
+		2BFF4632231EE6D700B4E072 /* libgtest_main.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF4627231EE6D700B4E072 /* libgtest_main.a */; };
+		2BFF4633231EE6D700B4E072 /* libSDL2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF4628231EE6D700B4E072 /* libSDL2.dylib */; };
+		2BFF4634231EE6D700B4E072 /* libavdevice.58.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF4629231EE6D700B4E072 /* libavdevice.58.dylib */; };
+		2BFF4635231EE6D700B4E072 /* libgtest.a in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF462A231EE6D700B4E072 /* libgtest.a */; };
+		2BFF4636231EE6D700B4E072 /* libswresample.3.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF462B231EE6D700B4E072 /* libswresample.3.dylib */; };
+		2BFF4637231EE6D700B4E072 /* libavcodec.58.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF462C231EE6D700B4E072 /* libavcodec.58.dylib */; };
+		2BFF4638231EE6D700B4E072 /* libavutil.56.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF462D231EE6D700B4E072 /* libavutil.56.dylib */; };
+		2BFF4639231EE6D700B4E072 /* libpostproc.55.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF462E231EE6D700B4E072 /* libpostproc.55.dylib */; };
+		2BFF463A231EE6D700B4E072 /* libswscale.5.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF462F231EE6D700B4E072 /* libswscale.5.dylib */; };
+		2BFF463B231EE6D700B4E072 /* libavfilter.7.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2BFF4630231EE6D700B4E072 /* libavfilter.7.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2BFF452F23172B9C00B4E072 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "${TARGET_BUILD_DIR}";
+			dstSubfolderSpec = 0;
+			files = (
+				2BFF4631231EE6D700B4E072 /* libavformat.58.dylib in CopyFiles */,
+				2BFF4632231EE6D700B4E072 /* libgtest_main.a in CopyFiles */,
+				2BFF4633231EE6D700B4E072 /* libSDL2.dylib in CopyFiles */,
+				2BFF4634231EE6D700B4E072 /* libavdevice.58.dylib in CopyFiles */,
+				2BFF4635231EE6D700B4E072 /* libgtest.a in CopyFiles */,
+				2BFF4636231EE6D700B4E072 /* libswresample.3.dylib in CopyFiles */,
+				2BFF4637231EE6D700B4E072 /* libavcodec.58.dylib in CopyFiles */,
+				2BFF4638231EE6D700B4E072 /* libavutil.56.dylib in CopyFiles */,
+				2BFF4639231EE6D700B4E072 /* libpostproc.55.dylib in CopyFiles */,
+				2BFF463A231EE6D700B4E072 /* libswscale.5.dylib in CopyFiles */,
+				2BFF463B231EE6D700B4E072 /* libavfilter.7.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2BFF453123172B9C00B4E072 /* MediaPLayerTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MediaPLayerTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BFF453B2317338900B4E072 /* TestDecoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestDecoder.cpp; sourceTree = "<group>"; };
+		2BFF453C2317338A00B4E072 /* TestClock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestClock.cpp; sourceTree = "<group>"; };
+		2BFF453D2317338A00B4E072 /* TestPacketQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestPacketQueue.cpp; sourceTree = "<group>"; };
+		2BFF453E2317338A00B4E072 /* TestFrameQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TestFrameQueue.cpp; sourceTree = "<group>"; };
+		2BFF4544231733DD00B4E072 /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest.a; path = dependencies/lib/libgtest.a; sourceTree = "<group>"; };
+		2BFF4545231733DD00B4E072 /* libpostproc.55.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpostproc.55.dylib; path = dependencies/lib/libpostproc.55.dylib; sourceTree = "<group>"; };
+		2BFF4546231733DD00B4E072 /* libswresample.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswresample.3.dylib; path = dependencies/lib/libswresample.3.dylib; sourceTree = "<group>"; };
+		2BFF4547231733DD00B4E072 /* libavcodec.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavcodec.58.dylib; path = dependencies/lib/libavcodec.58.dylib; sourceTree = "<group>"; };
+		2BFF4548231733DD00B4E072 /* libavdevice.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavdevice.58.dylib; path = dependencies/lib/libavdevice.58.dylib; sourceTree = "<group>"; };
+		2BFF4549231733DD00B4E072 /* libavfilter.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavfilter.7.dylib; path = dependencies/lib/libavfilter.7.dylib; sourceTree = "<group>"; };
+		2BFF454A231733DD00B4E072 /* libavutil.56.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavutil.56.dylib; path = dependencies/lib/libavutil.56.dylib; sourceTree = "<group>"; };
+		2BFF454B231733DD00B4E072 /* libgtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest_main.a; path = dependencies/lib/libgtest_main.a; sourceTree = "<group>"; };
+		2BFF454C231733DD00B4E072 /* libswscale.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswscale.5.dylib; path = dependencies/lib/libswscale.5.dylib; sourceTree = "<group>"; };
+		2BFF454D231733DD00B4E072 /* libavformat.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavformat.58.dylib; path = dependencies/lib/libavformat.58.dylib; sourceTree = "<group>"; };
+		2BFF454E231733DD00B4E072 /* libSDL2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2.dylib; path = dependencies/lib/libSDL2.dylib; sourceTree = "<group>"; };
+		2BFF455A2317345700B4E072 /* VideoState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoState.h; sourceTree = "<group>"; };
+		2BFF455B2317345700B4E072 /* PipelineOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PipelineOptions.h; sourceTree = "<group>"; };
+		2BFF455C2317345700B4E072 /* Clock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Clock.cpp; sourceTree = "<group>"; };
+		2BFF455D2317345700B4E072 /* FrameQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FrameQueue.cpp; sourceTree = "<group>"; };
+		2BFF455E2317345700B4E072 /* Pipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Pipeline.cpp; sourceTree = "<group>"; };
+		2BFF455F2317345700B4E072 /* Clock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Clock.h; sourceTree = "<group>"; };
+		2BFF45602317345700B4E072 /* AudioVideoFormats.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioVideoFormats.h; sourceTree = "<group>"; };
+		2BFF45612317345700B4E072 /* PacketQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PacketQueue.cpp; sourceTree = "<group>"; };
+		2BFF45622317345800B4E072 /* Media.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Media.h; sourceTree = "<group>"; };
+		2BFF45632317345800B4E072 /* Pipeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Pipeline.h; sourceTree = "<group>"; };
+		2BFF45642317345800B4E072 /* Decoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Decoder.cpp; sourceTree = "<group>"; };
+		2BFF45652317345800B4E072 /* VideoState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VideoState.cpp; sourceTree = "<group>"; };
+		2BFF45662317345800B4E072 /* FrameQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FrameQueue.h; sourceTree = "<group>"; };
+		2BFF45672317345800B4E072 /* AudioVideoFormats.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioVideoFormats.cpp; sourceTree = "<group>"; };
+		2BFF45682317345800B4E072 /* Singleton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Singleton.h; sourceTree = "<group>"; };
+		2BFF45692317345800B4E072 /* Media.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Media.cpp; sourceTree = "<group>"; };
+		2BFF456A2317345800B4E072 /* Decoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Decoder.h; sourceTree = "<group>"; };
+		2BFF456C2317345800B4E072 /* PacketQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PacketQueue.h; sourceTree = "<group>"; };
+		2BFF4578231736E200B4E072 /* JavaPlayerEventDispatcher.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JavaPlayerEventDispatcher.cpp; sourceTree = "<group>"; };
+		2BFF4579231736E200B4E072 /* JavaPlayerEventDispatcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JavaPlayerEventDispatcher.h; sourceTree = "<group>"; };
+		2BFF457B2317372A00B4E072 /* FfmpegAvPlayback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfmpegAvPlayback.h; sourceTree = "<group>"; };
+		2BFF457C2317372A00B4E072 /* FfmpegErrorUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfmpegErrorUtils.h; sourceTree = "<group>"; };
+		2BFF457D2317372A00B4E072 /* FfmpegErrorUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegErrorUtils.cpp; sourceTree = "<group>"; };
+		2BFF457E2317372A00B4E072 /* FfmpegAvPlayback.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegAvPlayback.cpp; sourceTree = "<group>"; };
+		2BFF457F2317372A00B4E072 /* JniUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JniUtils.cpp; sourceTree = "<group>"; };
+		2BFF45802317372B00B4E072 /* JniUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JniUtils.h; sourceTree = "<group>"; };
+		2BFF45812317372B00B4E072 /* FfmpegJniUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FfmpegJniUtils.cpp; sourceTree = "<group>"; };
+		2BFF45822317372B00B4E072 /* MediaPlayerErrors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediaPlayerErrors.h; sourceTree = "<group>"; };
+		2BFF45832317372B00B4E072 /* FfmpegJniUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FfmpegJniUtils.h; sourceTree = "<group>"; };
+		2BFF45D3231ED15F00B4E072 /* MediaPlayerGoogleTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediaPlayerGoogleTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BFF45DC231ED24F00B4E072 /* TestPacketQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestPacketQueue.cpp; sourceTree = "<group>"; };
+		2BFF45DD231ED24F00B4E072 /* TestDecoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestDecoder.cpp; sourceTree = "<group>"; };
+		2BFF45DE231ED24F00B4E072 /* TestClock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestClock.cpp; sourceTree = "<group>"; };
+		2BFF45DF231ED24F00B4E072 /* TestFrameQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestFrameQueue.cpp; sourceTree = "<group>"; };
+		2BFF45F0231ED36700B4E072 /* GoogleTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GoogleTests.mm; sourceTree = "<group>"; };
+		2BFF45F2231ED4AB00B4E072 /* Decoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Decoder.cpp; sourceTree = "<group>"; };
+		2BFF45F3231ED4AB00B4E072 /* PacketQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PacketQueue.cpp; sourceTree = "<group>"; };
+		2BFF45F4231ED4AB00B4E072 /* Clock.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Clock.cpp; sourceTree = "<group>"; };
+		2BFF45F5231ED4AB00B4E072 /* FrameQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FrameQueue.cpp; sourceTree = "<group>"; };
+		2BFF4626231EE6D700B4E072 /* libavformat.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavformat.58.dylib; path = dependencies/lib/libavformat.58.dylib; sourceTree = "<group>"; };
+		2BFF4627231EE6D700B4E072 /* libgtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest_main.a; path = dependencies/lib/libgtest_main.a; sourceTree = "<group>"; };
+		2BFF4628231EE6D700B4E072 /* libSDL2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2.dylib; path = dependencies/lib/libSDL2.dylib; sourceTree = "<group>"; };
+		2BFF4629231EE6D700B4E072 /* libavdevice.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavdevice.58.dylib; path = dependencies/lib/libavdevice.58.dylib; sourceTree = "<group>"; };
+		2BFF462A231EE6D700B4E072 /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest.a; path = dependencies/lib/libgtest.a; sourceTree = "<group>"; };
+		2BFF462B231EE6D700B4E072 /* libswresample.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswresample.3.dylib; path = dependencies/lib/libswresample.3.dylib; sourceTree = "<group>"; };
+		2BFF462C231EE6D700B4E072 /* libavcodec.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavcodec.58.dylib; path = dependencies/lib/libavcodec.58.dylib; sourceTree = "<group>"; };
+		2BFF462D231EE6D700B4E072 /* libavutil.56.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavutil.56.dylib; path = dependencies/lib/libavutil.56.dylib; sourceTree = "<group>"; };
+		2BFF462E231EE6D700B4E072 /* libpostproc.55.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpostproc.55.dylib; path = dependencies/lib/libpostproc.55.dylib; sourceTree = "<group>"; };
+		2BFF462F231EE6D700B4E072 /* libswscale.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswscale.5.dylib; path = dependencies/lib/libswscale.5.dylib; sourceTree = "<group>"; };
+		2BFF4630231EE6D700B4E072 /* libavfilter.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavfilter.7.dylib; path = dependencies/lib/libavfilter.7.dylib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2BFF452E23172B9C00B4E072 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BFF4556231733DD00B4E072 /* libgtest_main.a in Frameworks */,
+				2BFF454F231733DD00B4E072 /* libgtest.a in Frameworks */,
+				2BFF4550231733DD00B4E072 /* libpostproc.55.dylib in Frameworks */,
+				2BFF4551231733DD00B4E072 /* libswresample.3.dylib in Frameworks */,
+				2BFF4552231733DD00B4E072 /* libavcodec.58.dylib in Frameworks */,
+				2BFF4553231733DD00B4E072 /* libavdevice.58.dylib in Frameworks */,
+				2BFF4554231733DD00B4E072 /* libavfilter.7.dylib in Frameworks */,
+				2BFF4555231733DD00B4E072 /* libavutil.56.dylib in Frameworks */,
+				2BFF4557231733DD00B4E072 /* libswscale.5.dylib in Frameworks */,
+				2BFF4558231733DD00B4E072 /* libavformat.58.dylib in Frameworks */,
+				2BFF4559231733DD00B4E072 /* libSDL2.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2BFF45D0231ED15F00B4E072 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BFF461B231EE67200B4E072 /* libgtest_main.a in Frameworks */,
+				2BFF461C231EE67200B4E072 /* libgtest.a in Frameworks */,
+				2BFF461D231EE67200B4E072 /* libavcodec.58.dylib in Frameworks */,
+				2BFF461E231EE67200B4E072 /* libavdevice.58.dylib in Frameworks */,
+				2BFF461F231EE67200B4E072 /* libavfilter.7.dylib in Frameworks */,
+				2BFF4620231EE67200B4E072 /* libavformat.58.dylib in Frameworks */,
+				2BFF4621231EE67200B4E072 /* libavutil.56.dylib in Frameworks */,
+				2BFF4622231EE67200B4E072 /* libpostproc.55.dylib in Frameworks */,
+				2BFF4623231EE67200B4E072 /* libSDL2.dylib in Frameworks */,
+				2BFF4624231EE67200B4E072 /* libswresample.3.dylib in Frameworks */,
+				2BFF4625231EE67200B4E072 /* libswscale.5.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2BFF452823172B9C00B4E072 = {
+			isa = PBXGroup;
+			children = (
+				2BFF462C231EE6D700B4E072 /* libavcodec.58.dylib */,
+				2BFF4629231EE6D700B4E072 /* libavdevice.58.dylib */,
+				2BFF4630231EE6D700B4E072 /* libavfilter.7.dylib */,
+				2BFF4626231EE6D700B4E072 /* libavformat.58.dylib */,
+				2BFF462D231EE6D700B4E072 /* libavutil.56.dylib */,
+				2BFF4627231EE6D700B4E072 /* libgtest_main.a */,
+				2BFF462A231EE6D700B4E072 /* libgtest.a */,
+				2BFF462E231EE6D700B4E072 /* libpostproc.55.dylib */,
+				2BFF4628231EE6D700B4E072 /* libSDL2.dylib */,
+				2BFF462B231EE6D700B4E072 /* libswresample.3.dylib */,
+				2BFF462F231EE6D700B4E072 /* libswscale.5.dylib */,
+				2BFF45F4231ED4AB00B4E072 /* Clock.cpp */,
+				2BFF45F2231ED4AB00B4E072 /* Decoder.cpp */,
+				2BFF45F5231ED4AB00B4E072 /* FrameQueue.cpp */,
+				2BFF45F3231ED4AB00B4E072 /* PacketQueue.cpp */,
+				2BFF45F0231ED36700B4E072 /* GoogleTests.mm */,
+				2BFF45DE231ED24F00B4E072 /* TestClock.cpp */,
+				2BFF45DD231ED24F00B4E072 /* TestDecoder.cpp */,
+				2BFF45DF231ED24F00B4E072 /* TestFrameQueue.cpp */,
+				2BFF45DC231ED24F00B4E072 /* TestPacketQueue.cpp */,
+				2BFF457E2317372A00B4E072 /* FfmpegAvPlayback.cpp */,
+				2BFF457B2317372A00B4E072 /* FfmpegAvPlayback.h */,
+				2BFF457D2317372A00B4E072 /* FfmpegErrorUtils.cpp */,
+				2BFF457C2317372A00B4E072 /* FfmpegErrorUtils.h */,
+				2BFF45812317372B00B4E072 /* FfmpegJniUtils.cpp */,
+				2BFF45832317372B00B4E072 /* FfmpegJniUtils.h */,
+				2BFF457F2317372A00B4E072 /* JniUtils.cpp */,
+				2BFF45802317372B00B4E072 /* JniUtils.h */,
+				2BFF45822317372B00B4E072 /* MediaPlayerErrors.h */,
+				2BFF4578231736E200B4E072 /* JavaPlayerEventDispatcher.cpp */,
+				2BFF4579231736E200B4E072 /* JavaPlayerEventDispatcher.h */,
+				2BFF45672317345800B4E072 /* AudioVideoFormats.cpp */,
+				2BFF45602317345700B4E072 /* AudioVideoFormats.h */,
+				2BFF455C2317345700B4E072 /* Clock.cpp */,
+				2BFF455F2317345700B4E072 /* Clock.h */,
+				2BFF45642317345800B4E072 /* Decoder.cpp */,
+				2BFF456A2317345800B4E072 /* Decoder.h */,
+				2BFF455D2317345700B4E072 /* FrameQueue.cpp */,
+				2BFF45662317345800B4E072 /* FrameQueue.h */,
+				2BFF45692317345800B4E072 /* Media.cpp */,
+				2BFF45622317345800B4E072 /* Media.h */,
+				2BFF45612317345700B4E072 /* PacketQueue.cpp */,
+				2BFF456C2317345800B4E072 /* PacketQueue.h */,
+				2BFF455E2317345700B4E072 /* Pipeline.cpp */,
+				2BFF45632317345800B4E072 /* Pipeline.h */,
+				2BFF455B2317345700B4E072 /* PipelineOptions.h */,
+				2BFF45682317345800B4E072 /* Singleton.h */,
+				2BFF45652317345800B4E072 /* VideoState.cpp */,
+				2BFF455A2317345700B4E072 /* VideoState.h */,
+				2BFF453C2317338A00B4E072 /* TestClock.cpp */,
+				2BFF453B2317338900B4E072 /* TestDecoder.cpp */,
+				2BFF453E2317338A00B4E072 /* TestFrameQueue.cpp */,
+				2BFF453D2317338A00B4E072 /* TestPacketQueue.cpp */,
+				2BFF453223172B9C00B4E072 /* Products */,
+				2BFF4543231733DC00B4E072 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		2BFF453223172B9C00B4E072 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2BFF453123172B9C00B4E072 /* MediaPLayerTest */,
+				2BFF45D3231ED15F00B4E072 /* MediaPlayerGoogleTest.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2BFF4543231733DC00B4E072 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2BFF4547231733DD00B4E072 /* libavcodec.58.dylib */,
+				2BFF4548231733DD00B4E072 /* libavdevice.58.dylib */,
+				2BFF4549231733DD00B4E072 /* libavfilter.7.dylib */,
+				2BFF454D231733DD00B4E072 /* libavformat.58.dylib */,
+				2BFF454A231733DD00B4E072 /* libavutil.56.dylib */,
+				2BFF454B231733DD00B4E072 /* libgtest_main.a */,
+				2BFF4544231733DD00B4E072 /* libgtest.a */,
+				2BFF4545231733DD00B4E072 /* libpostproc.55.dylib */,
+				2BFF454E231733DD00B4E072 /* libSDL2.dylib */,
+				2BFF4546231733DD00B4E072 /* libswresample.3.dylib */,
+				2BFF454C231733DD00B4E072 /* libswscale.5.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2BFF453023172B9C00B4E072 /* MediaPLayerTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2BFF453823172B9C00B4E072 /* Build configuration list for PBXNativeTarget "MediaPLayerTest" */;
+			buildPhases = (
+				2BFF452D23172B9C00B4E072 /* Sources */,
+				2BFF452E23172B9C00B4E072 /* Frameworks */,
+				2BFF452F23172B9C00B4E072 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MediaPLayerTest;
+			productName = MediaPLayerTest;
+			productReference = 2BFF453123172B9C00B4E072 /* MediaPLayerTest */;
+			productType = "com.apple.product-type.tool";
+		};
+		2BFF45D2231ED15F00B4E072 /* MediaPlayerGoogleTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2BFF45DA231ED15F00B4E072 /* Build configuration list for PBXNativeTarget "MediaPlayerGoogleTest" */;
+			buildPhases = (
+				2BFF45CF231ED15F00B4E072 /* Sources */,
+				2BFF45D0231ED15F00B4E072 /* Frameworks */,
+				2BFF45D1231ED15F00B4E072 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MediaPlayerGoogleTest;
+			productName = MediaPlayerGoogleTest;
+			productReference = 2BFF45D3231ED15F00B4E072 /* MediaPlayerGoogleTest.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2BFF452923172B9C00B4E072 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1030;
+				ORGANIZATIONNAME = Datavyu;
+				TargetAttributes = {
+					2BFF453023172B9C00B4E072 = {
+						CreatedOnToolsVersion = 10.3;
+					};
+					2BFF45D2231ED15F00B4E072 = {
+						CreatedOnToolsVersion = 10.3;
+					};
+				};
+			};
+			buildConfigurationList = 2BFF452C23172B9C00B4E072 /* Build configuration list for PBXProject "MediaPLayerTest" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2BFF452823172B9C00B4E072;
+			productRefGroup = 2BFF453223172B9C00B4E072 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2BFF453023172B9C00B4E072 /* MediaPLayerTest */,
+				2BFF45D2231ED15F00B4E072 /* MediaPlayerGoogleTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2BFF45D1231ED15F00B4E072 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2BFF452D23172B9C00B4E072 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BFF45872317372B00B4E072 /* FfmpegJniUtils.cpp in Sources */,
+				2BFF45402317338A00B4E072 /* TestClock.cpp in Sources */,
+				2BFF45732317345800B4E072 /* Media.cpp in Sources */,
+				2BFF456D2317345800B4E072 /* AudioVideoFormats.cpp in Sources */,
+				2BFF45712317345800B4E072 /* PacketQueue.cpp in Sources */,
+				2BFF456E2317345800B4E072 /* Decoder.cpp in Sources */,
+				2BFF45852317372B00B4E072 /* FfmpegErrorUtils.cpp in Sources */,
+				2BFF45862317372B00B4E072 /* JniUtils.cpp in Sources */,
+				2BFF45412317338A00B4E072 /* TestPacketQueue.cpp in Sources */,
+				2BFF45842317372B00B4E072 /* FfmpegAvPlayback.cpp in Sources */,
+				2BFF45722317345800B4E072 /* VideoState.cpp in Sources */,
+				2BFF453F2317338A00B4E072 /* TestDecoder.cpp in Sources */,
+				2BFF456F2317345800B4E072 /* Pipeline.cpp in Sources */,
+				2BFF45702317345800B4E072 /* Clock.cpp in Sources */,
+				2BFF457A231736E200B4E072 /* JavaPlayerEventDispatcher.cpp in Sources */,
+				2BFF45422317338A00B4E072 /* TestFrameQueue.cpp in Sources */,
+				2BFF45742317345800B4E072 /* FrameQueue.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2BFF45CF231ED15F00B4E072 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2BFF45F6231ED4AB00B4E072 /* Decoder.cpp in Sources */,
+				2BFF45F7231ED4AB00B4E072 /* PacketQueue.cpp in Sources */,
+				2BFF45F8231ED4AB00B4E072 /* Clock.cpp in Sources */,
+				2BFF45F9231ED4AB00B4E072 /* FrameQueue.cpp in Sources */,
+				2BFF45F1231ED36700B4E072 /* GoogleTests.mm in Sources */,
+				2BFF45E1231ED25000B4E072 /* TestPacketQueue.cpp in Sources */,
+				2BFF45E2231ED25000B4E072 /* TestDecoder.cpp in Sources */,
+				2BFF45E3231ED25000B4E072 /* TestClock.cpp in Sources */,
+				2BFF45E4231ED25000B4E072 /* TestFrameQueue.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2BFF453623172B9C00B4E072 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(JAVA_HOME)/include/**",
+					"${PROJECT_DIR}/dependencies/include",
+				);
+				JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home;
+				LIBRARY_SEARCH_PATHS = "${PROJECT_DIR}/dependencies/lib";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2BFF453723172B9C00B4E072 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(JAVA_HOME)/include/**",
+					"${PROJECT_DIR}/dependencies/include",
+				);
+				JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home;
+				LIBRARY_SEARCH_PATHS = "${PROJECT_DIR}/dependencies/lib";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2BFF453923172B9C00B4E072 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2BFF453A23172B9C00B4E072 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		2BFF45D8231ED15F00B4E072 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/dependencies/lib",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.datavyu.MediaPlayerGoogleTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2BFF45D9231ED15F00B4E072 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/dependencies/lib",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.datavyu.MediaPlayerGoogleTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2BFF452C23172B9C00B4E072 /* Build configuration list for PBXProject "MediaPLayerTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BFF453623172B9C00B4E072 /* Debug */,
+				2BFF453723172B9C00B4E072 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2BFF453823172B9C00B4E072 /* Build configuration list for PBXNativeTarget "MediaPLayerTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BFF453923172B9C00B4E072 /* Debug */,
+				2BFF453A23172B9C00B4E072 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2BFF45DA231ED15F00B4E072 /* Build configuration list for PBXNativeTarget "MediaPlayerGoogleTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2BFF45D8231ED15F00B4E072 /* Debug */,
+				2BFF45D9231ED15F00B4E072 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2BFF452923172B9C00B4E072 /* Project object */;
+}

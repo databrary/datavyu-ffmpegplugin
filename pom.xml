@@ -15,8 +15,6 @@
     <msbuild.exe>msbuild</msbuild.exe>
     <!-- You will need to install the command-line tool -->
     <xcodebuild>/usr/bin/xcodebuild</xcodebuild>
-    <configuration.release>Release</configuration.release>
-    <configuration.debug>Debug</configuration.debug>
     <configuration.xcode.scheme>MediaPlayerWorkspace</configuration.xcode.scheme>
   </properties>
 
@@ -93,7 +91,30 @@
       </distributionManagement>
     </profile>
     <profile>
-      <id>mac-debug</id>
+      <id>debug</id>
+      <activation>
+        <property>
+          <name>debug</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <properties>
+        <configuration.build>Debug</configuration.build>
+      </properties>
+    </profile>
+    <profile>
+      <id>release</id>
+      <activation>
+        <property>
+          <name>!debug</name>
+        </property>
+      </activation>
+      <properties>
+        <configuration.build>Release</configuration.build>
+      </properties>
+    </profile>
+    <profile>
+      <id>mac</id>
       <activation>
         <os>
           <family>mac</family>
@@ -170,12 +191,12 @@
                 <configuration>
                   <arguments>
                     <argument>-workspace</argument>
-                    <argument>MediaPLayer.xcworkspace</argument>
+                    <argument>MediaPlayer.xcworkspace</argument>
                     <argument>clean</argument>
                     <argument>-scheme</argument>
                     <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
-                    <argument>${configuration.debug}</argument>
+                    <argument>${configuration.build}</argument>
                   </arguments>
                 </configuration>
               </execution>
@@ -189,12 +210,19 @@
                 <configuration>
                   <arguments>
                     <argument>-workspace</argument>
-                    <argument>MediaPLayer.xcworkspace</argument>
+                    <argument>MediaPlayer.xcworkspace</argument>
                     <argument>-scheme</argument>
                     <argument>${configuration.xcode.scheme}</argument>
                     <argument>-configuration</argument>
-                    <argument>${configuration.debug}</argument>
+                    <argument>${configuration.build}</argument>
+                    <!--java.home property points to the jre folder that is why we
+                    are pointing java.home parent directory
+                    Note: ${env.JAVA_HOME} (if JAVA_HOME is set properly) could be used
+                    but is not recommended, not as portable as java.home -->
+                    <argument>JAVA_HOME=${java.home}/..</argument>
                     <argument>build</argument>
+                    <!--Run Google Tests-->
+                    <argument>test</argument>
                   </arguments>
                 </configuration>
               </execution>
@@ -212,126 +240,7 @@
 
     </profile>
     <profile>
-      <id>mac-release</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-
-      <dependencies>
-        <dependency>
-          <groupId>org.datavyu</groupId>
-          <artifactId>libNativeOSXCanvas</artifactId>
-          <version>0.92</version>
-        </dependency>
-
-        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.1.1 Version -->
-        <dependency>
-          <groupId>org.datavyu</groupId>
-          <artifactId>ffmpeg-libs</artifactId>
-          <version>4.1.1</version>
-          <classifier>mac</classifier>
-        </dependency>
-
-        <!-- SDL 2.0.9 -->
-        <dependency>
-          <groupId>org.datavyu</groupId>
-          <artifactId>sdl-libs</artifactId>
-          <version>2.0.9</version>
-          <classifier>mac</classifier>
-        </dependency>
-      </dependencies>
-
-      <build>
-        <resources>
-          <resource>
-            <directory>./</directory>
-            <includes>
-              <include>libFfmpegJavaMediaPlayer.dylib</include>
-              <include>libFfmpegSdlMediaPlayer.dylib</include>
-            </includes>
-          </resource>
-        </resources>
-
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
-            <configuration combine.self="append">
-              <!-- Note all paths play off from sourceDirectory -->
-              <excludes>
-                <exclude>**/org/datavyu/plugins/mpv/*</exclude>
-                <exclude>**/org/datavyu/plugins/examples/*</exclude>
-              </excludes>
-            </configuration>
-          </plugin>
-
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.6.0</version>
-            <configuration>
-              <executable>${xcodebuild}</executable>
-              <workingDirectory>src/main/cpp</workingDirectory>
-            </configuration>
-
-            <executions>
-
-              <execution>
-                <id>clean-with-xcodebuild</id>
-                <phase>clean</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <arguments>
-                    <argument>-workspace</argument>
-                    <argument>MediaPLayer.xcworkspace</argument>
-                    <argument>clean</argument>
-                    <argument>-scheme</argument>
-                    <argument>${configuration.xcode.scheme}</argument>
-                    <argument>-configuration</argument>
-                    <argument>${configuration.release}</argument>
-                  </arguments>
-                </configuration>
-              </execution>
-
-              <execution>
-                <id>build-with-xcodebuild</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <arguments>
-                    <argument>-workspace</argument>
-                    <argument>MediaPLayer.xcworkspace</argument>
-                    <argument>-scheme</argument>
-                    <argument>${configuration.xcode.scheme}</argument>
-                    <argument>-configuration</argument>
-                    <argument>${configuration.release}</argument>
-                    <argument>build</argument>
-                  </arguments>
-                </configuration>
-              </execution>
-
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-              <classifier>mac</classifier>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-
-    </profile>
-    <profile>
-      <id>win64-release</id>
+      <id>win64</id>
       <activation>
         <os>
           <family>Windows</family>
@@ -407,7 +316,7 @@
                   <arguments>
                     <argument>MediaPlayer.sln</argument>
                     <argument>/t:Clean</argument>
-                    <argument>/p:Configuration=${configuration.release}</argument>
+                    <argument>/p:Configuration=${configuration.build}</argument>
                   </arguments>
                 </configuration>
               </execution>
@@ -419,7 +328,7 @@
                 </goals>
                 <configuration>
                   <arguments>
-                    <argument>/p:Configuration=${configuration.release}</argument>
+                    <argument>/p:Configuration=${configuration.build}</argument>
                     <argument>MediaPlayer.sln</argument>
                     <argument>/t:build</argument>
                   </arguments>
@@ -430,118 +339,6 @@
         </plugins>
       </build>
     </profile>
-
-    <profile>
-      <id>win64-debug</id>
-
-      <activation>
-        <os>
-          <family>Windows</family>
-          <arch>!x86</arch>
-        </os>
-        <property>
-          <name>debug</name>
-          <value>true</value>
-        </property>
-      </activation>
-
-      <dependencies>
-
-        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
-        <!-- FFmpeg 4.1.1 Version -->
-        <dependency>
-          <groupId>org.datavyu</groupId>
-          <artifactId>ffmpeg-libs</artifactId>
-          <version>4.1.1</version>
-          <classifier>win</classifier>
-        </dependency>
-
-        <!-- SDL 2.0.9 -->
-        <dependency>
-          <groupId>org.datavyu</groupId>
-          <artifactId>sdl-libs</artifactId>
-          <version>2.0.9</version>
-          <classifier>win</classifier>
-        </dependency>
-
-        <!-- MPV 0.29.1 -->
-        <dependency>
-          <groupId>org.datavyu</groupId>
-          <artifactId>mpv-libs</artifactId>
-          <version>0.29.1</version>
-        </dependency>
-
-      </dependencies>
-
-      <build>
-        <resources>
-          <resource>
-            <directory>./</directory>
-            <includes>
-              <include>FfmpegJavaMediaPlayer.dll</include>
-              <include>FfmpegSdlMediaPlayer.dll</include>
-              <include>MpvMediaPlayer.dll</include>
-            </includes>
-          </resource>
-        </resources>
-
-        <plugins>
-          <plugin>
-            <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-              <classifier>win</classifier>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.6.0</version>
-            <configuration>
-              <executable>${msbuild.exe}</executable>
-              <workingDirectory>src/main/cpp</workingDirectory>
-            </configuration>
-
-            <executions>
-
-              <execution>
-                <id>clean-with-msbuild</id>
-                <phase>clean</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <arguments>
-                    <argument>MediaPlayer.sln</argument>
-                    <argument>/t:Clean</argument>
-                    <argument>/p:Configuration=${configuration.debug}</argument>
-                  </arguments>
-                </configuration>
-              </execution>
-
-              <execution>
-                <id>build-with-msbuild</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <arguments>
-                    <argument>/p:Configuration=${configuration.debug}</argument>
-                    <!--Need to update the argument value if you change the name
-                    of the Visual Studio Solution-->
-                    <argument>MediaPlayer.sln</argument>
-                    <argument>/t:build</argument>
-                  </arguments>
-                </configuration>
-              </execution>
-
-            </executions>
-          </plugin>
-
-        </plugins>
-      </build>
-    </profile>
-
   </profiles>
 
   <build>
