@@ -221,6 +221,8 @@
                     but is not recommended, not as portable as java.home -->
                     <argument>JAVA_HOME=${java.home}/..</argument>
                     <argument>build</argument>
+                    <!--Run Google Tests-->
+                    <argument>test</argument>
                   </arguments>
                 </configuration>
               </execution>

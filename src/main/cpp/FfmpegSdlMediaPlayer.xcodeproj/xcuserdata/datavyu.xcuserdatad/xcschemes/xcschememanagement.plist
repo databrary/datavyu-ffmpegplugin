@@ -4,12 +4,12 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>FfmpegSdlMediaPlayer.xcscheme_^#shared#^_</key>
+		<key>FfmpegSdlMediaPlayer.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>MediaPlayerWorkspace.xcscheme_^#shared#^_</key>
+		<key>MediaPlayerWorkspace.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>3</integer>
@@ -17,6 +17,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>2BFF45C3231ED09300B4E072</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>E95D22D4219644C2007A6758</key>
 		<dict>
 			<key>primary</key>
