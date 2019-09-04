@@ -58,7 +58,7 @@ For Mac OS:
     </dependency>
 ```
 ## Examples
-With the Datavyu-ffmpegplugin you can lunch and control multiple instance of one the provided media player from your java application. Creating and instantiating a Media Player is a matter of passing a file path to the MediaPlayer interface.
+With Datavyu-ffmpegplugin you can launch and control multiple media player instances from your java application. Creating and instantiating a Media Player is a matter of passing a file path to the MediaPlayer interface.
 
 ### JAVA Player
 The Java Player is using FFmpeg API's to decode and read the stream, the player will pull both image buffers and audio buffers from the native side and display the video in a Java container.
