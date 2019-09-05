@@ -55,9 +55,9 @@ public:
   }
 
   inline void StepToPreviousFrame() {
-	// Get the current time and seek if it is NaN
+	// Get the current time and seek if it time is not NaN and equal 0
     double time = GetTime();
-    if (!isnan(time)) {
+    if (!isnan(time) && time > 0) {
       double difference = -1.0 / GetFrameRate();
       p_video_state_->Seek((int64_t)((time + difference) * AV_TIME_BASE),
                            (int64_t)(difference * AV_TIME_BASE),
