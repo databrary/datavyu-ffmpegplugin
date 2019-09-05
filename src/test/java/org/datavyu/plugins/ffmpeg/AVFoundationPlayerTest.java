@@ -15,7 +15,7 @@ public class AVFoundationPlayerTest extends MediaPlayerTest {
     private MediaInformation mediaInformation;
     private Container container;
 
-    AVFoundationBuilder() { }
+    AVFoundationBuilder() {}
 
     AVFoundationBuilder withMedia(MediaInformation mediaInformation) {
       this.mediaInformation = mediaInformation;
@@ -29,24 +29,31 @@ public class AVFoundationPlayerTest extends MediaPlayerTest {
 
     @Override
     public MediaPlayerSync build() {
-      MediaPlayer mediaPlayer = new AVFoundationMediaPlayer(mediaInformation.getLocalPath(), container);
+      MediaPlayer mediaPlayer =
+          new AVFoundationMediaPlayer(mediaInformation.getLocalPath(), container);
       return MediaPlayerSync.createMediaPlayerSync(mediaPlayer);
     }
   }
 
   @DataProvider(name = "shortMedia")
   public Object[][] createPlayerWithShortMedia() {
-    return new Object[][] {{ new AVFoundationBuilder().withMedia(SHORT_MEDIA).withContainer(new JDialog()), SHORT_MEDIA}};
+    return new Object[][] {
+      {new AVFoundationBuilder().withMedia(SHORT_MEDIA).withContainer(new JDialog()), SHORT_MEDIA}
+    };
   }
 
   @DataProvider(name = "longMedia")
   public Object[][] createPlayerWithLongMedia() {
-    return new Object[][] {{ new AVFoundationBuilder().withMedia(LONG_MEDIA).withContainer(new JDialog()), LONG_MEDIA}};
+    return new Object[][] {
+      {new AVFoundationBuilder().withMedia(LONG_MEDIA).withContainer(new JDialog()), LONG_MEDIA}
+    };
   }
 
   @DataProvider(name = "wrongMedia")
   public Object[][] createPlayerWithWrongMedia() {
-    return new Object[][] {{ new AVFoundationBuilder().withMedia(WRONG_MEDIA).withContainer(new JDialog()), WRONG_MEDIA}};
+    return new Object[][] {
+      {new AVFoundationBuilder().withMedia(WRONG_MEDIA).withContainer(new JDialog()), WRONG_MEDIA}
+    };
   }
 
   @Test(dataProvider = "shortMedia")

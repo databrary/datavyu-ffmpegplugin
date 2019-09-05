@@ -9,66 +9,68 @@ import org.datavyu.plugins.PlayerStateEvent;
 import org.datavyu.plugins.PlayerStateListener;
 
 public class MediaPlayerSync {
-    private final static Logger logger = LogManager.getFormatterLogger(MediaPlayerSync.class);
-    static {
-        Configurator.setRootLevel(Level.DEBUG);
-    }
+  private static final Logger logger = LogManager.getFormatterLogger(MediaPlayerSync.class);
 
-    private MediaPlayer mediaPlayer;
-    private final Object readyLock = new Object();
-    private final PlayerStateListener playerStateListener = new PlayerStateListener() {
+  static {
+    Configurator.setRootLevel(Level.DEBUG);
+  }
+
+  private MediaPlayer mediaPlayer;
+  private final Object readyLock = new Object();
+  private final PlayerStateListener playerStateListener =
+      new PlayerStateListener() {
         @Override
         public void onReady(PlayerStateEvent evt) {
-            synchronized (readyLock) {
-                readyLock.notify();
-                logger.debug("Player is Ready");
-            }
+          synchronized (readyLock) {
+            readyLock.notify();
+            logger.debug("Player is Ready");
+          }
         }
 
         @Override
-        public void onPlaying(PlayerStateEvent evt) { }
+        public void onPlaying(PlayerStateEvent evt) {}
 
         @Override
-        public void onPause(PlayerStateEvent evt) { }
+        public void onPause(PlayerStateEvent evt) {}
 
         @Override
-        public void onStop(PlayerStateEvent evt) { }
+        public void onStop(PlayerStateEvent evt) {}
 
         @Override
-        public void onStall(PlayerStateEvent evt) { }
+        public void onStall(PlayerStateEvent evt) {}
 
         @Override
-        public void onFinish(PlayerStateEvent evt) { }
+        public void onFinish(PlayerStateEvent evt) {}
 
         @Override
-        public void onHalt(PlayerStateEvent evt) { }
-    };
+        public void onHalt(PlayerStateEvent evt) {}
+      };
 
-    MediaPlayerSync(MediaPlayer mediaPlayer) {
-        this.mediaPlayer = mediaPlayer;
-        this.mediaPlayer.addMediaPlayerStateListener(playerStateListener);
-        waitForInit();
+  MediaPlayerSync(MediaPlayer mediaPlayer) {
+    this.mediaPlayer = mediaPlayer;
+    this.mediaPlayer.addMediaPlayerStateListener(playerStateListener);
+    waitForInit();
+  }
+
+  void waitForInit() {
+    synchronized (readyLock) {
+      try {
+        logger.debug("Init Media Player");
+        mediaPlayer.init();
+
+        logger.debug("Waiting for Ready state");
+        readyLock.wait();
+      } catch (InterruptedException e) {
+        // Happens if someone interrupts your thread
+      }
     }
+  }
 
-    void waitForInit() {
-        synchronized (readyLock) {
-            try {
-                logger.debug("Init Media Player");
-                mediaPlayer.init();
+  public MediaPlayer getMediaPlayer() {
+    return mediaPlayer;
+  }
 
-                logger.debug("Waiting for Ready state");
-                readyLock.wait();
-            } catch (InterruptedException e) {
-                // Happens if someone interrupts your thread
-            }
-        }
-    }
-
-    public MediaPlayer getMediaPlayer() {
-        return mediaPlayer;
-    }
-
-    public static MediaPlayerSync createMediaPlayerSync(MediaPlayer mediaPlayer) {
-        return new MediaPlayerSync(mediaPlayer);
-    }
+  public static MediaPlayerSync createMediaPlayerSync(MediaPlayer mediaPlayer) {
+    return new MediaPlayerSync(mediaPlayer);
+  }
 }
