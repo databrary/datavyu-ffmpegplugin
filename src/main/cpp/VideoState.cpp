@@ -1201,7 +1201,7 @@ int VideoState::StartStream() {
 
   /* open the streams */
   if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
-    OpenStreamComponent(st_index[AVMEDIA_TYPE_AUDIO]);
+    ret = OpenStreamComponent(st_index[AVMEDIA_TYPE_AUDIO]);
   }
   // Set the video duration
   duration_ = p_format_context->duration / (double)AV_TIME_BASE;
@@ -1216,6 +1216,9 @@ int VideoState::StartStream() {
            "Failed to open file '%s' or configure filtergraph\n", filename_);
     ret = AVERROR_STREAM_NOT_FOUND;
     goto fail;
+  } else if (image_stream_index_ >= 0 && audio_stream_index_ < 0) {
+    // Use video clock as Master when audio is not available
+    sync_type_ = AV_SYNC_VIDEO_MASTER;
   }
 
   if (player_state_callbacks[TO_READY]) {
