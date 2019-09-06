@@ -850,10 +850,10 @@ int VideoState::ReadPacketsToQueues() {
       continue;
     }
     if (!is_paused_ &&
-        (!p_audio_stream_ || (p_audio_decoder_->IsFinished() ==
+        (!p_audio_decoder_ || !p_audio_stream_ || (p_audio_decoder_->IsFinished() ==
                                   p_audio_packet_queue_->GetSerial() &&
                               p_audio_frame_queue_->GetNumToDisplay() == 0)) &&
-        (!p_image_stream_ || (p_image_decoder_->IsFinished() ==
+        (!p_image_decoder_ || !p_image_stream_ || (p_image_decoder_->IsFinished() ==
                                   p_image_packet_queue_->GetSerial() &&
                               p_image_frame_queue_->GetNumToDisplay() == 0))) {
       if (num_loop_ != 1 && (!num_loop_ || --num_loop_)) {
@@ -1201,7 +1201,7 @@ int VideoState::StartStream() {
 
   /* open the streams */
   if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
-    ret = OpenStreamComponent(st_index[AVMEDIA_TYPE_AUDIO]);
+    OpenStreamComponent(st_index[AVMEDIA_TYPE_AUDIO]);
   }
   // Set the video duration
   duration_ = p_format_context->duration / (double)AV_TIME_BASE;
