@@ -1260,9 +1260,11 @@ void VideoState::Seek(int64_t time, int64_t distance, int seek_flags) {
   // Only seek if
   // - there is no seek request in progress AND
   // - this seek time is different from the last OR
+  //        this seek is different than the current PTS OR
   //		the last seek was not precise (the we might not be at seek time)
   if (!seek_request_ &&
       (fabs(time - seek_time_) >= (double)AV_TIME_BASE / frame_rate_ ||
+       fabs(time - (GetTime() * (double)AV_TIME_BASE)) >= (double)AV_TIME_BASE / frame_rate_ ||
        seek_flags_ != kSeekPreciseFlag)) {
     std::mutex mtx;
 

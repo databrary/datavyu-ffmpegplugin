@@ -1,7 +1,5 @@
 package org.datavyu.plugins.ffmpeg;
 
-import java.awt.Container;
-import javax.swing.JDialog;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.MediaPlayer;
 import org.testng.annotations.DataProvider;
@@ -12,17 +10,11 @@ public class FfmpegSdlMediaPlayerTest extends MediaPlayerTest {
 
   public static class FfmpegBuilder implements Builder {
     private MediaInformation mediaInformation;
-    private Container container;
 
     FfmpegBuilder() {}
 
     FfmpegBuilder withMedia(MediaInformation mediaInformation) {
       this.mediaInformation = mediaInformation;
-      return this;
-    }
-
-    FfmpegBuilder withContainer(Container container) {
-      this.container = container;
       return this;
     }
 
@@ -80,7 +72,7 @@ public class FfmpegSdlMediaPlayerTest extends MediaPlayerTest {
     super.testTimeAtStart(builder, mediaInformation);
   }
 
-  @Test(dataProvider = "shortMedia")
+  @Test(dataProvider = "longMedia")
   public void testSeek(Builder builder, MediaInformation mediaInformation) {
     super.testSeek(builder, mediaInformation);
   }

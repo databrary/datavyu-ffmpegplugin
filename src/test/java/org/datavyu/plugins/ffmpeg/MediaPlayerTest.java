@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertTrue;
 
 import javafx.util.Pair;
@@ -10,14 +11,12 @@ import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.MediaPlayer;
 import org.datavyu.plugins.PlaybackRateController;
 import org.datavyu.plugins.PlayerStateEvent.PlayerState;
-import org.testng.Assert;
 
 import java.io.File;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.testng.asserts.SoftAssert;
 
 public class MediaPlayerTest {
   /** The LOGGER for this class */
@@ -33,10 +32,13 @@ public class MediaPlayerTest {
   private static final double START_TIME = 0;
 
   /** The end time of the playback rate interval */
-  private static final double END_TIME = 10;
+  private static final double END_TIME = 15;
 
   /** The Seek tolerance in seconds* */
   private static final double SEEK_TOLERANCE_IN_SECONDS = 0.100; // 100 ms
+
+  /** tolerated error for the rates duration in percentage */
+  private static final float RATES_ERROR_IN_PERCENTAGE = 10f;
 
   private static final double TO_MILLI = 1000;
 
@@ -169,7 +171,7 @@ public class MediaPlayerTest {
   protected void testTimeAtStart(Builder builder, MediaInformation mediaInformation) {
     logger.info("Presentation time at launch Test");
     MediaPlayerSync player = builder.build();
-    Assert.assertNotEquals(player.getMediaPlayer().getPresentationTime(), Double.NaN);
+    assertNotEquals(player.getMediaPlayer().getPresentationTime(), Double.NaN);
   }
 
   protected void testSeek(Builder builder, MediaInformation mediaInformation) {
@@ -184,6 +186,7 @@ public class MediaPlayerTest {
               // TODO: Need to see how we can remove this sleeping
               sleep(100);
               double actualTime = player.getMediaPlayer().getPresentationTime();
+              logger.debug("Seek to " + expectedTime + " s - Actual Time " + actualTime + " s");
               assertEquals(actualTime, expectedTime, SEEK_TOLERANCE_IN_SECONDS);
             });
   }
@@ -295,7 +298,6 @@ public class MediaPlayerTest {
 
   protected void testRates(Builder builder, MediaInformation mediaInformation) {
     logger.info("Playback speeds Test");
-    SoftAssert sa = new SoftAssert();
     MediaPlayerSync player = builder.build();
     createRatesIntervals()
         .forEach(
@@ -315,25 +317,18 @@ public class MediaPlayerTest {
                       + " Rate "
                       + rate);
               logger.debug("Seek to start " + start);
-              player.getMediaPlayer().seek(start);
-              sleep(100);
-              assertEquals(player.getMediaPlayer().getPresentationTime(), start);
-
               player.getMediaPlayer().setRate(rate);
-              player.getMediaPlayer().play();
+              player.getMediaPlayer().seek(start);
 
-              sleep((long) (duration * TO_MILLI));
+              sleep(200);
 
-              double actualDuration = player.getMediaPlayer().getPresentationTime() - start;
+              double actualDuration = player.playFor(duration) - start;
               double expectedDuration = Math.abs(rate) * duration;
               double diffInPercent = diffInPercent(actualDuration, expectedDuration);
               logger.debug(
                   "Duration: Actual = " + actualDuration + " - Expected = " + expectedDuration + " - DiffInPercent = " + diffInPercent);
 
-              player.getMediaPlayer().stop();
-              sleep(100);
-
-              sa.assertTrue(diffInPercent > -5f && diffInPercent < +5f);
+              assertTrue(diffInPercent > -RATES_ERROR_IN_PERCENTAGE && diffInPercent < +RATES_ERROR_IN_PERCENTAGE);
             });
   }
 

@@ -656,7 +656,7 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
       } else if (p_video_state_->HasAudioStream()) {
         av_diff = p_master_clock->GetTime() - p_audio_clock->GetTime();
       }
-#if _DEBUG
+#if DEBUG
       av_log(
           NULL, AV_LOG_INFO,
           "%7.2f at %1.3fX vc=%5.2f %s:%7.3f de=%4d dl=%4d aq=%5dKB "
@@ -677,7 +677,7 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
               ? p_decoder->GetNumberOfIncorrectPtsValues()
               : 0);
       fflush(stdout);
-#endif // _DEBUG
+#endif // DEBUG
 
       last_time = cur_time;
     }
