@@ -57,14 +57,9 @@ public class MediaPlayerTest {
     }
   }
 
-  //  static final MediaInformation SHORT_MEDIA =
-  //      MediaInformation.create(
-  //              "http://www.html5videoplayer.net/videos/toystory.mp4", 0.0, 149.95, 640, 360,
-  // 29.97)
-  //          .get(); // fail hard if the link is malformed
   static final MediaInformation LONG_MEDIA =
       MediaInformation.create(
-              "https://cdn-12.anonfile.com/E5Z6Rf49n8/a400367f-1567627596/counter.mp4",
+              "http://www.datavyu.org/releases_pre/resources/counter.mp4",
               0.0,
               600,
               1920,
@@ -73,13 +68,14 @@ public class MediaPlayerTest {
           .get();
 
   static final MediaInformation SHORT_MEDIA =
-      new MediaInformation(
-          new File("Nature_30fps_1080p.mp4").toURI(),
-          0.0,
-          142.11,
-          1920,
-          1080,
-          25); // fail hard if the link is malformed
+      MediaInformation.create(
+              "http://www.datavyu.org/releases_pre/resources/Nature_30fps_1080p.mp4",
+              0.0,
+              142.13,
+              1920,
+              1080,
+              25)
+          .get(); // fail hard if the link is malformed
 
   static final MediaInformation WRONG_MEDIA =
       new MediaInformation(new File("wrongFileName").toURI(), 0.0, 0.0, 0, 0, 0.0);
@@ -326,9 +322,16 @@ public class MediaPlayerTest {
               double expectedDuration = Math.abs(rate) * duration;
               double diffInPercent = diffInPercent(actualDuration, expectedDuration);
               logger.debug(
-                  "Duration: Actual = " + actualDuration + " - Expected = " + expectedDuration + " - DiffInPercent = " + diffInPercent);
+                  "Duration: Actual = "
+                      + actualDuration
+                      + " - Expected = "
+                      + expectedDuration
+                      + " - DiffInPercent = "
+                      + diffInPercent);
 
-              assertTrue(diffInPercent > -RATES_ERROR_IN_PERCENTAGE && diffInPercent < +RATES_ERROR_IN_PERCENTAGE);
+              assertTrue(
+                  diffInPercent > -RATES_ERROR_IN_PERCENTAGE
+                      && diffInPercent < +RATES_ERROR_IN_PERCENTAGE);
             });
   }
 

@@ -1,5 +1,6 @@
 package org.datavyu.plugins.ffmpeg;
 
+import java.net.URLConnection;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -108,7 +109,10 @@ public class MediaInformation {
 
     // If the file does not exist yet copy it from the www
     if (!outPath.exists()) {
-      FileUtils.copyURLToFile(remoteUrl, outPath);
+      URLConnection conn = remoteUrl.openConnection();
+      conn.setRequestProperty("User-Agent", "");
+      conn.connect();
+      FileUtils.copyInputStreamToFile(conn.getInputStream(), outPath);
       LOGGER.info("Copied resource from " + remoteUrl + " to " + outPath);
     } else {
       LOGGER.info("Found existing resource " + outPath);
