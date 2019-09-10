@@ -6,6 +6,7 @@
       <class name="org.datavyu.plugins.ffmpeg.AVFoundationPlayerTest">
         <methods>
           <exclude name="testRates" />
+          <exclude name="testMetadata" />
         </methods>
       </class>
       <class name="org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayerTest">
