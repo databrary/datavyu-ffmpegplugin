@@ -39,7 +39,7 @@ before_build:
   - cd %APPVEYOR_BUILD_FOLDER%
 
 build_script:
-  - mvn -Prelease,win64 clean compile
+  - mvn -T 4 -Prelease,win64 clean compile
 
 test_script:
-  - mvn -Prelease,win64 test
+  - mvn -T 4 -Prelease,win64 test

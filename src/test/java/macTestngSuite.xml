@@ -3,12 +3,12 @@
 <suite name="MacTestSuite">
   <test name="MacMediaPlayerTest">
     <classes>
-      <class name="org.datavyu.plugins.ffmpeg.AVFoundationPlayerTest">
-        <methods>
-          <exclude name="testRates" />
-          <exclude name="testMetadata" />
-        </methods>
-      </class>
+      <!--<class name="org.datavyu.plugins.ffmpeg.AVFoundationPlayerTest">-->
+        <!--<methods>-->
+          <!--<exclude name="testRates" />-->
+          <!--<exclude name="testMetadata" />-->
+        <!--</methods>-->
+      <!--</class>-->
       <class name="org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayerTest">
         <methods>
           <exclude name="testRates" />
