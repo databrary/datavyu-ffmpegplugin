@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public class MediaInformation {
   private static final String RESOURCE_NAME = "resources";
-  private static final String RESOURCE_DIR = "src/test"; // System.getProperty("java.io.tmpdir")
+  private static final String RESOURCE_DIR = System.getProperty("user.home"); //
   private static final String LOCAL_RESOURCE_DIR = createLocalResourcePath(RESOURCE_NAME);
   private static final Logger LOGGER = LogManager.getFormatterLogger(MediaInformation.class);
 
