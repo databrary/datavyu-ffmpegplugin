@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="MacTestSuite">
+  <test name="MacMediaPlayerTest">
+    <classes>
+      <!--<class name="org.datavyu.plugins.ffmpeg.AVFoundationPlayerTest" />-->
+      <class name="org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayerTest" />
+    </classes>
+  </test>
+</suite>

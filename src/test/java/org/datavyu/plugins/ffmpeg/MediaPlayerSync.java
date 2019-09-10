@@ -69,23 +69,33 @@ public class MediaPlayerSync {
   }
 
   /**
-   * Play video for a certain duration and return time elapsed for that duration.
-   * @param duration in seconds
-   * @return
+   * Play video for a certain duration and return elapsed time for the playback.
+   * @param start time in seconds
+   * @param end time in seconds
+   * @return elapsed time
    */
-  public double playFor(final double duration) {
+  public double playTo(final double start, final double end) {
     CountDownLatch startSignal = new CountDownLatch(COUNTDOWNLATCH_COUNT);
     CountDownLatch endSignal = new CountDownLatch(COUNTDOWNLATCH_COUNT);
-    Worker playWorker = new Worker(startSignal, endSignal, duration);
+
+    mediaPlayer.seek(start);
+
+    try {
+      Thread.sleep(200);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    Worker playWorker = new Worker(startSignal, endSignal, end);
     new Thread(playWorker).start();
     mediaPlayer.play();
     startSignal.countDown();
     try {
-      endSignal.await();
+      endSignal.await(5, TimeUnit.MINUTES);
     } catch (InterruptedException e) {
       logger.error(e.getMessage());
     }
-    return mediaPlayer.getPresentationTime();
+    return playWorker.getElapsedTime();
   }
 
   public MediaPlayer getMediaPlayer() {
@@ -99,24 +109,31 @@ public class MediaPlayerSync {
   class Worker implements Runnable {
     private final CountDownLatch startSignal;
     private final CountDownLatch endSignal;
-    private final double duration;
+    private double elapsedTime;
+    private final double stop;
 
-    Worker(CountDownLatch startSignal, CountDownLatch endSignal,double duration) {
+    Worker(CountDownLatch startSignal, CountDownLatch endSignal,final double stop) {
       this.startSignal = startSignal;
       this.endSignal = endSignal;
-      this.duration = duration;
+      this.stop = stop;
     }
 
     public void run() {
       try {
         startSignal.await();
         long startTime = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - startTime) / 1000 < duration) {}
+        //TODO(Reda): Implement markers to wait for event in the native
+        while (mediaPlayer.getPresentationTime() < stop) {}
         mediaPlayer.stop();
+        elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
         endSignal.countDown();
       } catch (InterruptedException ex) {
         logger.error(ex.getMessage());
       }
+    }
+
+    double getElapsedTime() {
+      return elapsedTime;
     }
   }
 

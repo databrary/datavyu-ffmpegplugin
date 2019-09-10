@@ -31,16 +31,20 @@ public class MediaPlayerTest {
   /** The start time of the playback rate interval */
   private static final double START_TIME = 0;
 
-  /** The end time of the playback rate interval */
-  private static final double END_TIME = 15;
+  /** The end time in sec for playback rates between 1X and 8X */
+  private static final double END_TIME = 20; // 20 sec
+
+  /** The end time in sec for playback rates < 1X */
+  private static final double END_TIME_LOW_RATES = 2; // 2 sec
+
+  /** The end time in sec for playback rates > 8X */
+  private static final double END_TIME_HIGH_RATES = 190; // 1 m, 30sec
 
   /** The Seek tolerance in seconds* */
   private static final double SEEK_TOLERANCE_IN_SECONDS = 0.100; // 100 ms
 
-  /** tolerated error for the rates duration in percentage */
-  private static final float RATES_ERROR_IN_PERCENTAGE = 10f;
-
-  private static final double TO_MILLI = 1000;
+  /** Playback rates duration tolerance */
+  private static final double RATES_TOLERANCE_IN_SECONDS = 1;
 
   interface Builder {
     MediaPlayerSync build();
@@ -306,32 +310,23 @@ public class MediaPlayerTest {
               logger.debug(
                   "Start: "
                       + start
-                      + " Stop: "
+                      + " - Stop: "
                       + stop
-                      + " Duration: "
+                      + " - Duration: "
                       + duration
-                      + " Rate "
+                      + " - Rate "
                       + rate);
-              logger.debug("Seek to start " + start);
               player.getMediaPlayer().setRate(rate);
-              player.getMediaPlayer().seek(start);
 
-              sleep(200);
-
-              double actualDuration = player.playFor(duration) - start;
-              double expectedDuration = Math.abs(rate) * duration;
-              double diffInPercent = diffInPercent(actualDuration, expectedDuration);
+              double actualDuration = player.playTo(start, stop);
+              double expectedDuration = (1 / Math.abs(rate)) * duration;
               logger.debug(
                   "Duration: Actual = "
                       + actualDuration
                       + " - Expected = "
-                      + expectedDuration
-                      + " - DiffInPercent = "
-                      + diffInPercent);
+                      + expectedDuration);
 
-              assertTrue(
-                  diffInPercent > -RATES_ERROR_IN_PERCENTAGE
-                      && diffInPercent < +RATES_ERROR_IN_PERCENTAGE);
+              assertEquals(actualDuration, expectedDuration, RATES_TOLERANCE_IN_SECONDS);
             });
   }
 
@@ -358,7 +353,7 @@ public class MediaPlayerTest {
     return EnumSet.range(
             PlaybackRateController.Rate.PLUS_1_DIV_32, PlaybackRateController.Rate.PLUS_32)
         .stream()
-        .map(rate -> new Pair<>(new TimeInterval(START_TIME, END_TIME), rate.getValue()))
+        .map(rate -> new Pair<>(new TimeInterval(START_TIME, rate.getValue() < 1 ? END_TIME_LOW_RATES : rate.getValue() > 8 ? END_TIME_HIGH_RATES : END_TIME), rate.getValue()))
         .collect(Collectors.toList());
   }
 
@@ -372,9 +367,5 @@ public class MediaPlayerTest {
     } catch (InterruptedException e) {
       /* normal */
     }
-  }
-
-  private static double diffInPercent(double actual, double expected) {
-    return (expected - actual) / expected * 100;
   }
 }
