@@ -3,7 +3,11 @@
 <suite name="WinTestSuite">
   <test name="WinMediaPlayerTest">
     <classes>
-      <class name="org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayerTest" />
+      <class name="org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayerTest">
+        <methods>
+          <exclude name="testRates" />
+        </methods>
+      </class>
     </classes>
   </test>
 </suite>
