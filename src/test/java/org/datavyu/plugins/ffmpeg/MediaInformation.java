@@ -20,7 +20,7 @@ public class MediaInformation {
   private static final Logger LOGGER = LogManager.getFormatterLogger(MediaInformation.class);
 
   static {
-    Configurator.setRootLevel(Level.INFO);
+    Configurator.setRootLevel(Level.DEBUG);
   }
 
   MediaInformation(
