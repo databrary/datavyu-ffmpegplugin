@@ -12,11 +12,11 @@ What's special about this player?
 
 1. It provides frame precision as much as possible with the engines.
 1. It provides fast forward playback for both the images and sound, e.g. 0 ... +32x
-1. It provides forward and backward stepping functionality.
+1. It provides forward and backward frame stepping functionality.
 
 What we are working on?
 
-1. Faster FFmpeg frame Display.
+1. Faster FFmpeg Java player rendering.
 1. Backward Playback from 0x to -32x.
 
 ## System Requirements
@@ -32,7 +32,7 @@ The latest version of the Datavyu Player could be downloaded using the following
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
-        <version>0.19</version>
+        <version>0.22</version>
     </dependency>
 ```
 
@@ -43,7 +43,7 @@ For Windows:
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
-        <version>0.19</version>
+        <version>0.22</version>
         <classifier>win</classifier>
     </dependency>
 ```
@@ -53,22 +53,22 @@ For Mac OS:
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
-        <version>0.19</version>
+        <version>0.22</version>
         <classifier>mac</classifier>
     </dependency>
 ```
 ## Examples
-With Datavyu-ffmpegplugin you can launch and control multiple media player instances from your java application. Creating and instantiating a Media Player is a matter of passing a file path to the MediaPlayer interface.
+With Datavyu Player you can launch and control multiple media player instances from your java application. Creating and instantiating a Media Player is a matter of passing a file path to the MediaPlayer interface.
 
 ### JAVA Player
 The Java Player is using FFmpeg API's to decode and read the stream, the player will pull both image buffers and audio buffers from the native side and display the video in a Java container.
 
-We provide a Maven dependency for the FFmpeg 4.0.2 version to be added to your `pom.xml` file
+We provide a Maven dependency for the FFmpeg 4.1.1 version to be added to your `pom.xml` file
 ``` xml  
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-libs</artifactId>
-        <version>4.0.2</version>
+        <version>4.1.1</version>
     </dependency>
 ```
 
@@ -101,7 +101,7 @@ Here is a simple example on how to create and initialize the Datavyu Java Player
 Note that The Java Player is using the MediaPLayerData Interface in order to access the buffers sent through the JNI interface.
 
 ### MPV Player
-The MPV Player is a fully functional media player providing an [API](https://github.com/mpv-player/mpv/blob/master/libmpv/client.h) to embed MPV in a window, in this repo we are providing an MPV java wrapper to control an MPV instance from your Java application. 
+The MPV Player is a fully functional media player providing an [API](https://github.com/mpv-player/mpv/blob/master/libmpv/client.h) to embed MPV in a window, in this repo we are providing an MPV java wrapper to control an MPV instance from your Java application on Windows platforms. 
 
 We provide a Maven dependency for the MPV 0.29.1 version to be added to your `pom.xml` file in addition to the FFmpeg dependency mentioned above.
 ``` xml  
@@ -149,7 +149,7 @@ We provide a Maven dependency for the SDL 2.0.8 version to be added to your `pom
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>sdl-libs</artifactId>
-        <version>2.0.8</version>
+        <version>2.0.9</version>
     </dependency>
 ```
 
@@ -233,6 +233,11 @@ You can check the wiki or the issue tracker for ideas on what you could contribu
 * Reda Nezzar
 * Jesse Lingeman
 
-[<img src="https://nyu.databrary.org/web/images/grants/nyu.jpg" width="150">](https://www.nyu.edu/)
-[<img src="http://datavyu.org/theme/img/logo/datavyu.png" width="200">](https://www.datavyu.org/)
+[<img src="http://datavyu.org/theme/img/logo/datavyu.png" width="100" height="25">](https://www.datavyu.org/)
+[<img src="http://www.datavyu.org/theme/img/logo/databrary-nav.png" width="100" height="25">](https://www.databrary.org/)
 
+[<img src="https://nyu.databrary.org/web/images/grants/nyu.jpg" width="200" height="50">](https://www.nyu.edu/)
+[<img src="https://nyu.databrary.org/web/images/grants/pennstate.png" width="150" height="50">](http://www.psu.edu/)
+
+[<img src="https://nyu.databrary.org/web/images/grants/nsf2.png" width="200" height="25">](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1238599&HistoricalAwards=false)
+[<img src="https://nyu.databrary.org/web/images/grants/nichd.png" width="200" height="25">](http://projectreporter.nih.gov/project_info_description.cfm?aid=8531595&icde=15908155&ddparam=&ddvalue=&ddsub=&cr=1&csb=default&cs=ASC)
