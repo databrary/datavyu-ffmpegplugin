@@ -491,8 +491,26 @@ void FfmpegSdlAvPlayback::GetAndDisplayVideoFrame() {
     p_frame->is_uploaded_ = true;
   }
 
+  SetYuvConversion(p_frame->p_frame_);
   SDL_RenderCopyEx(p_renderer_, p_vid_texture_, NULL, &rect, 0, NULL,
                    SDL_FLIP_NONE);
+  SetYuvConversion(NULL);
+}
+
+void FfmpegSdlAvPlayback::SetYuvConversion(AVFrame *frame)
+{
+#if SDL_VERSION_ATLEAST(2,0,8)
+	SDL_YUV_CONVERSION_MODE mode = SDL_YUV_CONVERSION_AUTOMATIC;
+	if (frame && (frame->format == AV_PIX_FMT_YUV420P || frame->format == AV_PIX_FMT_YUYV422 || frame->format == AV_PIX_FMT_UYVY422)) {
+		if (frame->color_range == AVCOL_RANGE_JPEG)
+			mode = SDL_YUV_CONVERSION_JPEG;
+		else if (frame->colorspace == AVCOL_SPC_BT709)
+			mode = SDL_YUV_CONVERSION_BT709;
+		else if (frame->colorspace == AVCOL_SPC_BT470BG || frame->colorspace == AVCOL_SPC_SMPTE170M || frame->colorspace == AVCOL_SPC_SMPTE240M)
+			mode = SDL_YUV_CONVERSION_BT601;
+	}
+	SDL_SetYUVConversionMode(mode);
+#endif
 }
 
 int FfmpegSdlAvPlayback::GetImageWidth() const {
@@ -918,7 +936,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
               pos < p_format_context->start_time / (double)AV_TIME_BASE)
             pos = p_format_context->start_time / (double)AV_TIME_BASE;
           p_video_state->Seek((int64_t)(pos * AV_TIME_BASE),
-                              (int64_t)(incr * AV_TIME_BASE), false);
+                              (int64_t)(incr * AV_TIME_BASE), 0x10);
         }
         break;
       default:

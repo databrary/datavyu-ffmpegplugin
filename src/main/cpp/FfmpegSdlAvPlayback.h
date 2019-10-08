@@ -264,6 +264,9 @@ private:
 
   // Function Called from the event loop
   void DisplayAndProcessEvent(SDL_Event *event);
+
+  // Support full YUV range
+  void SetYuvConversion(AVFrame *frame);
 };
 
 static void sdl_audio_callback_bridge(void *vs, Uint8 *stream, int len) {
