@@ -120,7 +120,9 @@
           <family>mac</family>
         </os>
       </activation>
-
+      <properties>
+        <testng.suite>src/test/java/macTestngSuite.xml</testng.suite>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>org.datavyu</groupId>
@@ -247,7 +249,9 @@
           <arch>!x86</arch>
         </os>
       </activation>
-
+      <properties>
+        <testng.suite>src/test/java/winTestngSuite.xml</testng.suite>
+      </properties>
       <dependencies>
 
         <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
@@ -343,6 +347,7 @@
 
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
 
     <plugins>
 
@@ -350,11 +355,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.1</version>
+        <version>2.22.2</version>
         <configuration>
           <!-- Suite testng xml file to consider for test execution -->
           <suiteXmlFiles>
-            <suiteXmlFile>src/test/java/testng.xml</suiteXmlFile>
+            <suiteXmlFile>${testng.suite}</suiteXmlFile>
           </suiteXmlFiles>
         </configuration>
       </plugin>
@@ -451,11 +456,11 @@
     <!-- Test cases -->
     <!-- Artifact: https://mvnrepository.com/artifact/org.testng/testng -->
     <!-- Documentation: http://testng.org/doc/documentation-main.html -->
-    <!-- Updated here: 03/28/2019 -->
+    <!-- Updated here: 09/09/2019 -->
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.14.3</version>
+      <version>7.0.0</version>
       <scope>test</scope>
     </dependency>
 

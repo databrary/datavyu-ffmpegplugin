@@ -15,6 +15,7 @@ language: java
 cache:
   directories:
     - $HOME/.m2
+    - $HOME/resources
 
 install:
   - curl -L https://github.com/databrary/FFplay64/raw/master/dependencies.zip -o $TRAVIS_BUILD_DIR/src/main/cpp/dependencies.zip
@@ -23,4 +24,4 @@ install:
   - mvn -version
 
 script:
-  - mvn -X -U -Prelease,mac -Dmaven.test.skip=true clean compile
+  - mvn -T 4 -Prelease,mac -Dmaven.test.skip=true clean package

@@ -850,10 +850,10 @@ int VideoState::ReadPacketsToQueues() {
       continue;
     }
     if (!is_paused_ &&
-        (!p_audio_stream_ || (p_audio_decoder_->IsFinished() ==
+        (!p_audio_decoder_ || !p_audio_stream_ || (p_audio_decoder_->IsFinished() ==
                                   p_audio_packet_queue_->GetSerial() &&
                               p_audio_frame_queue_->GetNumToDisplay() == 0)) &&
-        (!p_image_stream_ || (p_image_decoder_->IsFinished() ==
+        (!p_image_decoder_ || !p_image_stream_ || (p_image_decoder_->IsFinished() ==
                                   p_image_packet_queue_->GetSerial() &&
                               p_image_frame_queue_->GetNumToDisplay() == 0))) {
       if (num_loop_ != 1 && (!num_loop_ || --num_loop_)) {
@@ -1216,6 +1216,9 @@ int VideoState::StartStream() {
            "Failed to open file '%s' or configure filtergraph\n", filename_);
     ret = AVERROR_STREAM_NOT_FOUND;
     goto fail;
+  } else if (image_stream_index_ >= 0 && audio_stream_index_ < 0) {
+    // Use video clock as Master when audio is not available
+    sync_type_ = AV_SYNC_VIDEO_MASTER;
   }
 
   if (player_state_callbacks[TO_READY]) {
@@ -1257,9 +1260,11 @@ void VideoState::Seek(int64_t time, int64_t distance, int seek_flags) {
   // Only seek if
   // - there is no seek request in progress AND
   // - this seek time is different from the last OR
+  //        this seek is different than the current PTS OR
   //		the last seek was not precise (the we might not be at seek time)
   if (!seek_request_ &&
       (fabs(time - seek_time_) >= (double)AV_TIME_BASE / frame_rate_ ||
+       fabs(time - (GetTime() * (double)AV_TIME_BASE)) >= (double)AV_TIME_BASE / frame_rate_ ||
        seek_flags_ != kSeekPreciseFlag)) {
     std::mutex mtx;
 

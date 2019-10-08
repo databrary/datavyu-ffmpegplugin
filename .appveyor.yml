@@ -31,6 +31,7 @@ cache:
   - C:\apache-maven-3.5.4\
   - C:\Users\appveyor\.m2
   - C:\FFplay64\
+  - C:\resources\
 
 before_build:
   - cd %APPVEYOR_BUILD_FOLDER%\src\main\cpp
@@ -38,4 +39,7 @@ before_build:
   - cd %APPVEYOR_BUILD_FOLDER%
 
 build_script:
-  - mvn -X -U -Prelease,win64 -Dmaven.test.skip=true clean compile
+  - mvn -T 4 -Prelease,win64 clean compile
+
+#test_script:
+#  - mvn -T 4 -Prelease,win64 test

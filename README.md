@@ -235,3 +235,4 @@ You can check the wiki or the issue tracker for ideas on what you could contribu
 
 [<img src="https://nyu.databrary.org/web/images/grants/nyu.jpg" width="150">](https://www.nyu.edu/)
 [<img src="http://datavyu.org/theme/img/logo/datavyu.png" width="200">](https://www.datavyu.org/)
+

@@ -135,13 +135,13 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
   }
 
   if (p_sdl_playback_->GetStartTime() != AV_NOPTS_VALUE &&
-      dSeekTime < p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE) {
+      dSeekTime <= p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE) {
     dSeekTime = p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE;
   } else if (p_sdl_playback_->GetDuration() != AV_NOPTS_VALUE &&
              dSeekTime >= p_sdl_playback_->GetDuration()) {
     // FIXME Remove the 0.1 sec difference when seeking to end of stream is
     // fixed
-    dSeekTime = p_sdl_playback_->GetDuration() - 0.1;
+    dSeekTime = p_sdl_playback_->GetDuration() * (double)AV_TIME_BASE - 0.1;
   }
 
   double incr = dSeekTime - pos;
