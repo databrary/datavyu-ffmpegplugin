@@ -582,8 +582,9 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
         goto retry;
       }
 
-      if (lastvp->serial_ != vp->serial_)
-        frame_last_shown_time_ = av_gettime_relative() / 1000000.0;
+	  if (lastvp->serial_ != vp->serial_) {
+		frame_last_shown_time_ = av_gettime_relative() / 1000000.0;
+	  }
 
       // Force refresh overrides paused
       if (p_video_state_->IsPaused() && !force_refresh_)
@@ -936,7 +937,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
               pos < p_format_context->start_time / (double)AV_TIME_BASE)
             pos = p_format_context->start_time / (double)AV_TIME_BASE;
           p_video_state->Seek((int64_t)(pos * AV_TIME_BASE),
-                              (int64_t)(incr * AV_TIME_BASE), 0x10);
+                              (int64_t)(incr * AV_TIME_BASE), VideoState::kSeekPreciseFlag);
         }
         break;
       default:
@@ -969,7 +970,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
       }
       if (VideoState::kEnableSeekByBytes || p_format_context->duration <= 0) {
         uint64_t size = avio_size(p_format_context->pb);
-        p_video_state->Seek(size * x / width, 0, true);
+        p_video_state->Seek(size * x / width, 0, VideoState::kSeekFastFlag);
       } else {
         int64_t ts;
         int ns, hh, mm, ss;
@@ -991,7 +992,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         if (p_format_context->start_time != AV_NOPTS_VALUE) {
           ts += p_format_context->start_time;
         }
-        p_video_state->Seek(ts, 0, false);
+        p_video_state->Seek(ts, 0, VideoState::kSeekFastFlag);
       }
       break;
     case SDL_WINDOWEVENT:
