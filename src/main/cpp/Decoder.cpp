@@ -4,7 +4,7 @@ Decoder::Decoder(AVCodecContext *avctx, PacketQueue *queue,
                  std::condition_variable *empty_queue_cond)
     : p_codec_context_(avctx), p_packet_queue_(queue),
       p_is_empty_condition_(empty_queue_cond), serial_(-1), is_finished_(false),
-      is_packet_pending_(false), do_reorder_(false),
+      is_packet_pending_(false), do_reorder_(-1),
       start_pts_(AV_NOPTS_VALUE), start_pts_timebase_(av_make_q(0, 0)),
       next_pts_(0), next_pts_timebase_(av_make_q(0, 0)),
       p_decoder_thread_(nullptr) {
@@ -62,8 +62,9 @@ int Decoder::Decode(AVFrame *frame) {
           avcodec_flush_buffers(p_codec_context_);
           return 0;
         }
-        if (ret >= 0)
-          return 1;
+		if (ret >= 0) {
+		  return 1;
+		}
       } while (ret != AVERROR(EAGAIN));
     }
 

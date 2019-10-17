@@ -47,7 +47,7 @@ private:
   int serial_;
   bool is_finished_;
   bool is_packet_pending_;
-  bool do_reorder_;
+  int do_reorder_; // let decoder reorder pts 0=off 1=on -1=auto
   int64_t start_pts_;
   AVRational start_pts_timebase_;
   int64_t next_pts_;
