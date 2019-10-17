@@ -3,33 +3,20 @@
 
 bool FfmpegAvPlayback::kEnableShowStatus = true;
 
-void FfmpegAvPlayback::TogglePause() {
-
-  // Get all the clocks
-	Clock *pExtclk = nullptr;
-	Clock *pVidclk = nullptr;
-	Clock *pAudclk = nullptr;
-	p_video_state_->GetExternalClock(&pExtclk);
-	p_video_state_->GetImageClock(&pVidclk);
-	p_video_state_->GetAudioClock(&pAudclk);
-
-  // Update the video clock
-  if (p_video_state_->IsPaused()) {
-    SetFrameLastShownTime(GetFrameLastShownTime() +
-                          av_gettime_relative() / 1000000.0 -
-                          p_video_state_->GetImageClockLastSetTime());
-    pVidclk->SetTime(pVidclk->GetTime(), pVidclk->GetSerial());
+void FfmpegAvPlayback::TogglePause(bool update_state) {
+  p_video_state_->TogglePause();
+  if (update_state) {
+	if (p_video_state_->IsPaused()) {
+	  SetPaused();
+	} else {
+	  SetPlaying();
+	}
   }
-  // Update the external clock
-  pExtclk->SetTime(pExtclk->GetTime(), pExtclk->GetSerial());
-
-  // Flip the paused flag
-  p_video_state_->SetPaused(!p_video_state_->IsPaused());
 }
 
 FfmpegAvPlayback::FfmpegAvPlayback()
     : p_video_state_(nullptr), display_disabled_(false),
-      frame_last_shown_time_(0.0) ,frame_width_(0), frame_height_(0),
+	  frame_width_(0), frame_height_(0),
       force_refresh_(1), num_frame_drops_late_(0) {}
 
 int FfmpegAvPlayback::OpenVideo(const char *filename, AVInputFormat *p_input_format,
@@ -38,43 +25,43 @@ int FfmpegAvPlayback::OpenVideo(const char *filename, AVInputFormat *p_input_for
                                 audio_buffer_size);
 }
 
-void FfmpegAvPlayback::SetPlayerStateCallbackFunction(
-    VideoState::PlayerStateCallback callback,
-    const std::function<void()> &func) {
-  p_video_state_->SetPlayerStateCallbackFunction(callback, func);
+void FfmpegAvPlayback::SetUpdatePlayerStateCallbackFunction(
+	PlayerState::State state, const std::function<void()> &func) {
+  update_player_state_callbacks[state] = func;
+  p_video_state_->SetUpdatePlayerStateCallbackFunction(state, func);
 }
 
 void FfmpegAvPlayback::Play() {
-  if (p_video_state_->IsPaused()) {
-    TogglePauseAndStopStep();
-    p_video_state_->SetStopped(false);
-    p_video_state_->SetPaused(false);
-    p_video_state_->SetPlaying(true);
+  if (IsPaused() || IsStopped() || IsReady()) {
+	TogglePauseAndStopStep();
   }
 }
 
 void FfmpegAvPlayback::Pause() {
-  if (!p_video_state_->IsPaused()) {
-    TogglePauseAndStopStep();
-    p_video_state_->SetStopped(false);
-    p_video_state_->SetPlaying(false);
+  if (!IsPaused()) {
+	if (IsStopped()) {
+	  SetPaused();
+	} else {
+	  TogglePauseAndStopStep();
+	}
   }
 }
 
 // Stop and put the playback speed to 0x
 void FfmpegAvPlayback::Stop() {
-  if (p_video_state_->IsPaused()
-        && !p_video_state_->IsStopped()) {
-    // The Player is already stopped
-    // Need to update player state
-    p_video_state_->SetStopped(true);
-    p_video_state_->SetPlaying(false);
-  } else if (!p_video_state_->IsPaused()) {
-    TogglePauseAndStopStep();
-    p_video_state_->SetStopped(true);
-    p_video_state_->SetPlaying(false);
+  if (!IsStopped()) {
+	if (!IsPaused()) {
+	  TogglePauseAndStopStep();
+	}
+	SetStopped();
 	SetSpeed(1);
   }
+}
+
+// Pause and keep the playback speed
+void FfmpegAvPlayback::SetPauseAndStopStep(bool pause) {
+  TogglePause();
+  p_video_state_->SetStepping(false);
 }
 
 // Pause and keep the playback speed

@@ -29,29 +29,33 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char *input_file) {
   }
 
   // Assign the callback functions
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_UNKNOWN,
-      [this] { this->UpdatePlayerState(Unknown); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_READY,
-      [this] { this->UpdatePlayerState(Ready); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_PLAYING,
-      [this] { this->UpdatePlayerState(Playing); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_PAUSED,
-      [this] { this->UpdatePlayerState(Paused); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_STOPPED,
-      [this] { this->UpdatePlayerState(Stopped); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_STALLED,
-      [this] { this->UpdatePlayerState(Stalled); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_FINISHED,
-      [this] { this->UpdatePlayerState(Finished); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::State::Unknown,
+      [this] { this->UpdatePlayerState(PlayerState::State::Unknown); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::State::Ready,
+      [this] { this->UpdatePlayerState(PlayerState::State::Ready); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::State::Playing,
+      [this] { this->UpdatePlayerState(PlayerState::State::Playing); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::State::Paused,
+      [this] { this->UpdatePlayerState(PlayerState::State::Paused); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::State::Stopped,
+      [this] { this->UpdatePlayerState(PlayerState::State::Stopped); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::State::Stalled,
+      [this] { this->UpdatePlayerState(PlayerState::State::Stalled); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::State::Finished,
+      [this] { this->UpdatePlayerState(PlayerState::State::Finished); });
   p_sdl_playback_->SetKeyEventKeyDispatcherCallback(
-      [this](int sdlkeyCode) { this->MapSdlToJavaKey(sdlkeyCode); });
+      [this] (int sdlkeyCode) { this->MapSdlToJavaKey(sdlkeyCode); });  
+  p_sdl_playback_->SetPendingPlayerStateCallbackFunction(
+      [this] { this->SetPendingPlayerState(); });  
+  p_sdl_playback_->SetPlayerStateCallbackFunction(
+	  [this](PlayerState::State state) { return this->IsPlayerState(state); });
 
   err = p_sdl_playback_->InitializeAndStartDisplayLoop();
   if (err) {
@@ -72,8 +76,6 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Play() {
   }
   p_sdl_playback_->Play();
 
-  UpdatePlayerState(Playing);
-
   return ERROR_NONE; // no error
 }
 
@@ -82,8 +84,6 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Stop() {
     return ERROR_PLAYBACK_NULL;
   }
   p_sdl_playback_->Stop();
-
-  UpdatePlayerState(Stopped);
 
   return ERROR_NONE; // no error
 }
@@ -94,8 +94,6 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
   }
 
   p_sdl_playback_->Pause();
-
-  UpdatePlayerState(Paused);
 
   return ERROR_NONE; // no error
 }

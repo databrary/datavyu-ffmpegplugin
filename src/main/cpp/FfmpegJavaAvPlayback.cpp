@@ -122,10 +122,10 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
       }
 
       if (lastvp->serial_ != vp->serial_) {
-        frame_last_shown_time_ = av_gettime_relative() / 1000000.0;
+        p_video_state_->SetFrameLastShownTime(av_gettime_relative() / 1000000.0);
       }
 
-      if (p_video_state_->IsPaused() && !force_refresh_) {
+      if (IsPaused() || IsStopped() || IsReady()) {
         goto display;
       }
 
@@ -135,16 +135,16 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
       delay = p_video_state_->ComputeTargetDelay(last_duration);
 
       time = av_gettime_relative() / 1000000.0;
-      if (time < frame_last_shown_time_ + delay) {
+      if (time < p_video_state_->GetFrameLastShownTime() + delay) {
         *remaining_time =
-            FFMIN(frame_last_shown_time_ + delay - time, *remaining_time);
+            FFMIN(p_video_state_->GetFrameLastShownTime() + delay - time, *remaining_time);
         goto display;
       }
 
-      frame_last_shown_time_ += delay;
+	  p_video_state_->SetFrameLastShownTime(p_video_state_->GetFrameLastShownTime() + delay);
       if (delay > 0 &&
-          time - frame_last_shown_time_ > VideoState::kAvSyncThresholdMax) {
-        frame_last_shown_time_ = time;
+          time - p_video_state_->GetFrameLastShownTime() > VideoState::kAvSyncThresholdMax) {
+		p_video_state_->SetFrameLastShownTime(time);
       }
 
       std::unique_lock<std::mutex> locker(frame_queue->GetMutex());
@@ -159,7 +159,7 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
         duration = ComputeFrameDuration(vp, nextvp,
                                         p_video_state_->GetMaxFrameDuration());
         if (!p_video_state_->IsStepping() &&
-            time > frame_last_shown_time_ + duration) {
+            time > p_video_state_->GetFrameLastShownTime() + duration) {
           num_frame_drops_late_++;
           frame_queue->Next();
           goto retry;
@@ -168,15 +168,15 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
 
       frame_queue->Next();
       force_refresh_ = true;
+	  if (p_video_state_->IsStepping() && !IsPaused() && !IsStopped()) {
+		TogglePause();
+	  }
     }
   display:
     /* display picture */
     if (!display_disabled_ && force_refresh_ && frame_queue->HasShownFrame()) {
       display = true;
       force_refresh_ = false;
-      if (p_video_state_->IsStepping() && !p_video_state_->IsPaused()) {
-        TogglePause();
-      }
     }
   }
 

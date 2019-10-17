@@ -29,7 +29,8 @@
 
 CPipeline::CPipeline(CPipelineOptions *p_options)
     : p_event_dispatcher_(nullptr), p_options_(p_options),
-      player_state_(Unknown), player_pending_state_(Unknown) {}
+      player_state_(PlayerState::Unknown),
+      player_pending_state_(PlayerState::Unknown) {}
 
 CPipeline::~CPipeline() {
   if (nullptr != p_options_) {
@@ -50,64 +51,80 @@ void CPipeline::SetEventDispatcher(
 
 void CPipeline::Dispose() {}
 
-void CPipeline::UpdatePlayerState(PlayerState new_state) {
-  PlayerState newPlayerState =
+bool CPipeline::IsPlayerState(PlayerState::State state) {
+  return player_state_ == state;
+}
+
+void CPipeline::SetPendingPlayerState() {
+  if (player_pending_state_) {
+    SetPlayerState(player_pending_state_, false);
+  }
+}
+
+void CPipeline::UpdatePlayerState(PlayerState::State new_state) {
+  PlayerState::State newPlayerState =
       player_state_; // If we assign the same state again
   bool bSilent = false;
 
   switch (player_state_) {
-  case Unknown:
-    if (Ready == new_state) {
-      newPlayerState = Ready;
+  case PlayerState::State::Unknown:
+    if (PlayerState::State::Ready == new_state) {
+      newPlayerState = PlayerState::State::Ready;
     }
     break;
 
-  case Ready:
-    if (Playing == new_state) {
-      newPlayerState = Playing;
+  case PlayerState::State::Ready:
+    if (PlayerState::State::Playing == new_state) {
+      newPlayerState = PlayerState::State::Playing;
     }
     break;
 
-  case Playing:
-    if (Stalled == new_state || Paused == new_state || Stopped == new_state ||
-        Finished == new_state) {
+  case PlayerState::State::Playing:
+    if (PlayerState::State::Stalled == new_state ||
+        PlayerState::State::Paused == new_state ||
+        PlayerState::State::Stopped == new_state ||
+        PlayerState::State::Finished == new_state) {
       newPlayerState = new_state;
     }
     break;
 
-  case Paused:
-    if (Stopped == new_state || Playing == new_state) {
+  case PlayerState::State::Paused:
+    if (PlayerState::State::Stopped == new_state ||
+        PlayerState::State::Playing == new_state) {
       newPlayerState = new_state;
     }
     break;
 
-  case Stopped:
-    if (Playing == new_state || Paused == new_state) {
+  case PlayerState::State::Stopped:
+    if (PlayerState::State::Playing == new_state ||
+        PlayerState::State::Paused == new_state) {
       newPlayerState = new_state;
     }
     break;
 
-  case Stalled: {
-    if (Stopped == new_state || Paused == new_state || Playing == new_state) {
+  case PlayerState::State::Stalled: {
+    if (PlayerState::State::Stopped == new_state ||
+        PlayerState::State::Paused == new_state ||
+        PlayerState::State::Playing == new_state) {
       newPlayerState = new_state;
     }
     break;
   }
 
-  case Finished:
-    if (Playing == new_state) {
+  case PlayerState::State::Finished:
+    if (PlayerState::State::Playing == new_state) {
       // We can go from Finished to Playing only when seek happens (or repeat)
       // This state change should be silent.
-      newPlayerState = Playing;
+      newPlayerState = PlayerState::State::Playing;
       bSilent = true;
     }
-    if (Stopped == new_state) {
-      newPlayerState = Stopped;
+    if (PlayerState::State::Stopped == new_state) {
+      newPlayerState = PlayerState::State::Stopped;
     }
 
     break;
 
-  case Error:
+  case PlayerState::State::Error:
     break;
   }
 
@@ -115,11 +132,12 @@ void CPipeline::UpdatePlayerState(PlayerState new_state) {
   SetPlayerState(newPlayerState, bSilent);
 }
 
-void CPipeline::SetPlayerState(PlayerState new_state, bool silent) {
+void CPipeline::SetPlayerState(PlayerState::State new_state, bool silent) {
 
   // Determine if we need to send an event out
   bool updateState = new_state != player_state_;
   if (updateState) {
+    player_pending_state_ = player_state_;
     if (nullptr != p_event_dispatcher_ && !silent) {
       player_state_ = new_state;
 
@@ -189,15 +207,15 @@ void CPipeline::MapSdlToJavaKey(SDL_Keycode sdlKeyCode) {
   }
 
   if (javaCode != -1) {
-	  DispatchKeyEvent(javaCode);
+    DispatchKeyEvent(javaCode);
   }
 }
 
 void CPipeline::DispatchKeyEvent(int javaKeyCode) {
   if (nullptr != p_event_dispatcher_) {
-	if (!p_event_dispatcher_->SendSdlPlayerKeyEvent(javaKeyCode)) {
-	  av_log(NULL, AV_LOG_INFO, "Couldn't dispatch the Java Key");
-	}
+    if (!p_event_dispatcher_->SendSdlPlayerKeyEvent(javaKeyCode)) {
+      av_log(NULL, AV_LOG_INFO, "Couldn't dispatch the Java Key");
+    }
   }
 }
 #endif // SDL_ENABLED

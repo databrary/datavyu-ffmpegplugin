@@ -1,6 +1,7 @@
 #ifndef VIDEOSTATE_H_
 #define VIDEOSTATE_H_
 
+#include <atomic>
 #include <inttypes.h>
 #include <limits.h>
 #include <math.h>
@@ -12,6 +13,7 @@
 #include "Decoder.h"
 #include "FrameQueue.h"
 #include "PacketQueue.h"
+#include "PlayerState.h"
 
 extern "C" {
 #include "libavcodec/avfft.h"
@@ -50,16 +52,6 @@ public:
     AV_SYNC_VIDEO_MASTER,
     AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
   };
-  enum PlayerStateCallback {
-    TO_UNKNOWN = 0, // 1
-    TO_READY,       // 2
-    TO_PLAYING,     // 3
-    TO_PAUSED,      // 4
-    TO_STOPPED,     // 5
-    TO_STALLED,     // 6
-    TO_FINISHED,    // 7
-    NUM_PLAYER_STATE_CALLBACKS
-  };
 
   static double kAvSyncThresholdMax;
   static int kEnableSeekByBytes;
@@ -76,9 +68,10 @@ public:
   static int OpenStream(VideoState **pp_video_state, const char *filename,
                         AVInputFormat *iformat, int audio_buffer_size);
 
-  inline void SetPlayerStateCallbackFunction(
-      PlayerStateCallback callback, const std::function<void()> &func) {
-    player_state_callbacks[callback] = func;
+  inline void
+  SetUpdatePlayerStateCallbackFunction(PlayerState::State state,
+                                       const std::function<void()> &func) {
+    update_player_state_callbacks[state] = func;
   }
 
   inline void SetAudioOpenCallback(
@@ -104,24 +97,22 @@ public:
   inline AVRational GetFrameAspectRatio() const { return frame_aspect_ratio_; }
   inline bool HasAudioStream() const { return p_audio_stream_ != nullptr; }
   inline bool HasImageStream() const { return p_image_stream_ != nullptr; }
-  inline double GetDuration() const { return duration_; };  // duration in sec
+  inline double GetDuration() const { return duration_; }; // duration in sec
   inline double GetTime() const {
-	// Image Clock might return NaN after a seek which could mess up future seeks requested
-	// By Datavyu, If Image Clock is NaN we return the exrternal clock which is always updated after a seek.
-    return isnan(p_image_clock_->GetTime()) ? p_external_clock_->GetTime() : p_image_clock_->GetTime();
-  }  // current time in sec
+    // Image Clock might return NaN after a seek which could mess up future
+    // seeks requested By Datavyu, If Image Clock is NaN we return the exrternal
+    // clock which is always updated after a seek.
+    return isnan(p_image_clock_->GetTime()) ? p_external_clock_->GetTime()
+                                            : p_image_clock_->GetTime();
+  } // current time in sec
   inline void ToggleMute() { is_muted_ = !is_muted_; }
   void SetPts(double pts, int serial);
   void Seek(int64_t time, int64_t distance, int seek_flags);
   void SeekToFrame(int frame_nb);
 
-  /* Setter and Getters */
   inline bool IsPaused() const { return is_paused_; }
-  inline void SetPaused(bool is_paused) { is_paused_ = is_paused; }
 
-  inline bool IsStopped() const { return is_stopped_; }
-  inline void SetStopped(bool is_stopped) { is_stopped_ = is_stopped; }
-  inline void SetPlaying(bool is_playing) { is_playing_ = is_playing; }
+  inline void SetPaused(bool is_paused) { is_paused_ = is_paused; }
 
   inline int IsStepping() const { return is_stepping_; }
   inline void SetStepping(bool is_stepping) { is_stepping_ = is_stepping; }
@@ -159,6 +150,12 @@ public:
     *pp_clock = p_external_clock_;
   }
 
+  inline double GetFrameLastShownTime() const { return frame_last_shown_time_; }
+
+  inline void SetFrameLastShownTime(double frame_last_shown) {
+    frame_last_shown_time_ = frame_last_shown;
+  }
+
   inline double GetImageClockLastSetTime() const {
     return image_clock_last_set_time_;
   }
@@ -186,6 +183,8 @@ public:
   /* get the current master clock */
   void GetMasterClock(Clock **pp_clock) const;
 
+  void TogglePause();
+
   inline double GetFrameRate() const {
     return p_image_stream_ ? frame_rate_ : 0;
   }
@@ -201,27 +200,24 @@ public:
 
   inline bool GetVideoDisabled() const { return video_disabled_; }
 
-	inline int64_t GetStartTime() const {
+  inline int64_t GetStartTime() const {
     return start_time_ != AV_NOPTS_VALUE ? start_time_ : 0;
   }
 
- private:
+private:
   bool abort_request_;
-  bool is_paused_; // TODO(fraudies): Check if this need to be atomic
-  bool last_is_paused_;
-  bool is_stopped_; // TODO(fraudies): Check if this need to be atomic
-  bool is_playing_;
+  std::atomic<bool> is_paused_;
   bool queue_attachments_request_;
 
   bool seek_done_;
-  bool seek_request_;
+  std::atomic<bool> seek_request_;
   int seek_flags_;
   int64_t seek_time_;
   int seek_frame_;
   int64_t seek_distance_; // Signed distance between the current time and the
                           // seek time
   AvSyncType sync_type_;  // default is AV_SYNC_AUDIO_MASTER
-  double frame_rate_;        // Frame rate in Hz (frames per second)
+  double frame_rate_;     // Frame rate in Hz (frames per second)
 
   double image_clock_last_set_time_;
   int image_stream_index_;
@@ -290,9 +286,10 @@ public:
   struct AudioParams audio_parms_source_;
   struct AudioParams audio_params_target_;
   int num_frame_drops_early_;
-  int64_t start_time_;   // initial start time, in AV_TIME_BASE units
-  int64_t max_duration_; // initial play time, in AV_TIME_BASE units
-  int num_loop_;         // loop through the video
+  int64_t start_time_;           // initial start time, in AV_TIME_BASE units
+  int64_t max_duration_;         // initial play time, in AV_TIME_BASE units
+  int num_loop_;                 // loop through the video
+  double frame_last_shown_time_; // Time when the last frame was shown
 
   inline int CompareAudioFormats(enum AVSampleFormat fmt1,
                                  int64_t channel_count1,
@@ -316,7 +313,8 @@ public:
   int OpenStreamComponent(int stream_index);
   int GetImageFrame(AVFrame *frame);
 
-  int QueueImage(AVFrame *image_frame, double pts, double duration, int64_t pos, int frame_pos, int serial);
+  int QueueImage(AVFrame *image_frame, double pts, double duration, int64_t pos,
+                 int frame_pos, int serial);
   void CloseStreamComponent(int stream_index);
   bool StreamHasEnoughPackets(const AVStream &p_stream, int stream_index,
                               const PacketQueue &packet_queue);
@@ -345,8 +343,9 @@ public:
   // value.
   int DecodeAudioFrame();
 
-  std::function<void()>
-      player_state_callbacks[VideoState::NUM_PLAYER_STATE_CALLBACKS];
+  std::function<void()> update_player_state_callbacks
+      [PlayerState::Error]; // Error is the last in the enum item of the enum
+
   std::function<int(int64_t, int, int, struct AudioParams *)>
       audio_open_callback;
   std::function<void()> pause_audio_device_callback;

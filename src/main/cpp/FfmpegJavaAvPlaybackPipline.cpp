@@ -16,7 +16,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char *input_file) {
     return ERROR_PIPELINE_NULL;
   }
   
-  UpdatePlayerState(Unknown);
+  UpdatePlayerState(PlayerState::Unknown);
 
   int err = p_java_playback_->Init(input_file, file_iformat);
   if (err) {
@@ -25,27 +25,27 @@ uint32_t FfmpegJavaAvPlaybackPipline::Init(const char *input_file) {
   }
 
   // Assign the callback functions
-  p_java_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_UNKNOWN,
-      [this] { this->UpdatePlayerState(Unknown); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_READY,
-      [this] { this->UpdatePlayerState(Ready); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_PLAYING,
-      [this] { this->UpdatePlayerState(Playing); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_PAUSED,
-      [this] { this->UpdatePlayerState(Paused); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_STOPPED,
-      [this] { this->UpdatePlayerState(Stopped); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_STALLED,
-      [this] { this->UpdatePlayerState(Stalled); });
-  p_java_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_FINISHED,
-      [this] { this->UpdatePlayerState(Finished); });
+  p_java_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::Unknown,
+      [this] { this->UpdatePlayerState(PlayerState::Unknown); });
+  p_java_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::Ready,
+      [this] { this->UpdatePlayerState(PlayerState::Ready); });
+  p_java_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::Playing,
+      [this] { this->UpdatePlayerState(PlayerState::Playing); });
+  p_java_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::Paused,
+      [this] { this->UpdatePlayerState(PlayerState::Paused); });
+  p_java_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::Stopped,
+      [this] { this->UpdatePlayerState(PlayerState::Stopped); });
+  p_java_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::Stalled,
+      [this] { this->UpdatePlayerState(PlayerState::Stalled); });
+  p_java_playback_->SetUpdatePlayerStateCallbackFunction(
+	  PlayerState::Finished,
+      [this] { this->UpdatePlayerState(PlayerState::Finished); });
 
   return p_java_playback_->StartStream();
 }
@@ -72,8 +72,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::Play() {
 
   p_java_playback_->Play();
   
-  UpdatePlayerState(Playing);
-
   return ERROR_NONE;
 }
 
@@ -84,8 +82,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::Stop() {
 
   p_java_playback_->Stop();
     
-  UpdatePlayerState(Stopped);
-
   return ERROR_NONE;
 }
 
@@ -95,8 +91,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::Pause() {
   }
 
   p_java_playback_->Pause();
-
-  UpdatePlayerState(Paused);
 
   return ERROR_NONE;
 }

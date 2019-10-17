@@ -141,6 +141,11 @@ public:
   inline void SetKeyEventKeyDispatcherCallback(
       const std::function<void(SDL_Keycode)> &func) {
     dispatch_keyEvent_callback_ = func;
+  }  
+  
+  inline void SetKeyPlayerStateCallbackFunction(
+      const std::function<bool(int)> &func) {
+    player_state_callback_ = func;
   }
 
 private:
@@ -170,12 +175,13 @@ private:
   char *p_window_title_;
   SDL_RendererInfo renderer_info_;
 #ifdef __APPLE__
-  std::atomic<bool> is_stopped_ = {false};
+  std::atomic<bool> is_stopped_ = {false}; // Used for the display loop and doesn't reflect the player state
 #elif _WIN32
-  std::atomic<bool> is_stopped_ = false;
+  std::atomic<bool> is_stopped_ = false; // Used for the display loop and doesn't reflect the player state
 #endif
   std::thread *p_display_thread_id_ = nullptr;
   std::function<void(SDL_Keycode)> dispatch_keyEvent_callback_;
+  std::function<bool(int)> player_state_callback_;
 
   static int kDefaultWidth;
   static int kDefaultHeight;
