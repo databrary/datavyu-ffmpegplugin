@@ -17,7 +17,6 @@ public:
   virtual void Stop();
   virtual void Pause();
   virtual void TogglePauseAndStopStep();
-  virtual void SetPauseAndStopStep(bool pause);
 
   inline virtual void Seek(int64_t time, int64_t difference,
                            int seek_flags) {
@@ -59,7 +58,8 @@ public:
   inline void StepToNextFrame() {
     // if the stream is paused unpause it, then step
     if (IsPaused() || IsStopped()) {
-      TogglePause();
+	  // Mute player 
+      TogglePause(true, true);
 	}
 
     p_video_state_->SetStepping(true);
@@ -68,7 +68,7 @@ public:
   inline void StepToPreviousFrame() {
 
 	if (!IsPaused() || !IsStopped()) {
-	  TogglePause();
+	  TogglePause(true, true);
 	}
 
 	// Get the current time and seek if it time is not NaN and equal 0
@@ -113,7 +113,7 @@ protected:
   // Enable the showing of the status
   static bool kEnableShowStatus;
 
-  void TogglePause(bool update_state = true);
+  void TogglePause(bool update_state = true, bool mute = false);
 
   inline void SetForceReferesh(bool refresh) { force_refresh_ = refresh; }
   double ComputeFrameDuration(Frame *vp, Frame *nextvp,

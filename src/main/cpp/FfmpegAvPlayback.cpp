@@ -3,8 +3,8 @@
 
 bool FfmpegAvPlayback::kEnableShowStatus = true;
 
-void FfmpegAvPlayback::TogglePause(bool update_state) {
-  p_video_state_->TogglePause();
+void FfmpegAvPlayback::TogglePause(bool update_state, bool mute) {
+  p_video_state_->TogglePause(mute);
   if (update_state) {
 	if (p_video_state_->IsPaused()) {
 	  SetPaused();
@@ -56,12 +56,6 @@ void FfmpegAvPlayback::Stop() {
 	SetStopped();
 	SetSpeed(1);
   }
-}
-
-// Pause and keep the playback speed
-void FfmpegAvPlayback::SetPauseAndStopStep(bool pause) {
-  TogglePause();
-  p_video_state_->SetStepping(false);
 }
 
 // Pause and keep the playback speed

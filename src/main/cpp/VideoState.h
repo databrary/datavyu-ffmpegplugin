@@ -183,7 +183,7 @@ public:
   /* get the current master clock */
   void GetMasterClock(Clock **pp_clock) const;
 
-  void TogglePause();
+  void TogglePause(bool mute = false);
 
   inline double GetFrameRate() const {
     return p_image_stream_ ? frame_rate_ : 0;
@@ -282,7 +282,7 @@ private:
   unsigned int audio_buffer1_size_;
   int audio_buffer_index_; // in bytes
   int audio_write_buffer_size_;
-  bool is_muted_;
+  std::atomic<bool> is_muted_;
   struct AudioParams audio_parms_source_;
   struct AudioParams audio_params_target_;
   int num_frame_drops_early_;

@@ -615,7 +615,7 @@ VideoState::VideoState(int audio_buffer_size)
       p_audio_buffer_(nullptr), p_audio_buffer1_(nullptr),
       audio_buffer_size_(0),                          /* in bytes */
       audio_buffer1_size_(0), audio_buffer_index_(0), /* in bytes */
-      audio_write_buffer_size_(0), is_muted_(0), num_frame_drops_early_(0),
+      audio_write_buffer_size_(0), is_muted_(false), num_frame_drops_early_(0),
       start_time_(AV_NOPTS_VALUE), max_duration_(AV_NOPTS_VALUE), num_loop_(1),
       frame_last_shown_time_(0.0) {}
 
@@ -1210,7 +1210,7 @@ fail:
   return ret;
 }
 
-void VideoState::TogglePause() {
+void VideoState::TogglePause(bool mute) {
   // Update the video clock
   if (is_paused_) {
     frame_last_shown_time_ = frame_last_shown_time_ +
@@ -1222,6 +1222,8 @@ void VideoState::TogglePause() {
   // Update the external clock
   p_external_clock_->SetTime(p_external_clock_->GetTime(),
                              p_external_clock_->GetSerial());
+
+  is_muted_ = mute;
 
   // Flip the paused flag
   SetPaused(!is_paused_);
@@ -1247,7 +1249,7 @@ void VideoState::Seek(int64_t time, int64_t distance, int seek_flags) {
       (fabs(time - seek_time_) >= (double)AV_TIME_BASE / frame_rate_ ||
        fabs(time - (GetTime() * (double)AV_TIME_BASE)) >=
            (double)AV_TIME_BASE / frame_rate_ ||
-       (seek_flags_ | AVSEEK_FLAG_BACKWARD))) {
+       !(seek_flags_ & AVSEEK_FLAG_BACKWARD))) {
     std::mutex mtx;
 
     seek_time_ = time;
@@ -1424,7 +1426,7 @@ void VideoState::GetAudioCallback(uint8_t *stream, int len) {
     audio_buffer_index_ += len1;
   }
   audio_write_buffer_size_ = audio_buffer_size_ - audio_buffer_index_;
-  if (!isnan(audio_pts_) && !is_muted_) {
+  if (!isnan(audio_pts_)) {
     /* Let's assume the audio driver that is used by SDL has two periods. */
     p_audio_clock_->SetTime(
         audio_pts_ -

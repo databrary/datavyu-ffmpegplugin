@@ -204,6 +204,7 @@ public interface MediaPlayer {
    * Seeks playback to the specified time. The state of the player
    * is unchanged. A negative value will be clamped
    * to zero, and a positive value to the duration, if known.
+   * The seek is precise only when player is stopped/paused or rate is negative
    *
    * @param streamTime The time in seconds to which to seek.
    */
