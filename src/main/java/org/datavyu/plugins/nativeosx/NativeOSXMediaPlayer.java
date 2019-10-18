@@ -231,7 +231,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected boolean playerRateIsSupported(final float rate) {
-    return -32F <= rate && rate <= 32F;
+    return 0F <= rate && rate <= 8F;
   }
 
   @Override
