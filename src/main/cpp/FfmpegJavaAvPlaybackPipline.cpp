@@ -124,26 +124,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time, int seek_flags) {
   if (p_java_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-
-  double pos = p_java_playback_->GetTime();
-
-  if (isnan(pos)) {
-    pos = (double)p_java_playback_->GetSeekTime() / AV_TIME_BASE;  
-  }
-
-  if (p_java_playback_->GetStartTime() != AV_NOPTS_VALUE &&
-      time < p_java_playback_->GetStartTime() / (double)AV_TIME_BASE) {
-    time = p_java_playback_->GetStartTime() / (double)AV_TIME_BASE;
-  } else if (p_java_playback_->GetDuration() != AV_NOPTS_VALUE &&
-             time >= p_java_playback_->GetDuration()) {
-      //FIXME Remove the 0.1 sec difference when seeking to end of stream is fixed
-      time = p_java_playback_->GetDuration() - 0.1;
-  }
-
-  double difference = time - pos;
-
-  p_java_playback_->Seek((int64_t)(time * AV_TIME_BASE),
-                         (int64_t)(difference * AV_TIME_BASE), seek_flags);
+  p_java_playback_->Seek(time, seek_flags);
 
   return ERROR_NONE;
 }

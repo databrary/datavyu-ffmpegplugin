@@ -98,7 +98,7 @@ int VideoState::OpenStreamComponent(int stream_index) {
     goto fail;
   }
 
-  end_of_file_ = false;
+  end_of_file_ = false; // Is initilized in the constructor
   p_format_context->streams[stream_index]->discard = AVDISCARD_DEFAULT;
 
   switch (p_codec_context->codec_type) {
@@ -593,9 +593,9 @@ int VideoState::DecodeAudioFrame() {
 VideoState::VideoState(int audio_buffer_size)
     : abort_request_(false), is_paused_(true),
       queue_attachments_request_(false), seek_done_(false),
-      seek_request_(false), seek_flags_(AVSEEK_FLAG_BACKWARD), seek_time_(0), seek_frame_(0),
-      seek_distance_(0), sync_type_(AV_SYNC_AUDIO_MASTER), frame_rate_(0.0),
-      image_clock_last_set_time_(0), image_stream_index_(0),
+      seek_request_(false), seek_flags_(AVSEEK_FLAG_BACKWARD), seek_time_(0),
+      seek_frame_(0), seek_distance_(0), sync_type_(AV_SYNC_AUDIO_MASTER),
+      frame_rate_(0.0), image_clock_last_set_time_(0), image_stream_index_(0),
       max_frame_duration_(0), end_of_file_(false), duration_(0),
       frame_width_(0), frame_height_(0), frame_aspect_ratio_(av_make_q(0, 0)),
       is_stepping_(false), speed_request_(false), requested_speed_(1.0),
@@ -712,31 +712,31 @@ VideoState::~VideoState() {
 
   // From close method
   if (p_image_packet_queue_) {
-	delete p_image_packet_queue_;
+    delete p_image_packet_queue_;
   }
 
   if (p_audio_packet_queue_) {
-	delete p_audio_packet_queue_;
+    delete p_audio_packet_queue_;
   }
 
   if (p_image_frame_queue_) {
-	delete p_image_frame_queue_;
+    delete p_image_frame_queue_;
   }
 
   if (p_audio_frame_queue_) {
-	delete p_audio_frame_queue_;
+    delete p_audio_frame_queue_;
   }
 
   if (p_image_clock_) {
-	  delete p_image_clock_;
+    delete p_image_clock_;
   }
 
   if (p_audio_clock_) {
-	delete p_audio_clock_;
+    delete p_audio_clock_;
   }
 
   if (p_external_clock_) {
-	delete p_external_clock_;
+    delete p_external_clock_;
   }
 }
 
@@ -761,16 +761,21 @@ int VideoState::ReadPacketsToQueues() {
     }
 
     if (seek_request_) {
-      int64_t seek_min =
-          seek_distance_ > 0 ? seek_time_ - seek_distance_ + 2 : INT64_MIN;
-      int64_t seek_max =
-          seek_distance_ < 0 ? seek_time_ - seek_distance_ - 2 : INT64_MAX;
+      if (seek_flags_ & AVSEEK_FLAG_BACKWARD) {
+        ret = av_seek_frame(p_format_context, -1, seek_time_,
+                            AVSEEK_FLAG_BACKWARD);
+      } else {
+        int64_t seek_min =
+            seek_distance_ > 0 ? seek_time_ - seek_distance_ + 2 : INT64_MIN;
+        int64_t seek_max =
+            seek_distance_ < 0 ? seek_time_ - seek_distance_ - 2 : INT64_MAX;
 
-      // FIXME the +-2 is due to rounding being not done in the correct
-      // direction in generation
-      //      of the seek_pos/seek_rel variables
-      ret = avformat_seek_file(p_format_context, -1, seek_min, seek_time_,
-                               seek_max, seek_flags_);
+        // FIXME the +-2 is due to rounding being not done in the correct
+        // direction in generation
+        //      of the seek_pos/seek_rel variables
+        ret = avformat_seek_file(p_format_context, -1, seek_min, seek_time_,
+                                 seek_max, seek_flags_);
+      }
 
       if (ret < 0) {
         av_log(NULL, AV_LOG_ERROR, "%s: error while seeking\n",
@@ -849,14 +854,10 @@ int VideoState::ReadPacketsToQueues() {
           p_audio_packet_queue_->PutNullPacket(audio_stream_index_);
         }
         end_of_file_ = true;
-
-        // Set the player state to finished
-        if (update_player_state_callbacks[PlayerState::Finished]) {
-          update_player_state_callbacks[PlayerState::Finished]();
-        }
       }
-      if (p_format_context->pb && p_format_context->pb->error)
+      if (p_format_context->pb && p_format_context->pb->error) {
         break;
+      }
       /* wait 10 ms */
       std::unique_lock<std::mutex> locker(wait_mutex);
       continue_read_thread_.wait_for(locker, std::chrono::milliseconds(10));
@@ -929,6 +930,7 @@ int VideoState::DecodeAudioPacketsToFrames() {
           seek_time_ / (audio_time_base * (double)AV_TIME_BASE);
       if ((seek_flags_ & AVSEEK_FLAG_BACKWARD) &&
           p_frame->pts < audio_seek_pts) {
+        av_frame_unref(p_frame);
         continue;
       }
 
@@ -1068,7 +1070,7 @@ int VideoState::StartStream() {
   memset(st_index, -1, sizeof(st_index));
   last_video_stream_ = image_stream_index_ = -1;
   last_audio_stream_ = audio_stream_index_ = -1;
-  end_of_file_ = false;
+  end_of_file_ = false; // Is initialized in the constructor
 
   p_format_context = avformat_alloc_context();
   if (!p_format_context) {
@@ -1222,7 +1224,7 @@ fail:
   return ret;
 }
 
-void VideoState::TogglePause(bool mute) {
+void VideoState::TogglePauseAndMute(bool mute) {
   // Update the video clock
   if (is_paused_) {
     frame_last_shown_time_ = frame_last_shown_time_ +
@@ -1257,10 +1259,10 @@ void VideoState::Seek(int64_t time, int64_t distance, int seek_flags) {
   // - this seek time is different from the last OR
   //        this seek is different than the current PTS OR
   //		the last seek was not precise (the we might not be at seek time)
+  int64_t step = (int64_t)((1 / frame_rate_) * AV_TIME_BASE);
   if (!seek_request_ &&
-      (fabs(time - seek_time_) >= (double)AV_TIME_BASE / frame_rate_ ||
-       fabs(time - (GetTime() * (double)AV_TIME_BASE)) >=
-           (double)AV_TIME_BASE / frame_rate_ ||
+      (fabs(time - seek_time_) >= step ||
+       fabs(time - (int64_t)(GetTime() * AV_TIME_BASE)) >= step ||
        !(seek_flags_ & AVSEEK_FLAG_BACKWARD))) {
     std::mutex mtx;
 

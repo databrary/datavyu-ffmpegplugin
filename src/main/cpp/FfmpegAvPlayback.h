@@ -1,8 +1,8 @@
 #ifndef FFMPEGAVPLAYBACK_H_
 #define FFMPEGAVPLAYBACK_H_
 
-#include "VideoState.h"
 #include "PlayerState.h"
+#include "VideoState.h"
 
 class FfmpegAvPlayback {
 public:
@@ -11,32 +11,53 @@ public:
                 int audio_buffer_size);
   virtual void
   SetUpdatePlayerStateCallbackFunction(PlayerState::State state,
-                                 const std::function<void()> &func);  
+                                       const std::function<void()> &func);
 
   virtual void Play();
   virtual void Stop();
   virtual void Pause();
   virtual void TogglePauseAndStopStep();
 
-  inline virtual void Seek(int64_t time, int64_t difference,
+  inline virtual void Seek(double dSeekTime,
                            int seek_flags = VideoState::kSeekPreciseFlag) {
-	if (update_player_state_callbacks[PlayerState::State::Stalled]) {
-	  update_player_state_callbacks[PlayerState::State::Stalled]();
-	}
 
-    p_video_state_->Seek(time, difference, seek_flags);
+    double pos = GetTime();
 
-	if (set_pending_player_state_callback) {
-	  set_pending_player_state_callback();
-	}
+    if (isnan(pos)) {
+      pos = (double)GetSeekTime() / (double)AV_TIME_BASE;
+    }
+
+    if (GetStartTime() != AV_NOPTS_VALUE && dSeekTime <= GetStartTime()) {
+      dSeekTime = GetStartTime();
+    } else if (GetDuration() != AV_NOPTS_VALUE && dSeekTime >= GetDuration()) {
+      // Seek one fram before the Stram total duration to allow the stepping
+      // callback that occurs after the seek to update the display if the stream
+      // is paused
+      if (GetFrameRate() > 0) {
+        dSeekTime = GetDuration() - (1.0 / GetFrameRate());
+      } else {
+        dSeekTime = GetDuration();
+      }
+      seek_flags = VideoState::kSeekPreciseFlag; // make sure that we are using
+                                                 // the precise flag
+    }
+
+    double incr = dSeekTime - pos;
+
+    p_video_state_->Seek((int64_t)(dSeekTime * AV_TIME_BASE),
+                         (int64_t)(incr * AV_TIME_BASE), seek_flags);
   }
+
   inline virtual void SeekToFrame(int frame_nb) {
     p_video_state_->SeekToFrame(frame_nb);
   }
+
   inline virtual double GetDuration() const {
     return p_video_state_->GetDuration();
   }
+
   inline virtual double GetTime() const { return p_video_state_->GetTime(); }
+
   inline virtual double GetFrameRate() const {
     return p_video_state_->GetFrameRate();
   }
@@ -57,36 +78,38 @@ public:
 
   inline void StepToNextFrame() {
     // if the stream is paused/stopped unpause it, then step
-    if (IsPaused() || IsStopped()) {
-	  // Mute player 
-      TogglePause(true, true);
-	}
+    if (IsPaused() || IsStopped() || IsReady()) {
+      // Mute player, keep the same statebecause the display loop will stop the
+      // and keep the same state
+      TogglePauseUpdateStateAndMute(false, true);
+    }
 
     p_video_state_->SetStepping(true);
   }
 
   inline void StepToPreviousFrame() {
 
-	if (!IsPaused() || !IsStopped()) {
-	  TogglePause(true, true);
-	}
+    if (!IsPaused() && !IsStopped() && !IsReady()) {
+      TogglePauseUpdateStateAndMute(true, true);
+    }
 
-	// Get the current time and seek if it time is not NaN and equal 0
+    // Get the current time and seek if it time is not NaN and equal 0
     double time = GetTime();
     if (!isnan(time) && time > 0) {
       double difference = -1.0 / GetFrameRate();
-      p_video_state_->Seek((int64_t)((time + difference) * AV_TIME_BASE),
-                           (int64_t)(difference * AV_TIME_BASE),
-                           VideoState::kSeekPreciseFlag);
+	  av_log(NULL, AV_LOG_INFO, "Step backward from %2.3f with a %2.3f difference\n", time, difference);
+      Seek((time + difference), VideoState::kSeekPreciseFlag);
     }
   }
 
-  inline void SetPlayerStateCallbackFunction(const std::function<bool(PlayerState::State)> &func) {
-	is_player_state_callback = func;
+  inline void SetPlayerStateCallbackFunction(
+      const std::function<bool(PlayerState::State)> &func) {
+    is_player_state_callback = func;
   }
 
-  inline void SetPendingPlayerStateCallbackFunction(const std::function<void()> &func) {
-	set_pending_player_state_callback = func;
+  inline void
+  SetPendingPlayerStateCallbackFunction(const std::function<void()> &func) {
+    set_pending_player_state_callback = func;
   }
 
 protected:
@@ -107,13 +130,13 @@ protected:
 
   std::function<bool(PlayerState::State)> is_player_state_callback;
   std::function<void()> set_pending_player_state_callback;
-  std::function<void()>
-	  update_player_state_callbacks[PlayerState::Error]; // Error is the last in the enum item of the enum
+  std::function<void()> update_player_state_callbacks
+      [PlayerState::Error]; // Error is the last in the enum item of the enum
 
   // Enable the showing of the status
   static bool kEnableShowStatus;
 
-  void TogglePause(bool update_state = true, bool mute = false);
+  void TogglePauseUpdateStateAndMute(bool update_state = true, bool mute = false);
 
   inline void SetForceReferesh(bool refresh) { force_refresh_ = refresh; }
   double ComputeFrameDuration(Frame *vp, Frame *nextvp,
@@ -121,49 +144,56 @@ protected:
 
   /* Setter and Getters */
   inline bool IsReady() const {
-	if (is_player_state_callback) {
-	  return is_player_state_callback(PlayerState::State::Ready) && p_video_state_->IsPaused();
-	}
-	return false;
+    if (is_player_state_callback) {
+      return is_player_state_callback(PlayerState::State::Ready) &&
+             p_video_state_->IsPaused();
+    }
+    return false;
   }
 
   inline bool IsPaused() const {
-	if (is_player_state_callback) {
-	  return is_player_state_callback(PlayerState::State::Paused) && p_video_state_->IsPaused();
-	}
-	return p_video_state_->IsPaused();
+    if (is_player_state_callback) {
+      return is_player_state_callback(PlayerState::State::Paused) &&
+             p_video_state_->IsPaused();
+    }
+    return p_video_state_->IsPaused();
   }
 
   inline void SetPaused() {
-	if (update_player_state_callbacks[PlayerState::State::Paused] && p_video_state_->IsPaused()) {
-	  update_player_state_callbacks[PlayerState::State::Paused]();
-	}
+    if (update_player_state_callbacks[PlayerState::State::Paused] &&
+        p_video_state_->IsPaused()) {
+      update_player_state_callbacks[PlayerState::State::Paused]();
+    }
   }
 
   inline bool IsStopped() const {
-	if (is_player_state_callback) {
-	  return is_player_state_callback(PlayerState::State::Stopped) && p_video_state_->IsPaused();
-	}
-	return false;
+    if (is_player_state_callback) {
+      return is_player_state_callback(PlayerState::State::Stopped) &&
+             p_video_state_->IsPaused();
+    }
+    return false;
   }
 
   inline void SetStopped() {
-	if (update_player_state_callbacks[PlayerState::State::Stopped] && p_video_state_->IsPaused()) {
-	  update_player_state_callbacks[PlayerState::State::Stopped]();
-	}
+    if (update_player_state_callbacks[PlayerState::State::Stopped] &&
+        p_video_state_->IsPaused()) {
+      update_player_state_callbacks[PlayerState::State::Stopped]();
+    }
   }
 
   inline bool IsPlaying() const {
-	if (is_player_state_callback) {
-	  return is_player_state_callback(PlayerState::State::Playing) && !p_video_state_->IsPaused();
-	}
-	return !p_video_state_->IsPaused();
+    if (is_player_state_callback) {
+      return is_player_state_callback(PlayerState::State::Playing) &&
+             !p_video_state_->IsPaused();
+    }
+    return !p_video_state_->IsPaused();
   }
 
   inline void SetPlaying() {
-	if (update_player_state_callbacks[PlayerState::State::Playing] && !p_video_state_->IsPaused()) {
-	  update_player_state_callbacks[PlayerState::State::Playing]();
-	}
+    if (update_player_state_callbacks[PlayerState::State::Playing] &&
+        !p_video_state_->IsPaused()) {
+      update_player_state_callbacks[PlayerState::State::Playing]();
+    }
   }
 };
 

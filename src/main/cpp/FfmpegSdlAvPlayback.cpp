@@ -641,9 +641,9 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
 
       queue->Next();
       force_refresh_ = true;
-      if (p_video_state_->IsStepping() && !IsPaused() && !IsStopped()) {
-		// Stepping is done, keep player muted
-        TogglePause(true, true);
+      if (p_video_state_->IsStepping() && ((!IsPaused() && !IsStopped()) || IsPlaying())) {
+		// Stepping is done, keep player muted, and update the state only if the player is playing.
+        TogglePauseUpdateStateAndMute(IsPlaying(), true);
       }
     }
   display:

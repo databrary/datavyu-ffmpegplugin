@@ -344,6 +344,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   protected abstract void playerHideSDLWindow() throws MediaException;
 
+  protected abstract boolean playerRateIsSupported(float rate) throws MediaException;
+
   @Override
   public void setAudioSyncDelay(long delay) {
     try {
@@ -365,85 +367,99 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   @Override
   public void play() {
-    try {
-      if (!isDisposed) {
+    if (disposeLock.tryLock()) {
+      try {
         if (isStartTimeUpdated) {
           playerSeek(startTime);
         }
         playerPlay();
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
       }
-    } catch (MediaException me) {
-      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
     }
   }
 
   @Override
   public void stop() {
-    try {
-      if (!isDisposed) {
+    if (disposeLock.tryLock()) {
+      try {
         playerStop();
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
       }
-    } catch (MediaException me) {
-      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
     }
   }
 
   @Override
   public void pause() {
-    try {
-      if (!isDisposed) {
+    if (disposeLock.tryLock()) {
+      try {
         playerPause();
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
       }
-    } catch (MediaException me) {
-      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
     }
   }
 
   @Override
   public void togglePause() {
-    try {
-      if (!isDisposed) {
+    if (disposeLock.tryLock()) {
+      try {
         if (getState() == PlayerStateEvent.PlayerState.PAUSED) {
           play();
         } else {
           pause();
         }
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
       }
-    } catch (MediaException me) {
-      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
     }
   }
 
   @Override
   public void stepForward() {
-    try {
-      if (!isDisposed) {
+    if (disposeLock.tryLock()) {
+      try {
         playerStepForward();
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally {
+        disposeLock.unlock();
       }
-    } catch (MediaException me) {
-      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
     }
   }
 
   @Override
   public void stepBackward() {
-    try {
-      if (!isDisposed) {
+    if (disposeLock.tryLock()) {
+      try {
         playerStepBackward();
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally {
+        disposeLock.unlock();
       }
-    } catch (MediaException me) {
-      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
     }
   }
 
   @Override
   public float getRate() {
-    try {
-      if (!isDisposed) {
+    if (disposeLock.tryLock()) {
+      try {
         return isSeekPlaybackEnabled() ? playBackRate : playerGetRate();
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally {
+        disposeLock.unlock();
       }
-    } catch (MediaException me) {
-      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
     }
     return 0;
   }
@@ -451,15 +467,17 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   // ***** Public properties
   @Override
   public void setRate(float rate) {
-    try {
-      if (!isDisposed) {
+    if (disposeLock.tryLock()) {
+      try {
         playerSetRate(rate);
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally {
+        disposeLock.unlock();
       }
-    } catch (MediaException me) {
-      sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      // Native players will throw an exception when rates are not supported
+      playBackRate = rate;
     }
-    // Native players will throw an exception when rates are not supported
-    playBackRate = rate;
   }
 
   @Override
@@ -469,7 +487,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         return playerGetPresentationTime();
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
+      } finally {
         disposeLock.unlock();
       }
     }
@@ -478,12 +496,12 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   @Override
   public double getFps() {
-    if (disposeLock.tryLock()){
+    if (disposeLock.tryLock()) {
       try {
         return playerGetFps();
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
+      } finally {
         disposeLock.unlock();
       }
     }
@@ -497,7 +515,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         return playerGetVolume();
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
+      } finally {
         disposeLock.unlock();
       }
     }
@@ -511,7 +529,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         playerSetVolume(Math.max(Math.min(vol, 1F), 0F));
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
+      } finally {
         disposeLock.unlock();
       }
     }
@@ -524,7 +542,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         return playerGetMute();
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
+      } finally {
         disposeLock.unlock();
       }
     }
@@ -541,7 +559,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         playerSetMute(enable);
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
+      } finally {
         disposeLock.unlock();
       }
     }
@@ -554,7 +572,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
         return playerGetBalance();
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
+      } finally {
         disposeLock.unlock();
       }
     }
@@ -731,43 +749,65 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   @Override
   public boolean isSeekPlaybackEnabled() {
-    if (!isDisposed) {
-      return playerIsSeekPlaybackEnabled();
+    if (disposeLock.tryLock()) {
+      try {
+        return playerIsSeekPlaybackEnabled();
+      } finally{
+        disposeLock.unlock();
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isRateSupported(float rate) {
+    if (disposeLock.tryLock()) {
+      try {
+        return playerRateIsSupported(rate);
+      } finally{
+        disposeLock.unlock();
+      }
     }
     return false;
   }
 
   @Override
   public void showSDLWindow() {
-    if (!isDisposed) {
+    if (disposeLock.tryLock()) {
       try {
         playerShowSDLWindow();
         setMute(false);
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
       }
     }
   }
 
   @Override
   public void hideSDLWindow() {
-    if (!isDisposed) {
+    if (disposeLock.tryLock()) {
       try {
         playerHideSDLWindow();
         setMute(true);
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
       }
     }
   }
 
   @Override
   public int getWindowHeight() {
-    if (!isDisposed) {
+    if (disposeLock.tryLock()) {
       try {
         return playerGetWindowSize()[1];
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
       }
     }
     return -1;
@@ -775,11 +815,13 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   @Override
   public int getWindowWidth() {
-    if (!isDisposed) {
+    if (disposeLock.tryLock()) {
       try {
         return playerGetWindowSize()[0];
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
       }
     }
     return -1;
@@ -787,11 +829,13 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   @Override
   public void setWindowSize(final int width, final int height) {
-    if (!isDisposed) {
+    if (disposeLock.tryLock()) {
       try {
         playerSetWindowSize(width, height);
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
       }
     }
   }

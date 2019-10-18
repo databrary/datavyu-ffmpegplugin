@@ -183,7 +183,7 @@ public:
   /* get the current master clock */
   void GetMasterClock(Clock **pp_clock) const;
 
-  void TogglePause(bool mute = false);
+  void TogglePauseAndMute(bool mute = false);
 
   inline double GetFrameRate() const {
     return p_image_stream_ ? frame_rate_ : 0;

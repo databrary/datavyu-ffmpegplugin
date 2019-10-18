@@ -169,7 +169,7 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
       frame_queue->Next();
       force_refresh_ = true;
 	  if (p_video_state_->IsStepping() && !IsPaused() && !IsStopped()) {
-		TogglePause();
+		TogglePauseUpdateStateAndMute();
 	  }
     }
   display:

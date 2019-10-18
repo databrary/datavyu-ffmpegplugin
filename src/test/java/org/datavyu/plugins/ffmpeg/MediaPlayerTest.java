@@ -93,9 +93,11 @@ public class MediaPlayerTest {
   protected void testStateTransition(Builder builder, MediaInformation mediaInformation) {
     logger.info("State transitions Test");
     MediaPlayerSync player = builder.build();
+    logger.info("Test Ready State");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.READY);
 
     // Test Seek When Player is Ready
+    logger.info("Test Ready State after a seek");
     player.getMediaPlayer().seek(0.0);
     sleep(200);
     assertTrue(player.getMediaPlayer().getState() == PlayerState.READY);
@@ -103,52 +105,62 @@ public class MediaPlayerTest {
     // Test READY -> PLAYING
     player.getMediaPlayer().play();
     sleep(200);
+    logger.info("Test State Transition READY -> PLAYING");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.PLAYING);
 
     // Test STALLED -> PLAYING
     player.getMediaPlayer().seek(10.0);
     sleep(200);
+    logger.info("Test State Transition STALLED -> PLAYING");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.PLAYING);
 
     // Test PLAYING -> STOPPED
     player.getMediaPlayer().stop();
     sleep(200);
+    logger.info("Test State Transition PLAYING -> STOPPED");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.STOPPED);
 
     // Test STALLED -> STOPPED
     player.getMediaPlayer().seek(10.0);
     sleep(200);
+    logger.info("Test State Transition STALLED -> STOPPED");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.STOPPED);
 
     // Test STOPPED -> PLAYING
     player.getMediaPlayer().play();
     sleep(200);
+    logger.info("Test State Transition STOPPED -> PLAYING");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.PLAYING);
 
     // Test PLAYING -> PAUSED
     player.getMediaPlayer().pause();
     sleep(200);
+    logger.info("Test State Transition PLAYING -> PAUSED");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.PAUSED);
 
     // Test STALLED -> PAUSED
     player.getMediaPlayer().seek(10.0);
     sleep(200);
+    logger.info("Test State Transition STALLED -> PAUSED");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.PAUSED);
 
     // Test PAUSED -> PLAYING
     player.getMediaPlayer().play();
     sleep(200);
+    logger.info("Test State Transition PAUSED -> PLAYING");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.PLAYING);
 
     // Test PAUSED -> STOPPED
     player.getMediaPlayer().pause();
     player.getMediaPlayer().stop();
     sleep(200);
+    logger.info("Test State Transition PAUSED -> STOPPED");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.STOPPED);
 
     // Test STOPPED -> PAUSED
     player.getMediaPlayer().pause();
     sleep(200);
+    logger.info("Test State Transition STOPPED -> PAUSED+-");
     assertTrue(player.getMediaPlayer().getState() == PlayerState.PAUSED);
   }
 
@@ -224,13 +236,13 @@ public class MediaPlayerTest {
     assertEquals(actualTime, seekTime, SEEK_TOLERANCE_IN_SECONDS);
 
     for (int i = 0; i < NUMBER_OF_STEPS; i++) {
-
-      double beforeStepTime = player.getMediaPlayer().getPresentationTime();
+      actualTime = player.getMediaPlayer().getPresentationTime();
       player.getMediaPlayer().stepForward();
       sleep(100);
-      actualTime = player.getMediaPlayer().getPresentationTime();
-      double expectedTime = beforeStepTime + delta;
-      assertEquals(actualTime, expectedTime, delta - 0.01);
+      double afterStepTime = player.getMediaPlayer().getPresentationTime();
+      double expectedTime = actualTime + delta;
+      logger.info("Step Forward - Actual: " + afterStepTime +  " - Expected: " + expectedTime + " - Diff: " + (Math.abs(expectedTime - afterStepTime)));
+      assertTrue(Math.abs(afterStepTime - expectedTime) < delta);
     }
   }
 
@@ -240,18 +252,19 @@ public class MediaPlayerTest {
     double startTime = mediaInformation.getStartTime();
     double duration = mediaInformation.getDuration();
     // TODO(fraudies): Need to fix seeking to end, then remove -1
-    double seekTime = startTime + duration - 1;
+    double seekTime = startTime + duration;
     double delta = 1.0 / mediaInformation.getFramesPerSecond();
 
     player.getMediaPlayer().seek(seekTime);
     sleep(300);
-    double expectedTime = player.getMediaPlayer().getPresentationTime();
-    // Assert.assertNotEquals(expectedTime, Double.NaN);
+    double actualTime = player.getMediaPlayer().getPresentationTime();
+    logger.info("Seek to the end of the stream - Time: " + actualTime + " - Duration: " +player.getMediaPlayer().getDuration());
+    assertEquals(actualTime, player.getMediaPlayer().getDuration(), SEEK_TOLERANCE_IN_SECONDS);
 
     player.getMediaPlayer().stepForward();
     sleep(100);
-    double actualTime = player.getMediaPlayer().getPresentationTime();
-    assertEquals(actualTime, expectedTime, delta);
+    actualTime = player.getMediaPlayer().getPresentationTime();
+    assertEquals(actualTime, player.getMediaPlayer().getDuration());
   }
 
   protected void testStepBackward(Builder builder, MediaInformation mediaInformation) {
@@ -273,12 +286,13 @@ public class MediaPlayerTest {
 
     for (int i = 0; i < NUMBER_OF_STEPS; i++) {
 
-      double beforeStepTime = player.getMediaPlayer().getPresentationTime();
+      actualTime = player.getMediaPlayer().getPresentationTime();
       player.getMediaPlayer().stepBackward();
       sleep(100);
-      actualTime = player.getMediaPlayer().getPresentationTime();
-      double expectedTime = beforeStepTime - delta;
-      assertEquals(actualTime, expectedTime, delta - 0.01);
+      double afterStepTime = player.getMediaPlayer().getPresentationTime();
+      double expectedTime = actualTime - delta;
+      logger.info("Step Backward - Actual: " + afterStepTime +  " - Expected: " + expectedTime + " - Diff: " + (Math.abs(expectedTime - afterStepTime)));
+      assertTrue(Math.abs(afterStepTime - expectedTime) < delta);
     }
   }
 
@@ -306,27 +320,25 @@ public class MediaPlayerTest {
               double stop = parameter.getKey().stop;
               double duration = stop - start;
               float rate = parameter.getValue();
+              if (player.getMediaPlayer().isRateSupported(rate)) {
+                logger.debug(
+                    "Start: "
+                        + start
+                        + " - Stop: "
+                        + stop
+                        + " - Duration: "
+                        + duration
+                        + " - Rate "
+                        + rate);
+                player.getMediaPlayer().setRate(rate);
 
-              logger.debug(
-                  "Start: "
-                      + start
-                      + " - Stop: "
-                      + stop
-                      + " - Duration: "
-                      + duration
-                      + " - Rate "
-                      + rate);
-              player.getMediaPlayer().setRate(rate);
+                double actualDuration = player.playTo(start, stop);
+                double expectedDuration = (1 / Math.abs(rate)) * duration;
+                logger.debug(
+                    "Duration: Actual = " + actualDuration + " - Expected = " + expectedDuration);
 
-              double actualDuration = player.playTo(start, stop);
-              double expectedDuration = (1 / Math.abs(rate)) * duration;
-              logger.debug(
-                  "Duration: Actual = "
-                      + actualDuration
-                      + " - Expected = "
-                      + expectedDuration);
-
-              assertEquals(actualDuration, expectedDuration, RATES_TOLERANCE_IN_SECONDS);
+                assertEquals(actualDuration, expectedDuration, RATES_TOLERANCE_IN_SECONDS);
+              }
             });
   }
 
