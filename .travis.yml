@@ -24,4 +24,4 @@ install:
   - mvn -version
 
 script:
-  - mvn -T 4 -Prelease,mac -Dmaven.test.skip=true clean package
+  - mvn -T 4 -Prelease,mac clean package
