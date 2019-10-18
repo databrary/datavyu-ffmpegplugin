@@ -174,12 +174,6 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double *pdStreamTime) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  // The master clock (Audio Clock by default) could return NaN and affect
-  // performance while seeking. However returning the external clock should
-  // resolve this issue (Note that the timestamp return by the external is not
-  // as accurate as the audio clock  (Master))
-  //*pdStreamTime = pSdlPlayback->get_master_clock();
-
   *pdStreamTime = p_sdl_playback_->GetTime();
 
   return ERROR_NONE; // no error

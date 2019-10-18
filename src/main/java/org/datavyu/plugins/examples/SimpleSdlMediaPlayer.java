@@ -2,10 +2,7 @@ package org.datavyu.plugins.examples;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.MediaErrorListener;
 import org.datavyu.plugins.MediaPlayer;
-import org.datavyu.plugins.NativeMediaPlayer;
-import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
 import java.io.File;

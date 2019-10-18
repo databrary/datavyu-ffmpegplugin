@@ -19,7 +19,7 @@ public:
   virtual void TogglePauseAndStopStep();
 
   inline virtual void Seek(int64_t time, int64_t difference,
-                           int seek_flags) {
+                           int seek_flags = VideoState::kSeekPreciseFlag) {
 	if (update_player_state_callbacks[PlayerState::State::Stalled]) {
 	  update_player_state_callbacks[PlayerState::State::Stalled]();
 	}
@@ -56,7 +56,7 @@ public:
   inline int64_t GetSeekTime() const { return p_video_state_->GetSeekTime(); }
 
   inline void StepToNextFrame() {
-    // if the stream is paused unpause it, then step
+    // if the stream is paused/stopped unpause it, then step
     if (IsPaused() || IsStopped()) {
 	  // Mute player 
       TogglePause(true, true);

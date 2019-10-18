@@ -107,7 +107,7 @@ public:
   } // current time in sec
   inline void ToggleMute() { is_muted_ = !is_muted_; }
   void SetPts(double pts, int serial);
-  void Seek(int64_t time, int64_t distance, int seek_flags);
+  void Seek(int64_t time, int64_t distance, int seek_flags = VideoState::kSeekPreciseFlag);
   void SeekToFrame(int frame_nb);
 
   inline bool IsPaused() const { return is_paused_; }

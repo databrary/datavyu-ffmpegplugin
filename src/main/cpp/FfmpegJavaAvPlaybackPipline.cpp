@@ -173,11 +173,6 @@ uint32_t FfmpegJavaAvPlaybackPipline::GetStreamTime(double *p_stream_time) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  // The master clock (Audio Clock by default) could return NaN and affect
-  // performance while seeking. However returning the external clock should
-  // resolve this issue (Note that the timestamp return by the external is not
-  // as accurate as the audio clock  (Master))
-
   *p_stream_time = p_java_playback_->GetTime();
 
   return ERROR_NONE;

@@ -142,19 +142,19 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
 #ifdef __APPLE__
     dispatch_sync(dispatch_get_main_queue(), ^{
       Uint32 flags = SDL_GetWindowFlags(p_window_);
-      av_log(NULL, AV_LOG_INFO, "SDL Quit Subsytem for window %d \n",
+      av_log(NULL, AV_LOG_DEBUG, "SDL Quit Subsytem for window %d \n",
              window_id_);
       SDL_QuitSubSystem(flags);
       SDL_DestroyWindow(p_window_);
     });
 #elif _WIN32
     Uint32 flags = SDL_GetWindowFlags(p_window_);
-    av_log(NULL, AV_LOG_INFO, "SDL Quit Subsytem for window %d \n", window_id_);
+    av_log(NULL, AV_LOG_DEBUG, "SDL Quit Subsytem for window %d \n", window_id_);
     SDL_QuitSubSystem(flags);
     SDL_DestroyWindow(p_window_);
 #endif
     kWindowCount--;
-    av_log(NULL, AV_LOG_INFO, "Remaining SDL Window %d \n", kWindowCount);
+    av_log(NULL, AV_LOG_DEBUG, "Remaining SDL Window %d \n", kWindowCount);
   }
 
   avformat_network_deinit();
@@ -164,7 +164,7 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   }
 
   if (kWindowCount <= 0) {
-    av_log(NULL, AV_LOG_INFO, "SDL Quit\n");
+    av_log(NULL, AV_LOG_DEBUG, "SDL Quit\n");
     SDL_Quit();
   }
 
@@ -640,7 +640,7 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
       }
 
       queue->Next();
-      force_refresh_ = 1;
+      force_refresh_ = true;
       if (p_video_state_->IsStepping() && !IsPaused() && !IsStopped()) {
 		// Stepping is done, keep player muted
         TogglePause(true, true);
@@ -659,7 +659,7 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
 #endif
     }
   }
-  force_refresh_ = 0; // only reset force refresh when displayed
+  force_refresh_ = false; // only reset force refresh when displayed
   if (kEnableShowStatus) {
     static int64_t last_time;
     int64_t cur_time;
@@ -901,7 +901,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         }
         break;
       case SDLK_KP_MINUS:
-        if (p_video_state->SetSpeed(rate / 2)) {
+        if (p_player->SetSpeed(rate / 2)) {
           av_log(NULL, AV_LOG_ERROR, "Rate %f unavailable\n", rate / 2);
         } else {
           rate /= 2;
@@ -942,7 +942,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
             incr *= 180000.0;
           }
           pos += incr;
-          p_video_state->Seek(pos, incr, true);
+		  p_player->Seek(pos, incr);
         } else {
           pos = p_master_clock->GetTime();
           if (isnan(pos)) {
@@ -952,9 +952,8 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
           if (p_format_context->start_time != AV_NOPTS_VALUE &&
               pos < p_format_context->start_time / (double)AV_TIME_BASE)
             pos = p_format_context->start_time / (double)AV_TIME_BASE;
-          p_video_state->Seek((int64_t)(pos * AV_TIME_BASE),
-                              (int64_t)(incr * AV_TIME_BASE),
-                              VideoState::kSeekPreciseFlag);
+		  p_player->Seek((int64_t)(pos * AV_TIME_BASE),
+                              (int64_t)(incr * AV_TIME_BASE));
         }
         break;
       default:
@@ -987,7 +986,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
       }
       if (VideoState::kEnableSeekByBytes || p_format_context->duration <= 0) {
         uint64_t size = avio_size(p_format_context->pb);
-        p_video_state->Seek(size * x / width, 0, VideoState::kSeekFastFlag);
+		p_player->Seek(size * x / width, 0);
       } else {
         int64_t ts;
         int ns, hh, mm, ss;
@@ -1009,7 +1008,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         if (p_format_context->start_time != AV_NOPTS_VALUE) {
           ts += p_format_context->start_time;
         }
-        p_video_state->Seek(ts, 0, VideoState::kSeekFastFlag);
+		p_player->Seek(ts, 0);
       }
       break;
     case SDL_WINDOWEVENT:

@@ -593,7 +593,7 @@ int VideoState::DecodeAudioFrame() {
 VideoState::VideoState(int audio_buffer_size)
     : abort_request_(false), is_paused_(true),
       queue_attachments_request_(false), seek_done_(false),
-      seek_request_(false), seek_flags_(0), seek_time_(0), seek_frame_(0),
+      seek_request_(false), seek_flags_(AVSEEK_FLAG_BACKWARD), seek_time_(0), seek_frame_(0),
       seek_distance_(0), sync_type_(AV_SYNC_AUDIO_MASTER), frame_rate_(0.0),
       image_clock_last_set_time_(0), image_stream_index_(0),
       max_frame_duration_(0), end_of_file_(false), duration_(0),
@@ -706,26 +706,38 @@ VideoState::~VideoState() {
   if (p_format_context) {
     avformat_close_input(&p_format_context);
   }
+
   av_free(filename_);
   // End stream close
 
   // From close method
-  if (p_image_packet_queue_)
-    delete p_image_packet_queue_;
-  if (p_audio_packet_queue_)
-    delete p_audio_packet_queue_;
+  if (p_image_packet_queue_) {
+	delete p_image_packet_queue_;
+  }
 
-  if (p_image_frame_queue_)
-    delete p_image_frame_queue_;
-  if (p_audio_frame_queue_)
-    delete p_audio_frame_queue_;
+  if (p_audio_packet_queue_) {
+	delete p_audio_packet_queue_;
+  }
 
-  if (p_image_clock_)
-    delete p_image_clock_;
-  if (p_audio_clock_)
-    delete p_audio_clock_;
-  if (p_external_clock_)
-    delete p_external_clock_;
+  if (p_image_frame_queue_) {
+	delete p_image_frame_queue_;
+  }
+
+  if (p_audio_frame_queue_) {
+	delete p_audio_frame_queue_;
+  }
+
+  if (p_image_clock_) {
+	  delete p_image_clock_;
+  }
+
+  if (p_audio_clock_) {
+	delete p_audio_clock_;
+  }
+
+  if (p_external_clock_) {
+	delete p_external_clock_;
+  }
 }
 
 //* Gets the stream from the disk or the network */
@@ -823,7 +835,7 @@ int VideoState::ReadPacketsToQueues() {
               p_image_packet_queue_->GetSerial() &&
           p_image_frame_queue_->GetNumToDisplay() == 0))) {
       if (num_loop_ != 1 && (!num_loop_ || --num_loop_)) {
-        Seek(GetStartTime(), 0, false);
+        Seek(GetStartTime(), 0);
       }
     }
     ret = av_read_frame(p_format_context, pkt);
