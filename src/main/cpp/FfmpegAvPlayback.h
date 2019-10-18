@@ -78,7 +78,7 @@ public:
 
   inline void StepToNextFrame() {
     // if the stream is paused/stopped unpause it, then step
-    if (IsPaused() || IsStopped() || IsReady()) {
+    if ((IsPaused() || IsStopped() || IsReady()) && !is_fake_playback_) {
       // Mute player, keep the same statebecause the display loop will stop the
       // and keep the same state
       TogglePauseUpdateStateAndMute(false, true);
@@ -97,7 +97,9 @@ public:
     double time = GetTime();
     if (!isnan(time) && time > 0) {
       double difference = -1.0 / GetFrameRate();
-	  av_log(NULL, AV_LOG_INFO, "Step backward from %2.3f with a %2.3f difference\n", time, difference);
+      av_log(NULL, AV_LOG_INFO,
+             "Step backward from %2.3f with a %2.3f difference\n", time,
+             difference);
       Seek((time + difference), VideoState::kSeekPreciseFlag);
     }
   }
@@ -121,6 +123,7 @@ protected:
 
   // Force a refresh of the display
   bool force_refresh_;
+  bool is_fake_playback_; // When true Video state will not step after a seek
 
   // Disable the display
   bool display_disabled_;
@@ -136,7 +139,8 @@ protected:
   // Enable the showing of the status
   static bool kEnableShowStatus;
 
-  void TogglePauseUpdateStateAndMute(bool update_state = true, bool mute = false);
+  void TogglePauseUpdateStateAndMute(bool update_state = true,
+                                     bool mute = false);
 
   inline void SetForceReferesh(bool refresh) { force_refresh_ = refresh; }
   double ComputeFrameDuration(Frame *vp, Frame *nextvp,

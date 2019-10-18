@@ -597,7 +597,7 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
       }
 
       // Force refresh overrides paused
-      if (IsPaused() || IsStopped() || IsReady()) {
+      if (IsPaused() || IsStopped() || IsReady() || is_fake_playback_) {
         goto display;
       }
 

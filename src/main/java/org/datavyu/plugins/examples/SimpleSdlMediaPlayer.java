@@ -28,13 +28,5 @@ public class SimpleSdlMediaPlayer {
     mediaPlayer.init();
     // Open a JFrame to control the media player through key commands
     new JMediaPlayerControlFrame(mediaPlayer);
-
-//    new Thread(
-//        () -> {
-//          while (true) {
-//            System.out.println("Player Time " + mediaPlayer.getPresentationTime());
-//          }
-//        })
-//        .start();
   }
 }

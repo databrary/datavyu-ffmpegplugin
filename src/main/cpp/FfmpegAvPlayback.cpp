@@ -3,58 +3,59 @@
 
 bool FfmpegAvPlayback::kEnableShowStatus = true;
 
-void FfmpegAvPlayback::TogglePauseUpdateStateAndMute(bool update_state, bool mute) {
+void FfmpegAvPlayback::TogglePauseUpdateStateAndMute(bool update_state,
+                                                     bool mute) {
   p_video_state_->TogglePauseAndMute(mute);
   if (update_state) {
-	if (p_video_state_->IsPaused()) {
-	  SetPaused();
-	} else {
-	  SetPlaying();
-	}
+    if (p_video_state_->IsPaused()) {
+      SetPaused();
+    } else {
+      SetPlaying();
+    }
   }
 }
 
 FfmpegAvPlayback::FfmpegAvPlayback()
-    : p_video_state_(nullptr), display_disabled_(false),
-	  frame_width_(0), frame_height_(0),
-      force_refresh_(true), num_frame_drops_late_(0) {}
+    : p_video_state_(nullptr), display_disabled_(false), frame_width_(0),
+      frame_height_(0), force_refresh_(true), num_frame_drops_late_(0) {}
 
-int FfmpegAvPlayback::OpenVideo(const char *filename, AVInputFormat *p_input_format,
+int FfmpegAvPlayback::OpenVideo(const char *filename,
+                                AVInputFormat *p_input_format,
                                 int audio_buffer_size) {
   return VideoState::OpenStream(&p_video_state_, filename, p_input_format,
                                 audio_buffer_size);
 }
 
 void FfmpegAvPlayback::SetUpdatePlayerStateCallbackFunction(
-	PlayerState::State state, const std::function<void()> &func) {
+    PlayerState::State state, const std::function<void()> &func) {
   update_player_state_callbacks[state] = func;
   p_video_state_->SetUpdatePlayerStateCallbackFunction(state, func);
 }
 
 void FfmpegAvPlayback::Play() {
   if (IsPaused() || IsStopped() || IsReady()) {
-	TogglePauseAndStopStep();
+    TogglePauseAndStopStep();
   }
 }
 
 void FfmpegAvPlayback::Pause() {
   if (!IsPaused()) {
-	if (IsStopped()) {
-	  SetPaused();
-	} else {
-	  TogglePauseAndStopStep();
-	}
+    if (IsStopped()) {
+      SetPaused();
+    } else {
+      TogglePauseAndStopStep();
+    }
   }
 }
 
 // Stop and put the playback speed to 0x
 void FfmpegAvPlayback::Stop() {
   if (!IsStopped()) {
-	if (!IsPaused()) {
-	  TogglePauseAndStopStep();
-	}
-	SetStopped();
-	SetSpeed(1);
+    if (!IsPaused()) {
+      TogglePauseAndStopStep();
+    }
+    SetStopped();
+    SetSpeed(1);
   }
 }
 
@@ -66,9 +67,8 @@ void FfmpegAvPlayback::TogglePauseAndStopStep() {
 
 int FfmpegAvPlayback::SetSpeed(double speed) {
   int err = ERROR_NONE;
-  if (speed < 0) {
-	err = ERROR_FFMPEG_FILTER_NOT_FOUND; // no filter available for backward playback
-  } else if (speed < std::numeric_limits<double>::epsilon()) {
+  is_fake_playback_ = speed < 0;
+  if (speed < std::numeric_limits<double>::epsilon()) {
     Pause();
   } else {
     err = p_video_state_->SetSpeed(speed);
