@@ -3,21 +3,10 @@
 
 bool FfmpegAvPlayback::kEnableShowStatus = true;
 
-void FfmpegAvPlayback::TogglePauseUpdateStateAndMute(bool update_state,
-                                                     bool mute) {
-  p_video_state_->TogglePauseAndMute(mute);
-  if (update_state) {
-    if (p_video_state_->IsPaused()) {
-      SetPaused();
-    } else {
-      SetPlaying();
-    }
-  }
-}
-
 FfmpegAvPlayback::FfmpegAvPlayback()
     : p_video_state_(nullptr), display_disabled_(false), frame_width_(0),
-      frame_height_(0), force_refresh_(true), num_frame_drops_late_(0) {}
+      frame_height_(0), is_fake_playback_(false), force_refresh_(true),
+      num_frame_drops_late_(0) {}
 
 int FfmpegAvPlayback::OpenVideo(const char *filename,
                                 AVInputFormat *p_input_format,
@@ -34,43 +23,38 @@ void FfmpegAvPlayback::SetUpdatePlayerStateCallbackFunction(
 
 void FfmpegAvPlayback::Play() {
   if (IsPaused() || IsStopped() || IsReady()) {
-    TogglePauseAndStopStep();
+    SetPlaying();
   }
 }
 
 void FfmpegAvPlayback::Pause() {
   if (!IsPaused() && !IsReady()) {
-    if (IsStopped()) {
-      SetPaused();
-    } else {
-      TogglePauseAndStopStep();
-    }
+    SetPaused();
   }
 }
 
 // Stop and put the playback speed to 0x
 void FfmpegAvPlayback::Stop() {
   if (!IsStopped() && !IsReady()) {
-    if (!IsPaused()) {
-      TogglePauseAndStopStep();
-    }
     SetStopped();
-    SetSpeed(1);
   }
 }
 
 // Pause and keep the playback speed
-void FfmpegAvPlayback::TogglePauseAndStopStep() {
-  TogglePauseUpdateStateAndMute();
+void FfmpegAvPlayback::TogglePauseAndStopStep(bool mute) {
+  p_video_state_->TogglePauseAndMute(mute);
   p_video_state_->SetStepping(false);
 }
 
 int FfmpegAvPlayback::SetSpeed(double speed) {
   int err = ERROR_NONE;
-  is_fake_playback_ = speed < 0;
-  if (speed < std::numeric_limits<double>::epsilon()) {
-    Pause();
+  if (speed <= 0) {
+    if ((!IsPaused() || !IsStopped()) && speed == 0) {
+      Pause();
+    }
+    is_fake_playback_ = true;
   } else {
+    is_fake_playback_ = false;
     err = p_video_state_->SetSpeed(speed);
   }
   return err ? ERROR_FFMPEG_FILTER_NOT_FOUND : ERROR_NONE;

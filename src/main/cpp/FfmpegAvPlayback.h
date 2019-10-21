@@ -16,7 +16,6 @@ public:
   virtual void Play();
   virtual void Stop();
   virtual void Pause();
-  virtual void TogglePauseAndStopStep();
 
   inline virtual void Seek(double dSeekTime,
                            int seek_flags = VideoState::kSeekPreciseFlag) {
@@ -78,10 +77,10 @@ public:
 
   inline void StepToNextFrame() {
     // if the stream is paused/stopped unpause it, then step
-    if ((IsPaused() || IsStopped() || IsReady()) && !is_fake_playback_) {
+    if (IsPaused() || IsStopped() || IsReady() ) {
       // Mute player, keep the same statebecause the display loop will stop the
       // and keep the same state
-      TogglePauseUpdateStateAndMute(false, true);
+      SetPlaying(false, true);
     }
 
     p_video_state_->SetStepping(true);
@@ -89,8 +88,8 @@ public:
 
   inline void StepToPreviousFrame() {
 
-    if (!IsPaused() && !IsStopped() && !IsReady()) {
-      TogglePauseUpdateStateAndMute(true, true);
+    if (IsPlaying()) {
+      SetPaused(true, false);
     }
 
     // Get the current time and seek if it time is not NaN and equal 0
@@ -123,7 +122,8 @@ protected:
 
   // Force a refresh of the display
   bool force_refresh_;
-  bool is_fake_playback_; // When true Video state will not step after a seek
+  std::atomic<bool>
+      is_fake_playback_; // When true Video state will not step after a seek
 
   // Disable the display
   bool display_disabled_;
@@ -139,8 +139,7 @@ protected:
   // Enable the showing of the status
   static bool kEnableShowStatus;
 
-  void TogglePauseUpdateStateAndMute(bool update_state = true,
-                                     bool mute = false);
+  virtual void TogglePauseAndStopStep(bool mute = false);
 
   inline void SetForceReferesh(bool refresh) { force_refresh_ = refresh; }
   double ComputeFrameDuration(Frame *vp, Frame *nextvp,
@@ -163,10 +162,14 @@ protected:
     return p_video_state_->IsPaused();
   }
 
-  inline void SetPaused() {
-    if (update_player_state_callbacks[PlayerState::State::Paused] &&
-        p_video_state_->IsPaused()) {
-      update_player_state_callbacks[PlayerState::State::Paused]();
+  inline void SetPaused(bool update_state = true, bool mute = false) {
+    if (update_player_state_callbacks[PlayerState::State::Paused]) {
+      if (!IsStopped()) {
+        TogglePauseAndStopStep();
+      }
+      if (update_state) {
+        update_player_state_callbacks[PlayerState::State::Paused]();
+      }
     }
   }
 
@@ -178,10 +181,15 @@ protected:
     return false;
   }
 
-  inline void SetStopped() {
-    if (update_player_state_callbacks[PlayerState::State::Stopped] &&
-        p_video_state_->IsPaused()) {
-      update_player_state_callbacks[PlayerState::State::Stopped]();
+  inline void SetStopped(bool update_state = true, bool mute = false) {
+    if (update_player_state_callbacks[PlayerState::State::Stopped]) {
+      if (!IsPaused()) {
+        TogglePauseAndStopStep(mute);
+      }
+      SetSpeed(1);
+      if (update_state) {
+        update_player_state_callbacks[PlayerState::State::Stopped]();
+      }
     }
   }
 
@@ -193,10 +201,12 @@ protected:
     return !p_video_state_->IsPaused();
   }
 
-  inline void SetPlaying() {
-    if (update_player_state_callbacks[PlayerState::State::Playing] &&
-        !p_video_state_->IsPaused()) {
-      update_player_state_callbacks[PlayerState::State::Playing]();
+  inline void SetPlaying(bool update_state = true, bool mute = false) {
+    if (update_player_state_callbacks[PlayerState::State::Playing]) {
+      TogglePauseAndStopStep(mute);
+      if (update_state) {
+        update_player_state_callbacks[PlayerState::State::Playing]();
+      }
     }
   }
 };
