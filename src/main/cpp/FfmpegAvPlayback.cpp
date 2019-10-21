@@ -39,7 +39,7 @@ void FfmpegAvPlayback::Play() {
 }
 
 void FfmpegAvPlayback::Pause() {
-  if (!IsPaused()) {
+  if (!IsPaused() && !IsReady()) {
     if (IsStopped()) {
       SetPaused();
     } else {
@@ -50,7 +50,7 @@ void FfmpegAvPlayback::Pause() {
 
 // Stop and put the playback speed to 0x
 void FfmpegAvPlayback::Stop() {
-  if (!IsStopped()) {
+  if (!IsStopped() && !IsReady()) {
     if (!IsPaused()) {
       TogglePauseAndStopStep();
     }
