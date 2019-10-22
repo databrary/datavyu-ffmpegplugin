@@ -41,5 +41,5 @@ before_build:
 build_script:
   - mvn -T 4 -Prelease,win64 clean compile
 
-test_script:
-  - mvn -T 4 -Prelease,win64 test
+#test_script:
+#  - mvn -T 4 -Prelease,win64 test
