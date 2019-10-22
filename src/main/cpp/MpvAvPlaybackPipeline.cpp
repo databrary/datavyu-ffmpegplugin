@@ -14,7 +14,7 @@ uint32_t MpvAvPlaybackPipeline::Init(const char *input_file) {
     return err;
   }
 
-  UpdatePlayerState(Ready);
+  UpdatePlayerState(PlayerState::State::Ready);
 
   return ERROR_NONE;
 }
@@ -41,7 +41,7 @@ uint32_t MpvAvPlaybackPipeline::Play() {
     return ERROR_FFMPEG_UNKNOWN;
   }
 
-  UpdatePlayerState(Playing);
+  UpdatePlayerState(PlayerState::State::Playing);
 
   return ERROR_NONE; // no error
 }
@@ -56,7 +56,7 @@ uint32_t MpvAvPlaybackPipeline::Stop() {
     return ERROR_FFMPEG_UNKNOWN;
   }
 
-  UpdatePlayerState(Stopped);
+  UpdatePlayerState(PlayerState::State::Stopped);
   return ERROR_NONE; // no error
 }
 
@@ -69,7 +69,7 @@ uint32_t MpvAvPlaybackPipeline::Pause() {
     return err;
   }
 
-  UpdatePlayerState(Paused);
+  UpdatePlayerState(PlayerState::State::Paused);
 
   return ERROR_NONE; // no error
 }
@@ -84,7 +84,7 @@ uint32_t MpvAvPlaybackPipeline::StepForward() {
     return err;
   }
 
-  UpdatePlayerState(Paused);
+  UpdatePlayerState(PlayerState::State::Paused);
   return ERROR_NONE;
 }
 
@@ -98,13 +98,13 @@ uint32_t MpvAvPlaybackPipeline::StepBackward() {
     return err;
   }
 
-  UpdatePlayerState(Paused);
+  UpdatePlayerState(PlayerState::State::Paused);
 
   return ERROR_NONE;
 }
 
 uint32_t MpvAvPlaybackPipeline::Finish() {
-  UpdatePlayerState(Finished);
+  UpdatePlayerState(PlayerState::State::Finished);
 
   return ERROR_NONE;
 }

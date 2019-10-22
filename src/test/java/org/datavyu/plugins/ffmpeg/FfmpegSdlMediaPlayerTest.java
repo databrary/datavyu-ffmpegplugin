@@ -57,9 +57,21 @@ public class FfmpegSdlMediaPlayerTest extends MediaPlayerTest {
   }
 
   @Test(dataProvider = "shortMedia")
-  public void testStateTransition(Builder builder, MediaInformation mediaInformation) {
-    logger.debug("******** Test State Transitions ********");
-    super.testStateTransition(builder, mediaInformation);
+  public void testPlayingState(Builder builder, MediaInformation mediaInformation) {
+    logger.debug("******** Test Playing State ********");
+    super.testPlayingState(builder, mediaInformation);
+  }
+
+  @Test(dataProvider = "shortMedia")
+  public void testStoppedState(Builder builder, MediaInformation mediaInformation) {
+    logger.debug("******** Test Stopped State ********");
+    super.testStoppedState(builder, mediaInformation);
+  }
+
+  @Test(dataProvider = "shortMedia")
+  public void testPausedState(Builder builder, MediaInformation mediaInformation) {
+    logger.debug("******** Test Paused State ********");
+    super.testPausedState(builder, mediaInformation);
   }
 
   @Test(dataProvider = "shortMedia")

@@ -112,35 +112,35 @@ bool CJavaPlayerEventDispatcher::SendPlayerStateEvent(int newState,
   long newJavaState;
 
   switch (newState) {
-  case CPipeline::Unknown:
+  case PlayerState::State::Unknown:
     newJavaState =
         org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerUnknown;
     break;
-  case CPipeline::Ready:
+  case PlayerState::State::Ready:
     newJavaState =
         org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerReady;
     break;
-  case CPipeline::Playing:
+  case PlayerState::State::Playing:
     newJavaState =
         org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerPlaying;
     break;
-  case CPipeline::Paused:
+  case PlayerState::State::Paused:
     newJavaState =
         org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerPaused;
     break;
-  case CPipeline::Stopped:
+  case PlayerState::State::Stopped:
     newJavaState =
         org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerStopped;
     break;
-  case CPipeline::Stalled:
+  case PlayerState::State::Stalled:
     newJavaState =
         org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerStalled;
     break;
-  case CPipeline::Finished:
+  case PlayerState::State::Finished:
     newJavaState =
         org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerFinished;
     break;
-  case CPipeline::Error:
+  case PlayerState::State::Error:
     newJavaState =
         org_datavyu_plugins_ffmpeg_NativeMediaPlayer_eventPlayerError;
     break;

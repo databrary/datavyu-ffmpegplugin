@@ -34,15 +34,7 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
   protected void playerSeek(double streamTime) throws MediaException {
     // In most cases seek accurate, with the exception of large backward playback rates
     int seek_flag = (!isStartTimeUpdated && getRate() < -1) ? SEEK_FAST_FLAG : SEEK_ACCURATE_FLAG;
-    // Mute player when seeking and not playing
-    boolean wasMute = getMute();
-    if (!getMute() && getState() != PlayerState.PLAYING) {
-      setMute(true);
-    }
     playerSeek(streamTime, seek_flag);
-    if (!wasMute) {
-      setMute(false);
-    }
   }
 
   @Override
@@ -63,7 +55,12 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected boolean playerIsSeekPlaybackEnabled() {
-    return playBackRate < 0F ;
+    return playBackRate < 0F || playBackRate > 32F;
+  }
+
+  @Override
+  protected boolean playerRateIsSupported(final float rate) {
+    return 0F <= rate && rate <= 4F;
   }
 
   protected abstract void playerSeek(double streamTime, int seek_flag) throws MediaException;

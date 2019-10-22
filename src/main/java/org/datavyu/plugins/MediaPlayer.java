@@ -204,6 +204,7 @@ public interface MediaPlayer {
    * Seeks playback to the specified time. The state of the player
    * is unchanged. A negative value will be clamped
    * to zero, and a positive value to the duration, if known.
+   * The seek is precise only when player is stopped/paused or rate is negative
    *
    * @param streamTime The time in seconds to which to seek.
    */
@@ -244,14 +245,22 @@ public interface MediaPlayer {
    * be unusable after this method is invoked.
    */
   void dispose();
+
   /**
    * Check if the current rate is supported natively by the player, if not,
    * the plugin will pause when the speed is not supported and the playback
-   * will will performed through seeks requested by an external clock3
+   * will performed through seeks requested by an external clock
    *
    * @return true if the rate is supported
    */
   boolean isSeekPlaybackEnabled();
+
+  /**
+   * Return true if the Media player supports a specific playback speed
+   * @param rate playback speed
+   * @return True or False
+   */
+  boolean isRateSupported(float rate);
 
   /**
    * Expose SDL player window, this method is available only for the SDL player, will

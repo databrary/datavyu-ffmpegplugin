@@ -230,6 +230,11 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
+  protected boolean playerRateIsSupported(final float rate) {
+    return 0F <= rate && rate <= 8F;
+  }
+
+  @Override
   public int getImageWidth() {
     return (int) mediaPlayer.getMovieWidth(id);
   }

@@ -77,8 +77,6 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
-
-    playerSetRate(1.0F);
   }
 
   @Override

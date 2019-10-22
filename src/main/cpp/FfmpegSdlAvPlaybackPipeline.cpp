@@ -29,29 +29,33 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Init(const char *input_file) {
   }
 
   // Assign the callback functions
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_UNKNOWN,
-      [this] { this->UpdatePlayerState(Unknown); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_READY,
-      [this] { this->UpdatePlayerState(Ready); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_PLAYING,
-      [this] { this->UpdatePlayerState(Playing); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_PAUSED,
-      [this] { this->UpdatePlayerState(Paused); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_STOPPED,
-      [this] { this->UpdatePlayerState(Stopped); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_STALLED,
-      [this] { this->UpdatePlayerState(Stalled); });
-  p_sdl_playback_->SetPlayerStateCallbackFunction(
-      VideoState::PlayerStateCallback::TO_FINISHED,
-      [this] { this->UpdatePlayerState(Finished); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+      PlayerState::State::Unknown,
+      [this] { this->UpdatePlayerState(PlayerState::State::Unknown); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+      PlayerState::State::Ready,
+      [this] { this->UpdatePlayerState(PlayerState::State::Ready); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+      PlayerState::State::Playing,
+      [this] { this->UpdatePlayerState(PlayerState::State::Playing); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+      PlayerState::State::Paused,
+      [this] { this->UpdatePlayerState(PlayerState::State::Paused); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+      PlayerState::State::Stopped,
+      [this] { this->UpdatePlayerState(PlayerState::State::Stopped); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+      PlayerState::State::Stalled,
+      [this] { this->UpdatePlayerState(PlayerState::State::Stalled); });
+  p_sdl_playback_->SetUpdatePlayerStateCallbackFunction(
+      PlayerState::State::Finished,
+      [this] { this->UpdatePlayerState(PlayerState::State::Finished); });
   p_sdl_playback_->SetKeyEventKeyDispatcherCallback(
       [this](int sdlkeyCode) { this->MapSdlToJavaKey(sdlkeyCode); });
+  p_sdl_playback_->SetPendingPlayerStateCallbackFunction(
+      [this] { this->SetPendingPlayerState(); });
+  p_sdl_playback_->SetPlayerStateCallbackFunction(
+      [this](PlayerState::State state) { return this->IsPlayerState(state); });
 
   err = p_sdl_playback_->InitializeAndStartDisplayLoop();
   if (err) {
@@ -70,9 +74,8 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Play() {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  p_sdl_playback_->Play();
 
-  UpdatePlayerState(Playing);
+  p_sdl_playback_->Play();
 
   return ERROR_NONE; // no error
 }
@@ -81,9 +84,8 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Stop() {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  p_sdl_playback_->Stop();
 
-  UpdatePlayerState(Stopped);
+  p_sdl_playback_->Stop();
 
   return ERROR_NONE; // no error
 }
@@ -95,14 +97,13 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Pause() {
 
   p_sdl_playback_->Pause();
 
-  UpdatePlayerState(Paused);
-
   return ERROR_NONE; // no error
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::StepForward() {
-  if (p_sdl_playback_ == nullptr)
+  if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
+  }
 
   p_sdl_playback_->StepToNextFrame();
 
@@ -110,8 +111,9 @@ uint32_t FfmpegSdlAvPlaybackPipeline::StepForward() {
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::StepBackward() {
-  if (p_sdl_playback_ == nullptr)
+  if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
+  }
 
   p_sdl_playback_->StepToPreviousFrame();
 
@@ -128,26 +130,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  double pos = p_sdl_playback_->GetTime();
-
-  if (isnan(pos)) {
-    pos = (double)p_sdl_playback_->GetSeekTime() / (double)AV_TIME_BASE;
-  }
-
-  if (p_sdl_playback_->GetStartTime() != AV_NOPTS_VALUE &&
-      dSeekTime <= p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE) {
-    dSeekTime = p_sdl_playback_->GetStartTime() / (double)AV_TIME_BASE;
-  } else if (p_sdl_playback_->GetDuration() != AV_NOPTS_VALUE &&
-             dSeekTime >= p_sdl_playback_->GetDuration()) {
-    // FIXME Remove the 0.1 sec difference when seeking to end of stream is
-    // fixed
-    dSeekTime = p_sdl_playback_->GetDuration() * (double)AV_TIME_BASE - 0.1;
-  }
-
-  double incr = dSeekTime - pos;
-
-  p_sdl_playback_->Seek((int64_t)(dSeekTime * AV_TIME_BASE),
-                        (int64_t)(incr * AV_TIME_BASE), seek_flags);
+  p_sdl_playback_->Seek(dSeekTime, seek_flags);
 
   return ERROR_NONE; // no error
 }
@@ -166,6 +149,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetDuration(double *pdDuration) {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
+
   *pdDuration = p_sdl_playback_->GetDuration();
 
   return ERROR_NONE; // no error
@@ -175,12 +159,6 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetStreamTime(double *pdStreamTime) {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-
-  // The master clock (Audio Clock by default) could return NaN and affect
-  // performance while seeking. However returning the external clock should
-  // resolve this issue (Note that the timestamp return by the external is not
-  // as accurate as the audio clock  (Master))
-  //*pdStreamTime = pSdlPlayback->get_master_clock();
 
   *pdStreamTime = p_sdl_playback_->GetTime();
 
@@ -219,7 +197,9 @@ uint32_t FfmpegSdlAvPlaybackPipeline::SetVolume(float fVolume) {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
+
   p_sdl_playback_->SetVolume(fVolume * SDL_MIX_MAXVOLUME);
+
   return ERROR_NONE;
 }
 
@@ -227,7 +207,9 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetVolume(float *pfVolume) {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
+
   *pfVolume = p_sdl_playback_->GetVolume() / (double)SDL_MIX_MAXVOLUME;
+
   return ERROR_NONE;
 }
 
@@ -255,7 +237,9 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetImageWidth(int *iWidth) const {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
+
   *iWidth = p_sdl_playback_->GetImageWidth();
+
   return ERROR_NONE;
 }
 
@@ -263,31 +247,40 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int *iHeight) const {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
+
   *iHeight = p_sdl_playback_->GetImageHeight();
+
   return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetWindowSize(int *iWidth, int *iHeight) const {
-	if (p_sdl_playback_ == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-	p_sdl_playback_->GetWindowSize(iWidth, iHeight);
-	return ERROR_NONE;
+uint32_t FfmpegSdlAvPlaybackPipeline::GetWindowSize(int *iWidth,
+                                                    int *iHeight) const {
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+
+  p_sdl_playback_->GetWindowSize(iWidth, iHeight);
+
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::SetWindowSize(int width, int height) {
-	if (p_sdl_playback_ == nullptr) {
-		return ERROR_PLAYBACK_NULL;
-	}
-	p_sdl_playback_->SetWindowSize(width, height);
-	return ERROR_NONE;
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+
+  p_sdl_playback_->SetWindowSize(width, height);
+
+  return ERROR_NONE;
 }
 
 uint32_t FfmpegSdlAvPlaybackPipeline::HideWindow() {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
+
   p_sdl_playback_->HideWindow();
+
   return ERROR_NONE;
 }
 
@@ -295,6 +288,8 @@ uint32_t FfmpegSdlAvPlaybackPipeline::ShowWindow() {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
+
   p_sdl_playback_->ShowWindow();
+
   return ERROR_NONE;
 }
