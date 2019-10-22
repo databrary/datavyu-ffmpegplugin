@@ -77,7 +77,7 @@ public:
 
   inline void StepToNextFrame() {
     // if the stream is paused/stopped unpause it, then step
-    if (IsPaused() || IsStopped() || IsReady() ) {
+    if (IsPaused() || IsStopped() || IsReady()) {
       // Mute player, keep the same statebecause the display loop will stop the
       // and keep the same state
       SetPlaying(false, true);
