@@ -5,7 +5,7 @@ bool FfmpegAvPlayback::kEnableShowStatus = true;
 
 FfmpegAvPlayback::FfmpegAvPlayback()
     : p_video_state_(nullptr), display_disabled_(false), frame_width_(0),
-      frame_height_(0), is_fake_playback_(false), force_refresh_(true),
+      frame_height_(0), force_refresh_(true),
       num_frame_drops_late_(0) {}
 
 int FfmpegAvPlayback::OpenVideo(const char *filename,
@@ -48,13 +48,12 @@ void FfmpegAvPlayback::TogglePauseAndStopStep(bool mute) {
 
 int FfmpegAvPlayback::SetSpeed(double speed) {
   int err = ERROR_NONE;
-  if (speed <= 0) {
-    if ((!IsPaused() || !IsStopped()) && speed == 0) {
-      Pause();
-    }
-    is_fake_playback_ = true;
+  if (speed < 0) {
+    err = ERROR_FFMPEG_FILTER_NOT_FOUND; // no filter available for backward
+                                         // playback
+  } else if (speed < std::numeric_limits<double>::epsilon()) {
+    Pause();
   } else {
-    is_fake_playback_ = false;
     err = p_video_state_->SetSpeed(speed);
   }
   return err ? ERROR_FFMPEG_FILTER_NOT_FOUND : ERROR_NONE;

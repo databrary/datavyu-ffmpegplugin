@@ -122,8 +122,6 @@ protected:
 
   // Force a refresh of the display
   bool force_refresh_;
-  std::atomic<bool>
-      is_fake_playback_; // When true Video state will not step after a seek
 
   // Disable the display
   bool display_disabled_;

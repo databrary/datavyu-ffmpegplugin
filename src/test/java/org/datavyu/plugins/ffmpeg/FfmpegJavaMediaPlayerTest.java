@@ -2,6 +2,8 @@ package org.datavyu.plugins.ffmpeg;
 
 import java.awt.Container;
 import javax.swing.JDialog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.MediaPlayer;
 import org.testng.annotations.DataProvider;
@@ -9,6 +11,7 @@ import org.testng.annotations.Test;
 
 /** Tests the ffmpeg player using an AWT window for display */
 public class FfmpegJavaMediaPlayerTest extends MediaPlayerTest {
+  private static final Logger logger = LogManager.getFormatterLogger(FfmpegJavaMediaPlayerTest.class);
 
   public static class FfmpegBuilder implements Builder {
     private MediaInformation mediaInformation;
@@ -57,12 +60,26 @@ public class FfmpegJavaMediaPlayerTest extends MediaPlayerTest {
 
   @Test(dataProvider = "shortMedia")
   public void testReadyState(Builder builder, MediaInformation mediaInformation) {
+    logger.debug("******** Test Ready State ********");
     super.testReadyState(builder, mediaInformation);
   }
 
   @Test(dataProvider = "shortMedia")
-  public void testStateTransition(Builder builder, MediaInformation mediaInformation) {
-    super.testStateTransition(builder, mediaInformation);
+  public void testPlayingState(Builder builder, MediaInformation mediaInformation) {
+    logger.debug("******** Test Playing State ********");
+    super.testPlayingState(builder, mediaInformation);
+  }
+
+  @Test(dataProvider = "shortMedia")
+  public void testStoppedState(Builder builder, MediaInformation mediaInformation) {
+    logger.debug("******** Test Stopped State ********");
+    super.testStoppedState(builder, mediaInformation);
+  }
+
+  @Test(dataProvider = "shortMedia")
+  public void testPausedState(Builder builder, MediaInformation mediaInformation) {
+    logger.debug("******** Test Paused State ********");
+    super.testPausedState(builder, mediaInformation);
   }
 
   @Test(dataProvider = "shortMedia")
