@@ -44,10 +44,6 @@ public:
                          (int64_t)(incr * AV_TIME_BASE));
   }
 
-  inline virtual void SeekToFrame(int frame_nb) {
-    p_video_state_->SeekToFrame(frame_nb);
-  }
-
   inline virtual double GetDuration() const {
     return p_video_state_->GetDuration();
   }

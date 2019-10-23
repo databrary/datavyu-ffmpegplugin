@@ -122,7 +122,8 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
       }
 
       if (lastvp->serial_ != vp->serial_) {
-        p_video_state_->SetFrameLastShownTime(av_gettime_relative() / 1000000.0);
+        p_video_state_->SetFrameLastShownTime(av_gettime_relative() /
+                                              1000000.0);
       }
 
       if (IsPaused() || IsStopped() || IsReady()) {
@@ -137,14 +138,16 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
       time = av_gettime_relative() / 1000000.0;
       if (time < p_video_state_->GetFrameLastShownTime() + delay) {
         *remaining_time =
-            FFMIN(p_video_state_->GetFrameLastShownTime() + delay - time, *remaining_time);
+            FFMIN(p_video_state_->GetFrameLastShownTime() + delay - time,
+                  *remaining_time);
         goto display;
       }
 
-	  p_video_state_->SetFrameLastShownTime(p_video_state_->GetFrameLastShownTime() + delay);
-      if (delay > 0 &&
-          time - p_video_state_->GetFrameLastShownTime() > VideoState::kAvSyncThresholdMax) {
-		p_video_state_->SetFrameLastShownTime(time);
+      p_video_state_->SetFrameLastShownTime(
+          p_video_state_->GetFrameLastShownTime() + delay);
+      if (delay > 0 && time - p_video_state_->GetFrameLastShownTime() >
+                           VideoState::kAvSyncThresholdMax) {
+        p_video_state_->SetFrameLastShownTime(time);
       }
 
       std::unique_lock<std::mutex> locker(frame_queue->GetMutex());
@@ -168,9 +171,9 @@ bool FfmpegJavaAvPlayback::DoDisplay(double *remaining_time) {
 
       frame_queue->Next();
       force_refresh_ = true;
-	  if (p_video_state_->IsStepping() && !IsPaused() && !IsStopped()) {
-		TogglePauseAndStopStep();
-	  }
+      if (p_video_state_->IsStepping() && !IsPaused() && !IsStopped()) {
+        TogglePauseAndStopStep();
+      }
     }
   display:
     /* display picture */
@@ -254,8 +257,8 @@ void FfmpegJavaAvPlayback::UpdateImageBuffer(uint8_t *p_image_data,
   if (doUpdate) {
     Frame *vp = nullptr;
     queue->PeekLast(&vp);
-    av_log(NULL, AV_LOG_DEBUG, "Update Image Buffer - Number %d - PTS %2.7f\n"
-             , vp->frame_pos_, vp->p_frame_->pts);
+    av_log(NULL, AV_LOG_DEBUG, "Update Image Buffer - Number %d - PTS %2.7f\n",
+           vp->frame_pos_, vp->p_frame_->pts);
     p_img_convert_ctx_ = sws_getCachedContext(
         p_img_convert_ctx_, vp->p_frame_->width, vp->p_frame_->height,
         static_cast<AVPixelFormat>(vp->p_frame_->format), vp->p_frame_->width,
@@ -285,7 +288,6 @@ void FfmpegJavaAvPlayback::UpdateAudioBuffer(uint8_t *p_audio_data,
 #ifndef SDL_ENABLED
   p_video_state_->GetAudioCallback(p_audio_data, len);
 #endif // !SDL_ENABLED
-
 }
 
 void FfmpegJavaAvPlayback::GetAudioFormat(AudioFormat *p_audio_format) {

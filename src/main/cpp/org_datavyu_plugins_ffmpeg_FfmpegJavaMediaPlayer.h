@@ -32,202 +32,226 @@ extern "C" {
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegInitPlayer
- * Signature: ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;I)I
+ * Signature:
+ * ([JLjava/lang/String;Ljavax/sound/sampled/AudioFormat;Ljava/awt/color/ColorSpace;I)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegInitPlayer
-  (JNIEnv *, jobject, jlongArray, jstring, jobject, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegInitPlayer(
+    JNIEnv *, jobject, jlongArray, jstring, jobject, jobject, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegDisposePlayer
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegDisposePlayer
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegDisposePlayer(
+    JNIEnv *, jobject, jlong);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegGetAudioSyncDelay
  * Signature: (J[J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetAudioSyncDelay
-  (JNIEnv *, jobject, jlong, jlongArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetAudioSyncDelay(
+    JNIEnv *, jobject, jlong, jlongArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegSetAudioSyncDelay
  * Signature: (JJ)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSetAudioSyncDelay
-  (JNIEnv *, jobject, jlong, jlong);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSetAudioSyncDelay(
+    JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegPlay
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegPlay
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegPlay(JNIEnv *,
+                                                                 jobject,
+                                                                 jlong);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegPause
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegPause
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegPause(JNIEnv *,
+                                                                  jobject,
+                                                                  jlong);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegStop
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegStop
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegStop(JNIEnv *,
+                                                                 jobject,
+                                                                 jlong);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegStepForward
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegStepForward
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegStepForward(
+    JNIEnv *, jobject, jlong);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegStepBackward
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegStepBackward
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegStepBackward(
+    JNIEnv *, jobject, jlong);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegFinish
  * Signature: (J)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegFinish
-  (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegFinish(JNIEnv *,
+                                                                   jobject,
+                                                                   jlong);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegGetRate
  * Signature: (J[F)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetRate
-  (JNIEnv *, jobject, jlong, jfloatArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetRate(
+    JNIEnv *, jobject, jlong, jfloatArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegSetRate
  * Signature: (JF)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSetRate
-  (JNIEnv *, jobject, jlong, jfloat);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSetRate(JNIEnv *,
+                                                                    jobject,
+                                                                    jlong,
+                                                                    jfloat);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegGetPresentationTime
  * Signature: (J[D)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetPresentationTime
-  (JNIEnv *, jobject, jlong, jdoubleArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetPresentationTime(
+    JNIEnv *, jobject, jlong, jdoubleArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegGetFps
  * Signature: (J[D)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetFps
-  (JNIEnv *, jobject, jlong, jdoubleArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetFps(
+    JNIEnv *, jobject, jlong, jdoubleArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegGetDuration
  * Signature: (J[D)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetDuration
-  (JNIEnv *, jobject, jlong, jdoubleArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetDuration(
+    JNIEnv *, jobject, jlong, jdoubleArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegSeek
  * Signature: (JDI)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSeek
-  (JNIEnv *, jobject, jlong, jdouble, jint);
-    
-/*
- * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
- * Method:    ffmpegSeekToFrame
- * Signature: (JDI)I
-*/
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSeekToFrame
-  (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegSeek(JNIEnv *,
+                                                                 jobject, jlong,
+                                                                 jdouble, jint);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegHasAudioData
  * Signature: (J[Z)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegHasAudioData
-  (JNIEnv *, jobject, jlong, jbooleanArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegHasAudioData(
+    JNIEnv *, jobject, jlong, jbooleanArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegHasImageData
  * Signature: (J[Z)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegHasImageData
-  (JNIEnv *, jobject, jlong, jbooleanArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegHasImageData(
+    JNIEnv *, jobject, jlong, jbooleanArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegGetImageWidth
  * Signature: (J[I)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetImageWidth
-  (JNIEnv *, jobject, jlong, jintArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetImageWidth(
+    JNIEnv *, jobject, jlong, jintArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegGetImageHeight
  * Signature: (J[I)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetImageHeight
-  (JNIEnv *, jobject, jlong, jintArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetImageHeight(
+    JNIEnv *, jobject, jlong, jintArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegGetAudioFormat
  * Signature: (J[Ljavax/sound/sampled/AudioFormat;)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetAudioFormat
-  (JNIEnv *, jobject, jlong, jobjectArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetAudioFormat(
+    JNIEnv *, jobject, jlong, jobjectArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegGetColorSpace
  * Signature: (J[Ljava/awt/color/ColorSpace;)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetColorSpace
-  (JNIEnv *, jobject, jlong, jobjectArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegGetColorSpace(
+    JNIEnv *, jobject, jlong, jobjectArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegUpdateImageData
  * Signature: (J[B)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegUpdateImageData
-  (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegUpdateImageData(
+    JNIEnv *, jobject, jlong, jbyteArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer
  * Method:    ffmpegUpdateAudioData
  * Signature: (J[B)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegUpdateAudioData
-  (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegJavaMediaPlayer_ffmpegUpdateAudioData(
+    JNIEnv *, jobject, jlong, jbyteArray);
 
 #ifdef __cplusplus
 }

@@ -97,11 +97,6 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
   }
 
   @Override
-  protected void playerSeekToFrame(int frameNumber) throws MediaException {
-    throw new NotImplementedException();
-  }
-
-  @Override
   protected int[] playerGetWindowSize() throws MediaException {
     throw new NotImplementedException();
   }

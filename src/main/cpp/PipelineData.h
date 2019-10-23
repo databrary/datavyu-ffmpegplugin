@@ -21,9 +21,8 @@ public:
   virtual uint32_t StepForward() = 0;
   virtual uint32_t Finish() = 0;
 
-  virtual uint32_t Seek(double seek_time, int seek_flags) = 0;
-  virtual uint32_t SeekToFrame(int frame_nb) = 0;
-  
+  virtual uint32_t Seek(double seek_time) = 0;
+
   virtual uint32_t GetDuration(double *p_duration) = 0;
   virtual uint32_t GetStreamTime(double *p_stream_time) = 0;
   virtual uint32_t GetFps(double *p_fps) = 0;
@@ -46,8 +45,10 @@ public:
   virtual uint32_t GetImageHeight(int *p_height) const = 0;
   virtual uint32_t GetAudioFormat(AudioFormat *p_audio_format) const = 0;
   virtual uint32_t GetPixelFormat(PixelFormat *p_pixel_format) const = 0;
-  virtual uint32_t UpdateImageBuffer(uint8_t *p_image_buffer, const long len) = 0;
-  virtual uint32_t UpdateAudioBuffer(uint8_t *p_audio_buffer, const long len) = 0;
+  virtual uint32_t UpdateImageBuffer(uint8_t *p_image_buffer,
+                                     const long len) = 0;
+  virtual uint32_t UpdateAudioBuffer(uint8_t *p_audio_buffer,
+                                     const long len) = 0;
 };
 
 #endif //_PIPELINEDATA_H_

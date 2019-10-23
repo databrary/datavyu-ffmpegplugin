@@ -454,8 +454,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
   private native int ffmpegSeek(long refNativeMedia, double streamTime);
 
-  private native int ffmpegSeekToFrame(long refNativeMedia, int frameNumber);
-
   private native int ffmpegHasAudioData(long refNativeMedia, boolean[] hasData);
 
   private native int ffmpegHasImageData(long refNativeMedia, boolean[] hasData);

@@ -28,11 +28,6 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
-  protected void playerSeekToFrame(int frameNumber) throws MediaException {
-    playerSeek(frameNumber);
-  }
-
-  @Override
   protected double playerGetStartTime() throws MediaException {
     return startTime;
   }

@@ -339,8 +339,6 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
   protected native int ffmpegSeek(long refNativeMedia, double streamTime);
 
-  protected native int ffmpegSeekToFrame(long refNativeMedia, int frameNumber);
-
   protected native int ffmpegGetImageWidth(long refNativeMedia, int[] width);
 
   protected native int ffmpegGetImageHeight(long refNativeMedia, int[] height);

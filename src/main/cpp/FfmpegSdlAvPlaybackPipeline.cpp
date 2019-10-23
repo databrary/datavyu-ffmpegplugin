@@ -125,22 +125,12 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Finish() {
   return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
+uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime) {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
   p_sdl_playback_->Seek(dSeekTime);
-
-  return ERROR_NONE; // no error
-}
-
-uint32_t FfmpegSdlAvPlaybackPipeline::SeekToFrame(int frame_nb) {
-  if (p_sdl_playback_ == nullptr) {
-    return ERROR_PLAYBACK_NULL;
-  }
-
-  p_sdl_playback_->SeekToFrame(frame_nb);
 
   return ERROR_NONE; // no error
 }

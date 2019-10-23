@@ -55,9 +55,6 @@ public:
 
   static double kAvSyncThresholdMax;
   static int kEnableSeekByBytes;
-  static int kSeekPreciseFlag;
-  static int kSeekFastFlag;
-  static int kSeekFrameFlag;
 
   virtual ~VideoState();
 
@@ -108,7 +105,6 @@ public:
   inline void ToggleMute() { is_muted_ = !is_muted_; }
   void SetPts(double pts, int serial);
   void Seek(int64_t time, int64_t distance);
-  void SeekToFrame(int frame_nb);
 
   inline bool IsPaused() const { return is_paused_; }
 
@@ -212,7 +208,6 @@ private:
   bool seek_done_;
   std::atomic<bool> seek_request_;
   int64_t seek_time_;
-  int seek_frame_;
   int64_t seek_distance_; // Signed distance between the current time and the
                           // seek time
   AvSyncType sync_type_;  // default is AV_SYNC_AUDIO_MASTER

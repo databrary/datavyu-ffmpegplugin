@@ -211,15 +211,6 @@ public interface MediaPlayer {
   void seek(double streamTime);
 
   /**
-   * Seeks playback to the specified frame number. The state of the player
-   * is unchanged. A negative value will be clamped
-   * to zero, and a positive value to the frame, if known.
-   *
-   * @param frameNumber The frame id to which to seek.
-   */
-  void seekToFrame(int frameNumber);
-
-  /**
    * Get the width of the image in pixels
    *
    * @return Image width
