@@ -3,15 +3,12 @@ package org.datavyu.plugins.ffmpeg;
 import org.datavyu.plugins.DatavyuMediaPlayer;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.PlayerStateEvent;
-import org.datavyu.plugins.PlayerStateEvent.PlayerState;
+
 import org.datavyu.plugins.PlayerStateListener;
 import java.net.URI;
 
 /** Uses ffmpeg to decode and transcode (optional) image and audio data */
 abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
-
-  protected static final int SEEK_ACCURATE_FLAG = 0x01;
-  protected static final int SEEK_FAST_FLAG = 0x10;
 
   private PlayerStateListener stateListener;
 
@@ -31,13 +28,6 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
-  protected void playerSeek(double streamTime) throws MediaException {
-    // In most cases seek accurate, with the exception of large backward playback rates
-    int seek_flag = (!isStartTimeUpdated && getRate() < -1) ? SEEK_FAST_FLAG : SEEK_ACCURATE_FLAG;
-    playerSeek(streamTime, seek_flag);
-  }
-
-  @Override
   protected void playerSeekToFrame(int frameNumber) throws MediaException {
     playerSeek(frameNumber);
   }
@@ -50,7 +40,7 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
   @Override
   protected void playerSetStartTime(double startTime) throws MediaException {
     this.startTime = startTime;
-    playerSeek(startTime, SEEK_ACCURATE_FLAG);
+    playerSeek(startTime);
   }
 
   @Override
@@ -62,10 +52,6 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
   protected boolean playerRateIsSupported(final float rate) {
     return 0F <= rate && rate <= 4F;
   }
-
-  protected abstract void playerSeek(double streamTime, int seek_flag) throws MediaException;
-
-  protected abstract void playerSeek(int frameNumber) throws MediaException;
 
   class FfmpegPlayerStateListener implements PlayerStateListener {
 

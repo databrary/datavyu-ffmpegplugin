@@ -124,7 +124,7 @@ uint32_t FfmpegJavaAvPlaybackPipline::Seek(double time, int seek_flags) {
   if (p_java_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
-  p_java_playback_->Seek(time, seek_flags);
+  p_java_playback_->Seek(time);
 
   return ERROR_NONE;
 }

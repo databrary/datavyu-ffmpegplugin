@@ -130,7 +130,7 @@ uint32_t FfmpegSdlAvPlaybackPipeline::Seek(double dSeekTime, int seek_flags) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  p_sdl_playback_->Seek(dSeekTime, seek_flags);
+  p_sdl_playback_->Seek(dSeekTime);
 
   return ERROR_NONE; // no error
 }

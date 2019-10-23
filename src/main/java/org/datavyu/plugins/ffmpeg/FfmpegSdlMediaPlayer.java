@@ -210,19 +210,11 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerSeek(double streamTime, int flags) throws MediaException {
-    int rc = ffmpegSeek(getNativeMediaRef(), streamTime, flags);
+  protected void playerSeek(double streamTime) throws MediaException {
+    int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
-  }
-  @Override
-  protected void playerSeek(int frameNumber) throws MediaException {
-    int rc = ffmpegSeekToFrame(getNativeMediaRef(), frameNumber);
-    if (0 != rc) {
-      throwMediaErrorException(rc, null);
-    }
-    logger.trace("Player is seeking to Frame Number" + frameNumber);
   }
 
   @Override
@@ -345,7 +337,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
   protected native int ffmpegGetDuration(long refNativeMedia, double[] duration);
 
-  protected native int ffmpegSeek(long refNativeMedia, double streamTime, int flags);
+  protected native int ffmpegSeek(long refNativeMedia, double streamTime);
 
   protected native int ffmpegSeekToFrame(long refNativeMedia, int frameNumber);
 

@@ -107,8 +107,7 @@ public:
   } // current time in sec
   inline void ToggleMute() { is_muted_ = !is_muted_; }
   void SetPts(double pts, int serial);
-  void Seek(int64_t time, int64_t distance,
-            int seek_flags = VideoState::kSeekPreciseFlag);
+  void Seek(int64_t time, int64_t distance);
   void SeekToFrame(int frame_nb);
 
   inline bool IsPaused() const { return is_paused_; }
@@ -212,7 +211,6 @@ private:
 
   bool seek_done_;
   std::atomic<bool> seek_request_;
-  int seek_flags_;
   int64_t seek_time_;
   int seek_frame_;
   int64_t seek_distance_; // Signed distance between the current time and the

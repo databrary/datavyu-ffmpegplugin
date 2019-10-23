@@ -642,7 +642,7 @@ void FfmpegSdlAvPlayback::UpdateFrame(double *remaining_time) {
 
       queue->Next();
       force_refresh_ = true;
-      if (p_video_state_->IsStepping() && ((!IsPaused() && !IsStopped()) || IsPlaying())) {
+      if (p_video_state_->IsStepping() && !p_video_state_->IsPaused()) {
         // Stepping is done, keep player muted, and update the state only if the
         // player is playing.
         SetPaused(IsPlaying(), true);
@@ -944,7 +944,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
             incr *= 180000.0;
           }
           pos += incr;
-          p_player->Seek(pos, incr);
+		  p_video_state->Seek(pos, incr);
         } else {
           pos = p_master_clock->GetTime();
           if (isnan(pos)) {
@@ -954,7 +954,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
           if (p_format_context->start_time != AV_NOPTS_VALUE &&
               pos < p_format_context->start_time / (double)AV_TIME_BASE)
             pos = p_format_context->start_time / (double)AV_TIME_BASE;
-          p_player->Seek((int64_t)(pos * AV_TIME_BASE),
+		  p_video_state->Seek((int64_t)(pos * AV_TIME_BASE),
                          (int64_t)(incr * AV_TIME_BASE));
         }
         break;
@@ -988,7 +988,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
       }
       if (VideoState::kEnableSeekByBytes || p_format_context->duration <= 0) {
         uint64_t size = avio_size(p_format_context->pb);
-        p_player->Seek(size * x / width, 0);
+		p_video_state->Seek(size * x / width, 0);
       } else {
         int64_t ts;
         int ns, hh, mm, ss;
@@ -1010,7 +1010,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         if (p_format_context->start_time != AV_NOPTS_VALUE) {
           ts += p_format_context->start_time;
         }
-        p_player->Seek(ts, 0);
+		p_video_state->Seek(ts, 0);
       }
       break;
     case SDL_WINDOWEVENT:

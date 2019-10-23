@@ -293,21 +293,12 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   @Override
-  protected void playerSeek(double streamTime, int flags) throws MediaException {
-    int rc = ffmpegSeek(getNativeMediaRef(), streamTime, flags);
+  protected void playerSeek(double streamTime) throws MediaException {
+    int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
-    LOGGER.trace("Player is seeking to " + streamTime + " sec, with " + flags + " Flag");
-  }
-
-  @Override
-  protected void playerSeek(int frameNumber) throws MediaException {
-    int rc = ffmpegSeekToFrame(getNativeMediaRef(), frameNumber);
-    if (0 != rc) {
-      throwMediaErrorException(rc, null);
-    }
-    LOGGER.trace("Player is seeking to Frame Number" + frameNumber);
+    LOGGER.trace("Player is seeking to " + streamTime + " sec");
   }
 
   @Override
@@ -461,7 +452,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
 
   private native int ffmpegGetDuration(long refNativeMedia, double[] duration);
 
-  private native int ffmpegSeek(long refNativeMedia, double streamTime, int flags);
+  private native int ffmpegSeek(long refNativeMedia, double streamTime);
 
   private native int ffmpegSeekToFrame(long refNativeMedia, int frameNumber);
 
