@@ -4,7 +4,7 @@
 <sup>Mac OS:</sup> [![Travis CI](https://travis-ci.com/databrary/datavyu-ffmpegplugin.svg)](https://travis-ci.com/databrary/datavyu-ffmpegplugin)
 
 ## Overview
-The Datavyu Player is a Java Media Player using [FFmpeg](https://github.com/FFmpeg/FFmpeg), [MPV](https://github.com/mpv-player/mpv) and [AVFoundation](https://developer.apple.com/av-foundation/) Players as backend engines that we interface too through Java Native Interface (JNI). It supports a wide variety of video file formats, audio and video codecs for Windows and Mac OS Platforms. Datavyu Player is used within [Datavyu](http://www.datavyu.org/) a video annotation tool but could be embedded in any Java application.
+The Datavyu Player is a Java Media Player using [FFmpeg](https://github.com/FFmpeg/FFmpeg) and [AVFoundation](https://developer.apple.com/av-foundation/) Players as backend engines that we interface too through Java Native Interface (JNI). It supports a wide variety of video file formats, audio and video codecs for Windows and Mac OS Platforms. Datavyu Player is used within [Datavyu](http://www.datavyu.org/) a video annotation tool but could be embedded in any Java application.
 
 To learn how to use the plugin, please refer to the [Examples](##Examples) section below as well as the [Java](src/main/java/org/datavyu/plugins/examples) programs. You may also find it useful to refer to the [wiki](https://github.com/databrary/datavyu-ffmpegplugin/wiki) pages to set up a development environment and contribute to the project.
 
@@ -99,46 +99,6 @@ Here is a simple example on how to create and initialize the Datavyu Java Player
     }
 ```
 Note that The Java Player is using the MediaPLayerData Interface in order to access the buffers sent through the JNI interface.
-
-### MPV Player
-The MPV Player is a fully functional media player providing an [API](https://github.com/mpv-player/mpv/blob/master/libmpv/client.h) to embed MPV in a window, in this repo we are providing an MPV java wrapper to control an MPV instance from your Java application on Windows platforms. 
-
-We provide a Maven dependency for the MPV 0.29.1 version to be added to your `pom.xml` file in addition to the FFmpeg dependency mentioned above.
-``` xml  
-    <dependency>
-        <groupId>org.datavyu</groupId>
-        <artifactId>mpv-libs</artifactId>
-        <version>0.29.1</version>
-    </dependency>
-```
-Here is a simple example on how to create and initialize the [MPV Player](https://github.com/mpv-player/mpv), all what you have to do is to be creative and build your own Java controller for the player.
-
-``` java
-    import org.datavyu.plugins.MediaPlayer;
-    import org.datavyu.plugins.mpv.MpvMediaPlayer;
-
-    import javax.swing.*;
-    import java.io.File;
-    import java.net.URI;
-
-    public class SimpleMpvMediaPlayer {
-
-        public static void main(String[] args) {
-            // Define the media file, add your file path here !
-            URI mediaPath = new File("PATH/TO/MOVIE/FILE").toURI();
-
-            // Create the media player using the constructor with URI
-            MediaPlayer mediaPlayer = new MpvMediaPlayer(mediaPath);
-
-            // Initialize the player
-            mediaPlayer.init();
-
-            // Start Playing
-            mediaPlayer.play();
-        }
-    }
-```
-Note that the MPV player will embed a native window in the Java Container passed as an argument to the `MpvMediaPlayer` constructor.
 
 ### SDL Player
 The SDL player is relying on FFmpeg engine as the Java player does, but is using [Simple DirectMedia Layer SDL2 Framework](https://www.libsdl.org/) to Display Images and Play Audio natively.

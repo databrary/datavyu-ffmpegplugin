@@ -130,7 +130,7 @@
           <version>0.92</version>
         </dependency>
 
-        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
+        <!-- FFmpeg-libs and sdl-libs are not used -->
         <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
@@ -167,7 +167,6 @@
             <configuration combine.self="append">
               <!-- Note all paths play off from sourceDirectory -->
               <excludes>
-                <exclude>**/org/datavyu/plugins/mpv/*</exclude>
                 <exclude>**/org/datavyu/plugins/examples/*</exclude>
               </excludes>
             </configuration>
@@ -254,7 +253,7 @@
       </properties>
       <dependencies>
 
-        <!-- FFmpeg-libs, mpv-libs and sdl-libs are not used -->
+        <!-- FFmpeg-libs and sdl-libs are not used -->
         <!-- FFmpeg 4.1.1 Version -->
         <dependency>
           <groupId>org.datavyu</groupId>
@@ -271,13 +270,6 @@
           <classifier>win</classifier>
         </dependency>
 
-        <!-- MPV 0.29.1 -->
-        <dependency>
-          <groupId>org.datavyu</groupId>
-          <artifactId>mpv-libs</artifactId>
-          <version>0.29.1</version>
-        </dependency>
-
       </dependencies>
 
       <build>
@@ -288,7 +280,6 @@
             <includes>
               <include>FfmpegJavaMediaPlayer.dll</include>
               <include>FfmpegSdlMediaPlayer.dll</include>
-              <include>MpvMediaPlayer.dll</include>
             </includes>
           </resource>
         </resources>
