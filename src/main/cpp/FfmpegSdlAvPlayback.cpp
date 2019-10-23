@@ -110,14 +110,14 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
     p_display_thread_id_ = nullptr;
   }
 
+  delete p_video_state_;
+  p_video_state_ = nullptr;
+
   SDL_DelEventWatch(resizingEventHandler, this);
 
   if (audio_dev_) {
     CloseAudio();
   }
-
-  delete p_video_state_;
-  p_video_state_ = nullptr;
 
   // Cleanup textures
   if (p_vis_texture_) {
@@ -149,8 +149,7 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
     });
 #elif _WIN32
     Uint32 flags = SDL_GetWindowFlags(p_window_);
-    av_log(NULL, AV_LOG_DEBUG, "SDL Quit Subsytem for window %d \n",
-           window_id_);
+    av_log(NULL, AV_LOG_DEBUG, "SDL Quit Subsytem for window %d \n", window_id_);
     SDL_QuitSubSystem(flags);
     SDL_DestroyWindow(p_window_);
 #endif
@@ -165,7 +164,7 @@ FfmpegSdlAvPlayback::~FfmpegSdlAvPlayback() {
   }
 
   if (kWindowCount <= 0) {
-    av_log(NULL, AV_LOG_DEBUG, "SDL Quit\n");
+    av_log(NULL, AV_LOG_INFO, "SDL Quit\n");
     SDL_Quit();
   }
 
@@ -944,7 +943,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
             incr *= 180000.0;
           }
           pos += incr;
-		  p_video_state->Seek(pos, incr);
+          p_video_state->Seek(pos, incr);
         } else {
           pos = p_master_clock->GetTime();
           if (isnan(pos)) {
@@ -954,8 +953,8 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
           if (p_format_context->start_time != AV_NOPTS_VALUE &&
               pos < p_format_context->start_time / (double)AV_TIME_BASE)
             pos = p_format_context->start_time / (double)AV_TIME_BASE;
-		  p_video_state->Seek((int64_t)(pos * AV_TIME_BASE),
-                         (int64_t)(incr * AV_TIME_BASE));
+          p_video_state->Seek((int64_t)(pos * AV_TIME_BASE),
+                              (int64_t)(incr * AV_TIME_BASE));
         }
         break;
       default:
@@ -988,7 +987,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
       }
       if (VideoState::kEnableSeekByBytes || p_format_context->duration <= 0) {
         uint64_t size = avio_size(p_format_context->pb);
-		p_video_state->Seek(size * x / width, 0);
+        p_video_state->Seek(size * x / width, 0);
       } else {
         int64_t ts;
         int ns, hh, mm, ss;
@@ -1010,7 +1009,7 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         if (p_format_context->start_time != AV_NOPTS_VALUE) {
           ts += p_format_context->start_time;
         }
-		p_video_state->Seek(ts, 0);
+        p_video_state->Seek(ts, 0);
       }
       break;
     case SDL_WINDOWEVENT:

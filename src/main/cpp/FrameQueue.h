@@ -16,7 +16,7 @@ typedef struct Frame {
   double pts_;       // presentation timestamp for the frame
   double duration_;  // estimated duration of the frame
   int64_t byte_pos_; // byte position of the frame in the input file
-  int frame_pos_; // The Frame positin in the input file
+  int frame_pos_;    // The Frame positin in the input file
   int width_;
   int height_;
   int format_;
@@ -45,7 +45,7 @@ typedef struct Frame {
 // of the logic)
 //
 class FrameQueue {
- public:
+public:
   // Use this method to create a new frame queue to ensure cases where memory
   // allocation fails are handled properly
   static int CreateFrameQueue(FrameQueue **pp_frame_queue,
@@ -93,7 +93,7 @@ class FrameQueue {
   // return the byte position of the frame last shown
   int64_t GetBytePosOfLastFrame();
 
- private:
+private:
   Frame *p_frames_; // container for the frames
   int read_index_;  // read index
   int write_index_; // write index

@@ -5,8 +5,7 @@ bool FfmpegAvPlayback::kEnableShowStatus = true;
 
 FfmpegAvPlayback::FfmpegAvPlayback()
     : p_video_state_(nullptr), display_disabled_(false), frame_width_(0),
-      frame_height_(0), force_refresh_(true),
-      num_frame_drops_late_(0) {}
+      frame_height_(0), force_refresh_(true), num_frame_drops_late_(0) {}
 
 int FfmpegAvPlayback::OpenVideo(const char *filename,
                                 AVInputFormat *p_input_format,

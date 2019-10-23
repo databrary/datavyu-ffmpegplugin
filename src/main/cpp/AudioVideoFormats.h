@@ -3,8 +3,8 @@
 #include <string>
 
 extern "C" {
-#include "libavutil/samplefmt.h"
 #include "libavutil/pixfmt.h"
+#include "libavutil/samplefmt.h"
 }
 
 // TODO(fraudies): Consolidate AudioParams and AudioFormat
