@@ -348,6 +348,8 @@ public class MediaPlayerTest {
     sleep(100);
     double actualTime = player.getMediaPlayer().getPresentationTime();
     assertEquals(actualTime, beforeStepping);
+
+    player.disposeMediaPlayerSync();
   }
 
   protected void testStepBackward(Builder builder, MediaInformation mediaInformation) {

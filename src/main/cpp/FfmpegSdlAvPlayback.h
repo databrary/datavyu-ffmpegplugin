@@ -88,41 +88,41 @@ public:
   int GetImageWidth() const;
 
   // Get image Height
-  int GetImageHeight() const; 
+  int GetImageHeight() const;
 
   // Get SDL Window Size
   inline void GetWindowSize(int *width, int *height) const {
 #ifdef _WIN32
-	  SDL_Window *window = SDL_GetWindowFromID(window_id_);
-	  if (window) {
-		  SDL_GetWindowSize(p_window_, width, height);
-	  }
+    SDL_Window *window = SDL_GetWindowFromID(window_id_);
+    if (window) {
+      SDL_GetWindowSize(p_window_, width, height);
+    }
 #elif __APPLE__
-	  dispatch_async(dispatch_get_main_queue(), ^{
-		SDL_Window *window = SDL_GetWindowFromID(window_id_);
-		if (window) {
-			SDL_GetWindowSize(p_window_, width, height);
-		}
-	  });
+    dispatch_async(dispatch_get_main_queue(), ^{
+      SDL_Window *window = SDL_GetWindowFromID(window_id_);
+      if (window) {
+        SDL_GetWindowSize(p_window_, width, height);
+      }
+    });
 #endif
   }
 
   // Set SDL Window Size
   inline void SetWindowSize(int width, int height) {
 #ifdef _WIN32
-	  SDL_Window *window = SDL_GetWindowFromID(window_id_);
-	  if (window) {
-		  SDL_SetWindowSize(p_window_, width, height);
-		  SetSize(width, height);
-	  }
+    SDL_Window *window = SDL_GetWindowFromID(window_id_);
+    if (window) {
+      SDL_SetWindowSize(p_window_, width, height);
+      SetSize(width, height);
+    }
 #elif __APPLE__
-	  dispatch_async(dispatch_get_main_queue(), ^{
-		SDL_Window *window = SDL_GetWindowFromID(window_id_);
-		if (window) {
-			SDL_SetWindowSize(p_window_, width, height);
-			SetSize(width, height);
-		}
-	  });
+    dispatch_async(dispatch_get_main_queue(), ^{
+      SDL_Window *window = SDL_GetWindowFromID(window_id_);
+      if (window) {
+        SDL_SetWindowSize(p_window_, width, height);
+        SetSize(width, height);
+      }
+    });
 #endif
   }
 
@@ -141,10 +141,10 @@ public:
   inline void SetKeyEventKeyDispatcherCallback(
       const std::function<void(SDL_Keycode)> &func) {
     dispatch_keyEvent_callback_ = func;
-  }  
-  
-  inline void SetKeyPlayerStateCallbackFunction(
-      const std::function<bool(int)> &func) {
+  }
+
+  inline void
+  SetKeyPlayerStateCallbackFunction(const std::function<bool(int)> &func) {
     player_state_callback_ = func;
   }
 
@@ -175,9 +175,11 @@ private:
   char *p_window_title_;
   SDL_RendererInfo renderer_info_;
 #ifdef __APPLE__
-  std::atomic<bool> is_stopped_ = {false}; // Used for the display loop and doesn't reflect the player state
+  std::atomic<bool> is_stopped_ = {
+      false}; // Used for the display loop and doesn't reflect the player state
 #elif _WIN32
-  std::atomic<bool> is_stopped_ = false; // Used for the display loop and doesn't reflect the player state
+  std::atomic<bool> is_stopped_ =
+      false; // Used for the display loop and doesn't reflect the player state
 #endif
   std::thread *p_display_thread_id_ = nullptr;
   std::function<void(SDL_Keycode)> dispatch_keyEvent_callback_;

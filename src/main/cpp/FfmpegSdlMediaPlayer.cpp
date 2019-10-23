@@ -237,12 +237,14 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegStepForward(
  */
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegStepBackward(
-	JNIEnv *env, jobject obj, jlong ref_media) {
+    JNIEnv *env, jobject obj, jlong ref_media) {
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-  if (NULL == pMedia) return ERROR_MEDIA_NULL;
+  if (NULL == pMedia)
+    return ERROR_MEDIA_NULL;
 
   CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-  if (NULL == pPipeline) return ERROR_PIPELINE_NULL;
+  if (NULL == pPipeline)
+    return ERROR_PIPELINE_NULL;
 
   jint iRet = (jint)pPipeline->StepBackward();
 
@@ -457,37 +459,19 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetDuration(
  */
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSeek(
-	JNIEnv *env, jobject obj, jlong ref_media, jdouble stream_time,
-	jint seek_flags) {
+    JNIEnv *env, jobject obj, jlong ref_media, jdouble stream_time) {
 
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-  if (NULL == pMedia) return ERROR_MEDIA_NULL;
+  if (NULL == pMedia)
+    return ERROR_MEDIA_NULL;
 
   CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-  if (NULL == pPipeline) return ERROR_PIPELINE_NULL;
+  if (NULL == pPipeline)
+    return ERROR_PIPELINE_NULL;
 
-  jint iRet = (jint)pPipeline->Seek(stream_time, seek_flags);
+  jint iRet = (jint)pPipeline->Seek(stream_time);
 
   return iRet;
-}
-
-/*
- * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
- * Method:    ffmpegSeekToFrame
- * Signature: (JD)I
-*/
-JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSeekToFrame(
-	JNIEnv *env, jobject obj, jlong ref_media, jint frame_nb) {
-	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-	if (NULL == pMedia) return ERROR_MEDIA_NULL;
-
-	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-	if (NULL == pPipeline) return ERROR_PIPELINE_NULL;
-
-	jint iRet = (jint)pPipeline->SeekToFrame(frame_nb);
-
-	return iRet;
 }
 
 /*
@@ -497,23 +481,23 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSeekToFrame(
  */
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetImageWidth(
-	JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
-	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
-		return ERROR_MEDIA_NULL;
+    JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
+  CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+  if (NULL == pMedia)
+    return ERROR_MEDIA_NULL;
 
-	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-	if (NULL == pPipeline)
-		return ERROR_PIPELINE_NULL;
+  CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+  if (NULL == pPipeline)
+    return ERROR_PIPELINE_NULL;
 
-	int iImageWidth;
-	uint32_t uErrCode = pPipeline->GetImageWidth(&iImageWidth);
-	if (ERROR_NONE != uErrCode)
-		return uErrCode;
-	jint jiImageWidth = (jint)iImageWidth;
-	env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageWidth);
+  int iImageWidth;
+  uint32_t uErrCode = pPipeline->GetImageWidth(&iImageWidth);
+  if (ERROR_NONE != uErrCode)
+    return uErrCode;
+  jint jiImageWidth = (jint)iImageWidth;
+  env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageWidth);
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 /*
@@ -523,23 +507,23 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetImageWidth(
  */
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetImageHeight(
-	JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
-	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
-		return ERROR_MEDIA_NULL;
+    JNIEnv *env, jobject obj, jlong ref_media, jintArray jriImageWidth) {
+  CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+  if (NULL == pMedia)
+    return ERROR_MEDIA_NULL;
 
-	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-	if (NULL == pPipeline)
-		return ERROR_PIPELINE_NULL;
+  CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+  if (NULL == pPipeline)
+    return ERROR_PIPELINE_NULL;
 
-	int iImageHeight;
-	uint32_t uErrCode = pPipeline->GetImageHeight(&iImageHeight);
-	if (ERROR_NONE != uErrCode)
-		return uErrCode;
-	jint jiImageHeight = (jint)iImageHeight;
-	env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageHeight);
+  int iImageHeight;
+  uint32_t uErrCode = pPipeline->GetImageHeight(&iImageHeight);
+  if (ERROR_NONE != uErrCode)
+    return uErrCode;
+  jint jiImageHeight = (jint)iImageHeight;
+  env->SetIntArrayRegion(jriImageWidth, 0, 1, &jiImageHeight);
 
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 /*
@@ -596,27 +580,29 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetVolume(
  * Method:    ffmpegGetWindowWidth
  * Signature: (J[I)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowSize
-(JNIEnv *env, jobject obj, jlong ref_media, jintArray jriWindowWidth, jintArray jriWindowHeight) {
-	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
-		return ERROR_MEDIA_NULL;
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowSize(
+    JNIEnv *env, jobject obj, jlong ref_media, jintArray jriWindowWidth,
+    jintArray jriWindowHeight) {
+  CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+  if (NULL == pMedia)
+    return ERROR_MEDIA_NULL;
 
-	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-	if (NULL == pPipeline)
-		return ERROR_PIPELINE_NULL;
+  CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+  if (NULL == pPipeline)
+    return ERROR_PIPELINE_NULL;
 #ifdef SDL_ENABLED
-	int iWindowWidth;
-	int iWindowHeight;
-	uint32_t uErrCode = pPipeline->GetWindowSize(&iWindowWidth, &iWindowHeight);
-	if (ERROR_NONE != uErrCode)
-		return uErrCode;
-	jint jiWindowWidth = (jint)iWindowWidth;
-	jint jiWindowHeight = (jint)iWindowHeight;
-	env->SetIntArrayRegion(jriWindowWidth, 0, 1, &jiWindowWidth);
-	env->SetIntArrayRegion(jriWindowHeight, 0, 1, &jiWindowHeight);
+  int iWindowWidth;
+  int iWindowHeight;
+  uint32_t uErrCode = pPipeline->GetWindowSize(&iWindowWidth, &iWindowHeight);
+  if (ERROR_NONE != uErrCode)
+    return uErrCode;
+  jint jiWindowWidth = (jint)iWindowWidth;
+  jint jiWindowHeight = (jint)iWindowHeight;
+  env->SetIntArrayRegion(jriWindowWidth, 0, 1, &jiWindowWidth);
+  env->SetIntArrayRegion(jriWindowHeight, 0, 1, &jiWindowHeight);
 #endif
-	return ERROR_NONE;
+  return ERROR_NONE;
 }
 
 /*
@@ -624,44 +610,45 @@ JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmp
  * Method:    ffmpegSetWindowSize
  * Signature: (JII)I
  */
-JNIEXPORT jint JNICALL Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetWindowSize
-(JNIEnv *env, jobject obj, jlong ref_media, jint jiWidth, jint jiHeight) {
-	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-	if (NULL == pMedia)
-		return ERROR_MEDIA_NULL;
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetWindowSize(
+    JNIEnv *env, jobject obj, jlong ref_media, jint jiWidth, jint jiHeight) {
+  CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+  if (NULL == pMedia)
+    return ERROR_MEDIA_NULL;
 
-	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-	if (NULL == pPipeline)
-		return ERROR_PIPELINE_NULL;
+  CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+  if (NULL == pPipeline)
+    return ERROR_PIPELINE_NULL;
 #ifdef SDL_ENABLED
-	jint iRet = (jint)pPipeline->SetWindowSize(jiWidth, jiHeight);
+  jint iRet = (jint)pPipeline->SetWindowSize(jiWidth, jiHeight);
 #endif
-	return iRet;
+  return iRet;
 }
-    
+
 /*
-* Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
-* Method:    ffmpegShowWindow
-* Signature: (J)I
-*/
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegShowWindow
+ * Signature: (J)I
+ */
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegShowWindow(
     JNIEnv *env, jobject object, jlong ref_media) {
-    CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-    if (NULL == pMedia)
-        return ERROR_MEDIA_NULL;
-    
-    CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-    if (NULL == pPipeline)
-        return ERROR_PIPELINE_NULL;
-    
-    jint iRet = 0;
+  CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+  if (NULL == pMedia)
+    return ERROR_MEDIA_NULL;
+
+  CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+  if (NULL == pPipeline)
+    return ERROR_PIPELINE_NULL;
+
+  jint iRet = 0;
 #ifdef SDL_ENABLED
-    iRet = (jint)pPipeline->ShowWindow();
+  iRet = (jint)pPipeline->ShowWindow();
 #endif
-    return iRet;
+  return iRet;
 }
-    
+
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
  * Method:    ffmpegHideWindow
@@ -670,19 +657,19 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegShowWindow(
 JNIEXPORT jint JNICALL
 Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegHideWindow(
     JNIEnv *env, jobject object, jlong ref_media) {
-    CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
-    if (NULL == pMedia)
-        return ERROR_MEDIA_NULL;
-    
-    CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
-    if (NULL == pPipeline)
-        return ERROR_PIPELINE_NULL;
-    
-    jint iRet = 0;
+  CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+  if (NULL == pMedia)
+    return ERROR_MEDIA_NULL;
+
+  CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+  if (NULL == pPipeline)
+    return ERROR_PIPELINE_NULL;
+
+  jint iRet = 0;
 #ifdef SDL_ENABLED
-    iRet = (jint)pPipeline->HideWindow();
+  iRet = (jint)pPipeline->HideWindow();
 #endif
-    return iRet;
+  return iRet;
 }
 
 #ifdef __cplusplus

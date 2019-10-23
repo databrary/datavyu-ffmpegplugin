@@ -153,11 +153,9 @@
   <ItemGroup>
     <ClCompile Include="FfmpegSdlAvPlayback.cpp" />
     <ClCompile Include="player.cpp" />
-    <ClCompile Include="MpvAvPlayback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FfmpegSdlAvPlayback.h" />
-    <ClInclude Include="MpvAvPlayback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

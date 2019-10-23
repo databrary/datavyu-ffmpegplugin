@@ -24,7 +24,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)JavaPlayerEventDispatcher.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)JniUtils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Media.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)MpvErrorUtils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)PacketQueue.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Pipeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)VideoState.cpp" />
@@ -41,7 +40,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)JavaPlayerEventDispatcher.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)JniUtils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Media.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)MpvErrorUtils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PacketQueue.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Pipeline.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PipelineOptions.h" />

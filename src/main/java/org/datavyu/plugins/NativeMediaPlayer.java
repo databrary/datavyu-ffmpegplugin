@@ -331,9 +331,7 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   // protected abstract void playerSetStopTime(double stopTime) throws MediaException;
 
   protected abstract void playerSeek(double streamTime) throws MediaException;
-
-  protected abstract void playerSeekToFrame(int frameNumber) throws MediaException;
-
+  
   protected abstract void playerDispose();
 
   protected abstract int[] playerGetWindowSize() throws MediaException;
@@ -665,24 +663,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     if (disposeLock.tryLock()) {
       try {
         playerSeek(streamTime);
-      } catch (MediaException me) {
-        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally {
-        disposeLock.unlock();
-      }
-    }
-  }
-
-  @Override
-  public void seekToFrame(int frameNumber) {
-
-    if (frameNumber < 0) {
-      frameNumber = 0;
-    }
-
-    if (disposeLock.tryLock()) {
-      try {
-        playerSeekToFrame(frameNumber);
       } catch (MediaException me) {
         sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
       } finally {
