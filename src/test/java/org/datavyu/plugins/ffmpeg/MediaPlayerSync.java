@@ -14,8 +14,6 @@ public class MediaPlayerSync {
   private static final Logger logger = LogManager.getFormatterLogger(MediaPlayerSync.class);
   private static final int LOCK_TIMOUT = 100; // ms
   private static final int COUNTDOWNLATCH_COUNT = 1;
-  private CountDownLatch startSignal;
-  private CountDownLatch endSignal;
   static {
     Configurator.setRootLevel(Level.DEBUG);
   }
@@ -39,10 +37,6 @@ public class MediaPlayerSync {
         public void onPlaying(PlayerStateEvent evt) {
           synchronized (playingLock) {
             playingLock.notify();
-            if (startSignal != null) {
-              logger.trace("Start Signal Count down");
-              startSignal.countDown();
-            }
             logger.debug("Player is Playing");
           }
         }
@@ -59,10 +53,6 @@ public class MediaPlayerSync {
         public void onStop(PlayerStateEvent evt) {
           synchronized (stoppedLock) {
             stoppedLock.notify();
-            if (endSignal != null) {
-              logger.trace("End Signal Count down");
-              endSignal.countDown();
-            }
             logger.debug("Player is Stopped");
           }
         }
@@ -147,10 +137,10 @@ public class MediaPlayerSync {
    * @return elapsed time
    */
   public double playTo(final double start, final double end) {
-    startSignal = new CountDownLatch(COUNTDOWNLATCH_COUNT);
-    endSignal = new CountDownLatch(COUNTDOWNLATCH_COUNT);
+    CountDownLatch startSignal = new CountDownLatch(COUNTDOWNLATCH_COUNT);
+    CountDownLatch endSignal = new CountDownLatch(COUNTDOWNLATCH_COUNT);
 
-    Worker playWorker = new Worker(end);
+    Worker playWorker = new Worker(startSignal, endSignal,end);
     new Thread(playWorker).start();
 
     mediaPlayer.seek(start);
@@ -162,8 +152,10 @@ public class MediaPlayerSync {
     }
 
     waitForPlaying();
+    startSignal.countDown();
+
     try {
-      endSignal.await(5, TimeUnit.MINUTES);
+      endSignal.await();
     } catch (InterruptedException e) {
       logger.error(e.getMessage());
     }
@@ -181,38 +173,36 @@ public class MediaPlayerSync {
 
   public void disposeMediaPlayerSync() {
     if (mediaPlayer != null) {
-      mediaPlayer.dispose();
-    }
-
-    if (startSignal != null) {
-      startSignal = null;
-    }
-
-    if (endSignal != null) {
-      endSignal = null;
+      this.mediaPlayer.dispose();
+      this.mediaPlayer = null;
     }
   }
 
   class Worker implements Runnable {
     private double elapsedTime = 0;
     private final double stop;
+    private CountDownLatch startSignal;
+    private CountDownLatch endSignal;
     private boolean terminate = false;
 
-    Worker(final double stop) {
+    Worker(CountDownLatch startSignal, CountDownLatch endSignal, final double stop) {
+      this.startSignal = startSignal;
+      this.endSignal = endSignal;
       this.stop = stop;
     }
 
     public void run() {
       try {
         logger.trace("Start Signal is waiting");
-        startSignal.await();
+        this.startSignal.await();
         long startTime = System.currentTimeMillis();
         logger.trace("Play Worker started at " + startTime + " ms");
         logger.trace("Play Worker is waiting to reach " + stop + " sec");
         //TODO(Reda): Implement markers to wait for event in the native
         while (!terminate && mediaPlayer.getPresentationTime() < stop) {}
-        elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
+        this.elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
         waitForStopped();
+        endSignal.countDown();
         logger.trace("Play Worker is done elapsed time " + elapsedTime + " sec");
       } catch (InterruptedException ex) {
         logger.error(ex.getMessage());
@@ -220,11 +210,11 @@ public class MediaPlayerSync {
     }
 
     void terminate() {
-      terminate = true;
+      this.terminate = true;
     }
 
     double getElapsedTime() {
-      return elapsedTime;
+      return this.elapsedTime;
     }
   }
 

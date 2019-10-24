@@ -45,7 +45,7 @@ abstract class FfmpegMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected boolean playerRateIsSupported(final float rate) {
-    return 0F <= rate && rate <= 4F;
+    return 0F <= rate && rate <= 32F;
   }
 
   class FfmpegPlayerStateListener implements PlayerStateListener {
