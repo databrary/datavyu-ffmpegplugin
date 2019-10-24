@@ -138,12 +138,6 @@ public class LibraryLoader {
       outfile = new File(libraryFolder, destName + getExtension(destName));
     }
 
-    // If the file already exists and is in use aka can't be written
-    if (outfile.exists()) {
-      logger.info("Attempting to extract an existing file " + destName);
-      return outfile;
-    }
-
     URL url = getResource(destName);
     InputStream in = url.openStream();
 
