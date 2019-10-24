@@ -261,7 +261,7 @@ public class MediaPlayerTest {
   protected void testTimeAtStart(Builder builder, MediaInformation mediaInformation) {
     logger.info("Presentation time at launch Test");
     MediaPlayerSync player = builder.build();
-    assertEquals(player.getMediaPlayer().getPresentationTime(), 0.0);
+    assertEquals(player.getMediaPlayer().getPresentationTime(), player.getMediaPlayer().getStartTime());
 
     player.disposeMediaPlayerSync();
   }
