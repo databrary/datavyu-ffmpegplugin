@@ -28,15 +28,10 @@ public:
     if (GetStartTime() != AV_NOPTS_VALUE && dSeekTime <= GetStartTime()) {
       dSeekTime = GetStartTime();
     } else if (GetDuration() != AV_NOPTS_VALUE && dSeekTime >= GetDuration()) {
-      // Seek one fram before the Stram total duration to allow the stepping
-      // callback that occurs after the seek to update the display if the stream
-      // is paused
-      if (GetFrameRate() > 0) {
-        dSeekTime = GetDuration() - (1.0 / GetFrameRate());
-      } else {
-        dSeekTime = GetDuration();
-      }
+      dSeekTime = GetDuration();
     }
+
+    dSeekTime -= GetFrameRate() > 0 ? (1.0 / GetFrameRate()) : 0;
 
     double incr = dSeekTime - pos;
 
@@ -85,14 +80,12 @@ public:
       SetPaused(true, false);
     }
 
-    // Get the current time and seek if it time is not NaN and equal 0
-    double time = GetTime();
-    if (!isnan(time) && time > 0) {
-      double difference = -1.0 / GetFrameRate();
-      av_log(NULL, AV_LOG_INFO,
-             "Step backward from %2.3f with a %2.3f difference\n", time,
-             difference);
-      Seek((time + difference));
+    double pos = GetTime();
+    if (!isnan(pos)) {
+      double dSeekTime = pos - (1.0 / GetFrameRate());
+      double incr = dSeekTime - pos;
+      p_video_state_->Seek((int64_t)(dSeekTime * AV_TIME_BASE),
+                           (int64_t)(incr * AV_TIME_BASE));
     }
   }
 
