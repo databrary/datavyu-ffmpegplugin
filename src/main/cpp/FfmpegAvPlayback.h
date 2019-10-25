@@ -83,6 +83,11 @@ public:
     double pos = GetTime();
     if (!isnan(pos)) {
       double dSeekTime = pos - (1.0 / GetFrameRate());
+
+      if (GetStartTime() != AV_NOPTS_VALUE && dSeekTime <= GetStartTime()) {
+        dSeekTime = GetStartTime();
+      }
+
       double incr = dSeekTime - pos;
       p_video_state_->Seek((int64_t)(dSeekTime * AV_TIME_BASE),
                            (int64_t)(incr * AV_TIME_BASE));

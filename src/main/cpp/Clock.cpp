@@ -9,6 +9,12 @@ Clock::Clock(const int *queue_serial)
   SetTime(NAN, -1);
 }
 
+Clock::~Clock() {
+  if (p_serial_) {
+    p_serial_ == nullptr;
+  }
+}
+
 Clock::Clock() : time(0.0), serial(-1), p_serial_(&serial) { SetTime(NAN, -1); }
 
 double Clock::GetTime() const {
