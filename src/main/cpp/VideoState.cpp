@@ -983,7 +983,7 @@ int VideoState::DecodeImagePacketsToFrames() {
         (time_base.den * p_image_stream_->r_frame_rate.den);
 
     if (p_frame->pts < image_seek_pts) {
-      // av_frame_unref(p_frame);
+       av_frame_unref(p_frame);
       continue;
     }
 
