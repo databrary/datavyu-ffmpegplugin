@@ -24,6 +24,8 @@ public:
 
   Clock();
 
+  virtual ~Clock();
+
   double GetTime() const; // for stream time, depends on rate
 
   inline double GetSerial() const { return serial; }
