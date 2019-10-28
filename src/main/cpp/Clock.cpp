@@ -9,9 +9,13 @@ Clock::Clock(const int *queue_serial)
   SetTime(NAN, -1);
 }
 
-Clock::Clock() : time(0.0), serial(-1), p_serial_(&serial) {
-  SetTime(NAN, -1);
+Clock::~Clock() {
+  if (p_serial_) {
+    p_serial_ == nullptr;
+  }
 }
+
+Clock::Clock() : time(0.0), serial(-1), p_serial_(&serial) { SetTime(NAN, -1); }
 
 double Clock::GetTime() const {
   if (SerialNoMatch()) {
@@ -28,7 +32,7 @@ void Clock::SetTime(double newTime, int newSerial) {
 }
 
 void Clock::SyncMasterToSlave(Clock *master, Clock *slave,
-                                 double noSyncThreshold) {
+                              double noSyncThreshold) {
   double master_time = master->GetTime();
   double slave_time = slave->GetTime();
   if (!isnan(slave_time) &&

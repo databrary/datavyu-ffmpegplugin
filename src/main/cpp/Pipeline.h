@@ -28,8 +28,15 @@
 
 #include "AudioVideoFormats.h"
 #include "PipelineOptions.h"
+#include "PlayerState.h"
 #include <stdint.h>
 #include <sys/stat.h>
+
+extern "C" {
+#ifdef SDL_ENABLED
+#include <SDL2/SDL_keycode.h>
+#endif // SDL_ENABLED
+}
 
 class CMedia;
 class CJavaPlayerEventDispatcher;
@@ -39,17 +46,6 @@ class CJavaPlayerEventDispatcher;
 // Underlying object that interfaces the JNI layer to the actual media engine
 class CPipeline {
 public:
-  enum PlayerState {
-    Unknown = 0,
-    Ready = 1,
-    Playing = 2,
-    Paused = 3,
-    Stopped = 4,
-    Stalled = 5,
-    Finished = 6,
-    Error = 7
-  };
-
   CPipeline(CPipelineOptions *p_options = NULL);
   virtual ~CPipeline();
 
@@ -65,9 +61,8 @@ public:
   virtual uint32_t StepBackward() = 0;
   virtual uint32_t Finish() = 0;
 
-  virtual uint32_t Seek(double dSeekTime, int seek_flags) = 0;
-  virtual uint32_t SeekToFrame(int frame_nb) = 0;
-  
+  virtual uint32_t Seek(double dSeekTime) = 0;
+
   virtual uint32_t GetDuration(double *pdDuration) = 0;
   virtual uint32_t GetStreamTime(double *pdStreamTime) = 0;
   virtual uint32_t GetFps(double *pdFps) = 0;
@@ -87,6 +82,9 @@ public:
   virtual uint32_t GetAudioSyncDelay(long *plMillis) = 0;
 
 #ifdef SDL_ENABLED
+  virtual uint32_t GetWindowSize(int *p_width, int *p_height) const = 0;
+  virtual uint32_t SetWindowSize(int width, int height) = 0;
+
   virtual uint32_t ShowWindow() = 0;
   virtual uint32_t HideWindow() = 0;
 #endif
@@ -94,12 +92,19 @@ public:
 protected:
   CJavaPlayerEventDispatcher *p_event_dispatcher_;
   CPipelineOptions *p_options_;
-  PlayerState player_state_;
-  PlayerState player_pending_state_; // This is necessary to get from stalled
-                                     // into the next correct state
+  PlayerState::State player_state_;
+  PlayerState::State
+      player_pending_state_; // This is necessary to get from stalled
+                             // into the next correct state
 
-  void UpdatePlayerState(PlayerState new_state);
-  void SetPlayerState(PlayerState new_state, bool silent);
+  bool IsPlayerState(PlayerState::State state);
+  void SetPendingPlayerState();
+  void UpdatePlayerState(PlayerState::State new_state);
+  void SetPlayerState(PlayerState::State new_state, bool silent);
+#ifdef SDL_ENABLED
+  void MapSdlToJavaKey(SDL_Keycode sdlkeyCode);
+  void DispatchKeyEvent(int javaKeyCode);
+#endif // SDL_ENABLED
 };
 
 #endif //_PIPELINE_H_

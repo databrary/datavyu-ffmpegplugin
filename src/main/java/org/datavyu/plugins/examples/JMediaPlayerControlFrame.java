@@ -60,27 +60,6 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
         mediaPlayer.stepBackward();
         System.out.println("Finished backward step");
         break;
-      case KeyEvent.VK_X:
-        nextTime = mediaPlayer.getPresentationTime() + step;
-        // Don't step if is the current time
-        if (!Double.isNaN(nextTime)) {
-          frameNB = (int) Math.ceil(nextTime / step);
-          System.out.println(
-              "Step Forward to Frame "
-                  + frameNB);
-          mediaPlayer.seekToFrame(frameNB);
-        }
-        break;
-      case KeyEvent.VK_C:
-        nextTime = mediaPlayer.getPresentationTime() - step;
-        if (!Double.isNaN(nextTime)) {
-          frameNB = (int) Math.ceil(nextTime / step);
-          System.out.println(
-              "Step backward to Frame "
-                  + frameNB);
-          mediaPlayer.seekToFrame(frameNB);
-        }
-        break;
       case KeyEvent.VK_I:
         System.out.println(
             "Player State "

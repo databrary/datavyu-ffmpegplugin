@@ -30,7 +30,6 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
     stateListener = new PlayerStateListenerImpl();
     this.addMediaPlayerStateListener(stateListener);
     this.container = container;
-    sendPlayerStateEvent(eventPlayerUnknown, 0);
   }
 
   @Override
@@ -61,6 +60,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
               e.printStackTrace();
             }
           }
+          logger.debug("Sending Ready State");
           sendPlayerStateEvent(eventPlayerReady, 0);
         };
 
@@ -68,7 +68,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
     synchronized (readyLock) {
       try {
-        logger.info("Waiting for Ready state");
+        logger.debug("Waiting for Ready state");
         readyLock.wait();
         // Always increment the player count after creating an instance
         // Important: don't decrement the player count when releasing resources
@@ -97,7 +97,12 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
   }
 
   @Override
-  protected void playerSeekToFrame(int frameNumber) throws MediaException {
+  protected int[] playerGetWindowSize() throws MediaException {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  protected void playerSetWindowSize(int width, int height) throws MediaException {
     throw new NotImplementedException();
   }
 

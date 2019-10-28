@@ -1,6 +1,7 @@
 package org.datavyu.plugins.ffmpeg;
 
 import org.datavyu.plugins.MediaException;
+import org.datavyu.plugins.PlayerEvent;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,8 +77,6 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
-
-    playerSetRate(1.0F);
   }
 
   @Override
@@ -211,19 +210,11 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerSeek(double streamTime, int flags) throws MediaException {
-    int rc = ffmpegSeek(getNativeMediaRef(), streamTime, flags);
+  protected void playerSeek(double streamTime) throws MediaException {
+    int rc = ffmpegSeek(getNativeMediaRef(), streamTime);
     if (0 != rc) {
       throwMediaErrorException(rc, null);
     }
-  }
-  @Override
-  protected void playerSeek(int frameNumber) throws MediaException {
-    int rc = ffmpegSeekToFrame(getNativeMediaRef(), frameNumber);
-    if (0 != rc) {
-      throwMediaErrorException(rc, null);
-    }
-    logger.trace("Player is seeking to Frame Number" + frameNumber);
   }
 
   @Override
@@ -252,7 +243,26 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerShowSDLWindow() {
+  protected int[] playerGetWindowSize() throws MediaException{
+    int[] width = new int[1];
+    int[] height = new int[1];
+    int rc = ffmpegGetWindowSize(getNativeMediaRef(), width, height);
+    if (rc != 0) {
+      throwMediaErrorException(rc, null);
+    }
+    return new int[] {width[0], height[0]};
+  }
+
+  @Override
+  protected void playerSetWindowSize(final int width, final int height) throws MediaException{
+    int rc = ffmpegSetWindowSize(getNativeMediaRef(), width, height);
+    if (rc != 0) {
+      throwMediaErrorException(rc, null);
+    }
+  }
+
+  @Override
+  protected void playerShowSDLWindow() throws MediaException{
     int rc = ffmpegShowWindow(getNativeMediaRef());
     if (rc != 0) {
       throwMediaErrorException(rc, null);
@@ -260,10 +270,35 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerHideSDLWindow() {
+  protected void playerHideSDLWindow() throws MediaException{
     int rc = ffmpegHideWindow(getNativeMediaRef());
     if (rc != 0) {
       throwMediaErrorException(rc, null);
+    }
+  }
+
+  public static class SdlPlayerKeyEvent extends PlayerEvent {
+
+    private final Object source;
+    private final int keyCode;
+    private final long nativeMediaRef;
+
+    public SdlPlayerKeyEvent(Object source, long nativeMediaRef,int keyCode) {
+      this.source = source;
+      this.nativeMediaRef = nativeMediaRef;
+      this.keyCode = keyCode;
+    }
+
+    public Object getSource() {
+      return source;
+    }
+
+    public long getNativeMediaRef() {
+      return nativeMediaRef;
+    }
+
+    public int getKeyCode() {
+      return keyCode;
     }
   }
 
@@ -302,9 +337,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
   protected native int ffmpegGetDuration(long refNativeMedia, double[] duration);
 
-  protected native int ffmpegSeek(long refNativeMedia, double streamTime, int flags);
-
-  protected native int ffmpegSeekToFrame(long refNativeMedia, int frameNumber);
+  protected native int ffmpegSeek(long refNativeMedia, double streamTime);
 
   protected native int ffmpegGetImageWidth(long refNativeMedia, int[] width);
 
@@ -313,6 +346,10 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   protected native int ffmpegGetVolume(long refNativeMedia, float[] volume);
 
   protected native int ffmpegSetVolume(long refNativeMedia, float volume);
+
+  protected native int ffmpegGetWindowSize(long refNativeMedia, int[] width, int[] height);
+
+  protected native int ffmpegSetWindowSize(long refNativeMedia, int width, int height);
 
   protected native int ffmpegShowWindow(long refNativeMedia);
 

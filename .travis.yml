@@ -1,0 +1,27 @@
+os: osx
+
+osx_image: xcode9.3
+
+git:
+  depth: 1
+
+branches:
+  only:
+  - dev
+  - master
+
+language: java
+
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/resources
+
+install:
+  - curl -L https://github.com/databrary/FFplay64/raw/master/dependencies.zip -o $TRAVIS_BUILD_DIR/src/main/cpp/dependencies.zip
+  - unzip -qq $TRAVIS_BUILD_DIR/src/main/cpp/dependencies.zip -d $TRAVIS_BUILD_DIR/src/main/cpp/
+  - java -version
+  - mvn -version
+
+script:
+  - mvn -T 4 -Prelease,mac -Dmaven.test.skip=true clean package

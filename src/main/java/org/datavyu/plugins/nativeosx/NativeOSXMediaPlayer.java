@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.DatavyuMediaPlayer;
+import org.datavyu.plugins.PlayerStateEvent;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
@@ -53,8 +54,12 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     logger.debug("Start Player " + this.id);
     EventQueue.invokeLater(
         () -> {
-          mediaPlayer.setRate(prevRate, id);
-          sendPlayerStateEvent(eventPlayerPlaying, 0);
+          if (getState() == PlayerStateEvent.PlayerState.READY
+                  || getState() == PlayerStateEvent.PlayerState.STOPPED
+                  || getState() == PlayerStateEvent.PlayerState.PAUSED) {
+            mediaPlayer.setRate(prevRate, id);
+            sendPlayerStateEvent(eventPlayerPlaying, 0);
+          }
         });
   }
 
@@ -62,9 +67,12 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   protected void playerStop() throws MediaException {
     EventQueue.invokeLater(
         () -> {
-          prevRate = 1F;
-          mediaPlayer.stop(id);
-          sendPlayerStateEvent(eventPlayerStopped, 0);
+          if (getState() != PlayerStateEvent.PlayerState.STOPPED
+              && getState() != PlayerStateEvent.PlayerState.READY) {
+            prevRate = 1F;
+            mediaPlayer.stop(id);
+            sendPlayerStateEvent(eventPlayerStopped, 0);
+          }
         });
   }
 
@@ -105,7 +113,10 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected void playerPause() throws MediaException {
-    playerStop(mediaPlayer.getRate(id));
+    if (getState() != PlayerStateEvent.PlayerState.PAUSED
+        && getState() != PlayerStateEvent.PlayerState.READY) {
+      playerStop(mediaPlayer.getRate(id));
+    }
   }
 
   @Override
@@ -227,6 +238,11 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   @Override
   protected boolean playerIsSeekPlaybackEnabled() {
     return false;
+  }
+
+  @Override
+  protected boolean playerRateIsSupported(final float rate) {
+    return 0F <= rate && rate <= 8F;
   }
 
   @Override

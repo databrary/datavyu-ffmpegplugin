@@ -49,6 +49,22 @@ public interface MediaPlayer {
   void removeMediaPlayerStateListener(PlayerStateListener listener);
 
   /**
+   * Adds a listener for SDL player key events.
+   *
+   * @param listener listener to be added
+   * @throws IllegalArgumentException if <code>listener</code> is <code>null</code>.
+   */
+  void addSdlKeyEventListener(SdlKeyEventListener listener);
+
+  /**
+   * Removes a listener for SDL player key events.
+   *
+   * @param listener listener to be removed
+   * @throws IllegalArgumentException if <code>listener</code> is <code>null</code>.
+   */
+  void removeSdlKeyEventListener(SdlKeyEventListener listener);
+
+  /**
    * Set the amount of time to delay for the audio.
    *
    * @param delay time in milliseconds
@@ -188,19 +204,11 @@ public interface MediaPlayer {
    * Seeks playback to the specified time. The state of the player
    * is unchanged. A negative value will be clamped
    * to zero, and a positive value to the duration, if known.
+   * The seek is precise only when player is stopped/paused or rate is negative
    *
    * @param streamTime The time in seconds to which to seek.
    */
   void seek(double streamTime);
-
-  /**
-   * Seeks playback to the specified frame number. The state of the player
-   * is unchanged. A negative value will be clamped
-   * to zero, and a positive value to the frame, if known.
-   *
-   * @param frameNumber The frame id to which to seek.
-   */
-  void seekToFrame(int frameNumber);
 
   /**
    * Get the width of the image in pixels
@@ -228,14 +236,22 @@ public interface MediaPlayer {
    * be unusable after this method is invoked.
    */
   void dispose();
+
   /**
    * Check if the current rate is supported natively by the player, if not,
    * the plugin will pause when the speed is not supported and the playback
-   * will will performed through seeks requested by an external clock3
+   * will performed through seeks requested by an external clock
    *
    * @return true if the rate is supported
    */
   boolean isSeekPlaybackEnabled();
+
+  /**
+   * Return true if the Media player supports a specific playback speed
+   * @param rate playback speed
+   * @return True or False
+   */
+  boolean isRateSupported(float rate);
 
   /**
    * Expose SDL player window, this method is available only for the SDL player, will
@@ -248,4 +264,23 @@ public interface MediaPlayer {
    * throw an exception if called from a Java player.
    */
   void hideSDLWindow();
+
+  /**
+   * Return SDL Window Height
+   * @return window height
+   */
+  int getWindowHeight();
+
+  /**
+   * Return SDL Window Width
+   * @return window width
+   */
+  int getWindowWidth();
+
+  /**
+   * Set SDL Window new width and height
+   * @param width
+   * @param height
+   */
+  void setWindowSize(int width, int height);
 }

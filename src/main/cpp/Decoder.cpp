@@ -4,10 +4,9 @@ Decoder::Decoder(AVCodecContext *avctx, PacketQueue *queue,
                  std::condition_variable *empty_queue_cond)
     : p_codec_context_(avctx), p_packet_queue_(queue),
       p_is_empty_condition_(empty_queue_cond), serial_(-1), is_finished_(false),
-      is_packet_pending_(false), do_reorder_(false),
-      start_pts_(AV_NOPTS_VALUE), start_pts_timebase_(av_make_q(0, 0)),
-      next_pts_(0), next_pts_timebase_(av_make_q(0, 0)),
-      p_decoder_thread_(nullptr) {
+      is_packet_pending_(false), do_reorder_(-1), start_pts_(AV_NOPTS_VALUE),
+      start_pts_timebase_(av_make_q(0, 0)), next_pts_(0),
+      next_pts_timebase_(av_make_q(0, 0)), p_decoder_thread_(nullptr) {
   // Note, that pkt will need to be initialized for the case when decode_frame
   // is never run Sidenote: the move ref code will clean this initialization
   av_init_packet(&packet_);
@@ -15,8 +14,9 @@ Decoder::Decoder(AVCodecContext *avctx, PacketQueue *queue,
 
 Decoder::~Decoder() {
   av_packet_unref(&packet_);
-  // TODO(fraudies): Move initialization of codec context into Decoder from VideoState
-	avcodec_free_context(&p_codec_context_);
+  // TODO(fraudies): Move initialization of codec context into Decoder from
+  // VideoState
+  avcodec_free_context(&p_codec_context_);
 }
 
 int Decoder::Decode(AVFrame *frame) {
@@ -62,8 +62,9 @@ int Decoder::Decode(AVFrame *frame) {
           avcodec_flush_buffers(p_codec_context_);
           return 0;
         }
-        if (ret >= 0)
+        if (ret >= 0) {
           return 1;
+        }
       } while (ret != AVERROR(EAGAIN));
     }
 

@@ -65,6 +65,10 @@
 		2B80119822678004002548E4 /* libavformat.58.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavformat.58.dylib; path = dependencies/lib/libavformat.58.dylib; sourceTree = "<group>"; };
 		2B80119922678004002548E4 /* libavfilter.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libavfilter.7.dylib; path = dependencies/lib/libavfilter.7.dylib; sourceTree = "<group>"; };
 		2B8011A4226792D1002548E4 /* libSDL2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2.dylib; path = dependencies/lib/libSDL2.dylib; sourceTree = "<group>"; };
+		2BFF45B4231ED01400B4E072 /* libgtest_main.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest_main.a; path = dependencies/lib/libgtest_main.a; sourceTree = "<group>"; };
+		2BFF45B5231ED01400B4E072 /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest.a; path = dependencies/lib/libgtest.a; sourceTree = "<group>"; };
+		2BFF45C6231ED09400B4E072 /* MediaPlayerGoogleTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MediaPlayerGoogleTest.m; sourceTree = "<group>"; };
+		2BFF45C8231ED09400B4E072 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E95D22D5219644C2007A6758 /* libFfmpegSdlMediaPlayer.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libFfmpegSdlMediaPlayer.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		E95D22EF219647A2007A6758 /* FrameQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FrameQueue.cpp; sourceTree = "<group>"; };
 		E95D22F0219647A2007A6758 /* Pipeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Pipeline.cpp; sourceTree = "<group>"; };
@@ -125,6 +129,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2BFF45C5231ED09400B4E072 /* MediaPlayerGoogleTest */ = {
+			isa = PBXGroup;
+			children = (
+				2BFF45C6231ED09400B4E072 /* MediaPlayerGoogleTest.m */,
+				2BFF45C8231ED09400B4E072 /* Info.plist */,
+			);
+			path = MediaPlayerGoogleTest;
+			sourceTree = "<group>";
+		};
 		E95D22CC219644C2007A6758 = {
 			isa = PBXGroup;
 			children = (
@@ -165,6 +178,7 @@
 				E95D230A219647A4007A6758 /* Singleton.h */,
 				E95D22F3219647A2007A6758 /* VideoState.cpp */,
 				E95D2300219647A3007A6758 /* VideoState.h */,
+				2BFF45C5231ED09400B4E072 /* MediaPlayerGoogleTest */,
 				E95D22D6219644C2007A6758 /* Products */,
 				E95D22DC219646AA007A6758 /* Frameworks */,
 			);
@@ -181,6 +195,8 @@
 		E95D22DC219646AA007A6758 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2BFF45B4231ED01400B4E072 /* libgtest_main.a */,
+				2BFF45B5231ED01400B4E072 /* libgtest.a */,
 				2B8011A4226792D1002548E4 /* libSDL2.dylib */,
 				2B80119422678004002548E4 /* libavcodec.58.dylib */,
 				2B80119522678004002548E4 /* libavdevice.58.dylib */,
@@ -357,11 +373,16 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/dependencies/framework",
+					/Library/Frameworks,
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					"SDL_ENABLED=1",
 					"DEBUG=1",
 					"$(inherited)",
 				);
@@ -371,6 +392,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(JAVA_HOME)/include/**",
+					"${PROJECT_DIR}/dependencies/include",
+				);
+				JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home;
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/lib";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -415,14 +442,25 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/dependencies/framework",
+					/Library/Frameworks,
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = "SDL_ENABLED=1";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(JAVA_HOME)/include/**",
+					"${PROJECT_DIR}/dependencies/include",
+				);
+				JAVA_HOME = /Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home;
+				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/dependencies/lib";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
@@ -440,29 +478,20 @@
 					"$(PROJECT_DIR)/dependencies/framework/**",
 					"/Library/Frameworks/**",
 				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"SDL_ENABLED=1",
-					"DEBUG=1",
-					"$(inherited)",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
+					"$(JAVA_HOME)/include/**",
 					"${PROJECT_DIR}/dependencies/include",
 				);
 				INSTALL_PATH = "@rpath";
+				JAVA_HOME = "$(inherited)";
 				LD_RUNPATH_SEARCH_PATHS = "@rpath";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/dependencies/lib",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
-				);
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 			};
 			name = Debug;
 		};
@@ -477,25 +506,20 @@
 					"$(PROJECT_DIR)/dependencies/framework/**",
 					"/Library/Frameworks/**",
 				);
-				GCC_PREPROCESSOR_DEFINITIONS = "SDL_ENABLED=1";
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home/include/**",
+					"$(JAVA_HOME)/include/**",
 					"${PROJECT_DIR}/dependencies/include",
 				);
 				INSTALL_PATH = "@rpath";
+				JAVA_HOME = "$(inherited)";
 				LD_RUNPATH_SEARCH_PATHS = "@rpath";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/dependencies/lib",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SYSTEM_FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
-				);
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 			};
 			name = Release;
 		};

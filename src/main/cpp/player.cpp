@@ -1,5 +1,4 @@
 #include "FfmpegSdlAvPlayback.h"
-#include "MpvAvPlayback.h"
 
 int runFFmpegPlayer(const char *input_filename, AVInputFormat *file_iformat) {
 
@@ -16,17 +15,11 @@ int runFFmpegPlayer(const char *input_filename, AVInputFormat *file_iformat) {
   return 0;
 }
 
-int runMpvPlayer(const char *input_filename) {
-  MpvAvPlayback *p_player = new MpvAvPlayback();
-  p_player->InitAndEventLoop(input_filename);
-  return 0;
-}
-
 int main(int argc, char **argv) {
 	static const char *input_filename =
-    "Nature_30fps_1080p.mp4";
-		//"DatavyuSampleVideo.mp4";
-		// "counter.mp4";
+    //"Nature_30fps_1080p.mp4";
+		"DatavyuSampleVideo.mp4";
+		 //"counter.mp4";
         //"http://www.html5videoplayer.net/videos/toystory.mp4";
   AVInputFormat *file_iformat = nullptr;
 
@@ -34,11 +27,6 @@ int main(int argc, char **argv) {
    * Uncomment this part to test the ffmpeg player
    ******************************************************/
   runFFmpegPlayer(input_filename, file_iformat);
-
-  /******************************************************
-   * Uncomment this part to test the mpv player
-   ******************************************************/
-//  runMpvPlayer(input_filename);
 
   return 0;
 }

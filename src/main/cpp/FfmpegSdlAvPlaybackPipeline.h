@@ -27,8 +27,7 @@ private:
   virtual uint32_t StepBackward();
   virtual uint32_t Finish();
 
-  virtual uint32_t Seek(double seek_time, int seek_flags);
-  virtual uint32_t SeekToFrame(int frame_nb);
+  virtual uint32_t Seek(double seek_time);
 
   virtual uint32_t GetDuration(double *p_duration);
   virtual uint32_t GetStreamTime(double *p_stream_time);
@@ -48,6 +47,9 @@ private:
 
   virtual uint32_t GetImageWidth(int *p_width) const;
   virtual uint32_t GetImageHeight(int *p_height) const;
+
+  virtual uint32_t GetWindowSize(int *p_width, int *p_height) const;
+  virtual uint32_t SetWindowSize(int width, int height);
 
   virtual uint32_t ShowWindow();
   virtual uint32_t HideWindow();

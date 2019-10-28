@@ -76,14 +76,14 @@
     <LibraryPath>C:\Users\Florian\FFplay64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Program Files\Java\jdk1.8.0_172\include\win32;C:\Program Files\Java\jdk1.8.0_172\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Java\jdk1.8.0_172\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include\win32;$(JAVA_HOME)\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(JAVA_HOME)\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Program Files\Java\jdk1.8.0_172\include\win32;C:\Program Files\Java\jdk1.8.0_172\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Java\jdk1.8.0_172\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include\win32;$(JAVA_HOME)\include;C:\FFplay64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(JAVA_HOME)\lib;C:\FFplay64\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -153,11 +153,9 @@
   <ItemGroup>
     <ClCompile Include="FfmpegSdlAvPlayback.cpp" />
     <ClCompile Include="player.cpp" />
-    <ClCompile Include="MpvAvPlayback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FfmpegSdlAvPlayback.h" />
-    <ClInclude Include="MpvAvPlayback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,45 @@
+version: 1.0.{build}
+
+image: Visual Studio 2017
+
+clone_depth: 1
+
+branches:
+  only:
+    - master
+    - dev
+
+environment:
+  JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+
+install:
+  - ps: |
+      if (!(Test-path -Path "C:\FFplay64")) {
+        Write-Output "Download FFmpeg Dependencies"
+        Invoke-WebRequest "https://github.com/databrary/FFplay64/raw/master/FFplay64.zip" -OutFile "C:\FFplay64.zip"
+        Write-Output "Extract FFmpeg dependencies"
+        Expand-Archive -LiteralPath C:\FFplay64.zip -DestinationPath C:\
+      }
+      $msbuild = (Get-Command msbuild).path
+      Write-Output $msbuild
+
+  - cmd: SET PATH=%JAVA_HOME%\bin;%PATH%
+  - cmd: mvn --version
+  - cmd: java -version
+
+cache:
+  - C:\apache-maven-3.5.4\
+  - C:\Users\appveyor\.m2
+  - C:\FFplay64\
+  - C:\resources\
+
+before_build:
+  - cd %APPVEYOR_BUILD_FOLDER%\src\main\cpp
+  - nuget restore MediaPlayer.sln
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+build_script:
+  - mvn -T 4 -Prelease,win64 clean compile
+
+#test_script:
+#  - mvn -T 4 -Prelease,win64 test

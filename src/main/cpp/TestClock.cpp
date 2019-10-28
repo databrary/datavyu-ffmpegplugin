@@ -1,6 +1,9 @@
 #include "Clock.h"
 #include "gtest/gtest.h"
 
+#ifdef __APPLE__
+#include <cmath>
+#endif
 #include <chrono>
 #include <limits>
 #include <thread>

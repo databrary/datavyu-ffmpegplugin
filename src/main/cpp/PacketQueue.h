@@ -13,9 +13,9 @@ extern "C" {
 //
 // Replaces the SDL mutex through c++ std mutex/condition variable
 class PacketQueue {
- public:
+public:
   AVPacket
-      flush_packet_;  // TODO(fraudies): better use one object for all queues
+      flush_packet_; // TODO(fraudies): better use one object for all queues
 
   PacketQueue();
 
@@ -43,7 +43,7 @@ class PacketQueue {
 
   void Start();
 
-  int Put(AVPacket *p_packet);  // Must remain a pointer to cleanup package
+  int Put(AVPacket *p_packet); // Must remain a pointer to cleanup package
 
   int PutNullPacket(int stream_index);
 
