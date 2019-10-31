@@ -12,7 +12,6 @@ import java.net.URI;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/** WARNING: This class is tested only on Windows platform */
 public class SimpleJavaFXMediaPlayer extends Application {
   private static Logger logger = LogManager.getLogger(SimpleJavaFXMediaPlayer.class);
   private JMediaPlayerControlFrame controller;
