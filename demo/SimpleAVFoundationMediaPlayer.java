@@ -1,5 +1,3 @@
-package org.datavyu.plugins.examples;
-
 import org.datavyu.plugins.nativeosx.AVFoundationMediaPlayer;
 import org.datavyu.plugins.MediaPlayer;
 
