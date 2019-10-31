@@ -14,6 +14,7 @@ import java.net.URI;
  */
 public class SimpleJavaFXMediaPlayer extends Application {
   private static Logger logger = LogManager.getLogger(SimpleJavaFXMediaPlayer.class);
+  private JMediaPlayerControlFrame controller;
 
   @Override
   public void start(Stage primaryStage) {
@@ -24,15 +25,19 @@ public class SimpleJavaFXMediaPlayer extends Application {
         // Handle error thrown by The Media Player
         (source, errorCode, message) -> logger.error(errorCode + ": " + message));
 
-    mediaPlayer.addSdlKeyEventListener(
-        (source, nativeMediaRef, javaKeyCode) ->
-            // Handle key events triggered on SDL window (Working only on Windows platform)
-            logger.info("SDL Media " + nativeMediaRef + " event " + javaKeyCode));
-
     mediaPlayer.init();
+
+    // Open a simple JFrame to control the media player through key commands
+    // Be creative and create your own controller in JavaFX
     Platform.runLater(
-        // Video Controller
-        () -> new JMediaPlayerControlFrame(mediaPlayer));
+        () -> {
+          controller = new JMediaPlayerControlFrame(mediaPlayer);
+        });
+
+    // Handle Window Key events triggered from SDL window (Working only on Windows platform)
+    mediaPlayer.addSdlKeyEventListener(
+            (source, nativeMediaRef, javaKeyCode) ->
+                    controller.handleKeyEvents(javaKeyCode));
   }
 
   public static void main(String[] args) {

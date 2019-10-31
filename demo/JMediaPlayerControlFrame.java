@@ -158,4 +158,8 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
     System.out.println("Seek from " + currentTime + " sec to " + newTime + "sec");
     mediaPlayer.seek(newTime);
   }
+
+  public void handleKeyEvents(final int javaKeyCode) {
+    this.dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, javaKeyCode, KeyEvent.CHAR_UNDEFINED));
+  }
 }

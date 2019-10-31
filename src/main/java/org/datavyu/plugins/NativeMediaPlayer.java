@@ -191,8 +191,8 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
     }
 
     private void HandleSdlKeyEvents(SdlPlayerKeyEvent evt) {
-      logger.info("Received an event from the native side");
-      logger.info("key listener size " + keyListeners.size());
+      logger.debug("Received an event from the native side");
+      logger.trace("key listener size " + keyListeners.size());
       for (ListIterator<SdlKeyEventListener> it = keyListeners.listIterator(); it.hasNext(); ) {
         SdlKeyEventListener l = it.next();
         if (l != null) {
