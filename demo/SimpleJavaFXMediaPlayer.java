@@ -34,7 +34,7 @@ public class SimpleJavaFXMediaPlayer extends Application {
           controller = new JMediaPlayerControlFrame(mediaPlayer);
         });
 
-    // Handle Window Key events triggered from SDL window (Working only on Windows platform)
+    // Handle Window Key events triggered from SDL window
     mediaPlayer.addSdlKeyEventListener(
             (source, nativeMediaRef, javaKeyCode) ->
                     controller.handleKeyEvents(javaKeyCode));
