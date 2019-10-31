@@ -101,7 +101,9 @@ Here is a simple example on how to create and initialize an SDL Player, all what
 
 A simple video controller example is used [here](src/main/java/org/datavyu/plugins/examples/JMediaPlayerControlFrame.java) to control media players through key binding, and a more sophisticated controller is provided in [Datavyu](https://github.com/databrary/datavyu/blob/master/src/main/java/org/datavyu/views/VideoController.java).
 
-If you are interested in using Datavyu Player in a JavaFX Application, check [this](demo/SimpleJavaFXMediaPlayer.java) example.
+If you are interested in using Datavyu Player in a JavaFX Application, check [this](demo/SimpleJavaFXMediaPlayer.java) example. 
+
+**Important**: Using FFmpegSdlMediaPlayer with JavaFX works only on Windows platforms (Mac OSX Fix in progress)
 
 ### AVFoundation Player
 AVFoundation is a framework that provides media audiovisual services on Apple operating systems, the player provided via the ```libNativeOSXCanvas``` artifact, require an [AWT Canvas](https://docs.oracle.com/javase/7/docs/api/java/awt/Canvas.html) to attach to the [AVPlayer](https://developer.apple.com/documentation/avfoundation/avplayer). 
