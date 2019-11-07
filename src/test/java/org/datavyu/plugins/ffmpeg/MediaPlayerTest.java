@@ -399,6 +399,22 @@ public class MediaPlayerTest {
     player.disposeMediaPlayerSync();
   }
 
+  protected void testRateAtPlay(Builder builder, MediaInformation mediaInformation) {
+    logger.info("Change speeds when playing");
+    MediaPlayerSync player = builder.build();
+
+    player.waitForPlaying();
+    player.getMediaPlayer().setRate(2F);
+    sleep(300);
+
+    player.getMediaPlayer().setRate(4F);
+    sleep(300);
+
+    assertEquals(player.getMediaPlayer().getRate(), 4F);
+
+    player.disposeMediaPlayerSync();
+  }
+
   protected void testRates(Builder builder, MediaInformation mediaInformation) {
     logger.info("Playback speeds Test");
     MediaPlayerSync player = builder.build();
