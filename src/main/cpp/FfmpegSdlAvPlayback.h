@@ -96,21 +96,18 @@ public:
 
   // Set SDL Window Size
   inline void SetWindowSize(int width, int height) {
-#ifdef _WIN32
     SDL_Window *window = SDL_GetWindowFromID(window_id_);
     if (window) {
+#ifdef _WIN32
       SDL_SetWindowSize(p_window_, width, height);
-      SetSize(width, height);
-    }
 #elif __APPLE__
-    dispatch_async(dispatch_get_main_queue(), ^{
-      SDL_Window *window = SDL_GetWindowFromID(window_id_);
-      if (window) {
-        SDL_SetWindowSize(p_window_, width, height);
-        SetSize(width, height);
-      }
-    });
+      dispatch_async(dispatch_get_main_queue(), ^{
+         SDL_SetWindowSize(p_window_, width, height);
+      });
 #endif
+    }
+    SetSize(width, height);
+    SetForceReferesh(true);
   }
 
   // Set the volume
