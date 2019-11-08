@@ -243,13 +243,22 @@ uint32_t FfmpegSdlAvPlaybackPipeline::GetImageHeight(int *iHeight) const {
   return ERROR_NONE;
 }
 
-uint32_t FfmpegSdlAvPlaybackPipeline::GetWindowSize(int *iWidth,
-                                                    int *iHeight) const {
+uint32_t FfmpegSdlAvPlaybackPipeline::GetWindowWidth(int *iWidth) const {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
   }
 
-  p_sdl_playback_->GetWindowSize(iWidth, iHeight);
+  *iWidth = p_sdl_playback_->GetWindowWidth();
+
+  return ERROR_NONE;
+}
+
+uint32_t FfmpegSdlAvPlaybackPipeline::GetWindowHeight(int *iHeight) const {
+  if (p_sdl_playback_ == nullptr) {
+    return ERROR_PLAYBACK_NULL;
+  }
+
+  *iHeight = p_sdl_playback_->GetWindowHeight();
 
   return ERROR_NONE;
 }

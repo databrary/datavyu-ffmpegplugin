@@ -29,6 +29,5 @@ public class SimpleSdlMediaPlayer {
 
     // Handle Window Key events
     mediaPlayer.addSdlKeyEventListener(
-            (source, nativeMediaRef, javaKeyCode) -> controller.handleKeyEvents(javaKeyCode));
-  }
+            (source, nativeMediaRef, javaKeyCode) -> controller.handleKeyEvents(javaKeyCode)); }
 }

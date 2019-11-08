@@ -241,12 +241,21 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetVolume(JNIEnv *,
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
- * Method:    ffmpegGetWindowSize
+ * Method:    ffmpegGetWindowHeight
  * Signature: (J[I)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowSize(
-    JNIEnv *, jobject, jlong, jintArray, jintArray);
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowHeight(
+    JNIEnv *, jobject, jlong, jintArray);
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegGetWindowWidth
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowWidth(
+    JNIEnv *, jobject, jlong, jintArray);
 
 /*
  * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer

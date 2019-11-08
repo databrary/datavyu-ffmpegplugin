@@ -314,7 +314,12 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   @Override
-  protected int[] playerGetWindowSize() throws MediaException {
+  protected int playerGetWindowWidth() throws MediaException {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  protected int playerGetWindowHeight() throws MediaException {
     throw new NotImplementedException();
   }
 
@@ -354,7 +359,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   @Override
-  public int getImageWidth() {
+  public int playerGetImageWidth() {
     int[] width = new int[1];
     int rc = ffmpegGetImageWidth(getNativeMediaRef(), width);
     if (rc != 0) {
@@ -364,7 +369,7 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   @Override
-  public int getImageHeight() {
+  public int playerGetImageHeight() {
     int[] height = new int[1];
     int rc = ffmpegGetImageHeight(getNativeMediaRef(), height);
     if (rc != 0) {
