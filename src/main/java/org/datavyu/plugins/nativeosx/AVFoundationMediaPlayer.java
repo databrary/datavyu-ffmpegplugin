@@ -97,7 +97,12 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
   }
 
   @Override
-  protected int[] playerGetWindowSize() throws MediaException {
+  protected int playerGetWindowWidth() throws MediaException {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  protected int playerGetWindowHeight() throws MediaException {
     throw new NotImplementedException();
   }
 

@@ -581,9 +581,8 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegSetVolume(
  * Signature: (J[I)I
  */
 JNIEXPORT jint JNICALL
-Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowSize(
-    JNIEnv *env, jobject obj, jlong ref_media, jintArray jriWindowWidth,
-    jintArray jriWindowHeight) {
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowWidth(
+    JNIEnv *env, jobject obj, jlong ref_media, jintArray jriWindowWidth) {
   CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
   if (NULL == pMedia)
     return ERROR_MEDIA_NULL;
@@ -593,14 +592,37 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowSize(
     return ERROR_PIPELINE_NULL;
 #ifdef SDL_ENABLED
   int iWindowWidth;
-  int iWindowHeight;
-  uint32_t uErrCode = pPipeline->GetWindowSize(&iWindowWidth, &iWindowHeight);
+  uint32_t uErrCode = pPipeline->GetWindowWidth(&iWindowWidth);
   if (ERROR_NONE != uErrCode)
     return uErrCode;
   jint jiWindowWidth = (jint)iWindowWidth;
-  jint jiWindowHeight = (jint)iWindowHeight;
   env->SetIntArrayRegion(jriWindowWidth, 0, 1, &jiWindowWidth);
-  env->SetIntArrayRegion(jriWindowHeight, 0, 1, &jiWindowHeight);
+#endif
+  return ERROR_NONE;
+}
+
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegGetWindowHeight
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegGetWindowHeight(
+    JNIEnv *env, jobject obj, jlong ref_media, jintArray jriWindowHeight) {
+  CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+  if (NULL == pMedia)
+    return ERROR_MEDIA_NULL;
+
+  CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+  if (NULL == pPipeline)
+    return ERROR_PIPELINE_NULL;
+#ifdef SDL_ENABLED
+  int iWindowHeight;
+  uint32_t uErrCode = pPipeline->GetWindowHeight(&iWindowHeight);
+  if (ERROR_NONE != uErrCode)
+    return uErrCode;
+  jint jiWindowWidth = (jint)iWindowHeight;
+  env->SetIntArrayRegion(jriWindowHeight, 0, 1, &jiWindowWidth);
 #endif
   return ERROR_NONE;
 }

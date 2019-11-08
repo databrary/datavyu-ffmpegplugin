@@ -33,6 +33,10 @@ public:
   }
 
   inline void PauseAudio() { SDL_PauseAudioDevice(audio_dev_, 0); }
+    
+  inline int GetWindowWidth() const { return screen_width_; }
+    
+  inline int GetWindowHeight() const { return screen_height_; }
 
   // Toggle full screen mode
   inline void ToggleFullscreen() {
@@ -89,23 +93,6 @@ public:
 
   // Get image Height
   int GetImageHeight() const;
-
-  // Get SDL Window Size
-  inline void GetWindowSize(int *width, int *height) const {
-#ifdef _WIN32
-    SDL_Window *window = SDL_GetWindowFromID(window_id_);
-    if (window) {
-      SDL_GetWindowSize(p_window_, width, height);
-    }
-#elif __APPLE__
-    dispatch_async(dispatch_get_main_queue(), ^{
-      SDL_Window *window = SDL_GetWindowFromID(window_id_);
-      if (window) {
-        SDL_GetWindowSize(p_window_, width, height);
-      }
-    });
-#endif
-  }
 
   // Set SDL Window Size
   inline void SetWindowSize(int width, int height) {
@@ -201,11 +188,6 @@ private:
     enum AVPixelFormat format;
     int texture_fmt;
   };
-
-  inline void GetSize(int *p_width, int *p_height) const {
-    *p_width = frame_width_;
-    *p_height = frame_height_;
-  }
 
   inline bool IsScreenSizeSet() const {
     return screen_width_ != 0 && screen_height_ != 0;

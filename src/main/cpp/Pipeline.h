@@ -82,7 +82,8 @@ public:
   virtual uint32_t GetAudioSyncDelay(long *plMillis) = 0;
 
 #ifdef SDL_ENABLED
-  virtual uint32_t GetWindowSize(int *p_width, int *p_height) const = 0;
+  virtual uint32_t GetWindowWidth(int *p_width) const = 0;
+  virtual uint32_t GetWindowHeight(int *p_height) const = 0;
   virtual uint32_t SetWindowSize(int width, int height) = 0;
 
   virtual uint32_t ShowWindow() = 0;
