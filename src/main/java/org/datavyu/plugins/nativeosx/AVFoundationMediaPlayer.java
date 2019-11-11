@@ -3,15 +3,12 @@ package org.datavyu.plugins.nativeosx;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.datavyu.plugins.MediaError;
-import org.datavyu.plugins.MediaException;
-import org.datavyu.plugins.PlayerStateEvent;
-import org.datavyu.plugins.PlayerStateListener;
+import org.datavyu.plugins.*;
+import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
 import java.awt.*;
 import java.io.File;
 import java.net.URI;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
@@ -27,7 +24,7 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
   public AVFoundationMediaPlayer(URI mediaPath, Container container) {
     super(mediaPath);
-    stateListener = new PlayerStateListenerImpl();
+    this.stateListener = new PlayerStateListenerImpl();
     this.addMediaPlayerStateListener(stateListener);
     this.container = container;
   }
@@ -98,17 +95,43 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
 
   @Override
   protected int playerGetWindowWidth() throws MediaException {
-    throw new NotImplementedException();
+    return this.container.getWidth();
   }
 
   @Override
   protected int playerGetWindowHeight() throws MediaException {
-    throw new NotImplementedException();
+    return this.container.getHeight();
   }
 
   @Override
   protected void playerSetWindowSize(int width, int height) throws MediaException {
-    throw new NotImplementedException();
+    this.container.setSize(width, height);
+  }
+
+  @Override
+  protected void playerShowWindow() throws MediaException {
+    this.container.setVisible(true);
+  }
+
+  @Override
+  protected void playerHideWindow() throws MediaException {
+    this.container.setVisible(false);
+  }
+
+  @Override
+  protected void HandleSdlKeyEvents(FfmpegSdlMediaPlayer.SdlPlayerKeyEvent evt) {
+    throw new IllegalArgumentException();
+  }
+
+
+  @Override
+  public void addSdlKeyEventListener(SdlKeyEventListener listener) {
+    throw new IllegalArgumentException();
+  }
+
+  @Override
+  public void removeSdlKeyEventListener(SdlKeyEventListener listener) {
+    throw new IllegalArgumentException();
   }
 
   private class PlayerStateListenerImpl implements PlayerStateListener {

@@ -3,6 +3,7 @@ package org.datavyu.plugins.ffmpeg;
 import org.datavyu.plugins.MediaError;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.MediaPlayerData;
+import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -302,6 +303,31 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   @Override
+  protected int playerGetWindowWidth() throws MediaException {
+    return this.container.getWidth();
+  }
+
+  @Override
+  protected int playerGetWindowHeight() throws MediaException {
+    return this.container.getHeight();
+  }
+
+  @Override
+  protected void playerSetWindowSize(int width, int height) throws MediaException {
+    this.container.setSize(width, height);
+  }
+
+  @Override
+  protected void playerShowWindow() throws MediaException {
+    this.container.setVisible(true);
+  }
+
+  @Override
+  protected void playerHideWindow() throws MediaException {
+    this.container.setVisible(false);
+  }
+
+  @Override
   protected void playerDispose() {
     if (imageCanvasPlayerThread.isInit()) {
       imageCanvasPlayerThread.terminate();
@@ -311,31 +337,6 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
 
     ffmpegDisposePlayer(getNativeMediaRef());
-  }
-
-  @Override
-  protected int playerGetWindowWidth() throws MediaException {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  protected int playerGetWindowHeight() throws MediaException {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  protected void playerSetWindowSize(int width, int height) throws MediaException {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  protected void playerShowSDLWindow() {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  protected void playerHideSDLWindow() {
-    throw new NotImplementedException();
   }
 
   @Override
@@ -421,6 +422,20 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
     }
   }
 
+  @Override
+  protected void HandleSdlKeyEvents(FfmpegSdlMediaPlayer.SdlPlayerKeyEvent evt) {
+    throw new IllegalArgumentException();
+  }
+
+  @Override
+  public void addSdlKeyEventListener(SdlKeyEventListener listener) {
+    throw new IllegalArgumentException();
+  }
+
+  @Override
+  public void removeSdlKeyEventListener(SdlKeyEventListener listener) {
+    throw new IllegalArgumentException();
+  }
   // Native methods
   private native int ffmpegInitPlayer(
       long[] newNativeMedia,
