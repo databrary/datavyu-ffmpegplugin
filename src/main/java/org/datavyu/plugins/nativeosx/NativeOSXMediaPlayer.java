@@ -241,16 +241,6 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
-  protected void playerShowSDLWindow() {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  protected void playerHideSDLWindow() {
-    throw new NotImplementedException();
-  }
-
-  @Override
   protected boolean playerIsSeekPlaybackEnabled() {
     return false;
   }

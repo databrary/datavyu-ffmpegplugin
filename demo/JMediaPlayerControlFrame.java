@@ -1,4 +1,5 @@
 import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.MediaPlayerWindow;
 import org.datavyu.plugins.PlaybackRateController;
 
 import javax.swing.*;
@@ -132,12 +133,12 @@ public class JMediaPlayerControlFrame extends JFrame implements KeyListener, Cha
         mediaPlayer.setMute(false);
         break;
       case KeyEvent.VK_H:
-        System.out.println("Hide SDL Window");
-        mediaPlayer.hideSDLWindow();
+        System.out.println("Hide Window");
+        ((MediaPlayerWindow) mediaPlayer).hideWindow();
         break;
       case KeyEvent.VK_J:
-        System.out.println("Hide SDL Window");
-        mediaPlayer.showSDLWindow();
+        System.out.println("Show Window");
+        ((MediaPlayerWindow) mediaPlayer).showWindow();
         break;
       case KeyEvent.VK_ESCAPE:
         mediaPlayer.dispose();

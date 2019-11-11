@@ -69,7 +69,7 @@ void CJavaPlayerEventDispatcher::Init(JNIEnv *env, jobject PlayerInstance,
           env->GetMethodID(klass, "sendPlayerStateEvent", "(ID)V");
 #ifdef SDL_ENABLED
       send_sdl_player_key_event_method_ =
-          env->GetMethodID(klass, "sendSdlPlayerkeyEvent", "(I)V");
+          env->GetMethodID(klass, "sendSdlPlayerKeyEvent", "(I)V");
 #endif // SDL_ENABLED
       hasException = javaEnv.ReportException();
     }

@@ -2,11 +2,15 @@ package org.datavyu.plugins.ffmpeg;
 
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.PlayerEvent;
+import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Uses the SDL framework to playback the images and sound natively
@@ -17,6 +21,7 @@ import java.net.URI;
  */
 public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   private static final Logger logger = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
+  protected final List<SdlKeyEventListener> keyListeners = new ArrayList<>();
 
   static {
     try {
@@ -240,6 +245,10 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   @Override
   protected void playerDispose() {
     ffmpegDisposePlayer(getNativeMediaRef());
+
+    if (keyListeners != null) {
+      keyListeners.clear();
+    }
   }
 
   @Override
@@ -271,7 +280,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerShowSDLWindow() throws MediaException{
+  protected void playerShowWindow() throws MediaException{
     int rc = ffmpegShowWindow(getNativeMediaRef());
     if (rc != 0) {
       throwMediaErrorException(rc, null);
@@ -279,7 +288,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerHideSDLWindow() throws MediaException{
+  protected void playerHideWindow() throws MediaException{
     int rc = ffmpegHideWindow(getNativeMediaRef());
     if (rc != 0) {
       throwMediaErrorException(rc, null);
@@ -309,6 +318,43 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     public int getKeyCode() {
       return keyCode;
     }
+  }
+
+  @Override
+  public void addSdlKeyEventListener(SdlKeyEventListener listener) {
+    if (listener != null) {
+      this.keyListeners.add(listener);
+    }
+  }
+
+  @Override
+  public void removeSdlKeyEventListener(SdlKeyEventListener listener) {
+    if (listener != null) {
+      for (ListIterator<SdlKeyEventListener> it = keyListeners.listIterator(); it.hasNext(); ) {
+        SdlKeyEventListener l = it.next();
+        if (l == null || l == listener) {
+          it.remove();
+        }
+      }
+    }
+  }
+
+  @Override
+  protected void HandleSdlKeyEvents(SdlPlayerKeyEvent evt) {
+    logger.debug("Received an event from the native side");
+    logger.trace("key listener size " + keyListeners.size());
+    for (ListIterator<SdlKeyEventListener> it = keyListeners.listIterator(); it.hasNext(); ) {
+      SdlKeyEventListener l = it.next();
+      if (l != null) {
+        l.onKeyEvent(evt.getSource(), evt.getNativeMediaRef(), evt.getKeyCode());
+      } else {
+        it.remove();
+      }
+    }
+  }
+
+  protected void sendSdlPlayerKeyEvent(int keyEvent) {
+    sendPlayerEvent(new SdlPlayerKeyEvent(this, this.getNativeMediaRef(), keyEvent));
   }
 
   // Native methods

@@ -79,7 +79,7 @@ Here is a simple example on how to create and initialize an SDL Player, all what
     URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
 
     // Create the media player using the constructor with File
-    MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
+    MediaPlayerWindow mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
 
     // Handle Media Player errors
     mediaPlayer.addMediaErrorListener(
@@ -93,7 +93,7 @@ Here is a simple example on how to create and initialize an SDL Player, all what
     JMediaPlayerControlFrame controller = new JMediaPlayerControlFrame(mediaPlayer);
 
     // Handle Window Key events
-    mediaPlayer.addSdlKeyEventListener(
+    mediaPlayerWindow.addSdlKeyEventListener(
             (source, nativeMediaRef, javaKeyCode) -> controller.handleKeyEvents(javaKeyCode));
         }
     }
@@ -124,7 +124,7 @@ Here is a simple example on how to create and initialize an AVFoundation Player,
     import java.io.File;
     import java.net.URI;
 
-    public class SimpleSdlMediaPlayer {
+    public class SimpleAVFoundationMediaPlayer {
         public static void main(String[] args) {
             // Define the media file, add your file path here !
             URI mediaPath = new File("PATH/TO/MOVIE/FILE").toURI();

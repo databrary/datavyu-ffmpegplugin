@@ -4,7 +4,7 @@ import javafx.concurrent.Task;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.MediaPlayerWindow;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
 import java.io.File;
@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 public class SimpleJavaFXMediaPlayer extends Application {
   private static Logger logger = LogManager.getLogger(SimpleJavaFXMediaPlayer.class);
   private JMediaPlayerControlFrame controller;
-  private MediaPlayer mediaPlayer;
+  private MediaPlayerWindow mediaPlayer;
   private URI mediaPath;
 
   @Override
@@ -56,7 +56,7 @@ public class SimpleJavaFXMediaPlayer extends Application {
   }
 }
 
-class MediaPlayerTask extends Task<MediaPlayer> {
+class MediaPlayerTask extends Task<MediaPlayerWindow> {
   private URI mediaPath;
 
   MediaPlayerTask(URI mediaPath) {
@@ -64,8 +64,8 @@ class MediaPlayerTask extends Task<MediaPlayer> {
   }
 
   @Override
-  protected MediaPlayer call() throws Exception {
-    MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
+  protected MediaPlayerWindow call() throws Exception {
+    MediaPlayerWindow mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
     mediaPlayer.init();
     return mediaPlayer;
   }

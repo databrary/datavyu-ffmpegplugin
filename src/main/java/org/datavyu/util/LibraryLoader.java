@@ -11,6 +11,8 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 
+import static org.datavyu.util.Utils.isMac;
+
 /**
  * This native library loader loads libraries from jar resources. It resolves the library file
  * extension based on the loading OS automatically. It offers functionality to extract and load
@@ -36,7 +38,7 @@ public class LibraryLoader {
       return name + SEPARATOR + version;
     }
 
-    private static final char SEPARATOR = LibraryLoader.isMacOs ? '.' : '-';
+    private static final char SEPARATOR = Utils.SEPARATOR;
     private String name;
     private String version;
   }
@@ -49,9 +51,6 @@ public class LibraryLoader {
    * find dependent libraries.
    */
   private static File libraryFolder = new File(System.getProperty("user.dir"));
-
-  /** True if loading on Mac OS */
-  public static boolean isMacOs = System.getProperty("os.name").contains("Mac");
 
   /** Buffer size when copying files from streams */
   private static final int BUFFER_COPY_SIZE = 16 * 1024; // 16 kB
@@ -67,7 +66,7 @@ public class LibraryLoader {
     Enumeration<URL> resources;
     String extension;
     ClassLoader classLoader = LibraryLoader.class.getClassLoader();
-    if (isMacOs) {
+    if (isMac) {
       extension = ".jnilib";
       resources = classLoader.getResources("lib" + libName + extension);
       if (!resources.hasMoreElements()) {
@@ -90,7 +89,7 @@ public class LibraryLoader {
    */
   private static String getExtension(String libName) throws Exception {
     String extension;
-    if (isMacOs) {
+    if (isMac) {
       extension = ".jnilib";
       if (!LibraryLoader.class
           .getClassLoader()
@@ -132,7 +131,7 @@ public class LibraryLoader {
     logger.info("Attempting to extract " + destName);
 
     File outfile;
-    if (isMacOs) {
+    if (isMac) {
       outfile = new File(libraryFolder, "lib" + destName + getExtension(destName));
     } else {
       outfile = new File(libraryFolder, destName + getExtension(destName));

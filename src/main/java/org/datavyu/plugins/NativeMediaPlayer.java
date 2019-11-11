@@ -3,7 +3,6 @@ package org.datavyu.plugins;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer.SdlPlayerKeyEvent;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.ref.WeakReference;
 import java.net.URI;
@@ -30,13 +29,12 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
 
   private final List<WeakReference<MediaErrorListener>> errorListeners = new ArrayList<>();
   private final List<WeakReference<PlayerStateListener>> playerStateListeners = new ArrayList<>();
-  private final List<SdlKeyEventListener> keyListeners = new ArrayList<>();
 
   protected long nativeMediaRef = 0;
   private PlayerStateEvent.PlayerState playerState = PlayerStateEvent.PlayerState.UNKNOWN;
   private EventQueueThread eventLoop = new EventQueueThread();
-  private final Lock disposeLock = new ReentrantLock();
-  private boolean isDisposed = false;
+  protected final Lock disposeLock = new ReentrantLock();
+  protected boolean isDisposed = false;
   private double startTime = 0.0;
   private double stopTime = Double.POSITIVE_INFINITY;
   private boolean isStopTimeSet = false;
@@ -190,18 +188,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
       }
     }
 
-    private void HandleSdlKeyEvents(SdlPlayerKeyEvent evt) {
-      logger.debug("Received an event from the native side");
-      logger.trace("key listener size " + keyListeners.size());
-      for (ListIterator<SdlKeyEventListener> it = keyListeners.listIterator(); it.hasNext(); ) {
-        SdlKeyEventListener l = it.next();
-        if (l != null) {
-          l.onKeyEvent(evt.getSource(), evt.getNativeMediaRef(), evt.getKeyCode());
-        } else {
-          it.remove();
-        }
-      }
-    }
 
     public void postEvent(PlayerEvent event) {
       eventQueue.offer(event);
@@ -256,25 +242,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
               playerStateListeners.listIterator();
           it.hasNext(); ) {
         PlayerStateListener l = it.next().get();
-        if (l == null || l == listener) {
-          it.remove();
-        }
-      }
-    }
-  }
-
-  @Override
-  public void addSdlKeyEventListener(SdlKeyEventListener listener) {
-    if (listener != null) {
-      this.keyListeners.add(listener);
-    }
-  }
-
-  @Override
-  public void removeSdlKeyEventListener(SdlKeyEventListener listener) {
-    if (listener != null) {
-      for (ListIterator<SdlKeyEventListener> it = keyListeners.listIterator(); it.hasNext(); ) {
-        SdlKeyEventListener l = it.next();
         if (l == null || l == listener) {
           it.remove();
         }
@@ -338,17 +305,9 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
   
   protected abstract void playerDispose();
 
-  protected abstract int playerGetWindowWidth() throws MediaException;
-
-  protected abstract int playerGetWindowHeight() throws MediaException;
-
-  protected abstract void playerSetWindowSize(int width, int height) throws MediaException;
-
-  protected abstract void playerShowSDLWindow() throws MediaException;
-
-  protected abstract void playerHideSDLWindow() throws MediaException;
-
   protected abstract boolean playerRateIsSupported(float rate) throws MediaException;
+
+  protected abstract void HandleSdlKeyEvents(SdlPlayerKeyEvent evt);
 
   @Override
   public void setAudioSyncDelay(long delay) {
@@ -768,10 +727,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
           errorListeners.clear();
         }
 
-        if (keyListeners != null) {
-          keyListeners.clear();
-        }
-
         nativeMediaRef = 0;
         isDisposed = true;
       }
@@ -802,79 +757,6 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
       }
     }
     return false;
-  }
-
-  @Override
-  public void showSDLWindow() {
-    if (disposeLock.tryLock()) {
-      try {
-        playerShowSDLWindow();
-        setMute(false);
-      } catch (MediaException me) {
-        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
-        disposeLock.unlock();
-      }
-    }
-  }
-
-  @Override
-  public void hideSDLWindow() {
-    if (disposeLock.tryLock()) {
-      try {
-        playerHideSDLWindow();
-        setMute(true);
-      } catch (MediaException me) {
-        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
-        disposeLock.unlock();
-      }
-    }
-  }
-
-  @Override
-  public int getWindowHeight() {
-    if (disposeLock.tryLock()) {
-      try {
-        if (!isDisposed) {
-          return playerGetWindowHeight();
-        }
-      } catch (MediaException me) {
-        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
-        disposeLock.unlock();
-      }
-    }
-    return -1;
-  }
-
-  @Override
-  public int getWindowWidth() {
-    if (disposeLock.tryLock()) {
-      try {
-        if (!isDisposed) {
-          return playerGetWindowWidth();
-        }
-      } catch (MediaException me) {
-        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
-        disposeLock.unlock();
-      }
-    }
-    return -1;
-  }
-
-  @Override
-  public void setWindowSize(final int width, final int height) {
-    if (disposeLock.tryLock()) {
-      try {
-        playerSetWindowSize(width, height);
-      } catch (MediaException me) {
-        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
-      } finally{
-        disposeLock.unlock();
-      }
-    }
   }
 
   // **************************************************************************
@@ -911,9 +793,5 @@ public abstract class NativeMediaPlayer implements MediaPlayer {
       default:
         break;
     }
-  }
-
-  protected void sendSdlPlayerkeyEvent(int keyEvent) {
-    sendPlayerEvent(new SdlPlayerKeyEvent(this, this.getNativeMediaRef(), keyEvent));
   }
 }
