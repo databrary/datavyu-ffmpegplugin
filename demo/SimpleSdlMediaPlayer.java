@@ -1,8 +1,6 @@
-package org.datavyu.plugins.examples;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.datavyu.plugins.MediaPlayer;
+import org.datavyu.plugins.MediaPlayerWindow;
 import org.datavyu.plugins.ffmpeg.FfmpegSdlMediaPlayer;
 
 import java.io.File;
@@ -16,17 +14,21 @@ public class SimpleSdlMediaPlayer {
     URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
 
     // Create the media player using the constructor with File
-    MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
+    MediaPlayerWindow mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
 
+    // Handle Media Player errors
     mediaPlayer.addMediaErrorListener(
         (source, errorCode, message) -> logger.error(errorCode + ": " + message));
 
-    mediaPlayer.addSdlKeyEventListener(
-        (source, nativeMediaRef, javaKeyCode) -> logger.info("SDL Media " + nativeMediaRef + " event " + javaKeyCode));
-
     // Initialize the player
     mediaPlayer.init();
-    // Open a JFrame to control the media player through key commands
-    new JMediaPlayerControlFrame(mediaPlayer);
+
+    // Open a simple JFrame to control the media player through key commands
+    // Be creative and create your own controller
+    JMediaPlayerControlFrame controller = new JMediaPlayerControlFrame(mediaPlayer);
+
+    // Handle Window Key events
+    mediaPlayer.addSdlKeyEventListener(
+            (source, nativeMediaRef, javaKeyCode) -> controller.handleKeyEvents(javaKeyCode));
   }
 }

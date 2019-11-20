@@ -127,6 +127,12 @@ public class FfmpegSdlMediaPlayerTest extends MediaPlayerTest {
     logger.debug("******** Test Step Backward At Start ********");
     super.testStepBackwardAtStart(builder, mediaInformation);
   }
+  
+  @Test(dataProvider = "shortMedia")
+  public void testRateAtPlay(Builder builder, MediaInformation mediaInformation) {
+    logger.debug("******** Test Rates at Play ********");
+    super.testRateAtPlay(builder, mediaInformation);
+  }
 
   @Test(dataProvider = "longMedia")
   public void testRates(Builder builder, MediaInformation mediaInformation) {

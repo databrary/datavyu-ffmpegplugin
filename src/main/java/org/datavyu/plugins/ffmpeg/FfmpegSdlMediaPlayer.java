@@ -2,11 +2,15 @@ package org.datavyu.plugins.ffmpeg;
 
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.PlayerEvent;
+import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Uses the SDL framework to playback the images and sound natively
@@ -17,6 +21,7 @@ import java.net.URI;
  */
 public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   private static final Logger logger = LogManager.getFormatterLogger(FfmpegSdlMediaPlayer.class);
+  protected final List<SdlKeyEventListener> keyListeners = new ArrayList<>();
 
   static {
     try {
@@ -218,7 +223,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  public int getImageWidth() {
+  public int playerGetImageWidth() {
     int[] width = new int[1];
     int rc = ffmpegGetImageWidth(getNativeMediaRef(), width);
     if (rc != 0) {
@@ -228,7 +233,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  public int getImageHeight() {
+  public int playerGetImageHeight() {
     int[] height = new int[1];
     int rc = ffmpegGetImageHeight(getNativeMediaRef(), height);
     if (rc != 0) {
@@ -240,17 +245,30 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   @Override
   protected void playerDispose() {
     ffmpegDisposePlayer(getNativeMediaRef());
+
+    if (keyListeners != null) {
+      keyListeners.clear();
+    }
   }
 
   @Override
-  protected int[] playerGetWindowSize() throws MediaException{
+  protected int playerGetWindowWidth() throws MediaException{
     int[] width = new int[1];
-    int[] height = new int[1];
-    int rc = ffmpegGetWindowSize(getNativeMediaRef(), width, height);
+    int rc = ffmpegGetWindowWidth(getNativeMediaRef(), width);
     if (rc != 0) {
       throwMediaErrorException(rc, null);
     }
-    return new int[] {width[0], height[0]};
+    return width[0];
+  }
+
+  @Override
+  protected int playerGetWindowHeight() throws MediaException{
+    int[] height = new int[1];
+    int rc = ffmpegGetWindowHeight(getNativeMediaRef(), height);
+    if (rc != 0) {
+      throwMediaErrorException(rc, null);
+    }
+    return height[0];
   }
 
   @Override
@@ -262,7 +280,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerShowSDLWindow() throws MediaException{
+  protected void playerShowWindow() throws MediaException{
     int rc = ffmpegShowWindow(getNativeMediaRef());
     if (rc != 0) {
       throwMediaErrorException(rc, null);
@@ -270,7 +288,7 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   }
 
   @Override
-  protected void playerHideSDLWindow() throws MediaException{
+  protected void playerHideWindow() throws MediaException{
     int rc = ffmpegHideWindow(getNativeMediaRef());
     if (rc != 0) {
       throwMediaErrorException(rc, null);
@@ -300,6 +318,43 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     public int getKeyCode() {
       return keyCode;
     }
+  }
+
+  @Override
+  public void addSdlKeyEventListener(SdlKeyEventListener listener) {
+    if (listener != null) {
+      this.keyListeners.add(listener);
+    }
+  }
+
+  @Override
+  public void removeSdlKeyEventListener(SdlKeyEventListener listener) {
+    if (listener != null) {
+      for (ListIterator<SdlKeyEventListener> it = keyListeners.listIterator(); it.hasNext(); ) {
+        SdlKeyEventListener l = it.next();
+        if (l == null || l == listener) {
+          it.remove();
+        }
+      }
+    }
+  }
+
+  @Override
+  protected void HandleSdlKeyEvents(SdlPlayerKeyEvent evt) {
+    logger.debug("Received an event from the native side");
+    logger.trace("key listener size " + keyListeners.size());
+    for (ListIterator<SdlKeyEventListener> it = keyListeners.listIterator(); it.hasNext(); ) {
+      SdlKeyEventListener l = it.next();
+      if (l != null) {
+        l.onKeyEvent(evt.getSource(), evt.getNativeMediaRef(), evt.getKeyCode());
+      } else {
+        it.remove();
+      }
+    }
+  }
+
+  protected void sendSdlPlayerKeyEvent(int keyEvent) {
+    sendPlayerEvent(new SdlPlayerKeyEvent(this, this.getNativeMediaRef(), keyEvent));
   }
 
   // Native methods
@@ -347,7 +402,9 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
 
   protected native int ffmpegSetVolume(long refNativeMedia, float volume);
 
-  protected native int ffmpegGetWindowSize(long refNativeMedia, int[] width, int[] height);
+  protected native int ffmpegGetWindowWidth(long refNativeMedia, int[] width);
+
+  protected native int ffmpegGetWindowHeight(long refNativeMedia, int[] height);
 
   protected native int ffmpegSetWindowSize(long refNativeMedia, int width, int height);
 

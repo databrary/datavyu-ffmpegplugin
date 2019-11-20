@@ -973,10 +973,9 @@ void FfmpegSdlAvPlayback::InitializeAndListenForEvents(
         }
       }
     case SDL_MOUSEMOTION:
-      int width;
-      int height;
-      p_player->GetSize(&width, &height);
+    int width;
       if (event.type == SDL_MOUSEBUTTONDOWN) {
+        width = p_player->GetWindowWidth();
         if (event.button.button != SDL_BUTTON_RIGHT)
           break;
         x = event.button.x;

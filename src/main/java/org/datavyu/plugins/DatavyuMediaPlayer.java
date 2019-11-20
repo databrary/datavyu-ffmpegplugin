@@ -5,8 +5,9 @@ import org.datavyu.util.LibraryLoader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
-public abstract class DatavyuMediaPlayer extends NativeMediaPlayer {
+public abstract class DatavyuMediaPlayer extends NativeMediaPlayer implements MediaPlayerWindow {
 
   protected float mutedVolume = 1.0f; // last volume before mute
   protected boolean muteEnabled = false;
@@ -68,4 +69,86 @@ public abstract class DatavyuMediaPlayer extends NativeMediaPlayer {
       }
     }
   }
+  @Override
+  public void showWindow() {
+    if (disposeLock.tryLock()) {
+      try {
+        playerShowWindow();
+        setMute(false);
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
+      }
+    }
+  }
+
+  @Override
+  public void hideWindow() {
+    if (disposeLock.tryLock()) {
+      try {
+        playerHideWindow();
+        setMute(true);
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
+      }
+    }
+  }
+
+  @Override
+  public int getWindowHeight() {
+    if (disposeLock.tryLock()) {
+      try {
+        if (!isDisposed) {
+          return playerGetWindowHeight();
+        }
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public int getWindowWidth() {
+    if (disposeLock.tryLock()) {
+      try {
+        if (!isDisposed) {
+          return playerGetWindowWidth();
+        }
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
+      }
+    }
+    return -1;
+  }
+
+  @Override
+  public void setWindowSize(final int width, final int height) {
+    if (disposeLock.tryLock()) {
+      try {
+        playerSetWindowSize(width, height);
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
+      }
+    }
+  }
+
+  protected abstract int playerGetWindowWidth() throws MediaException;
+
+  protected abstract int playerGetWindowHeight() throws MediaException;
+
+  protected abstract void playerSetWindowSize(int width, int height) throws MediaException;
+
+  protected abstract void playerShowWindow() throws MediaException;
+
+  protected abstract void playerHideWindow() throws MediaException;
 }

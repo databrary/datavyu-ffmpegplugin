@@ -49,22 +49,6 @@ public interface MediaPlayer {
   void removeMediaPlayerStateListener(PlayerStateListener listener);
 
   /**
-   * Adds a listener for SDL player key events.
-   *
-   * @param listener listener to be added
-   * @throws IllegalArgumentException if <code>listener</code> is <code>null</code>.
-   */
-  void addSdlKeyEventListener(SdlKeyEventListener listener);
-
-  /**
-   * Removes a listener for SDL player key events.
-   *
-   * @param listener listener to be removed
-   * @throws IllegalArgumentException if <code>listener</code> is <code>null</code>.
-   */
-  void removeSdlKeyEventListener(SdlKeyEventListener listener);
-
-  /**
    * Set the amount of time to delay for the audio.
    *
    * @param delay time in milliseconds
@@ -252,35 +236,4 @@ public interface MediaPlayer {
    * @return True or False
    */
   boolean isRateSupported(float rate);
-
-  /**
-   * Expose SDL player window, this method is available only for the SDL player, will
-   * throw an exception if called from a Java player.
-   */
-  void showSDLWindow();
-
-  /**
-   * Hide SDL player window, this method is available only for the SDL player, will
-   * throw an exception if called from a Java player.
-   */
-  void hideSDLWindow();
-
-  /**
-   * Return SDL Window Height
-   * @return window height
-   */
-  int getWindowHeight();
-
-  /**
-   * Return SDL Window Width
-   * @return window width
-   */
-  int getWindowWidth();
-
-  /**
-   * Set SDL Window new width and height
-   * @param width
-   * @param height
-   */
-  void setWindowSize(int width, int height);
 }

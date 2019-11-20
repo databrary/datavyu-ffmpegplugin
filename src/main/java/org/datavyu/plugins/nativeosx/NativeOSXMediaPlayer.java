@@ -92,6 +92,22 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
         });
   }
 
+  /**
+   * Stops the player and save the rate, this method is used when Pausing the player. Note:
+   * AVFoundation player set the rate to 0 when stopped, and there is no Pause feature.
+   *
+   * @param rate
+   */
+  private void playerPlay(final float rate) {
+    EventQueue.invokeLater(
+            () -> {
+              prevRate = getRate();
+              mediaPlayer.setRate(rate, id);
+              logger.debug("Player Playing at " + rate + "X");
+              sendPlayerStateEvent(eventPlayerPlaying, 0);
+            });
+  }
+
   @Override
   protected void playerStepForward() throws MediaException {
     double stepSize = Math.ceil(1000F / mediaPlayer.getFPS(id));
@@ -133,8 +149,7 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
     EventQueue.invokeLater(
         () -> {
           if (rate != 0) {
-            prevRate = rate;
-            playerPlay();
+            playerPlay(rate);
           } else {
             playerStop();
           }
@@ -226,16 +241,6 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
-  protected void playerShowSDLWindow() {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  protected void playerHideSDLWindow() {
-    throw new NotImplementedException();
-  }
-
-  @Override
   protected boolean playerIsSeekPlaybackEnabled() {
     return false;
   }
@@ -246,12 +251,12 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
   }
 
   @Override
-  public int getImageWidth() {
+  public int playerGetImageWidth() {
     return (int) mediaPlayer.getMovieWidth(id);
   }
 
   @Override
-  public int getImageHeight() {
+  public int playerGetImageHeight() {
     return (int) mediaPlayer.getMovieHeight(id);
   }
 

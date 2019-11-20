@@ -4,9 +4,9 @@
 <sup>Mac OS:</sup> [![Travis CI](https://travis-ci.com/databrary/datavyu-ffmpegplugin.svg)](https://travis-ci.com/databrary/datavyu-ffmpegplugin)
 
 ## Overview
-The Datavyu Player is a Java Media Player using [FFmpeg](https://github.com/FFmpeg/FFmpeg) and [AVFoundation](https://developer.apple.com/av-foundation/) Players as backend engines that we interface too through Java Native Interface (JNI). It supports a wide variety of video file formats, audio and video codecs for Windows and Mac OS Platforms. Datavyu Player is used within [Datavyu](http://www.datavyu.org/) a video annotation tool but could be embedded in any Java application.
+The Datavyu Player is a Java Media Player using [FFmpeg](https://github.com/FFmpeg/FFmpeg) and [AVFoundation](https://developer.apple.com/av-foundation/) Players as backend engines that we interface too through Java Native Interface (JNI). It supports a wide variety of video file formats, audio and video codecs for Windows and Mac OS Platforms. Datavyu Player is used within [Datavyu](http://www.datavyu.org/); a video annotation tool but could be embedded in any Java application.
 
-To learn how to use the plugin, please refer to the [Examples](##Examples) section below as well as the [Java](src/main/java/org/datavyu/plugins/examples) programs. You may also find it useful to refer to the [wiki](https://github.com/databrary/datavyu-ffmpegplugin/wiki) pages to set up a development environment and contribute to the project.
+To learn how to use the plugin, please refer to the [Examples](##Examples) section below as well as the [Demo](demo/) projects. You may also find it useful to refer to the [wiki](https://github.com/databrary/datavyu-ffmpegplugin/wiki) pages to set up a development environment and contribute to the project.
 
 What's special about this player?
 
@@ -24,6 +24,7 @@ What we are working on?
 - An implementation of Java SE 8 or newer; [OpenJDK](http://openjdk.java.net/install/) or
 [Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/).
 - Windows 7 or later.
+- Mac OS X 10.6 or later.
 
 ## Downloads
 The latest version of the Datavyu Player could be downloaded using the following Maven dependency (inside your pom.xml file):
@@ -32,7 +33,7 @@ The latest version of the Datavyu Player could be downloaded using the following
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
-        <version>0.22</version>
+        <version>0.23</version>
     </dependency>
 ```
 
@@ -43,7 +44,7 @@ For Windows:
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
-        <version>0.22</version>
+        <version>0.23</version>
         <classifier>win</classifier>
     </dependency>
 ```
@@ -53,65 +54,15 @@ For Mac OS:
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
-        <version>0.22</version>
+        <version>0.23</version>
         <classifier>mac</classifier>
     </dependency>
 ```
 ## Examples
 With Datavyu Player you can launch and control multiple media player instances from your java application. Creating and instantiating a Media Player is a matter of passing a file path to the MediaPlayer interface.
 
-### JAVA Player
-The Java Player is using FFmpeg API's to decode and read the stream, the player will pull both image buffers and audio buffers from the native side and display the video in a Java container.
-
-We provide a Maven dependency for the FFmpeg 4.1.1 version to be added to your `pom.xml` file
-``` xml  
-    <dependency>
-        <groupId>org.datavyu</groupId>
-        <artifactId>ffmpeg-libs</artifactId>
-        <version>4.1.1</version>
-    </dependency>
-```
-
-Here is a simple example on how to create and initialize the Datavyu Java Player, all what you have to do is to be creative and create your own Java controller for the player
-
-``` java
-    import org.datavyu.plugins.ffmpeg.*;
-
-    import javax.swing.*;
-    import java.io.File;
-    import java.net.URI;
-
-    public class SimpleJavaMediaPlayer {
-
-        public static void main(String[] args) {
-            // Define the media file, add your file path here !
-            URI mediaPath = new File("PATH/TO/MOVIE/FILE").toURI();
-
-            // Create the media player using the constructor with URI
-            MediaPlayerData mediaPlayer = new FfmpegJavaMediaPlayer(mediaPath);
-
-            // Initialize the player
-            mediaPlayer.init();
-
-            // Start Playing
-            mediaPlayer.play();
-        }
-    }
-```
-Note that The Java Player is using the MediaPLayerData Interface in order to access the buffers sent through the JNI interface.
-
 ### SDL Player
 The SDL player is relying on FFmpeg engine as the Java player does, but is using [Simple DirectMedia Layer SDL2 Framework](https://www.libsdl.org/) to Display Images and Play Audio natively.
-
-We provide a Maven dependency for the SDL 2.0.8 version to be added to your `pom.xml` file in addition to the FFmpeg dependency mentioned above
-
-``` xml  
-    <dependency>
-        <groupId>org.datavyu</groupId>
-        <artifactId>sdl-libs</artifactId>
-        <version>2.0.9</version>
-    </dependency>
-```
 
 Here is a simple example on how to create and initialize an SDL Player, all what you have to do is to be creative and create your own Java controller for the player
 
@@ -123,22 +74,36 @@ Here is a simple example on how to create and initialize an SDL Player, all what
 
     public class SimpleSdlMediaPlayer {
         public static void main(String[] args) {
-            // Define the media file, add your file path here !
-            URI mediaPath = new File("PATH/TO/MOVIE/FILE").toURI();
 
-            // Create the media player using the constructor with URI
-            MediaPlayer mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
+    // Define the media file
+    URI mediaPath = new File("Nature_30fps_1080p.mp4").toURI();
 
-            // Initialize the player
-            mediaPlayer.init();
+    // Create the media player using the constructor with File
+    MediaPlayerWindow mediaPlayer = new FfmpegSdlMediaPlayer(mediaPath);
 
-            // Start Playing
-            mediaPlayer.play();
+    // Handle Media Player errors
+    mediaPlayer.addMediaErrorListener(
+        (source, errorCode, message) -> System.out.println(errorCode + ": " + message));
+
+    // Initialize the player
+    mediaPlayer.init();
+
+    // Open a simple JFrame to control the media player through key commands
+    // Be creative and create your own controller
+    JMediaPlayerControlFrame controller = new JMediaPlayerControlFrame(mediaPlayer);
+
+    // Handle Window Key events
+    mediaPlayerWindow.addSdlKeyEventListener(
+            (source, nativeMediaRef, javaKeyCode) -> controller.handleKeyEvents(javaKeyCode));
         }
     }
 ```
 
 A simple video controller example is used [here](src/main/java/org/datavyu/plugins/examples/JMediaPlayerControlFrame.java) to control media players through key binding, and a more sophisticated controller is provided in [Datavyu](https://github.com/databrary/datavyu/blob/master/src/main/java/org/datavyu/views/VideoController.java).
+
+If you are interested in using Datavyu Player in a JavaFX Application, check [this](demo/SimpleJavaFXMediaPlayer.java) example. 
+
+**Important**: Using FFmpegSdlMediaPlayer with JavaFX works only on Windows platforms (Mac OSX Fix in progress)
 
 ### AVFoundation Player
 AVFoundation is a framework that provides media audiovisual services on Apple operating systems, the player provided via the ```libNativeOSXCanvas``` artifact, require an [AWT Canvas](https://docs.oracle.com/javase/7/docs/api/java/awt/Canvas.html) to attach to the [AVPlayer](https://developer.apple.com/documentation/avfoundation/avplayer). 
@@ -159,7 +124,7 @@ Here is a simple example on how to create and initialize an AVFoundation Player,
     import java.io.File;
     import java.net.URI;
 
-    public class SimpleSdlMediaPlayer {
+    public class SimpleAVFoundationMediaPlayer {
         public static void main(String[] args) {
             // Define the media file, add your file path here !
             URI mediaPath = new File("PATH/TO/MOVIE/FILE").toURI();
