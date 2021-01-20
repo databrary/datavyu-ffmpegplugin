@@ -119,6 +119,11 @@ public class AVFoundationMediaPlayer extends NativeOSXMediaPlayer {
   }
 
   @Override
+  protected boolean playerIsVisible() throws MediaException {
+    return this.container.isVisible();
+  }
+
+  @Override
   protected void HandleSdlKeyEvents(FfmpegSdlMediaPlayer.SdlPlayerKeyEvent evt) {
     throw new IllegalArgumentException();
   }

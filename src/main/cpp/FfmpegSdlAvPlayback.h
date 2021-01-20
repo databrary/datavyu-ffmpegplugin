@@ -40,9 +40,18 @@ public:
 
   // Toggle full screen mode
   inline void ToggleFullscreen() {
-    enabled_full_screen_ = !enabled_full_screen_;
-    SDL_SetWindowFullscreen(
-        p_window_, enabled_full_screen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+#ifdef __APPLE__
+	dispatch_async(dispatch_get_main_queue(), ^{
+#endif
+	enabled_full_screen_ = !enabled_full_screen_;
+	SDL_Window *window = SDL_GetWindowFromID(window_id_);
+	if (window) {
+		SDL_SetWindowFullscreen(
+			window, enabled_full_screen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	}
+#ifdef __APPLE__
+  });
+#endif
   }
 
   // Get the volume
@@ -53,38 +62,56 @@ public:
   }
 
   inline void ShowWindow() {
-#ifdef _WIN32
+#ifdef __APPLE__
+	dispatch_async(dispatch_get_main_queue(), ^{
+#endif
     SDL_Window *window = SDL_GetWindowFromID(window_id_);
     if (window) {
-      SDL_ShowWindow(p_window_);
-      SDL_RaiseWindow(p_window_);
+      SDL_ShowWindow(window);
+      SDL_RaiseWindow(window);
     }
-#elif __APPLE__
-    dispatch_async(dispatch_get_main_queue(), ^{
-      SDL_Window *window = SDL_GetWindowFromID(window_id_);
-      if (window) {
-        SDL_ShowWindow(p_window_);
-        SDL_RaiseWindow(p_window_);
-      }
+#ifdef __APPLE__
     });
 #endif
   }
 
   inline void HideWindow() {
-#ifdef _WIN32
+#ifdef __APPLE__
+	dispatch_async(dispatch_get_main_queue(), ^{
+#endif
     SDL_Window *window = SDL_GetWindowFromID(window_id_);
     if (window) {
-      SDL_HideWindow(p_window_);
+      SDL_HideWindow(window);
     }
-#elif __APPLE__
-    dispatch_async(dispatch_get_main_queue(), ^{
-      SDL_Window *window = SDL_GetWindowFromID(window_id_);
-      if (window) {
-        SDL_HideWindow(window);
-      }
+#ifdef __APPLE__
     });
 #endif
   }
+
+  inline int IsVisible() {
+#ifdef __APPLE__
+	dispatch_async(dispatch_get_main_queue(), ^{
+#endif
+	  SDL_Window *window = SDL_GetWindowFromID(window_id_);
+	  if (window) {
+		UINT32 flags = SDL_GetWindowFlags(window);
+		if ((flags & SDL_WINDOW_HIDDEN) == SDL_WINDOW_HIDDEN) {
+			return 0;
+		}
+		if ((flags & SDL_WINDOW_MINIMIZED) == SDL_WINDOW_MINIMIZED) {
+			return 0;
+		}
+		if ((flags & SDL_WINDOW_SHOWN) == SDL_WINDOW_SHOWN) {
+			return 1;
+		}
+
+		return 0;
+	  }
+#ifdef __APPLE__
+	});
+#endif
+  }
+
 
   inline int GetWindowID() { return window_id_; }
 
@@ -99,10 +126,10 @@ public:
     SDL_Window *window = SDL_GetWindowFromID(window_id_);
     if (window) {
 #ifdef _WIN32
-      SDL_SetWindowSize(p_window_, width, height);
+      SDL_SetWindowSize(window, width, height);
 #elif __APPLE__
       dispatch_async(dispatch_get_main_queue(), ^{
-         SDL_SetWindowSize(p_window_, width, height);
+         SDL_SetWindowSize(window, width, height);
       });
 #endif
     }

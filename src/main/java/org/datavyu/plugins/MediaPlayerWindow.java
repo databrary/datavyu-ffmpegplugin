@@ -36,6 +36,8 @@ public interface MediaPlayerWindow extends MediaPlayer {
    */
   void hideWindow();
 
+  boolean isVisible();
+
   /**
    * Return Window Height
    *

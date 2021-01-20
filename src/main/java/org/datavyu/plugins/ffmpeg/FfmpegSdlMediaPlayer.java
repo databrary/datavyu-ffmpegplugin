@@ -295,6 +295,16 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
     }
   }
 
+  @Override
+  protected boolean playerIsVisible() throws MediaException{
+    int[] visible = new int[1];
+    int rc = ffmpegIsVisible(getNativeMediaRef(), visible);
+    if (rc != 0) {
+      throwMediaErrorException(rc, null);
+    }
+    return visible[0] == 1;
+  }
+
   public static class SdlPlayerKeyEvent extends PlayerEvent {
 
     private final Object source;
@@ -411,4 +421,6 @@ public final class FfmpegSdlMediaPlayer extends FfmpegMediaPlayer {
   protected native int ffmpegShowWindow(long refNativeMedia);
 
   protected native int ffmpegHideWindow(long refNativeMedia);
+
+  protected native int ffmpegIsVisible(long refNativeMedia, int[] visible);
 }
