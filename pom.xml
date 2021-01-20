@@ -20,15 +20,25 @@
 
   <repositories>
     <repository>
-      <id>java</id>
-      <url>http://download.java.net/maven/2</url>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2</url>
       <layout>default</layout>
     </repository>
 
     <repository>
-      <id>datavyu</id>
-      <url>http://datavyu.org/maven2</url>
-      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>release</id>
+      <name>oss-jfrog-artifactory-releases</name>
+      <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+    </repository>
+
+    <repository>
+      <snapshots />
+      <id>snapshots</id>
+      <name>oss-jfrog-artifactory-snapshots</name>
+      <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
     </repository>
 
     <repository>
@@ -43,8 +53,8 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>datavyu</id>
-      <url>http://datavyu.org/maven2</url>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2</url>
       <layout>default</layout>
     </pluginRepository>
   </pluginRepositories>
