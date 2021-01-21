@@ -328,6 +328,11 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   }
 
   @Override
+  protected boolean playerIsVisible() throws MediaException {
+    return this.container.isVisible();
+  }
+
+  @Override
   protected void playerDispose() {
     if (imageCanvasPlayerThread.isInit()) {
       imageCanvasPlayerThread.terminate();

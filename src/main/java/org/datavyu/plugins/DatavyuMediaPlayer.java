@@ -98,6 +98,21 @@ public abstract class DatavyuMediaPlayer extends NativeMediaPlayer implements Me
   }
 
   @Override
+  public boolean isVisible() {
+    if (disposeLock.tryLock()) {
+      try {
+        return playerIsVisible();
+      } catch (MediaException me) {
+        sendPlayerEvent(new MediaErrorEvent(this, me.getMediaError()));
+      } finally{
+        disposeLock.unlock();
+      }
+    }
+
+    return false;
+  }
+
+  @Override
   public int getWindowHeight() {
     if (disposeLock.tryLock()) {
       try {
@@ -151,4 +166,6 @@ public abstract class DatavyuMediaPlayer extends NativeMediaPlayer implements Me
   protected abstract void playerShowWindow() throws MediaException;
 
   protected abstract void playerHideWindow() throws MediaException;
+
+  protected abstract boolean playerIsVisible() throws MediaException;
 }

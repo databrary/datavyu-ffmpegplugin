@@ -88,6 +88,7 @@ public:
 
   virtual uint32_t ShowWindow() = 0;
   virtual uint32_t HideWindow() = 0;
+  virtual uint32_t IsVisible(int *isVisible) const = 0;
 #endif
 
 protected:

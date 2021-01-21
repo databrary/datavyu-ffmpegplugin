@@ -286,6 +286,17 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegHideWindow(JNIEnv *,
                                                                       jobject,
                                                                       jlong);
 
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegIsVisible
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegIsVisible(JNIEnv *,
+																	 jobject,
+																	 jlong,
+																	 jintArray);
+
 #ifdef __cplusplus
 }
 #endif

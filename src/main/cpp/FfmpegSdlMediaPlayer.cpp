@@ -694,6 +694,32 @@ Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegHideWindow(
   return iRet;
 }
 
+/*
+ * Class:     org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer
+ * Method:    ffmpegIsVisible
+ * Signature: (J[I)I
+ */
+JNIEXPORT jint JNICALL
+Java_org_datavyu_plugins_ffmpeg_FfmpegSdlMediaPlayer_ffmpegIsVisible(
+	JNIEnv *env, jobject object, jlong ref_media, jintArray jriVisible) {
+	CMedia *pMedia = (CMedia *)jlong_to_ptr(ref_media);
+	if (NULL == pMedia)
+		return ERROR_MEDIA_NULL;
+
+	CPipeline *pPipeline = (CPipeline *)pMedia->GetPipeline();
+	if (NULL == pPipeline)
+		return ERROR_PIPELINE_NULL;
+#ifdef SDL_ENABLED
+	int iVisible;
+	uint32_t uErrCode = pPipeline->IsVisible(&iVisible);
+	if (ERROR_NONE != uErrCode)
+		return uErrCode;
+	jint jiVisible = (jint)iVisible;
+	env->SetIntArrayRegion(jriVisible, 0, 1, &jiVisible);
+#endif
+	return ERROR_NONE;
+}
+
 #ifdef __cplusplus
 }
 #endif
