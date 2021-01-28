@@ -61,10 +61,10 @@
 
   <profiles>
     <profile>
-      <id>deploy-bintray</id>
+      <id>bintray</id>
       <activation>
         <property>
-          <name>deploy.bintray</name>
+          <name>bintray</name>
           <value>true</value>
         </property>
       </activation>
@@ -79,10 +79,10 @@
       </distributionManagement>
     </profile>
     <profile>
-      <id>deploy-artifactory</id>
+      <id>artifactory</id>
       <activation>
         <property>
-          <name>!deploy.bintray</name>
+          <name>!bintray</name>
         </property>
       </activation>
       <properties>
@@ -471,6 +471,12 @@
       <artifactId>commons-io</artifactId>
       <version>2.6</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>15.0.1</version>
     </dependency>
   </dependencies>
 </project>

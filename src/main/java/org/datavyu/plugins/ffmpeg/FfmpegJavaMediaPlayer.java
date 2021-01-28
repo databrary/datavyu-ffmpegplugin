@@ -7,7 +7,6 @@ import org.datavyu.plugins.SdlKeyEventListener;
 import org.datavyu.util.LibraryLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
@@ -270,13 +269,13 @@ public final class FfmpegJavaMediaPlayer extends FfmpegMediaPlayer implements Me
   @Override
   protected float playerGetBalance() throws MediaException {
     // TODO(fraudies): Add balance adjustment to audio thread
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   protected void playerSetBalance(float balance) throws MediaException {
     // TODO(fraudies): Add balance adjustment to audio thread
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
