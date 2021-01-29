@@ -6,7 +6,7 @@
 
   <groupId>org.datavyu</groupId>
   <artifactId>ffmpeg-plugin</artifactId>
-  <version>0.24-SNAPSHOT</version>
+  <version>0.24</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -89,7 +89,7 @@
       </properties>
       <distributionManagement>
         <repository>
-          <id>central</id>
+          <id>release</id>
           <name>oss-jfrog-artifactory-releases</name>
           <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
         </repository>
