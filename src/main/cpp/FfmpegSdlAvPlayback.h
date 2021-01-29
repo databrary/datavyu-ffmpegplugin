@@ -102,37 +102,41 @@ public:
 
   inline int IsVisible() {
 #ifdef _WIN32
+	int isVisible = 0;
 	SDL_Window *window = SDL_GetWindowFromID(window_id_);
 	if (window) {
 		Uint32 flags = SDL_GetWindowFlags(window);
 		if ((flags & SDL_WINDOW_HIDDEN) == SDL_WINDOW_HIDDEN) {
-			return 0;
+			isVisible = 0;
 		}
 		if ((flags & SDL_WINDOW_MINIMIZED) == SDL_WINDOW_MINIMIZED) {
-			return 0;
+			isVisible = 0;
 		}
 		if ((flags & SDL_WINDOW_SHOWN) == SDL_WINDOW_SHOWN) {
-			return 1;
+			isVisible = 1;
 		}
-		return 0;
 	}
+
+	return isVisible;
 #elif __APPLE__
+	  __block int isVisible = 0;
 	dispatch_async(dispatch_get_main_queue(), ^{
 		SDL_Window *window = SDL_GetWindowFromID(window_id_);
 		if (window) {
-		Uint32 flags = SDL_GetWindowFlags(window);
-		if ((flags & SDL_WINDOW_HIDDEN) == SDL_WINDOW_HIDDEN) {
-			return 0;
-		}
-		if ((flags & SDL_WINDOW_MINIMIZED) == SDL_WINDOW_MINIMIZED) {
-			return 0;
-		}
-		if ((flags & SDL_WINDOW_SHOWN) == SDL_WINDOW_SHOWN) {
-			return 1;
-		}
-		return 0;
+			Uint32 flags = SDL_GetWindowFlags(window);
+			if ((flags & SDL_WINDOW_HIDDEN) == SDL_WINDOW_HIDDEN) {
+				isVisible = 0;
+			}
+			if ((flags & SDL_WINDOW_MINIMIZED) == SDL_WINDOW_MINIMIZED) {
+				isVisible = 0;
+			}
+			if ((flags & SDL_WINDOW_SHOWN) == SDL_WINDOW_SHOWN) {
+				isVisible = 1;
+			}
 		}
 	});
+
+	return isVisible;
 #endif
   }
 
