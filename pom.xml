@@ -89,7 +89,7 @@
       </properties>
       <distributionManagement>
         <repository>
-          <id>central</id>
+          <id>release</id>
           <name>oss-jfrog-artifactory-releases</name>
           <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
         </repository>
