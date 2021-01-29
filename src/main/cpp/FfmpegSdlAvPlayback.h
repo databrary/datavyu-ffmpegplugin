@@ -104,7 +104,7 @@ public:
 #ifdef _WIN32
 	SDL_Window *window = SDL_GetWindowFromID(window_id_);
 	if (window) {
-		UINT32 flags = SDL_GetWindowFlags(window);
+		Uint32 flags = SDL_GetWindowFlags(window);
 		if ((flags & SDL_WINDOW_HIDDEN) == SDL_WINDOW_HIDDEN) {
 			return 0;
 		}
@@ -120,7 +120,7 @@ public:
 	dispatch_async(dispatch_get_main_queue(), ^{
 		SDL_Window *window = SDL_GetWindowFromID(window_id_);
 		if (window) {
-		UINT32 flags = SDL_GetWindowFlags(window);
+		Uint32 flags = SDL_GetWindowFlags(window);
 		if ((flags & SDL_WINDOW_HIDDEN) == SDL_WINDOW_HIDDEN) {
 			return 0;
 		}
