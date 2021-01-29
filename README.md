@@ -33,7 +33,7 @@ The latest version of the Datavyu Player could be downloaded using the following
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
-        <version>0.23</version>
+        <version>0.24</version>
     </dependency>
 ```
 
@@ -44,7 +44,7 @@ For Windows:
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
-        <version>0.23</version>
+        <version>0.24</version>
         <classifier>win</classifier>
     </dependency>
 ```
@@ -54,7 +54,7 @@ For Mac OS:
     <dependency>
         <groupId>org.datavyu</groupId>
         <artifactId>ffmpeg-plugin</artifactId>
-        <version>0.23</version>
+        <version>0.24</version>
         <classifier>mac</classifier>
     </dependency>
 ```

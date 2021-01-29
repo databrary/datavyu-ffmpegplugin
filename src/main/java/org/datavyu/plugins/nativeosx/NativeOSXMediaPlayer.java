@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.datavyu.plugins.MediaException;
 import org.datavyu.plugins.DatavyuMediaPlayer;
 import org.datavyu.plugins.PlayerStateEvent;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.awt.*;
 import java.net.URI;
@@ -266,22 +265,22 @@ abstract class NativeOSXMediaPlayer extends DatavyuMediaPlayer {
 
   @Override
   protected float playerGetBalance() throws MediaException {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   protected void playerSetBalance(float balance) throws MediaException {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   protected long playerGetAudioSyncDelay() throws MediaException {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   protected void playerSetAudioSyncDelay(long delay) throws MediaException {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   protected abstract void playerSeek(double streamTime, int flags) throws MediaException;

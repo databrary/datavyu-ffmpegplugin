@@ -6,7 +6,7 @@
 
   <groupId>org.datavyu</groupId>
   <artifactId>ffmpeg-plugin</artifactId>
-  <version>0.23</version>
+  <version>0.24</version>
   <packaging>jar</packaging>
 
   <properties>
@@ -20,15 +20,25 @@
 
   <repositories>
     <repository>
-      <id>java</id>
-      <url>http://download.java.net/maven/2</url>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2</url>
       <layout>default</layout>
     </repository>
 
     <repository>
-      <id>datavyu</id>
-      <url>http://datavyu.org/maven2</url>
-      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>release</id>
+      <name>oss-jfrog-artifactory-releases</name>
+      <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+    </repository>
+
+    <repository>
+      <snapshots />
+      <id>snapshots</id>
+      <name>oss-jfrog-artifactory-snapshots</name>
+      <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
     </repository>
 
     <repository>
@@ -43,18 +53,18 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>datavyu</id>
-      <url>http://datavyu.org/maven2</url>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2</url>
       <layout>default</layout>
     </pluginRepository>
   </pluginRepositories>
 
   <profiles>
     <profile>
-      <id>deploy-bintray</id>
+      <id>bintray</id>
       <activation>
         <property>
-          <name>deploy.bintray</name>
+          <name>bintray</name>
           <value>true</value>
         </property>
       </activation>
@@ -69,17 +79,17 @@
       </distributionManagement>
     </profile>
     <profile>
-      <id>deploy-artifactory</id>
+      <id>artifactory</id>
       <activation>
         <property>
-          <name>!deploy.bintray</name>
+          <name>!bintray</name>
         </property>
       </activation>
       <properties>
       </properties>
       <distributionManagement>
         <repository>
-          <id>central</id>
+          <id>release</id>
           <name>oss-jfrog-artifactory-releases</name>
           <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
         </repository>
@@ -461,6 +471,12 @@
       <artifactId>commons-io</artifactId>
       <version>2.6</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+      <version>15.0.1</version>
     </dependency>
   </dependencies>
 </project>

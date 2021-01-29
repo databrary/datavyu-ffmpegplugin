@@ -54,6 +54,7 @@ private:
 
   virtual uint32_t ShowWindow();
   virtual uint32_t HideWindow();
+  virtual uint32_t IsVisible(int *visible) const;
 
   FfmpegSdlAvPlayback *p_sdl_playback_;
 };

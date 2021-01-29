@@ -283,6 +283,16 @@ uint32_t FfmpegSdlAvPlaybackPipeline::HideWindow() {
   return ERROR_NONE;
 }
 
+uint32_t FfmpegSdlAvPlaybackPipeline::IsVisible(int *visible) const {
+	if (p_sdl_playback_ == nullptr) {
+		return ERROR_PLAYBACK_NULL;
+	}
+
+	*visible = p_sdl_playback_->IsVisible();
+
+	return ERROR_NONE;
+}
+
 uint32_t FfmpegSdlAvPlaybackPipeline::ShowWindow() {
   if (p_sdl_playback_ == nullptr) {
     return ERROR_PLAYBACK_NULL;
